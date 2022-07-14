@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.52
+      image: mailcow/clamd:1.53
       restart: always
       depends_on:
         - unbound-mailcow
@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.108
+      image: mailcow/sogo:1.109
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -215,7 +215,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.162
+      image: mailcow/dovecot:1.17
       depends_on:
         - mysql-mailcow
       dns:

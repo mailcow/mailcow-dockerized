@@ -176,15 +176,62 @@ function recursiveBase64StrToArrayBuffer(obj) {
     {% endfor %}
 
     // Confirm TFA modal
-  {% if pending_tfa_method %}
+  {% if pending_tfa_methods %}
     $('#ConfirmTFAModal').modal({
       backdrop: 'static',
       keyboard: false
     });
 
+    // validate Yubi OTP tfa
+    $("#pending_tfa_tab_yubi_otp").click(function(){
+      $(".totp-authenticator-selection").removeClass("active");
+      $(".webauthn-authenticator-selection").removeClass("active");
+
+      $("#collapseTotpTFA").collapse('hide');
+      $("#collapseWebAuthnTFA").collapse('hide');
+    });
+    $(".yubi-authenticator-selection").click(function(){
+      $(".yubi-authenticator-selection").removeClass("active");
+      $(this).addClass("active");
+
+      var id = $(this).children('input').first().val();
+      $("#yubi_selected_id").val(id);
+
+      $("#collapseYubiTFA").collapse('show');
+    });
+    // validate Time based OTP tfa
+    $("#pending_tfa_tab_totp").click(function(){
+      $(".yubi-authenticator-selection").removeClass("active");
+      $(".webauthn-authenticator-selection").removeClass("active");
+
+      $("#collapseYubiTFA").collapse('hide');
+      $("#collapseWebAuthnTFA").collapse('hide');
+    });
+    $(".totp-authenticator-selection").click(function(){
+      $(".totp-authenticator-selection").removeClass("active");
+      $(this).addClass("active");
+      
+      var id = $(this).children('input').first().val();
+      $("#totp_selected_id").val(id);
+
+      $("#collapseTotpTFA").collapse('show');
+    });
     // validate WebAuthn tfa
-    $('#start_webauthn_confirmation').click(function(){
-      $('#webauthn_status_auth').html('<p><i class="bi bi-arrow-repeat icon-spin"></i> ' + lang_tfa.init_webauthn + '</p>');
+    $("#pending_tfa_tab_webauthn").click(function(){
+      $(".totp-authenticator-selection").removeClass("active");
+      $(".yubi-authenticator-selection").removeClass("active");
+
+      $("#collapseTotpTFA").collapse('hide');
+      $("#collapseYubiTFA").collapse('hide');
+    });
+    $(".webauthn-authenticator-selection").click(function(){
+      $(".webauthn-authenticator-selection").removeClass("active");
+      $(this).addClass("active");
+      
+      var id = $(this).children('input').first().val();
+      $("#webauthn_selected_id").val(id);
+      
+      $("#collapseWebAuthnTFA").collapse('show');
 
       $(this).find('input[name=token]').focus();
       if(document.getElementById("webauthn_auth_data") !== null) {
@@ -198,30 +245,32 @@ function recursiveBase64StrToArrayBuffer(obj) {
         window.fetch("/api/v1/get/webauthn-tfa-get-args", {method:'GET',cache:'no-cache'}).then(response => {
             return response.json();
         }).then(json => {
-            if (json.success === false) throw new Error();
+          console.log(json);
+          if (json.success === false) throw new Error();
+          if (json.type === "error") throw new Error(json.msg);
       
-            recursiveBase64StrToArrayBuffer(json);
-            return json;
+          recursiveBase64StrToArrayBuffer(json);
+          return json;
         }).then(getCredentialArgs => {
-            // get credentials
-            return navigator.credentials.get(getCredentialArgs);
+          // get credentials
+          return navigator.credentials.get(getCredentialArgs);
         }).then(cred => {
-            return {
-                id: cred.rawId ? arrayBufferToBase64(cred.rawId) : null,
-                clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
-                authenticatorData: cred.response.authenticatorData ? arrayBufferToBase64(cred.response.authenticatorData) : null,
-                signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
-            };
+          return {
+            id: cred.rawId ? arrayBufferToBase64(cred.rawId) : null,
+            clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+            authenticatorData: cred.response.authenticatorData ? arrayBufferToBase64(cred.response.authenticatorData) : null,
+            signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
+          };
         }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
-            // send request by submit
-            var form = document.getElementById('webauthn_auth_form');
-            var auth = document.getElementById('webauthn_auth_data');
-            auth.value = AuthenticatorAttestationResponse;
-            form.submit();
+          // send request by submit
+          var form = document.getElementById('webauthn_auth_form');
+          var auth = document.getElementById('webauthn_auth_data');
+          auth.value = AuthenticatorAttestationResponse;
+          form.submit();
         }).catch(function(err) {
-            var webauthn_return_code = document.getElementById('webauthn_return_code');
-            webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
-            webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
+          var webauthn_return_code = document.getElementById('webauthn_return_code');
+          webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
+          webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
       } 
     });
@@ -237,7 +286,9 @@ function recursiveBase64StrToArrayBuffer(obj) {
         }
       });
     });
-    {% endif %}
+  {% endif %}
+
+
     // Validate FIDO2
   $("#fido2-login").click(function(){
     $('#fido2-alerts').html();
@@ -358,11 +409,13 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
         $("#start_webauthn_register").click(() => {
             var key_id = document.getElementsByName('key_id')[1].value;
+            var confirm_password = document.getElementsByName('confirm_password')[1].value;
 
             // fetch WebAuthn create args
             window.fetch("/api/v1/get/webauthn-tfa-registration/{{ mailcow_cc_username|url_encode(true)|default('null') }}", {method:'GET',cache:'no-cache'}).then(response => {
                 return response.json();
             }).then(json => {
+                console.log(json);
                 if (json.success === false) throw new Error(json.msg);
                 recursiveBase64StrToArrayBuffer(json);
 
@@ -375,7 +428,8 @@ function recursiveBase64StrToArrayBuffer(obj) {
                     clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
                     attestationObject: cred.response.attestationObject ? arrayBufferToBase64(cred.response.attestationObject) : null,
                     key_id: key_id,
-                    tfa_method: "webauthn"
+                    tfa_method: "webauthn",
+                    confirm_password: confirm_password
                 };
             }).then(JSON.stringify).then(AuthenticatorAttestationResponse => {
                 // send request

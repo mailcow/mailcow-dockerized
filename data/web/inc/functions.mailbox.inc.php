@@ -338,8 +338,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
 
           // validate custom params
-          foreach (explode(' -', $custom_params) as $param){
+          foreach (explode('-', $custom_params) as $param){
             if(empty($param)) continue;
+
+            // extract option
+            if (str_contains($param, '=')) $param = explode('=', $param)[0];
+            else $param = rtrim($param, ' ');
+            // remove first char if first char is -
+            if ($param[0] == '-') $param = ltrim($param, $param[0]);
 
             if (str_contains($param, ' ')) {
               // bad char
@@ -351,11 +357,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
 
-            // extract option
-            if (str_contains($param, '=')) $param = explode('=', $param)[0];
-            // remove first char if first char is -
-            if ($param[0] == '-') $param = ltrim($param, $param[0]);
-            
             // check if param is whitelisted
             if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
               // bad option
@@ -1793,8 +1794,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
 
             // validate custom params
-            foreach (explode(' -', $custom_params) as $param){
+            foreach (explode('-', $custom_params) as $param){
               if(empty($param)) continue;
+
+              // extract option
+              if (str_contains($param, '=')) $param = explode('=', $param)[0];
+              else $param = rtrim($param, ' ');
+              // remove first char if first char is -
+              if ($param[0] == '-') $param = ltrim($param, $param[0]);
 
               if (str_contains($param, ' ')) {
                 // bad char
@@ -1806,11 +1813,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 return false;
               }
   
-              // extract option
-              if (str_contains($param, '=')) $param = explode('=', $param)[0];
-              // remove first char if first char is -
-              if ($param[0] == '-') $param = ltrim($param, $param[0]);
-              
               // check if param is whitelisted
               if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
                 // bad option

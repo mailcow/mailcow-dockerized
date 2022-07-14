@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.18
+ARG DOVECOT=2.3.19.1
 ENV LC_ALL C
 ENV GOSU_VERSION 1.14
 

@@ -271,4 +271,13 @@ if ! ssh -o StrictHostKeyChecking=no \
     >&2 echo -e "\e[31m[ERR]\e[0m - Could not cleanup old images on remote"
 fi
 
+echo -e "\033[1mExecuting update script and checking for new docker-compose Version on remote...\033[0m"
+if ! ssh -o StrictHostKeyChecking=no \
+  -i "${REMOTE_SSH_KEY}" \
+  ${REMOTE_SSH_HOST} \
+  -p ${REMOTE_SSH_PORT} \
+  ${SCRIPT_DIR}/../update.sh -f --update-compose ; then
+    >&2 echo -e "\e[31m[ERR]\e[0m - Could not fetch docker-compose on remote"
+fi
+
 echo -e "\e[32mDone\e[0m"
