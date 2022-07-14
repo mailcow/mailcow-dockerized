@@ -823,13 +823,10 @@ paths:
                         - domain_admin_modified
                         - testadmin
               schema:
+                type: array
+                items:
+                  type: object
                 properties:
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
                   log:
                     description: contains request object
                     items: {}
@@ -837,7 +834,12 @@ paths:
                   msg:
                     items: {}
                     type: array
-                type: object
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
           description: OK
           headers: {}
       tags:
