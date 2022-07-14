@@ -1996,11 +1996,9 @@ paths:
                 - domain.tld
                 - domain2.tld
               properties:
+                type: array
                 items:
-                  description: contains list of domains you want to delete
-                  type: array
-                  items:
-                    type: string
+                  type: string
               type: object
       summary: Delete domain
   /api/v1/delete/domain-admin:
