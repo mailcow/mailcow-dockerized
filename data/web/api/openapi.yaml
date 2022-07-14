@@ -2987,23 +2987,25 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "200":
           content:
-            "*/*":
+            application/json:
               schema:
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    log:
+                      description: contains request object
+                      items: {}
+                      type: array
+                    msg:
+                      items: {}
+                      type: array
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
