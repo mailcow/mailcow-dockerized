@@ -2990,20 +2990,21 @@ paths:
             application/json:
               schema:
                 type: array
-                items: object
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    type: string
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
+                items: 
+                  type: object
+                  properties:
+                    log:
+                      description: contains request object
+                      items: {}
+                      type: array
+                    msg:
+                      type: string
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
