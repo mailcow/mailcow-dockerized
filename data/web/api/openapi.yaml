@@ -601,6 +601,9 @@ paths:
                     if not, them you have to create "dummy" mailbox for each
                     address to relay
                   type: boolean
+                relay_unknown_only:
+                  description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
+                  type: boolean
                 rl_frame:
                   enum:
                     - s
