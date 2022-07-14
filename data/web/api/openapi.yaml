@@ -3077,7 +3077,17 @@ paths:
                     relayhost:
                       description: id of relayhost
                       type: number
-                  type: object
+                    rl_frame:
+                      enum:
+                        - s
+                        - m
+                        - h
+                        - d
+                      type: string
+                    rl_value:
+                      description: rate limit value
+                      type: number
+                    type: object
                 items:
                   description: contains list of domain names you want update
                   type: object
