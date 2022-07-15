@@ -1992,12 +1992,15 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               example:
                 - domain.tld
                 - domain2.tld
-              type: array
-              items:
-                type: string
+              properties:
+                items: 
+                  type: array
+                  items:
+                    type: string
       summary: Delete domain
   /api/v1/delete/domain-admin:
     post:
