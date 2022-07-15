@@ -1,3 +1,5 @@
+TEST
+
 # mailcow: dockerized - 🐮 + 🐋 = 💕
 
 ## We stand with 🇺🇦
