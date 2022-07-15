@@ -182,13 +182,21 @@ function recursiveBase64StrToArrayBuffer(obj) {
       keyboard: false
     });
 
+
     // validate Yubi OTP tfa
     $("#pending_tfa_tab_yubi_otp").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
       $(".webauthn-authenticator-selection").removeClass("active");
-
       $("#collapseTotpTFA").collapse('hide');
       $("#collapseWebAuthnTFA").collapse('hide');
+
+      // select default if only one authenticator exists
+      if ($('.yubi-authenticator-selection').length == 1){
+        $('.yubi-authenticator-selection').addClass("active");
+        var id = $('.yubi-authenticator-selection').children('input').first().val();
+        $("#yubi_selected_id").val(id);
+        $("#collapseYubiTFA").collapse('show');
+      }
     });
     $(".yubi-authenticator-selection").click(function(){
       $(".yubi-authenticator-selection").removeClass("active");
@@ -198,14 +206,37 @@ function recursiveBase64StrToArrayBuffer(obj) {
       $("#yubi_selected_id").val(id);
 
       $("#collapseYubiTFA").collapse('show');
+      $("#collapseYubiTFA").children('input[name="token"]').focus();
+    });
+    if ($('.yubi-authenticator-selection').length == 1 &&
+        $('.webauthn-authenticator-selection').length == 0){
+
+      // select default if only one authenticator exists
+      $('.yubi-authenticator-selection').addClass("active");
+
+      var id = $('.yubi-authenticator-selection').children('input').first().val();
+      $("#yubi_selected_id").val(id);
+
+      $("#collapseYubiTFA").collapse('show');
+    }
+    $('#collapseYubiTFA').on('shown.bs.collapse', function() {
+      // autofocus
+      setTimeout(function() { $("#collapseYubiTFA").find('input[name="token"]').focus(); }, 200);
     });
     // validate Time based OTP tfa
     $("#pending_tfa_tab_totp").click(function(){
       $(".yubi-authenticator-selection").removeClass("active");
       $(".webauthn-authenticator-selection").removeClass("active");
-
       $("#collapseYubiTFA").collapse('hide');
       $("#collapseWebAuthnTFA").collapse('hide');
+
+      // select default if only one authenticator exists
+      if ($('.totp-authenticator-selection').length == 1){
+        $('.totp-authenticator-selection').addClass("active");
+        var id = $('.totp-authenticator-selection').children('input').first().val();
+        $("#totp_selected_id").val(id);
+        $("#collapseTotpTFA").collapse('show');
+      }
     });
     $(".totp-authenticator-selection").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
@@ -215,6 +246,22 @@ function recursiveBase64StrToArrayBuffer(obj) {
       $("#totp_selected_id").val(id);
 
       $("#collapseTotpTFA").collapse('show');
+    });
+    if ($('.totp-authenticator-selection').length == 1 &&
+        $('.yubi-authenticator-selection').length == 0 &&
+        $('.webauthn-authenticator-selection').length == 0){
+
+      // select default if only one authenticator exists
+      $('.totp-authenticator-selection').addClass("active");
+
+      var id = $('.totp-authenticator-selection').children('input').first().val();
+      $("#totp_selected_id").val(id);
+
+      $("#collapseTotpTFA").collapse('show');
+    }
+    $('#collapseTotpTFA').on('shown.bs.collapse', function() {
+      // autofocus
+      setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 200);
     });
     // validate WebAuthn tfa
     $("#pending_tfa_tab_webauthn").click(function(){
