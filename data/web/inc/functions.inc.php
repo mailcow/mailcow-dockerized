@@ -1630,12 +1630,8 @@ function verify_tfa_login($username, $_data) {
   global $WebAuthn;
 
   if ($_data['tfa_method'] != 'u2f'){
-    $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
-        WHERE `username` = :username AND `id` = :id AND `active` = '1'");
-    $stmt->execute(array(':username' => $username, ':id' => $_data['id']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    switch ($row["authmech"]) {
+    switch ($_data["tfa_method"]) {
         case "yubi_otp":
             if (!ctype_alnum($_data['token']) || strlen($_data['token']) != 44) {
                 $_SESSION['return'][] =  array(
@@ -1649,10 +1645,9 @@ function verify_tfa_login($username, $_data) {
             $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
                 WHERE `username` = :username
                 AND `authmech` = 'yubi_otp'
-                AND `id` = :id
                 AND `active` = '1'
                 AND `secret` LIKE :modhex");
-            $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id, ':id' => $_data['id']));
+            $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $yubico_auth = explode(':', $row['secret']);
             $yubi = new Auth_Yubico($yubico_auth[0], $yubico_auth[1]);

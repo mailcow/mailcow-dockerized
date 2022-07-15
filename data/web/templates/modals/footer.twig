@@ -206,20 +206,9 @@
                     <form role="form" method="post">
                       <legend>
                           <i class="bi bi-shield-fill-check"></i>
-                          Authenticators
+                          Authenticate
                       </legend>
-                      <div class="list-group">
-                        {% for authenticator in pending_tfa_methods %}
-                          {% if authenticator["authmech"] == "yubi_otp" %}
-                            <a href="#" class="list-group-item yubi-authenticator-selection">
-                              <i class="bi bi-key-fill" style="margin-right: 5px"></i>
-                              <span>{{ authenticator["key_id"] }}</span>
-                              <input type="hidden" value="{{ authenticator["id"] }}" />
-                            </a>
-                          {% endif %}
-                        {% endfor %}
-                      </div>
-                      <div class="collapse pending-tfa-collapse" id="collapseYubiTFA">
+                      <div class="collapse in pending-tfa-collapse" id="collapseYubiTFA">
                         <div class="form-group">
                           <div class="input-group">
                             <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
