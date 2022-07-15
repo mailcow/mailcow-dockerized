@@ -1,4 +1,4 @@
-name: Build Mailcow Docker Images
+name: Build mailcow Docker Images
 
 on:
   push:
