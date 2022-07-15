@@ -91,8 +91,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     'number_of_app_passwords' => $number_of_app_passwords,
   ];
 }
-
-if (!isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
+else {
   header('Location: /');
   exit();
 }
