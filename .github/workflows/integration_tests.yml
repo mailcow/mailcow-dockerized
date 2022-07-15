@@ -1,0 +1,60 @@
+name: Mailcow Integration Tests
+
+on:
+  push:
+    branches: [ "master", "staging" ]
+  workflow_dispatch:
+
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Ansible
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update
+          sudo apt-get install python3 python3-pip git
+          sudo pip3 install ansible
+      - name: Prepair Test Environment
+        run: |
+          git clone https://github.com/mailcow/mailcow-integration-tests.git --branch $(curl -sL https://api.github.com/repos/mailcow/mailcow-integration-tests/releases/latest | jq -r '.tag_name') --single-branch .
+          ./fork_check.sh
+          ./ci.sh
+          ./ci-pip-requirements.sh
+        env:
+          VAULT_PW: ${{ secrets.MAILCOW_TESTS_VAULT_PW }}
+          VAULT_FILE: ${{ secrets.MAILCOW_TESTS_VAULT_FILE }}
+      - name: Start Integration Test Server
+        run: |
+          ./fork_check.sh
+          ansible-playbook mailcow-start-server.yml --diff
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
+      - name: Setup Integration Test Server
+        run: |
+          ./fork_check.sh
+          sleep 30
+          ansible-playbook mailcow-setup-server.yml --private-key id_ssh_rsa --diff
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
+      - name: Run Integration Tests
+        run: |
+          ./fork_check.sh
+          ansible-playbook mailcow-integration-tests.yml --private-key id_ssh_rsa --diff
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
+      - name: Delete Integration Test Server
+        if: always()
+        run: |
+          ./fork_check.sh
+          ansible-playbook mailcow-delete-server.yml --diff
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
