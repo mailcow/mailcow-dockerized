@@ -203,7 +203,7 @@ else
     DC_DL_SUFFIX=legacy
   fi
   sleep 1
-  if [[ $(which pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 || $(which pip3 2>&1) && $(pip3 list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+  if [[ $(command -v pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 || $(command -v pip3 2>&1) && $(pip3 list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
     echo -e "\e[33mFound a docker-compose Version installed with pip!\e[0m"
     echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
     sleep 2
@@ -214,7 +214,7 @@ else
     LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
     COMPOSE_VERSION=$(docker-compose version --short)
     if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
-      COMPOSE_PATH=$(which docker-compose)
+      COMPOSE_PATH=$(command -v docker-compose)
       if [[ -w ${COMPOSE_PATH} ]]; then
         curl -#L https://github.com/docker/compose/releases/download/v${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
         chmod +x $COMPOSE_PATH
@@ -273,16 +273,18 @@ PATH=$PATH:/opt/bin
 umask 0022
 
 for bin in curl docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then 
+  if [[ -z $(command -v ${bin}) ]]; then 
   echo "Cannot find ${bin}, exiting..." 
   exit 1;
-  elif [[ -z $(which docker-compose) ]]; then
+  fi  
+done
+
+if [[ -z $(command -v docker-compose) ]]; then
   echo -e "\e[31mCannot find docker-compose Standalone.\e[0m" 
   echo -e "\e[31mPlease install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   sleep 3
   exit 1;
-  fi  
-done
+fi
 
 ## Check if docker-compose >= v2
 if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
