@@ -688,6 +688,14 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "user-acl":
+            switch ($object) {
+              default:
+                process_get_return(acl('get', 'user', $object));
+              break;
+            }
+          break;
+
           case "relayhost":
             switch ($object) {
               case "all":
