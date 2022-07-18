@@ -105,6 +105,7 @@ RUN groupadd -g 5000 vmail \
   zlib1g-dev \
   pkg-config \
   libsqlite3-dev \
+  liblua5.3-dev \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
@@ -124,26 +125,33 @@ RUN groupadd -g 5000 vmail \
 #  dovecot-imapd \
 #  dovecot-dev
 
-RUN cd /tmp && git clone https://github.com/dovecot/core.git dovecot && cd dovecot \
+RUN cd /tmp && git clone --depth 1 --branch release-2.3 https://github.com/dovecot/core.git dovecot/core && cd dovecot/core \
   && ./autogen.sh \
-  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-mysql --with-ldap --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
-  && make && make install && make clean
+  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-sql=yes --with-lua=yes --with-mysql --with-ldap=yes --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
+  && make -j6 \
+  && make install \
+  && make clean
 
 
-RUN cd /tmp && git clone https://github.com/dovecot/pigeonhole && cd pigeonhole \
+RUN cd /tmp && git clone --depth 1 --branch release-0.5 https://github.com/dovecot/pigeonhole dovecot/pigeonhole && cd dovecot/pigeonhole \
   && ./autogen.sh \
   && ./configure --with-dovecot=/usr/lib/dovecot --with-managesieve\ 
-  && make && make install && make clean
+  && make -j6 \
+  && make install \
+  && make clean
 
 RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPIAN}.tar.xz && tar xf xapian-core-${XAPIAN}.tar.xz && cd xapian-core-${XAPIAN} \
   && ./configure --prefix=/opt \
-  && make && make install && make clean
+  && make -j6 \
+  && make install \
+  && make clean
 
-#RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git && cd dovecot-fts-flatcurve \
-#  && ./autogen.sh \
-#  && ./configure --with-dovecot=/usr/lib/dovecot \
-#  && make \
-#  && make install
+RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git dovecot/flatcurve && cd dovecot/flatcurve \
+  && ./autogen.sh \
+  && ./configure --with-dovecot=/usr/lib/dovecot \
+  && make -j6 \
+  && make install \
+  && make clean
 
 RUN pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
