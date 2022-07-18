@@ -1,22 +1,14 @@
-FROM debian:bullseye-slim
+FROM debian:bullseye-slim as build
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DOVECOT=2.3.18
-ARG XAPIAN=1.4.19
+ARG XAPIAN=1.4.20
 ENV LC_ALL C
 ENV GOSU_VERSION 1.14
 
 # Add groups and users before installing Dovecot to not break compatibility
-RUN groupadd -g 5000 vmail \
-  && groupadd -g 401 dovecot \
-  && groupadd -g 402 dovenull \
-  && groupadd -g 999 sogo \
-  && usermod -a -G sogo nobody \
-  && useradd -g vmail -u 5000 vmail -d /var/vmail \
-  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
-  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull \
-  && touch /etc/default/locale \
+RUN touch /etc/default/locale \
   && apt-get update \
   && apt-get -y --no-install-recommends install \
   apt-transport-https \
@@ -125,13 +117,12 @@ RUN groupadd -g 5000 vmail \
 #  dovecot-imapd \
 #  dovecot-dev
 
-RUN cd /tmp && git clone --depth 1 --branch release-2.3 https://github.com/dovecot/core.git dovecot/core && cd dovecot/core \
+RUN cd /tmp && git clone --depth 1 --branch release-2.3.19 https://github.com/dovecot/core.git dovecot/core && cd dovecot/core \
   && ./autogen.sh \
-  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-sql=yes --with-lua=yes --with-mysql --with-ldap=yes --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
+  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-sql=yes --with-lua=yes --with-mysql --with-ldap --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
   && make -j6 \
   && make install \
   && make clean
-
 
 RUN cd /tmp && git clone --depth 1 --branch release-0.5 https://github.com/dovecot/pigeonhole dovecot/pigeonhole && cd dovecot/pigeonhole \
   && ./autogen.sh \
@@ -141,7 +132,7 @@ RUN cd /tmp && git clone --depth 1 --branch release-0.5 https://github.com/dovec
   && make clean
 
 RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPIAN}.tar.xz && tar xf xapian-core-${XAPIAN}.tar.xz && cd xapian-core-${XAPIAN} \
-  && ./configure --prefix=/opt \
+  && ./configure --prefix=/usr/local/xapian \
   && make -j6 \
   && make install \
   && make clean
@@ -153,21 +144,90 @@ RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git do
   && make install \
   && make clean
 
-RUN pip3 install mysql-connector-python html2text jinja2 redis \
-  && apt-get autoremove --purge -y \
-  && apt-get purge -y \   
-     make \
-     libxapian-dev \
-     libicu-dev \
-     zlib1g-dev \
-     pkg-config \
-     build-essential \
-     libsqlite3-dev \
-  && apt-get autoclean \
-  && rm -rf /var/lib/apt/lists/*
-  
-RUN rm -rf /tmp/* /var/tmp/* /root/.cache/ 
-
+FROM debian:bullseye-slim
+RUN groupadd -g 5000 vmail \
+  && groupadd -g 401 dovecot \
+  && groupadd -g 402 dovenull \
+  && groupadd -g 999 sogo \
+  && usermod -a -G sogo nobody \
+  && useradd -g vmail -u 5000 vmail -d /var/vmail \
+  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
+  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull \
+  && apt update && apt install lua-socket \
+  mariadb-client \
+  libstemmer-dev \
+  libexttextcat-dev \
+  libicu-dev \
+  libxapian-dev \
+  libsqlite3-dev \
+  liblua5.3-dev \
+  lua-sql-mysql \
+  libldap-dev \
+  procps \
+  python3-pip \
+  redis-server \
+  supervisor \
+  syslog-ng \
+  syslog-ng-core \
+  syslog-ng-mod-redis \
+  cpanminus \
+  curl \
+  libauthen-ntlm-perl \
+  libcgi-pm-perl \
+  libcrypt-openssl-rsa-perl \
+  libcrypt-ssleay-perl \
+  libdata-uniqid-perl \
+  libdbd-mysql-perl \
+  libdbi-perl \
+  libdigest-hmac-perl \
+  libdist-checkconflicts-perl \
+  libencode-imaputf7-perl \
+  libfile-copy-recursive-perl \
+  libfile-tail-perl \
+  libhtml-parser-perl \
+  libio-compress-perl \
+  libio-socket-inet6-perl \
+  libio-socket-ssl-perl \
+  libio-tee-perl \
+  libipc-run-perl \
+  libjson-webtoken-perl \
+  liblockfile-simple-perl \
+  libmail-imapclient-perl \
+  libmodule-implementation-perl \
+  libmodule-scandeps-perl \
+  libnet-ssleay-perl \
+  libpackage-stash-perl \
+  libpackage-stash-xs-perl \
+  libpar-packer-perl \
+  libparse-recdescent-perl \
+  libproc-processtable-perl \
+  libreadonly-perl \
+  libregexp-common-perl \
+  libsys-meminfo-perl \
+  libterm-readkey-perl \
+  libtest-deep-perl \
+  libtest-fatal-perl \
+  libtest-mock-guard-perl \
+  libtest-mockobject-perl \
+  libtest-nowarnings-perl \
+  libtest-pod-perl \
+  libtest-requires-perl \
+  libtest-simple-perl \
+  libtest-warn-perl \
+  libtry-tiny-perl \
+  libunicode-string-perl \
+  liburi-perl \
+  libwww-perl \
+  dnsutils -y --no-install-recommends \
+  && pip3 install mysql-connector-python html2text jinja2 redis
+COPY --from=build /usr/lib/dovecot /usr/lib/dovecot
+COPY --from=build /usr/bin/doveconf /usr/bin/doveconf
+COPY --from=build /usr/bin/doveadm /usr/bin/doveadm
+COPY --from=build /usr/bin/dovecot-sysreport /usr/bin/dovecot-sysreport
+COPY --from=build /usr/sbin/dovecot /usr/sbin/dovecot
+COPY --from=build /usr/libexec/dovecot/ /usr/libexec/dovecot/
+COPY --from=build /usr/local/bin /usr/local/bin
+COPY --from=build /usr/local/xapian/ /usr/local/xapian
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
