@@ -286,21 +286,6 @@ if [[ -z $(command -v docker-compose) ]]; then
   exit 1;
 fi
 
-## Check if docker-compose >= v2
-if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-  echo -e "\e[33mYour docker-compose Version is not up to date!\e[0m"
-  echo -e "\e[33mmailcow needs docker-compose > 2.X.X!\e[0m"
-  echo -e "\e[33mYour current installed Version: $(docker-compose version --short)\e[0m"
-  sleep 3
-  update_compose
-  if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-     echo -e "\e[31mmailcow does not work with docker-compose < 2.X.X anymore!\e[0m"
-     echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
-     echo -e "\e[31mExiting...\e[0m"
-     exit 1
-  fi    
-fi
-
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
@@ -379,6 +364,21 @@ while (($#)); do
   esac
   shift
 done
+
+# Check if Docker-Compose is older then v2 before continuing
+if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+  echo -e "\e[33mYour docker-compose Version is not up to date!\e[0m"
+  echo -e "\e[33mmailcow needs docker-compose > 2.X.X!\e[0m"
+  echo -e "\e[33mYour current installed Version: $(docker-compose version --short)\e[0m"
+  sleep 3
+  update_compose
+  if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]] && [[ ! ${FORCE} ]]; then
+     echo -e "\e[31mmailcow does not work with docker-compose < 2.X.X anymore!\e[0m"
+     echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
+     echo -e "\e[31mExiting...\e[0m"
+     exit 1
+  fi
+fi
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
 chmod 600 mailcow.conf
