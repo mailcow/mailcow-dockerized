@@ -1,4 +1,4 @@
-name: Build Mailcow Docker Images
+name: Build mailcow Docker Images
 
 on:
   push:
@@ -9,19 +9,20 @@ jobs:
   docker_image_builds:
     strategy:
       matrix:
-        images: ["acme-mailcow",
-                 "clamd-mailcow",
-                 "dockerapi-mailcow",
-                 "dovecot-mailcow",
-                 "netfilter-mailcow",
-                 "olefy-mailcow",
-                 "php-fpm-mailcow",
-                 "postfix-mailcow",
-                 "rspamd-mailcow",
-                 "sogo-mailcow",
-                 "solr-mailcow",
-                 "unbound-mailcow",
-                 "watchdog-mailcow"]
+        images:
+          - "acme-mailcow"
+          - "clamd-mailcow"
+          - "dockerapi-mailcow"
+          - "dovecot-mailcow"
+          - "netfilter-mailcow"
+          - "olefy-mailcow"
+          - "php-fpm-mailcow"
+          - "postfix-mailcow"
+          - "rspamd-mailcow"
+          - "sogo-mailcow"
+          - "solr-mailcow"
+          - "unbound-mailcow"
+          - "watchdog-mailcow"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
