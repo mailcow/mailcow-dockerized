@@ -472,7 +472,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_extra),
-              'msg' => 'access_denied'
+              'msg' => array('access_denied')
             );
             return false;
           }
@@ -490,7 +490,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'mailbox_defquota_exceeds_mailbox_maxquota'
+                'msg' => array('mailbox_defquota_exceeds_mailbox_maxquota')
             );
             return false;
           }
@@ -498,7 +498,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'mailbox_quota_exceeds_domain_quota'
+              'msg' => array('mailbox_quota_exceeds_domain_quota')
             );
             return false;
           }
@@ -506,7 +506,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'defquota_empty'
+                'msg' => array('defquota_empty')
             );
             return false;
           }
@@ -514,7 +514,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'maxquota_empty'
+              'msg' => array('maxquota_empty')
             );
             return false;
           }
@@ -534,7 +534,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'domain_invalid'
+              'msg' => array('domain_invalid')
             );
             return false;
           }
@@ -568,7 +568,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'domain_cannot_match_hostname'
+              'msg' => array('domain_cannot_match_hostname')
             );
             return false;
           }
@@ -631,7 +631,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'domain_add_dkim_available'
+                'msg' => array('domain_add_dkim_available')
               );
             }
             else {
@@ -652,7 +652,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'domain_added_sogo_failed'
+                'msg' => array('domain_added_sogo_failed')
               );
               return false;
             }
@@ -2247,7 +2247,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'domain_invalid'
+                'msg' => array('domain_invalid')
               );
               continue;
             }
@@ -2264,7 +2264,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'domain_invalid'
+                  'msg' => array('domain_invalid')
                 );
                 continue;
               }
@@ -2330,7 +2330,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'domain_invalid'
+                  'msg' => array('domain_invalid')
                 );
                 continue;
               }
@@ -2356,7 +2356,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                    'msg' => 'mailbox_defquota_exceeds_mailbox_maxquota'
+                    'msg' => array('mailbox_defquota_exceeds_mailbox_maxquota')
                 );
                 continue;
               }
@@ -2364,7 +2364,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                    'msg' => 'defquota_empty'
+                    'msg' => array('defquota_empty')
                 );
                 continue;
               }
@@ -2372,7 +2372,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'mailbox_quota_exceeds_domain_quota'
+                  'msg' => array('mailbox_quota_exceeds_domain_quota')
                 );
                 continue;
               }
@@ -2380,7 +2380,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'maxquota_empty'
+                  'msg' => array('maxquota_empty')
                 );
                 continue;
               }
@@ -4120,7 +4120,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'access_denied'
+              'msg' => array('access_denied')
             );
             return false;
           }
@@ -4129,7 +4129,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'domain_invalid'
+                'msg' => array('domain_invalid')
               );
               continue;
             }
@@ -4152,7 +4152,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'Could not move mail storage to garbage collector: ' . $maildir_gc['msg']
+                'msg' => array('Could not move mail storage to garbage collector: ' . $maildir_gc['msg'])
               );
             }
             $stmt = $pdo->prepare("DELETE FROM `domain` WHERE `domain` = :domain");
