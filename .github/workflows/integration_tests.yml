@@ -1,4 +1,4 @@
-name: Mailcow Integration Tests
+name: mailcow Integration Tests
 
 on:
   push:
