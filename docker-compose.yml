@@ -295,7 +295,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.67
+      image: mailcow/postfix:1.68
       depends_on:
         - mysql-mailcow
       volumes:
