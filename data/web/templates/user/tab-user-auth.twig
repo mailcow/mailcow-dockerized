@@ -18,10 +18,6 @@
               <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
             </a>
           {% endif %}
-          <div>
-            <hr>
-            <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
-          </div>
         </div>
       </div>
       <hr>
@@ -47,6 +43,8 @@
             </div>
           </div>
           <p>{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}<br>{{ mailboxdata.messages }} {{ lang.user.messages }}</p>
+          <hr>
+          <p><a href="#pwChangeModal" data-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
         </div>
       </div>
       <hr>
