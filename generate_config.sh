@@ -383,15 +383,32 @@ cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
 
 # Set app_info.inc.php
 mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+mailcow_git_commit=$(git rev-parse HEAD)
+mailcow_git_commit_date=$(git show -s --format=%cd --date=format:'%Y-%m-%d %H:%M')
+
 if [ $? -eq 0 ]; then
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT="'$mailcow_git_commit'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT_DATE="'$mailcow_git_commit_date'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BUILD="'$BUILD'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT_DATE="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BUILD="'$BUILD'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
