@@ -91,7 +91,7 @@
                     <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
                   </div>
                   <div class="ms-auto">
-                    <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="btn btn-sm btn-secondary d-flex align-items-center mb-2" style="height: 30px;">{{ lang.debug.restart_container }}
+                    <a href data-bs-toggle="modal" data-container="{{ container }}" data-bs-target="#RestartContainer" class="btn btn-sm btn-secondary d-flex align-items-center justify-content-center mb-2" style="height: 30px;">{{ lang.debug.restart_container }}
                       <i class="ms-1 bi
                       {% if container_info.State.Running == 1 %}
                       bi-record-fill text-success
