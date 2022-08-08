@@ -809,7 +809,7 @@ jQuery(function($){
       success: function (data) { 
         var md = window.markdownit();
         var result = md.render(data.body);
-        result = parseGitHubLinks(result);
+        result = parseLinks(result);
 
         $('#showWhatsNew').find(".modal-body").html(`
           <h3>` + data.name + `</h3>
@@ -826,17 +826,27 @@ jQuery(function($){
     }).show();
   }
 
-  function parseGitHubLinks(inputText) {
+  function parseLinks(inputText) {
     var replacedText, replacePattern1;
   
     replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
     replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
-        if (!matched.includes('github.com')) return matched;
+        if (matched.includes('github.com')){
+          // return short link if it's github link
+          last_uri_path = matched.split('/');
+          last_uri_path = last_uri_path[last_uri_path.length - 1];
+
+          // adjust Full Changelog link to match last git version and new git version, if link is a compare link
+          if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
+            matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
+            last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
+          }
+          
+          return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
+        };
   
-        last_uri_path = matched.split('/');
-        last_uri_path = last_uri_path[last_uri_path.length - 1];
-        
-        return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a>';
+        // if it's not a github link, return complete link
+        return '<a href="' + matched + '" target="_blank">' + matched + '</a>'; 
     });
   
     return replacedText;
