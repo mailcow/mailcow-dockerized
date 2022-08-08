@@ -64,6 +64,7 @@
   margin: 0;
 }
 .navbar-nav .nav-item {
+  flex-direction: column;
   display: flex;
   padding: 0 10px !important;
 }
