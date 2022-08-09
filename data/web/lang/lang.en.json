@@ -494,6 +494,7 @@
         "containers_info": "Container information",
         "container_running": "Running",
         "container_stopped": "Stopped",
+        "current_time": "System Time",
         "disk_usage": "Disk usage",
         "docs": "Docs",
         "external_logs": "External logs",
@@ -504,6 +505,7 @@
         "log_info": "<p>mailcow <b>in-memory logs</b> are collected in Redis lists and trimmed to LOG_LINES (%d) every minute to reduce hammering.\r\n  <br>In-memory logs are not meant to be persistent. All applications that log in-memory, also log to the Docker daemon and therefore to the default logging driver.\r\n  <br>The in-memory log type should be used for debugging minor issues with containers.</p>\r\n  <p><b>External logs</b> are collected via API of the given application.</p>\r\n  <p><b>Static logs</b> are mostly activity logs, that are not logged to the Dockerd but still need to be persistent (except for API logs).</p>",
         "login_time": "Time",
         "logs": "Logs",
+        "memory": "Memory",
         "online_users": "Users online",
         "restart_container": "Restart",
         "service": "Service",
@@ -515,7 +517,10 @@
         "static_logs": "Static logs",
         "success": "Success",
         "system_containers": "System & Containers",
+        "timezone": "Timezone",
         "uptime": "Uptime",
+        "update_available": "There is an update available",
+        "no_update_available": "The System is on the latest version",
         "username": "Username"
     },
     "diagnostics": {

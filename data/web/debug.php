@@ -44,15 +44,22 @@ foreach ($containers as $container => $container_info) {
   $containers[$container]['State']['StartedAtHR'] = $started;
 }
 
+// get mailconf data
+$hostname = getenv('MAILCOW_HOSTNAME');
+$timezone = getenv('TZ');
+
 $template = 'debug.twig';
 $template_data = [
   'log_lines' => getenv('LOG_LINES'),
   'vmail_df' => $vmail_df,
+  'hostname' => $hostname,
+  'timezone' => $timezone,
   'solr_status' => $solr_status,
   'solr_uptime' => round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60),
   'clamd_status' => $clamd_status,
   'containers' => $containers,
   'lang_admin' => json_encode($lang['admin']),
+  'lang_debug' => json_encode($lang['debug']),
   'lang_datatables' => json_encode($lang['datatables']),
 ];
 

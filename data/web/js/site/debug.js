@@ -36,6 +36,15 @@ $(document).ready(function() {
       $(this).text(started_local_date);
     }
   });
+
+  // set default ChartJs Font Color
+  Chart.defaults.color = '#999';
+  // create net and disk charts
+  createNetAndDiskChart();
+  // check for new version
+  check_update(mailcow_info.version_tag, mailcow_info.project_url);
+  // update system stats
+  update_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -998,3 +1007,233 @@ jQuery(function($){
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 });
+
+
+// update system stats - every 5 seconds if system & container tab is active
+function update_stats(){
+  if (!$('#tab-containers').hasClass('active')) {
+    // tab not active - dont fetch stats - run again in n seconds
+    setTimeout(update_stats, 5000);
+    return;
+  }
+
+  window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    $("#host_date").text(data.system_time);
+    $("#host_uptime").text(formatUptime(data.uptime));
+    $("#host_cpu_cores").text(data.cpu.cores);
+    $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
+    $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
+    $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+
+    var net_io_chart = Chart.getChart("net_io_chart");
+    var disk_io_chart = Chart.getChart("disk_io_chart");
+    
+    net_io_chart.data.labels.push(data.system_time.split(" ")[1]);
+    if (net_io_chart.data.labels.length > 20) {
+      net_io_chart.data.labels.shift();
+    }
+    net_io_chart.data.datasets[0].data.push((data.network.bytes_recv / 1024).toFixed(4));
+    net_io_chart.data.datasets[1].data.push((data.network.bytes_sent / 1024).toFixed(4));
+    if (net_io_chart.data.datasets[0].data.length > 20) {
+      net_io_chart.data.datasets[0].data.shift();
+    }
+    if (net_io_chart.data.datasets[1].data.length > 20) {
+      net_io_chart.data.datasets[1].data.shift();
+    }
+
+    disk_io_chart.data.labels.push(data.system_time.split(" ")[1]);
+    if (disk_io_chart.data.labels.length > 20) {
+      disk_io_chart.data.labels.shift();
+    }
+    disk_io_chart.data.datasets[0].data.push((data.disk.read_bytes / 1024).toFixed(4));
+    disk_io_chart.data.datasets[1].data.push((data.disk.write_bytes / 1024).toFixed(4));
+    if (disk_io_chart.data.datasets[0].data.length > 20) {
+      disk_io_chart.data.datasets[0].data.shift();
+    }
+    if (disk_io_chart.data.datasets[1].data.length > 20) {
+      disk_io_chart.data.datasets[1].data.shift();
+    }
+
+    net_io_chart.update();
+    disk_io_chart.update();
+
+    // run again in n seconds
+    setTimeout(update_stats, 5000);
+  });
+}
+// format hosts uptime seconds to readable string
+function formatUptime(seconds){
+  seconds = Number(seconds);
+  var d = Math.floor(seconds / (3600*24));
+  var h = Math.floor(seconds % (3600*24) / 3600);
+  var m = Math.floor(seconds % 3600 / 60);
+  var s = Math.floor(seconds % 60);
+
+  var dFormat = d > 0 ? d + "D " : "";
+  var hFormat = h > 0 ? h + "H " : "";
+  var mFormat = m > 0 ? m + "M " : "";
+  var sFormat = s > 0 ? s + "S" : "";
+  return dFormat + hFormat + mFormat + sFormat;
+} 
+// create network and disk chart
+function createNetAndDiskChart(){
+  var net_io_ctx = document.getElementById("net_io_chart");
+  var disk_io_ctx = document.getElementById("disk_io_chart");
+
+  var dataNet = {
+    labels: [],
+    datasets: [{
+      label: "Recieve",
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      color: "#ff0000",
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }, {
+      label: "Sent",
+      backgroundColor: "rgba(239, 60, 41, 0.3)",
+      borderColor: "rgba(239, 60, 41, 0.6)",
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsNet = {
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+            // b
+            if (i < 1000) return i.toFixed(2).toString()+' B/s';
+            // b to kb
+            i = i / 1024;
+            if (i < 1000) return i.toFixed(2).toString()+' KB/s';
+            // kb to mb
+            i = i / 1024;
+            if (i < 1000) return i.toFixed(2).toString()+' MB/s';
+            // final mb to gb
+            return (i / 1024).toFixed(2).toString()+' GB/s';
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+
+  var dataDisk = {
+    labels: [],
+    datasets: [{
+      label: "Read",
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      color: "#ff0000",
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }, {
+      label: "Write",
+      backgroundColor: "rgba(239, 60, 41, 0.3)",
+      borderColor: "rgba(239, 60, 41, 0.6)",
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsDisk = {
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+            // b
+            if (i < 1000) return i.toFixed(2).toString()+' B/s';
+            // b to kb
+            i = i / 1024;
+            if (i < 1000) return i.toFixed(2).toString()+' KB/s';
+            // kb to mb
+            i = i / 1024;
+            if (i < 1000) return i.toFixed(2).toString()+' MB/s';
+            // final mb to gb
+            return (i / 1024).toFixed(2).toString()+' GB/s';
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+
+  
+  var net_io_chart = new Chart(net_io_ctx, {
+    type: 'line',
+    data: dataNet,
+    options: optionsNet
+  });
+  var disk_io_chart = new Chart(disk_io_ctx, {
+    type: 'line',
+    data: dataDisk,
+    options: optionsDisk
+  });
+}
+// check for mailcow updates
+function check_update(current_version, github_repo_url){
+  var github_account = github_repo_url.split("/")[3];
+  var github_repo_name = github_repo_url.split("/")[4];
+
+  // get details about latest release
+  window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/latest", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(latest_data) {
+    // get details about current release
+    window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/tags/"+current_version, {method:'GET',cache:'no-cache'}).then(function(response) {
+      return response.json();
+    }).then(function(current_data) {
+      // compare releases
+      var date_current = new Date(current_data.created_at);
+      var date_latest = new Date(latest_data.created_at);
+      if (date_latest.getTime() <= date_current.getTime()){
+        // no update available
+        $("#mailcow_update").removeClass("text-warning text-danger").addClass("text-success");
+        $("#mailcow_update").html("<b>" + lang_debug.no_update_available + "</b>");
+      } else {
+        // update available
+        $("#mailcow_update").removeClass("text-danger text-success").addClass("text-warning");
+        $("#mailcow_update").html(
+          `<b>` + lang_debug.update_available + `
+          <a target="_blank" href="https://github.com/`+github_account+`/`+github_repo_name+`/releases/tag/`+latest_data.tag_name+`">`+latest_data.tag_name+`</a></b>`
+        );
+      }
+    }).catch(err => {
+      // err
+      console.log(err);
+      $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
+      $("#mailcow_update").html("<b>Could not check for an Update</b>");
+    });
+  }).catch(err => {
+    // err
+    console.log(err);
+    $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
+    $("#mailcow_update").html("<b>Could not check for an Update</b>");
+  });
+}

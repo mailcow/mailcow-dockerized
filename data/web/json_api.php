@@ -1474,29 +1474,33 @@ if (isset($_GET['query'])) {
                     'used_percent' => $vmail_df[4]
                   );
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
-              break;
-              case "solr":
-                $solr_status = solr_status();
-                $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
-                $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
-                if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                  $solr_enabled = false;
-                }
-                else {
-                  $solr_enabled = true;
-                }
-                echo json_encode(array(
-                  'type' => 'info',
-                  'solr_enabled' => $solr_enabled,
-                  'solr_size' => $solr_size,
-                  'solr_documents' => $solr_documents
-                ));
-              break;
-              case "version":
-                echo json_encode(array(
-                  'version' => $GLOBALS['MAILCOW_GIT_VERSION']
-                ));
-              break;
+                break;
+                case "solr":
+                  $solr_status = solr_status();
+                  $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
+                  $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
+                  if (strtolower(getenv('SKIP_SOLR')) != 'n') {
+                    $solr_enabled = false;
+                  }
+                  else {
+                    $solr_enabled = true;
+                  }
+                  echo json_encode(array(
+                    'type' => 'info',
+                    'solr_enabled' => $solr_enabled,
+                    'solr_size' => $solr_size,
+                    'solr_documents' => $solr_documents
+                  ));
+                break;  
+                case "host":
+                  $stats = docker("host_stats");
+                  echo json_encode($stats);
+                break;
+                case "version":
+                  echo json_encode(array(
+                    'version' => $GLOBALS['MAILCOW_GIT_VERSION']
+                  ));
+                break;
               }
             }
           break;

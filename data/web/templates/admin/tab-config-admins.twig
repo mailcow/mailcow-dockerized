@@ -89,39 +89,6 @@
         <br>
       </div>
 
-      <legend style="cursor:pointer;margin-top:40px" data-bs-target="#license" unselectable="on" data-bs-toggle="collapse">
-        <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.guid_and_license }}
-      </legend>
-      <hr />
-      <div id="license" class="collapse">
-        <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-          <div class="row">
-            <label class="control-label col-sm-3" for="guid">{{ lang.admin.guid }}:</label>
-            <div class="col-sm-9">
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-suit-heart{% if gal.valid == true %}-fill text-danger{% endif %}"></i>
-                </span>
-                <input type="text" id="guid" class="form-control" value="{{ license_guid }}" readonly>
-              </div>
-              <p class="text-muted">
-                {{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }} -
-                {{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }} -
-                {{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}
-              </p>
-            </div>
-          </div>
-          <div class="row">
-            <div class="offset-sm-3 col-sm-9">
-              <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
-              <div class="btn-group">
-                <button class="btn btn-sm d-block d-sm-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-
       <legend style="cursor:pointer;margin-top:20px" data-bs-target="#admin_api" unselectable="on" data-bs-toggle="collapse">
         <i style="font-size:10pt;" class="bi bi-plus-square"></i> API
       </legend>

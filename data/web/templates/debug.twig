@@ -28,26 +28,125 @@
 <div class="row">
   <div class="col-md-12">
     <div class="tab-content" style="padding-top:20px">
-      <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
       <div role="tabpanel" class="tab-pane active" id="tab-containers">
+
         <div class="card mb-4">
           <div class="card-header">
-            <h3 class="card-title">{{ lang.debug.disk_usage }}</h3>
+            <h3 class="card-title">mailcow</h3>
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col-sm-3">
-                <p><i class="bi bi-hdd-fill"></i> {{ vmail_df[0] }}</p>
-                <p>{{ vmail_df[2] }} / {{ vmail_df[1] }} ({{ vmail_df[4] }})</p>
+              <div class="col-sm-12 col-md-4 d-flex flex-column">
+                <img class="img-responsive" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}" style="max-height: 200px;">
+                <div style="margin-top: 60px;">
+                  <span class="d-block"><i class="bi bi-hdd-fill"></i> {{ vmail_df[0] }}</span>
+                  <span class="d-block">{{ vmail_df[2] }} / {{ vmail_df[1] }} ({{ vmail_df[4] }})</span>
+                </div>
+                <div class="mt-2 mb-4">
+                  <div class="progress">
+                    <div class="progress-bar bg-info" role="progressbar" style="width:{{ vmail_df[4] }}"></div>
+                  </div>
+                </div>
               </div>
-              <div class="col-sm-9">
-                <div class="progress">
-                  <div class="progress-bar bg-info" role="progressbar" style="width:{{ vmail_df[4] }}"></div>
+              <div class="col-sm-12 col-md-8">
+                <div class="table-responsive" style="margin-top: 10px;">
+                  <table class="table table-striped table-condensed">
+                    <tbody>
+                      <tr>
+                        <td>Hostname</td>
+                        <td><div>
+                          <p><b>{{ hostname }}</b></p>
+                        </div></td>
+                      </tr>
+                      <tr>
+                        <td>Version</td>
+                        <td><div>
+                          <p><b>{{ mailcow_info.version_tag }}</b></p>
+                          <p id="mailcow_update"></p> 
+                        </div></td>
+                      </tr>
+                      <tr>
+                        <td>Changelog</td>
+                        <td><a href="{{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
+                          {{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}
+                        </a></td>
+                      </tr>
+                      <tr>
+                        <td>{{ lang.debug.current_time }}</td>
+                        <td id="host_date">-</td>
+                      </tr>
+                      <tr>
+                        <td>{{ lang.debug.timezone }}</td>
+                        <td>{{ timezone }}</td>
+                      </tr>
+                      <tr>
+                        <td>{{ lang.debug.uptime }}</td>
+                        <td id="host_uptime">-</td>
+                      </tr>
+                      <tr>
+                        <td>CPU</td>
+                        <td>
+                          Cores <span id="host_cpu_cores">-</span><br />
+                          Usage <span id="host_cpu_usage"></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>{{ lang.debug.memory }}</td>
+                        <td>
+                          Total <span id="host_memory_total">-</span><br />
+                          Usage <span id="host_memory_usage"></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <canvas id="net_io_chart" width="400" height="200"></canvas>
+              </div>
+              <div class="col-sm-6">
+                <canvas id="disk_io_chart" width="400" height="200"></canvas>
+              </div>
+
+              <div class="col-sm-12">
+                <legend class="mt-4">
+                  {{ lang.admin.guid_and_license }}
+                </legend>
+                <hr />
+                <div id="license">
+                  <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+                    <div class="row">
+                      <label class="control-label col-sm-3" for="guid">{{ lang.admin.guid }}:</label>
+                      <div class="col-sm-9">
+                        <div class="input-group">
+                          <span class="input-group-text">
+                            <i class="bi bi-suit-heart{% if gal.valid == true %}-fill text-danger{% endif %}"></i>
+                          </span>
+                          <input type="text" id="guid" class="form-control" value="{{ license_guid }}" readonly>
+                        </div>
+                        <p class="text-muted">
+                          {{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }} -
+                          {{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }} -
+                          {{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="offset-sm-3 col-sm-9">
+                        <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
+                        <div class="btn-group">
+                          <button class="btn btn-sm d-block d-sm-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div class="card mb-4">
           <div class="card-header">
             <h3 class="card-title">{{ lang.debug.solr_status }}</h3>
@@ -124,6 +223,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-postfix-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Postfix
             <div class="btn-group ms-auto">
@@ -139,6 +239,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-ui">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex"> Mailcow UI
             <div class="btn-group ms-auto">
@@ -154,6 +255,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-sasl">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">SASL
             <div class="btn-group ms-auto">
@@ -169,6 +271,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-dovecot-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Dovecot
             <div class="btn-group ms-auto">
@@ -184,6 +287,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-sogo-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">SOGo
             <div class="btn-group ms-auto">
@@ -199,6 +303,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-netfilter-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Netfilter
             <div class="btn-group ms-auto">
@@ -214,6 +319,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-rspamd-history">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Rspamd history
             <div class="btn-group ms-auto">
@@ -234,6 +340,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-autodiscover-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Autodiscover
             <div class="btn-group ms-auto">
@@ -249,6 +356,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-watchdog-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Watchdog
             <div class="btn-group ms-auto">
@@ -264,6 +372,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-acme-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">ACME
             <div class="btn-group ms-auto">
@@ -279,6 +388,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-api-logs">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">API
             <div class="btn-group ms-auto">
@@ -294,6 +404,7 @@
       </div>
 
       <div role="tabpanel" class="tab-pane" id="tab-api-rl">
+        <div class="debug-log-info">{{ lang.debug.log_info|format(log_lines+1)|raw }}</div>
         <div class="card panel-xs-lg">
           <div class="card-header d-flex">Ratelimits
             <div class="btn-group ms-auto">
@@ -315,6 +426,7 @@
 
 <script type='text/javascript'>
   var lang = {{ lang_admin|raw }};
+  var lang_debug = {{ lang_debug|raw }};
   var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
   var log_pagination_size = '{{ log_pagination_size }}';

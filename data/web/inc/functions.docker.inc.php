@@ -32,6 +32,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
         }
       }
       return false;
+    break;
     case 'containers':
       curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/json');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -145,6 +146,24 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           }
         }
       }
+    break;
+    case 'host_stats':
+      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/host/stats');
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($curl, CURLOPT_POST, 0);
+      curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
+      $response = curl_exec($curl);
+      if ($response === false) {
+        $err = curl_error($curl);
+        curl_close($curl);
+        return $err;
+      }
+      else {
+        curl_close($curl);
+        $stats = json_decode($response, true);
+        if (!empty($stats)) return $stats;
+      }
+      return false;
     break;
   }
 }

@@ -494,6 +494,7 @@
         "containers_info": "Container-Information",
         "container_running": "Läuft",
         "container_stopped": "Angehalten",
+        "current_time": "Systemzeit",
         "disk_usage": "Festplattennutzung",
         "docs": "Dokumente",
         "external_logs": "Externe Logs",
@@ -504,6 +505,7 @@
         "log_info": "<p>mailcow <b>in-memory Logs</b> werden in Redis Listen gespeichert, die maximale Anzahl der Einträge pro Anwendung richtet sich nach LOG_LINES (%d).\r\n  <br>In-memory Logs sind vergänglich und nicht zur ständigen Aufbewahrung bestimmt. Alle Anwendungen, die in-memory protokollieren, schreiben ebenso in den Docker Daemon.\r\n  <br>Das in-memory Protokoll versteht sich als schnelle Übersicht zum Debugging eines Containers, für komplexere Protokolle sollte der Docker Daemon konsultiert werden.</p>\r\n  <p><b>Externe Logs</b> werden via API externer Applikationen bezogen.</p>\r\n  <p><b>Statische Logs</b> sind weitestgehend Aktivitätsprotokolle, die nicht in den Docker Daemon geschrieben werden, jedoch permanent verfügbar sein müssen (ausgeschlossen API Logs).</p>",
         "login_time": "Zeit",
         "logs": "Protokolle",
+        "memory": "Arbeitsspeicher",
         "online_users": "Benutzer online",
         "restart_container": "Neustart",
         "service": "Dienst",
@@ -515,7 +517,10 @@
         "static_logs": "Statische Logs",
         "success": "Erfolg",
         "system_containers": "System & Container",
+        "timezone": "Zeitzone",
         "uptime": "Uptime",
+        "update_available": "Es ist ein Update verfügbar",
+        "no_update_available": "Das System ist auf aktuellem Stand",
         "username": "Benutzername"
     },
     "diagnostics": {

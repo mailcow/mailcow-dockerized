@@ -6,6 +6,7 @@ from flask import jsonify
 from flask import Response
 from flask import request
 from threading import Thread
+from datetime import datetime
 import docker
 import uuid
 import signal
@@ -17,6 +18,7 @@ import ssl
 import socket
 import subprocess
 import traceback
+import psutil
 
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
 app = Flask(__name__)
@@ -326,6 +328,48 @@ class container_post(Resource):
         else:
             return jsonify(type='danger', msg='command did not complete')
 
+class host_stats_get(Resource):
+  def get(self):
+    try:
+      system_time = datetime.now()
+
+      disk_io_before = psutil.disk_io_counters(perdisk=False)
+      net_io_before = psutil.net_io_counters(pernic=False)
+      time.sleep(1)
+      disk_io_after = psutil.disk_io_counters(perdisk=False)
+      net_io_after = psutil.net_io_counters(pernic=False)
+
+      disks_read_per_sec = disk_io_after.read_bytes - disk_io_before.read_bytes
+      disks_write_per_sec = disk_io_after.write_bytes - disk_io_before.write_bytes
+      net_recv_per_sec = net_io_after.bytes_recv - net_io_before.bytes_recv
+      net_sent_per_sec = net_io_after.bytes_sent - net_io_before.bytes_sent
+
+
+      host_stats = {
+        "cpu": {
+          "cores": psutil.cpu_count(),
+          "usage": psutil.cpu_percent()
+        },
+        "memory": {
+          "total": psutil.virtual_memory().total,
+          "usage": psutil.virtual_memory().percent,
+          "swap": psutil.swap_memory()
+        },
+        "disk": {
+          "read_bytes": disks_read_per_sec,
+          "write_bytes": disks_write_per_sec
+        },
+        "network": {
+          "bytes_recv": net_recv_per_sec,
+          "bytes_sent": net_sent_per_sec
+        },
+        "uptime": time.time() - psutil.boot_time(),
+        "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
+      }
+      return host_stats
+    except Exception as e:
+      return jsonify(type='danger', msg=str(e))
+
 def exec_cmd_container(container, cmd, user, timeout=2, shell_cmd="/bin/bash"):
 
   def recv_socket_data(c_socket, timeout):
@@ -406,6 +450,7 @@ def startFlaskAPI():
 api.add_resource(containers_get, '/containers/json')
 api.add_resource(container_get,  '/containers/<string:container_id>/json')
 api.add_resource(container_post, '/containers/<string:container_id>/<string:post_action>')
+api.add_resource(host_stats_get, '/host/stats')
 
 if __name__ == '__main__':
   api_thread = Thread(target=startFlaskAPI)

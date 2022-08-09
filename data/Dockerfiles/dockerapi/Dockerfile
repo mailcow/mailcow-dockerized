@@ -8,6 +8,7 @@ RUN apk add --update --no-cache python3 \
   py3-pip \
   openssl \
   tzdata \
+  py3-psutil \
 && pip3 install --upgrade pip \
   docker \
   flask \
