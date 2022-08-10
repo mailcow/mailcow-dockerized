@@ -521,6 +521,7 @@
         "uptime": "Uptime",
         "update_available": "There is an update available",
         "no_update_available": "The System is on the latest version",
+        "update_failed": "Could not check for an Update",
         "username": "Username"
     },
     "diagnostics": {

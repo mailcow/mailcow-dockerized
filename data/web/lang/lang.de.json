@@ -521,6 +521,7 @@
         "uptime": "Uptime",
         "update_available": "Es ist ein Update verfügbar",
         "no_update_available": "Das System ist auf aktuellem Stand",
+        "update_failed": "Es konnte nicht nach einem Update gesucht werden",
         "username": "Benutzername"
     },
     "diagnostics": {

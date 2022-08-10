@@ -1077,6 +1077,19 @@ function formatUptime(seconds){
   var sFormat = s > 0 ? s + "S" : "";
   return dFormat + hFormat + mFormat + sFormat;
 } 
+// format bytes to readable string
+function formatBytes(bytes){
+  // b
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' B/s';
+  // b to kb
+  bytes = bytes / 1024;
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' KB/s';
+  // kb to mb
+  bytes = bytes / 1024;
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' MB/s';
+  // final mb to gb
+  return (bytes / 1024).toFixed(2).toString()+' GB/s';
+}
 // create network and disk chart
 function createNetAndDiskChart(){
   var net_io_ctx = document.getElementById("net_io_chart");
@@ -1088,7 +1101,8 @@ function createNetAndDiskChart(){
       label: "Recieve",
       backgroundColor: "rgba(41, 187, 239, 0.3)",
       borderColor: "rgba(41, 187, 239, 0.6)",
-      color: "#ff0000",
+      pointRadius: 1,
+      pointHitRadius: 6,
       borderWidth: 2,
       fill: true,
       tension: 0.2,
@@ -1097,6 +1111,8 @@ function createNetAndDiskChart(){
       label: "Sent",
       backgroundColor: "rgba(239, 60, 41, 0.3)",
       borderColor: "rgba(239, 60, 41, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
       borderWidth: 2,
       fill: true,
       tension: 0.2,
@@ -1104,6 +1120,9 @@ function createNetAndDiskChart(){
     }]
   };
   var optionsNet = {
+    interaction: {
+        mode: 'index'
+    },
     scales: {
       yAxis: {
         min: 0,
@@ -1112,16 +1131,7 @@ function createNetAndDiskChart(){
         },
         ticks: {
           callback: function(i, index, ticks) {
-            // b
-            if (i < 1000) return i.toFixed(2).toString()+' B/s';
-            // b to kb
-            i = i / 1024;
-            if (i < 1000) return i.toFixed(2).toString()+' KB/s';
-            // kb to mb
-            i = i / 1024;
-            if (i < 1000) return i.toFixed(2).toString()+' MB/s';
-            // final mb to gb
-            return (i / 1024).toFixed(2).toString()+' GB/s';
+             return formatBytes(i);
           }
         }  
       },
@@ -1139,7 +1149,8 @@ function createNetAndDiskChart(){
       label: "Read",
       backgroundColor: "rgba(41, 187, 239, 0.3)",
       borderColor: "rgba(41, 187, 239, 0.6)",
-      color: "#ff0000",
+      pointRadius: 1,
+      pointHitRadius: 6,
       borderWidth: 2,
       fill: true,
       tension: 0.2,
@@ -1148,6 +1159,8 @@ function createNetAndDiskChart(){
       label: "Write",
       backgroundColor: "rgba(239, 60, 41, 0.3)",
       borderColor: "rgba(239, 60, 41, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
       borderWidth: 2,
       fill: true,
       tension: 0.2,
@@ -1155,6 +1168,9 @@ function createNetAndDiskChart(){
     }]
   };
   var optionsDisk = {
+    interaction: {
+        mode: 'index'
+    },
     scales: {
       yAxis: {
         min: 0,
@@ -1163,16 +1179,7 @@ function createNetAndDiskChart(){
         },
         ticks: {
           callback: function(i, index, ticks) {
-            // b
-            if (i < 1000) return i.toFixed(2).toString()+' B/s';
-            // b to kb
-            i = i / 1024;
-            if (i < 1000) return i.toFixed(2).toString()+' KB/s';
-            // kb to mb
-            i = i / 1024;
-            if (i < 1000) return i.toFixed(2).toString()+' MB/s';
-            // final mb to gb
-            return (i / 1024).toFixed(2).toString()+' GB/s';
+            return formatBytes(i);
           }
         }  
       },
@@ -1228,12 +1235,12 @@ function check_update(current_version, github_repo_url){
       // err
       console.log(err);
       $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
-      $("#mailcow_update").html("<b>Could not check for an Update</b>");
+      $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
     });
   }).catch(err => {
     // err
     console.log(err);
     $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
-    $("#mailcow_update").html("<b>Could not check for an Update</b>");
+    $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
   });
 }
