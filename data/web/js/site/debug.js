@@ -1010,7 +1010,7 @@ jQuery(function($){
 
 
 // update system stats - every 5 seconds if system & container tab is active
-function update_stats(){
+function update_stats(prev_stats = null){
   if (!$('#tab-containers').hasClass('active')) {
     // tab not active - dont fetch stats - run again in n seconds
     setTimeout(update_stats, 5000);
@@ -1020,6 +1020,7 @@ function update_stats(){
   window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
     return response.json();
   }).then(function(data) {
+    // display table data
     $("#host_date").text(data.system_time);
     $("#host_uptime").text(formatUptime(data.uptime));
     $("#host_cpu_cores").text(data.cpu.cores);
@@ -1027,40 +1028,52 @@ function update_stats(){
     $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
     $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
 
-    var net_io_chart = Chart.getChart("net_io_chart");
-    var disk_io_chart = Chart.getChart("disk_io_chart");
-    
-    net_io_chart.data.labels.push(data.system_time.split(" ")[1]);
-    if (net_io_chart.data.labels.length > 20) {
-      net_io_chart.data.labels.shift();
-    }
-    net_io_chart.data.datasets[0].data.push((data.network.bytes_recv / 1024).toFixed(4));
-    net_io_chart.data.datasets[1].data.push((data.network.bytes_sent / 1024).toFixed(4));
-    if (net_io_chart.data.datasets[0].data.length > 20) {
-      net_io_chart.data.datasets[0].data.shift();
-    }
-    if (net_io_chart.data.datasets[1].data.length > 20) {
-      net_io_chart.data.datasets[1].data.shift();
-    }
 
-    disk_io_chart.data.labels.push(data.system_time.split(" ")[1]);
-    if (disk_io_chart.data.labels.length > 20) {
-      disk_io_chart.data.labels.shift();
-    }
-    disk_io_chart.data.datasets[0].data.push((data.disk.read_bytes / 1024).toFixed(4));
-    disk_io_chart.data.datasets[1].data.push((data.disk.write_bytes / 1024).toFixed(4));
-    if (disk_io_chart.data.datasets[0].data.length > 20) {
-      disk_io_chart.data.datasets[0].data.shift();
-    }
-    if (disk_io_chart.data.datasets[1].data.length > 20) {
-      disk_io_chart.data.datasets[1].data.shift();
-    }
+    // display network and disk i/o
+    if (prev_stats != null){
+      // get chart instances by elemId
+      var net_io_chart = Chart.getChart("net_io_chart");
+      var disk_io_chart = Chart.getChart("disk_io_chart");
 
-    net_io_chart.update();
-    disk_io_chart.update();
+
+      // calc time diff
+      var time_diff = (new Date(data.system_time) - new Date(prev_stats.system_time)) / 1000;
+      // push time label for x-axis
+      net_io_chart.data.labels.push(data.system_time.split(" ")[1]);
+      // shift data if more than 20 entires exists
+      if (net_io_chart.data.labels.length > 20) net_io_chart.data.labels.shift();
+
+      var diff_bytes_recv = (data.network.bytes_recv_total - prev_stats.network.bytes_recv_total) / time_diff;
+      var diff_bytes_sent = (data.network.bytes_sent_total - prev_stats.network.bytes_sent_total) / time_diff;
+      net_io_chart.data.datasets[0].data.push(diff_bytes_recv);
+      net_io_chart.data.datasets[1].data.push(diff_bytes_sent);
+      // shift data if more than 20 entires exists
+      if (net_io_chart.data.datasets[0].data.length > 20)  net_io_chart.data.datasets[0].data.shift();
+      if (net_io_chart.data.datasets[1].data.length > 20) net_io_chart.data.datasets[1].data.shift();
+
+
+      // push time label for x-axis
+      disk_io_chart.data.labels.push(data.system_time.split(" ")[1]);
+      // shift data if more than 20 entires exists
+      if (disk_io_chart.data.labels.length > 20) disk_io_chart.data.labels.shift();
+
+      var diff_bytes_read = (data.disk.bytes_read_total - prev_stats.disk.bytes_read_total) / time_diff;
+      var diff_bytes_write = (data.disk.bytes_write_total - prev_stats.disk.bytes_write_total) / time_diff;
+      disk_io_chart.data.datasets[0].data.push(diff_bytes_read);
+      disk_io_chart.data.datasets[1].data.push(diff_bytes_write);
+      // shift data if more than 20 entires exists
+      if (disk_io_chart.data.datasets[0].data.length > 20) disk_io_chart.data.datasets[0].data.shift();
+      if (disk_io_chart.data.datasets[1].data.length > 20) disk_io_chart.data.datasets[1].data.shift();
+
+
+      // update charts
+      net_io_chart.update();
+      disk_io_chart.update();
+    }
 
     // run again in n seconds
-    setTimeout(update_stats, 5000);
+    prev_stats = data;
+    setTimeout(update_stats(prev_stats), 2500);
   });
 }
 // format hosts uptime seconds to readable string
