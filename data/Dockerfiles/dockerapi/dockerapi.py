@@ -7,6 +7,7 @@ from flask import Response
 from flask import request
 from threading import Thread
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 import docker
 import uuid
 import signal
@@ -333,17 +334,29 @@ class host_stats_get(Resource):
     try:
       system_time = datetime.now()
 
-      disk_io_before = psutil.disk_io_counters(perdisk=False)
-      net_io_before = psutil.net_io_counters(pernic=False)
-      time.sleep(1)
-      disk_io_after = psutil.disk_io_counters(perdisk=False)
-      net_io_after = psutil.net_io_counters(pernic=False)
+      # get docker stats multithreaded for faster results
+      containers = docker_client.containers.list()
+      workers = os.cpu_count() * 4
+      with ThreadPoolExecutor(workers) as pool:
+        stats = list(pool.map(lambda x: x.stats(decode=None, stream=False), containers))
 
-      disks_read_per_sec = disk_io_after.read_bytes - disk_io_before.read_bytes
-      disks_write_per_sec = disk_io_after.write_bytes - disk_io_before.write_bytes
-      net_recv_per_sec = net_io_after.bytes_recv - net_io_before.bytes_recv
-      net_sent_per_sec = net_io_after.bytes_sent - net_io_before.bytes_sent
-
+      bytes_recv_total = 0
+      bytes_sent_total = 0
+      bytes_read_total = 0
+      bytes_write_total = 0
+      for stat in stats:
+        if "networks" in stat:
+          for interface in stat["networks"]:
+            bytes_recv_total += stat["networks"][interface]["rx_bytes"]
+            bytes_sent_total += stat["networks"][interface]["tx_bytes"]
+        if "blkio_stats" in stat:
+          if "io_service_bytes_recursive" in stat["blkio_stats"]:
+            if hasattr(stat["blkio_stats"]["io_service_bytes_recursive"], "__len__"):
+              for blkio in stat["blkio_stats"]["io_service_bytes_recursive"]:
+                if blkio["op"] == "read":
+                  bytes_read_total += blkio["value"]
+                elif blkio["op"] == "write":
+                  bytes_write_total += blkio["value"]
 
       host_stats = {
         "cpu": {
@@ -356,19 +369,21 @@ class host_stats_get(Resource):
           "swap": psutil.swap_memory()
         },
         "disk": {
-          "read_bytes": disks_read_per_sec,
-          "write_bytes": disks_write_per_sec
+          "bytes_read_total": bytes_read_total,
+          "bytes_write_total": bytes_write_total
         },
         "network": {
-          "bytes_recv": net_recv_per_sec,
-          "bytes_sent": net_sent_per_sec
+          "bytes_recv_total": bytes_recv_total,
+          "bytes_sent_total": bytes_sent_total
         },
+        "container_stats": stats,
         "uptime": time.time() - psutil.boot_time(),
         "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
       }
       return host_stats
     except Exception as e:
       return jsonify(type='danger', msg=str(e))
+
 
 def exec_cmd_container(container, cmd, user, timeout=2, shell_cmd="/bin/bash"):
 
