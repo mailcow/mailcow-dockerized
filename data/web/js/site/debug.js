@@ -43,8 +43,6 @@ $(document).ready(function() {
   createNetAndDiskChart();
   // check for new version
   check_update(mailcow_info.version_tag, mailcow_info.project_url);
-  // update system stats
-  update_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -1006,6 +1004,9 @@ jQuery(function($){
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
+
+  // start polling stats if tab is active
+  onVisible("[id^=tab-containers]", () => update_stats());
 });
 
 
@@ -1013,7 +1014,6 @@ jQuery(function($){
 function update_stats(prev_stats = null){
   if (!$('#tab-containers').hasClass('active')) {
     // tab not active - dont fetch stats - run again in n seconds
-    setTimeout(update_stats, 5000);
     return;
   }
 
