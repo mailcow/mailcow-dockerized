@@ -47,7 +47,7 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false, $original_do
 				}
 				
 				$new_hosts = array();
-        if ($mech == 'include' && $check_domain != $domain && $original_domain != $domain) // handle an inclusion
+				if ($mech == 'include' && $check_domain != $domain && $original_domain != $domain) // handle an inclusion
 				{
 					$new_hosts = get_spf_allowed_hosts($domain, false, $check_domain);
 				}
