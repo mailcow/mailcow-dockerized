@@ -24,7 +24,7 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
 			if (strpos($mech, '=') !== FALSE) // handle a modifier
 			{
 				$mod = explode('=', $mech);
-				if ($mod[0] == 'redirect') // handle a redirect
+				if ($mod[0] == 'redirect' && !in_array($mod[1], $checked_domains)) // handle a redirect
 				{
 					array_push($checked_domains, $mod[1]);
 					$hosts = get_spf_allowed_hosts($mod[1],true);
@@ -50,7 +50,7 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
 				}
 				
 				$new_hosts = array();
-        if ($mech == 'include' && $check_domain != $domain && !in_array($check_domain, $checked_domains)) // handle an inclusion
+        if ($mech == 'include' && $check_domain != $domain && !in_array($domain, $checked_domains)) // handle an inclusion
 				{
 					array_push($checked_domains, $domain);
 					$new_hosts = get_spf_allowed_hosts($domain);
