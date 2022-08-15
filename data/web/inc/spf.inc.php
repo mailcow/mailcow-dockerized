@@ -1,6 +1,8 @@
 <?php
 error_reporting(0);
-function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false, $original_domain = "") {
+$checked_domains = array();
+function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
+	global $checked_domains;
 	$hosts = array();
 	
 	$records = dns_get_record($check_domain, DNS_TXT);
@@ -24,7 +26,8 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false, $original_do
 				$mod = explode('=', $mech);
 				if ($mod[0] == 'redirect') // handle a redirect
 				{
-					$hosts = get_spf_allowed_hosts($mod[1],true, $check_domain);
+					array_push($checked_domains, $check_domain);
+					$hosts = get_spf_allowed_hosts($mod[1],true);
 					return $hosts;
 				}
 			}
@@ -47,9 +50,10 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false, $original_do
 				}
 				
 				$new_hosts = array();
-				if ($mech == 'include' && $check_domain != $domain && $original_domain != $domain) // handle an inclusion
+        if ($mech == 'include' && $check_domain != $domain && !in_array($check_domain, $checked_domains)) // handle an inclusion
 				{
-					$new_hosts = get_spf_allowed_hosts($domain, false, $check_domain);
+					array_push($checked_domains, $check_domain);
+					$new_hosts = get_spf_allowed_hosts($domain);
 				}
 				elseif ($mech == 'a') // handle a mechanism
 				{
@@ -133,7 +137,7 @@ function get_a_hosts($domain)
 function get_outgoing_hosts_best_guess($domain)
 {
 	// try the SPF record to get hosts that are allowed to send outgoing mails for this domain
-	$hosts = get_spf_allowed_hosts($domain, false, $check_domain);
+	$hosts = get_spf_allowed_hosts($domain);
 	if ($hosts) return $hosts;
 	
 	// try the MX record to get mail servers for this domain
