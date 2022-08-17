@@ -16,18 +16,48 @@ if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
   fi
 fi
 
-if grep --help 2>&1 | grep -q -i "busybox"; then
-  echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
-  exit 1
-fi
-if cp --help 2>&1 | grep -q -i "busybox"; then
-  echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""
-  exit 1
-fi
+if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
+# This will also cover sort
+if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
+if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
-for bin in openssl curl docker docker-compose git awk sha1sum; do
+for bin in openssl curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
+
+if docker compose > /dev/null 2>&1; then
+    if docker compose version --short | grep "^2." > /dev/null 2>&1; then
+      COMPOSE_VERSION=native
+      echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
+      echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
+      sleep 2
+      echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+    else
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mPlease update it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      exit 1
+    fi
+elif docker-compose > /dev/null 2>&1; then
+  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
+    if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+      COMPOSE_VERSION=standalone
+      echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
+      echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
+      sleep 2
+      echo -e "\e[33mNotice: You´ll have to update this Compose Version manually! Please see: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+    else
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mPlease update manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      exit 1
+    fi
+  fi
+
+else
+  echo -e "\e[31mCannot find Docker Compose.\e[0m" 
+  echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+  exit 1
+fi
+    
 
 if [ -f mailcow.conf ]; then
   read -r -p "A config file exists and will be overwritten, are you sure you want to continue? [y/N] " response
@@ -104,6 +134,8 @@ elif [ ${MEM_TOTAL} -le "3670016" ]; then
 else
   SKIP_SOLR=n
 fi
+
+if []
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
@@ -182,6 +214,12 @@ TZ=${MAILCOW_TZ}
 # Please use lowercase letters only
 
 COMPOSE_PROJECT_NAME=mailcowdockerized
+
+# Used Docker Compose version
+# Switch here between native (compose plugin) and standalone
+# For more informations take a look at the mailcow docs regarding the configuration options.
+
+DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
