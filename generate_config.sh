@@ -135,8 +135,6 @@ else
   SKIP_SOLR=n
 fi
 
-if []
-
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 cat << EOF > mailcow.conf
