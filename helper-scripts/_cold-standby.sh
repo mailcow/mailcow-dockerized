@@ -77,7 +77,7 @@ function preflight_local_checks() {
     exit 1
   fi
 
-  for bin in rsync docker docker-compose grep cut; do
+  for bin in rsync docker grep cut; do
     if [[ -z $(which ${bin}) ]]; then
       >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
       exit 1
@@ -111,7 +111,7 @@ function preflight_remote_checks() {
       exit 1
   fi
 
-  for bin in rsync docker docker-compose; do
+  for bin in rsync docker; do
     if ! ssh -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
@@ -121,16 +121,43 @@ function preflight_remote_checks() {
         exit 1
     fi
   done
+
+  ssh -o StrictHostKeyChecking=no \
+      -i "${REMOTE_SSH_KEY}" \
+      ${REMOTE_SSH_HOST} \
+      -p ${REMOTE_SSH_PORT} \
+      "bash -s" << "EOF"
+if docker compose > /dev/null 2>&1; then
+	exit 0
+elif docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+	exit 1
+else
+exit 2
+fi
+EOF
+
+if [ $? = 0 ]; then
+  COMPOSE_COMMAND="docker compose"
+  echo "DEBUG: Using native docker compose on remote"
+
+elif [ $? = 1 ]; then
+  COMPOSE_COMMAND="docker-compose"
+  echo "DEBUG: Using standalone docker compose on remote"
+
+else
+  echo -e "\e[31mCannot find any Docker Compose on remote, exiting...\e[0m"
+  exit 1
+fi
 }
+
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source "${SCRIPT_DIR}/../mailcow.conf"
+COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
+CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd 'A-Za-z-_')
+SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
 
 preflight_local_checks
 preflight_remote_checks
-
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
-source "${SCRIPT_DIR}/../mailcow.conf"
-CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd 'A-Za-z-_')
-SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
 
 echo
 echo -e "\033[1mFound compose project name ${CMPS_PRJ} for ${MAILCOW_HOSTNAME}\033[0m"
@@ -258,7 +285,7 @@ echo "OK"
     -i "${REMOTE_SSH_KEY}" \
     ${REMOTE_SSH_HOST} \
     -p ${REMOTE_SSH_PORT} \
-    docker-compose -f "${SCRIPT_DIR}/../docker-compose.yml" pull --no-parallel --quiet 2>&1 ; then
+    ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" pull --no-parallel --quiet 2>&1 ; then
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
   fi
 
@@ -269,15 +296,6 @@ if ! ssh -o StrictHostKeyChecking=no \
   -p ${REMOTE_SSH_PORT} \
   ${SCRIPT_DIR}/../update.sh -f --gc ; then
     >&2 echo -e "\e[31m[ERR]\e[0m - Could not cleanup old images on remote"
-fi
-
-echo -e "\033[1mExecuting update script and checking for new docker-compose Version on remote...\033[0m"
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  ${SCRIPT_DIR}/../update.sh -f --update-compose ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not fetch docker-compose on remote"
 fi
 
 echo -e "\e[32mDone\e[0m"
