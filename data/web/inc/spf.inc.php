@@ -1,8 +1,6 @@
 <?php
 error_reporting(0);
-$checked_domains = array();
-function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
-	global $checked_domains;
+function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false, $checked_domains = array()) {
 	$hosts = array();
 	
 	$records = dns_get_record($check_domain, DNS_TXT);
@@ -27,7 +25,7 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
 				if ($mod[0] == 'redirect' && !in_array($mod[1], $checked_domains)) // handle a redirect
 				{
 					array_push($checked_domains, $mod[1]);
-					$hosts = get_spf_allowed_hosts($mod[1],true);
+					$hosts = get_spf_allowed_hosts($mod[1],true, $checked_domains);
 					return $hosts;
 				}
 			}
@@ -53,7 +51,7 @@ function get_spf_allowed_hosts($check_domain, $expand_ipv6 = false) {
         if ($mech == 'include' && $check_domain != $domain && !in_array($domain, $checked_domains)) // handle an inclusion
 				{
 					array_push($checked_domains, $domain);
-					$new_hosts = get_spf_allowed_hosts($domain);
+					$new_hosts = get_spf_allowed_hosts($domain, false, $checked_domains);
 				}
 				elseif ($mech == 'a') // handle a mechanism
 				{
