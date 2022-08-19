@@ -175,6 +175,51 @@ remove_obsolete_nginx_ports() {
     done        
 }
 
+detect_docker_compose_command(){
+if ! [ "${DOCKER_COMPOSE_VERSION}" == "native" ] && ! [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
+  if docker compose > /dev/null 2>&1; then
+      if docker compose version --short | grep "^2." > /dev/null 2>&1; then
+        DOCKER_COMPOSE_VERSION=native
+        COMPOSE_COMMAND="docker compose"
+        echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
+        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
+        sleep 2
+        echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+      else
+        echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+        echo -e "\e[31mPlease update it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+        exit 1
+      fi
+  elif docker-compose > /dev/null 2>&1; then
+    if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
+      if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+        DOCKER_COMPOSE_VERSION=standalone
+        COMPOSE_COMMAND="docker-compose"
+        echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
+        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
+        sleep 2
+        echo -e "\e[33mNotice: You´ll have to update this Compose Version manually! Please see: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      else
+        echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+        echo -e "\e[31mPlease update manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+        exit 1
+      fi
+    fi
+
+  else
+    echo -e "\e[31mCannot find Docker Compose.\e[0m" 
+    echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+    exit 1
+  fi
+
+elif [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
+  COMPOSE_COMMAND="docker compose"
+
+elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
+  COMPOSE_COMMAND="docker-compose"
+fi
+}
+
 ############## End Function Section ##############
 
 # Check permissions
@@ -217,55 +262,16 @@ PATH=$PATH:/opt/bin
 
 umask 0022
 
+# Unset COMPOSE_COMMAND and DOCKER_COMPOSE_VERSION Variable to be on the newest state.
+unset COMPOSE_COMMAND
+unset DOCKER_COMPOSE_VERSION
+
 for bin in curl docker git awk sha1sum; do
   if [[ -z $(command -v ${bin}) ]]; then 
   echo "Cannot find ${bin}, exiting..." 
   exit 1;
   fi  
 done
-
-if ! grep "DOCKER_COMPOSE_VERSION=native" mailcow.conf > /dev/null 2>&1 && ! grep "DOCKER_COMPOSE_VERSION=standalone" mailcow.conf > /dev/null 2>&1; then
-  if docker compose > /dev/null 2>&1; then
-      if docker compose version --short | grep "^2." > /dev/null 2>&1; then
-        COMPOSE_VERSION=native
-        COMPOSE_COMMAND="docker compose"
-        echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
-        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
-        sleep 2
-        echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
-      else
-        echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-        echo -e "\e[31mPlease update it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-        exit 1
-      fi
-  elif docker-compose > /dev/null 2>&1; then
-    if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-      if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-        COMPOSE_VERSION=standalone
-        COMPOSE_COMMAND="docker-compose"
-        echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
-        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-        sleep 2
-        echo -e "\e[33mNotice: You´ll have to update this Compose Version manually! Please see: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-      else
-        echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-        echo -e "\e[31mPlease update manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-        exit 1
-      fi
-    fi
-
-  else
-    echo -e "\e[31mCannot find Docker Compose.\e[0m" 
-    echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-    exit 1
-  fi
-
-elif cat mailcow.conf | grep "DOCKER_COMPOSE_VERSION=native" > /dev/null 2>&1; then
-  COMPOSE_COMMAND="docker compose"
-
-elif cat mailcow.conf | grep "DOCKER_COMPOSE_VERSION=standalone" > /dev/null 2>&1; then
-  COMPOSE_COMMAND="docker-compose"
-fi
 
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
@@ -328,15 +334,7 @@ while (($#)); do
   shift
 done
 
-# Check if Docker Compose is older then v2 before continuing
-if ! $COMPOSE_COMMAND version --short | grep "^2." > /dev/null 2>&1; then
-  echo -e "\e[33mYour Docker Compose Version is not up to date!\e[0m"
-  echo -e "\e[33mmailcow needs Docker Compose > 2.X.X!\e[0m"
-  echo -e "\e[33mYour current installed Version: $($COMPOSE_COMMAND version --short)\e[0m"
-  exit 1
-fi
-
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
+[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 chmod 600 mailcow.conf
 source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
@@ -346,10 +344,20 @@ if [ ${#DOTS} -lt 2 ]; then
   exit 1
 fi
 
+detect_docker_compose_command
+
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
 # This will also cover sort
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
+
+# Check if Docker Compose is older then v2 before continuing
+if ! $COMPOSE_COMMAND version --short | grep "^2." > /dev/null 2>&1; then
+  echo -e "\e[33mYour Docker Compose Version is not up to date!\e[0m"
+  echo -e "\e[33mmailcow needs Docker Compose > 2.X.X!\e[0m"
+  echo -e "\e[33mYour current installed Version: $($COMPOSE_COMMAND version --short)\e[0m"
+  exit 1
+fi
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
@@ -412,7 +420,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "# Switch here between native (compose plugin) and standalone" >> mailcow.conf
       echo "# For more informations take a look at the mailcow docs regarding the configuration options." >> mailcow.conf
       echo "" >> mailcow.conf
-      echo "DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}" >> mailcow.conf
+      echo "DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}" >> mailcow.conf
     fi
   elif [[ ${option} == "DOVEADM_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -638,23 +646,16 @@ else
    fi
 fi
 
-echo -e "\e[32mChecking for newer update script...\e[0m"
-SHA1_1=$(sha1sum update.sh)
-git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh
-SHA1_2=$(sha1sum update.sh)
-if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-  echo "update.sh changed, please run this script again, exiting."
-  chmod +x update.sh
-  exit 2
-fi
-
-if [[ -f mailcow.conf ]]; then
-  source mailcow.conf
-else
-  echo -e "\e[31mNo mailcow.conf - is mailcow installed?\e[0m"
-  exit 1
-fi
+# echo -e "\e[32mChecking for newer update script...\e[0m"
+# SHA1_1=$(sha1sum update.sh)
+# git fetch origin #${BRANCH}
+# git checkout origin/${BRANCH} update.sh
+# SHA1_2=$(sha1sum update.sh)
+# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+#   echo "update.sh changed, please run this script again, exiting."
+#   chmod +x update.sh
+#   exit 2
+# fi
 
 if [ ! $FORCE ]; then
   read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
@@ -793,6 +794,9 @@ else
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
+
+# Set DOCKER_COMPOSE_VERSION
+sed -i 's/^DOCKER_COMPOSE_VERSION=$/DOCKER_COMPOSE_VERSION='$DOCKER_COMPOSE_VERSION'/g' mailcow.conf
 
 if [[ ${SKIP_START} == "y" ]]; then
   echo -e "\e[33mNot starting mailcow, please run \"$COMPOSE_COMMAND up -d --remove-orphans\" to start mailcow.\e[0m"
