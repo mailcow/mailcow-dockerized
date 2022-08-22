@@ -519,6 +519,8 @@ services:
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
