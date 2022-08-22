@@ -378,3 +378,18 @@ table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
 .btn-check-label {
   color: #555;
 }
+
+.caret {
+  transform: rotate(0deg);
+}
+a[aria-expanded='true'] > .caret, 
+button[aria-expanded='true'] > .caret {
+  transform: rotate(-180deg);
+}
+
+.list-group-details {
+  background: #fff;
+}
+.list-group-header {
+  background: #f7f7f7;
+}

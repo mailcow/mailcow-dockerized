@@ -37,12 +37,15 @@ $(document).ready(function() {
     }
   });
 
+  // set update loop container list
+  containersToUpdate = {}
   // set default ChartJs Font Color
   Chart.defaults.color = '#999';
-  // create net and disk charts
-  createNetAndDiskChart();
+  // create host cpu and mem charts
+  createHostCpuAndMemChart();
   // check for new version
   check_update(mailcow_info.version_tag, mailcow_info.project_url);
+  update_container_stats()
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -1005,13 +1008,61 @@ jQuery(function($){
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 
-  // start polling stats if tab is active
+
+
+  // start polling host stats if tab is active
   onVisible("[id^=tab-containers]", () => update_stats());
+  // start polling container stats if collapse is active
+  var containerElements = document.querySelectorAll(".container-details-collapse");
+  for (let i = 0; i < containerElements.length; i++){
+    new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(entry.intersectionRatio > 0) {
+
+          if (!containerElements[i].classList.contains("show")){
+            var container = containerElements[i].id.replace("Collapse", "");
+            var container_id = containerElements[i].getAttribute("data-id");
+
+            // check if chart exists or needs to be created
+            if (!Chart.getChart(container + "_DiskIOChart"))
+              createReadWriteChart(container + "_DiskIOChart", "Read", "Write");
+            if (!Chart.getChart(container + "_NetIOChart"))
+              createReadWriteChart(container + "_NetIOChart", "Recv", "Sent");
+
+            // add container to polling list
+            containersToUpdate[container] = {
+              id: container_id,
+              state: "idle"
+            }
+
+            // stop polling if collapse is closed
+            containerElements[i].addEventListener('hidden.bs.collapse', function () {
+              var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
+              var netIOCtx = Chart.getChart(container + "_NetIOChart");
+
+              diskIOCtx.data.datasets[0].data = [];
+              diskIOCtx.data.datasets[1].data = [];
+              diskIOCtx.data.labels = [];
+              netIOCtx.data.datasets[0].data = [];
+              netIOCtx.data.datasets[1].data = [];
+              netIOCtx.data.labels = [];
+            
+              diskIOCtx.update();
+              netIOCtx.update();
+              
+              delete containersToUpdate[container];
+            });
+          }
+
+        }
+      });
+    }).observe(containerElements[i]);
+  }
 });
 
 
 // update system stats - every 5 seconds if system & container tab is active
-function update_stats(prev_stats = null){
+function update_stats(timeout=5){
   if (!$('#tab-containers').hasClass('active')) {
     // tab not active - dont fetch stats - run again in n seconds
     return;
@@ -1020,61 +1071,114 @@ function update_stats(prev_stats = null){
   window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
     return response.json();
   }).then(function(data) {
-    // display table data
-    $("#host_date").text(data.system_time);
-    $("#host_uptime").text(formatUptime(data.uptime));
-    $("#host_cpu_cores").text(data.cpu.cores);
-    $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
-    $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
-    $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+    console.log(data);
 
+    if (data){
+      // display table data
+      $("#host_date").text(data.system_time);
+      $("#host_uptime").text(formatUptime(data.uptime));
+      $("#host_cpu_cores").text(data.cpu.cores);
+      $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
+      $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
+      $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
 
-    // display network and disk i/o
-    if (prev_stats != null){
-      // get chart instances by elemId
-      var net_io_chart = Chart.getChart("net_io_chart");
-      var disk_io_chart = Chart.getChart("disk_io_chart");
+      // update cpu and mem chart
+      var cpu_chart = Chart.getChart("host_cpu_chart");
+      var mem_chart = Chart.getChart("host_mem_chart");
 
+      cpu_chart.data.labels.push(data.system_time.split(" ")[1]);
+      if (cpu_chart.data.labels.length > 30) cpu_chart.data.labels.shift();
+      mem_chart.data.labels.push(data.system_time.split(" ")[1]);
+      if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
 
-      // calc time diff
-      var time_diff = (new Date(data.system_time) - new Date(prev_stats.system_time)) / 1000;
-      // push time label for x-axis
-      net_io_chart.data.labels.push(data.system_time.split(" ")[1]);
-      // shift data if more than 20 entires exists
-      if (net_io_chart.data.labels.length > 20) net_io_chart.data.labels.shift();
+      cpu_chart.data.datasets[0].data.push(data.cpu.usage);
+      if (cpu_chart.data.datasets[0].data.length > 30)  cpu_chart.data.datasets[0].data.shift();
+      mem_chart.data.datasets[0].data.push(data.memory.usage);
+      if (mem_chart.data.datasets[0].data.length > 30)  mem_chart.data.datasets[0].data.shift();
 
-      var diff_bytes_recv = (data.network.bytes_recv_total - prev_stats.network.bytes_recv_total) / time_diff;
-      var diff_bytes_sent = (data.network.bytes_sent_total - prev_stats.network.bytes_sent_total) / time_diff;
-      net_io_chart.data.datasets[0].data.push(diff_bytes_recv);
-      net_io_chart.data.datasets[1].data.push(diff_bytes_sent);
-      // shift data if more than 20 entires exists
-      if (net_io_chart.data.datasets[0].data.length > 20)  net_io_chart.data.datasets[0].data.shift();
-      if (net_io_chart.data.datasets[1].data.length > 20) net_io_chart.data.datasets[1].data.shift();
-
-
-      // push time label for x-axis
-      disk_io_chart.data.labels.push(data.system_time.split(" ")[1]);
-      // shift data if more than 20 entires exists
-      if (disk_io_chart.data.labels.length > 20) disk_io_chart.data.labels.shift();
-
-      var diff_bytes_read = (data.disk.bytes_read_total - prev_stats.disk.bytes_read_total) / time_diff;
-      var diff_bytes_write = (data.disk.bytes_write_total - prev_stats.disk.bytes_write_total) / time_diff;
-      disk_io_chart.data.datasets[0].data.push(diff_bytes_read);
-      disk_io_chart.data.datasets[1].data.push(diff_bytes_write);
-      // shift data if more than 20 entires exists
-      if (disk_io_chart.data.datasets[0].data.length > 20) disk_io_chart.data.datasets[0].data.shift();
-      if (disk_io_chart.data.datasets[1].data.length > 20) disk_io_chart.data.datasets[1].data.shift();
-
-
-      // update charts
-      net_io_chart.update();
-      disk_io_chart.update();
+      cpu_chart.update();
+      mem_chart.update();
     }
 
     // run again in n seconds
-    prev_stats = data;
-    setTimeout(update_stats(prev_stats), 2500);
+    setTimeout(update_stats, timeout * 1000);
   });
+}
+// update specific container stats - every n (default 5s) seconds
+function update_container_stats(timeout=5){
+  for (let container in containersToUpdate){
+    container_id = containersToUpdate[container].id;
+    if (containersToUpdate[container].state == "running")
+      continue;
+    containersToUpdate[container].state = "running";
+
+
+    window.fetch("/api/v1/get/status/container/" + container_id, {method:'GET',cache:'no-cache'}).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
+      var netIOCtx = Chart.getChart(container + "_NetIOChart");
+
+      console.log(container);
+      console.log(data);
+      prev_stats = null;
+      if (data.length >= 2)
+        prev_stats = data[data.length -2]
+      data = data[data.length -1];
+
+      if (prev_stats != null){
+        // calc time diff
+        var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
+  
+        // calc disk io b/s
+        var prev_read_bytes = 0;
+        var prev_write_bytes = 0;
+        for (var i = 0; i < prev_stats.blkio_stats.io_service_bytes_recursive.length; i++){
+          if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "read")
+            prev_read_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+          else if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "write")
+            prev_write_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+        }
+        var read_bytes = 0;
+        var write_bytes = 0;
+        for (var i = 0; i < data.blkio_stats.io_service_bytes_recursive.length; i++){
+          if (data.blkio_stats.io_service_bytes_recursive[i].op == "read")
+            read_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+          else if (data.blkio_stats.io_service_bytes_recursive[i].op == "write")
+            write_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+        }
+        var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
+        var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
+  
+        // calc net io b/s
+        var prev_recv_bytes = 0;
+        var prev_sent_bytes = 0;
+        for (var key in prev_stats.networks){
+          prev_recv_bytes += prev_stats.networks[key].rx_bytes;
+          prev_sent_bytes += prev_stats.networks[key].tx_bytes;
+        }
+        var recv_bytes = 0;
+        var sent_bytes = 0;
+        for (var key in data.networks){
+          recv_bytes += data.networks[key].rx_bytes;
+          sent_bytes += data.networks[key].tx_bytes;
+        }
+        var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
+        var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
+  
+        addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
+        addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
+      }
+  
+      // run again in n seconds
+      containersToUpdate[container].state = "idle";
+    }).catch(err => {
+      console.log(err);
+    });
+  }
+
+  // run again in n seconds
+  setTimeout(update_container_stats, timeout * 1000);
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){
@@ -1103,15 +1207,14 @@ function formatBytes(bytes){
   // final mb to gb
   return (bytes / 1024).toFixed(2).toString()+' GB/s';
 }
-// create network and disk chart
-function createNetAndDiskChart(){
-  var net_io_ctx = document.getElementById("net_io_chart");
-  var disk_io_ctx = document.getElementById("disk_io_chart");
+// create read write line chart
+function createReadWriteChart(chart_id, read_lable, write_lable){
+  var ctx = document.getElementById(chart_id);
 
   var dataNet = {
     labels: [],
     datasets: [{
-      label: "Recieve",
+      label: read_lable,
       backgroundColor: "rgba(41, 187, 239, 0.3)",
       borderColor: "rgba(41, 187, 239, 0.6)",
       pointRadius: 1,
@@ -1121,7 +1224,7 @@ function createNetAndDiskChart(){
       tension: 0.2,
       data: []
     }, {
-      label: "Sent",
+      label: write_lable,
       backgroundColor: "rgba(239, 60, 41, 0.3)",
       borderColor: "rgba(239, 60, 41, 0.6)",
       pointRadius: 1,
@@ -1155,11 +1258,37 @@ function createNetAndDiskChart(){
       }
     }
   };
+  
+  return new Chart(ctx, {
+    type: 'line',
+    data: dataNet,
+    options: optionsNet
+  });
+}
+// add to read write line chart
+function addReadWriteChart(chart_context, read_point, write_point, time, limit = 30){
+  // push time label for x-axis
+  chart_context.data.labels.push(time);
+  if (chart_context.data.labels.length > limit) chart_context.data.labels.shift();
 
-  var dataDisk = {
+  // push datapoints
+  chart_context.data.datasets[0].data.push(read_point);
+  chart_context.data.datasets[1].data.push(write_point);
+  // shift data if more than 20 entires exists
+  if (chart_context.data.datasets[0].data.length > limit)  chart_context.data.datasets[0].data.shift();
+  if (chart_context.data.datasets[1].data.length > limit) chart_context.data.datasets[1].data.shift();
+
+  chart_context.update();
+}
+// create host cpu and mem chart
+function createHostCpuAndMemChart(){
+  var cpu_ctx = document.getElementById("host_cpu_chart");
+  var mem_ctx = document.getElementById("host_mem_chart");
+
+  var dataCpu = {
     labels: [],
     datasets: [{
-      label: "Read",
+      label: "CPU %",
       backgroundColor: "rgba(41, 187, 239, 0.3)",
       borderColor: "rgba(41, 187, 239, 0.6)",
       pointRadius: 1,
@@ -1168,19 +1297,9 @@ function createNetAndDiskChart(){
       fill: true,
       tension: 0.2,
       data: []
-    }, {
-      label: "Write",
-      backgroundColor: "rgba(239, 60, 41, 0.3)",
-      borderColor: "rgba(239, 60, 41, 0.6)",
-      pointRadius: 1,
-      pointHitRadius: 6,
-      borderWidth: 2,
-      fill: true,
-      tension: 0.2,
-      data: []
     }]
   };
-  var optionsDisk = {
+  var optionsCpu = {
     interaction: {
         mode: 'index'
     },
@@ -1192,7 +1311,45 @@ function createNetAndDiskChart(){
         },
         ticks: {
           callback: function(i, index, ticks) {
-            return formatBytes(i);
+             return i.toFixed(0).toString() + "%";
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+
+  var dataMem = {
+    labels: [],
+    datasets: [{
+      label: "MEM %",
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsMem = {
+    interaction: {
+        mode: 'index'
+    },
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+            return i.toFixed(0).toString() + "%";
           }
         }  
       },
@@ -1205,15 +1362,15 @@ function createNetAndDiskChart(){
   };
 
   
-  var net_io_chart = new Chart(net_io_ctx, {
+  var net_io_chart = new Chart(cpu_ctx, {
     type: 'line',
-    data: dataNet,
-    options: optionsNet
+    data: dataCpu,
+    options: optionsCpu
   });
-  var disk_io_chart = new Chart(disk_io_ctx, {
+  var disk_io_chart = new Chart(mem_ctx, {
     type: 'line',
-    data: dataDisk,
-    options: optionsDisk
+    data: dataMem,
+    options: optionsMem
   });
 }
 // check for mailcow updates

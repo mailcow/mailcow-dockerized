@@ -340,3 +340,11 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
 .inputMissingAttr {
     border-color: #FF4136 !important;
 }
+
+
+.list-group-details {
+    background: #444444;
+}
+.list-group-header {
+    background: #333;
+}
