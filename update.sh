@@ -419,6 +419,8 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "# Used Docker Compose version" >> mailcow.conf
       echo "# Switch here between native (compose plugin) and standalone" >> mailcow.conf
       echo "# For more informations take a look at the mailcow docs regarding the configuration options." >> mailcow.conf
+      echo "# Normally this should be untouched but if you decided to use either of those you can switch it manually here." >> mailcow.conf
+      echo "# Please be aware that at least one of those variants should be installed on your maschine or mailcow will fail." >> mailcow.conf
       echo "" >> mailcow.conf
       echo "DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}" >> mailcow.conf
     fi
