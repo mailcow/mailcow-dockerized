@@ -252,7 +252,7 @@ def permBan(net, unban=False):
       if rule not in chain.rules and not unban:
         logCrit('Add host/network %s to blacklist' % net)
         chain.insert_rule(rule)
-        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
       elif rule in chain.rules and unban:
         logCrit('Remove host/network %s from blacklist' % net)
         chain.delete_rule(rule)
@@ -267,7 +267,7 @@ def permBan(net, unban=False):
       if rule not in chain.rules and not unban:
         logCrit('Add host/network %s to blacklist' % net)
         chain.insert_rule(rule)
-        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
       elif rule in chain.rules and unban:
         logCrit('Remove host/network %s from blacklist' % net)
         chain.delete_rule(rule)
@@ -377,7 +377,7 @@ def snat4(snat_target):
         table.commit()
         table.autocommit = True
       except:
-        print('Error running SNAT4, retrying...') 
+        print('Error running SNAT4, retrying...')
 
 def snat6(snat_target):
   global lock
@@ -411,7 +411,7 @@ def snat6(snat_target):
           table.commit()
         table.autocommit = True
       except:
-        print('Error running SNAT6, retrying...') 
+        print('Error running SNAT6, retrying...')
 
 def autopurge():
   while not quit_now:
@@ -477,7 +477,7 @@ def whitelistUpdate():
       if Counter(new_whitelist) != Counter(WHITELIST):
         WHITELIST = new_whitelist
         logInfo('Whitelist was changed, it has %s entries' % len(WHITELIST))
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def blacklistUpdate():
   global quit_now
@@ -488,7 +488,7 @@ def blacklistUpdate():
     new_blacklist = []
     if list:
       new_blacklist = genNetworkList(list)
-    if Counter(new_blacklist) != Counter(BLACKLIST): 
+    if Counter(new_blacklist) != Counter(BLACKLIST):
       addban = set(new_blacklist).difference(BLACKLIST)
       delban = set(BLACKLIST).difference(new_blacklist)
       BLACKLIST = new_blacklist
@@ -499,7 +499,7 @@ def blacklistUpdate():
       if delban:
         for net in delban:
           permBan(net=net, unban=True)
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def initChain():
   # Is called before threads start, no locking
