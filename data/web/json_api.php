@@ -1463,6 +1463,10 @@ if (isset($_GET['query'])) {
                   }
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
                 break;
+                case "container":
+                  $container_stats = docker('container_stats', $extra);
+                  echo json_encode($container_stats);
+                break;
                 case "vmail":
                   $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
                   $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
