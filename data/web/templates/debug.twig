@@ -45,38 +45,38 @@
                     <tbody>
                       <tr>
                         <td>Hostname</td>
-                        <td><div>
+                        <td class="text-break"><div>
                           <p><b>{{ hostname }}</b></p>
                         </div></td>
                       </tr>
                       <tr>
                         <td>Version</td>
-                        <td><div>
+                        <td class="text-break"><div>
                           <p><b>{{ mailcow_info.version_tag }}</b></p>
                           <p id="mailcow_update"></p> 
                         </div></td>
                       </tr>
                       <tr>
                         <td>Changelog</td>
-                        <td><a href="{{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
+                        <td class="text-break"><a href="{{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
                           {{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}
                         </a></td>
                       </tr>
                       <tr>
                         <td>{{ lang.debug.current_time }}</td>
-                        <td id="host_date">-</td>
+                        <td id="host_date" class="text-break">-</td>
                       </tr>
                       <tr>
                         <td>{{ lang.debug.timezone }}</td>
-                        <td>{{ timezone }}</td>
+                        <td class="text-break">{{ timezone }}</td>
                       </tr>
                       <tr>
                         <td>{{ lang.debug.uptime }}</td>
-                        <td id="host_uptime">-</td>
+                        <td id="host_uptime" class="text-break">-</td>
                       </tr>
                       <tr>
                         <td>Disk Info</td>
-                        <td>
+                        <td class="text-break">
                           <div>
                             <span class="d-block"><i class="bi bi-hdd-fill"></i> {{ vmail_df[0] }}</span>
                             <span class="d-block">{{ vmail_df[2] }} / {{ vmail_df[1] }} ({{ vmail_df[4] }})</span>

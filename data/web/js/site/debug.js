@@ -237,7 +237,8 @@ jQuery(function($){
         {
           title: 'URI',
           data: 'uri',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'text-break min-tablet none'
         },
         {
           title: 'Method',
@@ -411,7 +412,8 @@ jQuery(function($){
         {
           title: 'Call',
           data: 'call',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none text-break'
         }
       ]
     });
