@@ -135,6 +135,25 @@ else
   SKIP_SOLR=n
 fi
 
+echo "Which branch of mailcow do you want to use?"
+echo ""
+echo "Available Branches:"
+echo "- master branch (stable updates) | default, recommended [1]"
+echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+sleep 1
+read -r -p  "Choose the Branch with it´s number [1/2] " branch
+  case $branch in
+    [2])
+      git_branch="nightly"
+      ;;
+    *)
+      git_branch="master"
+    ;;
+  esac
+
+git fetch --all
+git checkout -f $git_branch
+
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 cat << EOF > mailcow.conf
