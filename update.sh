@@ -301,10 +301,21 @@ while (($#)); do
     --skip-start)
       SKIP_START=y
     ;;
+    --skip-ping-check)
+      SKIP_PING_CHECK=y
+    ;;
+    --stable)
+      CURRENT_BRANCH="$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)"
+      NEW_BRANCH="master"
+    ;;
     --gc)
       echo -e "\e[32mCollecting garbage...\e[0m"
       docker_garbage
       exit 0
+    ;;
+    --nightly)
+      CURRENT_BRANCH="$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)"
+      NEW_BRANCH="nightly"
     ;;
     --prefetch)
       echo -e "\e[32mPrefetching images...\e[0m"
@@ -315,18 +326,17 @@ while (($#)); do
       echo -e "\e[32mRunning in forced mode...\e[0m"
       FORCE=y
     ;;
-    --skip-ping-check)
-      SKIP_PING_CHECK=y
-    ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --prefetch, --skip-start, --skip-ping-check, -f|--force, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
+  --nightly            -   Switch your mailcow updates to the unstable (nightly) branch. FOR TESTING PURPOSES ONLY!!!!
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine)
+  --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly.
   -f|--force           -   Force update, do not ask questions
 '
     exit 1
@@ -648,6 +658,84 @@ else
    fi
 fi
 
+if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]
+  echo -e "\e[33mDetecting which build your mailcow runs on...\e[0m"
+  sleep 1
+  if [ ${BRANCH} == "master" ]; then
+    echo -e "\e[32mYou are receiving stable updates (master).\e[0m"
+    echo -e "\e[33mTo change that run the update.sh Script one time with the --nightly parameter to switch to nightly builds.\e[0m"
+
+  elif [ ${BRANCH} == "nightly" ]; then
+    echo -e "\e[31mYou are receiving unstable updates (nightly). These are for testing purposes only!!!\e[0m"
+    sleep 1
+    echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
+
+  else
+    echo -e "\e[33mYou are receiving updates from a unsupported branch.\e[0m"
+    sleep 1
+    echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
+    echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
+  fi
+elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]
+  echo -e "\e[33mYou are about to switch your mailcow Updates to the stable (master) branch.\e[0m"
+  sleep 1
+  echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
+  sleep 1
+  echo -e "\e[31mWARNING: Please see on GitHub or ask in the communitys if a switch to master is stable or not.
+  In some rear cases a Update back to master can destroy your mailcow configuration in case of Database Upgrades etc.
+  Normally a upgrade back to master should be safe during each full release. Check GitHub for Database Changes and Update only if there similar to the full release!\e[0m"
+  read -r -p "Are you sure you that want to continue upgrading to the stable (master) branch? [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK. If you prepared yourself for that please run the update.sh Script with the --stable parameter again to trigger this process here."
+    exit 0
+  fi
+
+  BRANCH = NEW_BRANCH
+  DIFF_DIRECTORY=update_diffs
+  DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_master_$(date +"%Y-%m-%d-%H-%M-%S")
+  mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
+  if ! git diff-index --quiet HEAD; then
+    echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
+    mkdir -p ${DIFF_DIRECTORY}
+    git diff ${BRANCH} --stat > ${DIFF_FILE}
+    git diff ${BRANCH} >> ${DIFF_FILE}
+  fi
+  echo -e "\e[32mSwitching Branch to ${BRANCH}...\e[0m"
+  git fetch origin --all
+  git checkout -f origin/${BRANCH}
+
+elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]
+  echo -e "\e[33mYou are about to switch your mailcow Updates to the unstable (nightly) branch.\e[0m"
+  sleep 1
+  echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
+  sleep 1
+  echo -e "\e[31mWARNING: A switch to nightly is possible any time. But a switch back (to master) not.\e[0m"
+  read -r -p "Are you sure you that want to continue upgrading to the unstable (nightly) branch? [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK. If you prepared yourself for that please run the update.sh Script with the --nightly parameter again to trigger this process here."
+    exit 0
+  fi
+
+  BRANCH = NEW_BRANCH
+  DIFF_DIRECTORY=update_diffs
+  DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_nightly_$(date +"%Y-%m-%d-%H-%M-%S")
+  mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
+  if ! git diff-index --quiet HEAD; then
+    echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
+    mkdir -p ${DIFF_DIRECTORY}
+    git diff ${BRANCH} --stat > ${DIFF_FILE}
+    git diff ${BRANCH} >> ${DIFF_FILE}
+  fi
+
+  git fetch origin --all
+  git checkout -f origin/${BRANCH}
+
+elif [ $FORCE ]; then
+  echo -e "\e[31mYou are running in forced mode!\e[0m"
+  echo -e "\e[31mA Branch Switch can only be performed manually (monitored).\e[0m"
+  echo -e "\e[31mPlease rerun the update.sh Script without the --force/-f parameter.\e[0m"
+fi
+
 echo -e "\e[32mChecking for newer update script...\e[0m"
 SHA1_1=$(sha1sum update.sh)
 git fetch origin #${BRANCH}
@@ -783,16 +871,41 @@ if [ -f "data/conf/rspamd/local.d/metrics.conf" ]; then
 fi
 
 # Set app_info.inc.php
-mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+if [ ${BRANCH} == "master" ]; then
+  mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+  mailcow_last_git_version=""
+elif [ ${BRANCH} == "nightly" ]; then
+  mailcow_git_version=$(git rev-parse --short HEAD)
+else
+  mailcow_git_version=$(git rev-parse --short HEAD)
+fi
+
+mailcow_git_commit=$(git rev-parse HEAD)
+mailcow_git_commit_date=$(git show -s --format=%cd --date=format:'%Y-%m-%d %H:%M')
+
 if [ $? -eq 0 ]; then
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT="'$mailcow_git_commit'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT_DATE="'$mailcow_git_commit_date'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BRANCH="'$BRANCH'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
   echo '<?php' > data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_COMMIT_DATE="";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BRANCH="'$BRANCH'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
