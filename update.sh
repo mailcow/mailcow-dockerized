@@ -676,7 +676,7 @@ if ! [ $NEW_BRANCH ]; then
     echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
   fi
-elif [ $FORCE = "y" ]; then
+elif [ $FORCE ]; then
   echo -e "\e[31mYou are running in forced mode!\e[0m"
   echo -e "\e[31mA Branch Switch can only be performed manually (monitored).\e[0m"
   echo -e "\e[31mPlease rerun the update.sh Script without the --force/-f parameter.\e[0m"
