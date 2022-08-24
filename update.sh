@@ -658,7 +658,7 @@ else
    fi
 fi
 
-if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]; then
+if ! [ $NEW_BRANCH ]; then
   echo -e "\e[33mDetecting which build your mailcow runs on...\e[0m"
   sleep 1
   if [ ${BRANCH} == "master" ]; then
@@ -676,6 +676,11 @@ if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]; then
     echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
   fi
+elif [ $FORCE = "y" ]; then
+  echo -e "\e[31mYou are running in forced mode!\e[0m"
+  echo -e "\e[31mA Branch Switch can only be performed manually (monitored).\e[0m"
+  echo -e "\e[31mPlease rerun the update.sh Script without the --force/-f parameter.\e[0m"
+  sleep 1
 elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
   echo -e "\e[33mYou are about to switch your mailcow Updates to the stable (master) branch.\e[0m"
   sleep 1
@@ -683,7 +688,8 @@ elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
   sleep 1
   echo -e "\e[31mWARNING: Please see on GitHub or ask in the communitys if a switch to master is stable or not.
   In some rear cases a Update back to master can destroy your mailcow configuration in case of Database Upgrades etc.
-  Normally a upgrade back to master should be safe during each full release. Check GitHub for Database Changes and Update only if there similar to the full release!\e[0m"
+  Normally a upgrade back to master should be safe during each full release. 
+  Check GitHub for Database Changes and Update only if there similar to the full release!\e[0m"
   read -r -p "Are you sure you that want to continue upgrading to the stable (master) branch? [y/N] " response
   if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --stable parameter again to trigger this process here."
@@ -709,7 +715,7 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   sleep 1
   echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
   sleep 1
-  echo -e "\e[31mWARNING: A switch to nightly is possible any time. But a switch back (to master) not.\e[0m"
+  echo -e "\e[31mWARNING: A switch to nightly is possible any time. But a switch back (to master) isn't.\e[0m"
   read -r -p "Are you sure you that want to continue upgrading to the unstable (nightly) branch? [y/N] " response
   if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --nightly parameter again to trigger this process here."
@@ -730,10 +736,6 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   git fetch origin --all
   git checkout -f origin/${BRANCH}
 
-elif [ $FORCE ]; then
-  echo -e "\e[31mYou are running in forced mode!\e[0m"
-  echo -e "\e[31mA Branch Switch can only be performed manually (monitored).\e[0m"
-  echo -e "\e[31mPlease rerun the update.sh Script without the --force/-f parameter.\e[0m"
 fi
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
