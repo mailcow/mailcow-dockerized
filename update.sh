@@ -873,11 +873,12 @@ fi
 # Set app_info.inc.php
 if [ ${BRANCH} == "master" ]; then
   mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-  mailcow_last_git_version=""
 elif [ ${BRANCH} == "nightly" ]; then
   mailcow_git_version=$(git rev-parse --short HEAD)
+  mailcow_last_git_version=""
 else
   mailcow_git_version=$(git rev-parse --short HEAD)
+  mailcow_last_git_version=""
 fi
 
 mailcow_git_commit=$(git rev-parse HEAD)
