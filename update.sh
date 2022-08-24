@@ -872,7 +872,7 @@ fi
 if [ ${BRANCH} == "master" ]; then
   mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
 elif [ ${BRANCH} == "nightly" ]; then
-  mailcow_git_version=$(git rev-parse origin/${BRANCH} --short HEAD | head -2 | tail -1)
+  mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
   mailcow_last_git_version=""
 else
   mailcow_git_version=$(git rev-parse --short HEAD)
@@ -928,8 +928,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-echo
-git reflog --color=always | grep "Before update on "
-echo
-echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
+# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+# echo
+# git reflog --color=always | grep "Before update on "
+# echo
+# echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
