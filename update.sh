@@ -730,7 +730,7 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
     git diff ${BRANCH} --stat > ${DIFF_FILE}
     git diff ${BRANCH} >> ${DIFF_FILE}
   fi
-  git fetch origin
+  git fetch origin --all
   git checkout -f ${BRANCH}
 fi
 
@@ -872,14 +872,14 @@ fi
 if [ ${BRANCH} == "master" ]; then
   mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
 elif [ ${BRANCH} == "nightly" ]; then
-  mailcow_git_version=$(git rev-parse --short HEAD)
+  mailcow_git_version=$(git rev-parse origin/${BRANCH} --short HEAD | head -2 | tail -1)
   mailcow_last_git_version=""
 else
   mailcow_git_version=$(git rev-parse --short HEAD)
   mailcow_last_git_version=""
 fi
 
-mailcow_git_commit=$(git rev-parse HEAD)
+mailcow_git_commit=$(git rev-parse origin/${BRANCH})
 mailcow_git_commit_date=$(git show -s --format=%cd --date=format:'%Y-%m-%d %H:%M')
 
 if [ $? -eq 0 ]; then
@@ -928,8 +928,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-# echo
-# git reflog --color=always | grep "Before update on "
-# echo
-# echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
+echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+echo
+git reflog --color=always | grep "Before update on "
+echo
+echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
