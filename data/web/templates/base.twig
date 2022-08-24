@@ -484,7 +484,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     </a>
   </span>
   {% endif %}  
-  {% if mailcow_cc_username and mailcow_info.mailcow_branch|lower == "origin/feature/nightly-editions" and mailcow_info.version_tag|default %}
+  {% if mailcow_cc_username and mailcow_info.mailcow_branch|lower == "nightly" and mailcow_info.version_tag|default %}
   <span class="version">
     🛠️🐮 + 🐋 = 💕
         Nightly: <a href="{{ mailcow_info.git_project_url }}/commit/{{ mailcow_info.git_commit }}" target="_blank">{{ mailcow_info.version_tag }}
