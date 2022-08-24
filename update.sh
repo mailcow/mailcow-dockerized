@@ -706,7 +706,7 @@ elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
     git diff ${BRANCH} >> ${DIFF_FILE}
   fi
   echo -e "\e[32mSwitching Branch to ${BRANCH}...\e[0m"
-  git fetch origin --all
+  git fetch origin
   git checkout -f ${BRANCH}
 
 elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
@@ -730,7 +730,7 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
     git diff ${BRANCH} --stat > ${DIFF_FILE}
     git diff ${BRANCH} >> ${DIFF_FILE}
   fi
-  git fetch origin --all
+  git fetch origin
   git checkout -f ${BRANCH}
 fi
 
