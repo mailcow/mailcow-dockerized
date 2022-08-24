@@ -695,8 +695,7 @@ elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --stable parameter again to trigger this process here."
     exit 0
   fi
-
-  BRANCH = NEW_BRANCH
+  BRANCH=$NEW_BRANCH
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_master_$(date +"%Y-%m-%d-%H-%M-%S")
   mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
@@ -708,7 +707,7 @@ elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
   fi
   echo -e "\e[32mSwitching Branch to ${BRANCH}...\e[0m"
   git fetch origin --all
-  git checkout -f origin/${BRANCH}
+  git checkout -f ${BRANCH}
 
 elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   echo -e "\e[33mYou are about to switch your mailcow Updates to the unstable (nightly) branch.\e[0m"
@@ -721,8 +720,7 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --nightly parameter again to trigger this process here."
     exit 0
   fi
-
-  BRANCH = NEW_BRANCH
+  BRANCH=$NEW_BRANCH
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_nightly_$(date +"%Y-%m-%d-%H-%M-%S")
   mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
@@ -732,10 +730,8 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
     git diff ${BRANCH} --stat > ${DIFF_FILE}
     git diff ${BRANCH} >> ${DIFF_FILE}
   fi
-
   git fetch origin --all
-  git checkout -f origin/${BRANCH}
-
+  git checkout -f ${BRANCH}
 fi
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
@@ -932,8 +928,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-# echo
-# git reflog --color=always | grep "Before update on "
-# echo
-# echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
+echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+echo
+git reflog --color=always | grep "Before update on "
+echo
+echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
