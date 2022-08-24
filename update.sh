@@ -658,7 +658,7 @@ else
    fi
 fi
 
-if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]
+if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]; then
   echo -e "\e[33mDetecting which build your mailcow runs on...\e[0m"
   sleep 1
   if [ ${BRANCH} == "master" ]; then
@@ -676,7 +676,7 @@ if [ $NEW_BRANCH != "master" ] || [ $NEW_BRANCH != "nightly"]
     echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
   fi
-elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]
+elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
   echo -e "\e[33mYou are about to switch your mailcow Updates to the stable (master) branch.\e[0m"
   sleep 1
   echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
@@ -704,7 +704,7 @@ elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]
   git fetch origin --all
   git checkout -f origin/${BRANCH}
 
-elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]
+elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   echo -e "\e[33mYou are about to switch your mailcow Updates to the unstable (nightly) branch.\e[0m"
   sleep 1
   echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
