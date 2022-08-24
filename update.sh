@@ -730,7 +730,7 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
     git diff ${BRANCH} --stat > ${DIFF_FILE}
     git diff ${BRANCH} >> ${DIFF_FILE}
   fi
-  git fetch origin --all
+  git fetch origin
   git checkout -f ${BRANCH}
 fi
 
@@ -928,8 +928,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-echo
-git reflog --color=always | grep "Before update on "
-echo
-echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
+# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+# echo
+# git reflog --color=always | grep "Before update on "
+# echo
+# echo "Use \"git reset --hard hash-on-the-left\" and run $COMPOSE_COMMAND up -d afterwards."
