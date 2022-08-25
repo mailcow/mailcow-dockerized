@@ -344,6 +344,8 @@ while (($#)); do
   shift
 done
 
+detect_docker_compose_command
+
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 chmod 600 mailcow.conf
 source mailcow.conf
@@ -353,8 +355,6 @@ if [ ${#DOTS} -lt 2 ]; then
   echo "Please change it to a FQDN and run $COMPOSE_COMMAND down followed by $COMPOSE_COMMAND up -d"
   exit 1
 fi
-
-detect_docker_compose_command
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
 # This will also cover sort
