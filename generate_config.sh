@@ -442,7 +442,7 @@ if [ $? -eq 0 ]; then
   echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT="'$mailcow_git_commit'";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT_DATE="'$mailcow_git_commit_date'";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_BRANCH="'$BRANCH'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BRANCH="'$git_branch'";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
@@ -454,7 +454,7 @@ else
   echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT="";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT_DATE="";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_BRANCH="'$BRANCH'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_BRANCH="'$git_branch'";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_UPDATEDAT='$(date +%s)';' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
