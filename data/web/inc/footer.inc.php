@@ -48,7 +48,14 @@ if (isset($pending_tfa_authmechs['u2f'])) {
 $globalVariables = [
   'mailcow_info' => array(
     'version_tag' => $GLOBALS['MAILCOW_GIT_VERSION'],
-    'git_project_url' => $GLOBALS['MAILCOW_GIT_URL']
+    'last_version_tag' => $GLOBALS['MAILCOW_LAST_GIT_VERSION'],
+    'git_owner' => $GLOBALS['MAILCOW_GIT_OWNER'],
+    'git_repo' => $GLOBALS['MAILCOW_GIT_REPO'],
+    'git_project_url' => $GLOBALS['MAILCOW_GIT_URL'],
+    'git_commit' => $GLOBALS['MAILCOW_GIT_COMMIT'],
+    'git_commit_date' => $GLOBALS['MAILCOW_GIT_COMMIT_DATE'],
+    'mailcow_branch' => $GLOBALS['MAILCOW_BRANCH'],
+    'updated_at' => $GLOBALS['MAILCOW_UPDATEDAT']
   ),
   'js_path' => '/cache/'.basename($JSPath),
   'pending_tfa_methods' => @$_SESSION['pending_tfa_methods'],
