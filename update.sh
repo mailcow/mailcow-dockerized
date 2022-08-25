@@ -344,11 +344,12 @@ while (($#)); do
   shift
 done
 
+chmod 600 mailcow.conf
+source mailcow.conf
+
 detect_docker_compose_command
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
-chmod 600 mailcow.conf
-source mailcow.conf
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 2 ]; then
   echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
@@ -734,16 +735,16 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   git checkout -f ${BRANCH}
 fi
 
-echo -e "\e[32mChecking for newer update script...\e[0m"
-SHA1_1=$(sha1sum update.sh)
-git fetch origin #${BRANCH}
-git checkout origin/${BRANCH} update.sh
-SHA1_2=$(sha1sum update.sh)
-if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-  echo "update.sh changed, please run this script again, exiting."
-  chmod +x update.sh
-  exit 2
-fi
+# echo -e "\e[32mChecking for newer update script...\e[0m"
+# SHA1_1=$(sha1sum update.sh)
+# git fetch origin #${BRANCH}
+# git checkout origin/${BRANCH} update.sh
+# SHA1_2=$(sha1sum update.sh)
+# if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+#   echo "update.sh changed, please run this script again, exiting."
+#   chmod +x update.sh
+#   exit 2
+# fi
 
 if [ ! $FORCE ]; then
   read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
