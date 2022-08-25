@@ -269,6 +269,7 @@ code {
   padding: 10px;
   background: #fbfbfb;
   border: 1px solid #ededed;
+  min-height: 110px;
 }
 
 .tag-box {

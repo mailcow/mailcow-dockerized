@@ -182,30 +182,19 @@ function recursiveBase64StrToArrayBuffer(obj) {
       keyboard: false
     });
 
-    // validate Yubi OTP tfa
-    $("#pending_tfa_tab_yubi_otp").click(function(){
-      $(".totp-authenticator-selection").removeClass("active");
-      $(".webauthn-authenticator-selection").removeClass("active");
 
-      $("#collapseTotpTFA").collapse('hide');
-      $("#collapseWebAuthnTFA").collapse('hide');
-    });
-    $(".yubi-authenticator-selection").click(function(){
-      $(".yubi-authenticator-selection").removeClass("active");
-      $(this).addClass("active");
-
-      var id = $(this).children('input').first().val();
-      $("#yubi_selected_id").val(id);
-
-      $("#collapseYubiTFA").collapse('show');
-    });
     // validate Time based OTP tfa
     $("#pending_tfa_tab_totp").click(function(){
-      $(".yubi-authenticator-selection").removeClass("active");
       $(".webauthn-authenticator-selection").removeClass("active");
-
-      $("#collapseYubiTFA").collapse('hide');
       $("#collapseWebAuthnTFA").collapse('hide');
+
+      // select default if only one authenticator exists
+      if ($('.totp-authenticator-selection').length == 1){
+        $('.totp-authenticator-selection').addClass("active");
+        var id = $('.totp-authenticator-selection').children('input').first().val();
+        $("#totp_selected_id").val(id);
+        $("#collapseTotpTFA").collapse('show');
+      }
     });
     $(".totp-authenticator-selection").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
@@ -216,13 +205,37 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
       $("#collapseTotpTFA").collapse('show');
     });
+    if ($('.totp-authenticator-selection').length == 1 &&
+        $('#pending_tfa_tab_yubi_otp').length == 0 &&
+        $('.webauthn-authenticator-selection').length == 0){
+      
+      // select default if only one authenticator exists
+      $('.totp-authenticator-selection').addClass("active");
+
+      var id = $('.totp-authenticator-selection').children('input').first().val();
+      $("#totp_selected_id").val(id);
+
+      $("#collapseTotpTFA").collapse('show');
+      setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 1000);
+    }
+    $('#pending_tfa_tab_totp').on('shown.bs.tab', function() {
+      // autofocus
+      setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 200);
+    });    
+    // validate Yubi OTP tfa
+    if ($('.webauthn-authenticator-selection').length == 0){
+      // autofocus
+      setTimeout(function() { $("#collapseYubiTFA").find('input[name="token"]').focus(); }, 1000);
+    }
+    $('#pending_tfa_tab_yubi_otp').on('shown.bs.tab', function() {
+      // autofocus
+      $("#collapseYubiTFA").find('input[name="token"]').focus();
+    });
     // validate WebAuthn tfa
     $("#pending_tfa_tab_webauthn").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
-      $(".yubi-authenticator-selection").removeClass("active");
 
       $("#collapseTotpTFA").collapse('hide');
-      $("#collapseYubiTFA").collapse('hide');
     });
     $(".webauthn-authenticator-selection").click(function(){
       $(".webauthn-authenticator-selection").removeClass("active");
