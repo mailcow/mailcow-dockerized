@@ -880,7 +880,7 @@ else
 fi
 
 mailcow_git_commit=$(git rev-parse origin/${BRANCH})
-mailcow_git_commit_date=$(git show -s --format=%cd --date=format:'%Y-%m-%d %H:%M')
+mailcow_git_commit_date=$(git log -1 --format=%ci @{upstream} )
 
 if [ $? -eq 0 ]; then
   echo '<?php' > data/web/inc/app_info.inc.php
