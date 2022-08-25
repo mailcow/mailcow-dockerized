@@ -100,6 +100,7 @@ $AVAILABLE_LANGUAGES = array(
   'ru' => 'Pусский (Russian)',
   'sk' => 'Slovenčina (Slovak)',
   'sv' => 'Svenska (Swedish)',
+  'tr' => 'Türkçe (Turkish)',
   'uk' => 'Українська (Ukrainian)',
   'zh' => '中文 (Chinese)'
 );

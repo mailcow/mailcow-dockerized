@@ -839,7 +839,7 @@
         "confirm_delete": "Potvrdit smazání prvku.",
         "danger": "Nebezpečí",
         "deliver_inbox": "Doručit do schránky",
-        "disabled_by_config": "Funkce karanténa je momentálně vypnuta v nastavení systému.",
+        "disabled_by_config": "Funkce karanténa je momentálně vypnuta v nastavení systému. Nastavte, prosím, prvkům karantény hodnoty \"počet zadržených zpráv\" a \"maximální velikost\".",
         "download_eml": "Stáhnout (.eml)",
         "empty": "Žádné výsledky",
         "high_danger": "Vysoké nebezpečí",
