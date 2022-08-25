@@ -160,12 +160,24 @@ function backup() {
 }
 
 function restore() {
-  for bin in docker docker-compose; do
+  for bin in docker; do
   if [[ -z $(which ${bin}) ]]; then
     >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
     exit 1
   fi
-  done  
+  done
+
+  if [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
+  COMPOSE_COMMAND="docker compose"
+
+  elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
+    COMPOSE_COMMAND="docker-compose"
+  
+  else
+    echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
+    exit 1
+  fi
+
   echo
   echo "Stopping watchdog-mailcow..."
   docker stop $(docker ps -qf name=watchdog-mailcow)
@@ -244,7 +256,7 @@ function restore() {
           continue
         else
           echo "Stopping mailcow..."
-          docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
         fi
         #docker stop $(docker ps -qf name=mysql-mailcow)
         if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
@@ -282,7 +294,7 @@ function restore() {
         sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
         source ${SCRIPT_DIR}/../mailcow.conf
         echo "Starting mailcow..."
-        docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
+        ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
         #docker start $(docker ps -aqf name=mysql-mailcow)
       fi
       ;;
