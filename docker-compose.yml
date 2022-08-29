@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.52
+      image: mailcow/clamd:1.54
       restart: always
       depends_on:
         - unbound-mailcow
@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.108
+      image: mailcow/sogo:1.109
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -215,7 +215,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.162
+      image: mailcow/dovecot:1.18
       depends_on:
         - mysql-mailcow
       dns:
@@ -377,8 +377,8 @@ services:
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
-        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+        - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+        - "${HTTP_BIND:-}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       networks:
         mailcow-network:

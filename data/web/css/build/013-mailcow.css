@@ -270,27 +270,6 @@ code {
 .flag-icon {
   margin-right: 5px;
 }
-.dropdown-header {
-  font-weight: 600;
-}
-
-.dataTables_info {
-  margin: 15px 0 !important;
-  padding: 0px !important;
-}
-.dataTables_paginate, .dataTables_length, .dataTables_filter {
-  margin: 15px 0 !important;
-}
-.dtr-details {
-  width: 100%;
-}
-.dtr-title {
-  width: 20%;
-}
-table.dataTable>tbody>tr.child ul.dtr-details>li {
-  border-bottom: 1px solid rgba(239, 239, 239, 0.129);
-  padding: 0.5em 0;
-}
 
 .tag-box {
   display: flex;
@@ -328,6 +307,7 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
   align-items: center;
   display: inline-flex;
 }
+
 #dnstable {
   overflow-x: auto!important;
 }
@@ -335,61 +315,4 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
   border: 1px solid #dfdfdf;
   background-color: #f9f9f9;
   padding: 10px;
-}
-
-
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
-  background-color: #5e5e5e;
-}
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before,
-table.dataTable td.dt-control:before {
-  background-color: #979797 !important;
-  border: 1.5px solid #616161 !important;
-  border-radius: 2px !important;
-  color: #fff;
-  height: 1em;
-  width: 1em;
-  line-height: 1.25em;
-  border-radius: 0px;
-  box-shadow: none;
-  font-size: 14px;
-  transition: 0.5s all;
-}
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
-table.dataTable td.dt-control:before {
-  background-color: #979797 !important;
-}
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
-  background-color: #fbfbfb;
-}
-table.dataTable.table-striped>tbody>tr>td {
-  vertical-align: middle;
-}
-table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
-  margin-top: 7px;
-}
-
-
-.btn-check-label {
-  color: #555;
-}
-
-.caret {
-  transform: rotate(0deg);
-}
-a[aria-expanded='true'] > .caret, 
-button[aria-expanded='true'] > .caret {
-  transform: rotate(-180deg);
-}
-
-.list-group-details {
-  background: #fff;
-}
-.list-group-header {
-  background: #f7f7f7;
 }

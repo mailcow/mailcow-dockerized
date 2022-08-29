@@ -131,37 +131,37 @@
   </div>
 </div>
 {% endif %}
-{% if pending_tfa_method %}
+{% if pending_tfa_methods %}
 <div class="modal fade" id="ConfirmTFAModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmTFAModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h3 class="modal-title">{{ lang.tfa[pending_tfa_method] }}</h3>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         {% if pending_tfa_method == 'yubi_otp' %}
         <form role="form" method="post">
-          <div>
+          <div class="form-group">
             <div class="input-group">
-              <span class="input-group-text" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
+              <span class="input-group-addon" id="yubi-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
               <input type="text" name="token" class="form-control" autocomplete="off" placeholder="Touch Yubikey" aria-describedby="yubi-addon">
               <input type="hidden" name="tfa_method" value="yubi_otp">
             </div>
           </div>
-          <button class="btn btn-sm d-block d-sm-inline btn-sm btn-secondary" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-sm btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
         </form>
         {% endif %}
         {% if pending_tfa_method == 'totp' %}
         <form role="form" method="post">
-          <div>
+          <div class="form-group">
             <div class="input-group">
-              <span class="input-group-text" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
+              <span class="input-group-addon" id="tfa-addon"><i class="bi bi-shield-lock-fill"></i></span>
               <input type="number" min="000000" max="999999" name="token" class="form-control" placeholder="123456" autocomplete="one-time-code" aria-describedby="tfa-addon">
               <input type="hidden" name="tfa_method" value="totp">
             </div>
           </div>
-          <button class="btn btn-sm d-block d-sm-inline btn-secondary" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
+          <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" type="submit" name="verify_tfa_login">{{ lang.login.login }}</button>
         </form>
         {% endif %}
         {% if pending_tfa_method == 'hotp' %}
