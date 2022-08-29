@@ -76,27 +76,6 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
-echo "checking docker compose version...";
-if docker compose >/dev/null 2>&1; then
-  echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker compose"
-elif docker-compose version --short | grep -m1 "^2" > /dev/null 2>&1; then
-  echo -e "\e[32mFound Compose v2!\e[0m"
-  COMPOSE_COMMAND="docker-compose"  
-elif docker-compose version --short | grep -m1 "^1" > /dev/null 2>&1; then
-  echo -e "\e[33mWARN: Your machine is using Docker-Compose v1!\e[0m"
-  echo -e "\e[33mmailcow will drop the Docker-Compose v1 Support in December 2022\e[0m"
-  echo -e "\e[33mPlease consider a upgrade to Docker-Compose v2.\e[0m"
-  echo
-  echo
-  echo -e "\e[33mContinuing...\e[0m"
-  sleep 3
-  COMPOSE_COMMAND="docker-compose"
-else
-  echo -e "\e[31mCannot find Docker-Compose v1 or v2 on your System. Please install Docker-Compose v2 and re-run the Script.\e[0m"
-  exit 1
-fi
-
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
   >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
   exit 1
@@ -108,6 +87,12 @@ function backup() {
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
+  for bin in docker; do
+  if [[ -z $(which ${bin}) ]]; then
+    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+    exit 1
+  fi
+  done
   while (( "$#" )); do
     case "$1" in
     vmail|all)
@@ -175,6 +160,24 @@ function backup() {
 }
 
 function restore() {
+  for bin in docker; do
+  if [[ -z $(which ${bin}) ]]; then
+    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+    exit 1
+  fi
+  done
+
+  if [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
+  COMPOSE_COMMAND="docker compose"
+
+  elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
+    COMPOSE_COMMAND="docker-compose"
+  
+  else
+    echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
+    exit 1
+  fi
+
   echo
   echo "Stopping watchdog-mailcow..."
   docker stop $(docker ps -qf name=watchdog-mailcow)

@@ -980,7 +980,8 @@
         "resource_modified": "Зміни поштового акаунту %s збережено",
         "settings_map_added": "Правило додано",
         "tls_policy_map_entry_deleted": "Політику TLS ID %s видалено",
-        "verified_totp_login": "Авторизацію TOTP пройдено"
+        "verified_totp_login": "Авторизацію TOTP пройдено",
+        "domain_add_dkim_available": "Ключ DKIM вже існує"
     },
     "tfa": {
         "confirm": "Підтвердьте",
