@@ -143,7 +143,8 @@
     updatedAt: '{{ mailcow_info.updatedAt }}',
     project_url: '{{ mailcow_info.project_url }}',
     project_owner: '{{ mailcow_info.project_owner }}',
-    project_repo: '{{ mailcow_info.project_repo }}'
+    project_repo: '{{ mailcow_info.project_repo }}',
+    branch: '{{ mailcow_info.mailcow_branch }}'
   };
 
 $(window).scroll(function() {
@@ -202,7 +203,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     {% endfor %}
 
     // Confirm TFA modal
-  {% if pending_tfa_method %}
+  {% if pending_tfa_methods %}
     new bootstrap.Modal(document.getElementById("ConfirmTFAModal"), {
       backdrop: 'static',
       keyboard: false
@@ -270,6 +271,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
       var id = $(this).children('input').first().val();
       $("#webauthn_selected_id").val(id);
       
+      var webauthn_status_auth = document.getElementById('webauthn_status_auth');
+      webauthn_status_auth.style.setProperty('display', 'flex', 'important');
+      var webauthn_return_code = document.getElementById('webauthn_return_code');
+      webauthn_return_code.style.setProperty('display', 'none', 'important');
+
       $("#collapseWebAuthnTFA").collapse('show');
 
       $(this).find('input[name=token]').focus();
@@ -307,8 +313,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
           auth.value = AuthenticatorAttestationResponse;
           form.submit();
         }).catch(function(err) {
+          var webauthn_status_auth = document.getElementById('webauthn_status_auth');
+          webauthn_status_auth.style.setProperty('display', 'none', 'important');
+
           var webauthn_return_code = document.getElementById('webauthn_return_code');
-          webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
+          webauthn_return_code.style.setProperty('display', 'block', 'important');
           webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
       } 

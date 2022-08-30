@@ -44,7 +44,9 @@ $(document).ready(function() {
   // create host cpu and mem charts
   createHostCpuAndMemChart();
   // check for new version
-  check_update(mailcow_info.version_tag, mailcow_info.project_url);
+  if (mailcow_info.branch === "master"){
+    check_update(mailcow_info.version_tag, mailcow_info.project_url);
+  }
   update_container_stats()
 });
 jQuery(function($){
@@ -1108,75 +1110,83 @@ function update_stats(timeout=5){
 }
 // update specific container stats - every n (default 5s) seconds
 function update_container_stats(timeout=5){
-  for (let container in containersToUpdate){
-    container_id = containersToUpdate[container].id;
-    if (containersToUpdate[container].state == "running")
-      continue;
-    containersToUpdate[container].state = "running";
+  
+  if ($('#tab-containers').hasClass('active')) {
+    for (let container in containersToUpdate){
+      container_id = containersToUpdate[container].id;
+      // check if container update stats is already running
+      if (containersToUpdate[container].state == "running")
+        continue;
+      containersToUpdate[container].state = "running";
 
 
-    window.fetch("/api/v1/get/status/container/" + container_id, {method:'GET',cache:'no-cache'}).then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
-      var netIOCtx = Chart.getChart(container + "_NetIOChart");
+      window.fetch("/api/v1/get/status/container/" + container_id, {method:'GET',cache:'no-cache'}).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
+        var netIOCtx = Chart.getChart(container + "_NetIOChart");
 
-      console.log(container);
-      console.log(data);
-      prev_stats = null;
-      if (data.length >= 2)
-        prev_stats = data[data.length -2]
-      data = data[data.length -1];
+        console.log(container);
+        console.log(data);
+        prev_stats = null;
+        if (data.length >= 2)
+          prev_stats = data[data.length -2]
+        data = data[data.length -1];
 
-      if (prev_stats != null){
-        // calc time diff
-        var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
-  
-        // calc disk io b/s
-        var prev_read_bytes = 0;
-        var prev_write_bytes = 0;
-        for (var i = 0; i < prev_stats.blkio_stats.io_service_bytes_recursive.length; i++){
-          if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "read")
-            prev_read_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
-          else if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "write")
-            prev_write_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+        if (prev_stats != null){
+          // calc time diff
+          var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
+    
+          // calc disk io b/s
+          if ('io_service_bytes_recursive' in prev_stats.blkio_stats && prev_stats.blkio_stats.io_service_bytes_recursive !== null){
+            var prev_read_bytes = 0;
+            var prev_write_bytes = 0;
+            for (var i = 0; i < prev_stats.blkio_stats.io_service_bytes_recursive.length; i++){
+              if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "read")
+                prev_read_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+              else if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "write")
+                prev_write_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+            }
+            var read_bytes = 0;
+            var write_bytes = 0;
+            for (var i = 0; i < data.blkio_stats.io_service_bytes_recursive.length; i++){
+              if (data.blkio_stats.io_service_bytes_recursive[i].op == "read")
+                read_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+              else if (data.blkio_stats.io_service_bytes_recursive[i].op == "write")
+                write_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+            }
+            var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
+            var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
+          }
+    
+          // calc net io b/s
+          if ('networks' in prev_stats){
+            var prev_recv_bytes = 0;
+            var prev_sent_bytes = 0;
+            for (var key in prev_stats.networks){
+              prev_recv_bytes += prev_stats.networks[key].rx_bytes;
+              prev_sent_bytes += prev_stats.networks[key].tx_bytes;
+            }
+            var recv_bytes = 0;
+            var sent_bytes = 0;
+            for (var key in data.networks){
+              recv_bytes += data.networks[key].rx_bytes;
+              sent_bytes += data.networks[key].tx_bytes;
+            }
+            var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
+            var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
+          }
+    
+          addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
+          addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
         }
-        var read_bytes = 0;
-        var write_bytes = 0;
-        for (var i = 0; i < data.blkio_stats.io_service_bytes_recursive.length; i++){
-          if (data.blkio_stats.io_service_bytes_recursive[i].op == "read")
-            read_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
-          else if (data.blkio_stats.io_service_bytes_recursive[i].op == "write")
-            write_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
-        }
-        var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
-        var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
-  
-        // calc net io b/s
-        var prev_recv_bytes = 0;
-        var prev_sent_bytes = 0;
-        for (var key in prev_stats.networks){
-          prev_recv_bytes += prev_stats.networks[key].rx_bytes;
-          prev_sent_bytes += prev_stats.networks[key].tx_bytes;
-        }
-        var recv_bytes = 0;
-        var sent_bytes = 0;
-        for (var key in data.networks){
-          recv_bytes += data.networks[key].rx_bytes;
-          sent_bytes += data.networks[key].tx_bytes;
-        }
-        var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
-        var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
-  
-        addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
-        addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
-      }
-  
-      // run again in n seconds
-      containersToUpdate[container].state = "idle";
-    }).catch(err => {
-      console.log(err);
-    });
+    
+        // run again in n seconds
+        containersToUpdate[container].state = "idle";
+      }).catch(err => {
+        console.log(err);
+      });
+    }
   }
 
   // run again in n seconds

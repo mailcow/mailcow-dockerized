@@ -56,12 +56,14 @@
                           <p id="mailcow_update"></p> 
                         </div></td>
                       </tr>
+                      {% if mailcow_info.mailcow_branch|lower == "master" %}
                       <tr>
                         <td>Changelog</td>
                         <td class="text-break"><a href="{{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
                           {{ mailcow_info.project_url }}/releases/tag/{{ mailcow_info.version_tag }}
                         </a></td>
                       </tr>
+                      {% endif %}
                       <tr>
                         <td>{{ lang.debug.current_time }}</td>
                         <td id="host_date" class="text-break">-</td>

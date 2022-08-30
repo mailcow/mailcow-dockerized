@@ -77,7 +77,6 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/domain-admin/all",
         dataSrc: function(data){
-          console.log(data);
           return process_table_data(data, 'domainadminstable');
         }
       },
@@ -133,7 +132,6 @@ jQuery(function($){
           },
       ],
       initComplete: function(settings, json){
-        console.log(settings);
       }
     });
   }

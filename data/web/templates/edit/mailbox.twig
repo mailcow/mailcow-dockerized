@@ -40,7 +40,7 @@
       </div>
       <div class="row mb-2">
         <label class="control-label col-sm-2" for="quota">{{ lang.edit.quota_mb }}
-          <br><span id="quotaBadge" class="badge">max. {{ (result.max_new_quota / 1048576) }} MiB</span>
+          <br><span id="quotaBadge" class="badge bg-info">max. {{ (result.max_new_quota / 1048576) }} MiB</span>
         </label>
         <div class="col-sm-10">
           <input type="number" name="quota" style="width:100%" min="0" max="{{ (result.max_new_quota / 1048576) }}" value="{{ (result.quota / 1048576) }}" class="form-control">
