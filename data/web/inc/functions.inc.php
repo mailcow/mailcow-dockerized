@@ -937,11 +937,13 @@ function check_login($user, $pass, $app_passwd_data = false) {
   }
   foreach ($rows as $row) {
     // verify password
-    if ($app_passwd_data['eas'] !== true && $app_passwd_data['dav'] !== true){
-      if (verify_hash($row['password'], $pass) !== false) {
+    if (verify_hash($row['password'], $pass) !== false) {
+      if (!array_key_exists("app_passwd_id", $row)){ 
+        // password is not a app password
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
+          // authenticators found, init TFA flow
           $_SESSION['pending_mailcow_cc_username'] = $user;
           $_SESSION['pending_mailcow_cc_role'] = "user";
           $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
@@ -953,6 +955,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
           );
           return "pending";
         } else {
+          // no authenticators found, login successfull
           // Reactivate TFA if it was set to "deactivate TFA for next login"
           $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
           $stmt->execute(array(':user' => $user));
@@ -960,22 +963,19 @@ function check_login($user, $pass, $app_passwd_data = false) {
           unset($_SESSION['ldelay']);
           return "user";
         }
-      }
-    } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
-      if (array_key_exists("app_passwd_id", $row)){
-        if (verify_hash($row['password'], $pass) !== false) {
-          $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
-          $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
-          $stmt->execute(array(
-            ':service' => $service,
-            ':app_id' => $row['app_passwd_id'],
-            ':username' => $user,
-            ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
-          ));
+      } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
+        // password is a app password
+        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
+        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
+        $stmt->execute(array(
+          ':service' => $service,
+          ':app_id' => $row['app_passwd_id'],
+          ':username' => $user,
+          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
+        ));
 
-          unset($_SESSION['ldelay']);
-          return "user";
-        }
+        unset($_SESSION['ldelay']);
+        return "user";
       }
     }
   }
@@ -994,7 +994,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   $_SESSION['return'][] =  array(
     'type' => 'danger',
     'log' => array(__FUNCTION__, $user, '*'),
-    'msg' => 'login_failed'
+    'msg' => array('login_failed', $pass, $rows, $app_passwd_data, array_key_exists("app_passwd_id", $row))
   );
 
   sleep($_SESSION['ldelay']);
