@@ -994,7 +994,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   $_SESSION['return'][] =  array(
     'type' => 'danger',
     'log' => array(__FUNCTION__, $user, '*'),
-    'msg' => array('login_failed', $pass, $rows, $app_passwd_data, array_key_exists("app_passwd_id", $row))
+    'msg' => 'login_failed'
   );
 
   sleep($_SESSION['ldelay']);
