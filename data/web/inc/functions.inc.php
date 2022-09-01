@@ -935,38 +935,47 @@ function check_login($user, $pass, $app_passwd_data = false) {
     $stmt->execute(array(':user' => $user));
     $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
   }
-  foreach ($rows as $row) {
+  foreach ($rows as $row) { 
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
-      // check for tfa authenticators
-      $authenticators = get_tfa($user);
-      if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
-        $_SESSION['pending_mailcow_cc_username'] = $user;
-        $_SESSION['pending_mailcow_cc_role'] = "user";
-        $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
-        unset($_SESSION['ldelay']);
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $user, '*'),
-          'msg' => array('logged_in_as', $user)
-        );
-        return "pending";
-      } else {
-        if ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
-          $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
-          $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
-          $stmt->execute(array(
-            ':service' => $service,
-            ':app_id' => $row['app_passwd_id'],
-            ':username' => $user,
-            ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
-          ));
+      if (!array_key_exists("app_passwd_id", $row)){ 
+        // password is not a app password
+        // check for tfa authenticators
+        $authenticators = get_tfa($user);
+        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 &&
+            $app_passwd_data['eas'] !== true && $app_passwd_data['dav'] !== true) {
+          // authenticators found, init TFA flow
+          $_SESSION['pending_mailcow_cc_username'] = $user;
+          $_SESSION['pending_mailcow_cc_role'] = "user";
+          $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+          unset($_SESSION['ldelay']);
+          $_SESSION['return'][] =  array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $user, '*'),
+            'msg' => array('logged_in_as', $user)
+          );
+          return "pending";
+        } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
+          // no authenticators found, login successfull
+          // Reactivate TFA if it was set to "deactivate TFA for next login"
+          $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
+          $stmt->execute(array(':user' => $user));
+
+          unset($_SESSION['ldelay']);
+          return "user";
         }
+      } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
+        // password is a app password
+        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
+        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
+        $stmt->execute(array(
+          ':service' => $service,
+          ':app_id' => $row['app_passwd_id'],
+          ':username' => $user,
+          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
+        ));
 
         unset($_SESSION['ldelay']);
-        // Reactivate TFA if it was set to "deactivate TFA for next login"
-        $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
-        $stmt->execute(array(':user' => $user));
         return "user";
       }
     }
@@ -1626,12 +1635,8 @@ function verify_tfa_login($username, $_data) {
   global $WebAuthn;
 
   if ($_data['tfa_method'] != 'u2f'){
-    $stmt = $pdo->prepare("SELECT `authmech` FROM `tfa`
-        WHERE `username` = :username AND `id` = :id AND `active` = '1'");
-    $stmt->execute(array(':username' => $username, ':id' => $_data['id']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    switch ($row["authmech"]) {
+    switch ($_data["tfa_method"]) {
         case "yubi_otp":
             if (!ctype_alnum($_data['token']) || strlen($_data['token']) != 44) {
                 $_SESSION['return'][] =  array(
@@ -1645,10 +1650,9 @@ function verify_tfa_login($username, $_data) {
             $stmt = $pdo->prepare("SELECT `id`, `secret` FROM `tfa`
                 WHERE `username` = :username
                 AND `authmech` = 'yubi_otp'
-                AND `id` = :id
                 AND `active` = '1'
                 AND `secret` LIKE :modhex");
-            $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id, ':id' => $_data['id']));
+            $stmt->execute(array(':username' => $username, ':modhex' => '%' . $yubico_modhex_id));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $yubico_auth = explode(':', $row['secret']);
             $yubi = new Auth_Yubico($yubico_auth[0], $yubico_auth[1]);

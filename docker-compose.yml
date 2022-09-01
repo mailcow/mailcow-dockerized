@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.109
+      image: mailcow/sogo:1.110
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -215,7 +215,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.17
+      image: mailcow/dovecot:1.18
       depends_on:
         - mysql-mailcow
       dns:
