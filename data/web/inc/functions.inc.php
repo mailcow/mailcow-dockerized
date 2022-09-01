@@ -935,14 +935,15 @@ function check_login($user, $pass, $app_passwd_data = false) {
     $stmt->execute(array(':user' => $user));
     $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
   }
-  foreach ($rows as $row) {
+  foreach ($rows as $row) { 
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
       if (!array_key_exists("app_passwd_id", $row)){ 
         // password is not a app password
         // check for tfa authenticators
         $authenticators = get_tfa($user);
-        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
+        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 &&
+            $app_passwd_data['eas'] !== true && $app_passwd_data['dav'] !== true) {
           // authenticators found, init TFA flow
           $_SESSION['pending_mailcow_cc_username'] = $user;
           $_SESSION['pending_mailcow_cc_role'] = "user";
@@ -954,7 +955,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
             'msg' => array('logged_in_as', $user)
           );
           return "pending";
-        } else {
+        } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
           // no authenticators found, login successfull
           // Reactivate TFA if it was set to "deactivate TFA for next login"
           $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
