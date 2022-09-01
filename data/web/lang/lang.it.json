@@ -973,7 +973,8 @@
         "verified_fido2_login": "Verified FIDO2 login",
         "verified_totp_login": "Verified TOTP login",
         "verified_webauthn_login": "Verified WebAuthn login",
-        "verified_yotp_login": "Verified Yubico OTP login"
+        "verified_yotp_login": "Verified Yubico OTP login",
+        "domain_add_dkim_available": "Esisteva già una chiave DKIM"
     },
     "tfa": {
         "api_register": "%s usa le API Yubico Cloud. Richiedi una chiave API <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">qui</a>",
