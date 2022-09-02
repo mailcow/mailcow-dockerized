@@ -141,7 +141,9 @@ echo "Available Branches:"
 echo "- master branch (stable updates) | default, recommended [1]"
 echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
 sleep 1
-read -r -p  "Choose the Branch with it´s number [1/2] " branch
+
+while [ -z "${MAILCOW_BRANCH}" ]; do
+  read -r -p  "Choose the Branch with it´s number [1/2] " branch
   case $branch in
     [2])
       git_branch="nightly"
@@ -150,6 +152,11 @@ read -r -p  "Choose the Branch with it´s number [1/2] " branch
       git_branch="master"
     ;;
   esac
+done
+
+if [ ! -z "${MAILCOW_BRANCH}" ]; then
+  git_branch=${MAILCOW_BRANCH}
+fi
 
 git fetch --all
 git checkout -f $git_branch
