@@ -178,7 +178,7 @@ remove_obsolete_nginx_ports() {
 detect_docker_compose_command(){
 if ! [ "${DOCKER_COMPOSE_VERSION}" == "native" ] && ! [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
   if docker compose > /dev/null 2>&1; then
-      if docker compose version --short | grep "^2." > /dev/null 2>&1; then
+      if docker compose version --short | grep "2." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
         echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
@@ -361,14 +361,6 @@ if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep 
 # This will also cover sort
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
-
-# Check if Docker Compose is older then v2 before continuing
-if ! $COMPOSE_COMMAND version --short | grep "^2." > /dev/null 2>&1; then
-  echo -e "\e[33mYour Docker Compose Version is not up to date!\e[0m"
-  echo -e "\e[33mmailcow needs Docker Compose > 2.X.X!\e[0m"
-  echo -e "\e[33mYour current installed Version: $($COMPOSE_COMMAND version --short)\e[0m"
-  exit 1
-fi
 
 CONFIG_ARRAY=(
   "SKIP_LETS_ENCRYPT"
