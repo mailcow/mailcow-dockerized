@@ -146,10 +146,10 @@ while [ -z "${MAILCOW_BRANCH}" ]; do
   read -r -p  "Choose the Branch with it´s number [1/2] " branch
   case $branch in
     [2])
-      git_branch="nightly"
+      MAILCOW_BRANCH="nightly"
       ;;
     *)
-      git_branch="master"
+      MAILCOW_BRANCH="master"
     ;;
   esac
 done
