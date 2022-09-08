@@ -145,7 +145,7 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
     <key>SOGoSieveServer</key>
     <string>sieve://${IPV4_NETWORK}.250:4190/?TLS=YES&amp;tlsVerifyMode=none</string>
     <key>SOGoSMTPServer</key>
-    <string>smtp://${IPV4_NETWORK}.253:588/?TLS=YES&tlsVerifyMode=none</string>
+    <string>smtp://${IPV4_NETWORK}.253:588/?TLS=YES&amp;tlsVerifyMode=none</string>
     <key>SOGoTrustProxyAuthentication</key>
     <string>YES</string>
     <key>SOGoEncryptionKey</key>
