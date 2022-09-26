@@ -14,7 +14,8 @@
         "sogo_access": "SOGo erişiminin yönetilmesine izin ver",
         "domain_desc": "Alan adı açıklamasını değiştir",
         "extend_sender_acl": "Gönderenin acl'sini harici adreslere göre genişletmeye izin ver",
-        "spam_policy": "Engellenenler / İzin verilenler"
+        "spam_policy": "Engellenenler / İzin verilenler",
+        "filters": "Fitreler"
     },
     "add": {
         "activate_filter_warn": "Aktif edilirse diğer tüm filtreler devre dışı bırakılacak.",
