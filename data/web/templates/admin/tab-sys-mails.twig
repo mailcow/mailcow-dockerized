@@ -28,7 +28,7 @@
             <p class="text-muted">{{ lang.admin.include_exclude_info|raw }}</p>
           </label>
           <div class="col-sm-5">
-            <label class="control-label" for="mass_exclude">{{ lang.admin.excludes }}:</label>
+            <label class="d-block" for="mass_exclude">{{ lang.admin.excludes }}:</label>
             <select id="mass_exclude" name="mass_exclude[]" data-live-search="true" data-width="100%"  size="30" multiple>
               {% for mailbox in mailboxes %}
                 <option>{{ mailbox }}</option>
@@ -36,7 +36,7 @@
             </select>
           </div>
           <div class="col-sm-5">
-            <label class="control-label" for="mass_include">{{ lang.admin.includes }}:</label>
+            <label class="d-block" for="mass_include">{{ lang.admin.includes }}:</label>
             <select id="mass_include" name="mass_include[]" data-live-search="true" data-width="100%"  size="30" multiple>
               {% for mailbox in mailboxes %}
                 <option>{{ mailbox }}</option>
