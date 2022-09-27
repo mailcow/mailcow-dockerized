@@ -210,13 +210,19 @@
                         <span class="d-block">{{ lang.debug.solr_dead }}</span>
                         {% endif %}
                       </div>
-                      <div class="mt-4 col-sm-12 col-md-6">
+                      <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
                         <h6>Disk I/O</h6>
-                        <canvas id="solr-mailcow_DiskIOChart" width="400" height="200"></canvas>
+                        <div class="spinner-border my-4 mx-auto" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <canvas class="d-none" id="solr-mailcow_DiskIOChart" width="400" height="200"></canvas>
                       </div>
-                      <div class="mt-4 col-sm-12 col-md-6">
+                      <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
                         <h6>Net I/O</h6>
-                        <canvas id="solr-mailcow_NetIOChart" width="400" height="200"></canvas>
+                        <div class="spinner-border my-4 mx-auto" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <canvas class="d-none" id="solr-mailcow_NetIOChart" width="400" height="200"></canvas>
                       </div>
                       <div class="col-sm-12 d-flex" style="height: 40px">
                         <a href data-bs-toggle="modal" 
@@ -273,13 +279,19 @@
                       </div>
                       <div class="collapse p-0 list-group-details container-details-collapse" id="{{ container }}Collapse" data-id="{{ container_info.Id }}">   
                         <div class="row p-2 pt-4">   
-                          <div class="mt-4 col-sm-12 col-md-6">
+                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
                             <h6>Disk I/O</h6>
-                            <canvas id="{{ container }}_DiskIOChart" width="400" height="200"></canvas>
+                            <div class="spinner-border my-4 mx-auto" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <canvas class="d-none" id="{{ container }}_DiskIOChart" width="400" height="200"></canvas>
                           </div>
-                          <div class="mt-4 col-sm-12 col-md-6">
+                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
                             <h6>Net I/O</h6>
-                            <canvas id="{{ container }}_NetIOChart" width="400" height="200"></canvas>
+                            <div class="spinner-border my-4 mx-auto" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <canvas class="d-none" id="{{ container }}_NetIOChart" width="400" height="200"></canvas>
                           </div>   
                           <div class="col-12 d-flex" style="height: 40px">             
                             <a href data-bs-toggle="modal" 
