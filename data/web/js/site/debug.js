@@ -1129,8 +1129,16 @@ function update_container_stats(timeout=5){
         console.log(container);
         console.log(data);
         prev_stats = null;
-        if (data.length >= 2)
-          prev_stats = data[data.length -2]
+        if (data.length >= 2){
+          prev_stats = data[data.length -2];
+
+          // hide spinners if we collected enough data
+          $('#' + container + "_DiskIOChart").removeClass('d-none');
+          $('#' + container + "_DiskIOChart").prev().addClass('d-none');
+          $('#' + container + "_NetIOChart").removeClass('d-none');
+          $('#' + container + "_NetIOChart").prev().addClass('d-none');
+        }
+          
         data = data[data.length -1];
 
         if (prev_stats != null){
@@ -1387,6 +1395,8 @@ function createHostCpuAndMemChart(){
 }
 // check for mailcow updates
 function check_update(current_version, github_repo_url){
+  if (!current_version || !github_repo_url) return false; 
+
   var github_account = github_repo_url.split("/")[3];
   var github_repo_name = github_repo_url.split("/")[4];
 

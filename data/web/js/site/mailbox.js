@@ -1,58 +1,5 @@
 $(document).ready(function() {
   acl_data = JSON.parse(acl);
-  // FooTable.domainFilter = FooTable.Filtering.extend({
-  //   construct: function(instance){
-  //     this._super(instance);
-  //     this.def = lang.all_domains;
-  //     this.$domain = null;
-  //   },
-  //   $create: function(){
-  //     this._super();
-  //     var self = this;
-  //     var domains = [];
-
-  //     $.each(self.ft.rows.all, function(i, row){
-  //       if((row.val().domain != null) && ($.inArray(row.val().domain, domains) === -1)) domains.push(row.val().domain);
-  //     });
-
-  //     $form_grp = $('<div/>', {'class': 'form-group'})
-  //       .append($('<label/>', {'class': 'sr-only', text: 'Domain'}))
-  //       .prependTo(self.$form);
-  //     self.$domain = $('<select/>', { 'class': 'aform-control' })
-  //       .on('change', {self: self}, self._onDomainDropdownChanged)
-  //       .append($('<option/>', {text: self.def}))
-  //       .appendTo($form_grp);
-
-  //     $.each(domains, function(i, domain){
-  //       domainname = $($.parseHTML(domain)).data('domainname')
-  //       if (domainname !== undefined) {
-  //         self.$domain.append($('<option/>').text(domainname));
-  //       } else {
-  //         self.$domain.append($('<option/>').text(domain));
-  //       }
-  //     });
-  //   },
-  //   _onDomainDropdownChanged: function(e){
-  //     var self = e.data.self,
-  //       selected = $(this).val();
-  //     if (selected !== self.def){
-  //       self.addFilter('domain', selected, ['domain']);
-  //     } else {
-  //       self.removeFilter('domain');
-  //     }
-  //     self.filter();
-  //   },
-  //   draw: function(){
-  //     this._super();
-  //     var domain = this.find('domain');
-  //     if (domain instanceof FooTable.Filter){
-  //       this.$domain.val(domain.query.val());
-  //     } else {
-  //       this.$domain.val(this.def);
-  //     }
-  //     $(this.$domain).closest("select").selectpicker();
-  //   }
-  // });
   // Set paging
   // Clone mailbox mass actions
   $("div").find("[data-actions-header='true'").each(function() {
@@ -118,7 +65,7 @@ $(document).ready(function() {
   // Log modal
   $('#dnsInfoModal').on('show.bs.modal', function(e) {
     var domain = $(e.relatedTarget).data('domain');
-    $('.dns-modal-body').html('<div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div>');
+    $('.dns-modal-body').html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
     $.ajax({
       url: '/inc/ajax/dns_diagnostics.php',
       data: { domain: domain },
@@ -411,6 +358,7 @@ jQuery(function($){
             item.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             item.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -428,15 +376,13 @@ jQuery(function($){
               item.quarantine_category = lang.q_all;
             }
             if (acl_data.login_as === 1) {
-              var btnSize = 'btn-xs-third';
-              if (ALLOW_ADMIN_EMAIL_LOGIN) btnSize = 'btn-xs-quart';
 
-            item.action = '<div class="btn-group">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs ' + btnSize + ' btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs ' + btnSize + ' btn-success"><i class="bi bi-person-fill"></i> Login</a>';
+              item.action = '<div class="btn-group">' +
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><i class="bi bi-person-fill"></i> Login</a>';
               if (ALLOW_ADMIN_EMAIL_LOGIN) {
-                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs ' + btnSize + ' btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
               }
               item.action += '</div>';
             }
@@ -555,6 +501,11 @@ jQuery(function($){
           {
             title: 'POP3',
             data: 'pop3_access',
+            defaultContent: ''
+          },
+          {
+            title: 'SIEVE',
+            data: 'sieve_access',
             defaultContent: ''
           },
           {
