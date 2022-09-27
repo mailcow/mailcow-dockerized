@@ -289,7 +289,7 @@ code {
   width: 20%;
 }
 table.dataTable>tbody>tr.child ul.dtr-details>li {
-  border-bottom: 1px solid rgba(239, 239, 239, 0.129);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.129);
   padding: 0.5em 0;
 }
 

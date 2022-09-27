@@ -107,6 +107,9 @@ tbody tr {
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #333;
 }
+table.dataTable>tbody>tr.child ul.dtr-details>li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
 tbody tr {
     color: #ccc;
 }
