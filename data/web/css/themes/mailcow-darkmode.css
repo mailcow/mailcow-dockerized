@@ -84,8 +84,12 @@ legend {
 .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
     color: #fafafa;
 }
+
 .bootstrap-select>.dropdown-toggle.bs-placeholder, .bootstrap-select>.dropdown-toggle.bs-placeholder:active, .bootstrap-select>.dropdown-toggle.bs-placeholder:focus, .bootstrap-select>.dropdown-toggle.bs-placeholder:hover {
     color: #fff;
+}
+.bootstrap-select>.dropdown-toggle.bs-placeholder, .bootstrap-select>.dropdown-toggle.bs-placeholder.btn-secondary {
+    color: #d4d4d4 !important;
 }
 tbody tr {
     color: #555;
@@ -102,6 +106,9 @@ tbody tr {
 }
 .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: #333;
+}
+table.dataTable>tbody>tr.child ul.dtr-details>li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
 }
 tbody tr {
     color: #ccc;
@@ -150,12 +157,6 @@ input.form-control:disabled, textarea.form-disabled {
     background-color: #242424;
 }
 
-.tag-add {
-    color: #ccc;
-}
-.tag-add:hover {
-    color: #d1d1d1;
-}
 
 
 .list-group-item {
@@ -198,6 +199,17 @@ input.form-control:disabled, textarea.form-disabled {
     border-color: #d8d8d8;
 }
 
+.table-light {
+    --bs-table-bg: #f6f6f6;
+    --bs-table-striped-bg: #eaeaea;
+    --bs-table-striped-color: #000;
+    --bs-table-active-bg: #dddddd;
+    --bs-table-active-color: #000;
+    --bs-table-hover-bg: #e4e4e4;
+    --bs-table-hover-color: #000;
+    color: #000;
+    border-color: #dddddd;
+}
 
 .form-control-plaintext {
     color: #e0e0e0;
@@ -239,17 +251,6 @@ a:hover {
 }
 
 
-.table-light {
-    --bs-table-bg: #f6f6f6;
-    --bs-table-striped-bg: #eaeaea;
-    --bs-table-striped-color: #000;
-    --bs-table-active-bg: #dddddd;
-    --bs-table-active-color: #000;
-    --bs-table-hover-bg: #e4e4e4;
-    --bs-table-hover-color: #000;
-    color: #000;
-    border-color: #dddddd;
-}
 
 
 .accordion-item {
@@ -290,7 +291,12 @@ a:hover {
     color: #fff;
     background-color: #555;
 }
-
+.tag-add {
+    color: #ccc;
+}
+.tag-add:hover {
+    color: #d1d1d1;
+}
 
 
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
@@ -316,12 +322,15 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
 .btn-check-label {
   color: #fff;
 }
+.btn-outline-secondary:hover {
+    background-color: #c3c3c3;
+}
 .btn.btn-outline-secondary {
   color: #fff !important;
   border-color: #7a7a7a !important;  
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
-    background-color: #7a7a7a !important;
+    background-color: #9b9b9b !important;
 }
 
 
@@ -348,3 +357,4 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
 .list-group-header {
     background: #333;
 }
+

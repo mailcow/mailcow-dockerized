@@ -44,9 +44,24 @@ foreach ($containers as $container => $container_info) {
   $containers[$container]['State']['StartedAtHR'] = $started;
 }
 
-// get mailconf data
+// get mailcow data
 $hostname = getenv('MAILCOW_HOSTNAME');
 $timezone = getenv('TZ');
+// get public ips
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($curl, CURLOPT_POST, 0);
+$ipv4 = curl_exec($curl);
+curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($curl, CURLOPT_POST, 0);
+$ipv6 = curl_exec($curl);
+$ips = array(
+  "ipv4" => $ipv4,
+  "ipv6" => $ipv6
+);
+curl_close($curl);
 
 $template = 'debug.twig';
 $template_data = [
@@ -54,6 +69,7 @@ $template_data = [
   'vmail_df' => $vmail_df,
   'hostname' => $hostname,
   'timezone' => $timezone,
+  'ips' => $ips,
   'solr_status' => $solr_status,
   'solr_uptime' => round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60),
   'clamd_status' => $clamd_status,

@@ -6,8 +6,8 @@
 <div class="row mb-4" style="margin-top: 60px">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
     <div class="card">
-      <div class="card-header d-flex">
-        <i class="bi bi-person-fill"></i> {{ lang.login.login }}
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-person-fill me-2"></i> {{ lang.login.login }}
         <div class="ms-auto form-check form-switch my-auto d-flex align-items-center">
           <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
           <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
@@ -69,18 +69,18 @@
         <div class="my-4" id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) %}
         <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
-        <div class="my-4 apps">
+        <div class="my-2 d-flex flex-wrap apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}
-            <div>
-              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-lg btn-block">{{ app.name }}</a>
+            <div class="m-2">
+              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-block">{{ app.name }}</a>
             </div>
           {% endif %}
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-              <div>
-                <a href="{{ val }}" role="button" class="btn btn-primary btn-lg btn-block">{{ key }}</a>
+              <div class="m-2">
+                <a href="{{ val }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
               </div>
             {% endfor %}
           {% endfor %}

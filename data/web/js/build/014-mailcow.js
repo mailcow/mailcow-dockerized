@@ -247,7 +247,7 @@ $(document).ready(function() {
     $('#containerName').text(container);
     $('#triggerRestartContainer').click(function(){
       $(this).prop("disabled",true);
-      $(this).html('<div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div>');
+      $(this).html('<div class="spinner-border text-white" role="status"><span class="visually-hidden">Loading...</span></div>');
       $('#statusTriggerRestartContainer').html(lang_footer.restarting_container);
       $.ajax({
         method: 'get',
