@@ -50,7 +50,7 @@ try:
   def query_mysql(query, headers = True, update = False):
     while True:
       try:
-        cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user=os.environ.get('DBUSER'), passwd=os.environ.get('DBPASS'), database=os.environ.get('DBNAME'), charset="utf8")
+        cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user=os.environ.get('DBUSER'), passwd=os.environ.get('DBPASS'), database=os.environ.get('DBNAME'), charset="utf8mb4", collation="utf8mb4_general_ci")
       except Exception as ex:
         print('%s - trying again...'  % (ex))
         time.sleep(3)
