@@ -128,10 +128,10 @@ table.footable > tbody > tr.footable-empty > th {
   content: "\f130";
 }
 .fooicon-plus:before {
-  content: "\f4fc";
+  content: "\f4fd";
 }
 .fooicon-minus:before {
-  content: "\f2e8";
+  content: "\f2e9";
 }
 .fooicon-search:before {
   content: "\f52a";

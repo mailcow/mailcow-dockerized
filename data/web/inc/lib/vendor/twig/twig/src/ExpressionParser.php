@@ -485,7 +485,7 @@ class ExpressionParser
                     }
                 }
             } else {
-                throw new SyntaxError('Expected name or number.', $lineno, $stream->getSourceContext());
+                throw new SyntaxError(sprintf('Expected name or number, got value "%s" of type %s.', $token->getValue(), Token::typeToEnglish($token->getType())), $lineno, $stream->getSourceContext());
             }
 
             if ($node instanceof NameExpression && null !== $this->parser->getImportedSymbol('template', $node->getAttribute('name'))) {
