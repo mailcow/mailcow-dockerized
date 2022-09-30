@@ -102,7 +102,8 @@
         "timeout2": "Délai d'expiration pour la connexion à l'hôte local",
         "username": "Nom d'utilisateur",
         "validate": "Valider",
-        "validation_success": "Validation réussie"
+        "validation_success": "Validation réussie",
+        "bcc_dest_format": "La destination Cci doit être une seule adresse e-mail valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici."
     },
     "admin": {
         "access": "Accès",
@@ -322,7 +323,9 @@
         "yes": "&#10003;",
         "api_read_write": "Accès Lecture-Écriture",
         "oauth2_add_client": "Ajouter un client OAuth2",
-        "password_policy": "Politique de mots de passe"
+        "password_policy": "Politique de mots de passe",
+        "admins": "Administrateurs",
+        "api_read_only": "Accès lecture-seule"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
