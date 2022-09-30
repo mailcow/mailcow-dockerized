@@ -91,11 +91,11 @@ final class SandboxExtension extends AbstractExtension
         }
     }
 
-    public function checkPropertyAllowed($obj, $method, int $lineno = -1, Source $source = null): void
+    public function checkPropertyAllowed($obj, $property, int $lineno = -1, Source $source = null): void
     {
         if ($this->isSandboxed()) {
             try {
-                $this->policy->checkPropertyAllowed($obj, $method);
+                $this->policy->checkPropertyAllowed($obj, $property);
             } catch (SecurityNotAllowedPropertyError $e) {
                 $e->setSourceContext($source);
                 $e->setTemplateLine($lineno);

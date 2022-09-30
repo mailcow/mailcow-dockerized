@@ -4,7 +4,11 @@ on:
     pull_request:
     push:
         branches:
+            - '2.x'
             - '3.x'
+
+permissions:
+  contents: read
 
 jobs:
     build:
@@ -16,32 +20,32 @@ jobs:
             -   name: "Checkout code"
                 uses: actions/checkout@v2
 
-            -   name: "Set up Python 3.7"
-                uses: actions/setup-python@v1
+            -   name: "Set-up PHP"
+                uses: shivammathur/setup-php@v2
                 with:
-                    python-version: '3.7' # Semantic version range syntax or exact version of a Python version
+                    php-version: 8.1
+                    coverage: none
+                    tools: "composer:v2"
 
-            -   name: "Display Python version"
-                run: python -c "import sys; print(sys.version)"
+            -   name: Get composer cache directory
+                id: composercache
+                working-directory: doc/_build
+                run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-            -   name: "Install Sphinx dependencies"
-                run: sudo apt-get install python-dev build-essential
-
-            -   name: "Cache pip"
+            -   name: Cache dependencies
                 uses: actions/cache@v2
                 with:
-                    path: ~/.cache/pip
-                    key: ${{ runner.os }}-pip-${{ hashFiles('_build/.requirements.txt') }}
-                    restore-keys: |
-                        ${{ runner.os }}-pip-
+                    path: ${{ steps.composercache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: ${{ runner.os }}-composer-
 
-            -   name: "Install Sphinx + requirements via pip"
-                working-directory: "doc"
-                run: pip install -r _build/.requirements.txt
+            -   name: "Install dependencies"
+                working-directory: doc/_build
+                run: composer install --prefer-dist --no-progress
 
-            -   name: "Build documentation"
-                working-directory: "doc"
-                run: make -C _build SPHINXOPTS="-nqW -j auto" html
+            -   name: "Build the docs"
+                working-directory: doc/_build
+                run: php build.php --disable-cache
 
     doctor-rst:
         name: "DOCtor-RST"
