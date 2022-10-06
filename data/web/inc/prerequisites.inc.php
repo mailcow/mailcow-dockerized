@@ -195,10 +195,50 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 // Set language
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-    $header_lang = strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-    if (array_key_exists($header_lang, $AVAILABLE_LANGUAGES)) {
-      $_SESSION['mailcow_locale'] = $header_lang;
+    preg_match_all('/([a-z]{1,8}-[a-z]{1,8})\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+    // preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})*)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+    
+    error_log(print_r($lang_parse, TRUE));
+    error_log(print_r(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2), TRUE));
+    error_log(print_r('asdasdasdasdasdasd', TRUE));
+    
+
+    $langs = $lang_parse[1];
+    $ranks = $lang_parse[3];
+
+    // (create an associative array 'language' => 'preference')
+    $lang2pref = array();
+    for ($i=0; $i<count($langs); $i++) {
+      $lang2pref[strtolower($langs[$i])] = (float) (!empty($ranks[$i]) ? $ranks[$i] : 1);
     }
+
+    // (comparison function for uksort)
+    $cmpLangs = function ($a, $b) use ($lang2pref) {
+      if ($lang2pref[$a] > $lang2pref[$b])
+        return -1;
+      elseif ($lang2pref[$a] < $lang2pref[$b])
+        return 1;
+      elseif (strlen($a) > strlen($b))
+        return -1;
+      elseif (strlen($a) < strlen($b))
+        return 1;
+      else
+        return 0;
+    };
+
+    // sort the languages by prefered language and by the most specific region
+    uksort($lang2pref, $cmpLangs);
+
+    foreach ($lang2pref as $lang => $q) {
+      error_log(print_r($lang, TRUE));      
+      if (array_key_exists($lang, $AVAILABLE_LANGUAGES)) {
+        $_SESSION['mailcow_locale'] = $lang;
+        break;
+      }
+    }
+
+    error_log(print_r($lang2pref, TRUE));
+    error_log(print_r($_SESSION['mailcow_locale'], TRUE));
   }
   else {
     $_SESSION['mailcow_locale'] = strtolower(trim($DEFAULT_LANG));
@@ -215,7 +255,7 @@ if (isset($_GET['lang']) && array_key_exists($_GET['lang'], $AVAILABLE_LANGUAGES
 /*
  * load language
  */
-$lang = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.json'), true);
+$lang = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en-gb.json'), true);
 
 $langFile = $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.json';
 if(file_exists($langFile)) {

@@ -76,7 +76,7 @@ $autodiscover_config = array(
 $DETECT_LANGUAGE = true;
 
 // Change default language
-$DEFAULT_LANG = 'en';
+$DEFAULT_LANG = 'en-gb';
 
 // Available languages
 // https://www.iso.org/obp/ui/#search

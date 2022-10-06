@@ -32,7 +32,7 @@
       <ul class="nav navbar-nav navbar-right">
         {% if mailcow_locale %}
         <li class="dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span><span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span><span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for key, val in available_languages %}
             <li{% if mailcow_locale == key %} class="active"{% endif %}>
