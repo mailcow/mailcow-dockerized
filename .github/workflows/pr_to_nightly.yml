@@ -17,7 +17,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           title: Automatic PR to nightly from ${{ github.event.repository.updated_at}}
           assignee: DerLinkman
+          source_branch: staging
+          target_branch: nightly
           reviewer: DerLinkman
           label: upstream
-          new_string: ${{ github.event.commits[0].message }}
+          body: Merge current staging state to nightly branch
           get_diff: true
