@@ -252,7 +252,7 @@ def permBan(net, unban=False):
       if rule not in chain.rules and not unban:
         logCrit('Add host/network %s to blacklist' % net)
         chain.insert_rule(rule)
-        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
       elif rule in chain.rules and unban:
         logCrit('Remove host/network %s from blacklist' % net)
         chain.delete_rule(rule)
@@ -267,7 +267,7 @@ def permBan(net, unban=False):
       if rule not in chain.rules and not unban:
         logCrit('Add host/network %s to blacklist' % net)
         chain.insert_rule(rule)
-        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time()))) 
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
       elif rule in chain.rules and unban:
         logCrit('Remove host/network %s from blacklist' % net)
         chain.delete_rule(rule)
@@ -346,6 +346,8 @@ def snat4(snat_target):
     rule.dst = '!' + rule.src
     target = rule.create_target("SNAT")
     target.to_source = snat_target
+    match = rule.create_match("comment")
+    match.comment = f'{int(round(time.time()))}'
     return rule
 
   while not quit_now:
@@ -356,19 +358,26 @@ def snat4(snat_target):
         table.refresh()
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
-        if get_snat4_rule() not in chain.rules:
-          logCrit('Added POSTROUTING rule for source network %s to SNAT target %s' % (get_snat4_rule().src, snat_target))
-          chain.insert_rule(get_snat4_rule())
-          table.commit()
-        else:
-          for position, item in enumerate(chain.rules):
-            if item == get_snat4_rule():
-              if position != 0:
-                chain.delete_rule(get_snat4_rule())
-          table.commit()
+        new_rule = get_snat4_rule()
+        for position, rule in enumerate(chain.rules):
+          match = all((
+            new_rule.get_src() == rule.get_src(),
+            new_rule.get_dst() == rule.get_dst(),
+            new_rule.target.parameters == rule.target.parameters,
+            new_rule.target.name == rule.target.name
+          ))
+          if position == 0:
+            if not match:
+              logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
+              chain.insert_rule(new_rule)
+          else:
+            if match:
+              logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
+              chain.delete_rule(rule)
+        table.commit()
         table.autocommit = True
       except:
-        print('Error running SNAT4, retrying...') 
+        print('Error running SNAT4, retrying...')
 
 def snat6(snat_target):
   global lock
@@ -402,7 +411,7 @@ def snat6(snat_target):
           table.commit()
         table.autocommit = True
       except:
-        print('Error running SNAT6, retrying...') 
+        print('Error running SNAT6, retrying...')
 
 def autopurge():
   while not quit_now:
@@ -468,7 +477,7 @@ def whitelistUpdate():
       if Counter(new_whitelist) != Counter(WHITELIST):
         WHITELIST = new_whitelist
         logInfo('Whitelist was changed, it has %s entries' % len(WHITELIST))
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def blacklistUpdate():
   global quit_now
@@ -479,7 +488,7 @@ def blacklistUpdate():
     new_blacklist = []
     if list:
       new_blacklist = genNetworkList(list)
-    if Counter(new_blacklist) != Counter(BLACKLIST): 
+    if Counter(new_blacklist) != Counter(BLACKLIST):
       addban = set(new_blacklist).difference(BLACKLIST)
       delban = set(BLACKLIST).difference(new_blacklist)
       BLACKLIST = new_blacklist
@@ -490,7 +499,7 @@ def blacklistUpdate():
       if delban:
         for net in delban:
           permBan(net=net, unban=True)
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def initChain():
   # Is called before threads start, no locking
