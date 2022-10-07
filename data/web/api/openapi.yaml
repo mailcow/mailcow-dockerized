@@ -518,21 +518,23 @@ paths:
                         - domain.tld
                       type: success
               schema:
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    log:
+                      description: contains request object
+                      items: {}
+                      type: array
+                    msg:
+                      items: {}
+                      type: array
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
@@ -579,6 +581,11 @@ paths:
                 domain:
                   description: Fully qualified domain name
                   type: string
+                gal:
+                  description: >-
+                    is domain global address list active or not, it enables
+                    shared contacts accross domain in SOGo webmail
+                  type: boolean
                 mailboxes:
                   description: limit count of mailboxes associated with this domain
                   type: number
@@ -596,6 +603,9 @@ paths:
                     if not, them you have to create "dummy" mailbox for each
                     address to relay
                   type: boolean
+                relay_unknown_only:
+                  description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
+                  type: boolean
                 rl_frame:
                   enum:
                     - s
@@ -606,6 +616,11 @@ paths:
                 rl_value:
                   description: rate limit value
                   type: number
+                tags:
+                  description: tags for this Domain
+                  type: array
+                  items:
+                    type: string
               type: object
       summary: Create domain
   /api/v1/add/domain-admin:
@@ -1952,21 +1967,23 @@ paths:
                         - domain2.tld
                       type: success
               schema:
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    log:
+                      description: contains request object
+                      items: {}
+                      type: array
+                    msg:
+                      items: {}
+                      type: array
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
@@ -1977,14 +1994,15 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               example:
                 - domain.tld
                 - domain2.tld
               properties:
-                items:
-                  description: contains list of domains you want to delete
-                  type: object
-              type: object
+                items: 
+                  type: array
+                  items:
+                    type: string
       summary: Delete domain
   /api/v1/delete/domain-admin:
     post:
@@ -2972,23 +2990,25 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "200":
           content:
-            "*/*":
+            application/json:
               schema:
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
-                type: object
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    log:
+                      type: array
+                      description: contains request object
+                      items: {}
+                    msg:
+                      type: array
+                      items: {}
+                    type:
+                      enum:
+                        - success
+                        - danger
+                        - error
+                      type: string
           description: OK
           headers: {}
       tags:
@@ -3056,13 +3076,33 @@ paths:
                         if not, them you have to create "dummy" mailbox for each
                         address to relay
                       type: boolean
+                    relay_unknown_only:
+                      description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
+                      type: boolean
                     relayhost:
                       description: id of relayhost
                       type: number
+                    rl_frame:
+                      enum:
+                        - s
+                        - m
+                        - h
+                        - d
+                      type: string
+                    rl_value:
+                      description: rate limit value
+                      type: number
+                    tags:
+                      description: tags for this Domain
+                      type: array
+                      items:
+                        type: string
                   type: object
                 items:
                   description: contains list of domain names you want update
-                  type: object
+                  type: array
+                  items:
+                    type: string
               type: object
       summary: Update domain
   /api/v1/edit/fail2ban:

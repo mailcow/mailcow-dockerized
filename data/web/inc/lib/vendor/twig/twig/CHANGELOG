@@ -1,6 +1,36 @@
+# 3.4.3 (2022-09-28)
+
+ * Fix a security issue on filesystem loader (possibility to load a template outside a configured directory)
+
+# 3.4.2 (2022-08-12)
+
+ * Allow inherited magic method to still run with calling class
+ * Fix CallExpression::reflectCallable() throwing TypeError
+ * Fix typo in naming (currency_code)
+
+# 3.4.1 (2022-05-17)
+
+* Fix optimizing non-public named closures
+
+# 3.4.0 (2022-05-22)
+
+ * Add support for named closures
+
+# 3.3.10 (2022-04-06)
+
+ * Enable bytecode invalidation when auto_reload is enabled
+
+# 3.3.9 (2022-03-25)
+
+ * Fix custom escapers when using multiple Twig environments
+ * Add support for "constant('class', object)"
+ * Do not reuse internally generated variable names during parsing
+
 # 3.3.8 (2022-02-04)
 
  * Fix a security issue when in a sandbox: the `sort` filter must require a Closure for the `arrow` parameter
+ * Fix deprecation notice on `round`
+ * Fix call to deprecated `convertToHtml` method
 
 # 3.3.7 (2022-01-03)
 

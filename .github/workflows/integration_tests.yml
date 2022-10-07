@@ -1,9 +1,12 @@
-name: Mailcow Integration Tests
+name: mailcow Integration Tests
 
 on:
   push:
     branches: [ "master", "staging" ]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   integration_tests:
