@@ -34,7 +34,7 @@ class EscapedValue
      */
     public function __construct($value, $ignore = '', $flags = 0)
     {
-        $this->value = $value;
+        $this->value = (string) $value;
         $this->ignore = $ignore;
         $this->flags = $flags;
     }
@@ -57,6 +57,16 @@ class EscapedValue
     public function get()
     {
         return ldap_escape($this->value, $this->ignore, $this->flags);
+    }
+
+    /**
+     * Get the raw (unescaped) value.
+     *
+     * @return mixed
+     */
+    public function raw()
+    {
+        return $this->value;
     }
 
     /**

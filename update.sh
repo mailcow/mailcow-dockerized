@@ -1,52 +1,6 @@
 #!/usr/bin/env bash
 
-# Check permissions
-if [ "$(id -u)" -ne "0" ]; then
-  echo "You need to be root"
-  exit 1
-fi
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# Run pre-update-hook
-if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
-  bash "${SCRIPT_DIR}/pre_update_hook.sh"
-fi
-
-if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
-  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-  echo "Please update to 5.x or use another distribution."
-  exit 1
-fi
-
-if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< $(uname -a); then
-    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!"
-    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
-    exit 1
-  fi
-  echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
-  read -p "Press any key to continue..." < /dev/tty
-fi
-
-# Exit on error and pipefail
-set -o pipefail
-
-# Setting high dc timeout
-export COMPOSE_HTTP_TIMEOUT=600
-
-# Add /opt/bin to PATH
-PATH=$PATH:/opt/bin
-
-umask 0022
-
-for bin in curl docker-compose docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
-done
-
-export LC_ALL=C
-DATE=$(date +%Y-%m-%d_%H_%M_%S)
-BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
+############## Begin Function Section ##############
 
 check_online_status() {
   CHECK_ONLINE_IPS=(1.1.1.1 9.9.9.9 8.8.8.8)
@@ -197,6 +151,145 @@ migrate_docker_nat() {
   fi
 }
 
+remove_obsolete_nginx_ports() {
+    # Removing obsolete docker-compose.override.yml
+    for override in docker-compose.override.yml docker-compose.override.yaml; do
+    if [ -s $override ] ; then
+        if cat $override | grep nginx-mailcow > /dev/null 2>&1; then
+          if cat $override | grep -E '(\[::])' > /dev/null 2>&1; then
+            if cat $override | grep -w 80:80 > /dev/null 2>&1 && cat $override | grep -w 443:443 > /dev/null 2>&1 ; then
+              echo -e "\e[33mBacking up ${override} to preserve custom changes...\e[0m"
+              echo -e "\e[33m!!! Manual Merge needed (if other overrides are set) !!!\e[0m"
+              sleep 3
+              cp $override ${override}_backup
+              sed -i '/nginx-mailcow:$/,/^$/d' $override
+              echo -e "\e[33mRemoved obsolete NGINX IPv6 Bind from original override File.\e[0m"
+                if [[ "$(cat $override | sed '/^\s*$/d' | wc -l)" == "2" ]]; then
+                  mv $override ${override}_empty
+                  echo -e "\e[31m${override} is empty. Renamed it to ensure mailcow is startable.\e[0m"
+                fi
+            fi
+          fi
+        fi
+    fi
+    done        
+}
+
+update_compose(){
+if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
+  return 0
+elif [[ -e /etc/alpine-release ]]; then
+  echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
+  return 0
+else
+  if [ ! $FORCE ]; then
+    read -r -p "Do you want to update your docker-compose Version? It will automatic upgrade your docker-compose installation (recommended)? [y/N] " updatecomposeresponse 
+    if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      echo "OK, not updating docker-compose."
+      return 0
+    fi
+  fi 
+  echo -e "\e[32mFetching new docker-compose version...\e[0m"
+  echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
+  if ldd --version > /dev/null; then
+    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
+    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
+      DC_DL_SUFFIX=
+    else
+      DC_DL_SUFFIX=legacy
+    fi
+  else
+    DC_DL_SUFFIX=legacy
+  fi
+  sleep 1
+  if [[ $(command -v pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 || $(command -v pip3 2>&1) && $(pip3 list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
+    echo -e "\e[33mFound a docker-compose Version installed with pip!\e[0m"
+    echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
+    sleep 2
+    echo -e "\e[33mExiting...\e[0m"
+    exit 1
+    #prevent breaking a working docker-compose installed with pip
+  elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
+    LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+    COMPOSE_VERSION=$(docker-compose version --short)
+    if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+      COMPOSE_PATH=$(command -v docker-compose)
+      if [[ -w ${COMPOSE_PATH} ]]; then
+        curl -#L https://github.com/docker/compose/releases/download/v${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
+        chmod +x $COMPOSE_PATH
+      else
+        echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
+        return 1
+      fi
+    fi
+  else
+    echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
+    return 1
+  fi
+fi
+}
+
+############## End Function Section ##############
+
+# Check permissions
+if [ "$(id -u)" -ne "0" ]; then
+  echo "You need to be root"
+  exit 1
+fi
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Run pre-update-hook
+if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
+  bash "${SCRIPT_DIR}/pre_update_hook.sh"
+fi
+
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
+if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
+  if grep -q Ubuntu <<< $(uname -a); then
+    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!"
+    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
+    exit 1
+  fi
+  echo "mailcow on a 4.4.x kernel is not supported. It may or may not work, please upgrade your kernel or continue at your own risk."
+  read -p "Press any key to continue..." < /dev/tty
+fi
+
+# Exit on error and pipefail
+set -o pipefail
+
+# Setting high dc timeout
+export COMPOSE_HTTP_TIMEOUT=600
+
+# Add /opt/bin to PATH
+PATH=$PATH:/opt/bin
+
+umask 0022
+
+for bin in curl docker git awk sha1sum; do
+  if [[ -z $(command -v ${bin}) ]]; then 
+  echo "Cannot find ${bin}, exiting..." 
+  exit 1;
+  fi  
+done
+
+if [[ -z $(command -v docker-compose) ]]; then
+  echo -e "\e[31mCannot find docker-compose Standalone.\e[0m" 
+  echo -e "\e[31mPlease install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+  sleep 3
+  exit 1;
+fi
+
+export LC_ALL=C
+DATE=$(date +%Y-%m-%d_%H_%M_%S)
+BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
+
 while (($#)); do
   case "${1}" in
     --check|-c)
@@ -238,21 +331,54 @@ while (($#)); do
     --no-update-compose)
       NO_UPDATE_COMPOSE=y
     ;;
+    --update-compose)
+      LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+      COMPOSE_VERSION=$(docker-compose version --short) 
+      if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+        echo -e "\e[33mA new docker-compose Version is available: $LATEST_COMPOSE\e[0m"
+        echo -e "\e[33mYour Version is: $COMPOSE_VERSION\e[0m"
+        update_compose
+        echo -e "\e[32mYour docker-compose Version is now up to date!\e[0m" 
+      else
+      echo -e "\e[32mYour docker-compose Version is up to date! Not updating it...\e[0m" 
+      fi
+      exit 0
+    ;;
+    --skip-ping-check)
+      SKIP_PING_CHECK=y
+    ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --prefetch, --skip-start, -f|--force, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --update-compose, --prefetch, --skip-start, --skip-ping-check, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
-  --no-update-compose  -   Do not update docker-compose
+  --no-update-compose  -   Skip the docker-compose Updates during the mailcow Update process
+  --update-compose     -   Only run the docker-compose Update process (don´t updates your mailcow itself)
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
+  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine)
   -f|--force           -   Force update, do not ask questions
 '
     exit 1
   esac
   shift
 done
+
+# Check if Docker-Compose is older then v2 before continuing
+if ! docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+  echo -e "\e[33mYour docker-compose Version is not up to date!\e[0m"
+  echo -e "\e[33mmailcow needs docker-compose > 2.X.X!\e[0m"
+  echo -e "\e[33mYour current installed Version: $(docker-compose version --short)\e[0m"
+  sleep 3
+  update_compose
+  if [[ ! "${updatecomposeresponse}" =~ ^([yY][eE][sS]|[yY])+$ ]] && [[ ! ${FORCE} ]]; then
+     echo -e "\e[31mmailcow does not work with docker-compose < 2.X.X anymore!\e[0m"
+     echo -e "\e[31mPlease update your docker-compose manually, to run mailcow.\e[0m"
+     echo -e "\e[31mExiting...\e[0m"
+     exit 1
+  fi
+fi
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing"; exit 1;}
 chmod 600 mailcow.conf
@@ -533,12 +659,17 @@ elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
   fi
 done
 
-echo -en "Checking internet connection... "
-if ! check_online_status; then
-  echo -e "\e[31mfailed\e[0m"
-  exit 1
+if [[( ${SKIP_PING_CHECK} == "y")]]; then
+echo -e "\e[32mSkipping Ping Check...\e[0m"
+
 else
-  echo -e "\e[32mOK\e[0m"
+   echo -en "Checking internet connection... "
+   if ! check_online_status; then
+      echo -e "\e[31mfailed\e[0m"
+      exit 1
+   else
+      echo -e "\e[32mOK\e[0m"
+   fi
 fi
 
 echo -e "\e[32mChecking for newer update script...\e[0m"
@@ -568,7 +699,21 @@ if [ ! $FORCE ]; then
   migrate_docker_nat
 fi
 
+LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+COMPOSE_VERSION=$(docker-compose version --short)
+if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
+  echo -e "\e[33mA new docker-compose Version is available: $LATEST_COMPOSE\e[0m"
+  echo -e "\e[33mYour Version is: $COMPOSE_VERSION\e[0m"
+  update_compose
+else
+  echo -e "\e[32mYour docker-compose Version is up to date! Not updating it...\e[0m" 
+fi
+
+remove_obsolete_nginx_ports
+
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
+sed -i 's/HTTPS_BIND:-:/HTTPS_BIND:-/g' docker-compose.yml
+sed -i 's/HTTP_BIND:-:/HTTP_BIND:-/g' docker-compose.yml
 if ! docker-compose config -q; then
   echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
   exit 1
@@ -637,44 +782,6 @@ elif [[ ${MERGE_RETURN} != 0 ]]; then
   exit 1
 fi
 
-if [[ ${NO_UPDATE_COMPOSE} == "y" ]]; then
-  echo -e "\e[33mNot fetching latest docker-compose, please check for updates manually!\e[0m"
-elif [[ -e /etc/alpine-release ]]; then
-  echo -e "\e[33mNot fetching latest docker-compose, because you are using Alpine Linux without glibc support. Please update docker-compose via apk!\e[0m"
-else
-  echo -e "\e[32mFetching new docker-compose version...\e[0m"
-  echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
-  if ldd --version > /dev/null; then
-    GLIBC_V=$(ldd --version | grep -E '(GLIBC|GNU libc)' | rev | cut -d ' ' -f1 | rev | cut -d '.' -f2)
-    if [ ! -z "${GLIBC_V}" ] && [ ${GLIBC_V} -gt 27 ]; then
-      DC_DL_SUFFIX=
-    else
-      DC_DL_SUFFIX=legacy
-    fi
-  else
-    DC_DL_SUFFIX=legacy
-  fi
-  sleep 1
-  if [[ ! -z $(which pip) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
-    true
-    #prevent breaking a working docker-compose installed with pip
-  elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
-    LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
-    COMPOSE_VERSION=$(docker-compose version --short)
-    if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
-      COMPOSE_PATH=$(which docker-compose)
-      if [[ -w ${COMPOSE_PATH} ]]; then
-        curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
-        chmod +x $COMPOSE_PATH
-      else
-        echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
-      fi
-    fi
-  else
-    echo -e "\e[33mCannot determine latest docker-compose version, skipping...\e[0m"
-  fi
-fi
-
 echo -e "\e[32mFetching new images, if any...\e[0m"
 sleep 2
 docker-compose pull
@@ -698,9 +805,6 @@ fi
 
 # Checking for old project name bug
 sed -i --follow-symlinks 's#COMPOSEPROJECT_NAME#COMPOSE_PROJECT_NAME#g' mailcow.conf
-# Checking old, wrong bindings
-sed -i --follow-symlinks 's/HTTP_BIND=0.0.0.0/HTTP_BIND=/g' mailcow.conf
-sed -i --follow-symlinks 's/HTTPS_BIND=0.0.0.0/HTTPS_BIND=/g' mailcow.conf
 
 # Fix Rspamd maps
 if [ -f data/conf/rspamd/custom/global_from_blacklist.map ]; then
@@ -722,10 +826,9 @@ fi
 # Set app_info.inc.php
 mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
 if [ $? -eq 0 ]; then
-  mailcow_git_url=$(git config --get remote.origin.url)
   echo '<?php' > data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_VERSION="'$mailcow_git_version'";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="'$mailcow_git_url'";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
   echo '?>' >> data/web/inc/app_info.inc.php
 else
   echo '<?php' > data/web/inc/app_info.inc.php
@@ -751,8 +854,8 @@ if [ -f "${SCRIPT_DIR}/post_update_hook.sh" ]; then
   bash "${SCRIPT_DIR}/post_update_hook.sh"
 fi
 
-#echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
-#echo
-#git reflog --color=always | grep "Before update on "
-#echo
-#echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."
+# echo "In case you encounter any problem, hard-reset to a state before updating mailcow:"
+# echo
+# git reflog --color=always | grep "Before update on "
+# echo
+# echo "Use \"git reset --hard hash-on-the-left\" and run docker-compose up -d afterwards."

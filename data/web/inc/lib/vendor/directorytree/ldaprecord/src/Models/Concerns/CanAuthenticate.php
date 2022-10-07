@@ -31,6 +31,7 @@ trait CanAuthenticate
      */
     public function getAuthPassword()
     {
+        return '';
     }
 
     /**
@@ -40,6 +41,7 @@ trait CanAuthenticate
      */
     public function getRememberToken()
     {
+        return '';
     }
 
     /**
@@ -60,5 +62,6 @@ trait CanAuthenticate
      */
     public function getRememberTokenName()
     {
+        return '';
     }
 }

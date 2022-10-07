@@ -32,9 +32,12 @@ require_once __DIR__.'/Resources/functions/dump.php';
  */
 class VarDumper
 {
+    /**
+     * @var callable|null
+     */
     private static $handler;
 
-    public static function dump($var)
+    public static function dump(mixed $var)
     {
         if (null === self::$handler) {
             self::register();
@@ -43,7 +46,7 @@ class VarDumper
         return (self::$handler)($var);
     }
 
-    public static function setHandler(callable $callable = null)
+    public static function setHandler(callable $callable = null): ?callable
     {
         $prevHandler = self::$handler;
 

@@ -76,6 +76,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     'acl_json' => json_encode($_SESSION['acl']),
     'user_spam_score' => mailbox('get', 'spam_score', $username),
     'tfa_data' => $tfa_data,
+    'tfa_id' => @$_SESSION['tfa_id'],
     'fido2_data' => $fido2_data,
     'mailboxdata' => $mailboxdata,
     'clientconfigstr' => $clientconfigstr,
@@ -90,8 +91,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     'number_of_app_passwords' => $number_of_app_passwords,
   ];
 }
-
-if (!isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
+else {
   header('Location: /');
   exit();
 }

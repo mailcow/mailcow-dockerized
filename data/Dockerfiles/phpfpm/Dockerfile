@@ -1,12 +1,12 @@
-FROM php:8.0-fpm-alpine3.14
+FROM php:8.0-fpm-alpine3.16
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.20
-ENV IMAGICK_PECL 3.5.1
+ENV APCU_PECL 5.1.21
+ENV IMAGICK_PECL 3.7.0
 # Mailparse is pulled from master branch
 #ENV MAILPARSE_PECL 3.0.2
-ENV MEMCACHED_PECL 3.1.5
-ENV REDIS_PECL 5.3.4
+ENV MEMCACHED_PECL 3.2.0
+ENV REDIS_PECL 5.3.7
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \

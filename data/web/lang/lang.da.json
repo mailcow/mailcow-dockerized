@@ -276,7 +276,7 @@
         "rsettings_preset_1": "Deaktiver alt undtagen DKIM og satsgrænse for godkendte brugere",
         "rsettings_preset_2": "Postmestere ønsker spam",
         "rsettings_preset_3": "Tillad kun specifikke afsendere til en postkasse (dvs. kun brug som intern postkasse)",
-        "rspamd-com_settings": "Et indstillingsnavn genereres automatisk, se eksemplet på forudindstillinger nedenfor. For flere detaljer se <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
+        "rspamd_com_settings": "Et indstillingsnavn genereres automatisk, se eksemplet på forudindstillinger nedenfor. For flere detaljer se <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "rspamd_global_filters": "Globale filterkort",
         "rspamd_global_filters_agree": "Jeg vil være forsigtig!",
         "rspamd_global_filters_info": "Global filter maps contain different kind of global black and whitelists.",

@@ -269,7 +269,7 @@
         "rsettings_preset_1": "인증된 사용자에 대해 DKIM과 속도 제한을 제외한 모든 것을 비활성화",
         "rsettings_preset_2": "포스트 마스터가 스팸을 원함",
         "rsettings_preset_3": "메일박스에 특정 발신자만 허용 (i.e. 서버 내부 메일함으로만 이용)",
-        "rspamd-com_settings": "설정 이름은 자동으로 생성되며 아래 사전 설정 예제를 참고하세요. 자세한 내용은 <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd 문서</a>를 참조하세요.",
+        "rspamd_com_settings": "설정 이름은 자동으로 생성되며 아래 사전 설정 예제를 참고하세요. 자세한 내용은 <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd 문서</a>를 참조하세요.",
         "rspamd_global_filters": "글로벌 필터 맵",
         "rspamd_global_filters_agree": "조심할게!",
         "rspamd_global_filters_info": "글로벌 필터 맵은 다른 종류의 글로벌 블랙리스트와 화이트리스트를 포함합니다.",

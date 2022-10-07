@@ -209,10 +209,17 @@ paths:
                         - app_passwd
                         - add
                         - active: "1"
-                          app_name: emclient
+                          username: info@domain.tld
+                          app_name: wordpress
                           app_passwd: keyleudecticidechothistishownsan31
                           app_passwd2: keyleudecticidechothistishownsan31
-                          username: hello@mailcow.email
+                          protocols:
+                            - imap_access
+                            - dav_access
+                            - smtp_access
+                            - eas_access
+                            - pop3_access
+                            - sieve_access
                       msg: app_passwd_added
                       type: success
               schema:
@@ -249,6 +256,13 @@ paths:
                 app_name: wordpress
                 app_passwd: keyleudecticidechothistishownsan31
                 app_passwd2: keyleudecticidechothistishownsan31
+                protocols:
+                  - imap_access
+                  - dav_access
+                  - smtp_access
+                  - eas_access
+                  - pop3_access
+                  - sieve_access
               properties:
                 active:
                   description: is alias active or not
@@ -497,6 +511,7 @@ paths:
                           relay_all_recipients: "0"
                           rl_frame: s
                           rl_value: "10"
+                          tags: ["tag1", "tag2"]
                         - null
                       msg:
                         - domain_added
@@ -544,6 +559,7 @@ paths:
                 rl_frame: s
                 rl_value: "10"
                 restart_sogo: "10"
+                tags: ["tag1", "tag2"]
               properties:
                 active:
                   description: is domain active or not
@@ -1010,6 +1026,7 @@ paths:
                           force_pw_update: "1"
                           tls_enforce_in: "1"
                           tls_enforce_out: "1"
+                          tags: ["tag1", "tag2"]
                         - null
                       msg:
                         - mailbox_added
@@ -1054,6 +1071,7 @@ paths:
                 force_pw_update: "1"
                 tls_enforce_in: "1"
                 tls_enforce_out: "1"
+                tags: ["tag1", "tag2"]
               properties:
                 active:
                   description: is mailbox active or not
@@ -2716,6 +2734,140 @@ paths:
                   type: object
               type: object
       summary: Delete Transport Maps
+  "/api/v1/delete/mailbox/tag/{mailbox}":
+    post:
+      parameters:
+        - description: name of mailbox
+          in: path
+          name: mailbox
+          example: info@domain.tld
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - delete
+                        - tags_mailbox
+                        - tags:
+                          - tag1
+                          - tag2
+                          mailbox: info@domain.tld
+                        - null
+                      msg:
+                        - mailbox_modified
+                        - info@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: You can delete one or more mailbox tags.
+      operationId: Delete mailbox tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - tag1
+                - tag2
+              properties:
+                items:
+                  description: contains list of mailboxes you want to delete
+                  type: object
+              type: object
+      summary: Delete mailbox tags
+  "/api/v1/delete/domain/tag/{domain}":
+    post:
+      parameters:
+        - description: name of domain
+          in: path
+          name: domain
+          example: domain.tld
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - delete
+                        - tags_domain
+                        - tags:
+                          - tag1
+                          - tag2
+                          domain: domain.tld
+                        - null
+                      msg:
+                        - domain_modified
+                        - domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: You can delete one or more domain tags.
+      operationId: Delete domain tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - tag1
+                - tag2
+              properties:
+                items:
+                  description: contains list of domains you want to delete
+                  type: object
+              type: object
+      summary: Delete domain tags
   /api/v1/edit/alias:
     post:
       responses:
@@ -2865,6 +3017,7 @@ paths:
                   quota: "10240"
                   relay_all_recipients: "0"
                   relayhost: "2"
+                  tags: ["tag3", "tag4"]
                 items: domain.tld
               properties:
                 attr:
@@ -3019,6 +3172,7 @@ paths:
                           sogo_access: "1"
                           username:
                             - info@domain.tld
+                          tags: ["tag3", "tag4"]
                         - null
                       msg:
                         - mailbox_modified
@@ -3066,6 +3220,7 @@ paths:
                     - domain3.tld
                     - "*"
                   sogo_access: "1"
+                  tags: ["tag3", "tag4"]
                 items:
                   - info@domain.tld
               properties:
@@ -3793,6 +3948,13 @@ paths:
               - all
               - mailcow.tld
             type: string
+        - description: comma seperated list of tags to filter by
+          example: "tag1,tag2"
+          in: query
+          name: tags
+          required: false
+          schema:
+            type: string
         - description: e.g. api-key-string
           example: api-key-string
           in: header
@@ -3831,6 +3993,7 @@ paths:
                       relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
+                      tags: ["tag1", "tag2"]
                     - active: "1"
                       aliases_in_domain: 0
                       aliases_left: 400
@@ -3853,6 +4016,7 @@ paths:
                       relay_all_recipients: "0"
                       relayhost: "0"
                       rl: false
+                      tags: ["tag3", "tag4"]
           description: OK
           headers: {}
       tags:
@@ -4345,6 +4509,13 @@ paths:
               - all
               - user@domain.tld
             type: string
+        - description: comma seperated list of tags to filter by
+          example: "tag1,tag2"
+          in: query
+          name: tags
+          required: false
+          schema:
+            type: string
         - description: e.g. api-key-string
           example: api-key-string
           in: header
@@ -4382,6 +4553,7 @@ paths:
                       rl: false
                       spam_aliases: 0
                       username: info@doman3.tld
+                      tags: ["tag1", "tag2"]
           description: OK
           headers: {}
       tags:
@@ -5072,6 +5244,27 @@ paths:
         of used storage.
       operationId: Get vmail status
       summary: Get vmail status
+  /api/v1/get/status/version:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    version: "2022-04"
+          description: OK
+          headers: {}
+      tags:
+        - Status
+      description: >-
+        Using this endpoint you can get the current running release of this
+        instance.
+      operationId: Get version status
+      summary: Get version status
   /api/v1/get/syncjobs/all/no_log:
     get:
       responses:

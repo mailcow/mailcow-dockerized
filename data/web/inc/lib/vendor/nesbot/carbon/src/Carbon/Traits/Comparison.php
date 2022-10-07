@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Carbon\Traits;
 
 use BadMethodCallException;
@@ -74,7 +75,7 @@ trait Comparison
      */
     public function equalTo($date): bool
     {
-        return $this == $date;
+        return $this == $this->resolveCarbon($date);
     }
 
     /**
@@ -154,7 +155,7 @@ trait Comparison
      */
     public function greaterThan($date): bool
     {
-        return $this > $date;
+        return $this > $this->resolveCarbon($date);
     }
 
     /**
@@ -255,7 +256,7 @@ trait Comparison
      */
     public function lessThan($date): bool
     {
-        return $this < $date;
+        return $this < $this->resolveCarbon($date);
     }
 
     /**

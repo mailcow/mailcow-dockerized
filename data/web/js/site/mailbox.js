@@ -99,37 +99,6 @@ $(document).ready(function() {
   });
   auto_fill_quota($('#addSelectDomain').val());
 
-  // Read bcc local dests
-  // Using ajax to not be a blocking moo
-  $.get("/api/v1/get/bcc-destination-options", function(data){
-    // Domains
-    var optgroup = "<optgroup label='" + lang.domains + "'>";
-    $.each(data.domains, function(index, domain){
-      optgroup += "<option value='" + domain + "'>" + domain + "</option>"
-    });
-    optgroup += "</optgroup>"
-    $('#bcc-local-dest').append(optgroup);
-    // Alias domains
-    var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
-    $.each(data.alias_domains, function(index, alias_domain){
-      optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
-    });
-    optgroup += "</optgroup>"
-    $('#bcc-local-dest').append(optgroup);
-    // Mailboxes and aliases
-    $.each(data.mailboxes, function(mailbox, aliases){
-      var optgroup = "<optgroup label='" + mailbox + "'>";
-      $.each(aliases, function(index, alias){
-        optgroup += "<option value='" + alias + "'>" + alias + "</option>"
-      });
-      optgroup += "</optgroup>"
-      $('#bcc-local-dest').append(optgroup);
-    });
-    // Finish
-    $('#bcc-local-dest').find('option:selected').remove();
-    $('#bcc-local-dest').selectpicker('refresh');
-  });
-
   $(".goto_checkbox").click(function( event ) {
    $("form[data-id='add_alias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='add_alias'] .goto_checkbox:checked").length > 0) {
@@ -236,9 +205,6 @@ $(document).ready(function() {
 
 });
 jQuery(function($){
-  // http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
-  var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
-  function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   function unix_time_format(i){return""==i?'<i class="bi bi-x-lg"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
@@ -293,6 +259,7 @@ jQuery(function($){
         {"name":"rl","title":"RL","breakpoints":"xs sm md lg","style":{"min-width":"100px","width":"100px"}},
         {"name":"backupmx","filterable": false,"style":{"min-width":"120px","width":"120px"},"title":lang.backup_mx,"breakpoints":"xs sm md lg","formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"domain_admins","title":lang.domain_admins,"style":{"word-break":"break-all","min-width":"200px"},"breakpoints":"xs sm md lg","filterable":(role == "admin"),"visible":(role == "admin")},
+        {"name":"tags","title":"Tags","style":{},"breakpoints":"xs sm md lg"},
         {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':0==value&&'<i class="bi bi-x-lg"></i>';}},
         {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right","min-width":"240px","width":"240px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -328,6 +295,13 @@ jQuery(function($){
             else {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-half btn-default"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-half btn-info" data-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+            }
+
+            if (Array.isArray(item.tags)){
+              var tags = '';
+              for (var i = 0; i < item.tags.length; i++)
+                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+              item.tags = tags;
             }
 
             if (item.backupmx == 1) {
@@ -418,6 +392,7 @@ jQuery(function($){
         },
         {"name":"messages","filterable": false,"title":lang.msg_num,"breakpoints":"xs sm md"},
         /* {"name":"rl","title":"RL","breakpoints":"all","style":{"width":"125px"}}, */
+        {"name":"tags","title":"Tags","style":{},"breakpoints":"xs sm md lg"},
         {"name":"active","filterable": false,"style":{"min-width":"80px","width":"80px"},"title":lang.active,"formatter": function(value){return 1==value?'<i class="bi bi-check-lg"></i>':(0==value?'<i class="bi bi-x-lg"></i>':2==value&&'&#8212;');}},
         {"name":"action","filterable": false,"sortable": false,"style":{"min-width":"290px","text-align":"right"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
@@ -497,6 +472,13 @@ jQuery(function($){
               '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
             item.username = escapeHtml(item.username);
+            
+            if (Array.isArray(item.tags)){
+              var tags = '';
+              for (var i = 0; i < item.tags.length; i++)
+                tags += '<span class="badge badge-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+              item.tags = tags;
+            }
           });
         }
       }),
@@ -571,6 +553,7 @@ jQuery(function($){
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
+            item.description = escapeHtml(item.description);
           });
         }
       }),
@@ -610,6 +593,37 @@ jQuery(function($){
     });
   }
   function draw_bcc_table() {
+  // Read bcc local dests
+  // Using ajax to not be a blocking moo
+  $.get("/api/v1/get/bcc-destination-options", function(data){
+    // Domains
+    var optgroup = "<optgroup label='" + lang.domains + "'>";
+    $.each(data.domains, function(index, domain){
+      optgroup += "<option value='" + domain + "'>" + domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Alias domains
+    var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+    $.each(data.alias_domains, function(index, alias_domain){
+      optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
+    });
+    optgroup += "</optgroup>"
+    $('#bcc-local-dest').append(optgroup);
+    // Mailboxes and aliases
+    $.each(data.mailboxes, function(mailbox, aliases){
+      var optgroup = "<optgroup label='" + mailbox + "'>";
+      $.each(aliases, function(index, alias){
+        optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+      });
+      optgroup += "</optgroup>"
+      $('#bcc-local-dest').append(optgroup);
+    });
+    // Finish
+    $('#bcc-local-dest').find('option:selected').remove();
+    $('#bcc-local-dest').selectpicker('refresh');
+  });
+
     ft_bcc_table = FooTable.init('#bcc_table', {
       "columns": [
         {"name":"chkbox","title":"","style":{"min-width":"60px","width":"60px"},"filterable": false,"sortable": false,"type":"html"},
@@ -1009,7 +1023,7 @@ jQuery(function($){
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
-              item.exclude  = '<code>' + item.exclude + '</code>';
+              item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group footable-actions">' +
@@ -1147,15 +1161,33 @@ jQuery(function($){
     event.stopPropagation();
   })
 
-  draw_domain_table();
-  draw_mailbox_table();
-  draw_resource_table();
-  draw_alias_table();
-  draw_aliasdomain_table();
-  draw_sync_job_table();
-  draw_filter_table();
-  draw_bcc_table();
-  draw_recipient_map_table();
-  draw_tls_policy_table();
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(element).ready(function() {
+      element_object = document.querySelector(element)
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+            observer.disconnect();
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+
+  // Load only if the tab is visible
+  onVisible("[id^=tab-domains]", () => draw_domain_table());
+  onVisible("[id^=tab-mailboxes]", () => draw_mailbox_table());
+  onVisible("[id^=tab-resources]", () => draw_resource_table());
+  onVisible("[id^=tab-mbox-aliases]", () => draw_alias_table());
+  onVisible("[id^=tab-domain-aliases]", () => draw_aliasdomain_table());
+  onVisible("[id^=tab-syncjobs]", () => draw_sync_job_table());
+  onVisible("[id^=tab-filters]", () => draw_filter_table());
+  onVisible("[id^=tab-bcc]", () => {
+    draw_bcc_table();
+    draw_recipient_map_table();
+  });
+  onVisible("[id^=tab-tls-policy]", () => draw_tls_policy_table());
 
 });

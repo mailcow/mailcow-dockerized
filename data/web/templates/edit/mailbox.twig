@@ -23,6 +23,22 @@
         </div>
       </div>
       <div class="form-group">
+        <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+        <div class="col-sm-10">
+          <div class="form-control tag-box">
+            {% for tag in mailbox_details.tags %}
+              <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge badge-primary tag-badge btn-badge">
+                <i class="bi bi-tag-fill"></i> 
+                {{ tag }}
+              </span>
+            {% endfor %}
+            <input type="text" class="tag-input">
+            <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+            <input type="hidden" value="" name="tags" class="tag-values" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="control-label col-sm-2" for="quota">{{ lang.edit.quota_mb }}
           <br><span id="quotaBadge" class="badge">max. {{ (result.max_new_quota / 1048576) }} MiB</span>
         </label>
@@ -154,12 +170,16 @@
         <div class="col-sm-10">
           <div class="btn-group" data-acl="{{ acl.tls_policy }}">
             <button type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default{% if get_tls_policy.tls_enforce_in == '1' %} active"{% endif %}"
+            role="switch"
+            aria-checked="{% if get_tls_policy.tls_enforce_in == '1' %}true{% else %}false{% endif %}"
             data-action="edit_selected"
             data-item="{{ mailbox }}"
             data-id="tls_policy"
             data-api-url='edit/tls_policy'
             data-api-attr='{"tls_enforce_in": {% if get_tls_policy.tls_enforce_in == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.tls_enforce_in }}</button>
             <button type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default{% if get_tls_policy.tls_enforce_out == '1' %} active"{% endif %}"
+            role="switch"
+            aria-checked="{% if get_tls_policy.tls_enforce_out == '1' %}true{% else %}false{% endif %}"
             data-action="edit_selected"
             data-item="{{ mailbox }}"
             data-id="tls_policy"

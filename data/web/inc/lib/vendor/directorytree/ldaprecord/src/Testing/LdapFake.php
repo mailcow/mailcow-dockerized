@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Testing;
 
+use Closure;
 use Exception;
 use LdapRecord\DetailedError;
 use LdapRecord\DetectsErrors;
@@ -81,11 +82,14 @@ class LdapFake implements LdapInterface
         $expectations = Arr::wrap($expectations);
 
         foreach ($expectations as $key => $expectation) {
-            // If the key is non-numeric, we will assume
-            // that the string is the method name and
-            // the expectation is the return value.
-            if (! is_numeric($key)) {
-                $expectation = static::operation($key)->andReturn($expectation);
+            if (! is_int($key)) {
+                $operation = static::operation($key);
+
+                $expectation instanceof Closure
+                    ? $expectation($operation)
+                    : $operation->andReturn($expectation);
+
+                $expectation = $operation;
             }
 
             if (! $expectation instanceof LdapExpectation) {
@@ -322,7 +326,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('search', func_get_args());
     }
@@ -330,7 +334,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('listing', func_get_args());
     }
@@ -338,7 +342,7 @@ class LdapFake implements LdapInterface
     /**
      * @inheritdoc
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = null, $serverControls = [])
+    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
     {
         return $this->resolveExpectation('read', func_get_args());
     }
@@ -453,9 +457,9 @@ class LdapFake implements LdapInterface
      * @param string $method
      * @param array  $args
      *
-     * @throws Exception
-     *
      * @return mixed
+     *
+     * @throws Exception
      */
     protected function resolveExpectation($method, array $args = [])
     {

@@ -244,9 +244,9 @@ class Password
      *
      * @param int $type
      *
-     * @throws InvalidArgumentException
-     *
      * @return array
+     *
+     * @throws InvalidArgumentException
      */
     protected static function makeCryptPrefixAndLength($type)
     {
@@ -297,9 +297,9 @@ class Password
     /**
      * Attempt to retrieve a salt from the encrypted password.
      *
-     * @throws LdapRecordException
-     *
      * @return string
+     *
+     * @throws LdapRecordException
      */
     public static function getSalt($encryptedPassword)
     {
@@ -321,9 +321,9 @@ class Password
      *
      * @param string $method
      *
-     * @throws \ReflectionException
-     *
      * @return bool
+     *
+     * @throws \ReflectionException
      */
     public static function hashMethodRequiresSalt($method): bool
     {

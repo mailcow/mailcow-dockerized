@@ -106,7 +106,8 @@
         "timeout2": "Timeout für Verbindung zum lokalen Host",
         "username": "Benutzername",
         "validate": "Validieren",
-        "validation_success": "Erfolgreich validiert"
+        "validation_success": "Erfolgreich validiert",
+        "tags": "Tags"
     },
     "admin": {
         "access": "Zugang",
@@ -295,7 +296,7 @@
         "rsettings_preset_2": "Spam an Postmaster-Adressen nicht blockieren",
         "rsettings_preset_3": "Nur einem oder vielen Absendern erlauben, eine Mailbox anzuschreiben (etwa interne Mailboxen)",
         "rsettings_preset_4": "Rspamd für eine Domain deaktivieren",
-        "rspamd-com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
+        "rspamd_com_settings": "Ein Name wird automatisch generiert. Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
         "rspamd_global_filters": "Globale Filter-Maps",
         "rspamd_global_filters_agree": "Ich werde vorsichtig sein!",
         "rspamd_global_filters_info": "Globale Filter-Maps steuern globales White- und Blacklisting dieses Servers.",
@@ -920,6 +921,7 @@
         "deleted_syncjob": "Sync-Jobs-ID %s gelöscht",
         "deleted_syncjobs": "Sync-Jobs gelöscht: %s",
         "dkim_added": "DKIM-Key %s wurde hinzugefügt",
+        "domain_add_dkim_available": "Ein DKIM-Key existierte bereits",
         "dkim_duplicated": "DKIM-Key der Domain %s wurde auf Domain %s kopiert",
         "dkim_removed": "DKIM-Key %s wurde entfernt",
         "domain_added": "Domain %s wurde angelegt",
