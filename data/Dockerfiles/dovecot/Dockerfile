@@ -2,8 +2,9 @@ FROM debian:bullseye-slim as build
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.18
-ARG XAPIAN=1.4.20
+ARG DOVECOT=2.3.19.1
+ARG FLATCURVE=v0.3.2
+ARG XAPIAN=1.4.21
 ENV LC_ALL C
 ENV GOSU_VERSION 1.14
 
@@ -117,7 +118,7 @@ RUN touch /etc/default/locale \
 #  dovecot-imapd \
 #  dovecot-dev
 
-RUN cd /tmp && git clone --depth 1 --branch release-2.3.19 https://github.com/dovecot/core.git dovecot/core && cd dovecot/core \
+RUN cd /tmp && git clone --depth 1 --branch ${DOVECOT} https://github.com/dovecot/core.git dovecot/core && cd dovecot/core \
   && ./autogen.sh \
   && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-sql=yes --with-lua=yes --with-mysql --with-ldap --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
   && make -j6 \
@@ -137,7 +138,7 @@ RUN  cd /tmp && wget https://oligarchy.co.uk/xapian/${XAPIAN}/xapian-core-${XAPI
   && make install \
   && make clean
 
-RUN cd /tmp && git clone https://github.com/slusarz/dovecot-fts-flatcurve.git dovecot/flatcurve && cd dovecot/flatcurve \
+RUN cd /tmp && git clone --depth 1 --branch ${FLATCURVE} https://github.com/slusarz/dovecot-fts-flatcurve.git dovecot/flatcurve && cd dovecot/flatcurve \
   && ./autogen.sh \
   && ./configure --with-dovecot=/usr/lib/dovecot \
   && make -j6 \
@@ -218,7 +219,8 @@ RUN groupadd -g 5000 vmail \
   libunicode-string-perl \
   liburi-perl \
   libwww-perl \
-  dnsutils -y --no-install-recommends \
+  dnsutils \
+  gettext-base -y --no-install-recommends \
   && pip3 install mysql-connector-python html2text jinja2 redis
 COPY --from=build /usr/lib/dovecot /usr/lib/dovecot
 COPY --from=build /usr/bin/doveconf /usr/bin/doveconf
