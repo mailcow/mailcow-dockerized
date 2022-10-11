@@ -47,7 +47,9 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
-  update_container_stats()
+  // get public ips
+  get_public_ips();
+  update_container_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -1217,6 +1219,20 @@ function update_container_stats(timeout=5){
 
   // run again in n seconds
   setTimeout(update_container_stats, timeout * 1000);
+}
+// get public ips
+function get_public_ips(){
+  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    console.log(data);
+
+    if (data){
+      // display host ips
+      $("#host_ipv4").text(data.ipv4);
+      $("#host_ipv6").text(data.ipv6);
+    }
+  });
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){

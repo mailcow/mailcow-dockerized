@@ -1506,8 +1506,28 @@ if (isset($_GET['query'])) {
                   ));
                 break;  
                 case "host":
-                  $stats = docker("host_stats");
-                  echo json_encode($stats);
+                  if (!$extra){
+                    $stats = docker("host_stats");
+                    echo json_encode($stats);
+                  } 
+                  else if ($extra == "ip") {
+                    // get public ips
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_POST, 0);
+                    $ipv4 = curl_exec($curl);
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_POST, 0);
+                    $ipv6 = curl_exec($curl);
+                    $ips = array(
+                      "ipv4" => $ipv4,
+                      "ipv6" => $ipv6
+                    );
+                    curl_close($curl);
+                    echo json_encode($ips);
+                  }
                 break;
                 case "version":
                   echo json_encode(array(
