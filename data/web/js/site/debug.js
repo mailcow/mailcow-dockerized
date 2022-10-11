@@ -90,6 +90,7 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
+          responsivePriority: 1,
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -98,22 +99,27 @@ jQuery(function($){
         {
           title: 'User-Agent',
           data: 'ua',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md',
+          responsivePriority: 5
         },
         {
           title: 'Username',
           data: 'user',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 4
         },
         {
           title: 'IP',
           data: 'ip',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 2
         },
         {
           title: 'Service',
           data: 'service',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 3
         }
       ]
     });
@@ -155,7 +161,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -240,7 +247,7 @@ jQuery(function($){
           title: 'URI',
           data: 'uri',
           defaultContent: '',
-          className: 'text-break min-tablet none'
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: 'Method',
@@ -255,7 +262,8 @@ jQuery(function($){
         {
           title: 'Data',
           data: 'data',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -394,28 +402,32 @@ jQuery(function($){
         {
           title: 'User',
           data: 'user',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-sm'
         },
         {
           title: 'Role',
           data: 'role',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-sm'
         },
         {
           title: 'IP',
           data: 'remote',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: lang.message,
           data: 'msg',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: 'Call',
           data: 'call',
           defaultContent: '',
-          className: 'none text-break'
+          className: 'none dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -453,7 +465,8 @@ jQuery(function($){
         {
           title: 'IP',
           data: 'real_rip',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         },
         {
           title: lang.login_time,
@@ -499,7 +512,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -541,7 +555,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -583,7 +598,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -625,7 +641,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -757,7 +774,8 @@ jQuery(function($){
         {
           title: 'Symbols',
           data: 'symbols',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none dtr-col-md'
         },
         {
           title: 'Msg size',

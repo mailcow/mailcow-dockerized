@@ -142,7 +142,9 @@ jQuery(function($){
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    $('#' + table_name).DataTable().ajax.reload();
+    
+    if ($.fn.DataTable.isDataTable('#' + table_name))
+      $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_domain_table() {
     // just recalc width if instance already exists
@@ -177,9 +179,9 @@ jQuery(function($){
             item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
             if (role == "admin") {
-              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                  '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                  '<a href="#dnsInfoModal" class="btn btn-sm btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
             else {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
@@ -288,18 +290,20 @@ jQuery(function($){
         {
           title: lang.domain_admins,
           data: 'domain_admins',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none'
         },
         {
           title: 'Tags',
           data: 'tags',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none'
         },
         {
           title: lang.active,
           data: 'active',
           defaultContent: '',
-          responsivePriority: 5,
+          responsivePriority: 6,
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
           }
@@ -307,7 +311,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -378,11 +382,11 @@ jQuery(function($){
             if (acl_data.login_as === 1) {
 
               item.action = '<div class="btn-group">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-success"><i class="bi bi-person-fill"></i> Login</a>';
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-half btn-success"><i class="bi bi-person-fill"></i> Login</a>';
               if (ALLOW_ADMIN_EMAIL_LOGIN) {
-                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-xs btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-half btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
               }
               item.action += '</div>';
             }
@@ -431,13 +435,13 @@ jQuery(function($){
           {
             title: lang.username,
             data: 'username',
-            responsivePriority: 1,
+            responsivePriority: 3,
             defaultContent: ''
           },
           {
             title: lang.domain_quota,
             data: 'quota',
-            responsivePriority: 2,
+            responsivePriority: 8,
             defaultContent: '',
             render: function (data, type) {
               data = data.split("/");
@@ -449,7 +453,7 @@ jQuery(function($){
             title: lang.last_mail_login,
             data: 'last_mail_login',
             defaultContent: '',
-            responsivePriority: 3,
+            responsivePriority: 7,
             render: function (data, type) {
               res = data.split("/");
               return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
@@ -466,57 +470,68 @@ jQuery(function($){
             title: lang.in_use,
             data: 'in_use',
             defaultContent: '',
-            responsivePriority: 4
+            responsivePriority: 9,
+            className: 'dt-data-w100'
           },
           {
             title: lang.fname,
             data: 'name',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.domain,
             data: 'domain',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.tls_enforce_in,
             data: 'tls_enforce_in',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.tls_enforce_out,
             data: 'tls_enforce_out',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: 'SMTP',
             data: 'smtp_access',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: 'IMAP',
             data: 'imap_access',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: 'POP3',
             data: 'pop3_access',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: 'SIEVE',
             data: 'sieve_access',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.quarantine_notification,
             data: 'quarantine_notification',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.quarantine_category,
             data: 'quarantine_category',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.msg_num,
@@ -527,13 +542,14 @@ jQuery(function($){
           {
             title: 'Tags',
             data: 'tags',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.active,
             data: 'active',
             defaultContent: '',
-            responsivePriority: 6,
+            responsivePriority: 4,
             render: function (data, type) {
               return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
             }
@@ -541,8 +557,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 5,
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+            responsivePriority: 6,
             defaultContent: ''
           },
       ]
@@ -572,8 +588,8 @@ jQuery(function($){
               item.multiple_bookings = '<span id="active-script" class="badge fs-6 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
             }
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
@@ -639,9 +655,9 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
             responsivePriority: 5,
-            defaultContent: ''
+            defaultContent: '',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right'
           },
       ]
     });
@@ -691,8 +707,8 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/bcc/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/bcc/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
             item.local_dest = escapeHtml(item.local_dest);
@@ -763,7 +779,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },
@@ -791,8 +807,8 @@ jQuery(function($){
             item.recipient_map_old = escapeHtml(item.recipient_map_old);
             item.recipient_map_new = escapeHtml(item.recipient_map_new);
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
           });
@@ -832,7 +848,8 @@ jQuery(function($){
           {
             title: lang.recipient_map_new,
             data: 'recipient_map_new',
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 4
           },
           {
             title: lang.active,
@@ -845,8 +862,8 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            responsivePriority: 4,
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+            responsivePriority: 5,
             defaultContent: ''
           },
       ]
@@ -867,6 +884,7 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/tls-policy-map/all",
         dataSrc: function(json){
+          console.log(json);
           if (role !== "admin") return null;
           
           $.each(json, function (i, item) {
@@ -878,8 +896,8 @@ jQuery(function($){
               item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
             }
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
           });
@@ -914,7 +932,8 @@ jQuery(function($){
           {
             title: lang.tls_map_dest,
             data: 'dest',
-            defaultContent: ''
+            defaultContent: '',
+            responsivePriority: 4
           },
           {
             title: lang.tls_map_policy,
@@ -924,12 +943,6 @@ jQuery(function($){
           {
             title: lang.tls_map_parameters,
             data: 'parameters',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            responsivePriority: 4,
             defaultContent: ''
           },
           {
@@ -943,7 +956,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },
@@ -967,8 +980,8 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
@@ -1083,7 +1096,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },
@@ -1107,9 +1120,9 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
+              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
             if(item.parent_is_backupmx == '1') {
@@ -1163,7 +1176,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },
@@ -1195,8 +1208,8 @@ jQuery(function($){
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + item.host1 + ':' + item.port1;
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
@@ -1290,17 +1303,19 @@ jQuery(function($){
           {
             title: lang.excludes,
             data: 'exclude',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.mins_interval,
             data: 'mins_interval',
-            defaultContent: ''
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },
@@ -1329,11 +1344,11 @@ jQuery(function($){
             } else {
               item.active = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.inactive + '</span>';
             }
-            item.script_data = '<pre style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
+            item.script_data = '<pre class="text-break" style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
             item.filter_type = '<div class="badge fs-6 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/filter/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/filter/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
@@ -1396,7 +1411,7 @@ jQuery(function($){
           {
             title: lang.action,
             data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
             responsivePriority: 5,
             defaultContent: ''
           },

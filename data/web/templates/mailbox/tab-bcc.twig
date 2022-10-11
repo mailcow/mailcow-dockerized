@@ -1,24 +1,20 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-bcc" role="tabpanel" aria-labelledby="tab-bcc">
   <div class="card mb-4">
-    <div class="card-header d-flex">
+    <div class="card-header d-flex fs-5">
       <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-bcc" data-bs-toggle="collapse" aria-controls="collapse-tab-bcc">
         {{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span>
       </button>
       <span class="d-none d-md-block">{{ lang.mailbox.bcc_maps }} <span class="badge bg-info table-lines"></span></span>
 
-      <div class="btn-group ms-auto d-none d-sm-flex">
-        <button class="btn btn-xs btn-success" href="#" data-acl="{{ acl.bcc_maps }}" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</button>
+      <div class="btn-group ms-auto d-flex">
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_bcc_table" data-table="bcc_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
     <div id="collapse-tab-bcc" class="card-body collapse" data-bs-parent="#mail-content">
-      <p class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
-      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-      <table id="bcc_table" class="table table-striped dt-responsive w-100"></table>
-      <div class="mass-actions-mailbox">
+      <div class="mass-actions-mailbox mb-4">
         <div class="btn-group" data-acl="{{ acl.bcc_maps }}">
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -27,39 +23,80 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#">{{ lang.mailbox.bcc_to_rcpt }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="bcc_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="bcc_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
-          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</a>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</a>
+        </div>
+      </div>
+      <p class="text-muted">{{ lang.mailbox.bcc_info|raw }}</p>
+      <table id="bcc_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group" data-acl="{{ acl.bcc_maps }}">
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="bcc" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"sender"}' href="#">{{ lang.mailbox.bcc_to_sender }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="bcc" data-api-url='edit/bcc' data-api-attr='{"type":"rcpt"}' href="#">{{ lang.mailbox.bcc_to_rcpt }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="bcc" data-api-url='delete/bcc' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="bcc_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="bcc_table">{{ lang.datatables.collapse_all }}</a></li>
+          </ul>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addBCCModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_bcc_entry }}</a>
         </div>
       </div>
     </div>
   </div>
   <div class="card mb-4{% if mailcow_cc_role != 'admin' %} d-none{% endif %}">
-    <div class="card-header d-flex">
+    <div class="card-header d-flex fs-5">
       <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-bcc-filters" data-bs-toggle="collapse" aria-controls="collapse-tab-bcc-filters">
         {{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span>
       </button>
       <span class="d-none d-md-block">{{ lang.mailbox.recipient_maps }} <span class="badge bg-info table-lines"></span></span>
 
-      <div class="btn-group ms-auto d-none d-sm-flex">
-        <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</button>
+      <div class="btn-group ms-auto d-flex">
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
     <div id="collapse-tab-bcc-filters" class="card-body collapse" data-bs-parent="#mail-content">
-      <p class="text-muted">{{ lang.mailbox.recipient_map_info }}</p>
-      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-      <table id="recipient_map_table" class="table table-striped dt-responsive w-100"></table>
-      <div class="mass-actions-mailbox">
+      <div class="mass-actions-mailbox mb-4">
         <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="recipient_map_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="recipient_map_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
-          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</a>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</a>
+        </div>
+      </div>
+      <p class="text-muted">{{ lang.mailbox.recipient_map_info }}</p>
+      <table id="recipient_map_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="recipient_map" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="recipient_map" data-api-url='edit/recipient_map' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="recipient_map" data-api-url='delete/recipient_map' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="recipient_map_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="recipient_map_table">{{ lang.datatables.collapse_all }}</a></li>
+          </ul>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRecipientMapModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_recipient_map_entry }}</a>
         </div>
       </div>
     </div>
