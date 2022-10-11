@@ -466,8 +466,10 @@
         "yotp_verification_failed": "Yubico OTP verification failed: %s"
     },
     "datatables": {
+      "collapse_all": "Collapse All",
       "decimal": "",
       "emptyTable": "No data available in table",
+      "expand_all": "Expand All",
       "info": "Showing _START_ to _END_ of _TOTAL_ entries",
       "infoEmpty": "Showing 0 to 0 of 0 entries",
       "infoFiltered": "(filtered from _MAX_ total entries)",

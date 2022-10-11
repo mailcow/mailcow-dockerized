@@ -1,33 +1,51 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-resources" role="tabpanel" aria-labelledby="tab-resources">
   <div class="card mb-4">
-    <div class="card-header d-flex">
+    <div class="card-header d-flex fs-5">
       <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-resources" data-bs-toggle="collapse" aria-controls="collapse-tab-resources">
         {{ lang.mailbox.resources }} <span class="badge bg-info table-lines"></span>
       </button>
       <span class="d-none d-md-block">{{ lang.mailbox.resources }} <span class="badge bg-info table-lines"></span></span>
 
-      <div class="btn-group ms-auto d-none d-sm-flex">
-        <button class="btn btn-xs btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</button>
+      <div class="btn-group ms-auto d-flex">
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_resource_table" data-table="resource_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div id="collapse-tab-resources" class="card-body collapse" data-bs-parent="#mail-content">
-      <p><span class="badge fs-6 bg-success">{{ lang.mailbox.booking_0_short }}</span> - {{ lang.mailbox.booking_null }}</p>
-      <p><span class="badge fs-6 bg-warning">{{ lang.mailbox.booking_lt0_short }}</span> - {{ lang.mailbox.booking_ltnull }}</p>
-      <p><span class="badge fs-6 bg-danger">{{ lang.mailbox.booking_custom_short }}</span> - {{ lang.mailbox.booking_custom }}</p>
-      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
-      <table id="resource_table" class="table table-striped dt-responsive w-100"></table>
-      <div class="mass-actions-mailbox">
+    <div id="collapse-tab-resources" class="card-body collapse" data-bs-parent="#mail-content">      
+      <div class="mass-actions-mailbox mb-4">
         <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="resource_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="resource_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
-          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
+        </div>
+      </div>
+      <p><span class="badge fs-6 bg-success">{{ lang.mailbox.booking_0_short }}</span> - {{ lang.mailbox.booking_null }}</p>
+      <p><span class="badge fs-6 bg-warning">{{ lang.mailbox.booking_lt0_short }}</span> - {{ lang.mailbox.booking_ltnull }}</p>
+      <p><span class="badge fs-6 bg-danger">{{ lang.mailbox.booking_custom_short }}</span> - {{ lang.mailbox.booking_custom }}</p>
+      {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}
+      <table id="resource_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="resource" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="resource" data-api-url='edit/resource' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="resource" data-api-url='delete/resource' href="#">{{ lang.mailbox.remove }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-datatables-expand="resource_table">{{ lang.datatables.expand_all }}</a></li>
+            <li><a class="dropdown-item" data-datatables-collapse="resource_table">{{ lang.datatables.collapse_all }}</a></li>
+          </ul>
+          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addResourceModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_resource }}</a>
         </div>
       </div>
     </div>
