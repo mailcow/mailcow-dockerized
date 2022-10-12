@@ -276,14 +276,16 @@ jQuery(function($){
           data: null,
           searchable: false,
           orderable: false,
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 1
         },
         {
           title: '',
           data: 'chkbox',
           searchable: false,
           orderable: false,
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 2
         },
         {
           title: 'ID',
@@ -299,7 +301,8 @@ jQuery(function($){
         {
           title: lang.username,
           data: 'user1',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 3
         },
         {
           title: lang.last_run,
@@ -328,7 +331,7 @@ jQuery(function($){
           title: lang.status,
           data: 'is_running',
           defaultContent: '',
-          responsivePriority: 4
+          responsivePriority: 5
         },
         {
           title: lang.encryption,

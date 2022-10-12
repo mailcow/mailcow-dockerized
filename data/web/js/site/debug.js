@@ -47,7 +47,9 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
-  update_container_stats()
+  // get public ips
+  get_public_ips();
+  update_container_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -90,6 +92,7 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
+          responsivePriority: 1,
           render: function(data, type){
             var date = new Date(data ? data * 1000 : 0); 
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -98,22 +101,27 @@ jQuery(function($){
         {
           title: 'User-Agent',
           data: 'ua',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md',
+          responsivePriority: 5
         },
         {
           title: 'Username',
           data: 'user',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 4
         },
         {
           title: 'IP',
           data: 'ip',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 2
         },
         {
           title: 'Service',
           data: 'service',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 3
         }
       ]
     });
@@ -155,7 +163,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -240,7 +249,7 @@ jQuery(function($){
           title: 'URI',
           data: 'uri',
           defaultContent: '',
-          className: 'text-break min-tablet none'
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: 'Method',
@@ -255,7 +264,8 @@ jQuery(function($){
         {
           title: 'Data',
           data: 'data',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -394,28 +404,32 @@ jQuery(function($){
         {
           title: 'User',
           data: 'user',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-sm'
         },
         {
           title: 'Role',
           data: 'role',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-sm'
         },
         {
           title: 'IP',
           data: 'remote',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: lang.message,
           data: 'msg',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         },
         {
           title: 'Call',
           data: 'call',
           defaultContent: '',
-          className: 'none text-break'
+          className: 'none dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -453,7 +467,8 @@ jQuery(function($){
         {
           title: 'IP',
           data: 'real_rip',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         },
         {
           title: lang.login_time,
@@ -499,7 +514,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
       ]
     });
@@ -541,7 +557,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -583,7 +600,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -625,7 +643,8 @@ jQuery(function($){
         {
           title: lang.message,
           data: 'message',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
       ]
     });
@@ -757,7 +776,8 @@ jQuery(function($){
         {
           title: 'Symbols',
           data: 'symbols',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none dtr-col-md'
         },
         {
           title: 'Msg size',
@@ -1199,6 +1219,20 @@ function update_container_stats(timeout=5){
 
   // run again in n seconds
   setTimeout(update_container_stats, timeout * 1000);
+}
+// get public ips
+function get_public_ips(){
+  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    console.log(data);
+
+    if (data){
+      // display host ips
+      $("#host_ipv4").text(data.ipv4);
+      $("#host_ipv6").text(data.ipv6);
+    }
+  });
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){

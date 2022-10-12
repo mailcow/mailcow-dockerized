@@ -380,4 +380,18 @@ $(document).ready(function() {
         $('#ConfirmDeleteModal').modal('hide');
       });
   });
+
+  // toggle jquery datatables child rows
+  $('button[data-datatables-expand], a[data-datatables-expand]').on('click', function (e) {
+    e.preventDefault();
+    var tableId = e.target.getAttribute("data-datatables-expand");
+    var table = $("#" + tableId).DataTable();
+    table.rows(':not(.parent)').nodes().to$().find('td:first-child').trigger('click');
+  });
+  $('button[data-datatables-collapse], a[data-datatables-collapse]').on('click', function (e) {
+    e.preventDefault();
+    var tableId = e.target.getAttribute("data-datatables-collapse");
+    var table = $("#" + tableId).DataTable();
+    table.rows('.parent').nodes().to$().find('td:first-child').trigger('click');
+  });
 });

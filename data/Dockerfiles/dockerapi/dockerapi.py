@@ -494,27 +494,14 @@ class DockerUtils:
       for container in (await self.docker_client.containers.list()):
         if container._id == container_id:
           
-          cmd = "/usr/bin/rspamadm pw -e -p '" + request_json['raw'].replace("'", "'\\''") + "' 2> /dev/null"
+          cmd = "./set_worker_password.sh '" + request_json['raw'].replace("'", "'\\''") + "' 2> /dev/null"
           rspamd_password_exec = await container.exec(cmd, user='_rspamd')  
           async with rspamd_password_exec.start(detach=False) as stream:
             rspamd_password_return = await stream.read_out()
-            
-          matched = False
-          for line in rspamd_password_return.data.decode('utf-8').split("\n"):
-            if '$2$' in line:
-              hash = line.strip()
-              hash_out = re.search('\$2\$.+$', hash).group(0)
-              rspamd_passphrase_hash = re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip())
 
-              rspamd_password_filename = "/etc/rspamd/override.d/worker-controller-password.inc"
-              cmd = '''/bin/echo 'enable_password = "%s";' > %s && cat %s''' % (rspamd_passphrase_hash, rspamd_password_filename, rspamd_password_filename)
-              rspamd_password_exec = await container.exec(cmd, user='_rspamd')  
-              async with rspamd_password_exec.start(detach=False) as stream:
-                rspamd_password_return = await stream.read_out()
-
-              if rspamd_passphrase_hash.startswith("$2$") and rspamd_passphrase_hash in rspamd_password_return.data.decode('utf-8'):
-                await container.restart()
-                matched = True
+          if "OK" in rspamd_password_return.data.decode('utf-8'):
+            matched = True
+            await container.restart()
 
           if matched:
             res = {

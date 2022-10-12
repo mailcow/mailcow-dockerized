@@ -90,7 +90,6 @@ $template_data = [
   'fido2_cid' => @$_SESSION['fido2_cid'],
   'fido2_data' => $fido2_data,
   'gal' => @$_SESSION['gal'],
-  'license_guid' => license('guid'),
   'api' => [
     'ro' => admin_api('ro', 'get'),
     'rw' => admin_api('rw', 'get'),
