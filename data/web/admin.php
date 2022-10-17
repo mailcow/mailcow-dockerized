@@ -83,6 +83,15 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
   ];
 }
 
+// cors settings
+$cors_settings = cors('get');
+$allowed_origins = '';
+foreach($cors_settings['allowed_origins'] as $allowed_origin){
+  $allowed_origins = $allowed_origins . $allowed_origin . "\r\n";
+}
+$cors_settings['allowed_origins'] = $allowed_origins;
+
+
 $template = 'admin.twig';
 $template_data = [
   'tfa_data' => $tfa_data,
@@ -94,6 +103,7 @@ $template_data = [
     'ro' => admin_api('ro', 'get'),
     'rw' => admin_api('rw', 'get'),
   ],
+  'cors_settings' => $cors_settings,
   'dkim_domains' => $dkim_domains,
   'dkim_domains_with_keys' => $dkim_domains_with_keys,
   'dkim_blind_domains' => $dkim_blind_domains,

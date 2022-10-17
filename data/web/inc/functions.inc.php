@@ -2402,4 +2402,127 @@ function cleanupCSS($ignore = '', $folder = '/tmp/*.css') {
   }
 }
 
+function cors($action, $data = null){
+  global $redis;
+
+  switch ($action) {
+    case "edit":  
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => array('access_denied', $_SESSION['mailcow_cc_role'])
+        );
+        return false;
+      }
+      
+      if (isset($data['allowed_origins'])){
+        $allowed_origins = '';
+        if (!is_array($data['allowed_origins'])) 
+          $data['allowed_origins'] = array($data['allowed_origins']);
+      
+        foreach($data['allowed_origins'] as $allowed_origin){
+          $allowed_origins = $allowed_origins . $allowed_origin . ',';
+        }
+
+        if (empty($allowed_origins)) 
+          $allowed_origins = $_SERVER['SERVER_NAME'];
+        else 
+          $allowed_origins = rtrim($allowed_origins, ',');
+
+        $redis->Set('allowed_cors_origins', $allowed_origins);
+      } else {
+        $allowed_origins = $_SERVER['SERVER_NAME'];
+        $redis->Set('allowed_cors_origins', $allowed_origins);
+      }
+
+      $allowed_methods_list = array(
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS"
+      );
+      if (isset($data['allowed_methods'])){
+        $allowed_methods = '';
+        if (!is_array($data['allowed_methods'])) 
+          $data['allowed_methods'] = array($data['allowed_methods']);
+
+        foreach($data['allowed_methods'] as $allowed_method){
+          if (in_array($allowed_method, $allowed_methods_list))
+            $allowed_methods = $allowed_methods . strtoupper($allowed_method) . ',';
+        }
+
+        if (empty($allowed_methods)) 
+          $allowed_methods = 'POST,GET';
+        else $allowed_methods =  
+          rtrim($allowed_methods, ',');
+
+        $redis->Set('allowed_cors_methods', $allowed_methods);
+      } else {
+        $allowed_methods = 'POST,GET';
+        $redis->Set('allowed_cors_methods', $allowed_methods);
+      }
+
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'cors_headers_edited'
+      );
+      return true;
+    break;
+    case "get":
+      $cors_origins = explode(',', $redis->Get('allowed_cors_origins'));
+      $cors_methods =  explode(',', $redis->Get('allowed_cors_methods'));
+      if (!$cors_origins) 
+        $cors_origins = [$_SERVER['SERVER_NAME']];
+      if (!$cors_methods) 
+        $cors_methods = ['POST', 'GET'];
+
+      return array(
+        'allowed_origins' => $cors_origins,
+        'allowed_methods' => $cors_methods
+      );
+    break;
+    case "set_headers":
+      $cors_settings = cors("get");
+      $allowed_origins = "";
+      $allowed_methods = "";
+    
+      if (in_array($_SERVER['HTTP_REFERER'], $cors_settings["allowed_origins"]))
+        $allowed_origins = $_SERVER['HTTP_REFERER'];
+      else if (in_array("*", $cors_settings["allowed_origins"]))
+        $allowed_origins = "*";
+      else
+        $allowed_origins = $_SERVER['SERVER_NAME'];
+      
+    
+      foreach($cors_settings['allowed_methods'] as $allowed_method){
+        $allowed_methods = $allowed_methods . strtoupper($allowed_method) . ',';
+      }
+      $allowed_methods =  rtrim($allowed_methods, ',');
+    
+      header('Content-Type: application/json');
+      header('Access-Control-Allow-Origin: ' . $allowed_origins);
+      header('Access-Control-Allow-Methods: '. $allowed_methods);
+      header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
+    
+      // Access-Control settings requested, this is just a preflight request
+      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && 
+          isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
+          isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+        
+        if (in_array($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'], $cors_settings["allowed_methods"]))
+          // method allowed send 200 OK
+          http_response_code(200);
+        else
+          // method not allowed send 405 METHOD NOT ALLOWED
+          http_response_code(405);
+    
+        exit;
+      }
+    break;
+  }
+}
+
 ?>

@@ -2,9 +2,8 @@
 /*
    see /api
 */
-
-header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+cors("set_headers");
 error_reporting(0);
 
 function api_log($_data) {
@@ -1740,6 +1739,9 @@ if (isset($_GET['query'])) {
       switch ($category) {
         case "bcc":
           process_edit_return(bcc('edit', array_merge(array('id' => $items), $attr)));
+        break;
+        case "corssettings":
+          process_edit_return(cors('edit', $attr));
         break;
         case "pushover":
           process_edit_return(pushover('edit', array_merge(array('username' => $items), $attr)));

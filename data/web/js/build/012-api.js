@@ -101,6 +101,7 @@ $(document).ready(function() {
     }
     // If clicked element #edit_selected is in a form with the same data-id as the button,
     // we merge all input fields by {"name":"value"} into api-attr
+    var processedData = {};
     if ($(this).closest("form").data('id') == id) {
       var invalid = false;
       $(this).closest("form").find('select, textarea, input').each(function() {
@@ -153,16 +154,28 @@ $(document).ready(function() {
             $(this).addClass('inputMissingAttr');
           }
         }
+        if ($(this).attr("data-action") === "newLineToArray"){
+          var lines = $(this).val().split(/\n/);
+          var texts = [];
+          for (var i=0; i < lines.length; i++) {
+            // only push this line if it contains a non whitespace character.
+            if (/\S/.test(lines[i])) {
+              texts.push($.trim(lines[i]));
+            }
+          }
+          processedData[$(this).attr('name')] = texts;
+        }
       });
       if (!invalid) {
         var attr_to_merge = $(this).closest("form").serializeObject();
         // parse possible JSON Strings
         for (var [key, value] of Object.entries(attr_to_merge)) {
           try {
-            attr_to_merge[key] = JSON.parse(attr_to_merge[key]);
+            if (processedData.hasOwnProperty(key)) attr_to_merge[key] = processedData[key];
+            else attr_to_merge[key] = JSON.parse(attr_to_merge[key]);
           } catch {}
         }
-        var api_attr = $.extend(api_attr, attr_to_merge)
+        var api_attr = $.extend(api_attr, attr_to_merge);
       } else {
         return false;
       }

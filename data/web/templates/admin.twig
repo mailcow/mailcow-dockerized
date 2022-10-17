@@ -10,6 +10,7 @@
         <!-- <li><button class="dropdown-item" data-bs-target="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-bs-toggle="tab">{{ lang.admin.admins_ldap }}</button></li> -->
         <li><button class="dropdown-item" data-bs-target="#tab-config-oauth2" aria-selected="false" aria-controls="tab-config-oauth2" role="tab" data-bs-toggle="tab">{{ lang.admin.oauth2_apps }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-rspamd" aria-selected="false" aria-controls="tab-config-rspamd" role="tab" data-bs-toggle="tab">Rspamd UI</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-api" aria-selected="false" aria-controls="tab-config-api" role="tab" data-bs-toggle="tab">API</button></li>
       </ul>
     </li>
 
@@ -44,6 +45,7 @@
         {# {% include 'admin/tab-ldap.twig' %} #}
         {% include 'admin/tab-config-oauth2.twig' %}
         {% include 'admin/tab-config-rspamd.twig' %}
+        {% include 'admin/tab-config-api.twig' %}
         {% include 'admin/tab-routing.twig' %}
         {% include 'admin/tab-config-dkim.twig' %}
         {% include 'admin/tab-config-fwdhosts.twig' %}

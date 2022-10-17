@@ -1,0 +1,123 @@
+<div role="tabpanel" class="tab-pane fade" id="tab-config-api" role="tabpanel" aria-labelledby="tab-config-api">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-api" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-api">
+        API
+      </button>
+      <span class="d-none d-md-block">API</span>
+    </div>
+    <div id="collapse-tab-config-api" class="card-body collapse" data-bs-parent="#admin-content">
+        <div class="row">
+          <div class="col-lg-12">
+            <p class="text-muted">{{ lang.admin.api_info|raw }}</p>
+          </div>
+          <div class="col-lg-12">
+            <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.cors_settings }}</h4>
+            <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" data-id="editcorssettings" method="post">
+              <div class="row mb-4">
+                <label class="control-label col-sm-2 mb-4" for="protocol_access">{{ lang.admin.allowed_origins }}</label>
+                <div class="col-sm-9 mb-4">
+                  <textarea class="form-control textarea-code" rows="7" name="allowed_origins" data-action="newLineToArray">{{ cors_settings.allowed_origins }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="control-label col-sm-2" for="allowed_methods">{{ lang.admin.allowed_methods }}</label>
+                <div class="col-sm-9">
+                  <select name="allowed_methods" multiple class="form-control">
+                    <option value="POST"{% if "POST" in cors_settings.allowed_methods  %} selected{% endif %}>POST</option>
+                    <option value="GET"{% if "GET" in cors_settings.allowed_methods  %} selected{% endif %}>GET</option>
+                    <option value="DELETE"{% if "DELETE" in cors_settings.allowed_methods  %} selected{% endif %}>DELETE</option>
+                    <option value="PUT"{% if "PUT" in cors_settings.allowed_methods %} selected{% endif %}>PUT</option>
+                    <option value="OPTIONS"{% if "OPTIONS" in cors_settings.allowed_methods  %} selected{% endif %}>OPTIONS</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <div class="offset-sm-2 col-sm-9">
+                  <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-item="corssettings" data-api-url="edit/corssettings" data-id="editcorssettings" data-action="edit_selected" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-lg-6 mt-4">
+            <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.api_read_only }}</h4>
+            <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="allow_from_ro">{{ lang.admin.api_allow_from }}:</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" {% if api.ro.skip_ip_check %}disabled{% endif %} required>{{ api.ro.allow_from }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="control-label col-sm-3">{{ lang.admin.api_key }}:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" value="{{ api.ro.api_key|default('-') }}" readonly />
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-lg-6 mt-4">
+            <h4 class="card-title"><i class="bi bi-file-earmark-diff"></i> {{ lang.admin.api_read_write }}</h4>
+            <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="allow_from_rw">{{ lang.admin.api_allow_from }}:</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_rw" {% if api.rw.skip_ip_check %}disabled{% endif %} required>{{ api.rw.allow_from }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="admin_api_key">{{ lang.admin.api_key }}:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" value="{{ api.rw.api_key|default('-') }}" readonly />
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

@@ -949,6 +949,7 @@
         "bcc_deleted": "BCC-Map-Einträge gelöscht: %s",
         "bcc_edited": "BCC-Map-Eintrag %s wurde geändert",
         "bcc_saved": "BCC- Map-Eintrag wurde gespeichert",
+        "cors_headers_edited": "CORS headers wurden erfolgreich gespeichert.",
         "db_init_complete": "Datenbankinitialisierung abgeschlossen",
         "delete_filter": "Filter-ID %s wurde gelöscht",
         "delete_filters": "Filter gelöscht: %s",
