@@ -6,6 +6,9 @@ jQuery(function($){
       $('#' + table_name).DataTable().ajax.reload();
     });
 
+
+    function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
+
     // Queue item
     $('#showQueuedMsg').on('show.bs.modal', function (e) {
       $('#queue_msg_content').text(lang.loading);
@@ -18,6 +21,7 @@ jQuery(function($){
           url: '/api/v1/get/postcat/' + button.data('queue-id'),
           dataType: 'text',
           complete: function (data) {
+            console.log(data);
             $('#queue_msg_content').text(data.responseText);
           }
       });
@@ -78,7 +82,7 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.arrival_time,
+            title: lang_admin.arrival_time,
             data: 'arrival_time',
             defaultContent: '',
             render: function (data, type){
@@ -87,7 +91,7 @@ jQuery(function($){
             }
           },
           {
-            title: lang.message_size,
+            title: lang_admin.message_size,
             data: 'message_size',
             defaultContent: '',
             render: function (data, type){
@@ -95,17 +99,17 @@ jQuery(function($){
             }
           },
           {
-            title: lang.sender,
+            title: lang_admin.sender,
             data: 'sender',
             defaultContent: ''
           },
           {
-            title: lang.recipients,
+            title: lang_admin.recipients,
             data: 'recipients',
             defaultContent: ''
           },
           {
-            title: lang.action,
+            title: lang_admin.action,
             data: 'action',
             className: 'text-md-end dt-sm-head-hidden dt-body-right',
             defaultContent: ''
