@@ -28,7 +28,6 @@
     </li>
     <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-routing" aria-selected="false" aria-controls="tab-routing" role="tab" data-bs-toggle="tab">{{ lang.admin.routing }}</button></li>
     <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-sys-mails" aria-selected="false" aria-controls="tab-sys-mails" role="tab" data-bs-toggle="tab">{{ lang.admin.sys_mails }}</button></li>
-    <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-mailq" aria-selected="false" aria-controls="tab-mailq" role="tab" data-bs-toggle="tab">{{ lang.admin.queue_manager }}</button></li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.rspamd_global_filters }}</a>
       <ul class="dropdown-menu">
@@ -54,7 +53,6 @@
         {% include 'admin/tab-config-customize.twig' %}
         {% include 'admin/tab-config-password-policy.twig' %}
         {% include 'admin/tab-sys-mails.twig' %}
-        {% include 'admin/tab-mailq.twig' %}
         {% include 'admin/tab-globalfilter-regex.twig' %}
       </div>
     </div> <!-- /col-md-12 -->
