@@ -248,7 +248,7 @@ class DockerUtils:
         for container in (await self.docker_client.containers.list()):
           if container._id == container_id:
             postcat_exec = await container.exec(["/bin/bash", "-c", "/usr/sbin/postcat -q " + sanitized_string], user='postfix')
-            return exec_run_handler('utf8_text_only', postcat_exec)
+            return await exec_run_handler('utf8_text_only', postcat_exec)
 
    # api call: container_post - post_action: exec - cmd: mailq - task: unhold
   async def container_post__exec__mailq__unhold(self, container_id, request_json):
