@@ -19,6 +19,7 @@ $template_data = [
   'acl_json' => json_encode($_SESSION['acl']),
   'role' => $role,
   'lang_admin' => json_encode($lang['admin']),
+  'lang_queue' => json_encode($lang['queue']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];
 
