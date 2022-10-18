@@ -466,86 +466,6 @@ jQuery(function($){
       ]
     });
   }
-  function draw_queue() {
-    // just recalc width if instance already exists
-    if ($.fn.DataTable.isDataTable('#queuetable') ) {
-      $('#queuetable').DataTable().columns.adjust().responsive.recalc();
-      return;
-    }
-
-    $('#queuetable').DataTable({
-      processing: true,
-      serverSide: false,
-      language: lang_datatables,
-      ajax: {
-        type: "GET",
-        url: "/api/v1/get/mailq/all",
-        dataSrc: function(data){
-          return process_table_data(data, 'queuetable');
-        }
-      },
-      columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'QID',
-            data: 'queue_id',
-            defaultContent: ''
-          },
-          {
-            title: 'Queue',
-            data: 'queue_name',
-            defaultContent: ''
-          },
-          {
-            title: lang.arrival_time,
-            data: 'arrival_time',
-            defaultContent: '',
-            render: function (data, type){
-              var date = new Date(data ? data * 1000 : 0); 
-              return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-            }
-          },
-          {
-            title: lang.message_size,
-            data: 'message_size',
-            defaultContent: '',
-            render: function (data, type){
-              return humanFileSize(data);
-            }
-          },
-          {
-            title: lang.sender,
-            data: 'sender',
-            defaultContent: ''
-          },
-          {
-            title: lang.recipients,
-            data: 'recipients',
-            defaultContent: ''
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
-      ]
-    });
-  }
 
   function process_table_data(data, table) {
     if (table == 'relayhoststable') {
@@ -653,7 +573,6 @@ jQuery(function($){
   onVisible("[id^=forwardinghoststable]", () => draw_fwd_hosts());
   onVisible("[id^=relayhoststable]", () => draw_relayhosts());
   onVisible("[id^=transportstable]", () => draw_transport_maps());
-  onVisible("[id^=queuetable]", () => draw_queue());
 
 
   $('body').on('click', 'span.footable-toggle', function () {
@@ -712,22 +631,6 @@ jQuery(function($){
       $('#transport_id').val(button.data('transport-id'));
       $('#transport_type').val(button.data('transport-type'));
     }
-  })
-  // Queue item
-  $('#showQueuedMsg').on('show.bs.modal', function (e) {
-    $('#queue_msg_content').text(lang.loading);
-    button = $(e.relatedTarget)
-    if (button != null) {
-      $('#queue_id').text(button.data('queue-id'));
-    }
-    $.ajax({
-        type: 'GET',
-        url: '/api/v1/get/postcat/' + button.data('queue-id'),
-        dataType: 'text',
-        complete: function (data) {
-          $('#queue_msg_content').text(data.responseText);
-        }
-    });
   })
   $('#test_transport').on('click', function (e) {
     e.preventDefault();
