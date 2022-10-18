@@ -41,8 +41,11 @@
     </div>
   </div>
 
+{% include 'modals/queue.twig' %}
+
 <script type='text/javascript'>
-  var lang = {{ lang_admin|raw }};
+  var lang_admin = {{ lang_admin|raw }};
+  var lang = {{ lang_queue|raw }};
   var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
   var pagination_size = '{{ pagination_size }}';
