@@ -201,7 +201,7 @@
     },
     "header": {
         "administration": "Administrowanie",
-        "mailboxes": "Skrzynki",
+        "email": "E-Mail",
         "mailcow_config": "Konfiguracja",
         "quarantine": "Kwarantanna",
         "restart_sogo": "Uruchom ponownie SOGo",
@@ -277,6 +277,18 @@
         "quick_actions": "Szybkie działania",
         "remove": "Usuń",
         "toggle_all": "Zaznacz wszystkie"
+    },
+    "queue": {
+        "delete_queue": "Delete all",
+        "flush_queue": "Flush queue",
+        "queue_ays": "Please confirm you want to delete all items from the current queue.",
+        "queue_command_success": "Queue command completed successfully",
+        "queue_deliver_mail": "Deliver",
+        "queue_hold_mail": "Hold",
+        "queue_manager": "Queue Manager",
+        "queue_show_message": "Show message",
+        "queue_unban": "queue unban",
+        "queue_unhold_mail": "Unhold"
     },
     "start": {
         "help": "Pokaż/Ukryj panel pomocy",
