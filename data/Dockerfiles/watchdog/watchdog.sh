@@ -142,7 +142,12 @@ function mail_error() {
       --to=${rcpt} \
       --from="watchdog@${MAILCOW_HOSTNAME}" \
       --hello-host=${MAILCOW_HOSTNAME} \
-      --ipv4
+      if [[ "${WATCHDOG_SMARTHOST}" == "" ]]; then
+        --ipv4
+      else
+        --ipv4 \
+        --host="${WATCHDOG_SMARTHOST}"
+      fi      
     if [[ $? -eq 1 ]]; then # exit code 1 is fine
       log_msg "Sent notification email to ${rcpt}"
     else
