@@ -354,6 +354,9 @@ WATCHDOG_EXTERNAL_CHECKS=n
 # Enable watchdog verbose logging
 WATCHDOG_VERBOSE=n
 
+# Enable watchdog smarthost in format ip_or_hostname[:port] (without authentication)
+#WATCHDOG_SMARTHOST=
+
 # Max log lines per service to keep in Redis logs
 
 LOG_LINES=9999
