@@ -402,6 +402,7 @@ CONFIG_ARRAY=(
   "ACME_CONTACT"
   "WATCHDOG_VERBOSE"
   "WEBAUTHN_ONLY_TRUSTED_VENDORS"
+  "WATCHDOG_SMARTHOST"
 )
 
 sed -i --follow-symlinks '$a\' mailcow.conf
@@ -627,11 +628,16 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
       echo 'WEBAUTHN_ONLY_TRUSTED_VENDORS=n' >> mailcow.conf
     fi
-elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
+  elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo '# Enable watchdog verbose logging' >> mailcow.conf
       echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
-  fi
+    fi
+  elif [[ ${option} == "WATCHDOG_SMARTHOST" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo '# Enable watchdog smarthost' >> mailcow.conf
+      echo 'WATCHDOG_SMARTHOST=n' >> mailcow.conf
+    fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
