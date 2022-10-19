@@ -36,6 +36,20 @@ $(document).ready(function() {
       $(this).text(started_local_date);
     }
   });
+
+  // set update loop container list
+  containersToUpdate = {}
+  // set default ChartJs Font Color
+  Chart.defaults.color = '#999';
+  // create host cpu and mem charts
+  createHostCpuAndMemChart();
+  // check for new version
+  if (mailcow_info.branch === "master"){
+    check_update(mailcow_info.version_tag, mailcow_info.project_url);
+  }
+  // get public ips
+  get_public_ips();
+  update_container_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -52,429 +66,587 @@ jQuery(function($){
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    $('#' + table_name).find("tr.footable-empty").remove();
-    draw_table = $(this).data('draw');
-    eval(draw_table + '()');
+    $('#' + table_name).DataTable().ajax.reload();
   });
-  function table_log_ready(ft, name) {
-    heading = ft.$el.parents('.panel').find('.panel-heading')
-    var ft_paging = ft.use(FooTable.Paging)
-    $('.refresh_table').prop("disabled", false);
-    $(heading).children('.table-lines').text(function(){
-      return ft_paging.totalRows;
-    })
-    if (current_page[name]) {
-      ft_paging.goto(parseInt(current_page[name]))
-    }
-  }
-  function table_log_paging(ft, name) {
-    var ft_paging = ft.use(FooTable.Paging)
-    current_page[name] = ft_paging.current;
-    localStorage.setItem('current_page', JSON.stringify(current_page));
-  }
   function draw_autodiscover_logs() {
-    ft_autodiscover_logs = FooTable.init('#autodiscover_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"ua","title":"User-Agent","style":{"min-width":"200px"}},
-        {"name":"user","title":"Username","style":{"min-width":"200px"}},
-        {"name":"ip","title":"IP","style":{"min-width":"200px"}},
-        {"name":"service","title":"Service"},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/autodiscover/100',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw autodiscover log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#autodiscover_log') ) {
+      $('#autodiscover_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#autodiscover_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/autodiscover/100",
+        dataSrc: function(data){
           return process_table_data(data, 'autodiscover_log');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          responsivePriority: 1,
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'autodiscover_logs');
+        {
+          title: 'User-Agent',
+          data: 'ua',
+          defaultContent: '',
+          className: 'dtr-col-md',
+          responsivePriority: 5
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'autodiscover_logs');
+        {
+          title: 'Username',
+          data: 'user',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: 'IP',
+          data: 'ip',
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'Service',
+          data: 'service',
+          defaultContent: '',
+          responsivePriority: 3
         }
-      }
+      ]
     });
   }
   function draw_postfix_logs() {
-    ft_postfix_logs = FooTable.init('#postfix_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
-        {"name":"message","title":lang.message},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/postfix',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw postfix log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#postfix_log') ) {
+      $('#postfix_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#postfix_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/postfix",
+        dataSrc: function(data){
           return process_table_data(data, 'general_syslog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'postfix_logs');
+        {
+          title: lang.priority,
+          data: 'priority',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'postfix_logs');
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
-      }
+      ]
     });
   }
   function draw_watchdog_logs() {
-    ft_watchdog_logs = FooTable.init('#watchdog_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"service","title":"Service"},
-        {"name":"trend","title":"Trend"},
-        {"name":"message","title":lang.message},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/watchdog',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw watchdog log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#watchdog_log') ) {
+      $('#watchdog_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#watchdog_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/watchdog",
+        dataSrc: function(data){
           return process_table_data(data, 'watchdog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'postfix_logs');
+        {
+          title: 'Service',
+          data: 'service',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'postfix_logs');
+        {
+          title: 'Trend',
+          data: 'trend',
+          defaultContent: ''
+        },
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: ''
         }
-      }
+      ]
     });
   }
   function draw_api_logs() {
-    ft_api_logs = FooTable.init('#api_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"uri","title":"URI","style":{"width":"310px"}},
-        {"name":"method","title":"Method","style":{"width":"80px"}},
-        {"name":"remote","title":"IP","style":{"width":"80px"}},
-        {"name":"data","title":"Data","breakpoints": "all","style":{"word-break":"break-all"}},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/api',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw api log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#api_log') ) {
+      $('#api_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#api_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/api",
+        dataSrc: function(data){
           return process_table_data(data, 'apilog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'api_logs');
+        {
+          title: 'URI',
+          data: 'uri',
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'api_logs');
+        {
+          title: 'Method',
+          data: 'method',
+          defaultContent: ''
+        },
+        {
+          title: 'IP',
+          data: 'remote',
+          defaultContent: ''
+        },
+        {
+          title: 'Data',
+          data: 'data',
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
-      }
+      ]
     });
   }
   function draw_rl_logs() {
-    ft_rl_logs = FooTable.init('#rl_log', {
-      "columns": [
-        {"name":"indicator","title":" ","style":{"width":"50px"}},
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.last_applied,"style":{"width":"170px"}},
-        {"name":"rl_name","title":lang.rate_name},
-        {"name":"from","title":lang.sender},
-        {"name":"rcpt","title":lang.recipients},
-        {"name":"user","title":lang.authed_user},
-        {"name":"message_id","title":"Msg ID","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"header_from","title":"Header From","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"header_subject","title":"Subject","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"rl_hash","title":"Hash","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"qid","title":"Rspamd QID","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"ip","title":"IP","breakpoints": "all","style":{"word-break":"break-all"}},
-        {"name":"action","title":lang.action,"breakpoints": "all","style":{"word-break":"break-all"}},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/ratelimited',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw rl log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#rl_log') ) {
+      $('#rl_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#rl_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/ratelimited",
+        dataSrc: function(data){
           return process_table_data(data, 'rllog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: ' ',
+          data: 'indicator',
+          defaultContent: ''
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'rl_logs');
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'rl_logs');
+        {
+          title: lang.rate_name,
+          data: 'rl_name',
+          defaultContent: ''
+        },
+        {
+          title: lang.sender,
+          data: 'from',
+          defaultContent: ''
+        },
+        {
+          title: lang.recipients,
+          data: 'rcpt',
+          defaultContent: ''
+        },
+        {
+          title: lang.authed_user,
+          data: 'user',
+          defaultContent: ''
+        },
+        {
+          title: 'Msg ID',
+          data: 'message_id',
+          defaultContent: ''
+        },
+        {
+          title: 'Header From',
+          data: 'header_from',
+          defaultContent: ''
+        },
+        {
+          title: 'Subject',
+          data: 'header_subject',
+          defaultContent: ''
+        },
+        {
+          title: 'Hash',
+          data: 'rl_hash',
+          defaultContent: ''
+        },
+        {
+          title: 'Rspamd QID',
+          data: 'qid',
+          defaultContent: ''
+        },
+        {
+          title: 'IP',
+          data: 'ip',
+          defaultContent: ''
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          defaultContent: ''
         }
-      }
+      ]
     });
   }
   function draw_ui_logs() {
-    ft_api_logs = FooTable.init('#ui_logs', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"type","title":"Type"},
-        {"name":"task","title":"Task"},
-        {"name":"user","title":"User"},
-        {"name":"role","title":"Role"},
-        {"name":"remote","title":"IP"},
-        {"name":"msg","title":lang.message,"style":{"word-break":"break-all"}},
-        {"name":"call","title":"Call","breakpoints": "all"}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/ui',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw ui log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#ui_logs') ) {
+      $('#ui_logs').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#ui_logs').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/ui",
+        dataSrc: function(data){
           return process_table_data(data, 'mailcow_ui');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'ui_logs');
+        {
+          title: 'Type',
+          data: 'type',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'ui_logs');
+        {
+          title: 'Task',
+          data: 'task',
+          defaultContent: ''
+        },
+        {
+          title: 'User',
+          data: 'user',
+          defaultContent: '',
+          className: 'dtr-col-sm'
+        },
+        {
+          title: 'Role',
+          data: 'role',
+          defaultContent: '',
+          className: 'dtr-col-sm'
+        },
+        {
+          title: 'IP',
+          data: 'remote',
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
+        },
+        {
+          title: lang.message,
+          data: 'msg',
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
+        },
+        {
+          title: 'Call',
+          data: 'call',
+          defaultContent: '',
+          className: 'none dtr-col-md dtr-break-all'
         }
-      }
+      ]
     });
   }
   function draw_sasl_logs() {
-    ft_api_logs = FooTable.init('#sasl_logs', {
-      "columns": [
-        {"name":"username","title":lang.username},
-        {"name":"service","title":lang.service},
-        {"name":"real_rip","title":"IP"},
-        {"sorted": true,"sortValue": function(value){res = new Date(value);return res.getTime();},"direction":"DESC","name":"datetime","formatter":function date_format(datetime) { var date = new Date(datetime.replace(/-/g, "/")); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.login_time,"style":{"width":"170px"}},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/sasl',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw sasl log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sasl_logs') ) {
+      $('#sasl_logs').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#sasl_logs').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/sasl",
+        dataSrc: function(data){
           return process_table_data(data, 'sasl_log_table');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.username,
+          data: 'username',
+          defaultContent: ''
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'sasl_logs');
+        {
+          title: lang.service,
+          data: 'service',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'sasl_logs');
+        {
+          title: 'IP',
+          data: 'real_rip',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
+        },
+        {
+          title: lang.login_time,
+          data: 'datetime',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data.replace(/-/g, "/")); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         }
-      }
+      ]
     });
   }
   function draw_acme_logs() {
-    ft_acme_logs = FooTable.init('#acme_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"message","title":lang.message,"style":{"word-break":"break-all"}},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/acme',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw acme log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#acme_log') ) {
+      $('#acme_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#acme_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/acme",
+        dataSrc: function(data){
           return process_table_data(data, 'general_syslog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'acme_logs');
-        },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'acme_logs');
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md dtr-break-all'
         }
-      }
+      ]
     });
   }
   function draw_netfilter_logs() {
-    ft_netfilter_logs = FooTable.init('#netfilter_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
-        {"name":"message","title":lang.message},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/netfilter',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw netfilter log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#netfilter_log') ) {
+      $('#netfilter_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#netfilter_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/netfilter",
+        dataSrc: function(data){
           return process_table_data(data, 'general_syslog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'netfilter_logs');
+        {
+          title: lang.priority,
+          data: 'priority',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'netfilter_logs');
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
-      }
+      ]
     });
   }
   function draw_sogo_logs() {
-    ft_sogo_logs = FooTable.init('#sogo_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
-        {"name":"message","title":lang.message},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/sogo',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw sogo log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#sogo_log') ) {
+      $('#sogo_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#sogo_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/sogo",
+        dataSrc: function(data){
           return process_table_data(data, 'general_syslog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'sogo_logs');
+        {
+          title: lang.priority,
+          data: 'priority',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'sogo_logs');
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
-      }
+      ]
     });
   }
   function draw_dovecot_logs() {
-    ft_dovecot_logs = FooTable.init('#dovecot_log', {
-      "columns": [
-        {"name":"time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name":"priority","title":lang.priority,"style":{"width":"80px"}},
-        {"name":"message","title":lang.message},
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/dovecot',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw dovecot log table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#dovecot_log') ) {
+      $('#dovecot_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#dovecot_log').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/dovecot",
+        dataSrc: function(data){
           return process_table_data(data, 'general_syslog');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'dovecot_logs');
+        {
+          title: lang.priority,
+          data: 'priority',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'dovecot_logs');
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
         }
-      }
+      ]
     });
   }
   function rspamd_pie_graph() {
@@ -482,11 +654,13 @@ jQuery(function($){
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
+        console.log(data);
 
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
+        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -515,7 +689,7 @@ jQuery(function($){
           }
         };
         var chartcanvas = document.getElementById('rspamd_donut');
-        Chart.plugins.register('ChartDataLabels');
+        Chart.register('ChartDataLabels');
         if(typeof chart == 'undefined') {
           chart = new Chart(chartcanvas.getContext("2d"), {
             plugins: [ChartDataLabels],
@@ -537,53 +711,95 @@ jQuery(function($){
     });
   }
   function draw_rspamd_history() {
-    ft_rspamd_history = FooTable.init('#rspamd_history', {
-      "columns": [
-        {"name":"unix_time","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.time,"style":{"width":"170px"}},
-        {"name": "ip","title": "IP address","breakpoints": "all","style": {"minWidth": 88}},
-        {"name": "sender_mime","title": "From","breakpoints": "xs sm md","style": {"minWidth": 100}},
-        {"name": "rcpt","title": "To","breakpoints": "xs sm md","style": {"minWidth": 100}},
-        {"name": "subject","title": "Subject","breakpoints": "all","style": {"word-break": "break-all","minWidth": 150}},
-        {"name": "action","title": "Action","style": {"minwidth": 82}},
-        {"name": "score","title": "Score","style": {"maxWidth": 110},},
-        {"name": "symbols","title": "Symbols","breakpoints": "all",},
-        {"name": "size","title": "Msg size","breakpoints": "all","style": {"minwidth": 50},"formatter": function(value){return humanFileSize(value);}},
-        {"name": "scan_time","title": "Scan time","breakpoints": "all","style": {"maxWidth": 72},},
-        {"name": "message-id","title": "ID","breakpoints": "all","style": {"minWidth": 130,"overflow": "hidden","textOverflow": "ellipsis","wordBreak": "break-all","whiteSpace": "normal"}},
-        {"name": "user","title": "Authenticated user","breakpoints": "xs sm md","style": {"minWidth": 100}}
-      ],
-      "rows": $.ajax({
-        dataType: 'json',
-        url: '/api/v1/get/logs/rspamd-history',
-        jsonp: false,
-        error: function () {
-          console.log('Cannot draw rspamd history table');
-        },
-        success: function (data) {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#rspamd_history') ) {
+      $('#rspamd_history').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#rspamd_history').DataTable({
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/rspamd-history",
+        dataSrc: function(data){
           return process_table_data(data, 'rspamd_history');
         }
-      }),
-      "empty": lang.empty,
-      "paging": {"enabled": true,"limit": 5,"size": log_pagination_size},
-      "filtering": {"enabled": true,"delay": 1200,"position": "left","connectors": false,"placeholder": lang.filter_table,"connectors": false},
-      "sorting": {"enabled": true},
-      "on": {
-        "destroy.ft.table": function(e, ft){
-          $('.refresh_table').attr('disabled', 'true');
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          render: function(data, type){
+            var date = new Date(data ? data * 1000 : 0); 
+            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          }
         },
-        "ready.ft.table": function(e, ft){
-          table_log_ready(ft, 'rspamd_history');
-          heading = ft.$el.parents('.panel').find('.panel-heading')
-          $(heading).children('.table-lines').text(function(){
-            var ft_paging = ft.use(FooTable.Paging)
-            return ft_paging.totalRows;
-          })
-          rspamd_pie_graph();
+        {
+          title: 'IP address',
+          data: 'ip',
+          defaultContent: ''
         },
-        "after.ft.paging": function(e, ft){
-          table_log_paging(ft, 'rspamd_history');
+        {
+          title: 'From',
+          data: 'sender_mime',
+          defaultContent: ''
+        },
+        {
+          title: 'To',
+          data: 'rcpt',
+          defaultContent: ''
+        },
+        {
+          title: 'Subject',
+          data: 'subject',
+          defaultContent: ''
+        },
+        {
+          title: 'Action',
+          data: 'action',
+          defaultContent: ''
+        },
+        {
+          title: 'Score',
+          data: 'score',
+          defaultContent: ''
+        },
+        {
+          title: 'Subject',
+          data: 'header_subject',
+          defaultContent: ''
+        },
+        {
+          title: 'Symbols',
+          data: 'symbols',
+          defaultContent: '',
+          className: 'none dtr-col-md'
+        },
+        {
+          title: 'Msg size',
+          data: 'size',
+          defaultContent: ''
+        },
+        {
+          title: 'Scan Time',
+          data: 'scan_time',
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'message-id',
+          defaultContent: ''
+        },
+        {
+          title: 'Authenticated user',
+          data: 'user',
+          defaultContent: ''
         }
-      }
+      ]
     });
   }
   function process_table_data(data, table) {
@@ -634,13 +850,13 @@ jQuery(function($){
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
-        item.action = "<div class='label label-success'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-success'>" + item.action + "</div>";
       } else if (item.action === 'rewrite subject' || item.action === 'add header' || item.action === 'probable spam') {
-        item.action = "<div class='label label-warning'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-warning'>" + item.action + "</div>";
       } else if (item.action === 'spam' || item.action === 'reject') {
-        item.action = "<div class='label label-danger'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-danger'>" + item.action + "</div>";
       } else {
-        item.action = "<div class='label label-info'>" + item.action + "</div>";
+        item.action = "<div class='badge fs-6 bg-info'>" + item.action + "</div>";
       }
       var score_content;
       if (item.score < item.required_score) {
@@ -667,13 +883,13 @@ jQuery(function($){
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
         if (item.service == "activesync") {
-          item.service = '<span class="label label-info">ActiveSync</span>';
+          item.service = '<span class="badge fs-6 bg-info">ActiveSync</span>';
         }
         else if (item.service == "imap") {
-          item.service = '<span class="label label-success">IMAP, SMTP, Cal-/CardDAV</span>';
+          item.service = '<span class="badge fs-6 bg-success">IMAP, SMTP, Cal-/CardDAV</span>';
         }
         else {
-          item.service = '<span class="label label-danger">' + escapeHtml(item.service) + '</span>';
+          item.service = '<span class="badge fs-6 bg-danger">' + escapeHtml(item.service) + '</span>';
         }
       });
     } else if (table == 'watchdog') {
@@ -681,13 +897,13 @@ jQuery(function($){
         if (item.message == null) {
           item.message = 'Health level: ' + item.lvl + '% (' + item.hpnow + '/' + item.hptotal + ')';
           if (item.hpdiff < 0) {
-            item.trend = '<span class="label label-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-danger"><i class="bi bi-caret-down-fill"></i> ' + item.hpdiff + '</span>';
           }
           else if (item.hpdiff == 0) {
-            item.trend = '<span class="label label-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-info"><i class="bi bi-caret-right-fill"></i> ' + item.hpdiff + '</span>';
           }
           else {
-            item.trend = '<span class="label label-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
+            item.trend = '<span class="badge fs-6 bg-success"><i class="bi bi-caret-up-fill"></i> ' + item.hpdiff + '</span>';
           }
         }
         else {
@@ -701,14 +917,14 @@ jQuery(function($){
         item.user = escapeHtml(item.user);
         item.call = escapeHtml(item.call);
         item.task = '<code>' + item.task + '</code>';
-        item.type = '<span class="label label-' + item.type + '">' + item.type + '</span>';
+        item.type = '<span class="badge fs-6 bg-' + item.type + '">' + item.type + '</span>';
       });
     } else if (table == 'sasl_log_table') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.username = escapeHtml(item.username);
-        item.service = '<div class="label label-default">' + item.service.toUpperCase() + '</div>';
-    });
+        item.service = '<div class="badge fs-6 bg-secondary">' + item.service.toUpperCase() + '</div>';
+      });
     } else if (table == 'general_syslog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
@@ -726,20 +942,20 @@ jQuery(function($){
         var warning_class = ["warning", "warn"];
         var info_class = ["notice", "info", "debug"];
         if (jQuery.inArray(item.priority, danger_class) !== -1) {
-          item.priority = '<span class="label label-danger">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-danger">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, warning_class) !== -1) {
-          item.priority = '<span class="label label-warning">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-warning">' + item.priority + '</span>';
         } else if (jQuery.inArray(item.priority, info_class) !== -1) {
-          item.priority = '<span class="label label-info">' + item.priority + '</span>';
+          item.priority = '<span class="badge fs-6 bg-info">' + item.priority + '</span>';
         }
       });
     } else if (table == 'apilog') {
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         if (item.method == 'GET') {
-          item.method = '<span class="label label-success">' + item.method + '</span>';
+          item.method = '<span class="badge fs-6 bg-success">' + item.method + '</span>';
         } else if (item.method == 'POST') {
-          item.method = '<span class="label label-warning">' + item.method + '</span>';
+          item.method = '<span class="badge fs-6 bg-warning">' + item.method + '</span>';
         }
         item.data = escapeHtml(item.data);
       });
@@ -769,37 +985,488 @@ jQuery(function($){
       console.log("no data-table or data-nrows or log_url or data-post-process attr found");
       return;
     }
-    if (ft = FooTable.get($('#' + log_table))) {
-      var heading = ft.$el.parents('.panel').find('.panel-heading')
-      var ft_paging = ft.use(FooTable.Paging)
-      var load_rows = (ft_paging.totalRows + 1) + '-' + (ft_paging.totalRows + new_nrows)
+
+    // BUG TODO: loading 100 results in loading 10 - loading 1000 results in loading 100
+    if (table = $('#' + log_table).DataTable()) {
+      var heading = $('#' + log_table).closest('.card').find('.card-header');
+      var load_rows = (table.page.len() + 1) + '-' + (table.page.len() + new_nrows)
+
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
         var rows = process_table_data(data, post_process);
-        var rows_now = (ft_paging.totalRows + data.length);
+        var rows_now = (table.page.len() + data.length);
         $(heading).children('.table-lines').text(rows_now)
         mailcow_alert_box(data.length + lang.additional_rows, "success");
-        ft.rows.load(rows, true);
+        table.rows.add(rows).draw();
       });
     }
   })
-  // Initial table drawings
-  draw_postfix_logs();
-  draw_autodiscover_logs();
-  draw_dovecot_logs();
-  draw_sogo_logs();
-  draw_watchdog_logs();
-  draw_acme_logs();
-  draw_api_logs();
-  draw_rl_logs();
-  draw_ui_logs();
-  draw_sasl_logs();
-  draw_netfilter_logs();
-  draw_rspamd_history();
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    var target = $(e.target).attr("href");
-    if (target == '#tab-rspamd-history') {
-      rspamd_pie_graph();
+
+  // detect element visibility changes
+  function onVisible(element, callback) {
+    $(document).ready(function() {
+      element_object = document.querySelector(element);
+      if (element_object === null) return;
+
+      new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if(entry.intersectionRatio > 0) {
+            callback(element_object);
+          }
+        });
+      }).observe(element_object);
+    });
+  }
+  // Draw Table if tab is active
+  onVisible("[id^=postfix_log]", () => draw_postfix_logs());
+  onVisible("[id^=dovecot_log]", () => draw_dovecot_logs());
+  onVisible("[id^=sogo_log]", () => draw_sogo_logs());
+  onVisible("[id^=watchdog_log]", () => draw_watchdog_logs());
+  onVisible("[id^=autodiscover_log]", () => draw_autodiscover_logs());
+  onVisible("[id^=acme_log]", () => draw_acme_logs());
+  onVisible("[id^=api_log]", () => draw_api_logs());
+  onVisible("[id^=rl_log]", () => draw_rl_logs());
+  onVisible("[id^=ui_logs]", () => draw_ui_logs());
+  onVisible("[id^=sasl_logs]", () => draw_sasl_logs());
+  onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
+  onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
+  onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
+
+
+
+  // start polling host stats if tab is active
+  onVisible("[id^=tab-containers]", () => update_stats());
+  // start polling container stats if collapse is active
+  var containerElements = document.querySelectorAll(".container-details-collapse");
+  for (let i = 0; i < containerElements.length; i++){
+    new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(entry.intersectionRatio > 0) {
+
+          if (!containerElements[i].classList.contains("show")){
+            var container = containerElements[i].id.replace("Collapse", "");
+            var container_id = containerElements[i].getAttribute("data-id");
+
+            // check if chart exists or needs to be created
+            if (!Chart.getChart(container + "_DiskIOChart"))
+              createReadWriteChart(container + "_DiskIOChart", "Read", "Write");
+            if (!Chart.getChart(container + "_NetIOChart"))
+              createReadWriteChart(container + "_NetIOChart", "Recv", "Sent");
+
+            // add container to polling list
+            containersToUpdate[container] = {
+              id: container_id,
+              state: "idle"
+            }
+
+            // stop polling if collapse is closed
+            containerElements[i].addEventListener('hidden.bs.collapse', function () {
+              var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
+              var netIOCtx = Chart.getChart(container + "_NetIOChart");
+
+              diskIOCtx.data.datasets[0].data = [];
+              diskIOCtx.data.datasets[1].data = [];
+              diskIOCtx.data.labels = [];
+              netIOCtx.data.datasets[0].data = [];
+              netIOCtx.data.datasets[1].data = [];
+              netIOCtx.data.labels = [];
+            
+              diskIOCtx.update();
+              netIOCtx.update();
+              
+              delete containersToUpdate[container];
+            });
+          }
+
+        }
+      });
+    }).observe(containerElements[i]);
+  }
+});
+
+
+// update system stats - every 5 seconds if system & container tab is active
+function update_stats(timeout=5){
+  if (!$('#tab-containers').hasClass('active')) {
+    // tab not active - dont fetch stats - run again in n seconds
+    return;
+  }
+
+  window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    console.log(data);
+
+    if (data){
+      // display table data
+      $("#host_date").text(data.system_time);
+      $("#host_uptime").text(formatUptime(data.uptime));
+      $("#host_cpu_cores").text(data.cpu.cores);
+      $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
+      $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
+      $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+
+      // update cpu and mem chart
+      var cpu_chart = Chart.getChart("host_cpu_chart");
+      var mem_chart = Chart.getChart("host_mem_chart");
+
+      cpu_chart.data.labels.push(data.system_time.split(" ")[1]);
+      if (cpu_chart.data.labels.length > 30) cpu_chart.data.labels.shift();
+      mem_chart.data.labels.push(data.system_time.split(" ")[1]);
+      if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
+
+      cpu_chart.data.datasets[0].data.push(data.cpu.usage);
+      if (cpu_chart.data.datasets[0].data.length > 30)  cpu_chart.data.datasets[0].data.shift();
+      mem_chart.data.datasets[0].data.push(data.memory.usage);
+      if (mem_chart.data.datasets[0].data.length > 30)  mem_chart.data.datasets[0].data.shift();
+
+      cpu_chart.update();
+      mem_chart.update();
+    }
+
+    // run again in n seconds
+    setTimeout(update_stats, timeout * 1000);
+  });
+}
+// update specific container stats - every n (default 5s) seconds
+function update_container_stats(timeout=5){
+  
+  if ($('#tab-containers').hasClass('active')) {
+    for (let container in containersToUpdate){
+      container_id = containersToUpdate[container].id;
+      // check if container update stats is already running
+      if (containersToUpdate[container].state == "running")
+        continue;
+      containersToUpdate[container].state = "running";
+
+
+      window.fetch("/api/v1/get/status/container/" + container_id, {method:'GET',cache:'no-cache'}).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
+        var netIOCtx = Chart.getChart(container + "_NetIOChart");
+
+        console.log(container);
+        console.log(data);
+        prev_stats = null;
+        if (data.length >= 2){
+          prev_stats = data[data.length -2];
+
+          // hide spinners if we collected enough data
+          $('#' + container + "_DiskIOChart").removeClass('d-none');
+          $('#' + container + "_DiskIOChart").prev().addClass('d-none');
+          $('#' + container + "_NetIOChart").removeClass('d-none');
+          $('#' + container + "_NetIOChart").prev().addClass('d-none');
+        }
+          
+        data = data[data.length -1];
+
+        if (prev_stats != null){
+          // calc time diff
+          var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
+    
+          // calc disk io b/s
+          if ('io_service_bytes_recursive' in prev_stats.blkio_stats && prev_stats.blkio_stats.io_service_bytes_recursive !== null){
+            var prev_read_bytes = 0;
+            var prev_write_bytes = 0;
+            for (var i = 0; i < prev_stats.blkio_stats.io_service_bytes_recursive.length; i++){
+              if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "read")
+                prev_read_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+              else if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "write")
+                prev_write_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
+            }
+            var read_bytes = 0;
+            var write_bytes = 0;
+            for (var i = 0; i < data.blkio_stats.io_service_bytes_recursive.length; i++){
+              if (data.blkio_stats.io_service_bytes_recursive[i].op == "read")
+                read_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+              else if (data.blkio_stats.io_service_bytes_recursive[i].op == "write")
+                write_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
+            }
+            var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
+            var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
+          }
+    
+          // calc net io b/s
+          if ('networks' in prev_stats){
+            var prev_recv_bytes = 0;
+            var prev_sent_bytes = 0;
+            for (var key in prev_stats.networks){
+              prev_recv_bytes += prev_stats.networks[key].rx_bytes;
+              prev_sent_bytes += prev_stats.networks[key].tx_bytes;
+            }
+            var recv_bytes = 0;
+            var sent_bytes = 0;
+            for (var key in data.networks){
+              recv_bytes += data.networks[key].rx_bytes;
+              sent_bytes += data.networks[key].tx_bytes;
+            }
+            var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
+            var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
+          }
+    
+          addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
+          addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
+        }
+    
+        // run again in n seconds
+        containersToUpdate[container].state = "idle";
+      }).catch(err => {
+        console.log(err);
+      });
+    }
+  }
+
+  // run again in n seconds
+  setTimeout(update_container_stats, timeout * 1000);
+}
+// get public ips
+function get_public_ips(){
+  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    console.log(data);
+
+    if (data){
+      // display host ips
+      $("#host_ipv4").text(data.ipv4);
+      $("#host_ipv6").text(data.ipv6);
     }
   });
-});
+}
+// format hosts uptime seconds to readable string
+function formatUptime(seconds){
+  seconds = Number(seconds);
+  var d = Math.floor(seconds / (3600*24));
+  var h = Math.floor(seconds % (3600*24) / 3600);
+  var m = Math.floor(seconds % 3600 / 60);
+  var s = Math.floor(seconds % 60);
+
+  var dFormat = d > 0 ? d + "D " : "";
+  var hFormat = h > 0 ? h + "H " : "";
+  var mFormat = m > 0 ? m + "M " : "";
+  var sFormat = s > 0 ? s + "S" : "";
+  return dFormat + hFormat + mFormat + sFormat;
+} 
+// format bytes to readable string
+function formatBytes(bytes){
+  // b
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' B/s';
+  // b to kb
+  bytes = bytes / 1024;
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' KB/s';
+  // kb to mb
+  bytes = bytes / 1024;
+  if (bytes < 1000) return bytes.toFixed(2).toString()+' MB/s';
+  // final mb to gb
+  return (bytes / 1024).toFixed(2).toString()+' GB/s';
+}
+// create read write line chart
+function createReadWriteChart(chart_id, read_lable, write_lable){
+  var ctx = document.getElementById(chart_id);
+
+  var dataNet = {
+    labels: [],
+    datasets: [{
+      label: read_lable,
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }, {
+      label: write_lable,
+      backgroundColor: "rgba(239, 60, 41, 0.3)",
+      borderColor: "rgba(239, 60, 41, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsNet = {
+    interaction: {
+        mode: 'index'
+    },
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+             return formatBytes(i);
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+  
+  return new Chart(ctx, {
+    type: 'line',
+    data: dataNet,
+    options: optionsNet
+  });
+}
+// add to read write line chart
+function addReadWriteChart(chart_context, read_point, write_point, time, limit = 30){
+  // push time label for x-axis
+  chart_context.data.labels.push(time);
+  if (chart_context.data.labels.length > limit) chart_context.data.labels.shift();
+
+  // push datapoints
+  chart_context.data.datasets[0].data.push(read_point);
+  chart_context.data.datasets[1].data.push(write_point);
+  // shift data if more than 20 entires exists
+  if (chart_context.data.datasets[0].data.length > limit)  chart_context.data.datasets[0].data.shift();
+  if (chart_context.data.datasets[1].data.length > limit) chart_context.data.datasets[1].data.shift();
+
+  chart_context.update();
+}
+// create host cpu and mem chart
+function createHostCpuAndMemChart(){
+  var cpu_ctx = document.getElementById("host_cpu_chart");
+  var mem_ctx = document.getElementById("host_mem_chart");
+
+  var dataCpu = {
+    labels: [],
+    datasets: [{
+      label: "CPU %",
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsCpu = {
+    interaction: {
+        mode: 'index'
+    },
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+             return i.toFixed(0).toString() + "%";
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+
+  var dataMem = {
+    labels: [],
+    datasets: [{
+      label: "MEM %",
+      backgroundColor: "rgba(41, 187, 239, 0.3)",
+      borderColor: "rgba(41, 187, 239, 0.6)",
+      pointRadius: 1,
+      pointHitRadius: 6,
+      borderWidth: 2,
+      fill: true,
+      tension: 0.2,
+      data: []
+    }]
+  };
+  var optionsMem = {
+    interaction: {
+        mode: 'index'
+    },
+    scales: {
+      yAxis: {
+        min: 0,
+        grid: {
+            display: false
+        },
+        ticks: {
+          callback: function(i, index, ticks) {
+            return i.toFixed(0).toString() + "%";
+          }
+        }  
+      },
+      xAxis: {
+        grid: {
+            display: false
+        }  
+      }
+    }
+  };
+
+  
+  var net_io_chart = new Chart(cpu_ctx, {
+    type: 'line',
+    data: dataCpu,
+    options: optionsCpu
+  });
+  var disk_io_chart = new Chart(mem_ctx, {
+    type: 'line',
+    data: dataMem,
+    options: optionsMem
+  });
+}
+// check for mailcow updates
+function check_update(current_version, github_repo_url){
+  if (!current_version || !github_repo_url) return false; 
+
+  var github_account = github_repo_url.split("/")[3];
+  var github_repo_name = github_repo_url.split("/")[4];
+
+  // get details about latest release
+  window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/latest", {method:'GET',cache:'no-cache'}).then(function(response) {
+    return response.json();
+  }).then(function(latest_data) {
+    // get details about current release
+    window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/tags/"+current_version, {method:'GET',cache:'no-cache'}).then(function(response) {
+      return response.json();
+    }).then(function(current_data) {
+      // compare releases
+      var date_current = new Date(current_data.created_at);
+      var date_latest = new Date(latest_data.created_at);
+      if (date_latest.getTime() <= date_current.getTime()){
+        // no update available
+        $("#mailcow_update").removeClass("text-warning text-danger").addClass("text-success");
+        $("#mailcow_update").html("<b>" + lang_debug.no_update_available + "</b>");
+      } else {
+        // update available
+        $("#mailcow_update").removeClass("text-danger text-success").addClass("text-warning");
+        $("#mailcow_update").html(
+          `<b>` + lang_debug.update_available + `
+          <a target="_blank" href="https://github.com/`+github_account+`/`+github_repo_name+`/releases/tag/`+latest_data.tag_name+`">`+latest_data.tag_name+`</a></b>`
+        );
+      }
+    }).catch(err => {
+      // err
+      console.log(err);
+      $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
+      $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
+    });
+  }).catch(err => {
+    // err
+    console.log(err);
+    $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
+    $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
+  });
+}

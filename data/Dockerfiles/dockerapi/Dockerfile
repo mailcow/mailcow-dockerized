@@ -8,11 +8,14 @@ RUN apk add --update --no-cache python3 \
   py3-pip \
   openssl \
   tzdata \
+  py3-psutil \
 && pip3 install --upgrade pip \
-  docker \
-  flask \
-  flask-restful
+  fastapi \
+  uvicorn \
+  aiodocker \
+  redis 
 
+COPY docker-entrypoint.sh /app/
 COPY dockerapi.py /app/
 
-CMD ["python3", "-u", "/app/dockerapi.py"]
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]

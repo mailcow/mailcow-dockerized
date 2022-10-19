@@ -89,6 +89,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     'pushover_data' => $pushover_data,
     'lang_user' => json_encode($lang['user']),
     'number_of_app_passwords' => $number_of_app_passwords,
+    'lang_datatables' => json_encode($lang['datatables']),
   ];
 }
 else {

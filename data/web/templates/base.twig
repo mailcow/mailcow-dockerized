@@ -9,34 +9,47 @@
   <title>{{ ui_texts.title_name|raw }}</title>
 
   <link rel="stylesheet" href="{{ css_path }}">
-  {% if theme != 'lumen' %}
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/{{ theme }}/bootstrap.min.css">
-  {% endif %}
+  <script>
+    // check if darkmode is preferred by OS or set by localStorage
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ||
+        JSON.parse(localStorage.getItem("darkmode")) === true) {
+      var head  = document.getElementsByTagName('head')[0];
+      var link  = document.createElement('link');
+      link.id   = 'dark-mode-theme';
+      link.rel  = 'stylesheet';
+      link.type = 'text/css';
+      link.href = '/css/themes/mailcow-darkmode.css';
+      head.appendChild(link);
+    }
+  </script>
+
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
   <link rel="icon" href="/favicon.png" type="image/png">
 </head>
-<body id="top">
+<body>
 <div class="overlay"></div>
 {% block navbar %}
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top p-0">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
-    </div>
+    <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="bi bi-list fs-3"></i>
+    </button>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <div class="nav-link form-check form-switch my-auto d-flex align-items-center">
+            <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
+            <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
+          </div>
+        </li>
         {% if mailcow_locale %}
-        <li class="dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span><span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
+        <li class="nav-item dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span></a>
+          <ul class="dropdown-menu" role="menu "aria-labelledby="languageDropdown">
             {% for key, val in available_languages %}
-            <li{% if mailcow_locale == key %} class="active"{% endif %}>
-              <a href="?{{ query_string({'lang': key}) }}">
+            <li>
+              <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
                 <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
               </a>
             </li>
@@ -45,52 +58,58 @@
         </li>
         {% endif %}
         {% if mailcow_cc_role %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.mailcow_settings }} <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.mailcow_system }}</a>
+          <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
-            <li {% if is_uri('admin') %}class="active"{% endif %}><a href="/admin">{{ lang.header.administration }}</a></li>
-            <li {% if is_uri('debug') %}class="active"{% endif %}><a href="/debug">{{ lang.header.debug }}</a></li>
-            {% endif %}
-            {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
-            <li {% if is_uri('mailbox') %}class="active"{% endif %}><a href="/mailbox">{{ lang.header.mailboxes }}</a></li>
+            <li><a href="/debug" class="dropdown-item {% if is_uri('debug') %}active{% endif %}">{{ lang.header.debug }}</a></li>
+            <li><a href="/admin" class="dropdown-item {% if is_uri('admin') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
             {% endif %}
             {% if mailcow_cc_role != 'admin' %}
-            <li {% if is_uri('user') %}class="active"{% endif %}><a href="/user">{{ lang.header.user_settings }}</a></li>
+            <li><a href="/user" class="dropdown-item {% if is_uri('user') %}active{% endif %}">{{ lang.header.user_settings }}</a></li>
             {% endif %}
           </ul>
         </li>
-        <li {% if is_uri('quarantine') %}class="active"{% endif %}><a href="/quarantine"><i class="bi bi-inbox-fill"></i> {{ lang.header.quarantine }}</a></li>
-        {% endif %}
-        {% if mailcow_cc_role == 'admin' and not skip_sogo %}
-        <li><a href data-toggle="modal" data-container="sogo-mailcow" data-target="#RestartContainer"><i class="bi bi-arrow-repeat"></i> {{ lang.header.restart_sogo }}</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.email }}</a>
+          <ul class="dropdown-menu">
+            {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
+            <li><a href="/mailbox" class="dropdown-item {% if is_uri('mailbox') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
+            {% endif %}
+            <li><a href="/quarantine" class="dropdown-item {% if is_uri('quarantine') %}active{% endif %}">{{ lang.header.quarantine }}</a></li>
+            {% if mailcow_cc_role == 'admin' %}
+            <li><a href="/queue" class="dropdown-item {% if is_uri('queue') %}active{% endif %}">{{ lang.queue.queue_manager }}</a></li>
+            {% endif %}
+            <li><a href="#" class="dropdown-item" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer">{{ lang.header.restart_sogo }}</a></li>
+          </ul>
+        </li>
         {% endif %}
         {% if mailcow_apps or app_links %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }} <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg me-2"></i> {{ ui_texts.apps_name|raw }}</a>
+          <ul class="dropdown-menu">
             {% for app in mailcow_apps %}
               {% if not skip_sogo or not is_uri('SOGo', app.link) %}
               <li {% if app.description %}title="{{ app.description }}"{% endif %}>
-                <a href="{{ app.link }}">{{ app.name }}</a>
+                <a href="{{ app.link }}" class="dropdown-item">{{ app.name }}</a>
               </li>
               {% endif %}
             {% endfor %}
             {% for row in app_links %}
               {% for key, val in row %}
-              <li><a href="{{ val }}">{{ key }}</a></li>
+              <li><a href="{{ val }}" class="dropdown-item">{{ key }}</a></li>
               {% endfor %}
             {% endfor %}
           </ul>
         </li>
         {% endif %}
         {% if not dual_login and mailcow_cc_username %}
-        <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power"></i></a></li>
+        <li class="logged-in-as nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power ms-2"></i></a></li>
         {% elseif dual_login %}
-        <li class="logged-in-as"><a href="#" onclick="logout.submit()"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power"></i></a></li>
+        <li class="logged-in-as nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }} <span class="text-info">({{ dual_login.username }})</span> </b><i class="bi bi-power ms-2"></i></a></li>
         {% endif %}
         {% if not is_master %}
-        <li class="text-warning slave-info">[ slave ]</li>
+        <li class="text-warning slave-info nav-item">[ slave ]</li>
         {% endif %}
       </ul>
     </div><!--/.nav-collapse -->
@@ -101,12 +120,12 @@
 <form action="/" method="post" id="logout"><input type="hidden" name="logout"></form>
 
 {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active and not is_root_uri %}
-<div class="container">
+<div class="container mt-4">
   <div class="alert alert-{{ ui_texts.ui_announcement_type }}">{{ ui_texts.ui_announcement_text }}</div>
 </div>
 {% endif %}
 
-<div class="container">
+<div class="container my-4">
 {% block content %}{% endblock %}
 </div>
 
@@ -119,6 +138,17 @@
   var lang_tfa = {{ lang_tfa|raw }};
   var lang_fido2 = {{ lang_fido2|raw }};
   var docker_timeout = {{ docker_timeout|raw }} * 1000;
+  var mailcow_cc_role = '{{ mailcow_cc_role }}';
+  var last_login = '{{ last_login }}';
+  var mailcow_info = {
+    version_tag: '{{ mailcow_info.version_tag }}',
+    last_version_tag: '{{ mailcow_info.last_version_tag }}',
+    updatedAt: '{{ mailcow_info.updatedAt }}',
+    project_url: '{{ mailcow_info.project_url }}',
+    project_owner: '{{ mailcow_info.project_owner }}',
+    project_repo: '{{ mailcow_info.project_repo }}',
+    branch: '{{ mailcow_info.mailcow_branch }}'
+  };
 
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
@@ -161,7 +191,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     }
   }
 }
-  $(window).load(function() {
+  $(window).on('load', function() {
     $(".overlay").hide();
   });
   $(document).ready(function() {
@@ -177,10 +207,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
     // Confirm TFA modal
   {% if pending_tfa_methods %}
-    $('#ConfirmTFAModal').modal({
+    new bootstrap.Modal(document.getElementById("ConfirmTFAModal"), {
       backdrop: 'static',
       keyboard: false
-    });
+    }).show();
 
 
     // validate Time based OTP tfa
@@ -244,6 +274,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
       var id = $(this).children('input').first().val();
       $("#webauthn_selected_id").val(id);
       
+      var webauthn_status_auth = document.getElementById('webauthn_status_auth');
+      webauthn_status_auth.style.setProperty('display', 'flex', 'important');
+      var webauthn_return_code = document.getElementById('webauthn_return_code');
+      webauthn_return_code.style.setProperty('display', 'none', 'important');
+
       $("#collapseWebAuthnTFA").collapse('show');
 
       $(this).find('input[name=token]').focus();
@@ -281,8 +316,11 @@ function recursiveBase64StrToArrayBuffer(obj) {
           auth.value = AuthenticatorAttestationResponse;
           form.submit();
         }).catch(function(err) {
+          var webauthn_status_auth = document.getElementById('webauthn_status_auth');
+          webauthn_status_auth.style.setProperty('display', 'none', 'important');
+
           var webauthn_return_code = document.getElementById('webauthn_return_code');
-          webauthn_return_code.style.display = webauthn_return_code.style.display === 'none' ? '' : null;
+          webauthn_return_code.style.setProperty('display', 'block', 'important');
           webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
       } 

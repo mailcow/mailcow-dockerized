@@ -116,6 +116,7 @@ function customize($_action, $_item, $_data = null) {
           $ui_announcement_text = $_data['ui_announcement_text'];
           $ui_announcement_type = (in_array($_data['ui_announcement_type'], array('info', 'warning', 'danger'))) ? $_data['ui_announcement_type'] : false;
           $ui_announcement_active = (!empty($_data['ui_announcement_active']) ? 1 : 0);
+
           try {
             $redis->set('TITLE_NAME', htmlspecialchars($title_name));
             $redis->set('MAIN_NAME', htmlspecialchars($main_name));

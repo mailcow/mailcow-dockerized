@@ -251,7 +251,7 @@ function password_check($password1, $password2) {
 
   return true;
 }
-function last_login($action, $username, $sasl_limit_days = 7) {
+function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   global $pdo;
   global $redis;
   $sasl_limit_days = intval($sasl_limit_days);
@@ -319,8 +319,11 @@ function last_login($action, $username, $sasl_limit_days = 7) {
         $stmt = $pdo->prepare('SELECT `remote`, `time` FROM `logs`
           WHERE JSON_EXTRACT(`call`, "$[0]") = "check_login"
             AND JSON_EXTRACT(`call`, "$[1]") = :username
-            AND `type` = "success" ORDER BY `time` DESC LIMIT 1 OFFSET 1');
-        $stmt->execute(array(':username' => $username));
+            AND `type` = "success" ORDER BY `time` DESC LIMIT 1 OFFSET :offset');
+        $stmt->execute(array(
+          ':username' => $username,
+          ':offset' => $ui_offset
+        ));
         $ui = $stmt->fetch(PDO::FETCH_ASSOC);
       }
       else {

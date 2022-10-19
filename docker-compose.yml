@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.90
+      image: mailcow/rspamd:1.91
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -510,7 +510,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.42
+      image: mailcow/dockerapi:1.44
       security_opt:
         - label=disable
       restart: always
@@ -520,6 +520,8 @@ services:
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:

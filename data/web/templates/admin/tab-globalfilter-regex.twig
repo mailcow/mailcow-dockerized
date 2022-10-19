@@ -1,20 +1,23 @@
-<div role="tabpanel" class="tab-pane" id="tab-globalfilter-regex">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      {{ lang.admin.rspamd_global_filters }}
+<div role="tabpanel" class="tab-pane fade" id="tab-globalfilter-regex" role="tabpanel" aria-labelledby="tab-globalfilter-regex">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-regex" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-regex">
+        {{ lang.admin.rspamd_global_filters }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.rspamd_global_filters }}</span>
     </div>
-    <div class="panel-body">
+    <div id="collapse-tab-config-regex" class="card-body collapse" data-bs-parent="#admin-content">
       <p>{{ lang.admin.rspamd_global_filters_info }}</p>
-      <div id="confirm_show_rspamd_global_filters"{% if show_rspamd_global_filters %} class="hidden"{% endif %}>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+      <div id="confirm_show_rspamd_global_filters"{% if show_rspamd_global_filters %} class="d-none"{% endif %}>
+        <div class="row">
+          <div class="offset-sm-2 col-sm-10">
             <label>
               <input type="checkbox" id="show_rspamd_global_filters"> {{ lang.admin.rspamd_global_filters_agree }}
             </label>
           </div>
         </div>
       </div>
-      <div id="rspamd_global_filters"{% if show_rspamd_global_filters != true %} class="hidden"{% endif %}>
+      <div id="rspamd_global_filters"{% if show_rspamd_global_filters != true %} class="d-none"{% endif %}>
         <hr>
         <span class="anchor" id="regexmaps"></span>
         <h4>{{ lang.admin.regex_maps }}</h4>
@@ -28,16 +31,18 @@
         <hr>
         <span class="anchor" id="{{ rspamd_regex_map.map }}"></span>
         <form class="form-horizontal" data-cached-form="false" data-id="{{ rspamd_regex_map.map }}" role="form" method="post">
-          <div class="form-group">
+          <div class="row">
             <label class="control-label col-sm-3" for="{{ rspamd_regex_map.map }}">{{ rspamd_regex_desc }}<br><small>{{ rspamd_regex_map.map }}</small></label>
             <div class="col-sm-9">
               <textarea id="{{ rspamd_regex_map.map }}" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control textarea-code" rows="10" name="rspamd_map_data" required>{{ rspamd_regex_map.data }}</textarea>
             </div>
           </div>
-          <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-              <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default validate_rspamd_regex" data-regex-map="{{ rspamd_regex_map.map }}" href="#">{{ lang.add.validate }}</button>
-              <button class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success submit_rspamd_regex" data-action="edit_selected" data-id="{{ rspamd_regex_map.map }}" data-item="{{ rspamd_regex_map.map }}" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled>{{ lang.edit.save }}</button>
+          <div class="row">
+            <div class="offset-sm-3 col-sm-9">
+              <div class="btn-group mt-2">
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary validate_rspamd_regex" data-regex-map="{{ rspamd_regex_map.map }}" href="#">{{ lang.add.validate }}</button>
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success submit_rspamd_regex" data-action="edit_selected" data-id="{{ rspamd_regex_map.map }}" data-item="{{ rspamd_regex_map.map }}" data-api-url='edit/rspamd-map' data-api-attr='{}' href="#" disabled>{{ lang.edit.save }}</button>
+              </div>
             </div>
           </div>
         </form>

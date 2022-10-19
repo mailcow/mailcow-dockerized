@@ -1,6 +1,7 @@
 <?php
 function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $extra_headers = null) {
   global $DOCKER_TIMEOUT;
+  global $redis;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: application/json' ));
   // We are using our mail certificates for dockerapi, the names will not match, the certs are trusted anyway
@@ -32,6 +33,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
         }
       }
       return false;
+    break;
     case 'containers':
       curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/json');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -51,6 +53,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
             if (strtolower($container['Config']['Labels']['com.docker.compose.project']) == strtolower(getenv('COMPOSE_PROJECT_NAME'))) {
               $out[$container['Config']['Labels']['com.docker.compose.service']]['State'] = $container['State'];
               $out[$container['Config']['Labels']['com.docker.compose.service']]['Config'] = $container['Config'];
+              $out[$container['Config']['Labels']['com.docker.compose.service']]['Id'] = trim($container['Id']);
             }
           }
         }
@@ -94,6 +97,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
                 unset($container['Config']['Env']);
                 $out[$container['Config']['Labels']['com.docker.compose.service']]['State'] = $container['State'];
                 $out[$container['Config']['Labels']['com.docker.compose.service']]['Config'] = $container['Config'];
+                $out[$container['Config']['Labels']['com.docker.compose.service']]['Id'] = trim($container['Id']);
               }
             }
           }
@@ -103,6 +107,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
               unset($container['Config']['Env']);
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['State'] = $decoded_response['State'];
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['Config'] = $decoded_response['Config'];
+              $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['Id'] = trim($decoded_response['Id']);
             }
           }
         }
@@ -145,6 +150,47 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           }
         }
       }
+    break;
+    case 'container_stats':
+      if (empty($service_name)){
+        return false;
+      }
+
+      $container_id = $service_name;
+      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/container/' . $container_id . '/stats/update');
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($curl, CURLOPT_POST, 1);
+      curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
+      $response = curl_exec($curl);
+      if ($response === false) {
+        $err = curl_error($curl);
+        curl_close($curl);
+        return $err;
+      }
+      else {
+        curl_close($curl);
+        $stats = json_decode($response, true);
+        if (!empty($stats)) return $stats;
+      }
+      return false;
+    break;
+    case 'host_stats':
+      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/host/stats');
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($curl, CURLOPT_POST, 0);
+      curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
+      $response = curl_exec($curl);
+      if ($response === false) {
+        $err = curl_error($curl);
+        curl_close($curl);
+        return $err;
+      }
+      else {
+        curl_close($curl);
+        $stats = json_decode($response, true);
+        if (!empty($stats)) return $stats;
+      }
+      return false;
     break;
   }
 }
