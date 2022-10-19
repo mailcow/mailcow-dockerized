@@ -84,7 +84,7 @@
                         <td id="host_uptime" class="text-break">-</td>
                       </tr>
                       <tr>
-                        <td>Disk Info</td>
+                        <td>{{ lang.debug.disk_usage }}</td>
                         <td class="text-break">
                           <div>
                             <span class="d-block"><i class="bi bi-hdd-fill"></i> {{ vmail_df[0] }}</span>
@@ -104,11 +104,11 @@
 
               <div class="col-sm-6 mt-4">
                 <h3>CPU</h3>
-                <h5><span id="host_cpu_cores">-</span> Cores @ <span id="host_cpu_usage"></span></h5>
+                <h5><span id="host_cpu_cores">-</span> {{ lang.debug.cores }} @ <span id="host_cpu_usage"></span></h5>
                 <canvas id="host_cpu_chart" width="400" height="200"></canvas>
               </div>
               <div class="col-sm-6 mt-4">
-                <h3>MEMORY</h3>
+                <h3>{{ lang.debug.memory|upper}}</h3>
                 <h5><span id="host_memory_total">-</span> @ <span id="host_memory_usage"></span></h5>
                 <canvas id="host_mem_chart" width="400" height="200"></canvas>
               </div>
