@@ -487,6 +487,7 @@
         "containers_info": "Container information",
         "container_running": "Running",
         "container_stopped": "Stopped",
+        "cores": "Cores",
         "current_time": "System Time",
         "disk_usage": "Disk usage",
         "docs": "Docs",
