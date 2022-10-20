@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-MASTER="en"
+MASTER="en-gb"
 
 DIR = "#{__dir__}/.."
 

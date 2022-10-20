@@ -180,9 +180,65 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 // Set language
 if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
   if ($DETECT_LANGUAGE && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-    $header_lang = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
-    if (array_key_exists($header_lang, $AVAILABLE_LANGUAGES)) {
-      $_SESSION['mailcow_locale'] = $header_lang;
+    // regex inspired from @GabrielAnderson on http://stackoverflow.com/questions/6038236/http-accept-language
+    preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})*)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+
+    $langs = $lang_parse[1];
+    $ranks = $lang_parse[4];
+
+    // (create an associative array 'language' => 'preference')
+    $lang2pref = array();
+    for ($i=0; $i<count($langs); $i++) {
+      $lang2pref[strtolower($langs[$i])] = (float) (!empty($ranks[$i]) ? $ranks[$i] : 1);
+    }
+
+    // (comparison function for uksort)
+    $cmpLangs = function ($a, $b) use ($lang2pref) {
+      if ($lang2pref[$a] > $lang2pref[$b])
+        return -1;
+      elseif ($lang2pref[$a] < $lang2pref[$b])
+        return 1;
+      elseif (strlen($a) > strlen($b))
+        return -1;
+      elseif (strlen($a) < strlen($b))
+        return 1;
+      else
+        return 0;
+    };
+
+    // sort the languages by prefered language and by the most specific region
+    uksort($lang2pref, $cmpLangs);
+
+    // generate language array without the region part
+    $AVAILABLE_BASE_LANGUAGES=array();
+    foreach ($AVAILABLE_LANGUAGES as $code => $lang) {
+      $base_code = substr($code, 0, 2);
+      if (!array_key_exists($base_code, $AVAILABLE_BASE_LANGUAGES)) {
+        $AVAILABLE_BASE_LANGUAGES[$base_code] = $code;
+      }
+    }
+
+    // Find a perfect match or partial match
+    // Match en-gb or en
+    foreach ($lang2pref as $lang => $q) {
+      if (array_key_exists($lang, $AVAILABLE_LANGUAGES)) {
+        $_SESSION['mailcow_locale'] = $lang;
+        break;
+      } elseif (array_key_exists($lang, $AVAILABLE_BASE_LANGUAGES)) {
+        $_SESSION['mailcow_locale'] = $AVAILABLE_BASE_LANGUAGES[$lang];
+        break;
+      }
+    }
+
+    // Try suggest match
+    // e.g. suggest en-gb when only en-us is provided
+    if (!isset($_COOKIE['mailcow_locale'])) {
+      foreach ($lang2pref as $lang => $q) {
+        if (array_key_exists(substr($lang, 0, 2), $AVAILABLE_BASE_LANGUAGES)) {
+          $_SESSION['mailcow_locale'] = $AVAILABLE_BASE_LANGUAGES[substr($lang, 0, 2)];
+          break;
+        }
+      }
     }
   }
   else {
@@ -200,7 +256,7 @@ if (isset($_GET['lang']) && array_key_exists($_GET['lang'], $AVAILABLE_LANGUAGES
 /*
  * load language
  */
-$lang = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.json'), true);
+$lang = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en-gb.json'), true);
 
 $langFile = $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.json';
 if(file_exists($langFile)) {
