@@ -49,13 +49,13 @@
             </div>
             {% if not oauth2_request %}
             <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span class="flag-icon flag-icon-{{ mailcow_locale }}"></span>
+              <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span>
             </button>
             <ul class="dropdown-menu ms-auto login">
               {% for key, val in available_languages %}
                 <li>
                   <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
-                    <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+                    <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
                   </a>
                 </li>
               {% endfor %}
