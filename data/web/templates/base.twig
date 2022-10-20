@@ -44,12 +44,12 @@
           </div>
         </li>
         {% if mailcow_locale %}
-        <li class="dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span><span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
+        <li class="nav-item dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span></a>
+          <ul class="dropdown-menu" role="menu "aria-labelledby="languageDropdown">
             {% for key, val in available_languages %}
-            <li{% if mailcow_locale == key %} class="active"{% endif %}>
-              <a href="?{{ query_string({'lang': key}) }}">
+            <li>
+              <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
                 <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
               </a>
             </li>
