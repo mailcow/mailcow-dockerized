@@ -76,33 +76,35 @@ $autodiscover_config = array(
 $DETECT_LANGUAGE = true;
 
 // Change default language
-$DEFAULT_LANG = 'en';
+$DEFAULT_LANG = 'en-gb';
 
 // Available languages
 // https://www.iso.org/obp/ui/#search
-// https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+// https://en.wikipedia.org/wiki/IETF_language_tag
 $AVAILABLE_LANGUAGES = array(
-  'cs' => 'Čeština (Czech)',
-  'da' => 'Danish (Dansk)',
-  'de' => 'Deutsch (German)',
-  'en' => 'English',
-  'es' => 'Español (Spanish)',
-  'fi' => 'Suomi (Finish)',
-  'fr' => 'Français (French)',
-  'hu' => 'Magyar (Hungarian)',
-  'it' => 'Italiano (Italian)',
-  'ko' => '한국어 (Korean)',
-  'lv' => 'latviešu (Latvian)',
-  'nl' => 'Nederlands (Dutch)',
-  'pl' => 'Język Polski (Polish)',
-  'pt' => 'Português (Portuguese)',
-  'ro' => 'Română (Romanian)',
-  'ru' => 'Pусский (Russian)',
-  'sk' => 'Slovenčina (Slovak)',
-  'sv' => 'Svenska (Swedish)',
-  'tr' => 'Türkçe (Turkish)',
-  'uk' => 'Українська (Ukrainian)',
-  'zh' => '中文 (Chinese)'
+  // 'ca-es' => 'Català (Catalan)',
+  'cs-cz' => 'Čeština (Czech)',
+  'da-dk' => 'Danish (Dansk)',
+  'de-de' => 'Deutsch (German)',
+  'en-gb' => 'English',
+  'es-es' => 'Español (Spanish)',
+  'fi-fi' => 'Suomi (Finish)',
+  'fr-fr' => 'Français (French)',
+  'hu-hu' => 'Magyar (Hungarian)',
+  'it-it' => 'Italiano (Italian)',
+  'ko-kr' => '한국어 (Korean)',
+  'lv-lv' => 'latviešu (Latvian)',
+  'nl-nl' => 'Nederlands (Dutch)',
+  'pl-pl' => 'Język Polski (Polish)',
+  'pt-pt' => 'Português (Portuguese)',
+  'ro-ro' => 'Română (Romanian)',
+  'ru-ru' => 'Pусский (Russian)',
+  'sk-sk' => 'Slovenčina (Slovak)',
+  'sv-se' => 'Svenska (Swedish)',
+  'tr-tr' => 'Türkçe (Turkish)',
+  'uk-ua' => 'Українська (Ukrainian)',
+  'zh-cn' => '简体中文 (Simplified Chinese)',
+  'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
 
 // Change theme (default: lumen)
