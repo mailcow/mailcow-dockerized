@@ -54,8 +54,6 @@ COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
 THREADS=$(echo ${THREADS:-1})
 
-echo $THREADS
-
 if [ ! -f ${COMPOSE_FILE} ]; then
   echo "Compose file not found"
   exit 1
