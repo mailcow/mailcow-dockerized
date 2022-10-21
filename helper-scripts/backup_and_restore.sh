@@ -48,21 +48,13 @@ else
   fi
 fi
 
-if [[ -z ${THREADS} ]]; then
-  read -ep "How many threads do you want to use? (Default $(echo "CPU threads: $(grep -c processor /proc/cpuinfo)" | grep -E -o "[0-9]+")):" THREADS
-  THREADS=${THREADS:-$(echo "CPU threads: $(grep -c processor /proc/cpuinfo)" | grep -E -o "[0-9]+")}
-fi
-
-if ! [[ "${THREADS}" =~ ^[0-9]+$ ]] ; then
-  echo "Thread input is not a number!"
-  exit 1
-fi
-
 BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
-THREADS=$(echo ${THREADS})
+THREADS=$(echo ${THREADS:-1})
+
+echo $THREADS
 
 if [ ! -f ${COMPOSE_FILE} ]; then
   echo "Compose file not found"
