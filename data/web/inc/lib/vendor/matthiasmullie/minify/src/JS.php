@@ -146,6 +146,7 @@ class JS extends Minify
      */
     public function execute($path = null)
     {
+        return join(';', $this->data);
         $content = '';
 
         /*
