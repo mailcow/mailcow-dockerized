@@ -41,7 +41,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:6-alpine
+      image: redis:7-alpine
       volumes:
         - redis-vol-1:/data/
       restart: always
