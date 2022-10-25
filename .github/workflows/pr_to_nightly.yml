@@ -1,0 +1,25 @@
+name: Create PR to merge to nightly from staging
+on:
+  push:
+    branches:
+      - staging
+jobs:
+  action-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Run the Action
+        uses: devops-infra/action-pull-request@v0.5.1
+        with:
+          github_token: ${{ secrets.PRTONIGHTLY_ACTION_PAT }}
+          title: Automatic PR to nightly from ${{ github.event.repository.updated_at}}
+          assignee: DerLinkman
+          source_branch: staging
+          target_branch: nightly
+          reviewer: DerLinkman
+          label: upstream
+          template: .github/ISSUE_TEMPLATE/pr_to_nighty_template.yml
+          get_diff: true

@@ -41,7 +41,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:6-alpine
+      image: redis:7-alpine
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.90
+      image: mailcow/rspamd:1.91
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow

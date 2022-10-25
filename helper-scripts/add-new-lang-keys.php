@@ -26,7 +26,7 @@ if(empty($targetLang)) {
 }
 
 // load master lang
-$masterLang = file_get_contents(__DIR__.'/../data/web/lang/lang.en.json');
+$masterLang = file_get_contents(__DIR__.'/../data/web/lang/lang.en-gb.json');
 $masterLang = json_decode($masterLang, true);
 
 // load target lang
