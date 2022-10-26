@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.91
+      image: mailcow/rspamd:1.90
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -424,7 +424,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.48
+      image: mailcow/netfilter:1.49
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
