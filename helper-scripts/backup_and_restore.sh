@@ -2,12 +2,50 @@
 
 DEBIAN_DOCKER_IMAGE="mailcow/backup:1.0"
 
+if [[ ${1} == "help" ]]; then
+  cat << END_OF_HELP
+  Script usage:
+
+  - Specify 'backup' or 'restore' mode:
+    backup_and_restore.sh backup
+    backup_and_restore.sh restore
+
+  - If you 'backup', you also have to specify what to backup.
+     Use 'backup' to see the backup options you can use.
+
+     backup_and_restore.sh backup
+
+  The script also comes with support for environment variables.
+
+  Available environment variables:
+    THREADS: Allows you to specify how many threads to backup with.
+      example: THREADS=4 backup_and_restore.sh backup all
+
+    NODATE: Allows you to omit the date stamped folder.
+      example: NODATE=1 backup_and_restore.sh backup all
+
+  You can combine the variables as well.
+    example: THREADS=4 NODATE=1 backup_and_restore.sh backup all
+
+  To do a full backup with the script, in an example "/backup/" folder:
+    echo "/backup/" | backup_and_restore.sh backup all
+
+  To do a full backup with 4 threads:
+    echo "/backup/" | THREADS=4 NODATE=1 backup_and_restore.sh backup all
+
+  To do a full backup with all available threads:
+    echo "/backup/" | THREADS=\`getconf _NPROCESSORS_ONLN\` NODATE=1 backup_and_restore.sh backup all
+
+END_OF_HELP
+  exit 0
+fi
+
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
 fi
 
-if [[ ! ${1} =~ (backup|restore) ]]; then
-  echo "First parameter needs to be 'backup' or 'restore'"
+if [[ ! ${1} =~ (backup|restore|help) ]]; then
+  echo "First parameter needs to be 'backup' or 'restore' or 'help'"
   exit 1
 fi
 
@@ -58,7 +96,7 @@ if ! [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
   echo "Thread input is not a number!"
   exit 1
 elif [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
-  echo "Using ${THREADS} Thread(s) for this run." 
+  echo "Using ${THREADS} Thread(s) for this run."
   echo "Notice: You can set the Thread count with the THREADS Variable before you run this script."
 fi
 
@@ -190,7 +228,7 @@ function restore() {
 
   elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
     COMPOSE_COMMAND="docker-compose"
-  
+
   else
     echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
     exit 1
