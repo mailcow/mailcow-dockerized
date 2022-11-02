@@ -93,9 +93,18 @@ fi
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-  mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
-  chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
-  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
+
+  if [[ -z "${NODATE}" ]]; then
+    # No NODATE defined so we backup normally
+    FINAL_BACKUP_LOCATION="${BACKUP_LOCATION}/mailcow-${DATE}"
+  else
+    # NODATE so we will not timestamp a backup folder
+    FINAL_BACKUP_LOCATION="${BACKUP_LOCATION}/"
+  fi
+
+  mkdir -p "${FINAL_BACKUP_LOCATION}"
+  chmod 755 "${FINAL_BACKUP_LOCATION}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${FINAL_BACKUP_LOCATION}"
   for bin in docker; do
   if [[ -z $(which ${bin}) ]]; then
     >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
@@ -106,32 +115,32 @@ function backup() {
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
@@ -148,7 +157,7 @@ function backup() {
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+          -v ${FINAL_BACKUP_LOCATION}:/backup:z \
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
           mariabackup --prepare --target-dir=/backup_mariadb ; \
           chown -R 999:999 /backup_mariadb ; \
