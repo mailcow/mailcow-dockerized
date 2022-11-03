@@ -7,7 +7,7 @@
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
     <ul class="dropdown-menu">
       <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
-      <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailbox-defaults" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailbox-defaults">Default settings</button></li>
+      <li><a href="/edit/domain/defaults" class="dropdown-item" aria-selected="false" aria-controls="tab-domain-defaults" role="tab">{{ lang.mailbox.mailbox_defaults }}</a></li>
     </ul>
     </li>
     {# <li class="nav-item" role="presentation"><button class="nav-link active" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li> #}
@@ -16,7 +16,7 @@
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}</a>
     <ul class="dropdown-menu">
       <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
-      <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailbox-defaults" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailbox-defaults">{{ lang.mailbox.mailbox_defaults }}</button></li>
+      <li><a href="/edit/mailbox/defaults" class="dropdown-item" aria-selected="false" aria-controls="tab-mailbox-defaults" role="tab">{{ lang.mailbox.mailbox_defaults }}</a></li>
     </ul>
     </li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-resources" role="tab" data-bs-toggle="tab" data-bs-target="#tab-resources">{{ lang.mailbox.resources }}</button></li>

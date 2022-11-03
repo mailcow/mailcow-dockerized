@@ -38,24 +38,36 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $template = 'edit/admin.twig';
       $template_data = ['admin' => $admin];
     }
-    elseif (isset($_GET['domain']) &&
-      is_valid_domain_name($_GET["domain"]) &&
-      !empty($_GET["domain"])) {
-        $domain = $_GET["domain"];
-        $result = mailbox('get', 'domain_details', $domain);
-        $quota_notification_bcc = quota_notification_bcc('get', $domain);
-        $rl = ratelimit('get', 'domain', $domain);
-        $rlyhosts = relayhost('get');
-        $template = 'edit/domain.twig';
-        $template_data = [
-          'acl' => $_SESSION['acl'],
-          'domain' => $domain,
-          'quota_notification_bcc' => $quota_notification_bcc,
-          'rl' => $rl,
-          'rlyhosts' => $rlyhosts,
-          'dkim' => dkim('details', $domain),
-          'domain_details' => $result,
-        ];
+    elseif (isset($_GET['domain'])) {
+      if ($_GET['domain'] == "defaults") {
+          // edit domain default settings
+          //$result = mailbox('get', 'domain_defaults');
+          //$rl = ratelimit('get', 'domain_defaults');
+          $result = true;
+          $template = 'edit/domain-defaults.twig';
+          $template_data = [
+          //  'rl' => $rl,
+          ];
+      }
+      elseif (is_valid_domain_name($_GET["domain"]) &&
+        !empty($_GET["domain"])) {
+          // edit domain
+          $domain = $_GET["domain"];
+          $result = mailbox('get', 'domain_details', $domain);
+          $quota_notification_bcc = quota_notification_bcc('get', $domain);
+          $rl = ratelimit('get', 'domain', $domain);
+          $rlyhosts = relayhost('get');
+          $template = 'edit/domain.twig';
+          $template_data = [
+            'acl' => $_SESSION['acl'],
+            'domain' => $domain,
+            'quota_notification_bcc' => $quota_notification_bcc,
+            'rl' => $rl,
+            'rlyhosts' => $rlyhosts,
+            'dkim' => dkim('details', $domain),
+            'domain_details' => $result,
+          ];
+      }
     }
     elseif (isset($_GET['oauth2client']) &&
       is_numeric($_GET["oauth2client"]) &&
@@ -79,29 +91,42 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'dkim' => dkim('details', $alias_domain),
         ];
     }
-    elseif (isset($_GET['mailbox']) && filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
-      $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
-      $result = mailbox('get', 'mailbox_details', $mailbox);
-      $rl = ratelimit('get', 'mailbox', $mailbox);
-      $pushover_data = pushover('get', $mailbox);
-      $quarantine_notification = mailbox('get', 'quarantine_notification', $mailbox);
-      $quarantine_category = mailbox('get', 'quarantine_category', $mailbox);
-      $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
-      $rlyhosts = relayhost('get');
-      $template = 'edit/mailbox.twig';
-      $template_data = [
-        'acl' => $_SESSION['acl'],
-        'mailbox' => $mailbox,
-        'rl' => $rl,
-        'pushover_data' => $pushover_data,
-        'quarantine_notification' => $quarantine_notification,
-        'quarantine_category' => $quarantine_category,
-        'get_tls_policy' => $get_tls_policy,
-        'rlyhosts' => $rlyhosts,
-        'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
-        'user_acls' => acl('get', 'user', $mailbox),
-        'mailbox_details' => $result
-      ];
+    elseif (isset($_GET['mailbox'])){
+      if ($_GET['mailbox'] == "defaults"){
+        // edit mailbox default settings
+        // $result = mailbox('get', 'mailbox_defaults');
+        // $rl = ratelimit('get', 'mailbox_defaults');
+        $result = true;
+        $template = 'edit/mailbox-defaults.twig';
+        $template_data = [
+        //  'rl' => $rl,
+        ];
+      }
+      elseif(filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
+        // edit mailbox
+        $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
+        $result = mailbox('get', 'mailbox_details', $mailbox);
+        $rl = ratelimit('get', 'mailbox', $mailbox);
+        $pushover_data = pushover('get', $mailbox);
+        $quarantine_notification = mailbox('get', 'quarantine_notification', $mailbox);
+        $quarantine_category = mailbox('get', 'quarantine_category', $mailbox);
+        $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
+        $rlyhosts = relayhost('get');
+        $template = 'edit/mailbox.twig';
+        $template_data = [
+          'acl' => $_SESSION['acl'],
+          'mailbox' => $mailbox,
+          'rl' => $rl,
+          'pushover_data' => $pushover_data,
+          'quarantine_notification' => $quarantine_notification,
+          'quarantine_category' => $quarantine_category,
+          'get_tls_policy' => $get_tls_policy,
+          'rlyhosts' => $rlyhosts,
+          'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
+          'user_acls' => acl('get', 'user', $mailbox),
+          'mailbox_details' => $result
+        ];
+      }
     }
     elseif (isset($_GET['relayhost']) && is_numeric($_GET["relayhost"]) && !empty($_GET["relayhost"])) {
         $relayhost = intval($_GET["relayhost"]);
