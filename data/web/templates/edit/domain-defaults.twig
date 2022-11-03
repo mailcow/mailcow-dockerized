@@ -1,0 +1,156 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dedit">{{ lang.edit.domain }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dratelimit">{{ lang.edit.ratelimit }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dspamfilter">{{ lang.edit.spam_filter }}</button></li>
+  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
+</ul>
+<hr>
+<div class="tab-content">
+  <div id="dedit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="domain-edit">
+    <form data-id="editdomain" class="form-horizontal" role="form" method="post">
+      <input type="hidden" value="0" name="active">
+      <input type="hidden" value="0" name="backupmx">
+      <input type="hidden" value="0" name="gal">
+      <input type="hidden" value="0" name="relay_all_recipients">
+      <input type="hidden" value="0" name="relay_unknown_only">
+      {% if mailcow_cc_role == 'admin' %}
+      <div class="row mb-2">
+        <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="aliases" value="{{ result.max_num_aliases_for_domain }}">
+        </div>
+      </div>
+      <div class="row mb-2">
+        <label class="control-label col-sm-2" for="mailboxes">{{ lang.edit.max_mailboxes }}</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="mailboxes" value="{{ result.max_num_mboxes_for_domain }}">
+        </div>
+      </div>
+      <div class="row mb-2">
+        <label class="control-label col-sm-2" for="defquota">{{ lang.edit.mailbox_quota_def }}</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="defquota" value="{{ (result.def_quota_for_mbox / 1048576) }}">
+        </div>
+      </div>
+      <div class="row mb-2">
+        <label class="control-label col-sm-2" for="maxquota">{{ lang.edit.max_quota }}</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="maxquota" value="{{ (result.max_quota_for_mbox / 1048576) }}">
+        </div>
+      </div>
+      <div class="row mb-4">
+        <label class="control-label col-sm-2" for="quota">{{ lang.edit.domain_quota }}</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="quota" value="{{ (result.max_quota_for_domain / 1048576) }}">
+        </div>
+      </div>
+      {% endif %}
+      <hr>
+      <div class="row mb-2">
+        <div class="offset-sm-2 col-sm-10">
+          <div class="checkbox">
+            <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="offset-sm-2 col-sm-10">
+          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div id="dratelimit" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-ratelimit">
+    <form data-id="domratelimit" class="form-inline well" method="post">
+      <div class="row">
+        <div class="col-12">
+          <label class="control-label mb-2">{{ lang.edit.ratelimit }}</label>
+          <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
+          <select name="rl_frame" class="form-control">
+            {% include 'mailbox/rl-frame.twig' %}
+          </select>
+          <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div id="dspamfilter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-spamfilter">
+    <div class="row">
+      <div class="col-sm-6">
+        <h4>{{ lang.user.spamfilter_wl }}</h4>
+        <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
+        <form class="form-inline mb-4" data-id="add_wl_policy_domain">
+          <div class="input-group" data-acl="{{ acl.spam_policy }}">
+            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+            <span class="input-group-btn">
+                      <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"wl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
+                    </span>
+          </div>
+        </form>
+        <table id="wl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
+        <div class="mass-actions-user">
+          <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <h4>{{ lang.user.spamfilter_bl }}</h4>
+        <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
+        <form class="form-inline mb-4" data-id="add_bl_policy_domain">
+          <div class="input-group" data-acl="{{ acl.spam_policy }}">
+            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+            <span class="input-group-btn">
+                      <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"bl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
+                    </span>
+          </div>
+        </form>
+        <table id="bl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
+        <div class="mass-actions-user">
+          <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a></li>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="dqwbcc" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-qwbcc">
+    <div class="row">
+      <div class="col-sm-12">
+        <h4>{{ lang.edit.quota_warning_bcc }}</h4>
+        <p>{{ lang.edit.quota_warning_bcc_info|raw }}</p>
+        <form class="form-horizontal" data-id="quota_bcc">
+          <input type="hidden" value="0" name="active">
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="script_data">{{ lang.edit.target_address|raw }}:</label>
+            <div class="col-sm-10">
+              <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="bcc_rcpt" name="bcc_rcpt">{{ quota_notification_bcc.bcc_rcpts|join("\n") }}</textarea>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="checkbox">
+                <label><input type="checkbox" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}
