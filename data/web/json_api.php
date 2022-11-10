@@ -230,13 +230,27 @@ if (isset($_GET['query'])) {
           process_add_return(rsettings('add', $attr));
         break;
         case "mailbox":
-          process_add_return(mailbox('add', 'mailbox', $attr));
+          switch ($object) {
+            case "template":
+              process_add_return(mailbox('add', 'mailbox_templates', $attr));
+            break;
+            default:
+              process_add_return(mailbox('add', 'mailbox', $attr));
+            break;
+          }
         break;
         case "oauth2-client":
           process_add_return(oauth2('add', 'client', $attr));
         break;
         case "domain":
-          process_add_return(mailbox('add', 'domain', $attr));
+          switch ($object) {
+            case "template":
+              process_add_return(mailbox('add', 'domain_templates', $attr));
+            break;
+            default:
+              process_add_return(mailbox('add', 'domain', $attr));
+            break;
+          }  
         break;
         case "resource":
           process_add_return(mailbox('add', 'resource', $attr));
@@ -519,7 +533,16 @@ if (isset($_GET['query'])) {
                   echo '{}';
                 }
               break;
-
+              case "template":
+                switch ($extra){
+                  case "all":
+                    process_get_return(mailbox('get', 'domain_templates'));
+                  break;
+                  default:
+                    process_get_return(mailbox('get', 'domain_templates', $extra));
+                  break;
+                }
+              break;
               default:
                 $data = mailbox('get', 'domain_details', $object);
                 process_get_return($data);
@@ -992,7 +1015,16 @@ if (isset($_GET['query'])) {
                   echo '{}';
                 }
               break;
-
+              case "template":
+                switch ($extra){
+                  case "all":
+                    process_get_return(mailbox('get', 'mailbox_templates'));
+                  break;
+                  default:
+                    process_get_return(mailbox('get', 'mailbox_templates', $extra));
+                  break;
+                }
+              break;
               default:
                 $tags = null;
                 if (isset($_GET['tags']) && $_GET['tags'] != '') 
@@ -1641,6 +1673,9 @@ if (isset($_GET['query'])) {
             case "tag":
               process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
             break;
+            case "template":
+              process_delete_return(mailbox('delete', 'domain_templates', array('ids' => $items)));
+            break;
             default:
               process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
           }
@@ -1652,6 +1687,9 @@ if (isset($_GET['query'])) {
           switch ($object){
             case "tag":
               process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+            break;
+            case "template":
+              process_delete_return(mailbox('delete', 'mailbox_templates', array('ids' => $items)));
             break;
             default:
               process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
@@ -1814,7 +1852,14 @@ if (isset($_GET['query'])) {
           process_edit_return(mailbox('edit', 'time_limited_alias', array_merge(array('address' => $items), $attr)));
         break;
         case "mailbox":
-          process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
+          switch ($object) {
+            case "template":
+              process_edit_return(mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            default:
+              process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
+            break;
+          }
         break;
         case "syncjob":
           process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
@@ -1826,7 +1871,14 @@ if (isset($_GET['query'])) {
           process_edit_return(mailbox('edit', 'resource', array_merge(array('name' => $items), $attr)));
         break;
         case "domain":
-          process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
+          switch ($object) {
+            case "template":
+              process_edit_return(mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            default:
+              process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
+            break;
+          }
         break;
         case "rl-domain":
           process_edit_return(ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));
