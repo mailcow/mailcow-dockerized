@@ -39,17 +39,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $template_data = ['admin' => $admin];
     }
     elseif (isset($_GET['domain'])) {
-      if ($_GET['domain'] == "defaults") {
-          // edit domain default settings
-          //$result = mailbox('get', 'domain_defaults');
-          //$rl = ratelimit('get', 'domain_defaults');
-          $result = true;
-          $template = 'edit/domain-defaults.twig';
-          $template_data = [
-          //  'rl' => $rl,
-          ];
-      }
-      elseif (is_valid_domain_name($_GET["domain"]) &&
+      if (is_valid_domain_name($_GET["domain"]) &&
         !empty($_GET["domain"])) {
           // edit domain
           $domain = $_GET["domain"];
@@ -67,6 +57,26 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'dkim' => dkim('details', $domain),
             'domain_details' => $result,
           ];
+      }
+    }
+    elseif (isset($_GET["template"])){
+      $domain_template = mailbox('get', 'domain_templates', $_GET["template"]);
+      if ($domain_template){
+        $template_data = [
+          'template' => $domain_template
+        ];
+        $template = 'edit/domain-templates.twig';
+        $result = true;
+      }
+      else {
+        $mailbox_template = mailbox('get', 'mailbox_templates', $_GET["template"]);
+        if ($mailbox_template){
+          $template_data = [
+            'template' => $mailbox_template
+          ];
+          $template = 'edit/mailbox-templates.twig';
+          $result = true;
+        }
       }
     }
     elseif (isset($_GET['oauth2client']) &&
@@ -92,17 +102,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         ];
     }
     elseif (isset($_GET['mailbox'])){
-      if ($_GET['mailbox'] == "defaults"){
-        // edit mailbox default settings
-        // $result = mailbox('get', 'mailbox_defaults');
-        // $rl = ratelimit('get', 'mailbox_defaults');
-        $result = true;
-        $template = 'edit/mailbox-defaults.twig';
-        $template_data = [
-        //  'rl' => $rl,
-        ];
-      }
-      elseif(filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
+      if(filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
         // edit mailbox
         $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
         $result = mailbox('get', 'mailbox_details', $mailbox);

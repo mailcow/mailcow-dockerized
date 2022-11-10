@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "25072022_2300";
+    $db_version = "10112022_1146";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -217,6 +217,22 @@ function init_db_schema() {
           "logged_in_as" => "VARCHAR(255) NOT NULL",
           "send_as" => "VARCHAR(255) NOT NULL",
           "external" => "TINYINT(1) NOT NULL DEFAULT '0'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "templates" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "template" => "VARCHAR(255) NOT NULL",
+          "type" => "VARCHAR(255) NOT NULL",
+          "attributes" => "JSON",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
         ),
         "keys" => array(
           "primary" => array(
@@ -1291,6 +1307,89 @@ function init_db_schema() {
     $pdo->query("INSERT INTO `da_acl` (`username`) SELECT DISTINCT `username` FROM `domain_admins` WHERE `username` != 'admin' AND NOT EXISTS (SELECT `username` FROM `da_acl`);");
     // Fix domain_admins
     $pdo->query("DELETE FROM `domain_admins` WHERE `domain` = 'ALL';");
+
+    // add default templates
+    $default_domain_template = array(
+      "template" => "Default",
+      "type" => "domain",
+      "attributes" => array(
+        "tags" => array(),
+        "max_num_aliases_for_domain" => 400,
+        "max_num_mboxes_for_domain" => 10,
+        "def_quota_for_mbox" => 3072 * 1048576,
+        "max_quota_for_mbox" => 10240 * 1048576,
+        "max_quota_for_domain" => 10240 * 1048576,
+        "rl_frame" => "s",
+        "rl_value" => "",
+        "active" => 1,
+        "gal" => 1,
+        "backupmx" => 0,
+        "relay_all_recipients" => 0,
+        "relay_unknown_only" => 0,
+        "dkim_selector" => "dkim",
+        "key_size" => 2048,
+        "max_quota_for_domain" => 10240 * 1048576,
+      )
+    );     
+    $default_mailbox_template = array(
+      "template" => "Default",
+      "type" => "mailbox",
+      "attributes" => array(
+        "tags" => array(),
+        "quota" => 0,
+        "quarantine_notification" => strval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['quarantine_notification']),
+        "quarantine_category" => strval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['quarantine_category']),
+        "rl_frame" => "s",
+        "rl_value" => "",
+        "force_pw_update" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['force_pw_update']),
+        "sogo_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sogo_access']),
+        "active" => 1,
+        "tls_enforce_in" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['tls_enforce_in']),
+        "tls_enforce_out" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['tls_enforce_out']),
+        "imap_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['imap_access']),
+        "pop3_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['pop3_access']),
+        "smtp_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['smtp_access']),
+        "sieve_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sieve_access']),
+        "acl_spam_alias" => 1,
+        "acl_tls_policy" => 1,
+        "acl_spam_score" => 1,
+        "acl_spam_policy" => 1,
+        "acl_delimiter_action" => 1,
+        "acl_syncjobs" => 0,
+        "acl_eas_reset" => 1,
+        "acl_sogo_profile_reset" => 0,
+        "acl_pushover" => 1,
+        "acl_quarantine" => 1,
+        "acl_quarantine_attachments" => 1,
+        "acl_quarantine_notification" => 1,
+        "acl_quarantine_category" => 1,
+        "acl_app_passwds" => 1,
+      )
+    );        
+    $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
+      SELECT :type, :template, :attributes FROM `templates`
+      WHERE NOT EXISTS (
+          SELECT `template` FROM `templates` WHERE `template` = :template2 AND `type` = :type2
+      ) LIMIT 1;");
+    $stmt->execute(array(
+      ":type" => "domain",
+      ":type2" => "domain",
+      ":template" => $default_domain_template["template"],
+      ":template2" => $default_mailbox_template["template"],
+      ":attributes" => json_encode($default_domain_template["attributes"])
+    ));   
+    $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
+      SELECT :type, :template, :attributes FROM `templates`
+      WHERE NOT EXISTS (
+          SELECT `template` FROM `templates` WHERE `template` = :template2 AND `type` = :type2
+      ) LIMIT 1;");
+    $stmt->execute(array(
+      ":type" => "mailbox",
+      ":type2" => "mailbox",
+      ":template" => $default_mailbox_template["template"],
+      ":template2" => $default_mailbox_template["template"],
+      ":attributes" => json_encode($default_mailbox_template["attributes"])
+    ));
 
     if (php_sapi_name() == "cli") {
       echo "DB initialization completed" . PHP_EOL;

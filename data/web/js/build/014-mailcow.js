@@ -289,37 +289,6 @@ $(document).ready(function() {
       addTag(this);
     } 
   });
-  function addTag(tagAddElem){
-    var tagboxElem = $(tagAddElem).parent();
-    var tagInputElem = $(tagboxElem).find(".tag-input")[0];
-    var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
-
-    var tag = escapeHtml($(tagInputElem).val());
-    if (!tag) return;
-    var value_tags = [];
-    try {
-      value_tags = JSON.parse($(tagValuesElem).val());
-    } catch {}
-    if (!Array.isArray(value_tags)) value_tags = [];
-    if (value_tags.includes(tag)) return;
-
-    $('<span class="badge bg-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + tag + '</span>').insertBefore('.tag-input').click(function(){
-      var del_tag = unescapeHtml($(this).text());
-      var del_tags = [];
-      try {
-        del_tags = JSON.parse($(tagValuesElem).val());
-      } catch {}
-      if (Array.isArray(del_tags)){
-        del_tags.splice(del_tags.indexOf(del_tag), 1);
-        $(tagValuesElem).val(JSON.stringify(del_tags));
-      }
-      $(this).remove();
-    });
-
-    value_tags.push($(tagInputElem).val());
-    $(tagValuesElem).val(JSON.stringify(value_tags));
-    $(tagInputElem).val('');
-  }
 
   // Dark Mode Loader
   $('#dark-mode-toggle').click(toggleDarkMode);
@@ -367,13 +336,14 @@ $(document).ready(function() {
           `);
 
           localStorage.setItem("seenChangelog", Math.floor(Date.now() / 1000).toString());
+
+          new bootstrap.Modal(document.getElementById("showWhatsNewModal"), {
+            backdrop: 'static',
+            keyboard: false
+          }).show();
         }
       });
 
-      new bootstrap.Modal(document.getElementById("showWhatsNewModal"), {
-        backdrop: 'static',
-        keyboard: false
-      }).show();
     }
   }
 
@@ -408,3 +378,36 @@ $(document).ready(function() {
 // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
 function unescapeHtml(t){var n={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#x2F;":"/","&#x60;":"`","&#x3D;":"="};return String(t).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g,function(t){return n[t]})}
+
+function addTag(tagAddElem, tag = null){
+  var tagboxElem = $(tagAddElem).parent();
+  var tagInputElem = $(tagboxElem).find(".tag-input")[0];
+  var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
+
+  if (!tag)
+    tag = $(tagInputElem).val();
+  if (!tag) return;
+  var value_tags = [];
+  try {
+    value_tags = JSON.parse($(tagValuesElem).val());
+  } catch {}
+  if (!Array.isArray(value_tags)) value_tags = [];
+  if (value_tags.includes(tag)) return;
+
+  $('<span class="badge bg-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(tag) + '</span>').insertBefore('.tag-input').click(function(){
+    var del_tag = unescapeHtml($(this).text());
+    var del_tags = [];
+    try {
+      del_tags = JSON.parse($(tagValuesElem).val());
+    } catch {}
+    if (Array.isArray(del_tags)){
+      del_tags.splice(del_tags.indexOf(del_tag), 1);
+      $(tagValuesElem).val(JSON.stringify(del_tags));
+    }
+    $(this).remove();
+  });
+
+  value_tags.push(tag);
+  $(tagValuesElem).val(JSON.stringify(value_tags));
+  $(tagInputElem).val('');
+}
