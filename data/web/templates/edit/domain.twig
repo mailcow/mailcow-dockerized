@@ -120,9 +120,15 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-2">
         <div class="offset-sm-2 col-sm-10">
           <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="offset-sm-2 col-sm-10">
+          <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
+          <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
         </div>
       </div>
     </form>

@@ -573,6 +573,18 @@ jQuery(function($){
           className: 'none'
         },
         {
+          title: lang.created_on,
+          data: 'created',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.last_modified,
+          data: 'modified',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
           title: 'Tags',
           data: 'tags',
           defaultContent: '',
@@ -1007,6 +1019,18 @@ jQuery(function($){
             data: 'messages',
             defaultContent: '',
             responsivePriority: 5
+          },
+          {
+            title: lang.created_on,
+            data: 'created',
+            defaultContent: '',
+            className: 'none'
+          },
+          {
+            title: lang.last_modified,
+            data: 'modified',
+            defaultContent: '',
+            className: 'none'
           },
           {
             title: 'Tags',

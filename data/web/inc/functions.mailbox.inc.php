@@ -4028,6 +4028,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailboxes`,
               `defquota`,
               `maxquota`,
+              `created`,
+              `modified`,
               `quota`,
               `relayhost`,
               `relay_all_recipients`,
@@ -4100,6 +4102,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients'];
           $domaindata['relay_unknown_only'] = $row['relay_unknown_only'];
           $domaindata['relay_unknown_only_int'] = $row['relay_unknown_only'];
+          $domaindata['created'] = $row['created'];
+          $domaindata['modified'] = $row['modified'];
           $stmt = $pdo->prepare("SELECT COUNT(`address`) AS `alias_count` FROM `alias`
             WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
               AND `address` NOT IN (
@@ -4184,6 +4188,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`domain`,
               `mailbox`.`local_part`,
               `mailbox`.`quota`,
+              `mailbox`.`created`,
+              `mailbox`.`modified`,
               `quota2`.`bytes`,
               `attributes`,
               `quota2`.`messages`
@@ -4202,6 +4208,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`domain`,
               `mailbox`.`local_part`,
               `mailbox`.`quota`,
+              `mailbox`.`created`,
+              `mailbox`.`modified`,
               `quota2replica`.`bytes`,
               `attributes`,
               `quota2replica`.`messages`
@@ -4228,6 +4236,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
           $mailboxdata['quota_used'] = intval($row['bytes']);
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
+          $mailboxdata['created'] = $row['created'];
+          $mailboxdata['modified'] = $row['modified'];
 
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";
