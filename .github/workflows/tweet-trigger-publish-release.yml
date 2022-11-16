@@ -7,6 +7,8 @@ jobs:
   tweet:
     runs-on: ubuntu-latest
     steps:
+      - name: "Install jq"
+        run: apt update && apt install jq --no-install-recommends -y
       - name: "Get Release Tag"
         run: curl https://api.github.com/repos/mailcow/mailcow-dockerized/releases/latest | jq '.tag_name' | sed 's/"//g' >> $RELEASE_TAG
       - name: Tweet-trigger-publish-release
