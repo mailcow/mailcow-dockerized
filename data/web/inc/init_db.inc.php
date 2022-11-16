@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "10112022_1146";
+    $db_version = "16112022_1325";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1366,30 +1366,36 @@ function init_db_schema() {
         "acl_app_passwds" => 1,
       )
     );        
-    $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
-      SELECT :type, :template, :attributes FROM `templates`
-      WHERE NOT EXISTS (
-          SELECT `template` FROM `templates` WHERE `template` = :template2 AND `type` = :type2
-      ) LIMIT 1;");
+    $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");
     $stmt->execute(array(
       ":type" => "domain",
-      ":type2" => "domain",
-      ":template" => $default_domain_template["template"],
-      ":template2" => $default_mailbox_template["template"],
-      ":attributes" => json_encode($default_domain_template["attributes"])
-    ));   
-    $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
-      SELECT :type, :template, :attributes FROM `templates`
-      WHERE NOT EXISTS (
-          SELECT `template` FROM `templates` WHERE `template` = :template2 AND `type` = :type2
-      ) LIMIT 1;");
+      ":template" => $default_domain_template["template"]
+    ));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($row)){
+      $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
+        VALUES (:type, :template, :attributes)");
+      $stmt->execute(array(
+        ":type" => "domain",
+        ":template" => $default_domain_template["template"],
+        ":attributes" => json_encode($default_domain_template["attributes"])
+      )); 
+    }    
+    $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");
     $stmt->execute(array(
       ":type" => "mailbox",
-      ":type2" => "mailbox",
-      ":template" => $default_mailbox_template["template"],
-      ":template2" => $default_mailbox_template["template"],
-      ":attributes" => json_encode($default_mailbox_template["attributes"])
+      ":template" => $default_mailbox_template["template"]
     ));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($row)){
+      $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
+        VALUES (:type, :template, :attributes)");
+      $stmt->execute(array(
+        ":type" => "mailbox",
+        ":template" => $default_mailbox_template["template"],
+        ":attributes" => json_encode($default_mailbox_template["attributes"])
+      )); 
+    } 
 
     if (php_sapi_name() == "cli") {
       echo "DB initialization completed" . PHP_EOL;
