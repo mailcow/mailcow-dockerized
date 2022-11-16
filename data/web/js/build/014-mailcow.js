@@ -289,37 +289,6 @@ $(document).ready(function() {
       addTag(this);
     } 
   });
-  function addTag(tagAddElem){
-    var tagboxElem = $(tagAddElem).parent();
-    var tagInputElem = $(tagboxElem).find(".tag-input")[0];
-    var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
-
-    var tag = escapeHtml($(tagInputElem).val());
-    if (!tag) return;
-    var value_tags = [];
-    try {
-      value_tags = JSON.parse($(tagValuesElem).val());
-    } catch {}
-    if (!Array.isArray(value_tags)) value_tags = [];
-    if (value_tags.includes(tag)) return;
-
-    $('<span class="badge bg-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + tag + '</span>').insertBefore('.tag-input').click(function(){
-      var del_tag = unescapeHtml($(this).text());
-      var del_tags = [];
-      try {
-        del_tags = JSON.parse($(tagValuesElem).val());
-      } catch {}
-      if (Array.isArray(del_tags)){
-        del_tags.splice(del_tags.indexOf(del_tag), 1);
-        $(tagValuesElem).val(JSON.stringify(del_tags));
-      }
-      $(this).remove();
-    });
-
-    value_tags.push($(tagInputElem).val());
-    $(tagValuesElem).val(JSON.stringify(value_tags));
-    $(tagInputElem).val('');
-  }
 
   // Dark Mode Loader
   $('#dark-mode-toggle').click(toggleDarkMode);
@@ -343,68 +312,42 @@ $(document).ready(function() {
       localStorage.setItem('darkmode', 'true');
     }
   }
-
-  // show whats new modal
-  if (mailcow_cc_role === "admin" || mailcow_cc_role === "domainadmin"){
-    if (mailcow_info.updatedAt > last_login){
-      var parsedSeenTimestamp = parseInt(localStorage.getItem("seenChangelog"));
-      if (!isNaN(parsedSeenTimestamp) && mailcow_info.updatedAt < parsedSeenTimestamp) {
-        console.log("changelog seen");
-        return;
-      }
-      $.ajax({
-        type: 'GET',
-        url: 'https://api.github.com/repos/' + mailcow_info.project_owner + '/' + mailcow_info.project_repo + '/releases/tags/' + mailcow_info.version_tag,
-        dataType: 'json',
-        success: function (data) { 
-          var md = window.markdownit();
-          var result = md.render(data.body);
-          result = parseGithubMarkdownLinks(result);
-
-          $('#showWhatsNewModal').find(".modal-body").html(`
-            <h3>` + data.name + `</h3>
-            <span class="mt-4">` + result + `</span>
-          `);
-
-          localStorage.setItem("seenChangelog", Math.floor(Date.now() / 1000).toString());
-        }
-      });
-
-      new bootstrap.Modal(document.getElementById("showWhatsNewModal"), {
-        backdrop: 'static',
-        keyboard: false
-      }).show();
-    }
-  }
-
-  function parseGithubMarkdownLinks(inputText) {
-    var replacedText, replacePattern1;
-  
-    replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-    replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
-        if (matched.includes('github.com')){
-          // return short link if it's github link
-          last_uri_path = matched.split('/');
-          last_uri_path = last_uri_path[last_uri_path.length - 1];
-
-          // adjust Full Changelog link to match last git version and new git version, if link is a compare link
-          if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
-            matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
-            last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
-          }
-          
-          return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
-        };
-  
-        // if it's not a github link, return complete link
-        return '<a href="' + matched + '" target="_blank">' + matched + '</a>'; 
-    });
-  
-    return replacedText;
-  }
 });
 
 
 // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
 function unescapeHtml(t){var n={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#x2F;":"/","&#x60;":"`","&#x3D;":"="};return String(t).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g,function(t){return n[t]})}
+
+function addTag(tagAddElem, tag = null){
+  var tagboxElem = $(tagAddElem).parent();
+  var tagInputElem = $(tagboxElem).find(".tag-input")[0];
+  var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
+
+  if (!tag)
+    tag = $(tagInputElem).val();
+  if (!tag) return;
+  var value_tags = [];
+  try {
+    value_tags = JSON.parse($(tagValuesElem).val());
+  } catch {}
+  if (!Array.isArray(value_tags)) value_tags = [];
+  if (value_tags.includes(tag)) return;
+
+  $('<span class="badge bg-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(tag) + '</span>').insertBefore('.tag-input').click(function(){
+    var del_tag = unescapeHtml($(this).text());
+    var del_tags = [];
+    try {
+      del_tags = JSON.parse($(tagValuesElem).val());
+    } catch {}
+    if (Array.isArray(del_tags)){
+      del_tags.splice(del_tags.indexOf(del_tag), 1);
+      $(tagValuesElem).val(JSON.stringify(del_tags));
+    }
+    $(this).remove();
+  });
+
+  value_tags.push(tag);
+  $(tagValuesElem).val(JSON.stringify(value_tags));
+  $(tagInputElem).val('');
+}

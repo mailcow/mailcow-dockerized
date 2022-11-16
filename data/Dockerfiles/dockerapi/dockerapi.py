@@ -499,6 +499,7 @@ class DockerUtils:
           async with rspamd_password_exec.start(detach=False) as stream:
             rspamd_password_return = await stream.read_out()
 
+          matched = False
           if "OK" in rspamd_password_return.data.decode('utf-8'):
             matched = True
             await container.restart()

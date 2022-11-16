@@ -47,6 +47,12 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
+  $("#maiclow_version").click(function(){
+    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
+      return;
+
+    showVersionModal("Version " + mailcow_info.version_tag, mailcow_info.version_tag);
+  })
   // get public ips
   get_public_ips();
   update_container_stats();
@@ -1227,11 +1233,11 @@ function get_public_ips(){
   }).then(function(data) {
     console.log(data);
 
-    if (data){
-      // display host ips
+    // display host ips
+    if (data.ipv4)
       $("#host_ipv4").text(data.ipv4);
+    if (data.ipv6)
       $("#host_ipv6").text(data.ipv6);
-    }
   });
 }
 // format hosts uptime seconds to readable string
@@ -1452,10 +1458,13 @@ function check_update(current_version, github_repo_url){
       } else {
         // update available
         $("#mailcow_update").removeClass("text-danger text-success").addClass("text-warning");
-        $("#mailcow_update").html(
-          `<b>` + lang_debug.update_available + `
-          <a target="_blank" href="https://github.com/`+github_account+`/`+github_repo_name+`/releases/tag/`+latest_data.tag_name+`">`+latest_data.tag_name+`</a></b>`
-        );
+        $("#mailcow_update").html(lang_debug.update_available + ` <a href="#" id="mailcow_update_changelog">`+latest_data.tag_name+`</a>`);
+        $("#mailcow_update_changelog").click(function(){
+          if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
+            return;
+      
+          showVersionModal("New Release " + latest_data.tag_name, latest_data.tag_name);
+        })
       }
     }).catch(err => {
       // err
@@ -1469,4 +1478,56 @@ function check_update(current_version, github_repo_url){
     $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
     $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
   });
+}
+// show version changelog modal
+function showVersionModal(title, version){
+  $.ajax({
+    type: 'GET',
+    url: 'https://api.github.com/repos/' + mailcow_info.project_owner + '/' + mailcow_info.project_repo + '/releases/tags/' + version,
+    dataType: 'json',
+    success: function (data) { 
+      var md = window.markdownit();
+      var result = md.render(data.body);
+      result = parseGithubMarkdownLinks(result);
+
+      $('#showVersionModal').find(".modal-title").html(title);
+      $('#showVersionModal').find(".modal-body").html(`
+        <h3>` + data.name + `</h3>
+        <span class="mt-4">` + result + `</span>
+        <span><b>Github Link:</b> 
+          <a target="_blank" href="https://github.com/` + mailcow_info.project_owner + `/` + mailcow_info.project_repo + `/releases/tag/` + version + `">` + version + `</a>
+        </span>
+      `);
+
+      new bootstrap.Modal(document.getElementById("showVersionModal"), {
+        backdrop: 'static',
+        keyboard: false
+      }).show();
+    }
+  });
+}
+function parseGithubMarkdownLinks(inputText) {
+  var replacedText, replacePattern1;
+
+  replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+  replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
+      if (matched.includes('github.com')){
+        // return short link if it's github link
+        last_uri_path = matched.split('/');
+        last_uri_path = last_uri_path[last_uri_path.length - 1];
+
+        // adjust Full Changelog link to match last git version and new git version, if link is a compare link
+        if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
+          matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
+          last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
+        }
+        
+        return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
+      };
+
+      // if it's not a github link, return complete link
+      return '<a href="' + matched + '" target="_blank">' + matched + '</a>'; 
+  });
+
+  return replacedText;
 }
