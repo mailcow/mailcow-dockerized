@@ -20,4 +20,4 @@ jobs:
           access_token_secret: ${{ secrets.ACCESS_TOKEN_SECRET }}
           tweet_body: '$RELEASE_TAG is here! Checkout the GitHub Page for changelog regarding the $RELEASE_TAG Release: github.com/mailcow/mailcow-dockerized/releases/tag/$RELEASE_TAG'
         env:
-        RELEASE_TAG: ${{ env.RELEASE_TAG }}
+          RELEASE_TAG: ${{ env.RELEASE_TAG }}
