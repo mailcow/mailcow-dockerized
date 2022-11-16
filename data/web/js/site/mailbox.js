@@ -77,6 +77,90 @@ $(document).ready(function() {
         $('.dns-modal-body').html(xhr.responseText);
       }
     });
+  }); 
+  // @Open Domain add modal
+  $('#addDomainModal').on('show.bs.modal', function(e) {
+    $.ajax({
+      url: '/api/v1/get/domain/template/all',
+      data: {},
+      dataType: 'json',
+      success: async function(data){
+        $('#domain_templates').find('option').remove(); 
+        $('#domain_templates').selectpicker('destroy');
+        $('#domain_templates').selectpicker();
+        for (var i = 0; i < data.length; i++){
+          if (data[i].template === "Default"){
+            $('#domain_templates').prepend($('<option>', { 
+                'value': data[i].id,
+                'text': data[i].template,
+                'data-attributes': JSON.stringify(data[i].attributes),
+                'selected': true
+            }));
+            setDomainTemplateData(data[i].attributes);
+          } else {
+            $('#domain_templates').append($('<option>', { 
+                'value': data[i].id,
+                'text': data[i].template,
+                'data-attributes': JSON.stringify(data[i].attributes),
+                'selected': false
+            }));
+          }
+        };
+        $('#domain_templates').selectpicker("refresh");
+
+        // @selecting template
+        $('#domain_templates').on('change', function(){
+          var selected = $('#domain_templates option:selected');
+          var attr = selected.data('attributes');
+          setDomainTemplateData(attr);
+        });
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  });
+  // @Open Mailbox add modal
+  $('#addMailboxModal').on('show.bs.modal', function(e) {
+    $.ajax({
+      url: '/api/v1/get/mailbox/template/all',
+      data: {},
+      dataType: 'json',
+      success: async function(data){
+        $('#mailbox_templates').find('option').remove(); 
+        $('#mailbox_templates').selectpicker('destroy');
+        $('#mailbox_templates').selectpicker();
+        for (var i = 0; i < data.length; i++){
+          if (data[i].template === "Default"){
+            $('#mailbox_templates').prepend($('<option>', { 
+                'value': data[i].id,
+                'text': data[i].template,
+                'data-attributes': JSON.stringify(data[i].attributes),
+                'selected': true
+            }));
+            setMailboxTemplateData(data[i].attributes);
+          } else {
+            $('#mailbox_templates').append($('<option>', { 
+                value: data[i].id,
+                text : data[i].template,
+                'data-attributes': JSON.stringify(data[i].attributes),
+                'selected': false
+            }));
+          }
+        };
+        $('#mailbox_templates').selectpicker("refresh");
+
+        // @selecting template
+        $('#mailbox_templates').on('change', function(){
+          var selected = $('#mailbox_templates option:selected');
+          var attr = selected.data('attributes');
+          setMailboxTemplateData(attr);
+        });
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
   });
   // Sieve data modal
   $('#sieveDataModal').on('show.bs.modal', function(e) {
@@ -133,6 +217,201 @@ $(document).ready(function() {
     $("#multiple_bookings").val($("#multiple_bookings_custom").val());
   });
 
+  function setDomainTemplateData(template){
+    $("#addDomain_max_aliases").val(template.max_num_aliases_for_domain);
+    $("#addDomain_max_mailboxes").val(template.max_num_mboxes_for_domain);
+    $("#addDomain_mailbox_quota_def").val(template.def_quota_for_mbox / 1048576);
+    $("#addDomain_mailbox_quota_m").val(template.max_quota_for_mbox / 1048576);
+    $("#addDomain_domain_quota_m").val(template.max_quota_for_domain / 1048576);
+
+    if (template.gal == 1){
+      $('#addDomain_gal').prop('checked', true);
+    } else {
+      $('#addDomain_gal').prop('checked', false);
+    }
+    
+    if (template.active == 1){
+      $('#addDomain_active').prop('checked', true);
+    } else {
+      $('#addDomain_active').prop('checked', false);
+    }
+    
+    $("#addDomain_rl_value").val(template.rl_value);
+    $('#addDomain_rl_frame').selectpicker('val', template.rl_frame);
+    $("#dkim_selector").val(template.dkim_selector);
+    if (!template.key_size)
+      template.key_size = 2048;
+    $('#key_size').selectpicker('val', template.key_size.toString());
+    
+    if (template.backupmx == 1){
+      $('#addDomain_relay_domain').prop('checked', true);
+    } else {
+      $('#addDomain_relay_domain').prop('checked', false);
+    }
+    if (template.relay_all_recipients == 1){
+      $('#addDomain_relay_all').prop('checked', true);
+    } else {
+      $('#addDomain_relay_all').prop('checked', false);
+    }
+    if (template.relay_unknown_only == 1){
+      $('#addDomain_relay_unknown_only').prop('checked', true);
+    } else {
+      $('#addDomain_relay_unknown_only').prop('checked', false);
+    }
+
+    
+    // load tags
+    $('#addDomain_tags').val("");
+    $($('#addDomain_tags').parent().find(".tag-values")[0]).val("");
+    $('#addDomain_tags').parent().find(".tag-badge").remove();
+    for (var i = 0; i < template.tags.length; i++)
+      addTag($('#addDomain_tags'), template.tags[i]);
+  }
+  function setMailboxTemplateData(template){
+    $("#addInputQuota").val(template.quota / 1048576);
+
+    if (template.quarantine_notification === "never"){
+      $('#quarantine_notification_never').prop('checked', true);
+      $('#quarantine_notification_hourly').prop('checked', false);
+      $('#quarantine_notification_daily').prop('checked', false);
+      $('#quarantine_notification_weekly').prop('checked', false);
+    } else if(template.quarantine_notification === "hourly"){
+      $('#quarantine_notification_never').prop('checked', false);
+      $('#quarantine_notification_hourly').prop('checked', true);
+      $('#quarantine_notification_daily').prop('checked', false);
+      $('#quarantine_notification_weekly').prop('checked', false);
+    } else if(template.quarantine_notification === "daily"){
+      $('#quarantine_notification_never').prop('checked', false);
+      $('#quarantine_notification_hourly').prop('checked', false);
+      $('#quarantine_notification_daily').prop('checked', true);
+      $('#quarantine_notification_weekly').prop('checked', false);
+    } else if(template.quarantine_notification === "weekly"){
+      $('#quarantine_notification_never').prop('checked', false);
+      $('#quarantine_notification_hourly').prop('checked', false);
+      $('#quarantine_notification_daily').prop('checked', false);
+      $('#quarantine_notification_weekly').prop('checked', true);
+    } else {
+      $('#quarantine_notification_never').prop('checked', false);
+      $('#quarantine_notification_hourly').prop('checked', false);
+      $('#quarantine_notification_daily').prop('checked', false);
+      $('#quarantine_notification_weekly').prop('checked', false);
+    }
+
+    if (template.quarantine_category === "reject"){
+      $('#quarantine_category_reject').prop('checked', true);
+      $('#quarantine_category_add_header').prop('checked', false);
+      $('#quarantine_category_all').prop('checked', false);
+    } else if(template.quarantine_category === "add_header"){
+      $('#quarantine_category_reject').prop('checked', false);
+      $('#quarantine_category_add_header').prop('checked', true);
+      $('#quarantine_category_all').prop('checked', false);
+    } else if(template.quarantine_category === "all"){
+      $('#quarantine_category_reject').prop('checked', false);
+      $('#quarantine_category_add_header').prop('checked', false);
+      $('#quarantine_category_all').prop('checked', true);
+    }
+
+    if (template.tls_enforce_in == 1){
+      $('#tls_enforce_in').prop('checked', true);
+    } else {
+      $('#tls_enforce_in').prop('checked', false);
+    }
+    if (template.tls_enforce_out == 1){
+      $('#tls_enforce_out').prop('checked', true);
+    } else {
+      $('#tls_enforce_out').prop('checked', false);
+    }
+
+    var protocol_access = [];
+    if (template.imap_access == 1){
+      protocol_access.push("imap");
+    }
+    if (template.pop3_access == 1){
+      protocol_access.push("pop3");
+    }
+    if (template.smtp_access == 1){
+      protocol_access.push("smtp");
+    }
+    if (template.sieve_access == 1){
+      protocol_access.push("sieve");
+    }
+    $('#protocol_access').selectpicker('val', protocol_access);
+
+    var acl = [];
+    if (template.acl_spam_alias == 1){
+      acl.push("spam_alias");
+    }
+    if (template.acl_tls_policy == 1){
+      acl.push("tls_policy");
+    }
+    if (template.acl_spam_score == 1){
+      acl.push("spam_score");
+    }
+    if (template.acl_spam_policy == 1){
+      acl.push("spam_policy");
+    }
+    if (template.acl_delimiter_action == 1){
+      acl.push("delimiter_action");
+    }
+    if (template.acl_syncjobs == 1){
+      acl.push("syncjobs");
+    }
+    if (template.acl_eas_reset == 1){
+      acl.push("eas_reset");
+    }
+    if (template.acl_sogo_profile_reset == 1){
+      acl.push("sogo_profile_reset");
+    }
+    if (template.acl_pushover == 1){
+      acl.push("pushover");
+    }
+    if (template.acl_quarantine == 1){
+      acl.push("quarantine");
+    }
+    if (template.acl_quarantine_attachments == 1){
+      acl.push("quarantine_attachments");
+    }
+    if (template.acl_quarantine_notification == 1){
+      acl.push("quarantine_notification");
+    }
+    if (template.acl_quarantine_category == 1){
+      acl.push("quarantine_category");
+    }
+    if (template.acl_app_passwds == 1){
+      acl.push("app_passwds");
+    }
+    $('#user_acl').selectpicker('val', acl);
+
+    $('#rl_value').val(template.rl_value);
+    if (template.rl_frame){
+      $('#rl_frame').selectpicker('val', template.rl_frame);
+    }
+
+    console.log(template.active)
+    if (template.active){
+      $('#mbox_active').selectpicker('val', template.active.toString());
+    } else {
+      $('#mbox_active').selectpicker('val', '');
+    }
+
+    if (template.force_pw_update == 1){
+      $('#force_pw_update').prop('checked', true);
+    } else {
+      $('#force_pw_update').prop('checked', false);
+    }
+    if (template.sogo_access == 1){
+      $('#sogo_access').prop('checked', true);
+    } else {
+      $('#sogo_access').prop('checked', false);
+    }
+    
+    // load tags
+    $('#addMailbox_tags').val("");
+    $($('#addMailbox_tags').parent().find(".tag-values")[0]).val("");
+    $('#addMailbox_tags').parent().find(".tag-badge").remove();
+    for (var i = 0; i < template.tags.length; i++)
+      addTag($('#addMailbox_tags'), template.tags[i]);
+  }
 });
 jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
@@ -294,6 +573,18 @@ jQuery(function($){
           className: 'none'
         },
         {
+          title: lang.created_on,
+          data: 'created',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.last_modified,
+          data: 'modified',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
           title: 'Tags',
           data: 'tags',
           defaultContent: '',
@@ -317,6 +608,196 @@ jQuery(function($){
         },
       ]
     });  
+  }
+  function draw_templates_domain_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#templates_domain_table') ) {
+      $('#templates_domain_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#templates_domain_table').DataTable({
+			responsive : true,
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/domain/template/all",
+        dataSrc: function(json){
+          console.log(json);
+          $.each(json, function (i, item) {
+            item.chkbox = '<input type="checkbox" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+
+            item.attributes.def_quota_for_mbox = humanFileSize(item.attributes.def_quota_for_mbox);
+            item.attributes.max_quota_for_mbox = humanFileSize(item.attributes.max_quota_for_mbox);
+            item.attributes.max_quota_for_domain = humanFileSize(item.attributes.max_quota_for_domain);
+
+            item.template = escapeHtml(item.template);
+            if (item.attributes.rl_frame === "s"){
+              item.attributes.rl_frame = lang_rl.second;
+            } else if (item.attributes.rl_frame === "m"){
+              item.attributes.rl_frame = lang_rl.minute;
+            } else if (item.attributes.rl_frame === "h"){
+              item.attributes.rl_frame = lang_rl.hour;
+            } else if (item.attributes.rl_frame === "d"){
+              item.attributes.rl_frame = lang_rl.day;
+            }
+            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
+
+            item.action = '<div class="btn-group">' +
+              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/domain/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '</div>';
+
+            if (Array.isArray(item.attributes.tags)){
+              var tags = '';
+              for (var i = 0; i < item.attributes.tags.length; i++)
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.attributes.tags[i]) + '</span>';
+              item.attributes.tags = tags;
+            } else {
+              item.attributes.tags = '';
+            }
+          });
+
+          return json;
+        }
+      },
+      columns: [
+          {
+            // placeholder, so checkbox will not block child row toggle
+            title: '',
+            data: null,
+            searchable: false,
+            orderable: false,
+            defaultContent: '',
+            responsivePriority: 1
+          },
+          {
+            title: '',
+            data: 'chkbox',
+            searchable: false,
+            orderable: false,
+            defaultContent: '',
+            responsivePriority: 1
+          },
+          {
+            title: "ID",
+            data: 'id',
+            responsivePriority: 2,
+            defaultContent: ''
+          },
+          {
+            title: "Template",
+            data: 'template',
+            responsivePriority: 3,
+            defaultContent: ''
+          },              
+          {
+            title: lang.max_aliases,
+            data: 'attributes.max_num_aliases_for_domain',
+            defaultContent: '',
+          },             
+          {
+            title: lang.max_mailboxes,
+            data: 'attributes.max_num_mboxes_for_domain',
+            defaultContent: '',
+          },             
+          {
+            title: lang.mailbox_defquota,
+            data: 'attributes.def_quota_for_mbox',
+            defaultContent: '',
+          },               
+          {
+            title: lang.max_quota,
+            data: 'attributes.max_quota_for_mbox',
+            defaultContent: '',
+          },            
+          {
+            title: lang.domain_quota_total,
+            data: 'attributes.max_quota_for_domain',
+            defaultContent: '',
+          },          
+          {
+            title: lang.gal,
+            data: 'attributes.gal',
+            defaultContent: '',
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            }
+          },           
+          {
+            title: lang.backup_mx,
+            data: 'attributes.backupmx',
+            defaultContent: '',
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            }
+          },           
+          {
+            title: lang.relay_all,
+            data: 'attributes.relay_all_recipients',
+            defaultContent: '',
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            }
+          },           
+          {
+            title: lang.relay_unknown,
+            data: 'attributes.relay_unknown_only',
+            defaultContent: '',
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            }
+          },           
+          {
+            title: lang.active,
+            data: 'attributes.active',
+            defaultContent: '',
+            responsivePriority: 4,
+            render: function (data, type) {
+              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            }
+          },               
+          {
+            title: 'rl_frame',
+            data: 'attributes.rl_frame',
+            defaultContent: '',
+            class: 'none',
+          },             
+          {
+            title: 'rl_value',
+            data: 'attributes.rl_value',
+            defaultContent: '',
+            class: 'none',
+          },            
+          {
+            title: lang.dkim_domains_selector,
+            data: 'attributes.dkim_selector',
+            defaultContent: '',
+            class: 'none',
+          },            
+          {
+            title: lang.dkim_key_length,
+            data: 'attributes.key_size',
+            defaultContent: '',
+            class: 'none',
+          }, 
+          {
+            title: 'Tags',
+            data: 'attributes.tags',
+            defaultContent: '',
+            className: 'none'
+          },    
+          {
+            title: lang.action,
+            data: 'action',
+            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+            responsivePriority: 6,
+            defaultContent: ''
+          },
+      ]
+    });
   }
   function draw_mailbox_table() {
     // just recalc width if instance already exists
@@ -540,6 +1021,18 @@ jQuery(function($){
             responsivePriority: 5
           },
           {
+            title: lang.created_on,
+            data: 'created',
+            defaultContent: '',
+            className: 'none'
+          },
+          {
+            title: lang.last_modified,
+            data: 'modified',
+            defaultContent: '',
+            className: 'none'
+          },
+          {
             title: 'Tags',
             data: 'tags',
             defaultContent: '',
@@ -561,6 +1054,211 @@ jQuery(function($){
             responsivePriority: 6,
             defaultContent: ''
           },
+      ]
+    });
+  }
+  function draw_templates_mbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#templates_mbox_table') ) {
+      $('#templates_mbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#templates_mbox_table').DataTable({
+			responsive : true,
+      processing: true,
+      serverSide: false,
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/mailbox/template/all",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
+            item.chkbox = '<input type="checkbox" data-id="mailbox_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+
+            item.template = escapeHtml(item.template);
+            if (item.attributes.rl_frame === "s"){
+              item.attributes.rl_frame = lang_rl.second;
+            } else if (item.attributes.rl_frame === "m"){
+              item.attributes.rl_frame = lang_rl.minute;
+            } else if (item.attributes.rl_frame === "h"){
+              item.attributes.rl_frame = lang_rl.hour;
+            } else if (item.attributes.rl_frame === "d"){
+              item.attributes.rl_frame = lang_rl.day;
+            }
+            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
+
+            item.attributes.quota = humanFileSize(item.attributes.quota);
+
+            item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.attributes.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.attributes.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.attributes.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.attributes.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            if (item.attributes.quarantine_notification === 'never') {
+              item.attributes.quarantine_notification = lang.never;
+            } else if (item.attributes.quarantine_notification === 'hourly') {
+              item.attributes.quarantine_notification = lang.hourly;
+            } else if (item.attributes.quarantine_notification === 'daily') {
+              item.attributes.quarantine_notification = lang.daily;
+            } else if (item.attributes.quarantine_notification === 'weekly') {
+              item.attributes.quarantine_notification = lang.weekly;
+            }
+            if (item.attributes.quarantine_category === 'reject') {
+              item.attributes.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
+            } else if (item.attributes.quarantine_category === 'add_header') {
+              item.attributes.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
+            } else if (item.attributes.quarantine_category === 'all') {
+              item.attributes.quarantine_category = lang.q_all;
+            }
+
+            
+
+            item.action = '<div class="btn-group">' +
+              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '</div>';
+
+            if (Array.isArray(item.attributes.tags)){
+              var tags = '';
+              for (var i = 0; i < item.attributes.tags.length; i++)
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.attributes.tags[i]) + '</span>';
+              item.attributes.tags = tags;
+            } else {
+              item.attributes.tags = '';
+            }
+          });
+
+          return json;
+        }
+      },
+      columns: [
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: "ID",
+          data: 'id',
+          responsivePriority: 2,
+          defaultContent: ''
+        },
+        {
+          title: "Template",
+          data: 'template',
+          responsivePriority: 3,
+          defaultContent: ''
+        },              
+        {
+          title: lang.domain_quota,
+          data: 'attributes.quota',
+          defaultContent: '',
+        },             
+        {
+          title: lang.tls_enforce_in,
+          data: 'attributes.tls_enforce_in',
+          defaultContent: ''
+        },
+        {
+          title: lang.tls_enforce_out,
+          data: 'attributes.tls_enforce_out',
+          defaultContent: ''
+        },
+        {
+          title: 'SMTP',
+          data: 'attributes.smtp_access',
+          defaultContent: '',
+        },
+        {
+          title: 'IMAP',
+          data: 'attributes.imap_access',
+          defaultContent: '',
+        },
+        {
+          title: 'POP3',
+          data: 'attributes.pop3_access',
+          defaultContent: '',
+        },
+        {
+          title: 'SIEVE',
+          data: 'attributes.sieve_access',
+          defaultContent: '',
+        },
+        {
+          title: 'SOGO',
+          data: 'attributes.sogo_access',
+          defaultContent: '',
+        },
+        {
+          title: lang.quarantine_notification,
+          data: 'attributes.quarantine_notification',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.quarantine_category,
+          data: 'attributes.quarantine_category',
+          defaultContent: '',
+          className: 'none'
+        },            
+        {
+          title: lang.force_pw_update,
+          data: 'attributes.force_pw_update',
+          defaultContent: '',
+          class: 'none',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },            
+        {
+          title: "rl_frame",
+          data: 'attributes.rl_frame',
+          defaultContent: '',
+          class: 'none',
+        },           
+        {
+          title: 'rl_value',
+          data: 'attributes.rl_value',
+          defaultContent: '',
+          class: 'none',
+        }, 
+        {
+          title: 'Tags',
+          data: 'attributes.tags',
+          defaultContent: '',
+          className: 'none'
+        },           
+        {
+          title: lang.active,
+          data: 'attributes.active',
+          defaultContent: '',
+          responsivePriority: 4,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+          }
+        },     
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          responsivePriority: 6,
+          defaultContent: ''
+        },
       ]
     });
   }
@@ -1437,7 +2135,9 @@ jQuery(function($){
 
   // Load only if the tab is visible
   onVisible("[id^=domain_table]", () => draw_domain_table());
+  onVisible("[id^=templates_domain_table]", () => draw_templates_domain_table());
   onVisible("[id^=mailbox_table]", () => draw_mailbox_table());
+  onVisible("[id^=templates_mbox_table]", () => draw_templates_mbox_table());
   onVisible("[id^=resource_table]", () => draw_resource_table());
   onVisible("[id^=alias_table]", () => draw_alias_table());
   onVisible("[id^=aliasdomain_table]", () => draw_aliasdomain_table());

@@ -57,6 +57,17 @@ $(document).ready(function() {
   $("#multiple_bookings_custom").bind("change keypress keyup blur", function() {
     $('input[name=multiple_bookings]').val($("#multiple_bookings_custom").val());
   });
+
+  // load tags
+  if ($('#tags').length){
+    var tagsEl = $('#tags').parent().find('.tag-values')[0];
+    console.log($(tagsEl).val())
+    var tags = JSON.parse($(tagsEl).val());
+    $(tagsEl).val("");
+    
+    for (var i = 0; i < tags.length; i++)
+      addTag($('#tags'), tags[i]);
+  }
 });
 
 jQuery(function($){
