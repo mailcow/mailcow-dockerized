@@ -7,10 +7,10 @@ jobs:
   tweet:
     runs-on: ubuntu-latest
     steps:
-      - name: "Install jq"
-        run: apt update && apt install jq --no-install-recommends -y
       - name: "Get Release Tag"
-        run: curl https://api.github.com/repos/mailcow/mailcow-dockerized/releases/latest | jq '.tag_name' | sed 's/"//g' >> $RELEASE_TAG
+        run:  |
+          RELEASE_TAG=$(curl https://api.github.com/repos/mailcow/mailcow-dockerized/releases/latest | jq -r '.tag_name')
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
       - name: Tweet-trigger-publish-release
         uses: mugi111/tweet-trigger-release@v1.1
         with:
@@ -19,3 +19,5 @@ jobs:
           access_token_key: ${{ secrets.ACCESS_TOKEN_KEY }}
           access_token_secret: ${{ secrets.ACCESS_TOKEN_SECRET }}
           tweet_body: '$RELEASE_TAG is here! Checkout the GitHub Page for changelog regarding the $RELEASE_TAG Release: github.com/mailcow/mailcow-dockerized/releases/tag/$RELEASE_TAG'
+        env:
+        RELEASE_TAG: ${{ env.RELEASE_TAG }}
