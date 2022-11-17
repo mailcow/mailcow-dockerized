@@ -352,6 +352,7 @@
         "bcc_must_be_email": "BCC destination %s is not a valid email address",
         "comment_too_long": "Comment too long, max 160 chars allowed",
         "defquota_empty": "Default quota per mailbox must not be 0.",
+        "demo_mode_enabled": "Demo Mode is enabled",
         "description_invalid": "Resource description for %s is invalid",
         "dkim_domain_or_sel_exists": "A DKIM key for \"%s\" exists and will not be overwritten",
         "dkim_domain_or_sel_invalid": "DKIM domain or selector invalid: %s",
