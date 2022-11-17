@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "25072022_2300";
+    $db_version = "17112022_2115";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1264,7 +1264,7 @@ function init_db_schema() {
     $pdo->query("UPDATE `pushover` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
     $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.evaluate_x_prio', \"0\") WHERE JSON_VALUE(`attributes`, '$.evaluate_x_prio') IS NULL;");
     $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.only_x_prio', \"0\") WHERE JSON_VALUE(`attributes`, '$.only_x_prio') IS NULL;");
-    $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.sound', \"0\") WHERE JSON_VALUE(`attributes`, '$.sound') IS NULL;");
+    $pdo->query("UPDATE `pushover` SET `attributes` =  JSON_SET(`attributes`, '$.sound', \"pushover\") WHERE JSON_VALUE(`attributes`, '$.sound') IS NULL;");
     // mailbox
     $pdo->query("UPDATE `mailbox` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.passwd_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.passwd_update') IS NULL;");
