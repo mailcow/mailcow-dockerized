@@ -65,6 +65,13 @@ if (is_array($symbols_array)) {
   }
 }
 
+$json = json_decode(file_get_contents('php://input'));
+
+$sender_address = $json->header_from ;
+if (preg_match('/[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)/i', $sender, $matches))
+	$sender_address = $matches[0];
+$sender_name =  trim(str_replace('<' . $email . '>', '', $from));
+
 $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
@@ -229,9 +236,9 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     $post_fields = array(
       "token" => $api_data['token'],
       "user" => $api_data['key'],
-      "title" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}'), array($subject, $sender), $title)),
+      "title" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}'), array($subject, $sender, $sender_name, $sender_address), $title)),
       "priority" => $priority,
-      "message" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}'), array($subject, $sender), $text))
+      "message" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}'), array($subject, $sender, $sender_name, $sender_address), $text))
     );
     if ($attributes['evaluate_x_prio'] == "1" && $priority == 1) {
       $post_fields['expire'] = 600;
