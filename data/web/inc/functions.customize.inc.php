@@ -2,8 +2,18 @@
 function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
+  
   switch ($_action) {
     case 'add':
+      // disable functionality when demo mode is enabled
+      if ($GLOBALS["DEMO_MODE"]) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_item, $_data),
+          'msg' => 'demo_mode_enabled'
+        );
+        return false;
+      }
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -72,6 +82,15 @@ function customize($_action, $_item, $_data = null) {
       }
     break;
     case 'edit':
+      // disable functionality when demo mode is enabled
+      if ($GLOBALS["DEMO_MODE"]) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_item, $_data),
+          'msg' => 'demo_mode_enabled'
+        );
+        return false;
+      }
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -144,6 +163,15 @@ function customize($_action, $_item, $_data = null) {
       }
     break;
     case 'delete':
+      // disable functionality when demo mode is enabled
+      if ($GLOBALS["DEMO_MODE"]) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_item, $_data),
+          'msg' => 'demo_mode_enabled'
+        );
+        return false;
+      }
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
           'type' => 'danger',
