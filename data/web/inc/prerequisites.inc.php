@@ -2,6 +2,8 @@
 
 // check for development mode
 $DEV_MODE = (getenv('DEV_MODE') == 'y');
+// check for demo mode
+$DEMO_MODE = (getenv('DEMO_MODE') == 'y');
 
 // Slave does not serve UI
 /* if (!preg_match('/y|yes/i', getenv('MASTER'))) {
