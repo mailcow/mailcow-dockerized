@@ -352,6 +352,7 @@
         "bcc_must_be_email": "BCC-Ziel %s ist keine gültige E-Mail-Adresse",
         "comment_too_long": "Kommentarfeld darf maximal 160 Zeichen enthalten",
         "defquota_empty": "Standard-Quota darf nicht 0 sein",
+        "demo_mode_enabled": "Demo Mode ist aktiviert",
         "description_invalid": "Ressourcenbeschreibung für %s ist ungültig",
         "dkim_domain_or_sel_exists": "Ein DKIM-Key für die Domain \"%s\" existiert und wird nicht überschrieben",
         "dkim_domain_or_sel_invalid": "DKIM-Domain oder Selector nicht korrekt: %s",
