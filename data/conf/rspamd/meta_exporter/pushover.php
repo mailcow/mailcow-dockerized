@@ -48,12 +48,12 @@ if (!function_exists('getallheaders'))  {
 
 $headers = getallheaders();
 
-$qid      = $headers['X-Rspamd-Qid'];
-$rcpts    = $headers['X-Rspamd-Rcpt'];
-$sender   = $headers['X-Rspamd-From'];
-$ip       = $headers['X-Rspamd-Ip'];
-$subject  = $headers['X-Rspamd-Subject'];
-$priority = 0;
+$qid            = $headers['X-Rspamd-Qid'];
+$rcpts          = $headers['X-Rspamd-Rcpt'];
+$sender_address = $headers['X-Rspamd-From'];
+$ip             = $headers['X-Rspamd-Ip'];
+$subject        = $headers['X-Rspamd-Subject'];
+$priority       = 0;
 
 $symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
 if (is_array($symbols_array)) {
@@ -67,12 +67,8 @@ if (is_array($symbols_array)) {
 
 $json = json_decode(file_get_contents('php://input'));
 
-$sender_address = $json->header_from[0];
-$sender_name = '-';
-if (preg_match('/[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)/i', $sender_address, $matches)) {
-	$sender_address = $matches[0];
-  $sender_name =  trim(str_replace('<' . $sender_address . '>', '', $json->header_from[0]));
-}
+$sender = $json->header_from[0];
+$sender_name =  trim(str_replace('<' . $sender_address . '>', '', $sender));
 
 $rcpt_final_mailboxes = array();
 
@@ -217,18 +213,18 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     }
     else {
       if (!empty($senders)) {
-        if (in_array($sender, $senders)) {
+        if (in_array($sender_address, $senders)) {
           $sender_validated = true;
         }
       }
       if (!empty($senders_regex) && $sender_validated !== true) {
-        if (preg_match($senders_regex, $sender)) {
+        if (preg_match($senders_regex, $sender_address)) {
           $sender_validated = true;
         }
       }
     }
     if ($sender_validated === false) {
-      error_log("NOTIFY: pushover pipe: skipping unwanted sender " . $sender);
+      error_log("NOTIFY: pushover pipe: skipping unwanted sender " . $sender_address);
       continue;
     }
     if ($attributes['only_x_prio'] == "1" && $priority == 0) {
