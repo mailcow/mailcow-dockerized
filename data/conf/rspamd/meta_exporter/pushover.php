@@ -55,7 +55,6 @@ $sender   = $headers['X-Rspamd-From'];
 $ip       = $headers['X-Rspamd-Ip'];
 $subject  = $headers['X-Rspamd-Subject'];
 $priority = 0;
-$to       = $json_body->header_to[0];
 
 $symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
 if (is_array($symbols_array)) {
@@ -69,10 +68,16 @@ if (is_array($symbols_array)) {
 
 $sender_address = $json_body->header_from[0];
 $sender_name = '-';
-
 if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $sender_address, $matches)) {
 	$sender_address = $matches['address'];
-  $sender_name =  trim(trim($matches['name']), '"\' ');
+  $sender_name =  trim($matches['name'], '"\' ');
+}
+
+$to_address = $json_body->header_to[0];
+$to_name = '-';
+if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
+	$to_address = $matches['address'];
+  $to_name =  trim($matches['name'], '"\' ');
 }
 
 $rcpt_final_mailboxes = array();
@@ -239,9 +244,15 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     $post_fields = array(
       "token" => $api_data['token'],
       "user" => $api_data['key'],
-      "title" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO}'), array($subject, $sender, $sender_name, $sender_address, $to), $title)),
+      "title" => sprintf("%s", str_replace(
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}'), 
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address), $title)
+      ),
       "priority" => $priority,
-      "message" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO}', '\n'), array($subject, $sender, $sender_name, $sender_address, $to, PHP_EOL), $text)),
+      "message" => sprintf("%s", str_replace(
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '\n'),
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, PHP_EOL), $text)
+      ),
       "sound" => $attributes['sound'] ?? "pushover"
     );
     if ($attributes['evaluate_x_prio'] == "1" && $priority == 1) {
