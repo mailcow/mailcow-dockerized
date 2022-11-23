@@ -127,6 +127,7 @@ elseif (!empty($_GET['id']) && ctype_alnum($_GET['id'])) {
     $data['fuzzy_hashes'] = json_decode($mailc['fuzzy_hashes']);
     // Get text/plain content
     $data['text_plain'] = $mail_parser->getMessageBody('text');
+    if (!json_encode($data['text_plain'])) $data['text_plain'] = '';
     // Get html content and convert to text
     $data['text_html'] = $html2text->convert($mail_parser->getMessageBody('html'));
     if (empty($data['text_plain']) && empty($data['text_html'])) {

@@ -41,7 +41,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:6-alpine
+      image: redis:7-alpine
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.91
+      image: mailcow/rspamd:1.90
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -160,6 +160,7 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MASTER=${MASTER:-y}
         - DEV_MODE=${DEV_MODE:-n}
+        - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
       restart: always
       networks:
@@ -425,7 +426,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.48
+      image: mailcow/netfilter:1.49
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow

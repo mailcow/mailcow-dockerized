@@ -118,6 +118,7 @@
         "filter_table": "Szűrő-táblázat",
         "filters": "Szűrők",
         "fname": "Teljes név",
+        "force_pw_update": "Új jelszót kell beállítania a csoportos szolgáltatások eléréséhez.",
         "hourly": "Óránként",
         "in_use": "Foglalt (%)",
         "inactive": "Inaktív",

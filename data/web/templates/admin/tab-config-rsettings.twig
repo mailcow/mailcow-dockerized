@@ -23,7 +23,7 @@
 
               {% endif %}
               {% for rsetting in rsettings %}
-                <a href="#{{ rsetting.details.id }}" class="list-group-item list-group-item-{% if rsetting.details.active %}success{% endif %}" data-dont-remember="1" data-bs-toggle="tab">{{ rsetting.details.desc }} (ID #{{ rsetting.id }})</a>
+                <a href="#" class="list-group-item list-group-item-{% if rsetting.details.active %}success{% endif %}" data-dont-remember="1" data-bs-target="#settings_tab{{ rsetting.details.id }}" data-bs-toggle="tab">{{ rsetting.details.desc }} (ID #{{ rsetting.id }})</a>
               {% else %}
                 <span class="list-group-item"><em>{{ lang.admin.rsetting_none }}</em></span>
               {% endfor %}
@@ -44,18 +44,18 @@
                   <p class="text-muted">{{ lang.admin.rsetting_no_selection }}</p>
                 </div>
                 {% for rsetting in rsettings %}
-                  <div id="{{ rsetting.details.id }}" class="tab-pane">
+                  <div id="settings_tab{{ rsetting.details.id }}" class="tab-pane">
                     <form class="form" data-id="rsettings" role="form" method="post">
                       <input type="hidden" name="active" value="0">
                       <div>
                         <label for="rsettings_desc">{{ lang.admin.rsetting_desc }}:</label>
                         <input type="text" class="form-control" id="rsettings_desc" name="desc" value="{{ rsetting.details.desc }}">
                       </div>
-                      <div>
+                      <div class="mt-4">
                         <label for="rsettings_content">{{ lang.admin.rsetting_content }}:</label>
                         <textarea class="form-control" id="rsettings_content" name="content" rows="10">{{ rsetting.details.content }}</textarea>
                       </div>
-                      <div>
+                      <div class="mt-4 mb-2">
                         <label>
                           <input type="checkbox" name="active" value="1" {% if rsetting.details.active %}checked{% endif %}> {{ lang.admin.active }}
                         </label>

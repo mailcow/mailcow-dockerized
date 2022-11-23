@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBIAN_DOCKER_IMAGE="debian:bullseye-slim"
+DEBIAN_DOCKER_IMAGE="mailcow/backup:1.0"
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
@@ -52,6 +52,15 @@ BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
+THREADS=$(echo ${THREADS:-1})
+
+if ! [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
+  echo "Thread input is not a number!"
+  exit 1
+elif [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
+  echo "Using ${THREADS} Thread(s) for this run." 
+  echo "Notice: You can set the Thread count with the THREADS Variable before you run this script."
+fi
 
 if [ ! -f ${COMPOSE_FILE} ]; then
   echo "Compose file not found"
@@ -99,32 +108,32 @@ function backup() {
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable" -Pcvpf /backup/backup_redis.tar.gz /redis
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="gzip --rsyncable" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -191,7 +200,7 @@ function restore() {
       docker run -it --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar -Pxvzf /backup/backup_vmail.tar.gz
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_vmail.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
       echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
@@ -210,7 +219,7 @@ function restore() {
       docker run -it --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar -Pxvzf /backup/backup_redis.tar.gz
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_redis.tar.gz
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
     crypt)
@@ -218,7 +227,7 @@ function restore() {
       docker run -it --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar -Pxvzf /backup/backup_crypt.tar.gz
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_crypt.tar.gz
       docker start $(docker ps -aqf name=dovecot-mailcow)
       ;;
     rspamd)
@@ -226,7 +235,7 @@ function restore() {
       docker run -it --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar -Pxvzf /backup/backup_rspamd.tar.gz
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
       docker start $(docker ps -aqf name=rspamd-mailcow)
       ;;
     postfix)
@@ -234,7 +243,7 @@ function restore() {
       docker run -it --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar -Pxvzf /backup/backup_postfix.tar.gz
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_postfix.tar.gz
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
     mysql|mariadb)

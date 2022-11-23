@@ -45,12 +45,12 @@
         </li>
         {% if mailcow_locale %}
         <li class="nav-item dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
-          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span></a>
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span></a>
           <ul class="dropdown-menu" role="menu "aria-labelledby="languageDropdown">
             {% for key, val in available_languages %}
             <li>
               <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
-                <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+                <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
               </a>
             </li>
             {% endfor %}
@@ -143,10 +143,10 @@
   var mailcow_info = {
     version_tag: '{{ mailcow_info.version_tag }}',
     last_version_tag: '{{ mailcow_info.last_version_tag }}',
-    updatedAt: '{{ mailcow_info.updatedAt }}',
-    project_url: '{{ mailcow_info.project_url }}',
-    project_owner: '{{ mailcow_info.project_owner }}',
-    project_repo: '{{ mailcow_info.project_repo }}',
+    updatedAt: '{{ mailcow_info.updated_at }}',
+    project_url: '{{ mailcow_info.git_project_url }}',
+    project_owner: '{{ mailcow_info.git_owner }}',
+    project_repo: '{{ mailcow_info.git_repo }}',
     branch: '{{ mailcow_info.mailcow_branch }}'
   };
 
@@ -202,7 +202,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     // TFA, CSRF, Alerts in footer.inc.php
     // Other general functions in mailcow.js
     {% for alert_type, alert_msg in alerts %}
-    mailcow_alert_box('{{ alert_msg|raw }}', '{{ alert_type }}');
+    mailcow_alert_box('{{ alert_msg|raw|e("js") }}', '{{ alert_type }}');
     {% endfor %}
 
     // Confirm TFA modal
