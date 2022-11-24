@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBIAN_DOCKER_IMAGE="mailcow/backup:1.0"
+DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
@@ -58,7 +58,7 @@ if ! [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
   echo "Thread input is not a number!"
   exit 1
 elif [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
-  echo "Using ${THREADS} Thread(s) for this run." 
+  echo "Using ${THREADS} Thread(s) for this run."
   echo "Notice: You can set the Thread count with the THREADS Variable before you run this script."
 fi
 
@@ -181,7 +181,7 @@ function restore() {
 
   elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
     COMPOSE_COMMAND="docker-compose"
-  
+
   else
     echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
     exit 1
