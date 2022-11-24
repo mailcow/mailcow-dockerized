@@ -3349,6 +3349,7 @@ paths:
                           evaluate_x_prio: "0"
                           key: 21e8918e1jksdjcpis712
                           only_x_prio: "0"
+                          sound: "pushover"
                           senders: ""
                           senders_regex: ""
                           text: ""
@@ -3392,6 +3393,7 @@ paths:
                   evaluate_x_prio: "0"
                   key: 21e8918e1jksdjcpis712
                   only_x_prio: "0"
+                  sound: "pushover"
                   senders: ""
                   senders_regex: ""
                   text: ""
@@ -3413,6 +3415,9 @@ paths:
                     only_x_prio:
                       description: Only send push for prio mails
                       type: number
+                    sound:
+                      description: Set notification sound
+                      type: string
                     senders:
                       description: Only send push for emails from these senders
                       type: string
