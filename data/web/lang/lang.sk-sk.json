@@ -106,7 +106,7 @@
         "username": "Používateľské meno",
         "validate": "Overiť",
         "validation_success": "Úspešne overené",
-        "app_passwd_protocols": "Povolené protokoly"
+        "app_passwd_protocols": "Povolené protokoly k heslu aplikácie"
     },
     "admin": {
         "access": "Prístup",
