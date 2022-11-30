@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.111
+      image: mailcow/sogo:1.12
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
