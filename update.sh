@@ -3,7 +3,7 @@
 ############## Begin Function Section ##############
 
 check_online_status() {
-  CHECK_ONLINE_DOMAINS=('https://github.com')
+  CHECK_ONLINE_DOMAINS=('https://github.com' 'https://hub.docker.com')
   for domain in "${CHECK_ONLINE_DOMAINS[@]}"; do
     if timeout 3 curl --head --silent --output /dev/null ${domain}; then
       return 0
