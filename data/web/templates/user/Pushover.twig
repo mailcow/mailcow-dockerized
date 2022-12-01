@@ -9,7 +9,7 @@
       </div>
       <div class="col-sm-10">
         <p class="help-block">{{ lang.user.pushover_info|format(mailcow_cc_username)|raw }}</p>
-        <p class="help-block">{{ lang.user.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code></p>
+        <p class="help-block">{{ lang.edit.pushover_vars|raw }}: <code>{SUBJECT}</code>, <code>{SENDER}</code>, <code>{SENDER_ADDRESS}</code>, <code>{SENDER_NAME}</code>, <code>{TO_NAME}</code>, <code>{TO_ADDRESS}</code></p>
         <div class="form-group">
           <div class="row">
             <div class="col-sm-6">
@@ -40,6 +40,36 @@
               <div class="form-group">
                 <label for="text">{{ lang.user.pushover_sender_array|raw }}</label>
                 <input type="text" class="form-control" name="senders" value="{{ pushover_data.senders }}" placeholder="sender1@example.com, sender2@example.com">
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="sound">{{ lang.edit.pushover_sound }}</label><br>
+                <select name="sound" class="form-control">
+                  <option value="pushover"{% if pushover_data.attributes.sound == 'pushover' %} selected{% endif %}>Pushover (default)</option>
+                  <option value="bike"{% if pushover_data.attributes.sound == 'bike' %} selected{% endif %}>Bike</option>
+                  <option value="bugle"{% if pushover_data.attributes.sound == 'bugle' %} selected{% endif %}>Bugle</option>
+                  <option value="cashregister"{% if pushover_data.attributes.sound == 'cashregister' %} selected{% endif %}>Cash Register</option>
+                  <option value="classical"{% if pushover_data.attributes.sound == 'classical' %} selected{% endif %}>Classical</option>
+                  <option value="cosmic"{% if pushover_data.attributes.sound == 'cosmic' %} selected{% endif %}>Cosmic</option>
+                  <option value="falling"{% if pushover_data.attributes.sound == 'falling' %} selected{% endif %}>Falling</option>
+                  <option value="gamelan"{% if pushover_data.attributes.sound == 'gamelan' %} selected{% endif %}>Gamelan</option>
+                  <option value="incoming"{% if pushover_data.attributes.sound == 'incoming' %} selected{% endif %}>Incoming</option>
+                  <option value="intermission"{% if pushover_data.attributes.sound == 'intermission' %} selected{% endif %}>Intermission</option>
+                  <option value="magic"{% if pushover_data.attributes.sound == 'magic' %} selected{% endif %}>Magic</option>
+                  <option value="mechanical"{% if pushover_data.attributes.sound == 'mechanical' %} selected{% endif %}>Mechanical</option>
+                  <option value="pianobar"{% if pushover_data.attributes.sound == 'pianobar' %} selected{% endif %}>Piano Bar</option>
+                  <option value="siren"{% if pushover_data.attributes.sound == 'siren' %} selected{% endif %}>Siren</option>
+                  <option value="spacealarm"{% if pushover_data.attributes.sound == 'spacealarm' %} selected{% endif %}>Space Alarm</option>
+                  <option value="tugboat"{% if pushover_data.attributes.sound == 'tugboat' %} selected{% endif %}>Tug Boat</option>
+                  <option value="alien"{% if pushover_data.attributes.sound == 'alien' %} selected{% endif %}>Alien Alarm (long)</option>
+                  <option value="climb"{% if pushover_data.attributes.sound == 'climb' %} selected{% endif %}>Climb (long)</option>
+                  <option value="persistent"{% if pushover_data.attributes.sound == 'persistent' %} selected{% endif %}>Persistent (long)</option>
+                  <option value="echo"{% if pushover_data.attributes.sound == 'echo' %} selected{% endif %}>Pushover Echo (long)</option>
+                  <option value="updown"{% if pushover_data.attributes.sound == 'updown' %} selected{% endif %}>Up Down (long)</option>
+                  <option value="vibrate"{% if pushover_data.attributes.sound == 'vibrate' %} selected{% endif %}>Vibrate Only</option>
+                  <option value="none"{% if pushover_data.attributes.sound == 'none' %} selected{% endif %}> None (silent) </option>
+                </select>
               </div>
             </div>
             <div class="col-sm-12">

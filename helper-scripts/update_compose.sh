@@ -50,7 +50,7 @@ echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
             exit 0
         else
             echo -e "\e[33mWARNING: $COMPOSE_PATH is not writable, but new version $LATEST_COMPOSE is available (installed: $COMPOSE_VERSION)\e[0m"
-            return 1
+            exit 1
         fi
         fi
     else

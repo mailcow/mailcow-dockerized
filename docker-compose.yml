@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.90
+      image: mailcow/rspamd:1.91
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.79
+      image: mailcow/phpfpm:1.80
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.111
+      image: mailcow/sogo:1.112
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
