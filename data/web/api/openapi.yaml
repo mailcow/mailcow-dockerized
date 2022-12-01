@@ -3349,6 +3349,7 @@ paths:
                           evaluate_x_prio: "0"
                           key: 21e8918e1jksdjcpis712
                           only_x_prio: "0"
+                          sound: "pushover"
                           senders: ""
                           senders_regex: ""
                           text: ""
@@ -3392,6 +3393,7 @@ paths:
                   evaluate_x_prio: "0"
                   key: 21e8918e1jksdjcpis712
                   only_x_prio: "0"
+                  sound: "pushover"
                   senders: ""
                   senders_regex: ""
                   text: ""
@@ -3413,6 +3415,9 @@ paths:
                     only_x_prio:
                       description: Only send push for prio mails
                       type: number
+                    sound:
+                      description: Set notification sound
+                      type: string
                     senders:
                       description: Only send push for emails from these senders
                       type: string
@@ -5501,6 +5506,60 @@ paths:
                   attr:
                     spam_score: "8,15"
       summary: Edit mailbox spam filter score
+  "/api/v1/get/mailbox/all/{domain}":
+    get:
+      parameters:
+        - description: name of domain
+          in: path
+          name: domain
+          required: false
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - active: "1"
+                      attributes:
+                        force_pw_update: "0"
+                        mailbox_format: "maildir:"
+                        quarantine_notification: never
+                        sogo_access: "1"
+                        tls_enforce_in: "0"
+                        tls_enforce_out: "0"
+                      domain: domain3.tld
+                      is_relayed: 0
+                      local_part: info
+                      max_new_quota: 10737418240
+                      messages: 0
+                      name: Full name
+                      percent_class: success
+                      percent_in_use: 0
+                      quota: 3221225472
+                      quota_used: 0
+                      rl: false
+                      spam_aliases: 0
+                      username: info@domain3.tld
+                      tags: ["tag1", "tag2"]
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: You can list all mailboxes existing in system for a specific domain.
+      operationId: Get mailboxes of a domain
+      summary: Get mailboxes of a domain
 
 tags:
   - name: Domains

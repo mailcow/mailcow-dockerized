@@ -1,12 +1,12 @@
-FROM php:8.0-fpm-alpine3.16
+FROM php:8.1-fpm-alpine3.16
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
-ENV APCU_PECL 5.1.21
+ENV APCU_PECL 5.1.22
 ENV IMAGICK_PECL 3.7.0
-# Mailparse is pulled from master branch
-#ENV MAILPARSE_PECL 3.0.2
+ENV MAILPARSE_PECL 3.1.4
 ENV MEMCACHED_PECL 3.2.0
 ENV REDIS_PECL 5.3.7
+ENV COMPOSER 2.4.4
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \
@@ -18,6 +18,7 @@ RUN apk add -U --no-cache autoconf \
   freetype-dev \
   g++ \
   git \
+  gettext \
   gettext-dev \
   gmp-dev \
   gnupg \
@@ -27,8 +28,11 @@ RUN apk add -U --no-cache autoconf \
   imagemagick-dev \
   imap-dev \
   jq \
+  libavif \
+  libavif-dev \
   libjpeg-turbo \
   libjpeg-turbo-dev \
+  libmemcached \
   libmemcached-dev \
   libpng \
   libpng-dev \
@@ -38,7 +42,9 @@ RUN apk add -U --no-cache autoconf \
   libtool \
   libwebp-dev \
   libxml2-dev \
+  libxpm \
   libxpm-dev \
+  libzip \
   libzip-dev \
   make \
   mysql-client \
@@ -49,22 +55,24 @@ RUN apk add -U --no-cache autoconf \
   samba-client \
   zlib-dev \
   tzdata \
-  && git clone https://github.com/php/pecl-mail-mailparse \
-  && cd pecl-mail-mailparse \
-  && pecl install package.xml \
-  && cd .. \
-  && rm -r pecl-mail-mailparse \
-  && pecl install redis-${REDIS_PECL} memcached-${MEMCACHED_PECL} APCu-${APCU_PECL} imagick-${IMAGICK_PECL} \
+  && pecl install mailparse-${MAILPARSE_PECL} \
+  && pecl install redis-${REDIS_PECL} \
+  && pecl install memcached-${MEMCACHED_PECL} \
+  && pecl install APCu-${APCU_PECL} \
+  && pecl install imagick-${IMAGICK_PECL} \
   && docker-php-ext-enable apcu imagick memcached mailparse redis \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
   && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
     --with-jpeg=/usr/include/ \
+    --with-webp \
+    --with-xpm \
+    --with-avif \
   && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
-  && curl --silent --show-error https://getcomposer.org/installer | php \
+  && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
@@ -72,15 +80,21 @@ RUN apk add -U --no-cache autoconf \
     cyrus-sasl-dev \
     freetype-dev \
     g++ \
+    gettext-dev \
     icu-dev \
     imagemagick-dev \
     imap-dev \
+    libavif-dev \
     libjpeg-turbo-dev \
+    libmemcached-dev \
     libpng-dev \
     libressl-dev \
     libwebp-dev \
     libxml2-dev \
+    libxpm-dev \
+    libzip-dev \
     make \
+    openldap-dev \
     pcre-dev \
     zlib-dev
 
