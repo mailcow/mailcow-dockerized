@@ -51,6 +51,7 @@ function pushover($_action, $_data = null) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
           $evaluate_x_prio = (isset($_data['evaluate_x_prio'])) ? intval($_data['evaluate_x_prio']) : $is_now['evaluate_x_prio'];
           $only_x_prio = (isset($_data['only_x_prio'])) ? intval($_data['only_x_prio']) : $is_now['only_x_prio'];
+          $sound = (isset($_data['sound'])) ? $_data['sound'] : $is_now['sound'];
         }
         else {
           $_SESSION['return'][] = array(
@@ -101,7 +102,8 @@ function pushover($_action, $_data = null) {
         $po_attributes = json_encode(
           array(
             'evaluate_x_prio' => strval(intval($evaluate_x_prio)),
-            'only_x_prio' => strval(intval($only_x_prio))
+            'only_x_prio' => strval(intval($only_x_prio)),
+            'sound' => strval($sound)
           )
         );
         $stmt = $pdo->prepare("REPLACE INTO `pushover` (`username`, `key`, `attributes`, `senders_regex`, `senders`, `token`, `title`, `text`, `active`)
