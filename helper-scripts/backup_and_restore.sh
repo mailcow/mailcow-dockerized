@@ -23,8 +23,8 @@ if [[ ${1} == "help" ]]; then
 
     NODATE: Allows you to omit the date stamped folder.
       example: NODATE=1 backup_and_restore.sh backup all
-      
-      IMPORTANT: If you'd like to restore a NODATE backup, you have to
+
+      IMPORTANT: If you'd like to restore a NODATE=1 backup, you have to
       use NODATE=1 for restoring as well! Otherwise, Mailcow will only
       look for timestamped folders, which you will not have.
 
@@ -46,6 +46,7 @@ fi
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
+  echo $BACKUP_LOCATION
 fi
 
 if [[ ! ${1} =~ (backup|restore|help) ]]; then
@@ -136,7 +137,7 @@ fi
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
 
-  if [[ -z "${NODATE}" ]]; then
+  if [[ -z "$NODATE" ]]; then
     # No NODATE defined so we backup normally
     FINAL_BACKUP_LOCATION="${BACKUP_LOCATION}/mailcow-${DATE}"
   else
@@ -371,25 +372,31 @@ if [[ ${1} == "backup" ]]; then
 elif [[ ${1} == "restore" ]]; then
   i=1
   declare -A FOLDER_SELECTION
-  
-  if [[ -z "${NODATE}" ]]; then
-    # No NODATE defined so restore normally
+
+  if [[ -z "$NODATE" ]]; then
+    # Normal backup mode, check if any timestamped folders exist at backup location
     if [[ $(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
       echo "Selected backup location has no timestamped subfolders"
       exit 1
     fi
+    for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
+      echo "[ ${i} ] - ${folder}"
+      FOLDER_SELECTION[${i}]="${folder}"
+      ((i++))
+    done
   else
+    # NODATE set, any sub-folder will be shown to user
     if [[ $(find ${BACKUP_LOCATION}/* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
       echo "Selected backup location has no subfolders"
       exit 1
     fi
+    for folder in $(ls -d ${BACKUP_LOCATION}/*/); do
+      echo "[ ${i} ] - ${folder}"
+      FOLDER_SELECTION[${i}]="${folder}"
+      ((i++))
+    done
   fi
-  
-  for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
-    echo "[ ${i} ] - ${folder}"
-    FOLDER_SELECTION[${i}]="${folder}"
-    ((i++))
-  done
+
   echo
   input_sel=0
   while [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
