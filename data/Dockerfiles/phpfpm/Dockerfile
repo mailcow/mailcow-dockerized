@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine3.16
+FROM php:8.1-fpm-alpine3.17
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ENV APCU_PECL 5.1.22
