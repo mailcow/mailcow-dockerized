@@ -25,7 +25,7 @@ if [[ ${1} == "help" ]]; then
       example: NODATE=1 backup_and_restore.sh backup all
 
       IMPORTANT: If you'd like to restore a NODATE=1 backup, you have to
-      use NODATE=1 for restoring as well! Otherwise, Mailcow will only
+      use NODATE=1 for restoring as well! Otherwise, mailcow will only
       look for timestamped folders, which you will not have.
 
   You can combine the variables as well.
