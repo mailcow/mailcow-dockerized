@@ -51,8 +51,8 @@ sub sig_handler {
   die "sig_handler received signal, preparing to exit...\n";
 };
 
-open my $file, '<', "/etc/sogo/sieve.creds";
-my $creds = <$file>;
+open my $file, '<', "/etc/sogo/sieve.creds"; 
+my $creds = <$file>; 
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
 my $sth = $dbh->prepare("SELECT id,
@@ -166,17 +166,11 @@ while ($row = $sth->fetchrow_arrayref()) {
       $success = 1;
     }
 
-    $keep_job_active = 1;
-    if (defined $exit_status && $exit_status eq "EXIT_AUTHENTICATION_FAILURE_USER1") {
-      $keep_job_active = 0;
-    }
-
-    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, success = ?, exit_status = ?, active = ? WHERE id = ?");
+    $update = $dbh->prepare("UPDATE imapsync SET returned_text = ?, success = ?, exit_status = ? WHERE id = ?");
     $update->bind_param( 1, ${stdout} );
     $update->bind_param( 2, ${success} );
     $update->bind_param( 3, ${exit_status} );
-    $update->bind_param( 4, ${keep_job_active} );
-    $update->bind_param( 5, ${id} );
+    $update->bind_param( 4, ${id} );
     $update->execute();
   } catch {
     $update = $dbh->prepare("UPDATE imapsync SET returned_text = 'Could not start or finish imapsync', success = 0 WHERE id = ?");
