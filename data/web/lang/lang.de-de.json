@@ -228,6 +228,7 @@
         "oauth2_renew_secret": "Neues Client Secret generieren",
         "oauth2_revoke_tokens": "Alle Client Tokens entfernen",
         "optional": "Optional",
+        "options": "Einstellungen",
         "password": "Passwort",
         "password_length": "Passwortlänge",
         "password_policy": "Passwortrichtlinie",
@@ -938,16 +939,20 @@
         "type": "Typ"
     },
     "queue": {
-        "delete_queue": "Queue löschen",
-        "flush_queue": "Queue flushen",
-        "queue_ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
-        "queue_command_success": "Queue-Aufgabe erfolgreich ausgeführt",
-        "queue_deliver_mail": "Ausliefern",
-        "queue_hold_mail": "Zurückhalten",
+        "delete": "Queue löschen",
+        "flush": "Queue flushen",
+        "info" : "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt aufschluss darüber, warum diese nicht zugestellt werden konnte",
+        "legend": "Funktionen der Mailqueue Aktionen:",
+        "ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
+        "deliver_mail": "Ausliefern",
+        "deliver_mail_legend": "Versucht eine erneute Zustellung der ausgwählten Mails.",
+        "hold_mail": "Zurückhalten",
+        "hold_mail_legend": "Hält die ausgewählten Mails zurück. (Verhindert weitere Zustellversuche)",
         "queue_manager": "Queue Manager",
-        "queue_show_message": "Nachricht anzeigen",
-        "queue_unban": "queue unban",
-        "queue_unhold_mail": "Freigeben"
+        "show_message": "Nachricht anzeigen",
+        "unban": "queue unban",
+        "unhold_mail": "Freigeben",
+        "unhold_mail_legend": "Gibt ausgewählte Mails zur Auslieferung frei. (Erfordert vorheriges Zurückhalten)"
     },
     "start": {
         "help": "Hilfe ein-/ausblenden",
