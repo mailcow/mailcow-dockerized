@@ -1,7 +1,7 @@
 $(document).ready(function() {
   // mailcow alert box generator
   window.mailcow_alert_box = function(message, type) {
-    msg = $('<span/>').text(message).text();
+    msg = $('<span/>').text(escapeHtml(message)).text();
     if (type == 'danger' || type == 'info') {
       auto_hide = 0;
       $('#' + localStorage.getItem("add_modal")).modal('show');

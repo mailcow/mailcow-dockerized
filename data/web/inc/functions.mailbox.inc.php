@@ -1420,11 +1420,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           // check attributes
           $attr = array();
           $attr['tags']                       = (isset($_data['tags'])) ? $_data['tags'] : array();
-          $attr['max_num_aliases_for_domain'] = (isset($_data['max_num_aliases_for_domain'])) ? intval($_data['max_num_aliases_for_domain']) : 0;
-          $attr['max_num_mboxes_for_domain']  = (isset($_data['max_num_mboxes_for_domain'])) ? intval($_data['max_num_mboxes_for_domain']) : 0;
-          $attr['def_quota_for_mbox']         = (isset($_data['def_quota_for_mbox'])) ? intval($_data['def_quota_for_mbox']) * 1048576 : 0;
-          $attr['max_quota_for_mbox']         = (isset($_data['max_quota_for_mbox'])) ? intval($_data['max_quota_for_mbox']) * 1048576 : 0;
-          $attr['max_quota_for_domain']       = (isset($_data['max_quota_for_domain'])) ? intval($_data['max_quota_for_domain']) * 1048576 : 0;
+          $attr['max_num_aliases_for_domain'] = (!empty($_data['max_num_aliases_for_domain'])) ? intval($_data['max_num_aliases_for_domain']) : 400;
+          $attr['max_num_mboxes_for_domain']  = (!empty($_data['max_num_mboxes_for_domain'])) ? intval($_data['max_num_mboxes_for_domain']) : 10;
+          $attr['def_quota_for_mbox']         = (!empty($_data['def_quota_for_mbox'])) ? intval($_data['def_quota_for_mbox']) * 1048576 : 3072 * 1048576;
+          $attr['max_quota_for_mbox']         = (!empty($_data['max_quota_for_mbox'])) ? intval($_data['max_quota_for_mbox']) * 1048576 : 10240 * 1048576;
+          $attr['max_quota_for_domain']       = (!empty($_data['max_quota_for_domain'])) ? intval($_data['max_quota_for_domain']) * 1048576 : 10240 * 1048576;
           $attr['rl_frame']                   = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : "s";
           $attr['rl_value']                   = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
           $attr['active']                     = isset($_data['active']) ? intval($_data['active']) : 1;
@@ -1434,7 +1434,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
-
 
           // save template
           $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
@@ -4756,15 +4755,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ":id" => $id,
               ":type" => "domain",
               ":template" => "Default"
-            )); 
-          }
+            ));
 
-          $_SESSION['return'][] = array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => 'template_removed'
-          );
-          return true;
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('template_removed', htmlspecialchars($id))
+            );
+            return true;
+          }
         break;
         case 'alias':
           if (!is_array($_data['id'])) {
