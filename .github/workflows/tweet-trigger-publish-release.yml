@@ -17,4 +17,4 @@ jobs:
           consumer_secret: ${{ secrets.CONSUMER_SECRET }}
           access_token_key: ${{ secrets.ACCESS_TOKEN_KEY }}
           access_token_secret: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          tweet_body: '$RELEASE_TAG is here! Checkout the GitHub Page for changelog regarding the $RELEASE_TAG Release: github.com/mailcow/mailcow-dockerized/releases/tag/$RELEASE_TAG'
+          tweet_body: 'A new mailcow update has just been released! Checkout the GitHub Page for changelog and more informations: github.com/mailcow/mailcow-dockerized/releases/tag/latest'
