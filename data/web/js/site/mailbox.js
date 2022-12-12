@@ -645,10 +645,18 @@ jQuery(function($){
             }
             item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
 
-            item.action = '<div class="btn-group">' +
+            
+            if (item.template.toLowerCase() == "default"){
+              item.action = '<div class="btn-group">' +
+              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '</div>';
+            }
+            else{
+              item.action = '<div class="btn-group">' +
               '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/domain/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
+            }
 
             if (Array.isArray(item.attributes.tags)){
               var tags = '';
@@ -688,7 +696,7 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: "Template",
+            title: lang.template,
             data: 'template',
             responsivePriority: 3,
             defaultContent: ''
@@ -1115,11 +1123,17 @@ jQuery(function($){
             }
 
             
-
-            item.action = '<div class="btn-group">' +
-              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '</div>';
+            if (item.template.toLowerCase() == "default"){
+                item.action = '<div class="btn-group">' +
+                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                  '</div>';
+            }
+            else {
+                  item.action = '<div class="btn-group">' +
+                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                  '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                  '</div>';              
+            }
 
             if (Array.isArray(item.attributes.tags)){
               var tags = '';
@@ -1159,7 +1173,7 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: "Template",
+          title: lang.template,
           data: 'template',
           responsivePriority: 3,
           defaultContent: ''

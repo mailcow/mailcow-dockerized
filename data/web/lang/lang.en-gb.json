@@ -1038,6 +1038,7 @@
         "sogo_profile_reset": "SOGo profile for user %s was reset",
         "template_added": "Added template %s",
         "template_modified": "Changes to template %s have been saved",
+        "template_removed": "Template ID %s has been deleted",
         "tls_policy_map_entry_deleted": "TLS policy map ID %s has been deleted",
         "tls_policy_map_entry_saved": "TLS policy map entry \"%s\" has been saved",
         "ui_texts": "Saved changes to UI texts",
