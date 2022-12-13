@@ -5,7 +5,7 @@
 check_online_status() {
   CHECK_ONLINE_DOMAINS=('https://github.com' 'https://hub.docker.com')
   for domain in "${CHECK_ONLINE_DOMAINS[@]}"; do
-    if timeout 3 curl --head --silent --output /dev/null ${domain}; then
+    if timeout 6 curl --head --silent --output /dev/null ${domain}; then
       return 0
     fi
   done
