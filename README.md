@@ -1,7 +1,5 @@
 # mailcow: dockerized - 🐮 + 🐋 = 💕
 
-## We stand with 🇺🇦
-
 [![Mailcow Integration Tests](https://github.com/mailcow/mailcow-dockerized/actions/workflows/integration_tests.yml/badge.svg?branch=master)](https://github.com/mailcow/mailcow-dockerized/actions/workflows/integration_tests.yml)
 [![Translation status](https://translate.mailcow.email/widgets/mailcow-dockerized/-/translation/svg-badge.svg)](https://translate.mailcow.email/engage/mailcow-dockerized/)
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/mailcow_email.svg?style=social&label=Follow%20%40mailcow_email)](https://twitter.com/mailcow_email)
@@ -36,3 +34,9 @@ Telegram desktop clients are available for [multiple platforms](https://desktop.
 
 **Important**: mailcow makes use of various open-source software. Please assure you agree with their license before using mailcow.
 Any part of mailcow itself is released under **GNU General Public License, Version 3**.
+
+mailcow is a registered word mark of The Infrastructure Company GmbH, Parkstr. 42, 47877 Willich, Germany.
+
+The project is managed and maintained by The Infrastructure Company GmbH.
+
+Originated from @andryyy (André)
