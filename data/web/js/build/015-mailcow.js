@@ -274,10 +274,11 @@ $(document).ready(function() {
     });
   })
 
-  // Jquery Datatables, enable responsive plugin
+  // Jquery Datatables, enable responsive plugin and date sort plugin
   $.extend($.fn.dataTable.defaults, {
     responsive: true
   });
+  $.fn.dataTable.moment('dd:mm:YYYY');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){
