@@ -34,7 +34,7 @@ echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
     sleep 1
     if [[ $(command -v pip 2>&1) && $(pip list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 || $(command -v pip3 2>&1) && $(pip3 list --local 2>&1 | grep -v DEPRECATION | grep -c docker-compose) == 1 ]]; then
         echo -e "\e[33mFound a docker-compose Version installed with pip!\e[0m"
-        echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn´t support Versions higher than 1.29.2.\e[0m"
+        echo -e "\e[31mPlease uninstall the pip Version of docker-compose since it doesn't support Versions higher than 1.29.2.\e[0m"
         sleep 2
         echo -e "\e[33mExiting...\e[0m"
         exit 1
