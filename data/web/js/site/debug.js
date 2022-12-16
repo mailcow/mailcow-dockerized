@@ -48,7 +48,8 @@ $(document).ready(function() {
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
   $("#maiclow_version").click(function(){
-    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
+    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" ||
+       mailcow_info.branch !== "master")
       return;
 
     showVersionModal("Version " + mailcow_info.version_tag, mailcow_info.version_tag);
@@ -992,7 +993,6 @@ jQuery(function($){
       return;
     }
 
-    // BUG TODO: loading 100 results in loading 10 - loading 1000 results in loading 100
     if (table = $('#' + log_table).DataTable()) {
       var heading = $('#' + log_table).closest('.card').find('.card-header');
       var load_rows = (table.page.len() + 1) + '-' + (table.page.len() + new_nrows)
