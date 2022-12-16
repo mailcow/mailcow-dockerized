@@ -38,13 +38,16 @@ echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
         echo -e "\e[33mExiting...\e[0m"
         exit 1
         #prevent breaking a working docker-compose installed with pip
-    elif [[ $(curl -sL -w "%{http_code}" https://www.servercow.de/docker-compose/latest.php?vers=${DC_DL_SUFFIX} -o /dev/null) == "200" ]]; then
-        LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+    elif [[ $(curl -sL -w "%{http_code}" https://github.com/docker/compose/releases/latest -o /dev/null) == "200" ]]; then
+        LATEST_COMPOSE=$(curl -Ls -w %{url_effective} -o /dev/null https://github.com/docker/compose/releases/latest) # redirect to latest release
+        LATEST_COMPOSE=${LATEST_COMPOSE##*/} #get the latest version from the redirect, inlcuding the "v" prefix
+        if [ $DC_DL_SUFFIX]; then
+          LATEST_COMPOSE=1.27.4 # force 1.27.4 for legacy systems, tag is not prefixed by "v"
         COMPOSE_VERSION=$(docker-compose version --short)
         if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
         COMPOSE_PATH=$(command -v docker-compose)
         if [[ -w ${COMPOSE_PATH} ]]; then
-            curl -#L https://github.com/docker/compose/releases/download/v${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
+            curl -#L https://github.com/docker/compose/releases/download/${LATEST_COMPOSE}/docker-compose-$(uname -s)-$(uname -m) > $COMPOSE_PATH
             chmod +x $COMPOSE_PATH
             echo -e "\e[32mYour Docker Compose (standalone) has been updated to: $LATEST_COMPOSE\e[0m"
             exit 0
