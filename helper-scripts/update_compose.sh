@@ -61,7 +61,7 @@ echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
 elif [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
     echo -e "\e[31mYou are using the native Docker Compose Plugin. This Script is for the standalone Docker Compose Version only.\e[0m"
     sleep 2
-    echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+    echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
     exit 1
 
 else
