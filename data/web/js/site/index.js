@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var darkmode = localStorage.getItem("darkmode");
+  var theme = localStorage.getItem("theme");
   localStorage.clear();
-  localStorage.setItem("darkmode", darkmode);
+  localStorage.setItem("theme", theme);
 });

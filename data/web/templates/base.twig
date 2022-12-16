@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="{{ css_path }}">
   <script>
     // check if darkmode is preferred by OS or set by localStorage
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ||
-        JSON.parse(localStorage.getItem("darkmode")) === true) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem("theme") !== "light" ||
+        localStorage.getItem("theme") === "dark") {
       var head  = document.getElementsByTagName('head')[0];
       var link  = document.createElement('link');
       link.id   = 'dark-mode-theme';
