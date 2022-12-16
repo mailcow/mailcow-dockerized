@@ -4,7 +4,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source ${SCRIPT_DIR}/../mailcow.conf
 
 if [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
-LATEST_COMPOSE=$(curl -#L https://www.servercow.de/docker-compose/latest.php)
+LATEST_COMPOSE=$(curl -Ls -w %{url_effective} -o /dev/null https://github.com/docker/compose/releases/latest) # redirect to latest release
+LATEST_COMPOSE=${LATEST_COMPOSE##*/v} #get the latest version from the redirect, excluding the "v" prefix
 COMPOSE_VERSION=$(docker-compose version --short)
 if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
   echo -e "\e[33mA new docker-compose Version is available: $LATEST_COMPOSE\e[0m"
