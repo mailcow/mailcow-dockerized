@@ -54,6 +54,7 @@ $rcpts    = $headers['X-Rspamd-Rcpt'];
 $sender   = $headers['X-Rspamd-From'];
 $ip       = $headers['X-Rspamd-Ip'];
 $subject  = $headers['X-Rspamd-Subject'];
+$messageid= $json_body->message_id;
 $priority = 0;
 
 $symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
@@ -245,13 +246,13 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       "token" => $api_data['token'],
       "user" => $api_data['key'],
       "title" => sprintf("%s", str_replace(
-        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}'), 
-        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address), $title)
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '{MSG_ID}'),
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, $messageid), $title)
       ),
       "priority" => $priority,
       "message" => sprintf("%s", str_replace(
-        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '\n'),
-        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, PHP_EOL), $text)
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '{MSG_ID}', '\n'),
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, $messageid, PHP_EOL), $text)
       ),
       "sound" => $attributes['sound'] ?? "pushover"
     );
