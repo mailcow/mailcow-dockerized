@@ -26,21 +26,21 @@ body:
     attributes:
       label: Description
       description: Please provide a brief description of the bug in 1-2 sentences. If applicable, add screenshots to help explain your problem. Very useful for bugs in mailcow UI.
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs:"
       description: "Please take a look at the [official documentation](https://docs.mailcow.email/troubleshooting/debug-logs/) and post the last few lines of logs, when the error occurs. For example, docker container logs of affected containers. This will be automatically formatted into code, so no need for backticks."
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Steps to reproduce:"
       description: "Please describe the steps to reproduce the bug. Screenshots can be added, if helpful."
-      render: text
+      render: plain text
       placeholder: |-
         1. ...
         2. ...
@@ -117,41 +117,41 @@ body:
     attributes:
       label: "Logs of git diff:"
       description: "#### Output of `git diff origin/master`, any other changes to the code? If so, **please post them**:"
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs of iptables -L -vn:"
       description: "#### Output of `iptables -L -vn`"
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs of ip6tables -L -vn:"
       description: "#### Output of `ip6tables -L -vn`"
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs of iptables -L -vn -t nat:"
       description: "#### Output of `iptables -L -vn -t nat`"
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs of ip6tables -L -vn -t nat:"
       description: "#### Output of `ip6tables -L -vn -t nat`"
-      render: text
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
       label: "DNS check:"
       description: "#### Output of `docker exec -it $(docker ps -qf name=acme-mailcow) dig +short stackoverflow.com @172.22.1.254` (set the IP accordingly, if you changed the internal mailcow network)"
-      render: text
+      render: plain text
     validations:
       required: true
