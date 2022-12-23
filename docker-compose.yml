@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.16
+      image: mailcow/unbound:1.17
       environment:
         - TZ=${TZ}
       volumes:
@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.80
+      image: mailcow/phpfpm:1.81
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -388,7 +388,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.82
+      image: mailcow/acme:1.83
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -424,7 +424,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.49
+      image: mailcow/netfilter:1.50
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -447,7 +447,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.96
+      image: mailcow/watchdog:1.97
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -509,7 +509,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.42
+      image: mailcow/dockerapi:1.43
       security_opt:
         - label=disable
       restart: always
@@ -543,7 +543,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.10
+      image: mailcow/olefy:1.11
       restart: always
       environment:
         - TZ=${TZ}
