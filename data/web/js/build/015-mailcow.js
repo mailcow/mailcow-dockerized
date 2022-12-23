@@ -274,10 +274,11 @@ $(document).ready(function() {
     });
   })
 
-  // Jquery Datatables, enable responsive plugin
+  // Jquery Datatables, enable responsive plugin and date sort plugin
   $.extend($.fn.dataTable.defaults, {
     responsive: true
   });
+  $.fn.dataTable.moment('dd:mm:YYYY');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){
@@ -303,13 +304,13 @@ $(document).ready(function() {
       $('#dark-mode-toggle').prop('checked', false);
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
-      localStorage.setItem('darkmode', 'false');
+      localStorage.setItem('theme', 'light');
     }else{
       $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
       $('#dark-mode-toggle').prop('checked', true);
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
-      localStorage.setItem('darkmode', 'true');
+      localStorage.setItem('theme', 'dark');
     }
   }
 });
