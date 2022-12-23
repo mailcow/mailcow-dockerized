@@ -3,12 +3,12 @@
     {% for key_info in tfa_data.additional %}
       <form style="display:inline;" method="post">
         <input type="hidden" name="unset_tfa_key" value="{{ key_info.id }}">
-        <p>
-          <span style="padding:4px;margin:4px" class="label label-keys label-{% if tfa_id == key_info.id %}success{% else %}default{% endif %}">
+        <div class="d-flex flex-column">
+          <span style="padding:4px;margin:4px" class="me-auto badge fs-6 bg-{% if tfa_id == key_info.id %}success{% else %}dark{% endif %}">
             {{ key_info.key_id }}
-            <a href="#" style="font-weight:bold;color:white" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";'>[{{ lang.admin.remove }}]</a>
+            <a href="#" class="btn p-0 text-white" style="font-size: 12px; line-height: 1rem;" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";'>[{{ lang.admin.remove }}]</a>
           </span>
-        </p>
+        </div>
       </form>
     {% endfor %}
   {% endif %}

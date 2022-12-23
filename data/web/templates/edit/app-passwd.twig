@@ -6,32 +6,32 @@
 <form class="form-horizontal" data-pwgen-length="32" data-id="editapp" role="form" method="post">
   <input type="hidden" value="0" name="active">
   <input type="hidden" value="0" name="protocols">
-  <div class="form-group">
+  <div class="row mb-4">
     <label class="control-label col-sm-2" for="app_name">{{ lang.edit.app_name }}</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="app_name" id="app_name" value="{{ result.name }}" required maxlength="255">
     </div>
   </div>
-  <div class="form-group">
+  <div class="row mb-2">
     <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
     <div class="col-sm-10">
       <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
     </div>
   </div>
-  <div class="form-group">
+  <div class="row mb-4">
     <label class="control-label col-sm-2" for="password2">{{ lang.edit.password_repeat }}</label>
     <div class="col-sm-10">
       <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
       <div class="checkbox">
         <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
       </div>
     </div>
   </div>
-  <div class="form-group">
+  <div class="row mb-4">
     <label class="control-label col-sm-2" for="protocols">{{ lang.edit.app_passwd_protocols }}</label>
     <div class="col-sm-10">
       <select class="full-width-select" data-live-search="true" id="protocols" name="protocols" multiple>
@@ -44,9 +44,9 @@
       </select>
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button class="btn btn-xs-lg visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-id="editapp" data-item="{{ result.id }}" data-api-url='edit/app-passwd' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editapp" data-item="{{ result.id }}" data-api-url='edit/app-passwd' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
     </div>
   </div>
 </form>

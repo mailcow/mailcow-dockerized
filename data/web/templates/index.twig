@@ -3,81 +3,84 @@
 {% block navbar %}{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-offset-3 col-md-6">
-    <div class="panel panel-default panel-login">
-      <div class="panel-heading"><i class="bi bi-person-fill"></i> {{ lang.login.login }}</div>
-      <div class="panel-body">
-        <div class="text-center mailcow-logo"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
+<div class="row mb-4" style="margin-top: 60px">
+  <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
+    <div class="card">
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-person-fill me-2"></i> {{ lang.login.login }}
+        <div class="ms-auto form-check form-switch my-auto d-flex align-items-center">
+          <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
+          <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="text-center mailcow-logo mb-4"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
-        <div class="alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
+        <div class="my-4 alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
         {% endif %}
-        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend>
+        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend><hr />
         {% if is_mobileconfig %}
-        <div class="alert alert-info">{{ lang.login.mobileconfig_info }}</div>
+        <div class="my-4 alert alert-info ">{{ lang.login.mobileconfig_info }}</div>
         {% endif %}
         <form method="post" autofill="off">
-          <div class="form-group">
-            <label class="sr-only" for="login_user">{{ lang.login.username }}</label>
+          <div class="d-flex mt-3">
+            <label class="visually-hidden" for="login_user">{{ lang.login.username }}</label>
             <div class="input-group">
-              <div class="input-group-addon"><i class="bi bi-person-fill"></i></div>
+              <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
               <input name="login_user" autocorrect="off" autocapitalize="none" type="{% if is_mobileconfig %}email{% else %}text{% endif %}" id="login_user" class="form-control" placeholder="{{ lang.login.username }}" required="" autofocus="" autocomplete="username">
             </div>
           </div>
-          <div class="form-group">
-            <label class="sr-only" for="pass_user">{{ lang.login.password }}</label>
+          <div class="d-flex mt-3">
+            <label class="visually-hidden" for="pass_user">{{ lang.login.password }}</label>
             <div class="input-group">
-              <div class="input-group-addon"><i class="bi bi-lock-fill"></i></div>
+              <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
               <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="{{ lang.login.password }}" required="" autocomplete="current-password">
             </div>
           </div>
-          <div class="form-group" style="position: relative">
+          <div class="d-flex mt-4" style="position: relative">
             <div class="btn-group">
               <div class="btn-group">
                 <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
-                <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="caret"></span>
-                </button>
+                <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                 <ul class="dropdown-menu">
-                  <li><a href="#" id="fido2-login" style="line-height:1.4;"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
+                  <li><a class="dropdown-item" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
                 </ul>
               </div>
             </div>
             {% if not oauth2_request %}
-            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-default pull-right dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span> <span class="caret"></span>
+            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span>
             </button>
-            <ul class="dropdown-menu pull-right login">
+            <ul class="dropdown-menu ms-auto login">
               {% for key, val in available_languages %}
-                <li{% if mailcow_locale == key %} class="active"{% endif %}>
-                  <a href="?{{ query_string({'lang': key}) }}">
+                <li>
+                  <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
                     <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
                   </a>
                 </li>
               {% endfor %}
             </ul>
             {% endif %}
-            <div class="clearfix"></div>
           </div>
         </form>
         {% if login_delay %}
-        <p><div class="alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
+        <p><div class="my-4 alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
         {% endif %}
-        <div id="fido2-alerts"></div>
+        <div class="my-4" id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) %}
-        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend>
-        <div class="apps">
+        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
+        <div class="my-2 d-flex flex-wrap apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}
-            <div class="media-clearfix">
-              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-lg btn-block">{{ app.name }}</a>
+            <div class="m-2">
+              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-block">{{ app.name }}</a>
             </div>
           {% endif %}
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-              <div class="media-clearfix">
-                <a href="{{ val }}" role="button" class="btn btn-primary btn-lg btn-block">{{ key }}</a>
+              <div class="m-2">
+                <a href="{{ val }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
               </div>
             {% endfor %}
           {% endfor %}
@@ -86,14 +89,16 @@
       </div>
     </div>
   </div>
-  {% if not oauth2_request %}
-  <div class="col-md-offset-3 col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <a data-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
+</div>
+{% if not oauth2_request %}
+<div class="row">
+  <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
+    <div class="card">
+      <div class="card-header">
+        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
       </div>
-      <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">
+      <div id="collapse1" class="card-collapse collapse">
+        <div class="card-body">
           {% if ui_texts.help_text %}
           <p>{{ ui_texts.help_text|raw }}</p>
           {% else %}

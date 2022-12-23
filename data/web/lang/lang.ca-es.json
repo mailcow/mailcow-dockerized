@@ -269,8 +269,8 @@
     "header": {
         "administration": "Administració",
         "debug": "Debug",
-        "mailboxes": "Bústies",
-        "mailcow_settings": "Configuració",
+        "email": "E-Mail",
+        "mailcow_config": "Configuració",
         "quarantine": "Quarantena",
         "restart_sogo": "Reiniciar SOGo",
         "user_settings": "Preferències d'usuari"
@@ -316,6 +316,7 @@
         "bcc_type": "BCC type",
         "deactivate": "Desactivar",
         "description": "Descripció",
+        "dkim_key_length": "Mida de la clau DKIM (bits)",
         "domain": "Domini",
         "domain_admins": "Administradores de dominio",
         "domain_aliases": "Àlies de domini",
@@ -327,6 +328,7 @@
         "filter_table": "Filtrar taula",
         "filters": "Filtres",
         "fname": "Nom complert",
+        "force_pw_update": "Forçar l'actualització de la contrassenya al proper login",
         "in_use": "En ús (%)",
         "inactive": "Inactiu",
         "kind": "Tipus",
@@ -334,6 +336,9 @@
         "last_run_reset": "Executar a continuació",
         "mailbox_quota": "Mida màx. de quota",
         "mailboxes": "Bústies",
+        "max_aliases": "Màx. àlies possibles",
+        "max_mailboxes": "Màx. bústies possibles",
+        "max_quota": "Màx. quota per bústia",
         "mins_interval": "Intèrval (min)",
         "msg_num": "Missatge #",
         "multiple_bookings": "Múltiples reserves",
@@ -346,6 +351,7 @@
         "recipient_map_new": "Nou destinatari",
         "recipient_map_old": "Destinatari original",
         "recipient_maps": "Recipient maps",
+        "relay_all": "Retransmetre tods els recipients",
         "remove": "Esborrar",
         "resources": "Recursos",
         "running": "Executant-se",
@@ -385,6 +391,18 @@
         "text_from_html_content": "Contingut (a partir del HTML)",
         "text_plain_content": "Contingut (text/plain)",
         "toggle_all": "Marcar tots"
+    },
+    "queue": {
+        "delete_queue": "Delete all",
+        "flush_queue": "Flush queue",
+        "queue_ays": "Please confirm you want to delete all items from the current queue.",
+        "queue_command_success": "Queue command completed successfully",
+        "queue_deliver_mail": "Deliver",
+        "queue_hold_mail": "Hold",
+        "queue_manager": "Queue Manager",
+        "queue_show_message": "Show message",
+        "queue_unban": "queue unban",
+        "queue_unhold_mail": "Unhold"
     },
     "start": {
         "help": "Mostrar/Ocultar panell d'ajuda",

@@ -1,0 +1,169 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<hr>
+<div id="medit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="mailbox-edit">
+  <form class="form-horizontal" data-id="editmailbox_template" role="form" method="post">
+
+    <input type="hidden" value="default" name="sender_acl">
+    <input type="hidden" value="0" name="force_pw_update">
+    <input type="hidden" value="0" name="sogo_access">
+    <input type="hidden" value="0" name="protocol_access">     
+         
+    <div class="row mb-4">
+      <label class="control-label col-sm-2" for="template">{{ lang.mailbox.template }}</label>
+      <div class="col-sm-10">
+        <div class="input-group mb-3">
+          <input type="text" name="template" class="form-control" aria-label="Text input with dropdown button" value="{{ template.template }}" />
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+      <div class="col-sm-10">
+        <div class="form-control tag-box">
+          <input id="tags" type="text" class="tag-input">
+          <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+          <input type="hidden" value='{{ template.attributes.tags|json_encode }}' name="tags" class="tag-values" />
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2" for="quota">{{ lang.edit.quota_mb }}</label>
+      <div class="col-sm-10">
+        <input type="number" name="quota" class="w-100 form-control" min="0" value="{{ template.attributes.quota / 1048576 }}">
+        <small class="text-muted">0 = ∞</small>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2">{{ lang.user.quarantine_notification }}</label>
+      <div class="col-sm-10">
+        <div class="btn-group">
+          <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_never" autocomplete="off" value="never" {% if template.attributes.quarantine_notification == 'never' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_never">{{ lang.user.never }}</label>
+
+          <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_hourly" autocomplete="off" value="hourly" {% if template.attributes.quarantine_notification == 'hourly' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_hourly">{{ lang.user.hourly }}</label>
+
+          <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_daily" autocomplete="off" value="daily" {% if template.attributes.quarantine_notification == 'daily' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_daily">{{ lang.user.daily }}</label>
+
+          <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_weekly" autocomplete="off" value="weekly" {% if template.attributes.quarantine_notification == 'weekly' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_weekly">{{ lang.user.weekly }}</label>
+        </div>
+        <p class="text-muted"><small>{{ lang.user.quarantine_notification_info }}</small></p>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2">{{ lang.user.quarantine_category }}</label>
+      <div class="col-sm-10">
+        <div class="btn-group">
+          <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_reject" autocomplete="off" value="reject" {% if template.attributes.quarantine_category == 'reject' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_reject">{{ lang.user.q_reject }}</label>
+          
+          <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_add_header" autocomplete="off" value="add_header" {% if template.attributes.quarantine_category == 'add_header' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
+          
+          <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_all" autocomplete="off" value="all" {% if template.attributes.quarantine_category == 'all' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_all">{{ lang.user.q_all }}</label>
+        </div>
+        <p class="text-muted"><small>{{ lang.user.quarantine_category_info }}</small></p>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <label class="control-label col-sm-2" for="sender_acl">{{ lang.user.tls_policy }}</label>
+      <div class="col-sm-10">
+        <div class="btn-group">
+          <input type="checkbox" class="btn-check" name="tls_enforce_in" id="tls_enforce_in" autocomplete="off" value="1" {% if template.attributes.tls_enforce_in == '1' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
+          
+          <input type="checkbox" class="btn-check" name="tls_enforce_out" id="tls_enforce_out" autocomplete="off" value="1" {% if template.attributes.tls_enforce_out == '1' %}checked{% endif %}>
+          <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2" for="protocol_access">{{ lang.edit.allowed_protocols }}</label>
+      <div class="col-sm-10">
+        <select name="protocol_access" multiple class="form-control">
+          <option value="imap"{% if template.attributes.imap_access == '1' %} selected{% endif %}>IMAP</option>
+          <option value="pop3"{% if template.attributes.pop3_access == '1' %} selected{% endif %}>POP3</option>
+          <option value="smtp"{% if template.attributes.smtp_access == '1' %} selected{% endif %}>SMTP</option>
+          <option value="sieve"{% if template.attributes.sieve_access == '1' %} selected{% endif %}>Sieve</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <label class="control-label col-sm-2">ACL</label>
+      <div class="col-sm-10">
+        <select id="template_user_acl" name="acl" size="10" multiple class="form-control">                  
+          <option value="spam_alias" {% if template.attributes.acl_spam_alias == '1' %} selected{% endif %}>{{ lang.acl["spam_alias"] }}</option>
+          <option value="tls_policy" {% if template.attributes.acl_tls_policy == '1' %} selected{% endif %}>{{ lang.acl["tls_policy"] }}</option>
+          <option value="spam_score" {% if template.attributes.acl_spam_score == '1' %} selected{% endif %}>{{ lang.acl["spam_score"] }}</option>
+          <option value="spam_policy" {% if template.attributes.acl_spam_policy == '1' %} selected{% endif %}>{{ lang.acl["spam_policy"] }}</option>
+          <option value="delimiter_action" {% if template.attributes.acl_delimiter_action == '1' %} selected{% endif %}>{{ lang.acl["delimiter_action"] }}</option>
+          <option value="syncjobs" {% if template.attributes.acl_syncjobs == '1' %} selected{% endif %}>{{ lang.acl["syncjobs"] }}</option>
+          <option value="eas_reset" {% if template.attributes.acl_eas_reset == '1' %} selected{% endif %}>{{ lang.acl["eas_reset"] }}</option>
+          <option value="sogo_profile_reset" {% if template.attributes.acl_sogo_profile_reset == '1' %} selected{% endif %}>{{ lang.acl["sogo_profile_reset"] }}</option>
+          <option value="pushover" {% if template.attributes.acl_pushover == '1' %} selected{% endif %}>{{ lang.acl["pushover"] }}</option>
+          <option value="quarantine" {% if template.attributes.acl_quarantine == '1' %} selected{% endif %}>{{ lang.acl["quarantine"] }}</option>
+          <option value="quarantine_attachments" {% if template.attributes.acl_quarantine_attachments == '1' %} selected{% endif %}>{{ lang.acl["quarantine_attachments"] }}</option>
+          <option value="quarantine_notification" {% if template.attributes.acl_quarantine_notification == '1' %} selected{% endif %}>{{ lang.acl["quarantine_notification"] }}</option>
+          <option value="quarantine_category" {% if template.attributes.acl_quarantine_category == '1' %} selected{% endif %}>{{ lang.acl["quarantine_category"] }}</option>
+          <option value="app_passwds" {% if template.attributes.acl_app_passwds == '1' %} selected{% endif %}>{{ lang.acl["app_passwds"] }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <label class="control-label col-sm-2">{{ lang.acl.ratelimit }}</label>
+      <div class="col-sm-10">
+        <input name="rl_value" type="number" autocomplete="off" value="{{ template.attributes.rl_value }}" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
+        <select name="rl_frame" class="form-control">
+          <option value="s"{% if template.attributes.rl_frame == 's' %} selected{% endif %}>{{ lang.ratelimit.second }}</option>
+          <option value="m"{% if template.attributes.rl_frame == 'm' %} selected{% endif %}>{{ lang.ratelimit.minute }}</option>
+          <option value="h"{% if template.attributes.rl_frame == 'h' %} selected{% endif %}>{{ lang.ratelimit.hour }}</option>
+          <option value="d"{% if template.attributes.rl_frame == 'd' %} selected{% endif %}>{{ lang.ratelimit.day }}</option>
+        </select>
+        <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+      </div>
+    </div>
+    <hr>
+    <div class="row my-2">
+      <div class="offset-sm-2 col-sm-10">
+        <select name="active" class="form-control">
+          <option value="1"{% if template.attributes.active == '1' %} selected{% endif %}>{{ lang.edit.active }}</option>
+          <option value="2"{% if template.attributes.active == '2' %} selected{% endif %}>{{ lang.edit.disable_login }}</option>
+          <option value="0"{% if template.attributes.active == '0' %} selected{% endif %}>{{ lang.edit.inactive }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="force_pw_update"{% if template.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
+          <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+        </div>
+      </div>
+    </div>
+    {% if not skip_sogo %}
+    <div class="row">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="checkbox">
+          <label><input type="checkbox" value="1" name="sogo_access"{% if template.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
+          <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="row my-2">
+      <div class="offset-sm-2 col-sm-10">
+        <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editmailbox_template" data-item="{{ template.id }}" data-api-url='edit/mailbox/template' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

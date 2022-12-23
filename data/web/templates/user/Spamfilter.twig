@@ -1,77 +1,91 @@
-<div role="tabpanel" class="tab-pane" id="Spamfilter">
-  <h4>{{ lang.user.spamfilter_behavior }}</h4>
-  <div class="row">
-    <div class="col-sm-12">
-      <form class="form-horizontal" role="form" data-id="spam_score" method="post">
-        <div class="form-group">
-          <div class="col-lg-8 col-sm-12">
-            <div id="spam_score" data-provide="slider" data-acl="{{ acl.spam_score }}"></div>
-            <input id="spam_score_value" name="spam_score" type="hidden" value="{{ user_spam_score }}">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item"><span class="label label-ham spam-ham-score"></span> {{ lang.user.spamfilter_green }}</li>
-              <li class="list-group-item"><span class="label label-spam spam-spam-score"></span> {{ lang.user.spamfilter_yellow }}</li>
-              <li class="list-group-item"><span class="label label-reject spam-reject-score"></span> {{ lang.user.spamfilter_red }}</li>
-            </ul>
+<div role="tabpanel" class="tab-pane fade" id="Spamfilter" role="tabpanel" aria-labelledby="Spamfilter">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-Spamfilter" data-bs-toggle="collapse" aria-controls="collapse-tab-Spamfilter">
+        {{ lang.user.spamfilter }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.spamfilter }}
+    </div>
+    <div id="collapse-tab-Spamfilter" class="card-body collapse" data-bs-parent="#user-content">
+      <h4>{{ lang.user.spamfilter_behavior }}</h4>
+      <div class="row">
+        <div class="col-sm-12">
+          <form class="form-horizontal" role="form" data-id="spam_score" method="post">
+            <div class="row">
+              <div class="col-sm-12">
+                <div id="spam_score" data-provide="slider" data-acl="{{ acl.spam_score }}"></div>
+                <input id="spam_score_value" name="spam_score" type="hidden" value="{{ user_spam_score }}">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><span class="label label-ham spam-ham-score"></span> {{ lang.user.spamfilter_green }}</li>
+                  <li class="list-group-item"><span class="label label-spam spam-spam-score"></span> {{ lang.user.spamfilter_yellow }}</li>
+                  <li class="list-group-item"><span class="label label-reject spam-reject-score"></span> {{ lang.user.spamfilter_red }}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="btn-group mt-4" data-acl="{{ acl.spam_score }}">
+              <a type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected"
+                data-item="{{ mailcow_cc_username }}"
+                data-id="spam_score"
+                data-api-url='edit/spam-score'
+                data-api-attr='{}'><i class="bi bi-save"></i> {{ lang.user.save_changes }}</a>
+              <a type="button" class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" data-action="edit_selected"
+                data-item="{{ mailcow_cc_username }}"
+                data-id="spam_score_reset"
+                data-api-url='edit/spam-score'
+                data-api-attr='{"spam_score":"default"}'>{{ lang.user.spam_score_reset }}</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-lg-6 my-3">
+          <h4>{{ lang.user.spamfilter_wl }}</h4>
+          <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
+          <form class="form-inline mb-4" data-id="add_wl_policy_mailbox">
+            <div class="input-group" data-acl="{{ acl.spam_policy }}">
+              <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"wl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
+              </span>
+            </div>
+          </form>
+          <table id="wl_policy_mailbox_table" class="table table-striped dt-responsive w-100"></table>
+          <div class="mass-actions-user">
+            <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" data-datatables-expand="wl_policy_mailbox_table" data-table="wl_policy_mailbox_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+                <li><a class="dropdown-item" data-datatables-collapse="wl_policy_mailbox_table" data-table="wl_policy_mailbox_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              </ul>
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-danger" data-action="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
+            </div>
           </div>
         </div>
-        <div class="btn-group" data-acl="{{ acl.spam_score }}">
-          <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected"
-             data-item="{{ mailcow_cc_username }}"
-             data-id="spam_score"
-             data-api-url='edit/spam-score'
-             data-api-attr='{}'><i class="bi bi-save"></i> {{ lang.user.save_changes }}</a>
-          <a type="button" class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" data-action="edit_selected"
-             data-item="{{ mailcow_cc_username }}"
-             data-id="spam_score_reset"
-             data-api-url='edit/spam-score'
-             data-api-attr='{"spam_score":"default"}'>{{ lang.user.spam_score_reset }}</a>
-        </div>
-      </form>
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    <div class="col-sm-6">
-      <h4>{{ lang.user.spamfilter_wl }}</h4>
-      <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
-      <form class="form-inline space20" data-id="add_wl_policy_mailbox">
-        <div class="input-group" data-acl="{{ acl.spam_policy }}">
-          <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-          <span class="input-group-btn">
-            <button class="btn btn-default" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"wl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
-          </span>
-        </div>
-      </form>
-      <div class="table-responsive">
-        <table class="table table-striped table-condensed" id="wl_policy_mailbox_table"></table>
-      </div>
-      <div class="mass-actions-user">
-        <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="policy_wl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" data-action="delete_selected" data-id="policy_wl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
-          <div class="clearfix visible-xs-block"></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6">
-      <h4>{{ lang.user.spamfilter_bl }}</h4>
-      <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
-      <form class="form-inline space20" data-id="add_bl_policy_mailbox">
-        <div class="input-group" data-acl="{{ acl.spam_policy }}">
-          <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-          <span class="input-group-btn">
-            <button class="btn btn-default" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"bl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
-          </span>
-        </div>
-      </form>
-      <div class="table-responsive">
-        <table class="table table-striped table-condensed" id="bl_policy_mailbox_table"></table>
-      </div>
-      <div class="mass-actions-user">
-        <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-danger" data-action="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
-          <div class="clearfix visible-xs-block"></div>
+        <div class="col-lg-6 my-3">
+          <h4>{{ lang.user.spamfilter_bl }}</h4>
+          <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
+          <form class="form-inline mb-4" data-id="add_bl_policy_mailbox">
+            <div class="input-group" data-acl="{{ acl.spam_policy }}">
+              <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"bl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
+              </span>
+            </div>
+          </form>
+          <table id="bl_policy_mailbox_table" class="table table-striped dt-responsive w-100"></table>
+          <div class="mass-actions-user">
+            <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" data-datatables-expand="bl_policy_mailbox_table" data-table="bl_policy_mailbox_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+                <li><a class="dropdown-item" data-datatables-collapse="bl_policy_mailbox_table" data-table="bl_policy_mailbox_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              </ul>
+              <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-danger" data-action="delete_selected" data-id="policy_bl_mailbox" data-api-url='delete/mailbox-policy' href="#">{{ lang.mailbox.remove }}</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
