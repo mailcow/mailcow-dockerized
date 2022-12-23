@@ -559,7 +559,7 @@
         "daily": "Päivittäin",
         "deactivate": "Deaktivoi",
         "description": "Kuvaus",
-        "disable_x": "Poista käytöstä",        
+        "disable_x": "Poista käytöstä",
         "dkim_domains_selector": "Valitsin",
         "dkim_key_length": "DKIM avaimen pituus (bits)",
         "domain": "Verkkotunnukset",
@@ -686,13 +686,9 @@
         "toggle_all": "Valitse kaikki"
     },
     "queue": {
-        "delete_queue": "Poista kaikki",
         "flush_queue": "Tyhjennä jono",
-        "queue_ays": "Vahvista, että haluat poistaa kaikki nykyisen jonon kohteet.",
         "queue_deliver_mail": "Toimittaa",
-        "queue_hold_mail": "Pidossa",
         "queue_manager": "Jonon hallinta",
-        "queue_unban": "jono unban",
         "queue_unhold_mail": "Poista pidosta"
     },
     "start": {
