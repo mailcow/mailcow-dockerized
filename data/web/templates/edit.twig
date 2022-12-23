@@ -1,13 +1,14 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<div class="row">
+<a href="{{ return_to }}">&#8592; {{ lang.edit.previous }}</a>
+<div class="row my-4">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{ lang.edit.title }}</h3>
+    <div class="card">
+      <div class="card-header fs-5">
+        <span>{{ lang.edit.title }}</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         {% block inner_content %}
           {% if access_denied %}
           <div class="alert alert-danger" role="alert">{{ lang.danger.access_denied }}</div>
@@ -23,6 +24,7 @@
 
 <script type='text/javascript'>
   var lang_user = {{ lang_user|raw }};
+  var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
   var pagination_size = '{{ pagination_size }}';
   var table_for_domain = '{{ domain }}';

@@ -8,7 +8,7 @@ if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
-  header('Location: /admin');
+  header('Location: /debug');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {

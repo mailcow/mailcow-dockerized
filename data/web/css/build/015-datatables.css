@@ -1,0 +1,80 @@
+.dataTables_info {
+    margin: 15px 0 !important;
+    padding: 0px !important;
+}
+.dataTables_paginate, .dataTables_length, .dataTables_filter {
+    margin: 15px 0 !important;
+}
+.dtr-details {
+    width: 100%;
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #F2F2F2;
+}
+td.child>ul>li {
+    display: flex;
+}
+table.dataTable>tbody>tr.child ul.dtr-details>li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.129);
+    padding: 0.5em 0;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
+    background-color: #5e5e5e;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before,
+table.dataTable td.dt-control:before {
+    background-color: #979797 !important;
+    border: 1.5px solid #616161 !important;
+    border-radius: 2px !important;
+    color: #fff;
+    height: 1em;
+    width: 1em;
+    line-height: 1.25em;
+    border-radius: 0px;
+    box-shadow: none;
+    font-size: 14px;
+    transition: 0.5s all;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
+table.dataTable td.dt-control:before {
+    background-color: #979797 !important;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
+    background-color: #fbfbfb;
+}
+table.dataTable.table-striped>tbody>tr>td {
+    vertical-align: middle;
+}
+table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
+    margin-top: 7px;
+}
+td.dtr-col-lg {
+    min-width: 350px;
+    word-break: break-word;
+}
+td.dtr-col-md {
+    min-width: 250px;
+    word-break: break-word;
+}
+td.dtr-col-sm {
+    min-width: 125px;
+    word-break: break-word;
+}
+.dt-data-w100 .dtr-data {
+    width: 100%;
+}
+li .dtr-data {
+    word-break: break-all;
+    flex: 1;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+table.dataTable>tbody>tr.child span.dtr-title {
+    width: 30%;
+    max-width: 250px;
+}

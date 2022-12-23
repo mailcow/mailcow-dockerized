@@ -21,6 +21,7 @@ $template_data = [
   'role' => $role,
   'quarantine_settings' => $quarantine_settings,
   'lang_quarantine' => json_encode($lang['quarantine']),
+  'lang_datatables' => json_encode($lang['datatables']),
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

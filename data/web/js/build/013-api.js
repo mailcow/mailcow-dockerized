@@ -11,7 +11,7 @@ $(document).ready(function() {
     } else {
       var parent_btn_grp = $(elem).parentsUntil(".btn-group").parent();
       if (parent_btn_grp.hasClass('btn-group')) {
-        parent_btn_grp.replaceWith('<button class="btn btn-default btn-sm" disabled>' + lang_footer.loading + '</a>');
+        parent_btn_grp.replaceWith('<button class="btn btn-secondary btn-sm" disabled>' + lang_footer.loading + '</a>');
       }
       $(elem).text(lang_footer.loading);
       $(elem).attr('data-submitted', '1');
@@ -355,11 +355,8 @@ $(document).ready(function() {
         data_array[i] = decodeURIComponent(data_array[i]);
         $("#ItemsToDelete").append("<li>" + escapeHtml(data_array[i]) + "</li>");
       }
-    });
-    $('#ConfirmDeleteModal').modal({
-        backdrop: 'static',
-        keyboard: false
-      })
+    })
+    $('#ConfirmDeleteModal').modal('show')
       .one('click', '#IsConfirmed', function(e) {
         if (is_active($('#IsConfirmed'))) { return false; }
         $.ajax({
@@ -382,5 +379,19 @@ $(document).ready(function() {
         $('#ConfirmDeleteModal').off();
         $('#ConfirmDeleteModal').modal('hide');
       });
+  });
+
+  // toggle jquery datatables child rows
+  $('button[data-datatables-expand], a[data-datatables-expand]').on('click', function (e) {
+    e.preventDefault();
+    var tableId = e.target.getAttribute("data-datatables-expand");
+    var table = $("#" + tableId).DataTable();
+    table.rows(':not(.parent)').nodes().to$().find('td:first-child').trigger('click');
+  });
+  $('button[data-datatables-collapse], a[data-datatables-collapse]').on('click', function (e) {
+    e.preventDefault();
+    var tableId = e.target.getAttribute("data-datatables-collapse");
+    var table = $("#" + tableId).DataTable();
+    table.rows('.parent').nodes().to$().find('td:first-child').trigger('click');
   });
 });

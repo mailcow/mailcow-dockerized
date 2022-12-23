@@ -1,12 +1,17 @@
-<div role="tabpanel" class="tab-pane" id="tab-user-details">
-  <div class="panel panel-default">
-    <div class="panel-heading">{{ lang.user.mailbox_details }}</div>
-    <div class="panel-body">
+<div role="tabpanel" class="tab-pane fade" id="tab-user-details" role="tabpanel" aria-labelledby="tab-user-details">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-user-details" data-bs-toggle="collapse" aria-controls="collapse-tab-user-details">
+        {{ lang.user.mailbox_details }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.mailbox_details }}
+    </div>
+    <div id="collapse-tab-user-details" class="card-body collapse" data-bs-parent="#user-content">
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left"><i class="bi bi-pin-angle"></i> {{ lang.user.direct_aliases }}:
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start"><i class="bi bi-pin-angle"></i> {{ lang.user.direct_aliases }}:
           <p class="small">{{ lang.user.direct_aliases_desc }}</p>
         </div>
-        <div class="col-sm-8 col-md-9 col-xs-12">
+        <div class="col-sm-8 col-md-9 col-12">
           {% for direct_alias, direct_alias_meta in user_get_alias_details.direct_aliases %}
             {% if direct_alias_meta.public_comment %}
               {{ direct_alias }} &mdash; <i class="bi bi-chat-left"></i> {{ direct_alias_meta.public_comment }}<br>
@@ -20,10 +25,10 @@
       </div>
       <br>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left"><i class="bi bi-share"></i> {{ lang.user.shared_aliases }}:
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start"><i class="bi bi-share"></i> {{ lang.user.shared_aliases }}:
           <p class="small">{{ lang.user.shared_aliases_desc }}</p>
         </div>
-        <div class="col-sm-8 col-md-9 col-xs-12">
+        <div class="col-sm-8 col-md-9 col-12">
           {% for shared_alias, shared_alias_meta in user_get_alias_details.shared_aliases %}
             {% if shared_alias_meta.public_comment %}
               {{ shared_alias }} &mdash; <i class="bi bi-chat-left"></i> {{ shared_alias_meta.public_comment }}<br>
@@ -37,8 +42,8 @@
       </div>
       <hr>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.aliases_also_send_as }}:</div>
-        <div class="col-sm-8 col-md-9 col-xs-12">
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.aliases_also_send_as }}:</div>
+        <div class="col-sm-8 col-md-9 col-12">
           <p>
             {% if user_get_alias_details.aliases_also_send_as == '*' %}
               {{ lang.user.sender_acl_disabled }}
@@ -51,14 +56,14 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.aliases_send_as_all }}:</div>
-        <div class="col-sm-8 col-md-9 col-xs-12">
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.aliases_send_as_all }}:</div>
+        <div class="col-sm-8 col-md-9 col-12">
           <p>{% if not user_get_alias_details.aliases_send_as_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 col-md-3 col-xs-12 text-right text-xs-left space20">{{ lang.user.is_catch_all }}:</div>
-        <div class="col-sm-8 col-md-9 col-xs-12">
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.is_catch_all }}:</div>
+        <div class="col-sm-8 col-md-9 col-12">
           <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
         </div>
       </div>

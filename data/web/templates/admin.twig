@@ -1,72 +1,72 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<ul class="nav nav-tabs responsive-tabs" role="tablist">
-  <li class="dropdown active">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.admin.access }}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li class="active" data-dont-remember="1" role="presentation"><a href="#tab-config-admins" aria-controls="tab-config-admins" role="tab" data-toggle="tab">{{ lang.admin.admins }}</a></li>
-      <!-- <li role="presentation"><a href="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-toggle="tab">{{ lang.admin.admins_ldap }}</a></li> -->
-      <li role="presentation"><a href="#tab-config-oauth2" aria-controls="tab-config-oauth2" role="tab" data-toggle="tab">{{ lang.admin.oauth2_apps }}</a></li>
-      <li role="presentation"><a href="#tab-config-rspamd" aria-controls="tab-config-rspamd" role="tab" data-toggle="tab">Rspamd UI</a></li>
-    </ul>
-  </li>
+<div id="admin-content" class="responsive-tabs">
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.access }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item active" data-bs-target="#tab-config-admins" aria-selected="false" aria-controls="tab-config-admins" role="tab" data-bs-toggle="tab">{{ lang.admin.admins }}</button></li>
+        <!-- <li><button class="dropdown-item" data-bs-target="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-bs-toggle="tab">{{ lang.admin.admins_ldap }}</button></li> -->
+        <li><button class="dropdown-item" data-bs-target="#tab-config-oauth2" aria-selected="false" aria-controls="tab-config-oauth2" role="tab" data-bs-toggle="tab">{{ lang.admin.oauth2_apps }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-rspamd" aria-selected="false" aria-controls="tab-config-rspamd" role="tab" data-bs-toggle="tab">Rspamd UI</button></li>
+      </ul>
+    </li>
 
-  <li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.admin.configuration }}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li role="presentation"><a href="#tab-config-dkim" aria-controls="tab-config-dkim" role="tab" data-toggle="tab">{{ lang.admin.dkim_keys }}</a></li>
-      <li role="presentation"><a href="#tab-config-fwdhosts" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab">{{ lang.admin.forwarding_hosts }}</a></li>
-      <li role="presentation"><a href="#tab-config-f2b" aria-controls="tab-config-f2b" role="tab" data-toggle="tab">{{ lang.admin.f2b_parameters }}</a></li>
-      <li role="presentation"><a href="#tab-config-quarantine" aria-controls="tab-config-quarantine" role="tab" data-toggle="tab">{{ lang.admin.quarantine }}</a></li>
-      <li role="presentation"><a href="#tab-config-quota" aria-controls="tab-config-quota" role="tab" data-toggle="tab">{{ lang.admin.quota_notifications }}</a></li>
-      <li role="presentation"><a href="#tab-config-rsettings" aria-controls="tab-config-rsettings" role="tab" data-toggle="tab">{{ lang.admin.rspamd_settings_map }}</a></li>
-      <li role="presentation"><a href="#tab-config-password-policy" aria-controls="tab-config-password-policy" role="tab" data-toggle="tab">{{ lang.admin.password_policy }}</a></li>
-      <li role="presentation"><a href="#tab-config-customize" aria-controls="tab-config-customize" role="tab" data-toggle="tab">{{ lang.admin.customize }}</a></li>
-    </ul>
-  </li>
-  <li role="presentation"><a href="#tab-routing" aria-controls="tab-routing" role="tab" data-toggle="tab">{{ lang.admin.routing }}</a></li>
-  <li role="presentation"><a href="#tab-sys-mails" aria-controls="tab-sys-mails" role="tab" data-toggle="tab">{{ lang.admin.sys_mails }}</a></li>
-  <li role="presentation"><a href="#tab-mailq" aria-controls="tab-mailq" role="tab" data-toggle="tab">{{ lang.admin.queue_manager }}</a></li>
-  <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.admin.rspamd_global_filters }}
-      <span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li role="presentation"><a href="#tab-globalfilter-regex" aria-controls="tab-globalfilter-regex" role="tab" data-toggle="tab">{{ lang.admin.regex_maps }}</a></li>
-    </ul>
-  </li>
-</ul>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.options }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" data-bs-target="#tab-config-dkim" aria-selected="false" aria-controls="tab-config-dkim" role="tab" data-bs-toggle="tab">{{ lang.admin.dkim_keys }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-fwdhosts" aria-selected="false" aria-controls="tab-config-fwdhosts" role="tab" data-bs-toggle="tab">{{ lang.admin.forwarding_hosts }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-f2b" aria-selected="false" aria-controls="tab-config-f2b" role="tab" data-bs-toggle="tab">{{ lang.admin.f2b_parameters }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-quarantine" aria-selected="false" aria-controls="tab-config-quarantine" role="tab" data-bs-toggle="tab">{{ lang.admin.quarantine }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-quota" aria-selected="false" aria-controls="tab-config-quota" role="tab" data-bs-toggle="tab">{{ lang.admin.quota_notifications }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-rsettings" aria-selected="false" aria-controls="tab-config-rsettings" role="tab" data-bs-toggle="tab">{{ lang.admin.rspamd_settings_map }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-password-policy" aria-selected="false" aria-controls="tab-config-password-policy" role="tab" data-bs-toggle="tab">{{ lang.admin.password_policy }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-customize" aria-selected="false" aria-controls="tab-config-customize" role="tab" data-bs-toggle="tab">{{ lang.admin.customize }}</button></li>
+      </ul>
+    </li>
+    <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-routing" aria-selected="false" aria-controls="tab-routing" role="tab" data-bs-toggle="tab">{{ lang.admin.routing }}</button></li>
+    <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-sys-mails" aria-selected="false" aria-controls="tab-sys-mails" role="tab" data-bs-toggle="tab">{{ lang.admin.sys_mails }}</button></li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.rspamd_global_filters }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" data-bs-target="#tab-globalfilter-regex" aria-selected="false" aria-controls="tab-globalfilter-regex" role="tab" data-bs-toggle="tab">{{ lang.admin.regex_maps }}</button></li>
+      </ul>
+    </li>
+  </ul>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="tab-content" style="padding-top:20px">
-      {% include 'admin/tab-config-admins.twig' %}
-      {% include 'admin/tab-ldap.twig' %}
-      {% include 'admin/tab-config-oauth2.twig' %}
-      {% include 'admin/tab-config-rspamd.twig' %}
-      {% include 'admin/tab-routing.twig' %}
-      {% include 'admin/tab-config-dkim.twig' %}
-      {% include 'admin/tab-config-fwdhosts.twig' %}
-      {% include 'admin/tab-config-f2b.twig' %}
-      {% include 'admin/tab-config-quarantine.twig' %}
-      {% include 'admin/tab-config-quota.twig' %}
-      {% include 'admin/tab-config-rsettings.twig' %}
-      {% include 'admin/tab-config-customize.twig' %}
-      {% include 'admin/tab-config-password-policy.twig' %}
-      {% include 'admin/tab-sys-mails.twig' %}
-      {% include 'admin/tab-mailq.twig' %}
-      {% include 'admin/tab-globalfilter-regex.twig' %}
-    </div>
-  </div> <!-- /col-md-12 -->
-</div> <!-- /row -->
-  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tab-content" style="padding-top:20px">
+        {% include 'admin/tab-config-admins.twig' %}
+        {# {% include 'admin/tab-ldap.twig' %} #}
+        {% include 'admin/tab-config-oauth2.twig' %}
+        {% include 'admin/tab-config-rspamd.twig' %}
+        {% include 'admin/tab-routing.twig' %}
+        {% include 'admin/tab-config-dkim.twig' %}
+        {% include 'admin/tab-config-fwdhosts.twig' %}
+        {% include 'admin/tab-config-f2b.twig' %}
+        {% include 'admin/tab-config-quarantine.twig' %}
+        {% include 'admin/tab-config-quota.twig' %}
+        {% include 'admin/tab-config-rsettings.twig' %}
+        {% include 'admin/tab-config-customize.twig' %}
+        {% include 'admin/tab-config-password-policy.twig' %}
+        {% include 'admin/tab-sys-mails.twig' %}
+        {% include 'admin/tab-globalfilter-regex.twig' %}
+      </div>
+    </div> <!-- /col-md-12 -->
+  </div> <!-- /row -->
+</div> 
+
 {% include 'modals/admin.twig' %}
 
 <script type='text/javascript'>
 var lang = {{ lang_admin|raw }};
+var lang_datatables = {{ lang_datatables|raw }};
 var admin_username = '{{ mailcow_cc_username }}';
 var csrf_token = '{{ csrf_token }}';
 var pagination_size = '{{ pagination_size }}';
 var log_pagination_size = '{{ log_pagination_size }}';
-
 </script>
 {% endblock %}

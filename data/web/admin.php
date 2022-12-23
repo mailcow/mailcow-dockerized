@@ -83,7 +83,6 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
   ];
 }
 
-
 $template = 'admin.twig';
 $template_data = [
   'tfa_data' => $tfa_data,
@@ -91,7 +90,6 @@ $template_data = [
   'fido2_cid' => @$_SESSION['fido2_cid'],
   'fido2_data' => $fido2_data,
   'gal' => @$_SESSION['gal'],
-  'license_guid' => license('guid'),
   'api' => [
     'ro' => admin_api('ro', 'get'),
     'rw' => admin_api('rw', 'get'),
@@ -112,6 +110,7 @@ $template_data = [
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'lang_admin' => json_encode($lang['admin']),
+  'lang_datatables' => json_encode($lang['datatables'])
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
