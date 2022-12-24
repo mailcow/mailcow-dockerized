@@ -686,10 +686,8 @@
         "toggle_all": "Valitse kaikki"
     },
     "queue": {
-        "flush_queue": "Tyhjennä jono",
         "queue_deliver_mail": "Toimittaa",
-        "queue_manager": "Jonon hallinta",
-        "queue_unhold_mail": "Poista pidosta"
+        "queue_manager": "Jonon hallinta"
     },
     "start": {
         "help": "Näytä/Piilota help paneeli",
