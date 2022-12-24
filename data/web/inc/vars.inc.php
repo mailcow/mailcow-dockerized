@@ -107,12 +107,10 @@ $AVAILABLE_LANGUAGES = array(
   'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
 
-// Change theme (default: lumen)
-// Needs to be one of those: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone,
-// simplex, slate, spacelab, superhero, united, yeti
-// See https://bootswatch.com/
-// WARNING: Only lumen is loaded locally. Enabling any other theme, will download external sources.
-$DEFAULT_THEME = 'lumen';
+// default theme is lumen
+// additional themes can be found here: https://bootswatch.com/
+// copy them to data/web/css/themes/{THEME-NAME}-bootstrap.css
+$UI_THEME = "lumen";
 
 // Show DKIM private keys - false by default
 $SHOW_DKIM_PRIV_KEYS = false;

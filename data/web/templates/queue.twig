@@ -1,0 +1,61 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <span>{{ lang.queue.queue_manager }} <span class="badge bg-info table-lines"></span></span>
+      <div class="btn-group ms-auto">
+        <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_queue" data-table="queuetable">{{ lang.admin.refresh }}</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="text-muted">{{ lang.queue.info|raw }}</p>
+      <p class="text-muted"><b>{{ lang.queue.legend|raw }}</b></p>
+      <ul class="text-muted">
+      <li>{{ lang.queue.deliver_mail }} | {{ lang.queue.deliver_mail_legend }}</li>
+      <li>{{ lang.queue.unhold_mail }} | {{ lang.queue.unhold_mail_legend }}</li>
+      <li>{{ lang.queue.hold_mail }} | {{ lang.queue.hold_mail_legend }}</li>
+      </ul>
+      <table id="queuetable" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-admin">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="mailqitems" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postqueue -i" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"deliver"}' href="#">{{ lang.queue.deliver_mail }}</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -H" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"unhold"}' href="#">{{ lang.queue.unhold_mail }}</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -h" data-action="edit_selected" data-id="mailqitems" data-api-url='edit/mailq' data-api-attr='{"action":"hold"}' href="#">{{ lang.queue.hold_mail }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-bs-toggle="tooltip" title="postsuper -d" data-action="delete_selected" data-id="mailqitems" data-api-url='delete/mailq' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-primary"
+             data-action="edit_selected"
+             data-item="mailqitems-all"
+             data-api-url='edit/mailq'
+             data-api-attr='{"action":"flush"}'
+             data-bs-toggle="tooltip" title="postqueue -f"
+             href="#"><i class="bi bi-check-all"></i> {{ lang.queue.flush }}</a>
+          <a class="btn btn-sm d-block d-sm-inline btn-danger"
+             id="super_delete"
+             data-action="edit_selected"
+             data-item="mailqitems-all"
+             data-api-url='edit/mailq'
+             data-api-attr='{"action":"super_delete"}'
+             data-bs-toggle="tooltip" title="postsuper -d ALL"
+             href="#"><i class="bi bi-trash"></i> {{ lang.queue.delete }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% include 'modals/queue.twig' %}
+
+<script type='text/javascript'>
+  var lang_admin = {{ lang_admin|raw }};
+  var lang = {{ lang_queue|raw }};
+  var lang_datatables = {{ lang_datatables|raw }};
+  var csrf_token = '{{ csrf_token }}';
+  var pagination_size = '{{ pagination_size }}';
+  var table_for_domain = '{{ domain }}';
+</script>
+{% endblock %}

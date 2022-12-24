@@ -1,74 +1,79 @@
-<div role="tabpanel" class="tab-pane" id="tab-config-quarantine">
-  <div class="panel panel-default">
-    <div class="panel-heading">{{ lang.admin.quarantine }}</div>
-    <div class="panel-body">
+<div role="tabpanel" class="tab-pane fade" id="tab-config-quarantine" role="tabpanel" aria-labelledby="tab-config-quarantine">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-quarantine" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-quarantine">
+        {{ lang.admin.quarantine }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.quarantine }}</span>
+    </div>
+    <div id="collapse-tab-config-quarantine" class="card-body collapse" data-bs-parent="#admin-content">
       {% if not q_data.retention_size or not q_data.max_size %}
       <div class="alert alert-info">{{ lang.quarantine.disabled_by_config }}</div>
       {% endif %}
       <form class="form-horizontal" data-id="quarantine" role="form" method="post">
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_retention_size">{{ lang.admin.quarantine_retention_size|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_retention_size">{{ lang.admin.quarantine_retention_size|raw }}</label>
           <div class="col-sm-8">
             <input type="number" class="form-control" id="quarantine_retention_size" name="retention_size" value="{{ q_data.retention_size }}" placeholder="0" required>
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_max_size">{{ lang.admin.quarantine_max_size|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_max_size">{{ lang.admin.quarantine_max_size|raw }}</label>
           <div class="col-sm-8">
             <input type="number" class="form-control" id="quarantine_max_size" name="max_size" value="{{ q_data.max_size }}" placeholder="0" required>
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_max_score">{{ lang.admin.quarantine_max_score|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_max_score">{{ lang.admin.quarantine_max_score|raw }}</label>
           <div class="col-sm-8">
             <input type="number" class="form-control" id="quarantine_max_score" name="max_score" value="{{ q_data.max_score }}" placeholder="9999.0">
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_max_age">{{ lang.admin.quarantine_max_age|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_max_age">{{ lang.admin.quarantine_max_age|raw }}</label>
           <div class="col-sm-8">
             <input type="number" class="form-control" id="quarantine_max_age" name="max_age" value="{{ q_data.max_age }}" min="1" required>
           </div>
         </div>
         <hr>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_redirect"><i class="bi bi-box-arrow-right"></i> {{ lang.admin.quarantine_redirect|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_redirect"><i class="bi bi-box-arrow-right"></i> {{ lang.admin.quarantine_redirect|raw }}</label>
           <div class="col-sm-8">
             <input type="email" class="form-control" id="quarantine_redirect" name="redirect" value="{{ q_data.redirect }}" placeholder="">
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_bcc"><i class="bi bi-files"></i> {{ lang.admin.quarantine_bcc|raw }}</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_bcc"><i class="bi bi-files"></i> {{ lang.admin.quarantine_bcc|raw }}</label>
           <div class="col-sm-8">
             <input type="email" class="form-control" id="quarantine_bcc" name="bcc" value="{{ q_data.bcc }}" placeholder="">
           </div>
         </div>
         <hr>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_sender">{{ lang.admin.quarantine_notification_sender }}:</label>
+        <div class="row mb-2">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_sender">{{ lang.admin.quarantine_notification_sender }}:</label>
           <div class="col-sm-8">
             <input type="email" class="form-control" id="quarantine_sender" name="sender" value="{{ q_data.sender }}" placeholder="quarantine@localhost">
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_subject">{{ lang.admin.quarantine_notification_subject }}:</label>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_subject">{{ lang.admin.quarantine_notification_subject }}:</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" id="quarantine_subject" name="subject" value="{{ q_data.subject }}" placeholder="Spam Quarantine Notification">
           </div>
         </div>
         <hr>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="quarantine_release_format">{{ lang.admin.quarantine_release_format }}:</label>
-          <div class="col-sm-8">
+        <div class="row mb-2">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_release_format">{{ lang.admin.quarantine_release_format }}:</label>
+          <div class="col-sm-8 col-md-6 col-lg-4 col-xl-3">
             <select data-width="100%" id="quarantine_release_format" name="release_format" class="selectpicker" title="{{ lang.tfa.select }}">
               <option {% if q_data.release_format == 'raw' %}selected{% endif %} value="raw">{{ lang.admin.quarantine_release_format_raw }}</option>
               <option {% if q_data.release_format == 'attachment' %}selected{% endif %} value="attachment">{{ lang.admin.quarantine_release_format_att }}</option>
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-4 control-label" for="exclude_domains">{{ lang.admin.quarantine_exclude_domains }}:</label>
-          <div class="col-sm-8">
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="exclude_domains">{{ lang.admin.quarantine_exclude_domains }}:</label>
+          <div class="col-sm-8 col-md-6 col-lg-4 col-xl-3">
             <select data-width="100%" name="exclude_domains" class="selectpicker" title="{{ lang.tfa.select }}" multiple>
               {% for domain in all_domains %}
                 <option {% if domain in q_data.exclude_domains %}selected{% endif %}>{{ domain }}</option>
@@ -77,13 +82,14 @@
           </div>
         </div>
         <hr>
-        <legend data-target="#quarantine_template" style="cursor:pointer" unselectable="on" data-toggle="collapse">
+        <legend data-bs-target="#quarantine_template" style="cursor:pointer" unselectable="on" data-bs-toggle="collapse">
           <i style="font-size:10pt;" class="bi bi-plus-square"></i> {{ lang.admin.quarantine_notification_html|raw }}
         </legend>
+        <hr />
         <div id="quarantine_template" class="collapse" >
           <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code" rows="40" name="html_tmpl">{{ q_data.html_tmpl|raw }}</textarea>
         </div>
-        <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+        <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"settings"}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
       </form>
     </div>
   </div>

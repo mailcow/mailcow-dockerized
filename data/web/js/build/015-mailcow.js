@@ -55,14 +55,14 @@ $(document).ready(function() {
 
   //  tooltips
   $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip()
   });
 
   // remember last navigation pill
   (function () {
     'use strict';
-    if ($('a[data-toggle="tab"]').length) {
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      // remember desktop tabs
+      $('button[data-bs-toggle="tab"]').on('click', function (e) {
         if ($(this).data('dont-remember') == 1) {
           return true;
         }
@@ -71,8 +71,28 @@ $(document).ready(function() {
         if (id) {
           key += ':' + id;
         }
-        localStorage.setItem(key, $(e.target).attr('href'));
+
+        var tab_id = $(e.target).attr('data-bs-target').substring(1);
+        localStorage.setItem(key, tab_id);
       });
+      // remember mobile tabs
+      $('button[data-bs-target^="#collapse-tab-"]').on('click', function (e) {
+        // only remember tab if its being opened
+        if ($(this).hasClass('collapsed')) return false;
+        var tab_id = $(this).closest('div[role="tabpanel"]').attr('id');
+
+        if ($(this).data('dont-remember') == 1) {
+          return true;
+        }
+        var id = $(this).parents('[role="tablist"]').attr('id');;
+        var key = 'lastTag';
+        if (id) {
+          key += ':' + id;
+        }
+
+        localStorage.setItem(key, tab_id);
+      });
+      // open last tab
       $('[role="tablist"]').each(function (idx, elem) {
         var id = $(elem).attr('id');
         var key = 'lastTag';
@@ -81,10 +101,11 @@ $(document).ready(function() {
         }
         var lastTab = localStorage.getItem(key);
         if (lastTab) {
-          $('[href="' + lastTab + '"]').tab('show');
+          $('[data-bs-target="#' + lastTab + '"]').click();
+          var tab = $('[id^="' + lastTab + '"]');
+          $(tab).find('.card-body.collapse').collapse('show');
         }
       });
-    }
   })();
 
   // IE fix to hide scrollbars when table body is empty
@@ -119,7 +140,7 @@ $(document).ready(function() {
       shake(password_field);
     }
     else {
-      $(hibp_result).attr('class', 'hibp-out label label-info');
+      $(hibp_result).attr('class', 'hibp-out badge fs-5 bg-info');
       $(hibp_result).text(lang_footer.loading);
       var password_digest = $.sha1($(password_field).val())
       var digest_five = password_digest.substring(0, 5).toUpperCase();
@@ -130,16 +151,16 @@ $(document).ready(function() {
         type: 'GET',
         success: function(res) {
           if (res.search(compl_digest) > -1){
-            $(hibp_result).removeClass('label label-info').addClass('label label-danger');
+            $(hibp_result).removeClass('badge fs-5 bg-info').addClass('badge fs-5 bg-danger');
             $(hibp_result).text(lang_footer.hibp_nok)
           } else {
-            $(hibp_result).removeClass('label label-info').addClass('label label-success');
+            $(hibp_result).removeClass('badge fs-5 bg-info').addClass('badge fs-5 bg-success');
             $(hibp_result).text(lang_footer.hibp_ok)
           }
           $(hibp_field).removeClass('task-running');
         },
         error: function(xhr, status, error) {
-          $(hibp_result).removeClass('label label-info').addClass('label label-warning');
+          $(hibp_result).removeClass('badge fs-5 bg-info').addClass('badge fs-5 bg-warning');
           $(hibp_result).text('API error: ' + xhr.responseText)
           $(hibp_field).removeClass('task-running');
         }
@@ -150,8 +171,8 @@ $(document).ready(function() {
   // Disable disallowed inputs
   $('[data-acl="0"]').each(function(event){
     if ($(this).is("a")) {
-      $(this).removeAttr("data-toggle");
-      $(this).removeAttr("data-target");
+      $(this).removeAttr("data-bs-toggle");
+      $(this).removeAttr("data-bs-target");
       $(this).removeAttr("data-action");
       $(this).click(function(event) {
         event.preventDefault();
@@ -166,8 +187,8 @@ $(document).ready(function() {
     if ($(this).hasClass('btn-group')) {
       $(this).find('a').each(function(){
         $(this).removeClass('dropdown-toggle')
-          .removeAttr('data-toggle')
-          .removeAttr('data-target')
+          .removeAttr('data-bs-toggle')
+          .removeAttr('data-bs-target')
           .removeAttr('data-action')
           .removeAttr('id')
           .attr("disabled", true);
@@ -182,7 +203,7 @@ $(document).ready(function() {
     } else if ($(this).hasClass('input-group')) {
       $(this).find('input').each(function() {
         $(this).removeClass('dropdown-toggle')
-          .removeAttr('data-toggle')
+          .removeAttr('data-bs-toggle')
           .attr("disabled", true);
         $(this).click(function(event) {
           event.preventDefault();
@@ -226,7 +247,7 @@ $(document).ready(function() {
     $('#containerName').text(container);
     $('#triggerRestartContainer').click(function(){
       $(this).prop("disabled",true);
-      $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
+      $(this).html('<div class="spinner-border text-white" role="status"><span class="visually-hidden">Loading...</span></div>');
       $('#statusTriggerRestartContainer').html(lang_footer.restarting_container);
       $.ajax({
         method: 'get',
@@ -253,26 +274,11 @@ $(document).ready(function() {
     });
   })
 
-  // responsive tabs
-  $('.responsive-tabs').tabCollapse({
-    tabsClass: 'hidden-xs',
-    accordionClass: 'js-tabcollapse-panel-group visible-xs'
+  // Jquery Datatables, enable responsive plugin and date sort plugin
+  $.extend($.fn.dataTable.defaults, {
+    responsive: true
   });
-  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
-	  var target = $(e.target);
-	  if($(window).width() <= 767) {
-		  var offset = target.offset().top - 112;
-		  $("html, body").stop().animate({
-		    scrollTop: offset
-		  }, 100);
-	  }
-	  if(target.hasClass('panel-collapse')){
-	    var id = e.target.id.replace(/-collapse$/g, '');
-	    if(id){
-          localStorage.setItem('lastTag', '#'+id);
-        }
-      }
-  });
+  $.fn.dataTable.moment('dd:mm:YYYY');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){
@@ -284,40 +290,65 @@ $(document).ready(function() {
       addTag(this);
     } 
   });
-  function addTag(tagAddElem){
-    var tagboxElem = $(tagAddElem).parent();
-    var tagInputElem = $(tagboxElem).find(".tag-input")[0];
-    var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
 
-    var tag = escapeHtml($(tagInputElem).val());
-    if (!tag) return;
-    var value_tags = [];
-    try {
-      value_tags = JSON.parse($(tagValuesElem).val());
-    } catch {}
-    if (!Array.isArray(value_tags)) value_tags = [];
-    if (value_tags.includes(tag)) return;
-
-    $('<span class="badge badge-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + tag + '</span>').insertBefore('.tag-input').click(function(){
-      var del_tag = unescapeHtml($(this).text());
-      var del_tags = [];
-      try {
-        del_tags = JSON.parse($(tagValuesElem).val());
-      } catch {}
-      if (Array.isArray(del_tags)){
-        del_tags.splice(del_tags.indexOf(del_tag), 1);
-        $(tagValuesElem).val(JSON.stringify(del_tags));
-      }
-      $(this).remove();
-    });
-
-    value_tags.push($(tagInputElem).val());
-    $(tagValuesElem).val(JSON.stringify(value_tags));
-    $(tagInputElem).val('');
+  // Dark Mode Loader
+  $('#dark-mode-toggle').click(toggleDarkMode);
+  if ($('#dark-mode-theme').length) {
+    $('#dark-mode-toggle').prop('checked', true);
+    if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
+    if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
+  }
+  function toggleDarkMode(){
+    if($('#dark-mode-theme').length){
+      $('#dark-mode-theme').remove();
+      $('#dark-mode-toggle').prop('checked', false);
+      if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
+      if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
+      localStorage.setItem('theme', 'light');
+    }else{
+      $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
+      $('#dark-mode-toggle').prop('checked', true);
+      if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
+      if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
+      localStorage.setItem('theme', 'dark');
+    }
   }
 });
 
 
-// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+// https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
 function unescapeHtml(t){var n={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#x2F;":"/","&#x60;":"`","&#x3D;":"="};return String(t).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x2F|&#x60|&#x3D;/g,function(t){return n[t]})}
+
+function addTag(tagAddElem, tag = null){
+  var tagboxElem = $(tagAddElem).parent();
+  var tagInputElem = $(tagboxElem).find(".tag-input")[0];
+  var tagValuesElem = $(tagboxElem).find(".tag-values")[0];
+
+  if (!tag)
+    tag = $(tagInputElem).val();
+  if (!tag) return;
+  var value_tags = [];
+  try {
+    value_tags = JSON.parse($(tagValuesElem).val());
+  } catch {}
+  if (!Array.isArray(value_tags)) value_tags = [];
+  if (value_tags.includes(tag)) return;
+
+  $('<span class="badge bg-primary tag-badge btn-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(tag) + '</span>').insertBefore('.tag-input').click(function(){
+    var del_tag = unescapeHtml($(this).text());
+    var del_tags = [];
+    try {
+      del_tags = JSON.parse($(tagValuesElem).val());
+    } catch {}
+    if (Array.isArray(del_tags)){
+      del_tags.splice(del_tags.indexOf(del_tag), 1);
+      $(tagValuesElem).val(JSON.stringify(del_tags));
+    }
+    $(this).remove();
+  });
+
+  value_tags.push(tag);
+  $(tagValuesElem).val(JSON.stringify(value_tags));
+  $(tagInputElem).val('');
+}

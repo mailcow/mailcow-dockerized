@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+NEXTCLOUD_VER="25"
 
 for bin in curl dirmngr; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
@@ -40,7 +41,7 @@ if [[ ${NC_PURGE} == "y" ]]; then
   fi
 
   docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
-    "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'nc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
+    "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'oc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
   docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c ' cat <<EOF | redis-cli
 SELECT 10
 FLUSHDB
@@ -76,7 +77,7 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     echo "Cannot upgrade to new major version, please update manually."
     exit 1
   else
-    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-22.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-$NEXTCLOUD_VER.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
       && mkdir -p ./data/web/nextcloud/data \
@@ -97,7 +98,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
   ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
-  curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-22.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+  curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-$NEXTCLOUD_VER.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
     && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
     && rm nextcloud.tar.bz2 \
     && mkdir -p ./data/web/nextcloud/data \

@@ -277,8 +277,8 @@
     "header": {
         "administration": "Administrēšana",
         "debug": "Atkļūdošana",
-        "mailboxes": "Pastkastes",
-        "mailcow_settings": "Configurācija",
+        "email": "E-Mail",
+        "mailcow_config": "Configurācija",
         "quarantine": "Karantīna",
         "restart_sogo": "Restartēt SOGo",
         "user_settings": "Lietotāja uzstādījumi"
@@ -323,10 +323,12 @@
         "bcc_type": "BCC tips",
         "deactivate": "Deaktivizēt",
         "description": "Apraksts",
+        "dkim_key_length": "DKIM atslēgas garums (bits)",
         "domain": "Domēns",
         "domain_admins": "Domēna administratori",
         "domain_aliases": "Domēna aliases",
         "domain_quota": "Kvota",
+        "domain_quota_total": "Kopējā  domēna kvota",
         "domains": "Domēns",
         "edit": "Labot",
         "empty": "Nav rezultātu",
@@ -334,6 +336,7 @@
         "filter_table": "Filtra tabula",
         "filters": "Filtri",
         "fname": "Pilns vārds",
+        "force_pw_update": "Piespiedu paroles atjaunošana pie nākošās pieslēgšanās",
         "in_use": "Lietošanā (%)",
         "inactive": "Neaktīvs",
         "kind": "Veids",
@@ -341,6 +344,9 @@
         "last_run_reset": "Nākamais grafiks",
         "mailbox_quota": "Maks. pastkastes izmērs",
         "mailboxes": "Pastkaste",
+        "max_aliases": "Maks. iespejamās aliases",
+        "max_mailboxes": "Maks. iespējamās pastkastes",
+        "max_quota": "Maks. kvota uz pastkasti",
         "mins_interval": "Intervāls (min)",
         "msg_num": "Vēstule #",
         "multiple_bookings": "Vairāki rezervējumi",
@@ -352,6 +358,7 @@
         "recipient_map_new": "Jauns saņēmējs",
         "recipient_map_old": "Oriģinālais saņēmējs",
         "recipient_maps": "Saņēmēja kartes",
+        "relay_all": "Pārsūtīt visus saņēmējus",
         "remove": "Noņemt",
         "resources": "Resursi",
         "running": "Darbojas",
@@ -391,6 +398,10 @@
         "text_from_html_content": "Saturs (konvertēts html)",
         "text_plain_content": "Saturs (teksts/vienkāršs)",
         "toggle_all": "Pārslēgt visu"
+    },
+    "queue": {
+        "queue_command_success": "Queue command completed successfully",
+        "queue_manager": "Queue Manager"
     },
     "start": {
         "help": "Rādīt/Paslēp palīdzības paneli",
