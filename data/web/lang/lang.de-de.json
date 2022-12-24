@@ -488,6 +488,7 @@
         "chart_this_server": "Chart (dieser Server)",
         "containers_info": "Container-Information",
         "container_running": "Läuft",
+        "container_disabled": "Container gestoppt oder deaktiviert",
         "container_stopped": "Angehalten",
         "cores": "Kerne",
         "current_time": "Systemzeit",

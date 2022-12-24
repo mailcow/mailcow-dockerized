@@ -160,8 +160,14 @@
                   <div class="d-flex p-2 list-group-header">
                     <div>
                       <span class="fw-bold">solr-mailcow</span>
+                      {% if containers["solr-mailcow"].State.Running == 1 %}
                       <span class="d-block d-md-inline">({{ containers["solr-mailcow"].Config.Image }})</span>
+                      {% endif %}
+                      {% if containers["solr-mailcow"].State.Running == 1 %}
                       <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ containers["solr-mailcow"].State.StartedAtHR }}</span>)</small>
+                      {% elseif containers["solr-mailcow"].State.Running != 1 %}
+                      <small class="d-block">{{ lang.debug.container_disabled }}</small>
+                      {% endif %}
                       {% if containers["solr-mailcow"].State.Running == 1 %}
                         <span class="badge fs-7 bg-success loader" style="min-width:100px">
                           {{ lang.debug.container_running }}
@@ -169,19 +175,22 @@
                           <span class="loader-dot">.</span>
                           <span class="loader-dot">.</span>
                         </span>
-                      {% elseif containers["solr-mailcow"].State %}
+                      {% elseif containers["solr-mailcow"].State.Running != 1 %}
                         <span class="badge fs-7 bg-danger" style="min-width:100px">
                           {{ lang.debug.container_stopped }}
                           <i class="bi-x ms-1"></i>
                         </span>
                       {% endif %}
                     </div>
+                  {% if containers["solr-mailcow"].State.Running == 1 %}
                     <div class="mt-auto ms-auto">
                       <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#solr-mailcowCollapse" aria-expanded="false" aria-controls="solr-mailcowCollapse">
                         <i class="bi bi-caret-down-fill caret"></i>
                       </button>
                     </div>
+                  {% endif %}  
                   </div>
+                  {% if containers["solr-mailcow"].State.Running == 1 %}
                   <div class="collapse p-0 list-group-details container-details-collapse" id="solr-mailcowCollapse" data-id="{{ containers["solr-mailcow"].Id }}">    
                     <div class="row p-2 pt-4">
                       <div class="col-sm-3">
@@ -238,6 +247,7 @@
                       </div>
                     </div>                  
                   </div>
+                  {% endif %}
                 </div>
               </div>
 
