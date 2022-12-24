@@ -895,15 +895,8 @@
         "toggle_all": "Comută toate"
     },
     "queue": {
-        "delete_queue": "Șterge tot",
-        "flush_queue": "Elimină coadă",
-        "queue_ays": "Te rog confirmă că dorești să ștergi toate articolele din coada curentă.",
         "queue_deliver_mail": "Livrează",
-        "queue_hold_mail": "Blochează",
-        "queue_manager": "Manager de coadă",
-        "queue_unban": "coadă pentru dezactivare interdicție",
-        "queue_unhold_mail": "Deblochează",
-        "queue_show_message": "Arată mesajul"
+        "queue_manager": "Manager de coadă"
     },
     "ratelimit": {
         "disabled": "Dezactivat",

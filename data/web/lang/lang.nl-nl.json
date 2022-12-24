@@ -659,7 +659,6 @@
         "domain_admins": "Domeinadministrators",
         "domain_aliases": "Domeinaliassen",
         "domain_quota": "Quota",
-        "domain_quota_m": "Totale domeinquota",
         "domains": "Domeinen",
         "edit": "Wijzig",
         "empty": "Geen resultaten",
@@ -816,15 +815,8 @@
         "toggle_all": "Selecteer alles"
     },
     "queue": {
-        "delete_queue": "Verwijder alles",
-        "flush_queue": "Leeg queue",
-        "queue_ays": "Bevestig het verwijderen van alle items uit de queue.",
         "queue_deliver_mail": "Lever af",
-        "queue_hold_mail": "Houd vast",
-        "queue_manager": "Queue manager",
-        "queue_unban": "hef verbanning op",
-        "queue_unhold_mail": "Geef vrij",
-        "queue_show_message": "Toon item"
+        "queue_manager": "Queue manager"
     },
     "start": {
         "help": "Toon/verberg hulppaneel",

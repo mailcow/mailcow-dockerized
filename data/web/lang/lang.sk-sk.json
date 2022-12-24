@@ -895,15 +895,8 @@
         "type": "Typ"
     },
     "queue": {
-        "delete_queue": "Vymazať všetko",
-        "flush_queue": "Vyprázdniť frontu",
-        "queue_ays": "Prosím potvrďte vymazanie všetkých položiek z aktuálnej fronty.",
         "queue_deliver_mail": "Doručiť",
-        "queue_hold_mail": "Pozdržať",
-        "queue_manager": "Správca fronty",
-        "queue_show_message": "Zobraziť správu",
-        "queue_unban": "Odblokovať",
-        "queue_unhold_mail": "Uvoľniť"
+        "queue_manager": "Správca fronty"
     },
     "ratelimit": {
         "disabled": "Vypnuté",

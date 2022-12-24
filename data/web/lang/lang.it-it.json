@@ -537,7 +537,6 @@
         "hostname": "Hostname",
         "inactive": "Inattivo",
         "kind": "Genere",
-        "last_mail_login": "Last mail login",
         "lookup_mx": "Destination is a regular expression to match against MX name (<code>.*google\\.com</code> to route all mail targeted to a MX ending in google.com over this hop)",
         "mailbox": "Modifica casella di posta",
         "mailbox_quota_def": "Default mailbox quota",
@@ -894,15 +893,8 @@
         "type": "Tipologia"
     },
     "queue": {
-        "delete_queue": "Elimina tutto",
-        "flush_queue": "Svuota la coda",
-        "queue_ays": "Conferma di voler eliminare tutti gli elementi dalla coda corrente.",
         "queue_deliver_mail": "Consegna",
-        "queue_hold_mail": "Trattieni",
-        "queue_manager": "Gestore code",
-        "queue_show_message": "Visualizza messaggio",
-        "queue_unban": "queue unban",
-        "queue_unhold_mail": "Rilascia"
+        "queue_manager": "Gestore code"
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",

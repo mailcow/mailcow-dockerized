@@ -602,14 +602,8 @@
         "toggle_all": "Seleccionar todos"
     },
     "queue": {
-        "delete_queue": "Eliminar todos",
-        "flush_queue": "Vaciar la cola",
-        "queue_ays": "Confirme que desea eliminar todos los elementos de la cola actual.",
         "queue_deliver_mail": "Entregar",
-        "queue_hold_mail": "Retener",
-        "queue_manager": "Administrador de cola",
-        "queue_unban": "Encolar desbloqueo",
-        "queue_unhold_mail": "Liberar retención"
+        "queue_manager": "Administrador de cola"
     },
     "start": {
         "help": "Mostrar/Ocultar panel de ayuda",
