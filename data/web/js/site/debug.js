@@ -731,7 +731,7 @@ jQuery(function($){
       columns: [
         {
           title: lang.time,
-          data: 'time',
+          data: 'unix_time',
           defaultContent: '',
           createdCell: function(td, cellData) {
             createSortableDate(td, cellData)
