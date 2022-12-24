@@ -257,9 +257,7 @@
         "quarantine_release_format_att": "附件",
         "quarantine_release_format_raw": "原件 (未修改)",
         "quarantine_retention_size": "每个邮箱保留隔离项目数:<br><small>0 表示 <b>禁用</b>。</small>",
-        "queue_deliver_mail": "传递",
         "queue_manager": "队列管理",
-        "queue_unban": "队列取消封禁",
         "quota_notification_html": "通知邮件模板:<br><small>留空则恢复默认模板。</small>",
         "quota_notification_sender": "通知邮件发件人",
         "quota_notification_subject": "通知邮件主题",
@@ -888,10 +886,8 @@
         "type": "类型"
     },
     "queue": {
-        "flush_queue": "清空队列",
         "queue_deliver_mail": "递送",
-        "queue_manager": "队列管理器",
-        "queue_unhold_mail": "继续"
+        "queue_manager": "队列管理器"
     },
     "ratelimit": {
         "disabled": "禁用",
