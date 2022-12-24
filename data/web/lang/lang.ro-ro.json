@@ -895,10 +895,8 @@
         "toggle_all": "Comută toate"
     },
     "queue": {
-        "flush_queue": "Elimină coadă",
         "queue_deliver_mail": "Livrează",
-        "queue_manager": "Manager de coadă",
-        "queue_unhold_mail": "Deblochează"
+        "queue_manager": "Manager de coadă"
     },
     "ratelimit": {
         "disabled": "Dezactivat",

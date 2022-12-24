@@ -777,10 +777,8 @@
         "toggle_all": "선택 반전"
     },
     "queue": {
-        "flush_queue": "큐 비우기",
         "queue_deliver_mail": "Deliver",
-        "queue_manager": "대기열 관리자",
-        "queue_unhold_mail": "Unhold"
+        "queue_manager": "대기열 관리자"
     },
     "start": {
         "help": "Show/Hide help panel",

@@ -803,10 +803,8 @@
         "toggle_all": "Skift alt"
     },
     "queue": {
-        "flush_queue": "Tøm kø",
         "queue_deliver_mail": "Aflevere",
-        "queue_manager": "Køadministrator",
-        "queue_unhold_mail": "Unhold"
+        "queue_manager": "Køadministrator"
     },
     "start": {
         "help": "Vis / skjul hjælpepanel",

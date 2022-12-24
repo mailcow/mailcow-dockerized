@@ -193,11 +193,8 @@
         "remove": "Remover"
     },
     "queue": {
-        "flush_queue": "Flush queue",
         "queue_command_success": "Queue command completed successfully",
-        "queue_hold_mail": "Hold",
-        "queue_manager": "Queue Manager",
-        "queue_unban": "queue unban"
+        "queue_manager": "Queue Manager"
     },
     "start": {
         "help": "Mostrar/Ocultar painel de ajuda",

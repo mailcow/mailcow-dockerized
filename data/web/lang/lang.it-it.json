@@ -893,10 +893,8 @@
         "type": "Tipologia"
     },
     "queue": {
-        "flush_queue": "Svuota la coda",
         "queue_deliver_mail": "Consegna",
-        "queue_manager": "Gestore code",
-        "queue_unban": "queue unban"
+        "queue_manager": "Gestore code"
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",

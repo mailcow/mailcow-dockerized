@@ -893,10 +893,8 @@
         "type": "Тип"
     },
     "queue": {
-        "flush_queue": "Отправить все сообщения",
         "queue_deliver_mail": "Доставить",
-        "queue_manager": "Очередь на отправку",
-        "queue_unban": "разблокировать очередь"
+        "queue_manager": "Очередь на отправку"
     },
     "ratelimit": {
         "disabled": "Отключен",

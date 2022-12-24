@@ -840,7 +840,6 @@
         "toggle_all": "Markera alla"
     },
     "queue": {
-        "queue_deliver_mail": "Leverera",
         "queue_manager": "Kö-hanteraring"
     },
     "start": {
