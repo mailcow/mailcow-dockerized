@@ -602,10 +602,8 @@
         "toggle_all": "Seleccionar todos"
     },
     "queue": {
-        "flush_queue": "Vaciar la cola",
         "queue_deliver_mail": "Entregar",
-        "queue_manager": "Administrador de cola",
-        "queue_unhold_mail": "Liberar retención"
+        "queue_manager": "Administrador de cola"
     },
     "start": {
         "help": "Mostrar/Ocultar panel de ayuda",
