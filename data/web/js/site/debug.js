@@ -721,6 +721,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/rspamd-history",
