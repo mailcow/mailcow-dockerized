@@ -815,10 +815,8 @@
         "toggle_all": "Selecteer alles"
     },
     "queue": {
-        "flush_queue": "Leeg queue",
         "queue_deliver_mail": "Lever af",
-        "queue_manager": "Queue manager",
-        "queue_unhold_mail": "Geef vrij"
+        "queue_manager": "Queue manager"
     },
     "start": {
         "help": "Toon/verberg hulppaneel",
