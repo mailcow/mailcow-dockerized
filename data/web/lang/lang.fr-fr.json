@@ -827,10 +827,8 @@
         "toggle_all": "Tout basculer"
     },
     "queue": {
-        "flush_queue": "Vider la file d'attente",
         "queue_deliver_mail": "Délivrer",
-        "queue_manager": "Gestion de la file d'attente",
-        "queue_unhold_mail": "Ne pas garder"
+        "queue_manager": "Gestion de la file d'attente"
     },
     "start": {
         "help": "Afficher/masquer le panneau d’aide",
