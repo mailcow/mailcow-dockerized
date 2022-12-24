@@ -896,10 +896,8 @@
         "table_size_show_n": "Відображати %s полів"
     },
     "queue": {
-        "flush_queue": "Flush queue",
         "queue_hold_mail": "Поставити на утримання",
-        "queue_manager": "Черга на відправлення",
-        "queue_unban": "розблокувати чергу"
+        "queue_manager": "Черга на відправлення"
     },
     "ratelimit": {
         "disabled": "Вимкнено",
