@@ -765,7 +765,14 @@ jQuery(function($){
         {
           title: 'Score',
           data: 'score',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'Subject',
@@ -786,7 +793,14 @@ jQuery(function($){
         {
           title: 'Scan Time',
           data: 'scan_time',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'ID',
@@ -843,9 +857,7 @@ jQuery(function($){
         scan_time += ' / ' + item.time_virtual.toFixed(3);
       }
       item.scan_time = {
-        "options": {
-          "sortValue": item.time_real
-        },
+        "sortBy": item.time_real,
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
@@ -864,9 +876,7 @@ jQuery(function($){
         score_content = "[ <span class='text-danger'>" + item.score.toFixed(2) + " / " + item.required_score + "</span> ]";
       }
       item.score = {
-        "options": {
-          "sortValue": item.score
-        },
+        "sortBy": item.score,
         "value": score_content
       };
       if (item.user == null) {
