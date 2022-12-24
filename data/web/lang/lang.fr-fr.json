@@ -675,10 +675,10 @@
         "enable_x": "Activer",
         "excludes": "Exclut",
         "filter_table": "Table de filtre",
-        "filters": "Filtres",   
+        "filters": "Filtres",
         "fname": "Nom complet",
         "force_pw_update": "Forcer la mise à jour du mot de passe à la prochaine ouverture de session",
-        "gal": "Carnet d'Adresses Global (GAL)",     
+        "gal": "Carnet d'Adresses Global (GAL)",
         "hourly": "Horaire",
         "in_use": "Utilisé (%)",
         "inactive": "Inactif",
@@ -827,15 +827,10 @@
         "toggle_all": "Tout basculer"
     },
     "queue": {
-        "delete_queue": "Tout supprimer",
         "flush_queue": "Vider la file d'attente",
-        "queue_ays": "Veuillez confirmer que vous voulez supprimer tous les éléments de la file d’attente actuelle.",
         "queue_deliver_mail": "Délivrer",
-        "queue_hold_mail": "Garder",
         "queue_manager": "Gestion de la file d'attente",
-        "queue_unban": "file d’attente unban",
-        "queue_unhold_mail": "Ne pas garder",
-        "queue_show_message": "Montrer message"
+        "queue_unhold_mail": "Ne pas garder"
     },
     "start": {
         "help": "Afficher/masquer le panneau d’aide",

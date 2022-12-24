@@ -640,7 +640,7 @@
         "deactivate": "Deaktiver",
         "description": "Beskrivelse",
         "disable_login": "Tillad ikke login (indgående mail accepteres stadig)",
-        "disable_x": "Deaktiver",        
+        "disable_x": "Deaktiver",
         "dkim_domains_selector": "Vælger",
         "dkim_key_length": "DKIM nøgle længde (bits)",
         "domain": "Domæne",
@@ -656,7 +656,7 @@
         "filter_table": "Filtertabel",
         "filters": "Filtre",
         "fname": "Fulde navn",
-        "force_pw_update": "Tving adgangskodeopdatering til næste login",   
+        "force_pw_update": "Tving adgangskodeopdatering til næste login",
         "gal": "Global adresseliste",
         "hourly": "Hver time",
         "in_use": "I brug (%)",
@@ -803,15 +803,10 @@
         "toggle_all": "Skift alt"
     },
     "queue": {
-        "delete_queue": "Slet alt",
         "flush_queue": "Tøm kø",
-        "queue_ays": "Bekræft venligst, at du vil slette alle emner fra den aktuelle kø.",
         "queue_deliver_mail": "Aflevere",
-        "queue_hold_mail": "Hold",
         "queue_manager": "Køadministrator",
-        "queue_unban": "kø ikke udeluk",
-        "queue_unhold_mail": "Unhold",
-        "queue_show_message": "Vis besked"
+        "queue_unhold_mail": "Unhold"
     },
     "start": {
         "help": "Vis / skjul hjælpepanel",
