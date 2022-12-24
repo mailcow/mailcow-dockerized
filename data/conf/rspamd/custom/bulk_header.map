@@ -3,7 +3,6 @@
 /.*episerver.*/i
 /.*supergewinne.*/i
 /List-Unsubscribe.*nbps\.eu/i
-/X-Mailer: AWeber.*/i
 /.*regiofinder.*/i
 /.*EmailSocket.*/i
 /List-Unsubscribe:.*respread.*/i

@@ -40,17 +40,17 @@ jQuery(function($){
           if (value.score > 0) highlightClass = 'negative'
           else if (value.score < 0) highlightClass = 'positive'
           else highlightClass = 'neutral'
-          $('#qid_detail_symbols').append('<span data-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+          $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
         });
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-bs-toggle="tooltip"]').tooltip()
       }
       if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
         if (data.action === "add header") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
         } else if (data.action === "reject") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action label label-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
         } else if (data.action === "rewrite subject") {
-          $('#qid_detail_score').append('<span class="label-rspamd-action label label-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+          $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
         }
       }
       if (typeof data.recipients !== 'undefined') {

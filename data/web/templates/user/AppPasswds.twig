@@ -1,23 +1,53 @@
-<div role="tabpanel" class="tab-pane" id="AppPasswds">
-  <p>{{ lang.user.app_hint|raw }}</p>
-  <div class="table-responsive">
-    <table class="table table-striped" id="app_passwd_table"></table>
-  </div>
-  <div class="mass-actions-user">
-    <div class="btn-group" data-acl="{{ acl.app_passwds }}">
-      <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <div class="clearfix visible-xs"></div>
+<div role="tabpanel" class="tab-pane fade" id="AppPasswds" role="tabpanel" aria-labelledby="AppPasswds">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-AppPasswds" data-bs-toggle="collapse" aria-controls="collapse-tab-AppPasswds">
+        {{ lang.user.app_passwds }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.app_passwds }}
+    </div>
+    <div id="collapse-tab-AppPasswds" class="card-body collapse" data-bs-parent="#user-content">
+      <div class="mass-actions-user mb-4">
+        <div class="btn-group" data-acl="{{ acl.app_passwds }}">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-datatables-expand="app_passwd_table" data-table="app_passwd_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li><a class="dropdown-item" data-datatables-collapse="app_passwd_table" data-table="app_passwd_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#">{{ lang.mailbox.remove }}</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_app_passwd }}</a>
+          </div>
+        </div>
       </div>
-      <div class="btn-group">
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_app_passwd }}</a>
+      <p>{{ lang.user.app_hint|raw }}</p>
+      <table id="app_passwd_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-user mt-4">
+        <div class="btn-group" data-acl="{{ acl.app_passwds }}">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="apppasswd" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="apppasswd" data-api-url='edit/app-passwd' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-datatables-expand="app_passwd_table" data-table="app_passwd_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li><a class="dropdown-item" data-datatables-collapse="app_passwd_table" data-table="app_passwd_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="apppasswd" data-api-url='delete/app-passwd' href="#">{{ lang.mailbox.remove }}</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addAppPasswdModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_app_passwd }}</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

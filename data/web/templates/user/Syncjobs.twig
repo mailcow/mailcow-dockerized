@@ -1,22 +1,52 @@
-<div role="tabpanel" class="tab-pane" id="Syncjobs">
-  <div class="table-responsive">
-    <table class="table table-striped" id="sync_job_table"></table>
-  </div>
-  <div class="mass-actions-user">
-    <div class="btn-group" data-acl="{{ acl.syncjobs }}">
-      <div class="btn-group">
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-        <a class="btn btn-sm btn-xs-half visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-default dropdown-toggle" data-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }} <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-          <li><a data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-          <li role="separator" class="divider"></li>
-          <li><a data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#">{{ lang.mailbox.remove }}</a></li>
-        </ul>
-        <div class="clearfix visible-xs"></div>
+<div role="tabpanel" class="tab-pane fade" id="Syncjobs" role="tabpanel" aria-labelledby="Syncjobs">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-Syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-Syncjobs">
+        {{ lang.user.sync_jobs }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.sync_jobs }}
+    </div>
+    <div id="collapse-tab-Syncjobs" class="card-body collapse" data-bs-parent="#user-content">      
+      <div class="mass-actions-user mb-4">
+        <div class="btn-group" data-acl="{{ acl.syncjobs }}">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-datatables-expand="sync_job_table" data-table="sync_job_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li><a class="dropdown-item" data-datatables-collapse="sync_job_table" data-table="sync_job_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#">{{ lang.mailbox.remove }}</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+          </div>
+        </div>
       </div>
-      <div class="btn-group">
-        <a class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+      <table id="sync_job_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-user mt-4">
+        <div class="btn-group" data-acl="{{ acl.syncjobs }}">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="syncjob" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="syncjob" data-api-url='edit/syncjob' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-datatables-expand="sync_job_table" data-table="sync_job_table" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li><a class="dropdown-item" data-datatables-collapse="sync_job_table" data-table="sync_job_table" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="syncjob" data-api-url='delete/syncjob' href="#">{{ lang.mailbox.remove }}</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

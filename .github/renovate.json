@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "timezone": "Europe/Berlin",
+  "dependencyDashboard": false,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "commitBody": "Signed-off-by: milkmaker <milkmaker@mailcow.de>",
+  "rebaseWhen": "auto",
+  "assignees": [
+    "@magiccc"
+  ],
+  "baseBranches": ["staging"],
+  "enabledManagers": ["github-actions"]
+}

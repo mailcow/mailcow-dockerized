@@ -230,13 +230,27 @@ if (isset($_GET['query'])) {
           process_add_return(rsettings('add', $attr));
         break;
         case "mailbox":
-          process_add_return(mailbox('add', 'mailbox', $attr));
+          switch ($object) {
+            case "template":
+              process_add_return(mailbox('add', 'mailbox_templates', $attr));
+            break;
+            default:
+              process_add_return(mailbox('add', 'mailbox', $attr));
+            break;
+          }
         break;
         case "oauth2-client":
           process_add_return(oauth2('add', 'client', $attr));
         break;
         case "domain":
-          process_add_return(mailbox('add', 'domain', $attr));
+          switch ($object) {
+            case "template":
+              process_add_return(mailbox('add', 'domain_templates', $attr));
+            break;
+            default:
+              process_add_return(mailbox('add', 'domain', $attr));
+            break;
+          }  
         break;
         case "resource":
           process_add_return(mailbox('add', 'resource', $attr));
@@ -519,7 +533,16 @@ if (isset($_GET['query'])) {
                   echo '{}';
                 }
               break;
-
+              case "template":
+                switch ($extra){
+                  case "all":
+                    process_get_return(mailbox('get', 'domain_templates'));
+                  break;
+                  default:
+                    process_get_return(mailbox('get', 'domain_templates', $extra));
+                  break;
+                }
+              break;
               default:
                 $data = mailbox('get', 'domain_details', $object);
                 process_get_return($data);
@@ -992,7 +1015,16 @@ if (isset($_GET['query'])) {
                   echo '{}';
                 }
               break;
-
+              case "template":
+                switch ($extra){
+                  case "all":
+                    process_get_return(mailbox('get', 'mailbox_templates'));
+                  break;
+                  default:
+                    process_get_return(mailbox('get', 'mailbox_templates', $extra));
+                  break;
+                }
+              break;
               default:
                 $tags = null;
                 if (isset($_GET['tags']) && $_GET['tags'] != '') 
@@ -1472,6 +1504,10 @@ if (isset($_GET['query'])) {
                   }
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
                 break;
+                case "container":
+                  $container_stats = docker('container_stats', $extra);
+                  echo json_encode($container_stats);
+                break;
                 case "vmail":
                   $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
                   $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
@@ -1483,29 +1519,53 @@ if (isset($_GET['query'])) {
                     'used_percent' => $vmail_df[4]
                   );
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
-              break;
-              case "solr":
-                $solr_status = solr_status();
-                $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
-                $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
-                if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                  $solr_enabled = false;
-                }
-                else {
-                  $solr_enabled = true;
-                }
-                echo json_encode(array(
-                  'type' => 'info',
-                  'solr_enabled' => $solr_enabled,
-                  'solr_size' => $solr_size,
-                  'solr_documents' => $solr_documents
-                ));
-              break;
-              case "version":
-                echo json_encode(array(
-                  'version' => $GLOBALS['MAILCOW_GIT_VERSION']
-                ));
-              break;
+                break;
+                case "solr":
+                  $solr_status = solr_status();
+                  $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
+                  $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
+                  if (strtolower(getenv('SKIP_SOLR')) != 'n') {
+                    $solr_enabled = false;
+                  }
+                  else {
+                    $solr_enabled = true;
+                  }
+                  echo json_encode(array(
+                    'type' => 'info',
+                    'solr_enabled' => $solr_enabled,
+                    'solr_size' => $solr_size,
+                    'solr_documents' => $solr_documents
+                  ));
+                break;  
+                case "host":
+                  if (!$extra){
+                    $stats = docker("host_stats");
+                    echo json_encode($stats);
+                  } 
+                  else if ($extra == "ip") {
+                    // get public ips
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_POST, 0);
+                    $ipv4 = curl_exec($curl);
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_POST, 0);
+                    $ipv6 = curl_exec($curl);
+                    $ips = array(
+                      "ipv4" => $ipv4,
+                      "ipv6" => $ipv6
+                    );
+                    curl_close($curl);
+                    echo json_encode($ips);
+                  }
+                break;
+                case "version":
+                  echo json_encode(array(
+                    'version' => $GLOBALS['MAILCOW_GIT_VERSION']
+                  ));
+                break;
               }
             }
           break;
@@ -1613,6 +1673,9 @@ if (isset($_GET['query'])) {
             case "tag":
               process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
             break;
+            case "template":
+              process_delete_return(mailbox('delete', 'domain_templates', array('ids' => $items)));
+            break;
             default:
               process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
           }
@@ -1624,6 +1687,9 @@ if (isset($_GET['query'])) {
           switch ($object){
             case "tag":
               process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+            break;
+            case "template":
+              process_delete_return(mailbox('delete', 'mailbox_templates', array('ids' => $items)));
             break;
             default:
               process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
@@ -1786,7 +1852,14 @@ if (isset($_GET['query'])) {
           process_edit_return(mailbox('edit', 'time_limited_alias', array_merge(array('address' => $items), $attr)));
         break;
         case "mailbox":
-          process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
+          switch ($object) {
+            case "template":
+              process_edit_return(mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            default:
+              process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
+            break;
+          }
         break;
         case "syncjob":
           process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
@@ -1798,7 +1871,14 @@ if (isset($_GET['query'])) {
           process_edit_return(mailbox('edit', 'resource', array_merge(array('name' => $items), $attr)));
         break;
         case "domain":
-          process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
+          switch ($object) {
+            case "template":
+              process_edit_return(mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            default:
+              process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
+            break;
+          }
         break;
         case "rl-domain":
           process_edit_return(ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));

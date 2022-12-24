@@ -9,7 +9,7 @@
         "backup_mx_options": "Opções Backup MX:",
         "description": "Descrição:",
         "domain": "Domínio",
-        "domain_quota_m": "Total de espaço por domínio(MiB):",
+        "domain_quota_m": "Total de espaço por domínio (MiB):",
         "full_name": "Nome:",
         "mailbox_quota_m": "Máximo espaço por conta (MiB):",
         "mailbox_username": "Usuário (primeira parte do endereço de email):",
@@ -136,8 +136,8 @@
     },
     "header": {
         "administration": "Administração",
-        "mailboxes": "Contas",
-        "mailcow_settings": "Configuração",
+        "email": "E-Mail",
+        "mailcow_config": "Configuração",
         "user_settings": "Configurações do usuário"
     },
     "info": {
@@ -161,10 +161,12 @@
         "aliases": "Apelidos",
         "backup_mx": "Backup MX",
         "description": "Descrição:",
+        "dkim_key_length": "Tamanho do registro DKIM (bits)",
         "domain": "Domínio",
         "domain_admins": "Administradores de domínio",
         "domain_aliases": "Encaminhamento de Domínio",
         "domain_quota": "Espaço",
+        "domain_quota_total": "Total de espaço por domínio",
         "domains": "Domínios",
         "edit": "Alterar",
         "filter_table": "Procurar",
@@ -172,9 +174,13 @@
         "in_use": "Em uso (%)",
         "mailbox_quota": "Espaço máximo da Conta",
         "mailboxes": "Contas",
+        "max_aliases": "Máximo de apelidos",
+        "max_mailboxes": "Máximo de contas",
+        "max_quota": "Máximo espaço por conta",
         "msg_num": "Mensagens",
         "no_record": "Nenhum registro",
         "no_record_single": "Nenhum registro",
+        "relay_all": "Relay para todas as contas",
         "remove": "Remover",
         "target_address": "Encaminhar para",
         "target_domain": "Domínio Destino",
@@ -185,6 +191,10 @@
     "quarantine": {
         "action": "Ação",
         "remove": "Remover"
+    },
+    "queue": {
+        "queue_command_success": "Queue command completed successfully",
+        "queue_manager": "Queue Manager"
     },
     "start": {
         "help": "Mostrar/Ocultar painel de ajuda",
