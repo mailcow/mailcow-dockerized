@@ -80,7 +80,9 @@
             {% if mailcow_cc_role == 'admin' %}
             <li><a href="/queue" class="dropdown-item {% if is_uri('queue') %}active{% endif %}">{{ lang.queue.queue_manager }}</a></li>
             {% endif %}
+            {% if mailcow_cc_role == 'admin' %}
             <li><a href="#" class="dropdown-item" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer">{{ lang.header.restart_sogo }}</a></li>
+            {% endif %}
           </ul>
         </li>
         {% endif %}
