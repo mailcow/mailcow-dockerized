@@ -1,3 +1,13 @@
+const LOCALE = undefined;
+const DATETIME_FORMAT = {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+};
+
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -7,14 +17,7 @@ $(document).ready(function() {
     if (typeof started_s_ago != 'NaN') {
       var started_date = new Date((ts_now - started_s_ago) * 1000);
       if (started_date instanceof Date && !isNaN(started_date)) {
-        var started_local_date = started_date.toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit"
-        });
+        var started_local_date = started_date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
         $(this).text(started_local_date);
       } else {
         $(this).text('-');
@@ -25,14 +28,7 @@ $(document).ready(function() {
   $('.parse_date').each(function(i, parse_date) {
     var started_date = new Date(Date.parse($(this).text()));
     if (typeof started_date != 'NaN') {
-      var started_local_date = started_date.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
+      var started_local_date = started_date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
       $(this).text(started_local_date);
     }
   });
@@ -75,6 +71,13 @@ jQuery(function($){
     var table_name = $(this).data('table');
     $('#' + table_name).DataTable().ajax.reload();
   });
+  function createSortableDate(td, cellData) {
+    $(td).attr({
+      "data-order": cellData,
+      "data-sort": cellData
+    });
+    $(td).html(convertTimestampToLocalFormat(cellData));
+  }
   function draw_autodiscover_logs() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#autodiscover_log') ) {
@@ -100,9 +103,8 @@ jQuery(function($){
           data: 'time',
           defaultContent: '',
           responsivePriority: 1,
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -157,9 +159,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -200,9 +201,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -247,9 +247,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -306,9 +305,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -393,9 +391,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -481,9 +478,9 @@ jQuery(function($){
           title: lang.login_time,
           data: 'datetime',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data.replace(/-/g, "/")); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            cellData = Math.floor((new Date(data.replace(/-/g, "/"))).getTime() / 1000);
+            createSortableDate(td, cellData)
           }
         }
       ]
@@ -513,9 +510,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -551,9 +547,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -594,9 +589,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -637,9 +631,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -728,6 +721,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order: [[0, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/rspamd-history",
@@ -738,11 +732,10 @@ jQuery(function($){
       columns: [
         {
           title: lang.time,
-          data: 'time',
+          data: 'unix_time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -773,7 +766,14 @@ jQuery(function($){
         {
           title: 'Score',
           data: 'score',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'Subject',
@@ -794,7 +794,14 @@ jQuery(function($){
         {
           title: 'Scan Time',
           data: 'scan_time',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'ID',
@@ -851,9 +858,7 @@ jQuery(function($){
         scan_time += ' / ' + item.time_virtual.toFixed(3);
       }
       item.scan_time = {
-        "options": {
-          "sortValue": item.time_real
-        },
+        "sortBy": item.time_real,
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
@@ -872,9 +877,7 @@ jQuery(function($){
         score_content = "[ <span class='text-danger'>" + item.score.toFixed(2) + " / " + item.required_score + "</span> ]";
       }
       item.score = {
-        "options": {
-          "sortValue": item.score
-        },
+        "sortBy": item.score,
         "value": score_content
       };
       if (item.user == null) {
@@ -1076,10 +1079,10 @@ jQuery(function($){
               netIOCtx.data.datasets[0].data = [];
               netIOCtx.data.datasets[1].data = [];
               netIOCtx.data.labels = [];
-            
+
               diskIOCtx.update();
               netIOCtx.update();
-              
+
               delete containersToUpdate[container];
             });
           }
@@ -1136,7 +1139,7 @@ function update_stats(timeout=5){
 }
 // update specific container stats - every n (default 5s) seconds
 function update_container_stats(timeout=5){
-  
+
   if ($('#tab-containers').hasClass('active')) {
     for (let container in containersToUpdate){
       container_id = containersToUpdate[container].id;
@@ -1164,13 +1167,13 @@ function update_container_stats(timeout=5){
           $('#' + container + "_NetIOChart").removeClass('d-none');
           $('#' + container + "_NetIOChart").prev().addClass('d-none');
         }
-          
+
         data = data[data.length -1];
 
         if (prev_stats != null){
           // calc time diff
           var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
-    
+
           // calc disk io b/s
           if ('io_service_bytes_recursive' in prev_stats.blkio_stats && prev_stats.blkio_stats.io_service_bytes_recursive !== null){
             var prev_read_bytes = 0;
@@ -1192,7 +1195,7 @@ function update_container_stats(timeout=5){
             var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
             var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
           }
-    
+
           // calc net io b/s
           if ('networks' in prev_stats){
             var prev_recv_bytes = 0;
@@ -1210,11 +1213,11 @@ function update_container_stats(timeout=5){
             var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
             var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
           }
-    
+
           addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
           addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
         }
-    
+
         // run again in n seconds
         containersToUpdate[container].state = "idle";
       }).catch(err => {
@@ -1253,7 +1256,7 @@ function formatUptime(seconds){
   var mFormat = m > 0 ? m + "M " : "";
   var sFormat = s > 0 ? s + "S" : "";
   return dFormat + hFormat + mFormat + sFormat;
-} 
+}
 // format bytes to readable string
 function formatBytes(bytes){
   // b
@@ -1309,16 +1312,16 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
           callback: function(i, index, ticks) {
              return formatBytes(i);
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
             display: false
-        }  
+        }
       }
     }
   };
-  
+
   return new Chart(ctx, {
     type: 'line',
     data: dataNet,
@@ -1373,12 +1376,12 @@ function createHostCpuAndMemChart(){
           callback: function(i, index, ticks) {
              return i.toFixed(0).toString() + "%";
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
             display: false
-        }  
+        }
       }
     }
   };
@@ -1411,17 +1414,17 @@ function createHostCpuAndMemChart(){
           callback: function(i, index, ticks) {
             return i.toFixed(0).toString() + "%";
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
             display: false
-        }  
+        }
       }
     }
   };
 
-  
+
   var net_io_chart = new Chart(cpu_ctx, {
     type: 'line',
     data: dataCpu,
@@ -1435,7 +1438,7 @@ function createHostCpuAndMemChart(){
 }
 // check for mailcow updates
 function check_update(current_version, github_repo_url){
-  if (!current_version || !github_repo_url) return false; 
+  if (!current_version || !github_repo_url) return false;
 
   var github_account = github_repo_url.split("/")[3];
   var github_repo_name = github_repo_url.split("/")[4];
@@ -1462,7 +1465,7 @@ function check_update(current_version, github_repo_url){
         $("#mailcow_update_changelog").click(function(){
           if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
             return;
-      
+
           showVersionModal("New Release " + latest_data.tag_name, latest_data.tag_name);
         })
       }
@@ -1485,7 +1488,7 @@ function showVersionModal(title, version){
     type: 'GET',
     url: 'https://api.github.com/repos/' + mailcow_info.project_owner + '/' + mailcow_info.project_repo + '/releases/tags/' + version,
     dataType: 'json',
-    success: function (data) { 
+    success: function (data) {
       var md = window.markdownit();
       var result = md.render(data.body);
       result = parseGithubMarkdownLinks(result);
@@ -1494,7 +1497,7 @@ function showVersionModal(title, version){
       $('#showVersionModal').find(".modal-body").html(`
         <h3>` + data.name + `</h3>
         <span class="mt-4">` + result + `</span>
-        <span><b>Github Link:</b> 
+        <span><b>Github Link:</b>
           <a target="_blank" href="https://github.com/` + mailcow_info.project_owner + `/` + mailcow_info.project_repo + `/releases/tag/` + version + `">` + version + `</a>
         </span>
       `);
@@ -1521,13 +1524,18 @@ function parseGithubMarkdownLinks(inputText) {
           matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
           last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
         }
-        
+
         return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
       };
 
       // if it's not a github link, return complete link
-      return '<a href="' + matched + '" target="_blank">' + matched + '</a>'; 
+      return '<a href="' + matched + '" target="_blank">' + matched + '</a>';
   });
 
   return replacedText;
+}
+
+function convertTimestampToLocalFormat(timestamp) {
+  var date = new Date(timestamp ? timestamp * 1000 : 0);
+  return date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
 }
