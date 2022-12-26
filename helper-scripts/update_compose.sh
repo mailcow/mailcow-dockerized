@@ -42,8 +42,6 @@ echo -e "\e[32mTrying to determine GLIBC version...\e[0m"
     elif [[ $(curl -sL -w "%{http_code}" https://github.com/docker/compose/releases/latest -o /dev/null) == "200" ]]; then
         LATEST_COMPOSE=$(curl -Ls -w %{url_effective} -o /dev/null https://github.com/docker/compose/releases/latest) # redirect to latest release
         LATEST_COMPOSE=${LATEST_COMPOSE##*/} #get the latest version from the redirect, inlcuding the "v" prefix
-        if [ $DC_DL_SUFFIX]; then
-          LATEST_COMPOSE=1.27.4 # force 1.27.4 for legacy systems, tag is not prefixed by "v"
         COMPOSE_VERSION=$(docker-compose version --short)
         if [[ "$LATEST_COMPOSE" != "$COMPOSE_VERSION" ]]; then
         COMPOSE_PATH=$(command -v docker-compose)
