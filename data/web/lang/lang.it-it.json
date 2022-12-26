@@ -893,7 +893,6 @@
         "type": "Tipologia"
     },
     "queue": {
-        "queue_deliver_mail": "Consegna",
         "queue_manager": "Gestore code"
     },
     "start": {
