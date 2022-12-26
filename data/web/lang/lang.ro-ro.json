@@ -895,7 +895,6 @@
         "toggle_all": "Comută toate"
     },
     "queue": {
-        "queue_deliver_mail": "Livrează",
         "queue_manager": "Manager de coadă"
     },
     "ratelimit": {

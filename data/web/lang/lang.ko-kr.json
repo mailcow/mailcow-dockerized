@@ -777,7 +777,6 @@
         "toggle_all": "선택 반전"
     },
     "queue": {
-        "queue_deliver_mail": "Deliver",
         "queue_manager": "대기열 관리자"
     },
     "start": {

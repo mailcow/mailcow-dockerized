@@ -602,7 +602,6 @@
         "toggle_all": "Seleccionar todos"
     },
     "queue": {
-        "queue_deliver_mail": "Entregar",
         "queue_manager": "Administrador de cola"
     },
     "start": {
