@@ -776,11 +776,6 @@ jQuery(function($){
           }
         },
         {
-          title: 'Subject',
-          data: 'header_subject',
-          defaultContent: ''
-        },
-        {
           title: 'Symbols',
           data: 'symbols',
           defaultContent: '',
