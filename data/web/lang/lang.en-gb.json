@@ -491,6 +491,7 @@
         "chart_this_server": "Chart (this server)",
         "containers_info": "Container information",
         "container_running": "Running",
+        "container_disabled": "Container stopped or disabled",
         "container_stopped": "Stopped",
         "cores": "Cores",
         "current_time": "System Time",
