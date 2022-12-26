@@ -896,7 +896,6 @@
         "table_size_show_n": "Відображати %s полів"
     },
     "queue": {
-        "queue_hold_mail": "Поставити на утримання",
         "queue_manager": "Черга на відправлення"
     },
     "ratelimit": {

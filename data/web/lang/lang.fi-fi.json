@@ -686,7 +686,6 @@
         "toggle_all": "Valitse kaikki"
     },
     "queue": {
-        "queue_deliver_mail": "Toimittaa",
         "queue_manager": "Jonon hallinta"
     },
     "start": {

@@ -815,7 +815,6 @@
         "toggle_all": "Selecteer alles"
     },
     "queue": {
-        "queue_deliver_mail": "Lever af",
         "queue_manager": "Queue manager"
     },
     "start": {

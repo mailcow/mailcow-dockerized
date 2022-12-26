@@ -193,7 +193,6 @@
         "remove": "Remover"
     },
     "queue": {
-        "queue_command_success": "Queue command completed successfully",
         "queue_manager": "Queue Manager"
     },
     "start": {
