@@ -97,7 +97,7 @@ jQuery(function($){
           },
           {
             title: lang.subj,
-            data: 'sender',
+            data: 'subject',
             defaultContent: ''
           },
           {
