@@ -889,7 +889,6 @@
         "type": "Typ"
     },
     "queue": {
-        "queue_deliver_mail": "Doručit",
         "queue_manager": "Správce fronty"
     },
     "ratelimit": {

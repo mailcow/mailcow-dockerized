@@ -285,7 +285,6 @@
         "toggle_all": "Zaznacz wszystkie"
     },
     "queue": {
-        "queue_command_success": "Queue command completed successfully",
         "queue_manager": "Queue Manager"
     },
     "start": {

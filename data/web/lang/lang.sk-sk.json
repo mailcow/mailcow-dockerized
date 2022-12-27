@@ -895,7 +895,6 @@
         "type": "Typ"
     },
     "queue": {
-        "queue_deliver_mail": "Doručiť",
         "queue_manager": "Správca fronty"
     },
     "ratelimit": {

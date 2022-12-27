@@ -893,7 +893,6 @@
         "type": "Тип"
     },
     "queue": {
-        "queue_deliver_mail": "Доставить",
         "queue_manager": "Очередь на отправку"
     },
     "ratelimit": {
