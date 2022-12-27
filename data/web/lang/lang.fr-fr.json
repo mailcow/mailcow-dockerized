@@ -26,7 +26,9 @@
         "syncjobs": "Tâches de synchronisation",
         "tls_policy": "Police TLS",
         "unlimited_quota": "Quota illimité pour les boites de courriel",
-        "domain_desc": "Modifier la description du domaine"
+        "domain_desc": "Modifier la description du domaine",
+        "domain_relayhost": "Changer le relais pour un domaine",
+        "mailbox_relayhost": "Changer le relais d’une boîte de réception"
     },
     "add": {
         "activate_filter_warn": "Tous les autres filtres seront désactivés, quand activé est coché.",
@@ -827,7 +829,6 @@
         "toggle_all": "Tout basculer"
     },
     "queue": {
-        "queue_deliver_mail": "Délivrer",
         "queue_manager": "Gestion de la file d'attente"
     },
     "start": {
