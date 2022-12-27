@@ -479,7 +479,7 @@ jQuery(function($){
           data: 'datetime',
           defaultContent: '',
           createdCell: function(td, cellData) {
-            cellData = Math.floor((new Date(data.replace(/-/g, "/"))).getTime() / 1000);
+            cellData = Math.floor((new Date(cellData.replace(/-/g, "/"))).getTime() / 1000);
             createSortableDate(td, cellData)
           }
         }
