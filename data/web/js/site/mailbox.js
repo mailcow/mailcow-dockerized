@@ -1908,6 +1908,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
