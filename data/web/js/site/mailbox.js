@@ -623,6 +623,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/template/all",
@@ -1078,6 +1079,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/mailbox/template/all",
@@ -1414,6 +1416,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/bcc/all",
@@ -1510,6 +1513,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/recipient_map/all",
@@ -1593,6 +1597,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/tls-policy-map/all",
@@ -1686,6 +1691,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias/all",
@@ -2049,6 +2055,7 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/filters/all",
