@@ -5,7 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
   ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
 }
 
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
   strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") {
   if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set("session.cookie_secure", 1);
@@ -65,7 +65,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       }
     }
     else {
-      $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+      $redis->publish("NETFILTER_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
       error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
       http_response_code(401);
       echo json_encode(array(
@@ -77,7 +77,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     }
   }
   else {
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+    $redis->publish("NETFILTER_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     http_response_code(401);
     echo json_encode(array(

@@ -48,7 +48,7 @@ until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
   sleep 2
 done
 
-${REDIS_CMDLINE} DEL F2B_RES > /dev/null
+${REDIS_CMDLINE} DEL NETFILTER_RES > /dev/null
 
 # Common functions
 get_ipv6(){
@@ -116,7 +116,7 @@ function mail_error() {
   fi
   WATCHDOG_NOTIFY_EMAIL=$(echo "${WATCHDOG_NOTIFY_EMAIL}" | sed 's/"//;s|"$||')
   # Some exceptions for subject and body formats
-  if [[ ${1} == "fail2ban" ]]; then
+  if [[ ${1} == "netfilter" ]]; then
     SUBJECT="${BODY}"
     BODY="Please see netfilter-mailcow for more details and triggered rules."
   else
@@ -607,29 +607,29 @@ mailq_checks() {
   return 1
 }
 
-fail2ban_checks() {
+netfilter_checks() {
   err_count=0
   diff_c=0
-  THRESHOLD=${FAIL2BAN_THRESHOLD}
-  F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
-  F2B_RES=
+  THRESHOLD=${NETFILTER_THRESHOLD}
+  NETFILTER_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS NETFILTER_ACTIVE_BANS))
+  NETFILTER_RES=
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    F2B_LOG_STATUS_PREV=(${F2B_LOG_STATUS[@]})
-    F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
-    array_diff F2B_RES F2B_LOG_STATUS F2B_LOG_STATUS_PREV
-    if [[ ! -z "${F2B_RES}" ]]; then
+    NETFILTER_LOG_STATUS_PREV=(${NETFILTER_LOG_STATUS[@]})
+    NETFILTER_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS NETFILTER_ACTIVE_BANS))
+    array_diff NETFILTER_RES NETFILTER_LOG_STATUS NETFILTER_LOG_STATUS_PREV
+    if [[ ! -z "${NETFILTER_RES}" ]]; then
       err_count=$(( ${err_count} + 1 ))
-      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s ${REDIS_CMDLINE} -x SET F2B_RES > /dev/null
+      echo -n "${NETFILTER_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s ${REDIS_CMDLINE} -x SET NETFILTER_RES > /dev/null
       if [ $? -ne 0 ]; then
-         ${REDIS_CMDLINE} -x DEL F2B_RES
+         ${REDIS_CMDLINE} -x DEL NETFILTER_RES
       fi
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
-    progress "Fail2ban" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    progress "Netfilter" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
       sleep 1
@@ -944,14 +944,14 @@ BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
-  if ! fail2ban_checks; then
-    log_msg "Fail2ban hit error limit"
-    echo fail2ban > /tmp/com_pipe
+  if ! netfilter_checks; then
+    log_msg "Netfilter hit error limit"
+    echo netfilter > /tmp/com_pipe
   fi
 done
 ) &
 PID=$!
-echo "Spawned fail2ban_checks with PID ${PID}"
+echo "Spawned netfilter_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
 (
@@ -1056,15 +1056,15 @@ while true; do
     log_msg "acme-mailcow did not complete successfully"
     # Define $2 to override message text, else print service was restarted at ...
     [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && mail_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
-  elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
-    F2B_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET F2B_RES 2> /dev/null))
-    if [[ ! -z "${F2B_RES}" ]]; then
-      ${REDIS_CMDLINE} DEL F2B_RES > /dev/null
+  elif [[ ${com_pipe_answer} == "netfilter" ]]; then
+    NETFILTER_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET NETFILTER_RES 2> /dev/null))
+    if [[ ! -z "${NETFILTER_RES}" ]]; then
+      ${REDIS_CMDLINE} DEL NETFILTER_RES > /dev/null
       host=
-      for host in "${F2B_RES[@]}"; do
+      for host in "${NETFILTER_RES[@]}"; do
         log_msg "Banned ${host}"
-        rm /tmp/fail2ban 2> /dev/null
-        timeout 2s whois "${host}" > /tmp/fail2ban
+        rm /tmp/netfilter 2> /dev/null
+        timeout 2s whois "${host}" > /tmp/netfilter
         [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && mail_error "${com_pipe_answer}" "IP ban: ${host}"
       done
     fi

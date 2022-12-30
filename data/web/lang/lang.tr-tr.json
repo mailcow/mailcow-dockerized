@@ -79,8 +79,8 @@
         "domain_s": "Alan ad(ları)",
         "duplicate": "Çift",
         "duplicate_dkim": "Çift DKIM kayıtları",
-        "f2b_ban_time": "Yasaklama süresi (saniye)",
-        "f2b_max_attempts": "Maksimum giriş denemesi",
-        "f2b_retry_window": "Maksimum girişim için deneme pencere(leri)"
+        "netfilter_ban_time": "Yasaklama süresi (saniye)",
+        "netfilter_max_attempts": "Maksimum giriş denemesi",
+        "netfilter_retry_window": "Maksimum girişim için deneme pencere(leri)"
     }
 }

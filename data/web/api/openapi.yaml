@@ -1999,7 +1999,7 @@ paths:
                 - domain.tld
                 - domain2.tld
               properties:
-                items: 
+                items:
                   type: array
                   items:
                     type: string
@@ -2993,7 +2993,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   type: object
                   properties:
                     log:
@@ -3105,7 +3105,7 @@ paths:
                     type: string
               type: object
       summary: Update domain
-  /api/v1/edit/fail2ban:
+  /api/v1/edit/netfilter:
     post:
       responses:
         "401":
@@ -3132,11 +3132,11 @@ paths:
           description: OK
           headers: {}
       tags:
-        - Fail2Ban
+        - Netfilter
       description: >-
-        Using this endpoint you can edit the Fail2Ban config and black or
+        Using this endpoint you can edit the Netfilter config and black or
         whitelist new ips.
-      operationId: Edit Fail2Ban
+      operationId: Edit Netfilter
       requestBody:
         content:
           application/json:
@@ -3153,7 +3153,7 @@ paths:
                 items: none
               properties:
                 attr:
-                  description: array containing the fail2ban settings
+                  description: array containing the netfilter settings
                   properties:
                     backlist:
                       description: the backlisted ips or hostnames separated by comma
@@ -3182,7 +3182,7 @@ paths:
                 items:
                   description: has to be none
               type: object
-      summary: Edit Fail2Ban
+      summary: Edit Netfilter
   /api/v1/edit/mailbox:
     post:
       responses:
@@ -4069,7 +4069,7 @@ paths:
       description: You can list all domains existing in system.
       operationId: Get domains
       summary: Get domains
-  /api/v1/get/fail2ban:
+  /api/v1/get/netfilter:
     get:
       responses:
         "401":
@@ -4095,10 +4095,10 @@ paths:
           description: OK
           headers: {}
       tags:
-        - Fail2Ban
-      description: Gets the current Fail2Ban configuration.
-      operationId: Get Fail2Ban Config
-      summary: Get Fail2Ban Config
+        - Netfilter
+      description: Gets the current Netfilter configuration.
+      operationId: Get Netfilter Config
+      summary: Get Netfilter Config
   /api/v1/get/fwdhost/all:
     get:
       responses:
@@ -4522,7 +4522,7 @@ paths:
                       hpnow: "1"
                       hptotal: "1"
                       lvl: "100"
-                      service: Fail2ban
+                      service: Netfilter
                       time: "1569938958"
                     - hpdiff: "0"
                       hpnow: "5"
@@ -5580,8 +5580,8 @@ tags:
     description: Manage the postfix mail queue
   - name: Quarantine
     description: Check what emails went to quarantine
-  - name: Fail2Ban
-    description: Manage the Netfilter fail2ban options
+  - name: Netfilter
+    description: Manage the Netfilter netfilter options
   - name: DKIM
     description: Manage DKIM keys
   - name: Domain admin

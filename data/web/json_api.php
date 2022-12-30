@@ -1310,10 +1310,10 @@ if (isset($_GET['query'])) {
               break;
             }
           break;
-          case "fail2ban":
+          case "netfilter":
             switch ($object) {
               default:
-                $data = fail2ban('get');
+                $data = netfilter('get');
                 process_get_return($data);
               break;
             }
@@ -1917,8 +1917,8 @@ if (isset($_GET['query'])) {
         case "fwdhost":
           process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
         break;
-        case "fail2ban":
-          process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+        case "netfilter":
+          process_edit_return(netfilter('edit', array_merge(array('network' => $items), $attr)));
         break;
         case "ui_texts":
           process_edit_return(customize('edit', 'ui_texts', $attr));

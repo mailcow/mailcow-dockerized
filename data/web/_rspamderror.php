@@ -14,4 +14,4 @@ catch (Exception $e) {
 header('Content-Type: application/json');
 echo '{"error":"Unauthorized"}';
 error_log("Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);
-$redis->publish("F2B_CHANNEL", "Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);
+$redis->publish("NETFILTER_CHANNEL", "Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);

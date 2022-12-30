@@ -938,10 +938,10 @@ function check_login($user, $pass, $app_passwd_data = false) {
     $stmt->execute(array(':user' => $user));
     $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
   }
-  foreach ($rows as $row) { 
+  foreach ($rows as $row) {
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
-      if (!array_key_exists("app_passwd_id", $row)){ 
+      if (!array_key_exists("app_passwd_id", $row)){
         // password is not a app password
         // check for tfa authenticators
         $authenticators = get_tfa($user);
@@ -986,12 +986,12 @@ function check_login($user, $pass, $app_passwd_data = false) {
 
   if (!isset($_SESSION['ldelay'])) {
     $_SESSION['ldelay'] = "0";
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $redis->publish("NETFILTER_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
   elseif (!isset($_SESSION['mailcow_cc_username'])) {
     $_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $redis->publish("NETFILTER_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
 
@@ -1306,7 +1306,7 @@ function set_tfa($_data) {
             $_data['registration']->certificate,
             0
         ));
-    
+
         $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_data_log),
@@ -1476,7 +1476,7 @@ function unset_tfa_key($_data) {
 
   try {
     if (!is_numeric($id)) $access_denied = true;
-    
+
     // set access_denied error
     if ($access_denied){
       $_SESSION['return'][] = array(
@@ -1485,7 +1485,7 @@ function unset_tfa_key($_data) {
         'msg' => 'access_denied'
       );
       return false;
-    } 
+    }
 
     // check if it's last key
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
@@ -1534,7 +1534,7 @@ function get_tfa($username = null, $id = null) {
         WHERE `username` = :username AND `active` = '1'");
     $stmt->execute(array(':username' => $username));
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
+
     // no tfa methods found
     if (count($results) == 0) {
         $data['name'] = 'none';
@@ -1742,8 +1742,8 @@ function verify_tfa_login($username, $_data) {
                   'msg' => array('webauthn_verification_failed', 'authenticator not found')
               );
               return false;
-            } 
-            
+            }
+
             if (empty($process_webauthn['publicKey']) || $process_webauthn['publicKey'] === false) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
