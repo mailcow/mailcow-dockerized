@@ -11,7 +11,7 @@ jobs:
         run:  |
           RELEASE_TAG=$(curl https://api.github.com/repos/mailcow/mailcow-dockerized/releases/latest | jq -r '.tag_name')
       - name: Tweet-trigger-publish-release
-        uses: mugi111/tweet-trigger-release@v1.1
+        uses: mugi111/tweet-trigger-release@v1.2
         with:
           consumer_key: ${{ secrets.CONSUMER_KEY }}
           consumer_secret: ${{ secrets.CONSUMER_SECRET }}
