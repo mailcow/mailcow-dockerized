@@ -9,5 +9,13 @@
     "@magiccc"
   ],
   "baseBranches": ["staging"],
-  "enabledManagers": ["github-actions"]
+  "enabledManagers": ["github-actions", "regex"],
+  "regexManagers": [
+    {
+      "fileMatch": ["^helper-scripts\/nextcloud.sh$"],
+      "matchStrings": [
+        "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s.*?_VERSION=(?<currentValue>.*)"
+       ]
+    }
+  ]
 }
