@@ -462,30 +462,30 @@
         "yotp_verification_failed": "Yubico OTP verification failed: %s"
     },
     "datatables": {
-      "collapse_all": "Collapse All",
-      "decimal": "",
-      "emptyTable": "No data available in table",
-      "expand_all": "Expand All",
-      "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-      "infoEmpty": "Showing 0 to 0 of 0 entries",
-      "infoFiltered": "(filtered from _MAX_ total entries)",
-      "infoPostFix": "",
-      "thousands": ",",
-      "lengthMenu": "Show _MENU_ entries",
-      "loadingRecords": "Loading...",
-      "processing": "Please wait...",
-      "search": "Search:",
-      "zeroRecords": "No matching records found",
-      "paginate": {
-          "first": "First",
-          "last": "Last",
-          "next": "Next",
-          "previous": "Previous"
-      },
-      "aria": {
-          "sortAscending": ": activate to sort column ascending",
-          "sortDescending": ": activate to sort column descending"
-      }
+        "collapse_all": "Collapse All",
+        "decimal": "",
+        "emptyTable": "No data available in table",
+        "expand_all": "Expand All",
+        "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+        "infoEmpty": "Showing 0 to 0 of 0 entries",
+        "infoFiltered": "(filtered from _MAX_ total entries)",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "Show _MENU_ entries",
+        "loadingRecords": "Loading...",
+        "processing": "Please wait...",
+        "search": "Search:",
+        "zeroRecords": "No matching records found",
+        "paginate": {
+            "first": "First",
+            "last": "Last",
+            "next": "Next",
+            "previous": "Previous"
+        },
+        "aria": {
+            "sortAscending": ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
     },
     "debug": {
         "chart_this_server": "Chart (this server)",
@@ -947,7 +947,7 @@
     "queue": {
         "delete": "Delete all",
         "flush": "Flush queue",
-        "info" : "The mail queue contains all e-mails that are waiting for delivery. If an email is stuck in the mail queue for a long time, it is automatically deleted by the system.<br>The error message of the respective mail gives information about why the mail could not be delivered.",
+        "info": "The mail queue contains all e-mails that are waiting for delivery. If an email is stuck in the mail queue for a long time, it is automatically deleted by the system.<br>The error message of the respective mail gives information about why the mail could not be delivered.",
         "legend": "Mail queue actions functions:",
         "ays": "Please confirm you want to delete all items from the current queue.",
         "deliver_mail": "Deliver",
@@ -961,11 +961,11 @@
         "unhold_mail_legend": "Releases selected mails for delivery. (Requires prior hold)"
     },
     "ratelimit": {
-      "disabled": "Disabled",
-      "second": "msgs / second",
-      "minute": "msgs / minute",
-      "hour": "msgs / hour",
-      "day": "msgs / day"
+        "disabled": "Disabled",
+        "second": "msgs / second",
+        "minute": "msgs / minute",
+        "hour": "msgs / hour",
+        "day": "msgs / day"
     },
     "start": {
         "help": "Show/Hide help panel",
