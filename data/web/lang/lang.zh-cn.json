@@ -335,7 +335,8 @@
         "username": "用户名",
         "validate_license_now": "通过证书服务器验证 GUID",
         "verify": "验证",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "options": "选项"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -454,7 +455,8 @@
         "username_invalid": "用户名 %s 无法使用",
         "validity_missing": "请设置有效期",
         "value_missing": "请填入所有值",
-        "yotp_verification_failed": "Yubico OTP 认证失败: %s"
+        "yotp_verification_failed": "Yubico OTP 认证失败: %s",
+        "template_exists": "模板 %s 已存在"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -481,7 +483,11 @@
         "success": "成功",
         "system_containers": "系统和容器",
         "uptime": "运行时间",
-        "username": "用户名"
+        "username": "用户名",
+        "container_disabled": "容器已被停止或禁用",
+        "container_running": "运行中",
+        "cores": "核心数",
+        "memory": "内存"
     },
     "diagnostics": {
         "cname_from_a": "虽然此记录为 A/AAAA 类型，但只要此记录指向了正确的资源便可以被支持",
@@ -820,7 +826,12 @@
         "username": "用户名",
         "waiting": "等待中",
         "weekly": "每周",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "domain_templates": "域名模板",
+        "mailbox_templates": "邮箱模板",
+        "gal": "全局地址列表",
+        "max_aliases": "最大别名数",
+        "max_mailboxes": "最大可能的邮箱数"
     },
     "oauth2": {
         "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权",
@@ -885,7 +896,8 @@
         "type": "类型"
     },
     "queue": {
-        "queue_manager": "队列管理器"
+        "queue_manager": "队列管理器",
+        "delete": "全部删除"
     },
     "ratelimit": {
         "disabled": "禁用",
@@ -1179,5 +1191,18 @@
         "quota_exceeded_scope": "域名配额超标: 此域名下现在只能创建无限容量的邮箱。",
         "session_token": "表单字段无效: Token 不匹配",
         "session_ua": "表单字段无效: User-Agent 校验错误"
+    },
+    "datatables": {
+        "info": "正从 _TOTAL_ 个条目中显示 _START_ 到 _END_ 条目",
+        "collapse_all": "全部折叠",
+        "expand_all": "全部展开",
+        "infoEmpty": "正从共 0 个条目中显示从 0 到 0 条目",
+        "processing": "请稍等...",
+        "search": "搜索：",
+        "paginate": {
+            "first": "第一页",
+            "last": "最后一页",
+            "previous": "上一页"
+        }
     }
 }
