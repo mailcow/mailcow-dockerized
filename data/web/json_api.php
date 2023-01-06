@@ -561,6 +561,15 @@ if (isset($_GET['query'])) {
                   echo '{}';
                 }
               break;
+              default:
+                $password_complexity_rules = password_complexity('get');
+                if ($password_complexity_rules !== false) {
+                  process_get_return($password_complexity_rules);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
             }
           break;
 
