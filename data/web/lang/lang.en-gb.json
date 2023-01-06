@@ -363,6 +363,7 @@
         "domain_not_empty": "Cannot remove non-empty domain %s",
         "domain_not_found": "Domain %s not found",
         "domain_quota_m_in_use": "Domain quota must be greater or equal to %s MiB",
+        "extended_sender_acl_denied": "missing ACL to set external sender addresses",
         "extra_acl_invalid": "External sender address \"%s\" is invalid",
         "extra_acl_invalid_domain": "External sender \"%s\" uses an invalid domain",
         "fido2_verification_failed": "FIDO2 verification failed: %s",

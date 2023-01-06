@@ -363,6 +363,7 @@
         "domain_not_empty": "Domain %s ist nicht leer",
         "domain_not_found": "Domain %s nicht gefunden",
         "domain_quota_m_in_use": "Domain-Speicherplatzlimit muss größer oder gleich %d MiB sein",
+        "extended_sender_acl_denied": "Keine Rechte zum setzen von externen Absenderadressen",
         "extra_acl_invalid": "Externe Absenderadresse \"%s\" ist ungültig",
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain",
         "fido2_verification_failed": "FIDO2-Verifizierung fehlgeschlagen: %s",
