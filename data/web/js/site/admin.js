@@ -70,8 +70,10 @@ jQuery(function($){
     }
 
     $('#domainadminstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -143,8 +145,10 @@ jQuery(function($){
     }
 
     $('#oauth2clientstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -206,8 +210,10 @@ jQuery(function($){
     }
 
     $('#adminstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -272,8 +278,10 @@ jQuery(function($){
     }
 
     $('#forwardinghoststable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -330,8 +338,10 @@ jQuery(function($){
     }
 
     $('#relayhoststable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -402,8 +412,10 @@ jQuery(function($){
     }
 
     $('#transportstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
