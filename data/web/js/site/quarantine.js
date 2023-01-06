@@ -14,8 +14,10 @@ jQuery(function($){
   });
   function draw_quarantine_table() {
     $('#quarantinetable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -129,9 +131,15 @@ jQuery(function($){
             title: lang.received,
             data: 'created',
             defaultContent: '',
-            render: function (data,type) {
-              var date = new Date(data ? data * 1000 : 0); 
-              return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            createdCell: function(td, cellData) {    
+              $(td).attr({
+                "data-order": cellData,
+                "data-sort": cellData
+              });
+              
+              var date = new Date(cellData ? cellData * 1000 : 0); 
+              var dateString = date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+              $(td).html(dateString);
             }
           },
           {

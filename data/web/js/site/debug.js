@@ -119,8 +119,10 @@ jQuery(function($){
     }
 
     $('#autodiscover_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -176,8 +178,10 @@ jQuery(function($){
     }
 
     $('#postfix_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -218,8 +222,10 @@ jQuery(function($){
     }
 
     $('#watchdog_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -264,8 +270,10 @@ jQuery(function($){
     }
 
     $('#api_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -317,8 +325,10 @@ jQuery(function($){
     }
 
     $('#rl_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -408,8 +418,10 @@ jQuery(function($){
     }
 
     $('#ui_logs').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -479,8 +491,10 @@ jQuery(function($){
     }
 
     $('#sasl_logs').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -527,8 +541,10 @@ jQuery(function($){
     }
 
     $('#acme_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -564,8 +580,10 @@ jQuery(function($){
     }
 
     $('#netfilter_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -606,8 +624,10 @@ jQuery(function($){
     }
 
     $('#sogo_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -648,8 +668,10 @@ jQuery(function($){
     }
 
     $('#dovecot_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -751,8 +773,10 @@ jQuery(function($){
     }
 
     $('#rspamd_history').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {

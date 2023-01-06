@@ -433,8 +433,10 @@ jQuery(function($){
     }
 
     var table = $('#domain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -619,9 +621,10 @@ jQuery(function($){
     }
 
     $('#templates_domain_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -816,9 +819,10 @@ jQuery(function($){
     }
 
     $('#mailbox_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1074,9 +1078,10 @@ jQuery(function($){
     }
 
     $('#templates_mbox_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1285,8 +1290,10 @@ jQuery(function($){
     }
 
     $('#resource_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1411,8 +1418,10 @@ jQuery(function($){
     }
     
     $('#bcc_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1507,8 +1516,10 @@ jQuery(function($){
     }
 
     $('#recipient_map_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1590,8 +1601,10 @@ jQuery(function($){
     }
 
     $('#tls_policy_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1683,8 +1696,10 @@ jQuery(function($){
     }
 
     $('#alias_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1823,8 +1838,10 @@ jQuery(function($){
     }
 
     $('#aliasdomain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1905,8 +1922,10 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -2044,9 +2063,11 @@ jQuery(function($){
     }
 
     var table = $('#filter_table').DataTable({
+			responsive: true,
       autoWidth: false,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",

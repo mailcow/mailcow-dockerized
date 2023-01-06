@@ -135,8 +135,10 @@ jQuery(function($){
     }
 
     $('#tla_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -216,8 +218,10 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -366,8 +370,10 @@ jQuery(function($){
     }
 
     $('#app_passwd_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -456,8 +462,10 @@ jQuery(function($){
     }
 
     $('#wl_policy_mailbox_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -521,8 +529,10 @@ jQuery(function($){
     }
 
     $('#bl_policy_mailbox_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",

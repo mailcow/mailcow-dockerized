@@ -35,8 +35,10 @@ jQuery(function($){
     }
 
     $('#queuetable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
       language: lang_datatables,
       ajax: {
         type: "GET",
