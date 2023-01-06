@@ -98,6 +98,8 @@ log_msg() {
 }
 
 function notify_error() {
+  # Check if one of the notification options is enabled
+  [[ -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ -z ${WATCHDOG_NOTIFY_WEBHOOK} ]] && return 0
   THROTTLE=
   [[ -z ${1} ]] && return 1
   # If exists, body will be the content of "/tmp/${1}", even if ${2} is set
@@ -746,9 +748,7 @@ olefy_checks() {
 }
 
 # Notify about start
-if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
-  notify_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
-fi
+notify_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
 
 # Create watchdog agents
 
@@ -1029,33 +1029,33 @@ while true; do
   fi
   if [[ ${com_pipe_answer} == "ratelimit" ]]; then
     log_msg "At least one ratelimit was applied"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}"
+    notify_error "${com_pipe_answer}"
   elif [[ ${com_pipe_answer} == "mail_queue_status" ]]; then
     log_msg "Mail queue status is critical"
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}"
+    notify_error "${com_pipe_answer}"
   elif [[ ${com_pipe_answer} == "external_checks" ]]; then
     log_msg "Your mailcow is an open relay!"
     # Define $2 to override message text, else print service was restarted at ...
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
+    notify_error "${com_pipe_answer}" "Please stop mailcow now and check your network configuration!"
   elif [[ ${com_pipe_answer} == "mysql_repl_checks" ]]; then
     log_msg "MySQL replication is not working properly"
     # Define $2 to override message text, else print service was restarted at ...
     # Once mail per 10 minutes
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}" "Please check the SQL replication status" 600
+    notify_error "${com_pipe_answer}" "Please check the SQL replication status" 600
   elif [[ ${com_pipe_answer} == "dovecot_repl_checks" ]]; then
     log_msg "Dovecot replication is not working properly"
     # Define $2 to override message text, else print service was restarted at ...
     # Once mail per 10 minutes
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}" "Please check the Dovecot replicator status" 600
+    notify_error "${com_pipe_answer}" "Please check the Dovecot replicator status" 600
   elif [[ ${com_pipe_answer} == "certcheck" ]]; then
     log_msg "Certificates are about to expire"
     # Define $2 to override message text, else print service was restarted at ...
     # Only mail once a day
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}" "Please renew your certificate" 86400
+    notify_error "${com_pipe_answer}" "Please renew your certificate" 86400
   elif [[ ${com_pipe_answer} == "acme-mailcow" ]]; then
     log_msg "acme-mailcow did not complete successfully"
     # Define $2 to override message text, else print service was restarted at ...
-    [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
+    notify_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
     F2B_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET F2B_RES 2> /dev/null))
     if [[ ! -z "${F2B_RES}" ]]; then
@@ -1065,7 +1065,7 @@ while true; do
         log_msg "Banned ${host}"
         rm /tmp/fail2ban 2> /dev/null
         timeout 2s whois "${host}" > /tmp/fail2ban
-        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && notify_error "${com_pipe_answer}" "IP ban: ${host}"
+        [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && notify_error "${com_pipe_answer}" "IP ban: ${host}"
       done
     fi
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
@@ -1085,7 +1085,7 @@ while true; do
       else
         log_msg "Sending restart command to ${CONTAINER_ID}..."
         curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/restart
-        [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && notify_error "${com_pipe_answer}"
+        notify_error "${com_pipe_answer}"
         log_msg "Wait for restarted container to settle and continue watching..."
         sleep 35
       fi
@@ -1095,3 +1095,4 @@ while true; do
     kill -USR1 ${BACKGROUND_TASKS[*]}
   fi
 done
+
