@@ -199,6 +199,10 @@
     display: none !important;
   }
 
+  div.dataTables_wrapper div.dataTables_length {
+    text-align: left;
+  }
+
 }
 
 @media (max-width: 350px) {
