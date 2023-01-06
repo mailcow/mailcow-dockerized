@@ -4,18 +4,18 @@
 <div id="mail-content" class="responsive-tabs">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item dropdown" role="presentation">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
-    <ul class="dropdown-menu">
-      <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
-      <li><button class="dropdown-item {% if mailcow_cc_role != 'admin' %} d-none{% endif %}" aria-selected="false" aria-controls="tab-templates-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-domains">{{ lang.mailbox.templates }}</button></li>
-    </ul>
+      <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
+        <li><button class="dropdown-item {% if mailcow_cc_role != 'admin' %} d-none{% endif %}" aria-selected="false" aria-controls="tab-templates-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-domains">{{ lang.mailbox.templates }}</button></li>
+      </ul>
     </li>
     <li class="nav-item dropdown" role="presentation">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}</a>
-    <ul class="dropdown-menu">
-      <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
-      <li><button class="dropdown-item {% if mailcow_cc_role != 'admin' %} d-none{% endif %}" aria-selected="false" aria-controls="tab-templates-mbox" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-mbox">{{ lang.mailbox.templates }}</button></li>
-    </ul>
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}</a>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
+        <li><button class="dropdown-item {% if mailcow_cc_role != 'admin' %} d-none{% endif %}" aria-selected="false" aria-controls="tab-templates-mbox" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-mbox">{{ lang.mailbox.templates }}</button></li>
+      </ul>
     </li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-resources" role="tab" data-bs-toggle="tab" data-bs-target="#tab-resources">{{ lang.mailbox.resources }}</button></li>
     <li class="nav-item dropdown">
