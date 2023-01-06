@@ -288,6 +288,18 @@ if (isset($_GET['query'])) {
         case "domain-admin":
           process_add_return(domain_admin('add', $attr));
         break;
+        case "sso":
+          switch ($object) {
+            case "domain-admin":
+              $data = domain_admin_sso('issue', $attr);
+              if($data) {
+                echo json_encode($data);
+                exit(0);
+              }
+              process_add_return($data);
+            break;
+          }
+        break;
         case "admin":
           process_add_return(admin('add', $attr));
         break;

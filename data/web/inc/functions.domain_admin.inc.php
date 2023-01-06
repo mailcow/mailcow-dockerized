@@ -405,3 +405,64 @@ function domain_admin($_action, $_data = null) {
     break;
   }
 }
+function domain_admin_sso($_action, $_data) {
+  global $pdo;
+
+  switch ($_action) {
+    case 'check':
+      $token = $_data;
+
+      $stmt = $pdo->prepare("SELECT `t1`.`username` FROM `da_sso` AS `t1` JOIN `admin` AS `t2` ON `t1`.`username` = `t2`.`username` WHERE `t1`.`token` = :token AND `t1`.`created` > DATE_SUB(NOW(), INTERVAL '30' SECOND) AND `t2`.`active` = 1 AND `t2`.`superadmin` = 0;");
+      $stmt->execute(array(
+        ':token' => preg_replace('/[^a-zA-Z0-9-]/', '', $token)
+      ));
+      $return = $stmt->fetch(PDO::FETCH_ASSOC);
+      return empty($return['username']) ? false : $return['username'];
+    case 'issue':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+
+      $username = $_data['username'];
+
+      $stmt = $pdo->prepare("SELECT `username` FROM `domain_admins`
+        WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+
+      if ($num_results < 1) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => array('object_doesnt_exist', htmlspecialchars($username))
+        );
+        return false;
+      }
+
+      $token = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+
+      $stmt = $pdo->prepare("INSERT INTO `da_sso` (`username`, `token`)
+            VALUES (:username, :token)");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':token' => $token
+      ));
+
+      // perform cleanup
+      $pdo->query("DELETE FROM `da_sso` WHERE created < DATE_SUB(NOW(), INTERVAL '30' SECOND);");
+
+      return ['token' => $token];
+    break;
+  }
+}
