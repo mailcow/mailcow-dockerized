@@ -123,6 +123,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -182,6 +185,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -226,6 +232,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -274,6 +283,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -329,6 +341,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -422,6 +437,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -495,6 +513,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -545,6 +566,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -584,6 +608,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -628,6 +655,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -672,6 +702,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -777,6 +810,9 @@ jQuery(function($){
       processing: true,
       serverSide: false,
       stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
