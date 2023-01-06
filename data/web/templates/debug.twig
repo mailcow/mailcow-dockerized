@@ -52,8 +52,14 @@
                       <tr>
                         <td>IPs</td>
                         <td class="text-break">
-                          <span class="d-block" id="host_ipv4">-</span>
-                          <span class="d-block" id="host_ipv6">-</span>
+                          <span class="d-none" id="host_ipv4">-</span>
+                          <span class="d-none mb-2" id="host_ipv6">-</span>
+                          <button class="d-block btn btn-primary btn-sm" id="host_show_ip">
+                            <span class="text">{{ lang.debug.show_ip }}</span>
+                            <div class="spinner-border spinner-border-sm d-none" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div>  
+                          </button>
                         </td>
                       </tr>
                       <tr>

@@ -1548,10 +1548,14 @@ if (isset($_GET['query'])) {
                     curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_POST, 0);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                     $ipv4 = curl_exec($curl);
                     curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_POST, 0);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                     $ipv6 = curl_exec($curl);
                     $ips = array(
                       "ipv4" => $ipv4,
