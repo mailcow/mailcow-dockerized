@@ -124,37 +124,40 @@ function notify_error() {
   else
     SUBJECT="${WATCHDOG_SUBJECT}: ${1}"
   fi
-  IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
-  for rcpt in "${MAIL_RCPTS[@]}"; do
-    RCPT_DOMAIN=
-    RCPT_MX=
-    RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
-    CHECK_FOR_VALID_MX=$(dig +short ${RCPT_DOMAIN} mx)
-    if [[ -z ${CHECK_FOR_VALID_MX} ]]; then
-      log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
-      return 1
-    fi
-    [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
-    timeout 10s ./smtp-cli --missing-modules-ok \
-      "${SMTP_VERBOSE}" \
-      --charset=UTF-8 \
-      --subject="${SUBJECT}" \
-      --body-plain="${BODY}" \
-      --add-header="X-Priority: 1" \
-      --to=${rcpt} \
-      --from="watchdog@${MAILCOW_HOSTNAME}" \
-      --hello-host=${MAILCOW_HOSTNAME} \
-      --ipv4
-    if [[ $? -eq 1 ]]; then # exit code 1 is fine
-      log_msg "Sent notification email to ${rcpt}"
-    else
-      if [[ "${SMTP_VERBOSE}" == "" ]]; then
-        log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
-      else
-        log_msg "Error while sending notification email to ${rcpt}."
+
+  if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
+    IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
+    for rcpt in "${MAIL_RCPTS[@]}"; do
+      RCPT_DOMAIN=
+      RCPT_MX=
+      RCPT_DOMAIN=$(echo ${rcpt} | awk -F @ {'print $NF'})
+      CHECK_FOR_VALID_MX=$(dig +short ${RCPT_DOMAIN} mx)
+      if [[ -z ${CHECK_FOR_VALID_MX} ]]; then
+        log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
+        return 1
       fi
-    fi
-  done
+      [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
+      timeout 10s ./smtp-cli --missing-modules-ok \
+        "${SMTP_VERBOSE}" \
+        --charset=UTF-8 \
+        --subject="${SUBJECT}" \
+        --body-plain="${BODY}" \
+        --add-header="X-Priority: 1" \
+        --to=${rcpt} \
+        --from="watchdog@${MAILCOW_HOSTNAME}" \
+        --hello-host=${MAILCOW_HOSTNAME} \
+        --ipv4
+      if [[ $? -eq 1 ]]; then # exit code 1 is fine
+        log_msg "Sent notification email to ${rcpt}"
+      else
+        if [[ "${SMTP_VERBOSE}" == "" ]]; then
+          log_msg "Error while sending notification email to ${rcpt}. You can enable verbose logging by setting 'WATCHDOG_VERBOSE=y' in mailcow.conf."
+        else
+          log_msg "Error while sending notification email to ${rcpt}."
+        fi
+      fi
+    done
+  fi
 }
 
 get_container_ip() {
