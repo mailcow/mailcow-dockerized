@@ -1544,18 +1544,15 @@ if (isset($_GET['query'])) {
                   } 
                   else if ($extra == "ip") {
                     // get public ips
+                    
                     $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_POST, 0);
-                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
                     $ipv4 = curl_exec($curl);
                     curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_POST, 0);
-                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                     $ipv6 = curl_exec($curl);
                     $ips = array(
                       "ipv4" => $ipv4,
@@ -1916,6 +1913,9 @@ if (isset($_GET['query'])) {
         break;
         case "ui_texts":
           process_edit_return(customize('edit', 'ui_texts', $attr));
+        break;
+        case "ip_check":
+          process_edit_return(customize('edit', 'ip_check', $attr));
         break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
