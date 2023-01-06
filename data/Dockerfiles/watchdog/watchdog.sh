@@ -125,6 +125,7 @@ function notify_error() {
     SUBJECT="${WATCHDOG_SUBJECT}: ${1}"
   fi
 
+  # Send mail notification if enabled
   if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
     IFS=',' read -r -a MAIL_RCPTS <<< "${WATCHDOG_NOTIFY_EMAIL}"
     for rcpt in "${MAIL_RCPTS[@]}"; do
@@ -157,6 +158,23 @@ function notify_error() {
         fi
       fi
     done
+  fi
+
+  # Send webhook notification if enabled
+  if [[ ! -z ${WATCHDOG_NOTIFY_WEBHOOK} ]]; then
+    if [[ -z ${WATCHDOG_NOTIFY_WEBHOOK_BODY} ]]; then
+      log_msg "No webhook body set, skipping webhook notification..."
+      return 1
+    fi
+
+    WEBHOOK_BODY=$(echo "${WATCHDOG_NOTIFY_WEBHOOK_BODY}" | envsubst '$SUBJECT,$BODY')
+
+    curl -X POST \
+      -H "Content-Type: application/json" \
+      -d ${WEBHOOK_BODY} \
+      ${WATCHDOG_NOTIFY_WEBHOOK}
+
+    log_msg "Posted notification to webhook"
   fi
 }
 
