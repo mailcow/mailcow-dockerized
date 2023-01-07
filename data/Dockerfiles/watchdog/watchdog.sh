@@ -167,7 +167,7 @@ function notify_error() {
       return 1
     fi
 
-    WEBHOOK_BODY=$(echo "${WATCHDOG_NOTIFY_WEBHOOK_BODY}" | envsubst '$SUBJECT,$BODY')
+    WEBHOOK_BODY=$(echo ${WATCHDOG_NOTIFY_WEBHOOK_BODY} | sed "s/\$SUBJECT\|\${SUBJECT}/$SUBJECT/g" | sed "s/\$BODY\|\${BODY}/$BODY/" | sed "s/\"/\\\\\"/g")
 
     curl -X POST \
       -H "Content-Type: application/json" \
