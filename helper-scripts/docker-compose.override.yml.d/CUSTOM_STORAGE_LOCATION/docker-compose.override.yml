@@ -1,0 +1,66 @@
+version: '2.1'
+
+services:
+
+  mysql-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/mysql:/var/lib/mysql/
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+
+  redis-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/redis:/data/
+
+  clamd-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/clamd-db:/var/lib/clamav
+
+  rspamd-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/rspamd:/var/lib/rspamd
+
+  php-fpm-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/rspamd:/var/lib/rspamd
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+
+  sogo-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+      - ${MAILCOW_STORAGE_DIR}/sogo-web:/sogo_web
+      - ${MAILCOW_STORAGE_DIR}/sogo-userdata-backup:/sogo_backup
+
+  dovecot-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/vmail:/var/vmail
+      - ${MAILCOW_STORAGE_DIR}/vmail-index:/var/vmail_index
+      - ${MAILCOW_STORAGE_DIR}/crypt:/mail_crypt/
+      - ${MAILCOW_STORAGE_DIR}/rspamd:/var/lib/rspamd
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+
+  postfix-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/postfix:/var/spool/postfix
+      - ${MAILCOW_STORAGE_DIR}/crypt:/var/lib/zeyple
+      - ${MAILCOW_STORAGE_DIR}/rspamd:/var/lib/rspamd
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+
+  nginx-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/sogo-web:/usr/lib/GNUstep/SOGo/
+
+  acme-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+
+  watchdog-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/rspamd:/var/lib/rspamd
+      - ${MAILCOW_STORAGE_DIR}/mysql-socket:/var/run/mysqld/
+      - ${MAILCOW_STORAGE_DIR}/postfix:/var/spool/postfix
+
+  solr-mailcow:
+    volumes:
+      - ${MAILCOW_STORAGE_DIR}/solr:/opt/solr/server/solr/dovecot-fts/data
+
+volumes: {}
