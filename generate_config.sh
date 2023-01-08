@@ -343,7 +343,7 @@ USE_WATCHDOG=y
 #WATCHDOG_NOTIFY_WEBHOOK=https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # JSON body included in the webhook POST request. Needs to be in single quotes.
 # Following variables are available: SUBJECT, BODY
-#WATCHDOG_NOTIFY_WEBHOOK_BODY='{"username": "Mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}'
+#WATCHDOG_NOTIFY_WEBHOOK_BODY='{"username": "mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}'
 
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
