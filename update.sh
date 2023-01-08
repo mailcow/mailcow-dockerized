@@ -560,7 +560,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# JSON body included in the webhook POST request. Needs to be in single quotes.' >> mailcow.conf
       echo '# Following variables are available: SUBJECT, BODY' >> mailcow.conf
-      echo '#WATCHDOG_NOTIFY_WEBHOOK_BODY=\'{"username": "Mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}\'' >> mailcow.conf
+      echo '#WATCHDOG_NOTIFY_WEBHOOK_BODY=\'{"username": "mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}\'' >> mailcow.conf
     fi
   elif [[ ${option} == "WATCHDOG_NOTIFY_BAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
