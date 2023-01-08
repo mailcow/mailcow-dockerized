@@ -60,6 +60,7 @@ data/web/inc/app_info.inc.php
 data/web/nextcloud*/
 data/web/rc*/
 docker-compose.override.yml
+!helper-scripts/docker-compose.override.yml.d/**/docker-compose.override.yml
 mailcow.conf
 mailcow.conf_backup
 rebuild-images.sh
