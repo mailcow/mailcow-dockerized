@@ -59,6 +59,7 @@ data/web/inc/vars.local.inc.php
 data/web/inc/app_info.inc.php
 data/web/nextcloud*/
 data/web/rc*/
+docker-compose.yml**.bak
 docker-compose.override.yml
 !helper-scripts/docker-compose.override.yml.d/**/docker-compose.override.yml
 mailcow.conf
