@@ -838,7 +838,13 @@ jQuery(function($){
         url: "/api/v1/get/mailbox/reduced",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.quota = item.quota_used + "/" + item.quota;
+            item.quota = {
+              sortBy: item.quota_used,
+              value: item.quota
+            }
+            item.quota.value = (item.quota.value == 0 ? "∞" : humanFileSize(item.quota.value));
+            item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
+
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
             /*
@@ -943,14 +949,10 @@ jQuery(function($){
           },
           {
             title: lang.domain_quota,
-            data: 'quota',
+            data: 'quota.value',
             responsivePriority: 8,
-            defaultContent: '',
-            render: function (data, type) {
-              data = data.split("/");
-              var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
-              return humanFileSize(data[0]) + " / " + of_q;
-            }
+            defaultContent: '',  
+            orderData: 23
           },
           {
             title: lang.last_mail_login,
@@ -1075,6 +1077,13 @@ jQuery(function($){
             className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
             responsivePriority: 6,
             defaultContent: ''
+          },
+          {
+            title: "",
+            data: 'quota.sortBy',
+            responsivePriority: 8,
+            defaultContent: '',
+            className: "d-none"
           },
       ]
     });
