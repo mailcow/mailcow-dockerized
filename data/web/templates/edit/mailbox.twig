@@ -200,8 +200,10 @@
           {% if sender_acl_handles.external_sender_aliases %}
             {% set ext_sender_acl = sender_acl_handles.external_sender_aliases|join(', ') %}
           {% endif %}
-          <input type="text" class="form-control" name="extended_sender_acl" value="{{ ext_sender_acl }}" placeholder="user1@example.com, user2@example.org, @example.com, ...">
-          <small class="text-muted">{{ lang.edit.extended_sender_acl_info|raw }}</small>
+          {% if acl.extend_sender_acl and acl.extend_sender_acl == 1 %}
+            <input type="text" class="form-control" name="extended_sender_acl" value="{{ ext_sender_acl }}" placeholder="user1@example.com, user2@example.org, @example.com, ...">
+            <small class="text-muted">{{ lang.edit.extended_sender_acl_info|raw }}</small>
+          {% endif %}
         </div>
       </div>
       <div class="row">

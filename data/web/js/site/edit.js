@@ -78,8 +78,13 @@ jQuery(function($){
   }
   function draw_wl_policy_domain_table() {
     $('#wl_policy_domain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -133,8 +138,13 @@ jQuery(function($){
   }
   function draw_bl_policy_domain_table() {
     $('#bl_policy_domain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",

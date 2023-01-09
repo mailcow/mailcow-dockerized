@@ -358,3 +358,11 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
     background: #333;
 }
 
+span.mail-address-item {
+    background-color: #333;
+    border-radius: 4px;
+    border: 1px solid #555;
+    padding: 2px 7px;
+    display: inline-block;
+    margin: 2px 6px 2px 0;
+}
