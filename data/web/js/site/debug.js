@@ -51,7 +51,40 @@ $(document).ready(function() {
     showVersionModal("Version " + mailcow_info.version_tag, mailcow_info.version_tag);
   })
   // get public ips
-  get_public_ips();
+  $("#host_show_ip").click(function(){  
+    $("#host_show_ip").find(".text").addClass("d-none");
+    $("#host_show_ip").find(".spinner-border").removeClass("d-none");
+
+    window.fetch("/api/v1/get/status/host/ip", { method:'GET', cache:'no-cache' }).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(data);
+
+      // display host ips
+      if (data.ipv4)
+        $("#host_ipv4").text(data.ipv4);
+      if (data.ipv6)
+        $("#host_ipv6").text(data.ipv6);
+
+      $("#host_show_ip").addClass("d-none");
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+      $("#host_ipv4").removeClass("d-none");
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").removeClass("text-danger");
+      $("#host_ipv4").addClass("d-block");
+      $("#host_ipv6").addClass("d-block");
+    }).catch(function(error){
+      console.log(error);
+      
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").addClass("d-block");
+      $("#host_ipv6").addClass("text-danger");
+      $("#host_ipv6").text(lang_debug.error_show_ip);
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+    });
+  });
   update_container_stats();
 });
 jQuery(function($){
@@ -86,8 +119,13 @@ jQuery(function($){
     }
 
     $('#autodiscover_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -143,8 +181,13 @@ jQuery(function($){
     }
 
     $('#postfix_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -185,8 +228,13 @@ jQuery(function($){
     }
 
     $('#watchdog_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -231,8 +279,13 @@ jQuery(function($){
     }
 
     $('#api_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -284,8 +337,13 @@ jQuery(function($){
     }
 
     $('#rl_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -375,8 +433,13 @@ jQuery(function($){
     }
 
     $('#ui_logs').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -446,8 +509,13 @@ jQuery(function($){
     }
 
     $('#sasl_logs').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -494,8 +562,13 @@ jQuery(function($){
     }
 
     $('#acme_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -531,8 +604,13 @@ jQuery(function($){
     }
 
     $('#netfilter_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -573,8 +651,13 @@ jQuery(function($){
     }
 
     $('#sogo_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -615,8 +698,13 @@ jQuery(function($){
     }
 
     $('#dovecot_log').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -718,8 +806,13 @@ jQuery(function($){
     }
 
     $('#rspamd_history').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
       ajax: {
@@ -1223,20 +1316,6 @@ function update_container_stats(timeout=5){
 
   // run again in n seconds
   setTimeout(update_container_stats, timeout * 1000);
-}
-// get public ips
-function get_public_ips(){
-  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    console.log(data);
-
-    // display host ips
-    if (data.ipv4)
-      $("#host_ipv4").text(data.ipv4);
-    if (data.ipv6)
-      $("#host_ipv6").text(data.ipv6);
-  });
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){
