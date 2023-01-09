@@ -207,8 +207,8 @@ if [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
     MAILCOW_HTTP_BIND="127.0.0.1"
     MAILCOW_HTTPS_BIND="127.0.0.1"
 
-    # Patch the docker-compose.yml for usage with Podman
-    bash ./patch-docker-compose-for-podman.sh
+    # Apply patches for usage with Podman
+    bash ./patches-for-podman.sh
 else
     MAILCOW_HTTP_BIND=""
     MAILCOW_HTTPS_BIND=""

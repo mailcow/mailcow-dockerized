@@ -3,6 +3,8 @@
 # This script patches the docker-compose.yml for usage with podman.
 # This is necessary because not all options (e.g. DNS) can be overwritten by docker-compose, see
 #   https://github.com/docker/compose/issues/3729
+#
+# Next to that because IPv6 does not work (yet), patch the MySQL configuration file to bind to IPv4
 
 set -e
 
@@ -16,5 +18,14 @@ cp docker-compose.yml docker-compose.yml.${TIMESTAMP}.bak
 if ! patch -R -s -f --dry-run docker-compose.yml < ${PATCH_FILE} > /dev/null 2>&1; then
     patch docker-compose.yml < ${PATCH_FILE}
 else
-    echo "Patch file already applied or custom changes prevent applying the patch"
+    echo "docker-compose.yml already patched (or custom changes prevent applying the patch)"
+fi
+
+# Patch the MySQL configuration file
+MYCNF_PATH="data/conf/mysql/my.cnf"
+if ! grep "bind_address" ${MYCNF_PATH} > /dev/null 2>&1; then
+    echo "patching file my.cnf"
+    echo "bind_address = 0.0.0.0" >> ${MYCNF_PATH}
+else
+    echo "my.cnf already patched"
 fi
