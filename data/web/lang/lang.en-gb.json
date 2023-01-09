@@ -267,6 +267,7 @@
         "quota_notifications": "Quota notifications",
         "quota_notifications_info": "Quota notifications are sent to users once when crossing 80% and once when crossing 95% usage.",
         "quota_notifications_vars": "{{percent}} equals the current quota of the user<br>{{username}} is the mailbox name",
+        "queue_unban": "unban",
         "r_active": "Active restrictions",
         "r_inactive": "Inactive restrictions",
         "r_info": "Greyed out/disabled elements on the list of active restrictions are not known as valid restrictions to mailcow and cannot be moved. Unknown restrictions will be set in order of appearance anyway. <br>You can add new elements in <code>inc/vars.local.inc.php</code> to be able to toggle them.",
