@@ -288,6 +288,12 @@ COMPOSE_PROJECT_NAME=mailcowdockerized
 
 DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
+# Additional override files (relative to the repo root) that need to be taken care of when running mailcow scripts.
+# Comma separated list without spaces!
+# Example: DOCKER_COMPOSE_EXTRA_OVERRIDES=helper-scripts/docker-compose.override.yml.d/CONTAINER_ENGINE_PODMAN/docker-compose.override.yml,helper-scripts/docker-compose.override.yml.d/CUSTOM_STORAGE_LOCATION/docker-compose.override.yml
+
+DOCKER_COMPOSE_EXTRA_OVERRIDES=
+
 # The name of the docker-compose binary to use. This option can be used in case both
 # docker-compose v1 and docker-compose v2 need to be installed.
 # Default: docker-compose
