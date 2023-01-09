@@ -205,7 +205,7 @@
         "include_exclude_info": "Ohne Auswahl werden <b>alle Mailboxen</b> adressiert.",
         "includes": "Diese Empfänger einschließen",
         "ip_check": "IP Check",
-        "ip_check_disabled": "IP check ist deaktiviert. Unter dem angegebenen Pfad kann es aktiviert werden<br> <strong>System > Configuration > Options > Customize</strong>",
+        "ip_check_disabled": "IP check ist deaktiviert. Unter dem angegebenen Pfad kann es aktiviert werden<br> <strong>System > Konfiguration > Einstellungen > UI-Anpassung</strong>",
         "ip_check_opt_in": "Opt-In für die Nutzung der Drittanbieter-Dienste <strong>ipv4.mailcow.email</strong> und <strong>ipv6.mailcow.email</strong> zur Auflösung externer IP-Adressen.",
         "is_mx_based": "MX-basiert",
         "last_applied": "Zuletzt angewendet",
