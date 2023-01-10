@@ -22,8 +22,9 @@ function validate_input()
 
 detect_docker_compose_command(){
   if ! [[ "${DOCKER_COMPOSE_VERSION}" == "native" ]] && ! [[ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]]; then
-    if docker compose > /dev/null 2>&1; then
-      if docker compose version --short | grep "2." > /dev/null 2>&1; then
+    if command -v docker compose > /dev/null 2>&1; then
+      version=$(docker compose version --short)
+      if [[ $version =~ ^2\.([0-9]+)\.([0-9]+) ]]; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
         echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
@@ -35,20 +36,19 @@ detect_docker_compose_command(){
         echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
         exit 1
       fi
-    elif docker-compose > /dev/null 2>&1; then
-      if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-        if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-          DOCKER_COMPOSE_VERSION=standalone
-          COMPOSE_COMMAND="docker-compose"
-          echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
-          echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-          sleep 2
-          echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
-        else
-          echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-          echo -e "\e[31mPlease update/install regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-          exit 1
-        fi
+    elif command -v docker-compose > /dev/null 2>&1; then
+      version=$(docker-compose version --short)
+      if [[ $version =~ ^2\.([0-9]+)\.([0-9]+) ]]; then
+        DOCKER_COMPOSE_VERSION=standalone
+        COMPOSE_COMMAND="docker-compose"
+        echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
+        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
+        sleep 2
+        echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
+      else
+        echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
+        echo -e "\e[31mPlease update/install regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+        exit 1
       fi
 
     else

@@ -43,7 +43,10 @@ else
 fi
 
 for bin in openssl curl git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+  if [[ -z $(which ${bin}) ]]; then
+    echo "Cannot find ${bin}, exiting..."
+    exit 1
+  fi
 done
 
 MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE:-"docker-compose"}
@@ -229,7 +232,7 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 # see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/
 MAILCOW_PASS_SCHEME=BLF-CRYPT
 
-# The directory used to store the data of the used containers
+# The directory used to store the data of the used containers (used in case the CUSTOM_STORAGE_LOCATION override is included)
 MAILCOW_STORAGE_DIR=
 
 # ------------------------------
@@ -294,9 +297,8 @@ DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
 DOCKER_COMPOSE_EXTRA_OVERRIDES=
 
-# The name of the docker-compose binary to use. This option can be used in case both
-# docker-compose v1 and docker-compose v2 need to be installed.
-# Default: docker-compose
+# The name of the docker-compose binary to use. This option can be used in case different versions of
+# docker-compose are installed and another binary than 'docker-compose' (default) needs to be used.
 # Example: docker-compose-v2
 
 MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE}
