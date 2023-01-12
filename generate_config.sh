@@ -32,17 +32,21 @@ if command -v podman > /dev/null 2>&1; then
     else
         CONTAINER_SOCKET="/run/user/${UID}/podman/podman.sock"
     fi
+
+    # To patch the docker-compose file for use with podman
+    EXTRA_REQUIRED_PACKAGES="patch"
 elif command -v docker > /dev/null 2>&1; then
     CONTAINER_ENGINE="docker"
     echo -e "\e[32mFound Docker container engine.\e[0m"
 
     CONTAINER_SOCKET="/var/run/docker.sock"
+    EXTRA_REQUIRED_PACKAGES=""
 else
     echo "Cannot find container engine (Docker or Podman), exiting..."
     exit 1
 fi
 
-for bin in openssl curl git awk sha1sum; do
+for bin in openssl curl git awk sha1sum ${EXTRA_REQUIRED_PACKAGES}; do
   if [[ -z $(which ${bin}) ]]; then
     echo "Cannot find ${bin}, exiting..."
     exit 1
