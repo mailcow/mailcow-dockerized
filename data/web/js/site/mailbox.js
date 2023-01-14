@@ -433,8 +433,13 @@ jQuery(function($){
     }
 
     var table = $('#domain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -619,10 +624,15 @@ jQuery(function($){
     }
 
     $('#templates_domain_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/template/all",
@@ -816,16 +826,26 @@ jQuery(function($){
     }
 
     $('#mailbox_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
         url: "/api/v1/get/mailbox/reduced",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.quota = item.quota_used + "/" + item.quota;
+            item.quota = {
+              sortBy: item.quota_used,
+              value: item.quota
+            }
+            item.quota.value = (item.quota.value == 0 ? "∞" : humanFileSize(item.quota.value));
+            item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
+
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
             item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
             /*
@@ -930,14 +950,10 @@ jQuery(function($){
           },
           {
             title: lang.domain_quota,
-            data: 'quota',
+            data: 'quota.value',
             responsivePriority: 8,
-            defaultContent: '',
-            render: function (data, type) {
-              data = data.split("/");
-              var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
-              return humanFileSize(data[0]) + " / " + of_q;
-            }
+            defaultContent: '',  
+            orderData: 23
           },
           {
             title: lang.last_mail_login,
@@ -1063,6 +1079,13 @@ jQuery(function($){
             responsivePriority: 6,
             defaultContent: ''
           },
+          {
+            title: "",
+            data: 'quota.sortBy',
+            responsivePriority: 8,
+            defaultContent: '',
+            className: "d-none"
+          },
       ]
     });
   }
@@ -1074,10 +1097,15 @@ jQuery(function($){
     }
 
     $('#templates_mbox_table').DataTable({
-			responsive : true,
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/mailbox/template/all",
@@ -1285,8 +1313,13 @@ jQuery(function($){
     }
 
     $('#resource_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1411,9 +1444,15 @@ jQuery(function($){
     }
     
     $('#bcc_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/bcc/all",
@@ -1507,9 +1546,15 @@ jQuery(function($){
     }
 
     $('#recipient_map_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/recipient_map/all",
@@ -1590,9 +1635,15 @@ jQuery(function($){
     }
 
     $('#tls_policy_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/tls-policy-map/all",
@@ -1683,9 +1734,15 @@ jQuery(function($){
     }
 
     $('#alias_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias/all",
@@ -1823,8 +1880,13 @@ jQuery(function($){
     }
 
     $('#aliasdomain_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -1905,9 +1967,15 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
@@ -2044,10 +2112,16 @@ jQuery(function($){
     }
 
     var table = $('#filter_table').DataTable({
+			responsive: true,
       autoWidth: false,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order:[[2, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/filters/all",

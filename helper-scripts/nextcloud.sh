@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-NEXTCLOUD_VER="25"
+# renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
+NEXTCLOUD_VERSION=25.0.2
 
 for bin in curl dirmngr; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
@@ -77,7 +78,7 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     echo "Cannot upgrade to new major version, please update manually."
     exit 1
   else
-    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-$NEXTCLOUD_VER.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
       && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
       && rm nextcloud.tar.bz2 \
       && mkdir -p ./data/web/nextcloud/data \
@@ -98,7 +99,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
   ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 
-  curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/latest-$NEXTCLOUD_VER.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
+  curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
     && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
     && rm nextcloud.tar.bz2 \
     && mkdir -p ./data/web/nextcloud/data \
