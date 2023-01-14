@@ -441,7 +441,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "# docker-compose are installed and another binary than 'docker-compose' (default) needs to be used." >> mailcow.conf
       echo "# Example: docker-compose-v2" >> mailcow.conf
       echo "" >> mailcow.conf
-      echo "MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE}" >> mailcow.conf
+      echo "MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE:-"docker-compose"}" >> mailcow.conf
     fi
   elif [[ ${option} == "DOVEADM_PORT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
@@ -618,6 +618,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Additional server names for mailcow UI' >> mailcow.conf
       echo '#' >> mailcow.conf
       echo '# Specify alternative addresses for the mailcow UI to respond to' >> mailcow.conf
@@ -629,6 +630,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Lets Encrypt registration contact information' >> mailcow.conf
       echo '# Optional: Leave empty for none' >> mailcow.conf
       echo '# This value is only used on first order!' >> mailcow.conf
@@ -638,6 +640,7 @@ for option in ${CONFIG_ARRAY[@]}; do
   fi
   elif [[ ${option} == "WEBAUTHN_ONLY_TRUSTED_VENDORS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo "# WebAuthn device manufacturer verification" >> mailcow.conf
       echo '# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed' >> mailcow.conf
       echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
@@ -645,11 +648,13 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Enable watchdog verbose logging' >> mailcow.conf
       echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
     fi
   elif [[ ${option} == "MAILCOW_STORAGE_DIR" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# The directory used to store the data of the used containers (used in case the CUSTOM_STORAGE_LOCATION override is included)' >> mailcow.conf
       echo 'MAILCOW_STORAGE_DIR=' >> mailcow.conf
     fi
