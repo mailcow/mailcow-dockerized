@@ -25,8 +25,9 @@ for bin in openssl curl docker git awk sha1sum; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
-if docker compose > /dev/null 2>&1; then
-    if docker compose version --short | grep "^2." > /dev/null 2>&1; then
+if command -v docker compose > /dev/null 2>&1; then
+    version=$(docker compose version --short)
+    if [[ $version =~ ^2\.([0-9]+)\.([0-9]+) ]]; then
       COMPOSE_VERSION=native
       echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
       echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
@@ -34,12 +35,12 @@ if docker compose > /dev/null 2>&1; then
       echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
-elif docker-compose > /dev/null 2>&1; then
-  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-    if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+elif command -v docker-compose > /dev/null 2>&1; then
+    version=$(docker-compose version --short)
+    if [[ $version =~ ^2\.([0-9]+)\.([0-9]+) ]]; then
       COMPOSE_VERSION=standalone
       echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
       echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
@@ -50,11 +51,9 @@ elif docker-compose > /dev/null 2>&1; then
       echo -e "\e[31mPlease update/install manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
-  fi
-
 else
   echo -e "\e[31mCannot find Docker Compose.\e[0m" 
-  echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+  echo -e "\e[31mPlease install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
 
@@ -458,15 +457,6 @@ case ${git_branch} in
     mailcow_last_git_version=""
     ;;
 esac
-# if [ ${git_branch} == "master" ]; then
-#   mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-# elif [ ${git_branch} == "nightly" ]; then
-#   mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
-#   mailcow_last_git_version=""
-# else
-#   mailcow_git_version=$(git rev-parse --short HEAD)
-#   mailcow_last_git_version=""
-# fi
 
 if [[ $SKIP_BRANCH != "y" ]]; then
 mailcow_git_commit=$(git rev-parse origin/${git_branch})
