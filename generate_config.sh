@@ -57,7 +57,13 @@ else
   echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
-    
+
+### If generate_config.sh is started with --dev or -d it will not check out nightly or master branch and will keep on the current branch
+if [[ ${1} == "--dev" || ${1} == "-d" ]]; then
+  SKIP_BRANCH=y
+else
+  SKIP_BRANCH=n
+fi
 
 if [ -f mailcow.conf ]; then
   read -r -p "A config file exists and will be overwritten, are you sure you want to continue? [y/N] " response
@@ -135,31 +141,43 @@ else
   SKIP_SOLR=n
 fi
 
-echo "Which branch of mailcow do you want to use?"
-echo ""
-echo "Available Branches:"
-echo "- master branch (stable updates) | default, recommended [1]"
-echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
-sleep 1
+if [[ ${SKIP_BRANCH} != y ]]; then
+  echo "Which branch of mailcow do you want to use?"
+  echo ""
+  echo "Available Branches:"
+  echo "- master branch (stable updates) | default, recommended [1]"
+  echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+  sleep 1
 
-while [ -z "${MAILCOW_BRANCH}" ]; do
-  read -r -p  "Choose the Branch with it´s number [1/2] " branch
-  case $branch in
-    [2])
-      MAILCOW_BRANCH="nightly"
+  while [ -z "${MAILCOW_BRANCH}" ]; do
+    read -r -p  "Choose the Branch with it´s number [1/2] " branch
+    case $branch in
+      [2])
+        MAILCOW_BRANCH="nightly"
+        ;;
+      *)
+        MAILCOW_BRANCH="master"
       ;;
-    *)
-      MAILCOW_BRANCH="master"
-    ;;
-  esac
-done
+    esac
+  done
+
+  git fetch --all
+  git checkout -f $git_branch
+
+elif [[ ${SKIP_BRANCH} == y ]]; then
+  echo -e "\033[33mEnabled Dev Mode.\033[0m"
+  echo -e "\033[33mNot checking out a different branch!\033[0m"
+  MAILCOW_BRANCH=$(git rev-parse --short $(git rev-parse @{upstream}))
+
+else
+  echo -e "\033[31mCould not determine branch input..."
+  echo -e "\033[31mExiting."
+  exit 1
+fi  
 
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
-
-git fetch --all
-git checkout -f $git_branch
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
@@ -427,18 +445,37 @@ echo "Copying snake-oil certificate..."
 cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
 
 # Set app_info.inc.php
-if [ ${git_branch} == "master" ]; then
-  mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-elif [ ${git_branch} == "nightly" ]; then
-  mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
-  mailcow_last_git_version=""
-else
-  mailcow_git_version=$(git rev-parse --short HEAD)
-  mailcow_last_git_version=""
-fi
+case ${git_branch} in
+  master)
+    mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+    ;;
+  nightly)
+    mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
+    mailcow_last_git_version=""
+    ;;
+  *)
+    mailcow_git_version=$(git rev-parse --short HEAD)
+    mailcow_last_git_version=""
+    ;;
+esac
+# if [ ${git_branch} == "master" ]; then
+#   mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+# elif [ ${git_branch} == "nightly" ]; then
+#   mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
+#   mailcow_last_git_version=""
+# else
+#   mailcow_git_version=$(git rev-parse --short HEAD)
+#   mailcow_last_git_version=""
+# fi
 
+if [[ $SKIP_BRANCH != "y" ]]; then
 mailcow_git_commit=$(git rev-parse origin/${git_branch})
 mailcow_git_commit_date=$(git log -1 --format=%ci @{upstream} )
+else
+mailcow_git_commit=$(git rev-parse ${git_branch})
+mailcow_git_commit_date=$(git log -1 --format=%ci @{upstream} )
+git_branch=$(git rev-parse --abbrev-ref HEAD)
+fi
 
 if [ $? -eq 0 ]; then
   echo '<?php' > data/web/inc/app_info.inc.php
