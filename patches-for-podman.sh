@@ -20,12 +20,3 @@ if ! patch -R -s -f --dry-run docker-compose.yml < ${PATCH_FILE} > /dev/null 2>&
 else
     echo "docker-compose.yml already patched (or custom changes prevent applying the patch)"
 fi
-
-# Patch the MySQL configuration file
-MYCNF_PATH="data/conf/mysql/my.cnf"
-if ! grep "bind_address" ${MYCNF_PATH} > /dev/null 2>&1; then
-    echo "patching file my.cnf"
-    echo "bind_address = 0.0.0.0" >> ${MYCNF_PATH}
-else
-    echo "my.cnf already patched"
-fi
