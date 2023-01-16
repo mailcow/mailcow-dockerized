@@ -229,6 +229,7 @@ if [[ -z "${MAILCOW_CONTAINER_ENGINE}" ]]; then
   if command -v podman > /dev/null 2>&1; then
     MAILCOW_CONTAINER_ENGINE="podman"
     echo -e "\e[32mFound Podman container engine.\e[0m"
+    echo -e "\e[31mNOTE: Support for Podman is experimental, consider this before deploying to production! \e[0m"
 
     if [[ -n "${DOCKER_HOST}" ]] && [[ "${DOCKER_HOST}" == "unix://"* ]]; then
       CONTAINER_SOCKET="${DOCKER_HOST/"unix://"/}"
