@@ -18,9 +18,9 @@
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="delete_selected" data-id="domain_template" data-api-url='delete/domain/template' href="#">{{ lang.mailbox.remove }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="templates_domain_table">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="templates_domain_table">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="templates_domain_table">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="templates_domain_table">{{ lang.datatables.collapse_all }}</a></li>
             {% endif %}
           </ul>
           {% if mailcow_cc_role == 'admin' %}
@@ -36,9 +36,9 @@
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="delete_selected" data-id="domain_template" data-api-url='delete/domain/template' href="#">{{ lang.mailbox.remove }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="templates_domain_table">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="templates_domain_table">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="templates_domain_table">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="templates_domain_table">{{ lang.datatables.collapse_all }}</a></li>
             {% endif %}
           </ul>
           {% if mailcow_cc_role == 'admin' %}

@@ -23,9 +23,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"postfilter"}' href="#">{{ lang.mailbox.set_postfilter }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-id="filter_item" data-api-url='delete/filter' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="filter_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="filter_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="filter_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="filter_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
         </div>
@@ -44,9 +44,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"filter_type":"postfilter"}' href="#">{{ lang.mailbox.set_postfilter }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-text="{{ lang.user.eas_reset }}?" data-id="filter_item" data-api-url='delete/filter' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="filter_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="filter_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="filter_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="filter_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
         </div>

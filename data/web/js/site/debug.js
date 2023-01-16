@@ -118,7 +118,7 @@ jQuery(function($){
       return;
     }
 
-    $('#autodiscover_log').DataTable({
+    var table = $('#autodiscover_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -128,6 +128,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/autodiscover/100",
@@ -172,6 +175,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+    });
   }
   function draw_postfix_logs() {
     // just recalc width if instance already exists
@@ -180,7 +187,7 @@ jQuery(function($){
       return;
     }
 
-    $('#postfix_log').DataTable({
+    var table = $('#postfix_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -190,6 +197,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/postfix",
@@ -219,6 +229,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+    });
   }
   function draw_watchdog_logs() {
     // just recalc width if instance already exists
@@ -227,7 +241,7 @@ jQuery(function($){
       return;
     }
 
-    $('#watchdog_log').DataTable({
+    var table = $('#watchdog_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -237,6 +251,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/watchdog",
@@ -270,6 +287,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+    });
   }
   function draw_api_logs() {
     // just recalc width if instance already exists
@@ -278,7 +299,7 @@ jQuery(function($){
       return;
     }
 
-    $('#api_log').DataTable({
+    var table =  $('#api_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -288,6 +309,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/api",
@@ -328,6 +352,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+    });
   }
   function draw_rl_logs() {
     // just recalc width if instance already exists
@@ -336,7 +364,7 @@ jQuery(function($){
       return;
     }
 
-    $('#rl_log').DataTable({
+    var table = $('#rl_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -346,6 +374,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ratelimited",
@@ -424,6 +455,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+    });
   }
   function draw_ui_logs() {
     // just recalc width if instance already exists
@@ -432,7 +467,7 @@ jQuery(function($){
       return;
     }
 
-    $('#ui_logs').DataTable({
+    var table = $('#ui_logs').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -442,6 +477,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ui",
@@ -500,6 +538,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_log');
+    });
   }
   function draw_sasl_logs() {
     // just recalc width if instance already exists
@@ -508,7 +550,7 @@ jQuery(function($){
       return;
     }
 
-    $('#sasl_logs').DataTable({
+    var table = $('#sasl_logs').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -518,6 +560,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sasl",
@@ -553,6 +598,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
+    });
   }
   function draw_acme_logs() {
     // just recalc width if instance already exists
@@ -561,7 +610,7 @@ jQuery(function($){
       return;
     }
 
-    $('#acme_log').DataTable({
+    var table = $('#acme_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -571,6 +620,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/acme",
@@ -595,6 +647,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+    });
   }
   function draw_netfilter_logs() {
     // just recalc width if instance already exists
@@ -603,7 +659,7 @@ jQuery(function($){
       return;
     }
 
-    $('#netfilter_log').DataTable({
+    var table = $('#netfilter_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -613,6 +669,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/netfilter",
@@ -642,6 +701,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+    });
   }
   function draw_sogo_logs() {
     // just recalc width if instance already exists
@@ -650,7 +713,7 @@ jQuery(function($){
       return;
     }
 
-    $('#sogo_log').DataTable({
+    var table = $('#sogo_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -660,6 +723,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sogo",
@@ -689,6 +755,10 @@ jQuery(function($){
         }
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+    });
   }
   function draw_dovecot_logs() {
     // just recalc width if instance already exists
@@ -697,7 +767,7 @@ jQuery(function($){
       return;
     }
 
-    $('#dovecot_log').DataTable({
+    var table = $('#dovecot_log').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -707,6 +777,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/dovecot",
@@ -735,6 +808,10 @@ jQuery(function($){
           className: 'dtr-col-md text-break'
         }
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
     });
   }
   function rspamd_pie_graph() {
@@ -805,7 +882,7 @@ jQuery(function($){
       return;
     }
 
-    $('#rspamd_history').DataTable({
+    var table = $('#rspamd_history').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -815,6 +892,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rspamd-logs', '#rspamd_history');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/rspamd-history",
@@ -902,6 +982,10 @@ jQuery(function($){
           defaultContent: ''
         }
       ]
+    });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rspamd-history', '#rspamd_history');
     });
   }
   function process_table_data(data, table) {
@@ -1098,6 +1182,12 @@ jQuery(function($){
       });
     }
   })
+  function hideTableExpandCollapseBtn(tab, table){
+    if ($(table).hasClass('collapsed'))
+      $(tab).find(".table_collapse_option").show(); 
+    else
+      $(tab).find(".table_collapse_option").hide(); 
+  }
 
   // detect element visibility changes
   function onVisible(element, callback) {
