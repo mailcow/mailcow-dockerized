@@ -212,14 +212,8 @@ fi
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 if [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
-    MAILCOW_HTTP_BIND="127.0.0.1"
-    MAILCOW_HTTPS_BIND="127.0.0.1"
-
     # Apply patches for usage with Podman
     bash ./patches-for-podman.sh
-else
-    MAILCOW_HTTP_BIND=""
-    MAILCOW_HTTPS_BIND=""
 fi
 
 cat << EOF > mailcow.conf
@@ -266,10 +260,10 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
 
 HTTP_PORT=80
-HTTP_BIND=${MAILCOW_HTTP_BIND}
+HTTP_BIND=
 
 HTTPS_PORT=443
-HTTPS_BIND=${MAILCOW_HTTPS_BIND}
+HTTPS_BIND=
 
 # ------------------------------
 # Container environment
