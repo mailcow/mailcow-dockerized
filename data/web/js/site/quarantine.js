@@ -13,7 +13,7 @@ jQuery(function($){
     $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_quarantine_table() {
-    $('#quarantinetable').DataTable({
+    var table = $('#quarantinetable').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -22,6 +22,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#quarantinetable');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/quarantine/all",
@@ -153,6 +156,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#quarantinetable');
+    });
   }
 
   $('body').on('click', '.show_qid_info', function (e) {
@@ -268,4 +275,12 @@ jQuery(function($){
 
   // Initial table drawings
   draw_quarantine_table();
+
+  
+  function hideTableExpandCollapseBtn(table){
+    if ($(table).hasClass('collapsed'))
+      $(".table_collapse_option").show(); 
+    else
+      $(".table_collapse_option").hide(); 
+  }
 });
