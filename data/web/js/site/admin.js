@@ -331,7 +331,10 @@ jQuery(function($){
           {
             title: lang.spamfilter,
             data: 'keep_spam',
-            defaultContent: ''
+            defaultContent: '',
+            render: function(data, type){
+              return 'yes'==data?'<i class="bi bi-x-lg"></i>':'no'==data&&'<i class="bi bi-check-lg"></i>';
+            }
           },
           {
             title: lang.action,

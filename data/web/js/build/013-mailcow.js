@@ -286,6 +286,8 @@ $(document).ready(function() {
   $.extend($.fn.dataTable.defaults, {
     responsive: true
   });
+  // disable default datatable click listener
+  $(document).off('click', 'tbody>tr');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){

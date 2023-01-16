@@ -441,6 +441,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/all",
@@ -614,7 +617,11 @@ jQuery(function($){
           defaultContent: ''
         },
       ]
-    });  
+    });      
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
+    });
   }
   function draw_templates_domain_table() {
     // just recalc width if instance already exists
@@ -623,7 +630,7 @@ jQuery(function($){
       return;
     }
 
-    $('#templates_domain_table').DataTable({
+    var table = $('#templates_domain_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -633,6 +640,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-templates-domains', '#templates_domain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/template/all",
@@ -817,6 +827,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-templates-domains', '#templates_domain_table');
+    });
   }
   function draw_mailbox_table() {
     // just recalc width if instance already exists
@@ -825,7 +839,7 @@ jQuery(function($){
       return;
     }
 
-    $('#mailbox_table').DataTable({
+    var table = $('#mailbox_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -834,6 +848,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/mailbox/reduced",
@@ -1088,6 +1105,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
+    });
   }
   function draw_templates_mbox_table() {
     // just recalc width if instance already exists
@@ -1096,7 +1117,7 @@ jQuery(function($){
       return;
     }
 
-    $('#templates_mbox_table').DataTable({
+    var table = $('#templates_mbox_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1106,6 +1127,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/mailbox/template/all",
@@ -1304,6 +1328,10 @@ jQuery(function($){
         },
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
+    });
   }
   function draw_resource_table() {
     // just recalc width if instance already exists
@@ -1312,7 +1340,7 @@ jQuery(function($){
       return;
     }
 
-    $('#resource_table').DataTable({
+    var table = $('#resource_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1321,6 +1349,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-resources', '#resource_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/resource/all",
@@ -1407,6 +1438,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-resources', '#resource_table');
+    });
   }
   function draw_bcc_table() {
     $.get("/api/v1/get/bcc-destination-options", function(data){
@@ -1443,7 +1478,7 @@ jQuery(function($){
       return;
     }
     
-    $('#bcc_table').DataTable({
+    var table = $('#bcc_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1453,6 +1488,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/bcc/all",
@@ -1537,6 +1575,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
+    });
   }
   function draw_recipient_map_table() {
     // just recalc width if instance already exists
@@ -1545,7 +1587,7 @@ jQuery(function($){
       return;
     }
 
-    $('#recipient_map_table').DataTable({
+    var table = $('#recipient_map_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1555,6 +1597,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/recipient_map/all",
@@ -1626,6 +1671,10 @@ jQuery(function($){
           },
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
+    });
   }
   function draw_tls_policy_table() {
     // just recalc width if instance already exists
@@ -1634,7 +1683,7 @@ jQuery(function($){
       return;
     }
 
-    $('#tls_policy_table').DataTable({
+    var table = $('#tls_policy_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1644,6 +1693,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/tls-policy-map/all",
@@ -1725,6 +1777,10 @@ jQuery(function($){
           },
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
+    });
   }
   function draw_alias_table() {
     // just recalc width if instance already exists
@@ -1733,7 +1789,7 @@ jQuery(function($){
       return;
     }
 
-    $('#alias_table').DataTable({
+    var table = $('#alias_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1743,6 +1799,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias/all",
@@ -1871,6 +1930,10 @@ jQuery(function($){
           },
       ]
     });
+    
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
+    });
   }
   function draw_aliasdomain_table() {
     // just recalc width if instance already exists
@@ -1879,7 +1942,7 @@ jQuery(function($){
       return;
     }
 
-    $('#aliasdomain_table').DataTable({
+    var table = $('#aliasdomain_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1888,6 +1951,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-domain-aliases', '#aliasdomain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias-domain/all",
@@ -1958,6 +2024,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-domain-aliases', '#aliasdomain_table');
+    });
   }
   function draw_sync_job_table() {
     // just recalc width if instance already exists
@@ -1966,7 +2036,7 @@ jQuery(function($){
       return;
     }
 
-    $('#sync_job_table').DataTable({
+    var table = $('#sync_job_table').DataTable({
 			responsive: true,
       processing: true,
       serverSide: false,
@@ -1976,6 +2046,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
@@ -2103,6 +2176,10 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
+    });
   }
   function draw_filter_table() {
     // just recalc width if instance already exists
@@ -2122,6 +2199,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order:[[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-filters', '#filter_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/filters/all",
@@ -2206,8 +2286,19 @@ jQuery(function($){
           },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-filters', '#filter_table');
+    });
   };
 
+  function hideTableExpandCollapseBtn(tab, table){
+    if ($(table).hasClass('collapsed'))
+      $(tab).find(".table_collapse_option").show(); 
+    else
+      $(tab).find(".table_collapse_option").hide(); 
+  }
+  
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {

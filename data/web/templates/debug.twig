@@ -350,9 +350,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="postfix_log" data-log-url="postfix" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="postfix_log" data-table="postfix_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="postfix_log" data-table="postfix_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="postfix_log" data-table="postfix_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="postfix_log" data-table="postfix_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="postfix_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -373,9 +373,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="mailcow_ui" data-table="ui_logs" data-log-url="ui" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="ui_logs" data-table="ui_logs" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="ui_logs" data-table="ui_logs" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="ui_logs" data-table="ui_logs" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="ui_logs" data-table="ui_logs" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="ui_logs" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -396,9 +396,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="sasl_log_table" data-table="sasl_logs" data-log-url="ui" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="sasl_logs" data-table="sasl_logs" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="sasl_logs" data-table="sasl_logs" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="sasl_logs" data-table="sasl_logs" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="sasl_logs" data-table="sasl_logs" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="sasl_logs" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -419,9 +419,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="dovecot_log" data-log-url="dovecot" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="dovecot_log" data-table="dovecot_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="dovecot_log" data-table="dovecot_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="dovecot_log" data-table="dovecot_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="dovecot_log" data-table="dovecot_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="dovecot_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -442,9 +442,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="sogo_log" data-log-url="sogo" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="sogo_log" data-table="sogo_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="sogo_log" data-table="sogo_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="sogo_log" data-table="sogo_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="sogo_log" data-table="sogo_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="sogo_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -465,9 +465,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="netfilter_log" data-log-url="netfilter" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="netfilter_log" data-table="netfilter_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="netfilter_log" data-table="netfilter_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="netfilter_log" data-table="netfilter_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="netfilter_log" data-table="netfilter_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="netfilter_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -493,9 +493,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd_history" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd_history" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="rspamd_history" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -516,9 +516,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="autodiscover_log" data-table="autodiscover_log" data-log-url="autodiscover" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="autodiscover_log" data-table="autodiscover_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="autodiscover_log" data-table="autodiscover_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="autodiscover_log" data-table="autodiscover_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="autodiscover_log" data-table="autodiscover_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="autodiscover_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -539,9 +539,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="watchdog" data-table="watchdog_log" data-log-url="watchdog" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="watchdog_log" data-table="watchdog_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="watchdog_log" data-table="watchdog_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="watchdog_log" data-table="watchdog_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="watchdog_log" data-table="watchdog_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="watchdog_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -562,9 +562,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="general_syslog" data-table="acme_log" data-log-url="acme" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="acme_log" data-table="acme_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="acme_log" data-table="acme_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="acme_log" data-table="acme_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="acme_log" data-table="acme_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="acme_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -585,9 +585,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="apilog" data-table="api_log" data-log-url="api" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="api_log" data-table="api_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="api_log" data-table="api_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="api_log" data-table="api_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="api_log" data-table="api_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="api_log" class="table table-striped dt-responsive w-100"></table>
           </div>
@@ -608,9 +608,9 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="100" href="#">+ 100</a></li>
               <li><a class="dropdown-item add_log_lines" data-post-process="rllog" data-table="rl_log" data-log-url="ratelimited" data-nrows="1000" href="#">+ 1000</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-datatables-expand="rl_log" data-table="rl_log" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="rl_log" data-table="rl_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="rl_log" data-table="rl_log" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="rl_log" data-table="rl_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <p class="text-muted">{{ lang.admin.hash_remove_info }}</p>
             <table id="rl_log" class="table table-striped dt-responsive w-100"></table>
