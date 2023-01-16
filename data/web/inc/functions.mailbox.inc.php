@@ -5171,15 +5171,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();
 
-          
-          if ($_SESSION['mailcow_cc_role'] != "admin") {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'access_denied'
-            );
-            return false;
-          }
 
           $wasModified = false;
           foreach ($domains as $domain) {            
@@ -5191,7 +5182,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              return false;
+            }
+            
             foreach($tags as $tag){
               // delete tag
               $wasModified = true;
