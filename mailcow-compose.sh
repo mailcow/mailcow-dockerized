@@ -20,7 +20,8 @@ function validate_input()
   source mailcow.conf
 }
 
-detect_docker_compose_command(){
+function detect_docker_compose_command()
+{
   if ! [[ "${DOCKER_COMPOSE_VERSION}" == "native" ]] && ! [[ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]]; then
     if command -v docker compose > /dev/null 2>&1; then
       version=$(docker compose version --short)
@@ -65,6 +66,25 @@ detect_docker_compose_command(){
   fi
 }
 
+function ensure_storage_directories_exist()
+{
+  # In case the user specified MAILCOW_STORAGE_DIR, create the required subdirectories.
+  if [[ -n "${MAILCOW_STORAGE_DIR}" ]]; then
+    mkdir -p "${MAILCOW_STORAGE_DIR}/clamd-db"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/crypt"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/mysql"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/mysql-socket"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/postfix"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/redis"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/rspamd"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/sogo-userdata-backup"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/sogo-web"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/solr"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/vmail"
+    mkdir -p "${MAILCOW_STORAGE_DIR}/vmail-index"
+  fi
+}
+
 function run_compose()
 {
   if [[ -n "${DOCKER_COMPOSE_EXTRA_OVERRIDES}" ]]; then
@@ -86,4 +106,5 @@ function run_compose()
 #---------------------------------------
 validate_input $@
 detect_docker_compose_command
+ensure_storage_directories_exist
 run_compose $@
