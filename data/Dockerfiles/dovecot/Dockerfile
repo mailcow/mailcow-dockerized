@@ -2,6 +2,7 @@ FROM debian:bullseye-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
+# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced
 ARG DOVECOT=2.3.20
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced
 ARG GOSU_VERSION=1.16
