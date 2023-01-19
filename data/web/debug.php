@@ -65,6 +65,7 @@ $template_data = [
   'solr_uptime' => round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60),
   'clamd_status' => $clamd_status,
   'containers' => $containers,
+  'ip_check' => customize('get', 'ip_check'),
   'lang_admin' => json_encode($lang['admin']),
   'lang_debug' => json_encode($lang['debug']),
   'lang_datatables' => json_encode($lang['datatables']),

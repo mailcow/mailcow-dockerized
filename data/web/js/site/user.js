@@ -135,8 +135,13 @@ jQuery(function($){
     }
 
     $('#tla_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -216,8 +221,13 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -366,8 +376,13 @@ jQuery(function($){
     }
 
     $('#app_passwd_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -456,8 +471,13 @@ jQuery(function($){
     }
 
     $('#wl_policy_mailbox_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -521,8 +541,13 @@ jQuery(function($){
     }
 
     $('#bl_policy_mailbox_table').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",

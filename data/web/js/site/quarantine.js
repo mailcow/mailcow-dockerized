@@ -13,10 +13,18 @@ jQuery(function($){
     $('#' + table_name).DataTable().ajax.reload();
   });
   function draw_quarantine_table() {
-    $('#quarantinetable').DataTable({
+    var table = $('#quarantinetable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#quarantinetable');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/quarantine/all",
@@ -129,9 +137,15 @@ jQuery(function($){
             title: lang.received,
             data: 'created',
             defaultContent: '',
-            render: function (data,type) {
-              var date = new Date(data ? data * 1000 : 0); 
-              return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            createdCell: function(td, cellData) {    
+              $(td).attr({
+                "data-order": cellData,
+                "data-sort": cellData
+              });
+              
+              var date = new Date(cellData ? cellData * 1000 : 0); 
+              var dateString = date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+              $(td).html(dateString);
             }
           },
           {
@@ -141,6 +155,10 @@ jQuery(function($){
             defaultContent: ''
           },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#quarantinetable');
     });
   }
 
@@ -257,4 +275,12 @@ jQuery(function($){
 
   // Initial table drawings
   draw_quarantine_table();
+
+  
+  function hideTableExpandCollapseBtn(table){
+    if ($(table).hasClass('collapsed'))
+      $(".table_collapse_option").show(); 
+    else
+      $(".table_collapse_option").hide(); 
+  }
 });

@@ -70,8 +70,13 @@ jQuery(function($){
     }
 
     $('#domainadminstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -143,8 +148,13 @@ jQuery(function($){
     }
 
     $('#oauth2clientstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -206,8 +216,13 @@ jQuery(function($){
     }
 
     $('#adminstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -272,8 +287,13 @@ jQuery(function($){
     }
 
     $('#forwardinghoststable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -311,7 +331,10 @@ jQuery(function($){
           {
             title: lang.spamfilter,
             data: 'keep_spam',
-            defaultContent: ''
+            defaultContent: '',
+            render: function(data, type){
+              return 'yes'==data?'<i class="bi bi-x-lg"></i>':'no'==data&&'<i class="bi bi-check-lg"></i>';
+            }
           },
           {
             title: lang.action,
@@ -330,8 +353,13 @@ jQuery(function($){
     }
 
     $('#relayhoststable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -402,8 +430,13 @@ jQuery(function($){
     }
 
     $('#transportstable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",

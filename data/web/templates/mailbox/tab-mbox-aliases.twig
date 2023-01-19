@@ -20,9 +20,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="alias_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="alias_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="alias_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="alias_table">{{ lang.datatables.collapse_all }}</a></li>
             {% if not skip_sogo %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#">{{ lang.mailbox.sogo_visible_y }}</a></li>
@@ -44,9 +44,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="alias_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="alias_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="alias_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="alias_table">{{ lang.datatables.collapse_all }}</a></li>
             {% if not skip_sogo %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#">{{ lang.mailbox.sogo_visible_y }}</a></li>

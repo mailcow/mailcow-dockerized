@@ -12,14 +12,22 @@ $(document).ready(function() {
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
 
-  $(".generate_password").click(function( event ) {
+  $(".generate_password").click(async function( event ) {   
+    try { 
+      var password_policy = await window.fetch("/api/v1/get/passwordpolicy", { method:'GET', cache:'no-cache' });
+      var password_policy = await password_policy.json();
+      random_passwd_length = password_policy.length;
+    } catch(err) {
+      var random_passwd_length = 8;
+    }
+
     event.preventDefault();
     $('[data-hibp]').trigger('input');
     if (typeof($(this).closest("form").data('pwgen-length')) == "number") {
       var random_passwd = GPW.pronounceable($(this).closest("form").data('pwgen-length'))
     }
     else {
-      var random_passwd = GPW.pronounceable(8)
+      var random_passwd = GPW.pronounceable(random_passwd_length)
     }
     $(this).closest("form").find('[data-pwgen-field]').attr('type', 'text');
     $(this).closest("form").find('[data-pwgen-field]').val(random_passwd);
@@ -278,6 +286,8 @@ $(document).ready(function() {
   $.extend($.fn.dataTable.defaults, {
     responsive: true
   });
+  // disable default datatable click listener
+  $(document).off('click', 'tbody>tr');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){
