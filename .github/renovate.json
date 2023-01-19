@@ -1,15 +1,19 @@
 {
   "enabled": true,
   "timezone": "Europe/Berlin",
-  "dependencyDashboard": false,
+  "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
   "commitBody": "Signed-off-by: milkmaker <milkmaker@mailcow.de>",
   "rebaseWhen": "auto",
+  "labels": ["renovate"],
   "assignees": [
     "@magiccc"
   ],
   "baseBranches": ["staging"],
-  "enabledManagers": ["github-actions", "regex"],
+  "enabledManagers": ["github-actions", "regex", "docker-compose"],
+  "ignorePaths": [
+    "data\/web\/inc\/lib\/vendor\/matthiasmullie\/minify\/**"
+  ],
   "regexManagers": [
     {
       "fileMatch": ["^helper-scripts\/nextcloud.sh$"],
