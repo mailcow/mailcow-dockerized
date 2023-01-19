@@ -204,6 +204,9 @@
         "include_exclude": "Ein- und Ausschlüsse",
         "include_exclude_info": "Ohne Auswahl werden <b>alle Mailboxen</b> adressiert.",
         "includes": "Diese Empfänger einschließen",
+        "ip_check": "IP Check",
+        "ip_check_disabled": "IP check ist deaktiviert. Unter dem angegebenen Pfad kann es aktiviert werden<br> <strong>System > Konfiguration > Einstellungen > UI-Anpassung</strong>",
+        "ip_check_opt_in": "Opt-In für die Nutzung der Drittanbieter-Dienste <strong>ipv4.mailcow.email</strong> und <strong>ipv6.mailcow.email</strong> zur Auflösung externer IP-Adressen.",
         "is_mx_based": "MX-basiert",
         "last_applied": "Zuletzt angewendet",
         "license_info": "Eine Lizenz ist nicht erforderlich, hilft jedoch der Entwicklung mailcows.<br><a href=\"https://www.servercow.de/mailcow#sal\" target=\"_blank\" alt=\"SAL Bestellung\">Hier kann die mailcow-GUID registriert werden.</a> Alternativ ist <a href=\"https://www.servercow.de/mailcow#support\" target=\"_blank\" alt=\"SAL Bestellung\">die Bestellung von Support-Paketen möglich</a>.",
@@ -363,6 +366,7 @@
         "domain_not_empty": "Domain %s ist nicht leer",
         "domain_not_found": "Domain %s nicht gefunden",
         "domain_quota_m_in_use": "Domain-Speicherplatzlimit muss größer oder gleich %d MiB sein",
+        "extended_sender_acl_denied": "Keine Rechte zum setzen von externen Absenderadressen",
         "extra_acl_invalid": "Externe Absenderadresse \"%s\" ist ungültig",
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain",
         "fido2_verification_failed": "FIDO2-Verifizierung fehlgeschlagen: %s",
@@ -459,30 +463,30 @@
         "yotp_verification_failed": "Yubico OTP-Verifizierung fehlgeschlagen: %s"
     },
     "datatables": {
-      "collapse_all": "Alle Einklappen",
-      "decimal": "",
-      "emptyTable": "Keine Daten in der Tabelle vorhanden",
-      "expand_all": "Alle Ausklappen",
-      "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
-      "infoEmpty": "0 bis 0 von 0 Einträgen",
-      "infoFiltered": "(gefiltert von _MAX_ Einträgen)",
-      "infoPostFix": "",
-      "thousands": ".",
-      "lengthMenu": "_MENU_ Einträge anzeigen",
-      "loadingRecords": "Wird geladen...",
-      "processing": "Bitte warten...",
-      "search": "Suchen",
-      "zeroRecords": "Keine Einträge vorhanden.",
-      "paginate": {
-        "first": "Erste",
-        "previous": "Zurück",
-        "next": "Nächste",
-        "last": "Letzte"
-      },
-      "aria": {
-        "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
-        "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
-      }
+        "collapse_all": "Alle Einklappen",
+        "decimal": "",
+        "emptyTable": "Keine Daten in der Tabelle vorhanden",
+        "expand_all": "Alle Ausklappen",
+        "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
+        "infoEmpty": "0 bis 0 von 0 Einträgen",
+        "infoFiltered": "(gefiltert von _MAX_ Einträgen)",
+        "infoPostFix": "",
+        "thousands": ".",
+        "lengthMenu": "_MENU_ Einträge anzeigen",
+        "loadingRecords": "Wird geladen...",
+        "processing": "Bitte warten...",
+        "search": "Suchen",
+        "zeroRecords": "Keine Einträge vorhanden.",
+        "paginate": {
+            "first": "Erste",
+            "previous": "Zurück",
+            "next": "Nächste",
+            "last": "Letzte"
+        },
+        "aria": {
+            "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
+            "sortDescending": ": aktivieren, um Spalte absteigend zu sortieren"
+        }
     },
     "debug": {
         "chart_this_server": "Chart (dieser Server)",
@@ -494,6 +498,7 @@
         "current_time": "Systemzeit",
         "disk_usage": "Festplattennutzung",
         "docs": "Dokumente",
+        "error_show_ip": "konnte die öffentlichen IP Adressen nicht auflösen",
         "external_logs": "Externe Logs",
         "history_all_servers": "History (alle Server)",
         "in_memory_logs": "In-memory Logs",
@@ -506,6 +511,7 @@
         "online_users": "Benutzer online",
         "restart_container": "Neustart",
         "service": "Dienst",
+        "show_ip": "Zeige öffentliche IP",
         "size": "Größe",
         "solr_dead": "Solr startet, ist deaktiviert oder temporär nicht erreichbar.",
         "solr_status": "Solr Status",
@@ -942,7 +948,7 @@
     "queue": {
         "delete": "Queue löschen",
         "flush": "Queue flushen",
-        "info" : "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt aufschluss darüber, warum diese nicht zugestellt werden konnte",
+        "info": "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt aufschluss darüber, warum diese nicht zugestellt werden konnte",
         "legend": "Funktionen der Mailqueue Aktionen:",
         "ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
         "deliver_mail": "Ausliefern",
@@ -1001,6 +1007,7 @@
         "forwarding_host_removed": "Weiterleitungs-Host %s wurde entfernt",
         "global_filter_written": "Filterdatei wurde erfolgreich geschrieben",
         "hash_deleted": "Hash wurde gelöscht",
+        "ip_check_opt_in_modified": "IP Check wurde erfolgreich gespeichert",
         "item_deleted": "Objekt %s wurde entfernt",
         "item_released": "Objekt %s freigegeben",
         "items_deleted": "Objekt(e) %s wurde(n) erfolgreich entfernt",

@@ -1,7 +1,7 @@
 <div role="tabpanel" class="tab-pane fade" id="tab-domain-aliases" role="tabpanel" aria-labelledby="tab-domain-aliases">
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
-      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-domain-aliases" data-bs-toggle="collapse" aria-controls="ollapse-tab-domain-aliases">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-domain-aliases" data-bs-toggle="collapse" aria-controls="collapse-tab-domain-aliases">
         {{ lang.mailbox.domain_aliases }} <span class="badge bg-info table-lines"></span>
       </button>
       <span class="d-none d-md-block">{{ lang.mailbox.domain_aliases }} <span class="badge bg-info table-lines"></span></span>
@@ -20,9 +20,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="aliasdomain_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="aliasdomain_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="aliasdomain_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="aliasdomain_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <a class="btn btn-sm btn-success" href="#" data-acl="{{ acl.alias_domains }}" data-bs-toggle="modal" data-bs-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain_alias }}</a>
         </div>
@@ -37,9 +37,9 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="alias-domain" data-api-url='edit/alias-domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" data-action="delete_selected" data-id="alias-domain" data-api-url='delete/alias-domain' href="#">{{ lang.mailbox.remove }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-datatables-expand="aliasdomain_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="aliasdomain_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="aliasdomain_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="aliasdomain_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <a class="btn btn-sm btn-success" href="#" data-acl="{{ acl.alias_domains }}" data-bs-toggle="modal" data-bs-target="#addAliasDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain_alias }}</a>
         </div>

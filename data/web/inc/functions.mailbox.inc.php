@@ -2879,67 +2879,68 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'access_denied'
+                  'msg' => 'extended_sender_acl_denied'
                 );
-                return false;
               }
-              $extra_acls = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['extended_sender_acl']));
-              foreach ($extra_acls as $i => &$extra_acl) {
-                if (empty($extra_acl)) {
-                  continue;
-                }
-                if (substr($extra_acl, 0, 1) === "@") {
-                  $extra_acl = ltrim($extra_acl, '@');
-                }
-                if (!filter_var($extra_acl, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name($extra_acl)) {
-                  $_SESSION['return'][] = array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                    'msg' => array('extra_acl_invalid', htmlspecialchars($extra_acl))
-                  );
-                  unset($extra_acls[$i]);
-                  continue;
-                }
-                $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
-                if (filter_var($extra_acl, FILTER_VALIDATE_EMAIL)) {
-                  $extra_acl_domain = idn_to_ascii(substr(strstr($extra_acl, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
-                  if (in_array($extra_acl_domain, $domains)) {
+              else {
+                $extra_acls = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['extended_sender_acl']));
+                foreach ($extra_acls as $i => &$extra_acl) {
+                  if (empty($extra_acl)) {
+                    continue;
+                  }
+                  if (substr($extra_acl, 0, 1) === "@") {
+                    $extra_acl = ltrim($extra_acl, '@');
+                  }
+                  if (!filter_var($extra_acl, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name($extra_acl)) {
                     $_SESSION['return'][] = array(
                       'type' => 'danger',
                       'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                      'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
+                      'msg' => array('extra_acl_invalid', htmlspecialchars($extra_acl))
                     );
                     unset($extra_acls[$i]);
                     continue;
                   }
-                }
-                else {
-                  if (in_array($extra_acl, $domains)) {
-                    $_SESSION['return'][] = array(
-                      'type' => 'danger',
-                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                      'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
-                    );
-                    unset($extra_acls[$i]);
-                    continue;
+                  $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+                  if (filter_var($extra_acl, FILTER_VALIDATE_EMAIL)) {
+                    $extra_acl_domain = idn_to_ascii(substr(strstr($extra_acl, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
+                    if (in_array($extra_acl_domain, $domains)) {
+                      $_SESSION['return'][] = array(
+                        'type' => 'danger',
+                        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                        'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
+                      );
+                      unset($extra_acls[$i]);
+                      continue;
+                    }
                   }
-                  $extra_acl = '@' . $extra_acl;
+                  else {
+                    if (in_array($extra_acl, $domains)) {
+                      $_SESSION['return'][] = array(
+                        'type' => 'danger',
+                        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                        'msg' => array('extra_acl_invalid_domain', $extra_acl_domain)
+                      );
+                      unset($extra_acls[$i]);
+                      continue;
+                    }
+                    $extra_acl = '@' . $extra_acl;
+                  }
                 }
-              }
-              $extra_acls = array_filter($extra_acls);
-              $extra_acls = array_values($extra_acls);
-              $extra_acls = array_unique($extra_acls);
-              $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `logged_in_as` = :username");
-              $stmt->execute(array(
-                ':username' => $username
-              ));
-              foreach ($extra_acls as $sender_acl_external) {
-                $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`, `external`)
-                  VALUES (:sender_acl, :username, 1)");
+                $extra_acls = array_filter($extra_acls);
+                $extra_acls = array_values($extra_acls);
+                $extra_acls = array_unique($extra_acls);
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 1 AND `logged_in_as` = :username");
                 $stmt->execute(array(
-                  ':sender_acl' => $sender_acl_external,
                   ':username' => $username
                 ));
+                foreach ($extra_acls as $sender_acl_external) {
+                  $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`, `external`)
+                    VALUES (:sender_acl, :username, 1)");
+                  $stmt->execute(array(
+                    ':sender_acl' => $sender_acl_external,
+                    ':username' => $username
+                  ));
+                }
               }
             }
             if (isset($_data['sender_acl'])) {
@@ -5170,15 +5171,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();
 
-          
-          if ($_SESSION['mailcow_cc_role'] != "admin") {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'access_denied'
-            );
-            return false;
-          }
 
           $wasModified = false;
           foreach ($domains as $domain) {            
@@ -5190,7 +5182,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              return false;
+            }
+            
             foreach($tags as $tag){
               // delete tag
               $wasModified = true;

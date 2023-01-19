@@ -2,9 +2,12 @@ FROM debian:bullseye-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.19.1
+# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced
+ARG DOVECOT=2.3.20
+# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced
+ARG GOSU_VERSION=1.16
 ENV LC_ALL C
-ENV GOSU_VERSION 1.14
+
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN groupadd -g 5000 vmail \
