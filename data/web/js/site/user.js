@@ -127,6 +127,13 @@ jQuery(function($){
     }
   }
 
+  $(".refresh_table").on('click', function(e) {
+    e.preventDefault();
+    var table_name = $(this).data('table');
+    
+    if ($.fn.DataTable.isDataTable('#' + table_name))
+      $('#' + table_name).DataTable().ajax.reload();
+  });
   function draw_tla_table() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#tla_table') ) {
@@ -254,13 +261,15 @@ jQuery(function($){
               item.action = '<span>-</span>';
               item.chkbox = '<input type="checkbox" disabled />';
             }
-            if (item.is_running == 1) {
+            if (item.is_running == 1 && item.active == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
-            } else {
+            } else if (item.is_running == 0 && item.active == 1) {
               item.is_running = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.waiting + '</span>';
+            } else {
+              item.is_running = '<span id="disabled-script" class="badge fs-6 bg-danger">' + lang.inactive + '</span>';
             }
-            if (!item.last_run > 0) {
-              item.last_run = lang.waiting;
+            if (!item.last_run) {
+              item.last_run = lang.never;
             }
             if (item.success == null) {
               item.success = '-';
@@ -330,14 +339,6 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: lang.active,
-          data: 'active',
-          defaultContent: '',
-          render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>'
-          }
-        },
-        {
           title: lang.status,
           data: 'is_running',
           defaultContent: '',
@@ -346,17 +347,20 @@ jQuery(function($){
         {
           title: lang.encryption,
           data: 'enc1',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none'
         },
         {
           title: lang.excludes,
           data: 'exclude',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none'
         },
         {
           title: lang.interval + " (min)",
           data: 'mins_interval',
-          defaultContent: ''
+          defaultContent: '',
+          className: 'none'
         },
         {
           title: lang.action,

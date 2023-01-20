@@ -2053,6 +2053,7 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
         dataSrc: function(json){
+          console.log(json);
           $.each(json, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
@@ -2067,13 +2068,16 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
-            if (item.is_running == 1) {
+            
+            if (item.is_running == 1 && item.active == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
-            } else {
+            } else if (item.is_running == 0 && item.active == 1) {
               item.is_running = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.waiting + '</span>';
+            } else {
+              item.is_running = '<span id="inactive-script" class="badge fs-6 bg-danger">' + lang.inactive + '</span>';
             }
-            if (!item.last_run > 0) {
-              item.last_run = lang.waiting;
+            if (!item.last_run) {
+              item.last_run = lang.never;
             }
             if (item.success == null) {
               item.success = '-';
@@ -2143,18 +2147,16 @@ jQuery(function($){
             defaultContent: ''
           },
           {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
             title: lang.status,
             data: 'is_running',
             defaultContent: ''
           },
+          {
+            title: lang.encryption,
+            data: 'enc1',
+            defaultContent: '',
+            className: 'none'
+          },          
           {
             title: lang.excludes,
             data: 'exclude',
