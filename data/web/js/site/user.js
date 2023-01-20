@@ -240,7 +240,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'

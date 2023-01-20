@@ -2053,7 +2053,6 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
         dataSrc: function(json){
-          console.log(json);
           $.each(json, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
