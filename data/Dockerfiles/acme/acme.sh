@@ -213,11 +213,13 @@ while true; do
   done
   ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
 
+  if [[ ${SKIP_IP_CHECK} != "y" ]]; then
   # Start IP detection
   log_f "Detecting IP addresses..."
   IPV4=$(get_ipv4)
   IPV6=$(get_ipv6)
   log_f "OK: ${IPV4}, ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}"
+  fi
 
   #########################################
   # IP and webroot challenge verification #
