@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=25.0.2
+NEXTCLOUD_VERSION=25.0.3
 
 for bin in curl dirmngr; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
@@ -46,22 +46,22 @@ if [[ ${NC_PURGE} == "y" ]]; then
 
   echo -e "\033[33mDetecting Database information...\033[0m"
   if [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "Show databases" | grep "nextcloud") ]]; then
-    echo -e "\033[32mFound seperate nextcloud Database (newer scheme)!\033[0m"
+    echo -e "\033[32mFound seperate Nextcloud database (newer scheme)!\033[0m"
     echo -e "\033[31mPurging...\033[0m"
     docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "DROP DATABASE nextcloud;" > /dev/null
     docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "DROP USER 'nextcloud'@'%';" > /dev/null
   elif [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} mailcow -e "SHOW TABLES LIKE 'oc_%'") && $? -eq 0 ]]; then
-    echo -e "\033[32mFound nextcloud (oc) tables inside of mailcow Database (old scheme)!\033[0m"
+    echo -e "\033[32mFound Nextcloud (oc) tables inside of mailcow database (old scheme)!\033[0m"
     echo -e "\033[31mPurging...\033[0m"
     docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
      "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'oc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)" > /dev/null
   elif [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} mailcow -e "SHOW TABLES LIKE 'nc_%'") && $? -eq 0 ]]; then
-    echo -e "\033[32mFound nextcloud (nc) tables inside of mailcow Database (old scheme)!\033[0m"
+    echo -e "\033[32mFound Nextcloud (nc) tables inside of mailcow database (old scheme)!\033[0m"
     echo -e "\033[31mPurging...\033[0m"
     docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
      "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'nc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)" > /dev/null
   else
-    echo -e "\033[31mError: No Nextcloud Databases/Tables found!"
+    echo -e "\033[31mError: No Nextcloud databases/tables found!"
     echo -e "\033[33mNot purging anything...\033[0m"
     exit 1
   fi
@@ -80,10 +80,10 @@ EOF
 
   docker restart $(docker ps -aqf name=nginx-mailcow)
 
-  echo -e "\033[32mNextcloud has been sucessfully uninstalled!\033[0m"
+  echo -e "\033[32mNextcloud has been uninstalled sucessfully!\033[0m"
 
 elif [[ ${NC_UPDATE} == "y" ]]; then
-  read -r -p "Are you sure you want to update Nextcloud (with nextclouds own updater)? [y/N] " response
+  read -r -p "Are you sure you want to update Nextcloud (with Nextclouds own updater)? [y/N] " response
   response=${response,,}
   if [[ ! "$response" =~ ^(yes|y)$ ]]; then
     echo "OK, aborting."
@@ -118,18 +118,18 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     && mkdir -p ./data/web/nextcloud/data \
     && chmod +x ./data/web/nextcloud/occ
 
-  echo -e "\033[33mCreating Nextcloud Database...\033[0m"
+  echo -e "\033[33mCreating 'nextcloud' database...\033[0m"
   NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
   NC_DBUSER=nextcloud
   NC_DBNAME=nextcloud
 
-  echo -ne "[1/3] Creating nextcloud Database"
+  echo -ne "[1/3] Creating 'nextcloud' database"
   docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "CREATE DATABASE ${NC_DBNAME};"
   sleep 2
-  echo -ne "\r[2/3] Creating nextcloud Database user"
+  echo -ne "\r[2/3] Creating 'nextcloud' database user"
   docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "CREATE USER '${NC_DBUSER}'@'%' IDENTIFIED BY '${NC_DBPASS}';"
   sleep 2
-  echo -ne "\r[3/3] Granting nextcloud user all permissions on database nextcloud"
+  echo -ne "\r[3/3] Granting 'nextcloud' user all permissions on database 'nextcloud'"
   docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "GRANT ALL PRIVILEGES ON ${NC_DBNAME}.* TO '${NC_DBUSER}'@'%';"
   sleep 2
 
@@ -140,7 +140,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
   echo -ne "[1/4] Setting correct permissions for www-data"
   docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud"
   sleep 2
-  echo -ne "\r[2/4] Running occ maintenance:install to install nextcloud"
+  echo -ne "\r[2/4] Running occ maintenance:install to install Nextcloud"
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings maintenance:install \
     --database mysql \
     --database-host mysql \
@@ -149,9 +149,9 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     --database-pass ${NC_DBPASS} \
     --admin-user admin \
     --admin-pass ${ADMIN_NC_PASS} \
-      --data-dir /web/nextcloud/data 2>&1 /dev/null
+    --data-dir /web/nextcloud/data > /dev/null 2>&1
 
-  echo -ne "\r[3/4] Setting custom parameters inside the nextcloud config file"
+  echo -ne "\r[3/4] Setting custom parameters inside the Nextcloud config file"
   echo ""
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings config:system:set redis host --value=redis --type=string; \
     /web/nextcloud/occ --no-warnings config:system:set redis port --value=6379 --type=integer; \
@@ -178,7 +178,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 arguments 0 --value={dovecot:143/imap/tls/novalidate-cert}; \
     #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP; \
 
-    echo -e "\r[4/4] Enabling NGINX Configuration"
+    echo -e "\r[4/4] Enabling Nginx Configuration"
     cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
     sed -i "s/NC_SUBD/${NC_SUBD}/g" ./data/conf/nginx/nextcloud.conf
     sleep 2
@@ -193,11 +193,11 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
   echo "*    INSTALL DATE: $(date +%Y-%m-%d_%H-%M-%S)   *"
   echo "******************************************"
   echo ""
-  echo -e "\033[36mDatabase Name:      ${NC_DBNAME}\033[0m"
-  echo -e "\033[36mDatabase User:      ${NC_DBUSER}\033[0m"
-  echo -e "\033[36mDatabase Password:  ${NC_DBPASS}\033[0m"
+  echo -e "\033[36mDatabase name:      ${NC_DBNAME}\033[0m"
+  echo -e "\033[36mDatabase user:      ${NC_DBUSER}\033[0m"
+  echo -e "\033[36mDatabase password:  ${NC_DBPASS}\033[0m"
   echo ""
-  echo -e "\033[31mUI Admin Password:  ${ADMIN_NC_PASS}\033[0m"
+  echo -e "\033[31mUI admin password:  ${ADMIN_NC_PASS}\033[0m"
   echo ""
 
 
