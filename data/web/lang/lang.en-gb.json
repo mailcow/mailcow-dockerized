@@ -468,7 +468,7 @@
     },
     "datatables": {
         "collapse_all": "Collapse All",
-        "decimal": "",
+        "decimal": ".",
         "emptyTable": "No data available in table",
         "expand_all": "Expand All",
         "info": "Showing _START_ to _END_ of _TOTAL_ entries",
