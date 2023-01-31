@@ -208,7 +208,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]
@@ -363,7 +363,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: '',
           responsivePriority: 5
         }
@@ -460,7 +460,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]

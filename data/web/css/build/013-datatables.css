@@ -78,3 +78,21 @@ table.dataTable>tbody>tr.child span.dtr-title {
     width: 30%;
     max-width: 250px;
 }
+
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+div.dataTables_wrapper div.dataTables_length {
+    text-align: right;
+}
+.dataTables_paginate, .dataTables_length, .dataTables_filter {
+    margin: 10px 0!important;
+}
+
+td.dt-text-right {
+    text-align: end !important;
+}
+th.dt-text-right {
+    text-align: end !important;
+}

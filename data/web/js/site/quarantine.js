@@ -163,7 +163,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-text-right dt-sm-head-hidden',
           defaultContent: ''
         },
       ]

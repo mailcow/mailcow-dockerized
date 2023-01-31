@@ -116,7 +116,7 @@ jQuery(function($){
         {
           title: lang_admin.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ]
