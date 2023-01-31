@@ -133,7 +133,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ],
@@ -204,7 +204,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ]
@@ -277,7 +277,7 @@ jQuery(function($){
           title: lang.action,
           data: 'action',
           defaultContent: '',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right'
+          className: 'dt-sm-head-hidden dt-text-right'
         },
       ]
     });
@@ -343,7 +343,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ]
@@ -421,7 +421,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ]
@@ -499,7 +499,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         },
       ]

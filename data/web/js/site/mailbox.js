@@ -613,7 +613,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -823,7 +823,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
         },
@@ -1095,7 +1095,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
         },
@@ -1326,7 +1326,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
         },
@@ -1439,7 +1439,7 @@ jQuery(function($){
           data: 'action',
           responsivePriority: 5,
           defaultContent: '',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right'
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right'
         },
       ]
     });
@@ -1575,7 +1575,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -1672,7 +1672,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -1779,7 +1779,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -1933,7 +1933,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -2028,7 +2028,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -2181,7 +2181,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
@@ -2292,7 +2292,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
