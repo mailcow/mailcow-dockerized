@@ -5264,7 +5264,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource'))) {
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource')) && getenv('SKIP_SOGO') != "y") {
     update_sogo_static_view();
   }
 }
