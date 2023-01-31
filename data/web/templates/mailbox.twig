@@ -58,7 +58,7 @@
   var lang_rl = {{ lang_rl|raw }};
   var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
-  var pagination_size = '{{ pagination_size }}';
+  var pagination_size = Math.trunc('{{ pagination_size }}');
   var role = '{{ role }}';
   var is_dual = {{ is_dual }};
   var ALLOW_ADMIN_EMAIL_LOGIN = {{ allow_admin_email_login }};
