@@ -699,6 +699,38 @@ paths:
                   type: string
               type: object
       summary: Create Domain Admin user
+  /api/v1/add/sso/domain-admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    token: "591F6D-5C3DD2-7455CD-DAF1C1-AA4FCC"
+          description: OK
+          headers: { }
+      tags:
+        - Single Sign-On
+      description: >-
+        Using this endpoint you can issue a token for Domain Admin user. This token can be used for
+        autologin Domain Admin user by using query_string var sso_token={token}. Token expiration time is 30s
+      operationId: Issue Domain Admin SSO token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                username: testadmin
+              properties:
+                username:
+                  description: the username for the admin user
+                  type: object
+              type: object
+      summary: Issue Domain Admin SSO token
   /api/v1/edit/da-acl:
     post:
       responses:
@@ -1999,7 +2031,7 @@ paths:
                 - domain.tld
                 - domain2.tld
               properties:
-                items: 
+                items:
                   type: array
                   items:
                     type: string
@@ -2993,7 +3025,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   type: object
                   properties:
                     log:
@@ -5586,6 +5618,8 @@ tags:
     description: Manage DKIM keys
   - name: Domain admin
     description: Create or udpdate domain admin users
+  - name: Single Sign-On
+    description: Issue tokens for users
   - name: Address Rewriting
     description: Create BCC maps or recipient maps
   - name: Outgoing TLS Policy Map Overrides

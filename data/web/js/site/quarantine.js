@@ -14,10 +14,21 @@ jQuery(function($){
   });
   function draw_quarantine_table() {
     var table = $('#quarantinetable').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
+      order: [[2, 'desc']],
+      lengthMenu: [
+        [10, 25, 50, 100, -1],
+        [10, 25, 50, 100, 'all']
+      ],
+      pagingType: 'first_last_numbers',
+      aColumns: [
+        { sWidth: '8.25%' },
+        { sClass: 'classDataTable' }
+      ],
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -73,87 +84,88 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            defaultContent: ''
-          },
-          {
-            title: lang.qid,
-            data: 'qid',
-            defaultContent: ''
-          },
-          {
-            title: lang.sender,
-            data: 'sender',
-            defaultContent: ''
-          },
-          {
-            title: lang.subj,
-            data: 'subject',
-            defaultContent: ''
-          },
-          {
-            title: lang.rspamd_result,
-            data: 'rspamdaction',
-            defaultContent: ''
-          },
-          {
-            title: lang.rcpt,
-            data: 'rcpt',
-            defaultContent: ''
-          },
-          {
-            title: lang.danger,
-            data: 'virus',
-            defaultContent: ''
-          },
-          {
-            title: lang.spam_score,
-            data: 'score',
-            defaultContent: ''
-          },
-          {
-            title: lang.notified,
-            data: 'notified',
-            defaultContent: ''
-          },
-          {
-            title: lang.received,
-            data: 'created',
-            defaultContent: '',
-            createdCell: function(td, cellData) {    
-              $(td).attr({
-                "data-order": cellData,
-                "data-sort": cellData
-              });
-              
-              var date = new Date(cellData ? cellData * 1000 : 0); 
-              var dateString = date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-              $(td).html(dateString);
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          defaultContent: ''
+        },
+        {
+          title: lang.qid,
+          data: 'qid',
+          defaultContent: ''
+        },
+        {
+          title: lang.sender,
+          data: 'sender',
+          className: 'senders-mw220',
+          defaultContent: ''
+        },
+        {
+          title: lang.subj,
+          data: 'subject',
+          defaultContent: ''
+        },
+        {
+          title: lang.rspamd_result,
+          data: 'rspamdaction',
+          defaultContent: ''
+        },
+        {
+          title: lang.rcpt,
+          data: 'rcpt',
+          defaultContent: ''
+        },
+        {
+          title: lang.danger,
+          data: 'virus',
+          defaultContent: ''
+        },
+        {
+          title: lang.spam_score,
+          data: 'score',
+          defaultContent: ''
+        },
+        {
+          title: lang.notified,
+          data: 'notified',
+          defaultContent: ''
+        },
+        {
+          title: lang.received,
+          data: 'created',
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData,
+              "data-sort": cellData
+            });
+
+            var date = new Date(cellData ? cellData * 1000 : 0);
+            var dateString = date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            $(td).html(dateString);
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-text-right dt-sm-head-hidden',
+          defaultContent: ''
+        },
       ]
     });
 
@@ -193,24 +205,24 @@ jQuery(function($){
         $('#qid_detail_fuzzy').html('');
         if (typeof data.symbols !== 'undefined') {
           data.symbols.sort(function (a, b) {
-            if (a.score === 0) return 1
-            if (b.score === 0) return -1
+            if (a.score === 0) return 1;
+            if (b.score === 0) return -1;
             if (b.score < 0 && a.score < 0) {
-              return a.score - b.score
+              return a.score - b.score;
             }
             if (b.score > 0 && a.score > 0) {
-              return b.score - a.score
+              return b.score - a.score;
             }
-            return b.score - a.score
+            return b.score - a.score;
           })
           $.each(data.symbols, function (index, value) {
-            var highlightClass = ''
-            if (value.score > 0) highlightClass = 'negative'
-            else if (value.score < 0) highlightClass = 'positive'
-            else highlightClass = 'neutral'
+            var highlightClass = '';
+            if (value.score > 0) highlightClass = 'negative';
+            else if (value.score < 0) highlightClass = 'positive';
+            else highlightClass = 'neutral';
             $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
           });
-          $('[data-bs-toggle="tooltip"]').tooltip()
+          $('[data-bs-toggle="tooltip"]').tooltip();
         }
         if (typeof data.fuzzy_hashes === 'object' && data.fuzzy_hashes !== null && data.fuzzy_hashes.length !== 0) {
           $.each(data.fuzzy_hashes, function (index, value) {
@@ -276,11 +288,10 @@ jQuery(function($){
   // Initial table drawings
   draw_quarantine_table();
 
-  
   function hideTableExpandCollapseBtn(table){
     if ($(table).hasClass('collapsed'))
-      $(".table_collapse_option").show(); 
+      $(".table_collapse_option").show();
     else
-      $(".table_collapse_option").hide(); 
+      $(".table_collapse_option").hide();
   }
 });
