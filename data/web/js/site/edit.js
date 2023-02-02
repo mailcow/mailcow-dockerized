@@ -2,7 +2,7 @@ $(document).ready(function() {
   $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $(this).find('.arrow').toggleClass("animation"); });
   $("#pushover_delete").click(function() { return confirm(lang.delete_ays); });
   $(".goto_checkbox").click(function( event ) {
-   $("form[data-id='editalias'] .goto_checkbox").not(this).prop('checked', false);
+    $("form[data-id='editalias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='editalias'] .goto_checkbox:checked").length > 0) {
       $('#textarea_alias_goto').prop('disabled', true);
     }
@@ -64,7 +64,7 @@ $(document).ready(function() {
     console.log($(tagsEl).val())
     var tags = JSON.parse($(tagsEl).val());
     $(tagsEl).val("");
-    
+
     for (var i = 0; i < tags.length; i++)
       addTag($('#tags'), tags[i]);
   }
@@ -78,10 +78,11 @@ jQuery(function($){
   }
   function draw_wl_policy_domain_table() {
     $('#wl_policy_domain_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -103,45 +104,46 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'prefid',
-            defaultContent: ''
-          },
-          {
-            title: lang_user.spamfilter_table_rule,
-            data: 'value',
-            defaultContent: ''
-          },
-          {
-            title: 'Scope',
-            data: 'object',
-            defaultContent: ''
-          }
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'prefid',
+          defaultContent: ''
+        },
+        {
+          title: lang_user.spamfilter_table_rule,
+          data: 'value',
+          defaultContent: ''
+        },
+        {
+          title: 'Scope',
+          data: 'object',
+          defaultContent: ''
+        }
       ]
     });
   }
   function draw_bl_policy_domain_table() {
     $('#bl_policy_domain_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -163,41 +165,41 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'prefid',
-            defaultContent: ''
-          },
-          {
-            title: lang_user.spamfilter_table_rule,
-            data: 'value',
-            defaultContent: ''
-          },
-          {
-            title: 'Scope',
-            data: 'object',
-            defaultContent: ''
-          }
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'prefid',
+          defaultContent: ''
+        },
+        {
+          title: lang_user.spamfilter_table_rule,
+          data: 'value',
+          defaultContent: ''
+        },
+        {
+          title: 'Scope',
+          data: 'object',
+          defaultContent: ''
+        }
       ]
     });
   }
 
-  
+
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {

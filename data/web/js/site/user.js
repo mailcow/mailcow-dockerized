@@ -135,10 +135,11 @@ jQuery(function($){
     }
 
     $('#tla_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -165,7 +166,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -191,7 +192,7 @@ jQuery(function($){
           data: 'validity',
           defaultContent: '',
           render: function (data, type) {
-            var date = new Date(data ? data * 1000 : 0); 
+            var date = new Date(data ? data * 1000 : 0);
             return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
           }
         },
@@ -207,7 +208,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]
@@ -221,10 +222,11 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -269,9 +271,9 @@ jQuery(function($){
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
             if (lang['syncjob_'+item.exit_status]) {
-	            item.exit_status = lang['syncjob_'+item.exit_status];
+              item.exit_status = lang['syncjob_'+item.exit_status];
             } else if (item.success != '-') {
-	            item.exit_status = lang.syncjob_check_log;
+              item.exit_status = lang.syncjob_check_log;
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
@@ -279,7 +281,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -361,7 +363,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: '',
           responsivePriority: 5
         }
@@ -376,10 +378,11 @@ jQuery(function($){
     }
 
     $('#app_passwd_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -415,7 +418,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -457,7 +460,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]
@@ -471,10 +474,11 @@ jQuery(function($){
     }
 
     $('#wl_policy_mailbox_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -499,7 +503,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -541,10 +545,11 @@ jQuery(function($){
     }
 
     $('#bl_policy_mailbox_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -569,7 +574,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',

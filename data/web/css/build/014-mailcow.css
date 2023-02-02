@@ -370,14 +370,3 @@ button[aria-expanded='true'] > .caret {
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
     background-color: #f0f0f0 !important;
 }
-
-
-div.dataTables_wrapper div.dataTables_filter {
-  text-align: left;
-}
-div.dataTables_wrapper div.dataTables_length {
-  text-align: right;
-}
-.dataTables_paginate, .dataTables_length, .dataTables_filter {
-  margin: 10px 0!important;
-}
