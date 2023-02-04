@@ -394,6 +394,10 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 #SNAT6_TO_SOURCE=
 
+# Use this variable if you want to use Nftables instead of Iptables in the netfilter container
+
+#USE_NFTABLES=
+
 # Create or override an API key for the web UI
 # You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
 # An API key defined as API_KEY has read-write access
