@@ -531,7 +531,6 @@ def initChain():
 
 if __name__ == '__main__':
 
-  logInfo("Using Iptables backend")
   # In case a previous session was killed without cleanup
   clear()
   # Reinit MAILCOW chain
