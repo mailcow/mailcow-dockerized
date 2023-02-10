@@ -165,28 +165,26 @@ def search_current_chains():
   if kernel_ruleset:
     for object in kernel_ruleset['nftables']:
       chain = object.get("chain")
-      if not chain:
-        continue
+      if not chain: continue
 
       _family = chain['family']
       _table = chain['table']
+      if not _family in nft_chain_names: continue
+      if not _table in nft_chain_names[_family]: continue
 
-      hook = chain.get("hook")
-      if not hook or hook not in nft_chain_names[_family][_table]:
-        continue
+      _hook = chain.get("hook")
+      if not _hook in nft_chain_names[_family][_table]: continue
 
-      _hook = chain['hook']
+      _priority = chain.get("prio")
+      if _priority is None: continue
+      _name = chain['name']
 
-      priority = chain.get("prio")
-      if priority is None:
-        continue
-
-      if priority < nft_chain_priority[_family][_table][_hook]:
-          # at this point, we know the chain has:
-          # hook and priority set
-          # and it has the lowest priority
-          nft_chain_priority[_family][_table][_hook] = priority
-          nft_chain_names[_family][_table][_hook] = chain['name']
+      if _priority < nft_chain_priority[_family][_table][_hook]:
+        # at this point, we know the chain has:
+        # hook and priority set
+        # and it has the lowest priority
+        nft_chain_priority[_family][_table][_hook] = _priority
+        nft_chain_names[_family][_table][_hook] = _name
 
 def search_for_chain(kernel_ruleset: dict, chain_name: str):
   found = False
@@ -261,18 +259,18 @@ def insert_mailcow_chains(_family: str):
         continue
 
       rule = object["rule"]
-      if rule["chain"] == nft_input_chain:
+      if nft_input_chain and rule["chain"] == nft_input_chain:
         if rule.get("comment") and rule["comment"] == "mailcow":
           input_jump_found = True
-      if rule["chain"] == nft_forward_chain:
+      if nft_forward_chain and rule["chain"] == nft_forward_chain:
         if rule.get("comment") and rule["comment"] == "mailcow":
           forward_jump_found = True
 
-    if not input_jump_found and nft_input_chain:
+    if not input_jump_found:
       command = get_mailcow_jump_rule_dict(_family, nft_input_chain)
       nft_exec_dict(command)
 
-    if not forward_jump_found and nft_forward_chain:
+    if not forward_jump_found:
       command = get_mailcow_jump_rule_dict(_family, nft_forward_chain)
       nft_exec_dict(command)
 
