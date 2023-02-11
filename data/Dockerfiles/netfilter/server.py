@@ -153,8 +153,8 @@ def get_base_dict():
 
 def search_current_chains():
   global nft_chain_names
-  nft_chain_priority = {'ip': {'filter': {'input': 1, 'forward': 1}, 'nat': {'postrouting': 111} },
-                    'ip6': {'filter': {'input': 1, 'forward': 1}, 'nat': {'postrouting': 111} } }
+  nft_chain_priority = {'ip': {'filter': {'input': None, 'forward': None}, 'nat': {'postrouting': None} },
+                    'ip6': {'filter': {'input': None, 'forward': None}, 'nat': {'postrouting': None} } }
 
   # Command: 'nft list chains'
   _list_opts = dict(chains='null')
@@ -169,17 +169,17 @@ def search_current_chains():
 
       _family = chain['family']
       _table = chain['table']
-      if not _family in nft_chain_names: continue
-      if not _table in nft_chain_names[_family]: continue
-
       _hook = chain.get("hook")
-      if not _hook in nft_chain_names[_family][_table]: continue
-
       _priority = chain.get("prio")
-      if _priority is None: continue
       _name = chain['name']
 
-      if _priority < nft_chain_priority[_family][_table][_hook]:
+      if _family not in nft_chain_names: continue
+      if _table not in nft_chain_names[_family]: continue
+      if _hook not in nft_chain_names[_family][_table]: continue
+      if _priority is None: continue
+
+      _saved_priority = nft_chain_priority[_family][_table][_hook]
+      if _saved_priority is None or _priority < _saved_priority:
         # at this point, we know the chain has:
         # hook and priority set
         # and it has the lowest priority
