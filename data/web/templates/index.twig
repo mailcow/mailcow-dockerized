@@ -38,15 +38,8 @@
             </div>
           </div>
           <div class="d-flex mt-4" style="position: relative">
-            <div class="btn-group">
-              <div class="btn-group">
-                <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
-                <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
-                </ul>
-              </div>
-            </div>
+            <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
+            <button type="button" class="btn btn-xs-lg btn-success ms-2" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</button>
             {% if not oauth2_request %}
             <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span>
