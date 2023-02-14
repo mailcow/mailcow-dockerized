@@ -3,7 +3,8 @@
         "bcc_maps": "BCC kartes",
         "filters": "Filtri",
         "recipient_maps": "Saņēmēja kartes",
-        "syncjobs": "Sinhronizācijas uzdevumi"
+        "syncjobs": "Sinhronizācijas uzdevumi",
+        "spam_score": "Mēstules novērtējums"
     },
     "add": {
         "activate_filter_warn": "Visi pārējie filtri tiks deaktivizēti, kad aktīvs ir atzīmēts.",
@@ -104,10 +105,10 @@
         "host": "Hosts",
         "import": "Importēt",
         "import_private_key": "Importēt privātu atslēgu",
-        "in_use_by": "Tiek lietots ar",
+        "in_use_by": "Izmanto",
         "inactive": "Neaktīvs",
         "link": "Saite",
-        "loading": "Lūdzu uzgaidiet...",
+        "loading": "Lūgums uzgaidīt...",
         "logo_info": "Jūsu attēls augšējā navigācijas joslā tiks palielināts līdz 40 pikseļiem un maks. sākumlapas platums par 250 pikseļi. Ir ļoti ieteicama pielāgojama grafikaYour image will be scaled to a height of 40px for the top navigation bar and a max. width of 250px for the start page. Ir ļoti ieteicama pielāgojamā grafika",
         "main_name": "\"mailcow UI\" nosaukums",
         "merged_vars_hint": "Pelēkās rindas tika apvienotas <code>vars.(local.)inc.php</code> un nevar tikt modificētas.",
@@ -144,7 +145,10 @@
         "ui_texts": "UI etiķetes un teksti",
         "unchanged_if_empty": "Ja nav veiktas izmaiņas, atstājiet tukšu",
         "upload": "Augšupielādēt",
-        "username": "Lietotājvārds"
+        "username": "Lietotājvārds",
+        "generate": "izveidot",
+        "message": "Ziņojums",
+        "last_applied": "Pēdējoreiz pielietots"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",
@@ -170,7 +174,7 @@
         "is_alias": "%s jau ir zināms alias",
         "is_alias_or_mailbox": "%s jau ir zināms alias, pastkastes vai alias addrese izvērsta no alias domēna.",
         "is_spam_alias": "%s ir jau zināms spam alias",
-        "last_key": "Pēdējā atslēga nevar būt dzēsta",
+        "last_key": "Pēdējo atslēgu nevar izdzēst, tā vietā jāatspējo divpakāpju pārbaude.",
         "login_failed": "Ielogošanās neveiksmīga",
         "mailbox_invalid": "Pastkastes vārds ir nederīgs",
         "mailbox_quota_exceeded": "Kvota pārsniedz domēna limitu (max. %d MiB)",
@@ -262,7 +266,8 @@
         "title": "Labot priekšmetu",
         "unchanged_if_empty": "Ja neizmainīts atstājiet tukšu",
         "username": "Lietotājvārds",
-        "validate_save": "Apstiprināt un saglabāt"
+        "validate_save": "Apstiprināt un saglabāt",
+        "last_modified": "Pēdējoreiz mainīts"
     },
     "footer": {
         "cancel": "Atcelt",
@@ -314,21 +319,21 @@
         "bcc_destinations": "BCC galamērķi/s",
         "bcc_info": "BCC kartes tiek izmantotas, lai klusu pārsūtītu visu ziņojumu kopijas uz citu adresi. Saņēmēja kartes tipa ieraksts tiek izmantots, kad vietējais galamērķis darbojas kā pasta adresāts. Sūtītāja kartes atbilst vienam un tam pašam principam. <br/>\r\n   Vietējais galamērķis netiks informēts par piegādes neveiksmi. ",
         "bcc_local_dest": "Vietējais galamērķis",
-        "bcc_map_type": "BCC tips",
+        "bcc_map_type": "BCC veids",
         "bcc_maps": "BCC kartes",
         "bcc_rcpt_map": "saņēmēja karte",
         "bcc_sender_map": "Sūtītāja karte",
         "bcc_to_rcpt": "Pārslēdzieties uz adresāta kartes tipu",
         "bcc_to_sender": "Pārslēgties uz sūtītāja kartes tipu",
         "bcc_type": "BCC tips",
-        "deactivate": "Deaktivizēt",
+        "deactivate": "Deaktivēt",
         "description": "Apraksts",
         "dkim_key_length": "DKIM atslēgas garums (bits)",
         "domain": "Domēns",
         "domain_admins": "Domēna administratori",
         "domain_aliases": "Domēna aliases",
         "domain_quota": "Kvota",
-        "domain_quota_total": "Kopējā  domēna kvota",
+        "domain_quota_total": "Kopējais domēna ierobežojums",
         "domains": "Domēns",
         "edit": "Labot",
         "empty": "Nav rezultātu",
@@ -341,7 +346,7 @@
         "inactive": "Neaktīvs",
         "kind": "Veids",
         "last_run": "Pēdējā norise",
-        "last_run_reset": "Nākamais grafiks",
+        "last_run_reset": "Ievietot sarakstā kā nākamo",
         "mailbox_quota": "Maks. pastkastes izmērs",
         "mailboxes": "Pastkaste",
         "max_aliases": "Maks. iespejamās aliases",
@@ -374,7 +379,13 @@
         "tls_enforce_out": "Piespiest TLS izejošajiem",
         "toggle_all": "Pārslēgt visu",
         "username": "Lietotājvārds",
-        "waiting": "Gaidīšana"
+        "waiting": "Gaidīšana",
+        "last_modified": "Pēdējoreiz mainīts",
+        "booking_0_short": "Vienmēŗ bezmaksas",
+        "daily": "Ik dienu",
+        "hourly": "Ik stundu",
+        "last_mail_login": "Pēdējā pieteikšanās pastkastē",
+        "mailbox": "Pastkaste"
     },
     "quarantine": {
         "action": "Darbības",
@@ -547,5 +558,14 @@
         "waiting": "Waiting",
         "week": "Nedēļa",
         "weeks": "Nedēļas"
+    },
+    "datatables": {
+        "paginate": {
+            "first": "Pirmā",
+            "last": "Pēdējā"
+        }
+    },
+    "debug": {
+        "last_modified": "Pēdējoreiz mainīts"
     }
 }
