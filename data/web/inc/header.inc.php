@@ -30,6 +30,14 @@ if(!file_exists($CSSPath)) {
   cleanupCSS($hash);
 }
 
+$mailcow_apps_processed = $MAILCOW_APPS;
+for ($i = 0; $i < count($mailcow_apps_processed); $i++) {
+  if (!empty($_SESSION['mailcow_cc_username'])){
+    $mailcow_apps_processed[$i]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $mailcow_apps_processed[$i]['user_link']);
+  }
+}
+
+
 $globalVariables = [
   'mailcow_hostname' => getenv('MAILCOW_HOSTNAME'),
   'mailcow_locale' => @$_SESSION['mailcow_locale'],
@@ -45,6 +53,7 @@ $globalVariables = [
   'lang' => $lang,
   'skip_sogo' => (getenv('SKIP_SOGO') == 'y'),
   'allow_admin_email_login' => (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == 'n'),
+  'mailcow_apps_processed' => $mailcow_apps_processed,
   'mailcow_apps' => $MAILCOW_APPS,
   'app_links' => customize('get', 'app_links'),
   'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
