@@ -65,8 +65,7 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
-  header('HTTP/1.0 403 Forbidden');
-  echo "Forbidden";
+  header("Location: /SOGo/");
   exit;
 }
 // only check for admin-login on sogo GUI requests
