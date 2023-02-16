@@ -656,7 +656,7 @@
     },
     "login": {
         "delayed": "Conectarea a fost întârziată cu %s secunde.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Autentificare",
         "mobileconfig_info": "Autentificați-vă cu adresa de email pentru a descărca profilul de conexiune Apple.",
         "other_logins": "Autentificare cu cheie",

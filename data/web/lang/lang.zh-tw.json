@@ -655,7 +655,7 @@
     },
     "login": {
         "delayed": "請在 %s 秒後重新登入。",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "登入",
         "mobileconfig_info": "請使用信箱使用者登入以下載 Apple 連接描述檔案。",
         "other_logins": "金鑰登入",
