@@ -598,7 +598,7 @@
     },
     "login": {
         "delayed": "Aanmelding vertraagd met %s seconden.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Aanmelden",
         "mobileconfig_info": "Log in als mailboxgebruiker om het Apple-verbindingsprofiel te downloaden.",
         "other_logins": "Meld aan met key",

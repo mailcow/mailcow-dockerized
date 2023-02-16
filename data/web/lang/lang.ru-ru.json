@@ -654,7 +654,7 @@
     },
     "login": {
         "delayed": "Вход был отложен на %s секунд.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Войти",
         "mobileconfig_info": "Пожалуйста, войдите в систему как пользователь почтового аккаунта для загрузки профиля подключения Apple.",
         "other_logins": "Вход с помощью ключа",
