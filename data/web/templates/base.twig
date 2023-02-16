@@ -29,7 +29,7 @@
 <body>
 <div class="overlay"></div>
 {% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top p-0">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-0">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
       <img class="main-logo" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}">
@@ -60,49 +60,58 @@
           </ul>
         </li>
         {% endif %}
+
         {% if mailcow_cc_role %}
+        {% if mailcow_cc_role == 'admin' %}
         <li class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.mailcow_system }}</a>
           <ul class="dropdown-menu">
-            {% if mailcow_cc_role == 'admin' %}
             <li><a href="/debug" class="dropdown-item {% if is_uri('debug') %}active{% endif %}">{{ lang.header.debug }}</a></li>
             <li><a href="/admin" class="dropdown-item {% if is_uri('admin') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
-            {% endif %}
-            {% if mailcow_cc_role != 'admin' %}
-            <li><a href="/user" class="dropdown-item {% if is_uri('user') %}active{% endif %}">{{ lang.header.user_settings }}</a></li>
-            {% endif %}
           </ul>
         </li>
+        {% endif %}
+        {% if mailcow_cc_role != 'admin' %}
+        <li class="nav-item dropdown">
+          <a href="/user" class="nav-link" role="button" aria-expanded="false">{{ lang.header.user_settings }}</a>
+        </li>
+        {% endif %}
+
+        {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
         <li class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false">{{ lang.header.email }}</a>
           <ul class="dropdown-menu">
-            {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
             <li><a href="/mailbox" class="dropdown-item {% if is_uri('mailbox') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
-            {% endif %}
             <li><a href="/quarantine" class="dropdown-item {% if is_uri('quarantine') %}active{% endif %}">{{ lang.header.quarantine }}</a></li>
             {% if mailcow_cc_role == 'admin' %}
             <li><a href="/queue" class="dropdown-item {% if is_uri('queue') %}active{% endif %}">{{ lang.queue.queue_manager }}</a></li>
-            {% endif %}
-            {% if mailcow_cc_role == 'admin' %}
             <li><a href="#" class="dropdown-item" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer">{{ lang.header.restart_sogo }}</a></li>
             {% endif %}
           </ul>
         </li>
         {% endif %}
-        {% if mailcow_apps or app_links %}
+
+        {% if mailcow_cc_role == 'user' %}
+        <li class="nav-item dropdown">
+          <a href="/quarantine" class="nav-link">{{ lang.header.quarantine }}</a>
+        </li>
+        {% endif %}
+        {% endif %}
+
+        {% if mailcow_apps_processed or app_links %}
         <li class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg me-2"></i> {{ ui_texts.apps_name|raw }}</a>
           <ul class="dropdown-menu">
-            {% for app in mailcow_apps %}
-              {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+            {% for app in mailcow_apps_processed %}
+              {% if not skip_sogo or not is_uri('SOGo', app.user_link) %}
               <li {% if app.description %}title="{{ app.description }}"{% endif %}>
-                <a href="{{ app.link }}" class="dropdown-item">{{ app.name }}</a>
+                <a href="{{ app.user_link }}" class="dropdown-item">{{ app.name }}</a>
               </li>
               {% endif %}
             {% endfor %}
             {% for row in app_links %}
               {% for key, val in row %}
-              <li><a href="{{ val }}" class="dropdown-item">{{ key }}</a></li>
+              <li><a href="{{ val.user_link }}" class="dropdown-item">{{ key }}</a></li>
               {% endfor %}
             {% endfor %}
           </ul>
@@ -132,7 +141,7 @@
 </div>
 {% endif %}
 
-<div class="container my-4">
+<div class="container flex-grow-1 my-4">
 {% block content %}{% endblock %}
 </div>
 

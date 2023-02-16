@@ -58,13 +58,15 @@
           <tr>
             <th>{{ lang.admin.app_name }}</th>
             <th>{{ lang.admin.link }}</th>
+            <th>{{ lang.admin.user_link }}</th>
             <th style="width:100px;">&nbsp;</th>
           </tr>
           {% for row in app_links %}
             {% for key, val in row %}
               <tr>
                 <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="{{ key }}"></td>
-                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val.link }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required value="{{ val.user_link }}"></td>
                 <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">{{ lang.admin.remove_row }}</a></td>
               </tr>
             {% endfor %}
@@ -73,6 +75,7 @@
             <tr>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.name }}" disabled></td>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.link }}" disabled></td>
+              <td><input class="input-sm input-xs-lg form-control" value="{{ app.user_link }}" disabled></td>
               <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100 disabled" type="button">{{ lang.admin.remove_row }}</a></td>
             </tr>
           {% endfor %}

@@ -714,6 +714,7 @@ jQuery(function($){
     if (type == "app_link") {
       cols = '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required></td>';
+      cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required></td>';
       cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
       cols = '<td><input style="text-align:center" class="input-sm input-xs-lg form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
