@@ -77,7 +77,9 @@
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-              <a href="{{ val }}" role="button" class="btn btn-primary">{{ key }}</a>
+              <div class="m-2">
+                <a href="{{ val.link }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
+              </div>
             {% endfor %}
           {% endfor %}
         </div>
