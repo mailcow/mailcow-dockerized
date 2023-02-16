@@ -612,7 +612,7 @@
     },
     "login": {
         "delayed": "La connexion a été retardée de %s secondes.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Connexion",
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte pour télécharger le profil de connexion Apple demandé.",
         "other_logins": "Clé d'authentification",
