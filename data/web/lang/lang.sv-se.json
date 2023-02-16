@@ -618,7 +618,7 @@
     },
     "login": {
         "delayed": "Av säkerhetsskäl har inloggning inaktiverats i %s sekunder.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Logga in",
         "mobileconfig_info": "Logga in som en användare av brevlåda för att ladda ner den begärda Apple-anslutningsprofilen.",
         "other_logins": "Loggain med nyckel",

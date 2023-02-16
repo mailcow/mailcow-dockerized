@@ -710,7 +710,7 @@
     },
     "login": {
         "delayed": "Login wurde zur Sicherheit um %s Sekunde/n verzögert.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Anmelden",
         "mobileconfig_info": "Bitte als Mailbox-Benutzer einloggen, um das Verbindungsprofil herunterzuladen.",
         "other_logins": "Key Login",

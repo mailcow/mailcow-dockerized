@@ -650,7 +650,7 @@
     },
     "login": {
         "delayed": "Přihlášení zpožděno o %s sekund.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Přihlásit",
         "mobileconfig_info": "Ke stažení profilového souboru se přihlaste jako uživatel schránky.",
         "other_logins": "Přihlášení klíčem",
