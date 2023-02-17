@@ -359,21 +359,28 @@ def snat4(snat_target):
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
         new_rule = get_snat4_rule()
-        for position, rule in enumerate(chain.rules):
-          match = all((
-            new_rule.get_src() == rule.get_src(),
-            new_rule.get_dst() == rule.get_dst(),
-            new_rule.target.parameters == rule.target.parameters,
-            new_rule.target.name == rule.target.name
-          ))
-          if position == 0:
-            if not match:
-              logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
-              chain.insert_rule(new_rule)
-          else:
-            if match:
-              logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
-              chain.delete_rule(rule)
+
+        if not chain.rules:
+          # if there are no rules in the chain, insert the new rule directly
+          logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
+          chain.insert_rule(new_rule)
+        else:
+          for position, rule in enumerate(chain.rules):
+            match = all((
+              new_rule.get_src() == rule.get_src(),
+              new_rule.get_dst() == rule.get_dst(),
+              new_rule.target.parameters == rule.target.parameters,
+              new_rule.target.name == rule.target.name
+            ))
+            if position == 0:
+              if not match:
+                logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
+                chain.insert_rule(new_rule)
+            else:
+              if match:
+                logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
+                chain.delete_rule(rule)
+
         table.commit()
         table.autocommit = True
       except:
