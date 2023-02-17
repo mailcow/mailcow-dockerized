@@ -586,7 +586,7 @@
     },
     "login": {
         "delayed": "Login blev forsinket med% s sekunder.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Log ind som postkassebruger for at downloade den anmodede Apple-forbindelsesprofil.",
         "other_logins": "Nøgle login",

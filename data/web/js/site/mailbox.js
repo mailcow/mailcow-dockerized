@@ -926,9 +926,12 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             }
-            item.in_use = '<div class="progress">' +
+            item.in_use = {
+              sortBy: item.percent_in_use,
+              value: '<div class="progress">' +
               '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
-              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
+              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
+            };
             item.username = escapeHtml(item.username);
 
             if (Array.isArray(item.tags)){
@@ -994,10 +997,11 @@ jQuery(function($){
         },
         {
           title: lang.in_use,
-          data: 'in_use',
+          data: 'in_use.value',
           defaultContent: '',
           responsivePriority: 9,
-          className: 'dt-data-w100'
+          className: 'dt-data-w100',
+          orderData: 24
         },
         {
           title: lang.fname,
@@ -1102,7 +1106,12 @@ jQuery(function($){
         {
           title: "",
           data: 'quota.sortBy',
-          responsivePriority: 8,
+          defaultContent: '',
+          className: "d-none"
+        },
+        {
+          title: "",
+          data: 'in_use.sortBy',
           defaultContent: '',
           className: "d-none"
         },
