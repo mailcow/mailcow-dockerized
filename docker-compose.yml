@@ -49,8 +49,6 @@ services:
         - "${REDIS_PORT:-127.0.0.1:7654}:6379"
       environment:
         - TZ=${TZ}
-      sysctls:
-        - net.core.somaxconn=4096
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
@@ -284,11 +282,6 @@ services:
         ofelia.job-exec.dovecot_fts.command: "/usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true"
         ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
-      ulimits:
-        nproc: 65535
-        nofile:
-          soft: 20000
-          hard: 40000
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
@@ -434,7 +427,6 @@ services:
         - php-fpm-mailcow
         - redis-mailcow
       restart: always
-      privileged: true
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -443,7 +435,6 @@ services:
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-      network_mode: "host"
       volumes:
         - /lib/modules:/lib/modules:ro
 
@@ -522,7 +513,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /run/user/${CURRENT_USER_ID:?}/docker.sock:/var/run/docker.sock:ro
       networks:
         mailcow-network:
           aliases:
@@ -576,7 +567,7 @@ services:
       security_opt:
         - label=disable
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /run/user/${CURRENT_USER_ID:?}/docker.sock:/var/run/docker.sock:ro
       networks:
         mailcow-network:
           aliases:
@@ -606,10 +597,8 @@ services:
       security_opt:
         - label=disable
       restart: always
-      privileged: true
-      network_mode: "host"
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /run/user/${CURRENT_USER_ID:?}/docker.sock:/var/run/docker.sock:ro
         - /lib/modules:/lib/modules:ro
 
 networks:
