@@ -14,6 +14,14 @@ version: '3.9'
 
 services:
 
+  dovecot-mailcow:
+    cap_add:
+      - SYS_CHROOT
+
+  postfix-mailcow:
+    cap_add:
+      - SYS_CHROOT
+
   dockerapi-mailcow:
     volumes:
       - ${MAILCOW_CONTAINER_SOCKET}:/var/run/docker.sock:ro
