@@ -458,6 +458,9 @@
         "totp_verification_failed": "TOTP verification failed",
         "transport_dest_exists": "Transport destination \"%s\" exists",
         "webauthn_verification_failed": "WebAuthn verification failed: %s",
+        "webauthn_authenticator_failed": "The selected authenticator was not found",
+        "webauthn_publickey_failed": "No public key was stored for the selected authenticator",
+        "webauthn_username_failed": "The selected authenticator belongs to another account",
         "unknown": "An unknown error occurred",
         "unknown_tfa_method": "Unknown TFA method",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
@@ -468,7 +471,7 @@
     },
     "datatables": {
         "collapse_all": "Collapse All",
-        "decimal": "",
+        "decimal": ".",
         "emptyTable": "No data available in table",
         "expand_all": "Expand All",
         "info": "Showing _START_ to _END_ of _TOTAL_ entries",
@@ -707,7 +710,7 @@
     },
     "login": {
         "delayed": "Login was delayed by %s seconds.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
         "other_logins": "Key login",

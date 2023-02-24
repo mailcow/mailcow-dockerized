@@ -106,7 +106,8 @@
         "username": "Používateľské meno",
         "validate": "Overiť",
         "validation_success": "Úspešne overené",
-        "app_passwd_protocols": "Povolené protokoly k heslu aplikácie"
+        "app_passwd_protocols": "Povolené protokoly k heslu aplikácie",
+        "tags": "Štítky"
     },
     "admin": {
         "access": "Prístup",
@@ -656,7 +657,7 @@
     },
     "login": {
         "delayed": "Prihlásenie bolo oneskorené o %s sekúnd.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Prihlásenie",
         "mobileconfig_info": "Prosím, prihláste sa ako mailový používateľ pre stiahnutie požadovaného Apple profilu.",
         "other_logins": "Prihlásenie kľúčom",

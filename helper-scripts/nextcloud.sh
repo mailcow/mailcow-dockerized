@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=25.0.2
+NEXTCLOUD_VERSION=25.0.4
 
-for bin in curl dirmngr; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+echo -ne "Checking prerequisites..."
+sleep 1
+for bin in curl dirmngr tar bzip2; do
+  if [[ -z $(which ${bin}) ]]; then echo -ne "\r\033[31mCannot find ${bin}, exiting...\033[0m\n"; exit 1; fi
 done
+echo -ne "\r\033[32mFound all prerequisites! Continuing...\033[0m\n"
 
 [[ -z ${1} ]] && NC_HELP=y
 
 while [ "$1" != '' ]; do
+  if [[ $# -ne 1 ]]; then
+      echo -e "\033[31mPlease use only one parameter at the same time!\033[0m" >&2
+      exit 2
+  fi
   case "${1}" in
     -p|--purge) NC_PURGE=y && shift;;
     -i|--install) NC_INSTALL=y && shift;;
+    -u|--update)  NC_UPDATE=y && shift;;
     -r|--resetpw) NC_RESETPW=y && shift;;
     -h|--help) NC_HELP=y && shift;;
     *) echo "Unknown parameter: ${1}" && shift;;
@@ -22,12 +30,10 @@ if [[ ${NC_HELP} == "y" ]]; then
   printf 'Usage:\n\n'
   printf '  -p|--purge\n    Purge Nextcloud\n'
   printf '  -i|--install\n    Install Nextcloud\n'
+  printf '  -u|--update\n    Update Nextcloud\n'
   printf '  -r|--resetpw\n    Reset password\n\n'
   exit 0
 fi
-
-[[ ${NC_PURGE} == "y" ]] && [[ ${NC_INSTALL} == "y" ]] && { echo "Cannot use -p and -i at the same time!"; exit 1; }
-[[ ${NC_PURGE} == "y" ]] && [[ ${NC_RESETPW} == "y" ]] && { echo "Cannot use -p and -r at the same time!"; exit 1; }
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${SCRIPT_DIR}/../
@@ -41,8 +47,27 @@ if [[ ${NC_PURGE} == "y" ]]; then
     exit 1
   fi
 
-  docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
-    "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'oc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)"
+  echo -e "\033[33mDetecting Database information...\033[0m"
+  if [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "Show databases" | grep "nextcloud") ]]; then
+    echo -e "\033[32mFound seperate Nextcloud database (newer scheme)!\033[0m"
+    echo -e "\033[31mPurging...\033[0m"
+    docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "DROP DATABASE nextcloud;" > /dev/null
+    docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "DROP USER 'nextcloud'@'%';" > /dev/null
+  elif [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} mailcow -e "SHOW TABLES LIKE 'oc_%'") && $? -eq 0 ]]; then
+    echo -e "\033[32mFound Nextcloud (oc) tables inside of mailcow database (old scheme)!\033[0m"
+    echo -e "\033[31mPurging...\033[0m"
+    docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
+     "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'oc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)" > /dev/null
+  elif [[ $(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} mailcow -e "SHOW TABLES LIKE 'nc_%'") && $? -eq 0 ]]; then
+    echo -e "\033[32mFound Nextcloud (nc) tables inside of mailcow database (old scheme)!\033[0m"
+    echo -e "\033[31mPurging...\033[0m"
+    docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e \
+     "$(docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "SELECT IFNULL(GROUP_CONCAT('DROP TABLE ', TABLE_SCHEMA, '.', TABLE_NAME SEPARATOR ';'),'SELECT NULL;') FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'nc_%' AND TABLE_SCHEMA = '${DBNAME}';" -BN)" > /dev/null
+  else
+    echo -e "\033[31mError: No Nextcloud databases/tables found!"
+    echo -e "\033[33mNot purging anything...\033[0m"
+    exit 1
+  fi
   docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c ' cat <<EOF | redis-cli
 SELECT 10
 FLUSHDB
@@ -58,9 +83,10 @@ EOF
 
   docker restart $(docker ps -aqf name=nginx-mailcow)
 
+  echo -e "\033[32mNextcloud has been uninstalled sucessfully!\033[0m"
+
 elif [[ ${NC_UPDATE} == "y" ]]; then
-  exit;
-  read -r -p "Are you sure you want to update Nextcloud? [y/N] " response
+  read -r -p "Are you sure you want to update Nextcloud (with Nextclouds own updater)? [y/N] " response
   response=${response,,}
   if [[ ! "$response" =~ ^(yes|y)$ ]]; then
     echo "OK, aborting."
@@ -68,23 +94,14 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
   fi
 
   if [ ! -f data/web/nextcloud/occ ]; then
-    echo "Nextcloud occ not found. Is Nextcloud installed?"
+    echo -e "\033[31mError: Nextcloud occ not found. Is Nextcloud installed?\033[0m"
     exit 1
   fi
   if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
     echo "Nextcloud seems not to be installed."
     exit 1
-  elif ! grep -q 'version: 20\.' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
-    echo "Cannot upgrade to new major version, please update manually."
-    exit 1
   else
-    curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
-      && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
-      && rm nextcloud.tar.bz2 \
-      && mkdir -p ./data/web/nextcloud/data \
-      && chmod +x ./data/web/nextcloud/occ \
-       docker exec -it $(docker ps -f name=php-fpm-mailcow -q) bash -c "chown www-data:www-data -R /web/nextcloud" \
-       docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings upgrade"
+    docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "php /web/nextcloud/updater/updater.phar"
   fi
 
 elif [[ ${NC_INSTALL} == "y" ]]; then
@@ -97,25 +114,48 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     [[ ! ${NC_CONT_FAIL,,} =~ ^(yes|y)$ ]] && { echo "Ok, exiting..."; exit 1; }
   fi
 
-  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
-
+  echo -e "\033[33mDownloading \033[34mNextcloud ${NEXTCLOUD_VERSION}\033[33m...\033[0m"
   curl -L# -o nextcloud.tar.bz2 "https://download.nextcloud.com/server/releases/nextcloud-$NEXTCLOUD_VERSION.tar.bz2" || { echo "Failed to download Nextcloud archive."; exit 1; } \
     && tar -xjf nextcloud.tar.bz2 -C ./data/web/ \
     && rm nextcloud.tar.bz2 \
     && mkdir -p ./data/web/nextcloud/data \
     && chmod +x ./data/web/nextcloud/occ
 
+  echo -e "\033[33mCreating 'nextcloud' database...\033[0m"
+  NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+  NC_DBUSER=nextcloud
+  NC_DBNAME=nextcloud
+
+  echo -ne "[1/3] Creating 'nextcloud' database"
+  docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "CREATE DATABASE ${NC_DBNAME};"
+  sleep 2
+  echo -ne "\r[2/3] Creating 'nextcloud' database user"
+  docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "CREATE USER '${NC_DBUSER}'@'%' IDENTIFIED BY '${NC_DBPASS}';"
+  sleep 2
+  echo -ne "\r[3/3] Granting 'nextcloud' user all permissions on database 'nextcloud'"
+  docker exec -it $(docker ps -f name=mysql-mailcow -q) mysql -uroot -p${DBROOT} -e "GRANT ALL PRIVILEGES ON ${NC_DBNAME}.* TO '${NC_DBUSER}'@'%';"
+  sleep 2
+
+  echo ""
+  echo -e "\033[33mInstalling Nextcloud...\033[0m"
+  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+
+  echo -ne "[1/4] Setting correct permissions for www-data"
   docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud"
+  sleep 2
+  echo -ne "\r[2/4] Running occ maintenance:install to install Nextcloud"
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ --no-warnings maintenance:install \
     --database mysql \
     --database-host mysql \
-    --database-name ${DBNAME} \
-    --database-user ${DBUSER} \
-    --database-pass ${DBPASS} \
+    --database-name ${NC_DBNAME} \
+    --database-user ${NC_DBUSER} \
+    --database-pass ${NC_DBPASS} \
     --admin-user admin \
     --admin-pass ${ADMIN_NC_PASS} \
-      --data-dir /web/nextcloud/data
+    --data-dir /web/nextcloud/data > /dev/null 2>&1
 
+  echo -ne "\r[3/4] Setting custom parameters inside the Nextcloud config file"
+  echo ""
   docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings config:system:set redis host --value=redis --type=string; \
     /web/nextcloud/occ --no-warnings config:system:set redis port --value=6379 --type=integer; \
     /web/nextcloud/occ --no-warnings config:system:set redis timeout --value=0.0 --type=integer; \
@@ -141,13 +181,28 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 arguments 0 --value={dovecot:143/imap/tls/novalidate-cert}; \
     #/web/nextcloud/occ --no-warnings config:system:set user_backends 0 class --value=OC_User_IMAP; \
 
+    echo -e "\r[4/4] Enabling Nginx Configuration"
     cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
     sed -i "s/NC_SUBD/${NC_SUBD}/g" ./data/conf/nginx/nextcloud.conf
+    sleep 2
 
-  echo "Restarting Nginx..."
+  echo ""
+  echo -e "\033[33mFinalizing installation...\033[0m"
   docker restart $(docker ps -aqf name=nginx-mailcow)
 
-  echo "Login as admin with password: ${ADMIN_NC_PASS}"
+  echo ""
+  echo "******************************************"
+  echo "*        SAVE THESE CREDENTIALS          *"
+  echo "*    INSTALL DATE: $(date +%Y-%m-%d_%H-%M-%S)   *"
+  echo "******************************************"
+  echo ""
+  echo -e "\033[36mDatabase name:      ${NC_DBNAME}\033[0m"
+  echo -e "\033[36mDatabase user:      ${NC_DBUSER}\033[0m"
+  echo -e "\033[36mDatabase password:  ${NC_DBPASS}\033[0m"
+  echo ""
+  echo -e "\033[31mUI admin password:  ${ADMIN_NC_PASS}\033[0m"
+  echo ""
+
 
 elif [[ ${NC_RESETPW} == "y" ]]; then
     printf 'You are about to set a new password for a Nextcloud user.\n\nDo not use this option if your Nextcloud is configured to use mailcow for authentication.\nSet a new password for the corresponding mailbox in mailcow, instead.\n\n'
@@ -163,5 +218,4 @@ elif [[ ${NC_RESETPW} == "y" ]]; then
       read -p "Enter the username: " NC_USER
     done
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ user:resetpassword ${NC_USER}
-
 fi

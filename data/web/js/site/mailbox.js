@@ -77,7 +77,7 @@ $(document).ready(function() {
         $('.dns-modal-body').html(xhr.responseText);
       }
     });
-  }); 
+  });
   // @Open Domain add modal
   $('#addDomainModal').on('show.bs.modal', function(e) {
     $.ajax({
@@ -85,24 +85,24 @@ $(document).ready(function() {
       data: {},
       dataType: 'json',
       success: async function(data){
-        $('#domain_templates').find('option').remove(); 
+        $('#domain_templates').find('option').remove();
         $('#domain_templates').selectpicker('destroy');
         $('#domain_templates').selectpicker();
         for (var i = 0; i < data.length; i++){
           if (data[i].template === "Default"){
-            $('#domain_templates').prepend($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': true
+            $('#domain_templates').prepend($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': true
             }));
             setDomainTemplateData(data[i].attributes);
           } else {
-            $('#domain_templates').append($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': false
+            $('#domain_templates').append($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': false
             }));
           }
         };
@@ -127,24 +127,24 @@ $(document).ready(function() {
       data: {},
       dataType: 'json',
       success: async function(data){
-        $('#mailbox_templates').find('option').remove(); 
+        $('#mailbox_templates').find('option').remove();
         $('#mailbox_templates').selectpicker('destroy');
         $('#mailbox_templates').selectpicker();
         for (var i = 0; i < data.length; i++){
           if (data[i].template === "Default"){
-            $('#mailbox_templates').prepend($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': true
+            $('#mailbox_templates').prepend($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': true
             }));
             setMailboxTemplateData(data[i].attributes);
           } else {
-            $('#mailbox_templates').append($('<option>', { 
-                value: data[i].id,
-                text : data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': false
+            $('#mailbox_templates').append($('<option>', {
+              value: data[i].id,
+              text : data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': false
             }));
           }
         };
@@ -229,20 +229,20 @@ $(document).ready(function() {
     } else {
       $('#addDomain_gal').prop('checked', false);
     }
-    
+
     if (template.active == 1){
       $('#addDomain_active').prop('checked', true);
     } else {
       $('#addDomain_active').prop('checked', false);
     }
-    
+
     $("#addDomain_rl_value").val(template.rl_value);
     $('#addDomain_rl_frame').selectpicker('val', template.rl_frame);
     $("#dkim_selector").val(template.dkim_selector);
     if (!template.key_size)
       template.key_size = 2048;
     $('#key_size').selectpicker('val', template.key_size.toString());
-    
+
     if (template.backupmx == 1){
       $('#addDomain_relay_domain').prop('checked', true);
     } else {
@@ -259,7 +259,7 @@ $(document).ready(function() {
       $('#addDomain_relay_unknown_only').prop('checked', false);
     }
 
-    
+
     // load tags
     $('#addDomain_tags').val("");
     $($('#addDomain_tags').parent().find(".tag-values")[0]).val("");
@@ -404,7 +404,7 @@ $(document).ready(function() {
     } else {
       $('#sogo_access').prop('checked', false);
     }
-    
+
     // load tags
     $('#addMailbox_tags').val("");
     $($('#addMailbox_tags').parent().find(".tag-values")[0]).val("");
@@ -417,11 +417,11 @@ jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   function unix_time_format(i){return""==i?'<i class="bi bi-x"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
-  
+
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    
+
     if ($.fn.DataTable.isDataTable('#' + table_name))
       $('#' + table_name).DataTable().ajax.reload();
   });
@@ -433,10 +433,11 @@ jQuery(function($){
     }
 
     var table = $('#domain_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -612,13 +613,13 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
       ]
-    });      
-    
+    });
+
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
     });
@@ -631,15 +632,16 @@ jQuery(function($){
     }
 
     var table = $('#templates_domain_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-templates-domains', '#templates_domain_table');
       },
@@ -666,13 +668,13 @@ jQuery(function($){
             }
             item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
 
-            
+
             if (item.template.toLowerCase() == "default"){
               item.action = '<div class="btn-group">' +
               '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '</div>';
             }
-            else{
+            else {
               item.action = '<div class="btn-group">' +
               '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/domain/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
@@ -693,138 +695,138 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: "ID",
-            data: 'id',
-            responsivePriority: 2,
-            defaultContent: ''
-          },
-          {
-            title: lang.template,
-            data: 'template',
-            responsivePriority: 3,
-            defaultContent: ''
-          },              
-          {
-            title: lang.max_aliases,
-            data: 'attributes.max_num_aliases_for_domain',
-            defaultContent: '',
-          },             
-          {
-            title: lang.max_mailboxes,
-            data: 'attributes.max_num_mboxes_for_domain',
-            defaultContent: '',
-          },             
-          {
-            title: lang.mailbox_defquota,
-            data: 'attributes.def_quota_for_mbox',
-            defaultContent: '',
-          },               
-          {
-            title: lang.max_quota,
-            data: 'attributes.max_quota_for_mbox',
-            defaultContent: '',
-          },            
-          {
-            title: lang.domain_quota_total,
-            data: 'attributes.max_quota_for_domain',
-            defaultContent: '',
-          },          
-          {
-            title: lang.gal,
-            data: 'attributes.gal',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.backup_mx,
-            data: 'attributes.backupmx',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.relay_all,
-            data: 'attributes.relay_all_recipients',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.relay_unknown,
-            data: 'attributes.relay_unknown_only',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.active,
-            data: 'attributes.active',
-            defaultContent: '',
-            responsivePriority: 4,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },               
-          {
-            title: 'rl_frame',
-            data: 'attributes.rl_frame',
-            defaultContent: '',
-            class: 'none',
-          },             
-          {
-            title: 'rl_value',
-            data: 'attributes.rl_value',
-            defaultContent: '',
-            class: 'none',
-          },            
-          {
-            title: lang.dkim_domains_selector,
-            data: 'attributes.dkim_selector',
-            defaultContent: '',
-            class: 'none',
-          },            
-          {
-            title: lang.dkim_key_length,
-            data: 'attributes.key_size',
-            defaultContent: '',
-            class: 'none',
-          }, 
-          {
-            title: 'Tags',
-            data: 'attributes.tags',
-            defaultContent: '',
-            className: 'none'
-          },    
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
-            responsivePriority: 6,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: "ID",
+          data: 'id',
+          responsivePriority: 2,
+          defaultContent: ''
+        },
+        {
+          title: lang.template,
+          data: 'template',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.max_aliases,
+          data: 'attributes.max_num_aliases_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.max_mailboxes,
+          data: 'attributes.max_num_mboxes_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.mailbox_defquota,
+          data: 'attributes.def_quota_for_mbox',
+          defaultContent: '',
+        },
+        {
+          title: lang.max_quota,
+          data: 'attributes.max_quota_for_mbox',
+          defaultContent: '',
+        },
+        {
+          title: lang.domain_quota_total,
+          data: 'attributes.max_quota_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.gal,
+          data: 'attributes.gal',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.backup_mx,
+          data: 'attributes.backupmx',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.relay_all,
+          data: 'attributes.relay_all_recipients',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.relay_unknown,
+          data: 'attributes.relay_unknown_only',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.active,
+          data: 'attributes.active',
+          defaultContent: '',
+          responsivePriority: 4,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: 'rl_frame',
+          data: 'attributes.rl_frame',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: 'rl_value',
+          data: 'attributes.rl_value',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: lang.dkim_domains_selector,
+          data: 'attributes.dkim_selector',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: lang.dkim_key_length,
+          data: 'attributes.key_size',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: 'Tags',
+          data: 'attributes.tags',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 6,
+          defaultContent: ''
+        },
       ]
     });
 
@@ -840,10 +842,11 @@ jQuery(function($){
     }
 
     var table = $('#mailbox_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -923,11 +926,14 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             }
-            item.in_use = '<div class="progress">' +
+            item.in_use = {
+              sortBy: item.percent_in_use,
+              value: '<div class="progress">' +
               '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
-              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
+              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
+            };
             item.username = escapeHtml(item.username);
-            
+
             if (Array.isArray(item.tags)){
               var tags = '';
               for (var i = 0; i < item.tags.length; i++)
@@ -942,167 +948,173 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.domain_quota,
-            data: 'quota.value',
-            responsivePriority: 8,
-            defaultContent: '',  
-            orderData: 23
-          },
-          {
-            title: lang.last_mail_login,
-            data: 'last_mail_login',
-            defaultContent: '',
-            responsivePriority: 7,
-            render: function (data, type) {
-              res = data.split("/");
-              return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-                '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-                '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
-            }
-          },
-          {
-            title: lang.last_pw_change,
-            data: 'last_pw_change',
-            defaultContent: ''
-          },
-          {
-            title: lang.in_use,
-            data: 'in_use',
-            defaultContent: '',
-            responsivePriority: 9,
-            className: 'dt-data-w100'
-          },
-          {
-            title: lang.fname,
-            data: 'name',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.tls_enforce_in,
-            data: 'tls_enforce_in',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.tls_enforce_out,
-            data: 'tls_enforce_out',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'SMTP',
-            data: 'smtp_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'IMAP',
-            data: 'imap_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'POP3',
-            data: 'pop3_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'SIEVE',
-            data: 'sieve_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.quarantine_notification,
-            data: 'quarantine_notification',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.quarantine_category,
-            data: 'quarantine_category',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.msg_num,
-            data: 'messages',
-            defaultContent: '',
-            responsivePriority: 5
-          },
-          {
-            title: lang.created_on,
-            data: 'created',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.last_modified,
-            data: 'modified',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'Tags',
-            data: 'tags',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            responsivePriority: 4,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
-            responsivePriority: 6,
-            defaultContent: ''
-          },
-          {
-            title: "",
-            data: 'quota.sortBy',
-            responsivePriority: 8,
-            defaultContent: '',
-            className: "d-none"
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.domain_quota,
+          data: 'quota.value',
+          responsivePriority: 8,
+          defaultContent: '',
+          orderData: 23
+        },
+        {
+          title: lang.last_mail_login,
+          data: 'last_mail_login',
+          defaultContent: '',
+          responsivePriority: 7,
+          render: function (data, type) {
+            res = data.split("/");
+            return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+              '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
+              '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+          }
+        },
+        {
+          title: lang.last_pw_change,
+          data: 'last_pw_change',
+          defaultContent: ''
+        },
+        {
+          title: lang.in_use,
+          data: 'in_use.value',
+          defaultContent: '',
+          responsivePriority: 9,
+          className: 'dt-data-w100',
+          orderData: 24
+        },
+        {
+          title: lang.fname,
+          data: 'name',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.tls_enforce_in,
+          data: 'tls_enforce_in',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.tls_enforce_out,
+          data: 'tls_enforce_out',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'SMTP',
+          data: 'smtp_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'IMAP',
+          data: 'imap_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'POP3',
+          data: 'pop3_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'SIEVE',
+          data: 'sieve_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.quarantine_notification,
+          data: 'quarantine_notification',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.quarantine_category,
+          data: 'quarantine_category',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.msg_num,
+          data: 'messages',
+          defaultContent: '',
+          responsivePriority: 5
+        },
+        {
+          title: lang.created_on,
+          data: 'created',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.last_modified,
+          data: 'modified',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'Tags',
+          data: 'tags',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          responsivePriority: 4,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 6,
+          defaultContent: ''
+        },
+        {
+          title: "",
+          data: 'quota.sortBy',
+          defaultContent: '',
+          className: "d-none"
+        },
+        {
+          title: "",
+          data: 'in_use.sortBy',
+          defaultContent: '',
+          className: "d-none"
+        },
       ]
     });
 
@@ -1118,15 +1130,16 @@ jQuery(function($){
     }
 
     var table = $('#templates_mbox_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
       },
@@ -1175,17 +1188,17 @@ jQuery(function($){
               item.attributes.quarantine_category = lang.q_all;
             }
 
-            
+
             if (item.template.toLowerCase() == "default"){
-                item.action = '<div class="btn-group">' +
-                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                  '</div>';
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '</div>';
             }
             else {
-                  item.action = '<div class="btn-group">' +
-                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                  '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                  '</div>';              
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                '</div>';
             }
 
             if (Array.isArray(item.attributes.tags)){
@@ -1230,12 +1243,12 @@ jQuery(function($){
           data: 'template',
           responsivePriority: 3,
           defaultContent: ''
-        },              
+        },
         {
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
-        },             
+        },
         {
           title: lang.tls_enforce_in,
           data: 'attributes.tls_enforce_in',
@@ -1282,7 +1295,7 @@ jQuery(function($){
           data: 'attributes.quarantine_category',
           defaultContent: '',
           className: 'none'
-        },            
+        },
         {
           title: lang.force_pw_update,
           data: 'attributes.force_pw_update',
@@ -1291,25 +1304,25 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
           }
-        },            
+        },
         {
           title: "rl_frame",
           data: 'attributes.rl_frame',
           defaultContent: '',
           class: 'none',
-        },           
+        },
         {
           title: 'rl_value',
           data: 'attributes.rl_value',
           defaultContent: '',
           class: 'none',
-        }, 
+        },
         {
           title: 'Tags',
           data: 'attributes.tags',
           defaultContent: '',
           className: 'none'
-        },           
+        },
         {
           title: lang.active,
           data: 'attributes.active',
@@ -1318,17 +1331,17 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
           }
-        },     
+        },
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
         },
       ]
     });
-    
+
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
     });
@@ -1341,10 +1354,11 @@ jQuery(function($){
     }
 
     var table = $('#resource_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -1377,65 +1391,65 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.description,
-            data: 'description',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.alias,
-            data: 'name',
-            defaultContent: ''
-          },
-          {
-            title: lang.kind,
-            data: 'kind',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.multiple_bookings,
-            data: 'multiple_bookings',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            responsivePriority: 5,
-            defaultContent: '',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right'
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.description,
+          data: 'description',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.alias,
+          data: 'name',
+          defaultContent: ''
+        },
+        {
+          title: lang.kind,
+          data: 'kind',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.multiple_bookings,
+          data: 'multiple_bookings',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          responsivePriority: 5,
+          defaultContent: '',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right'
+        },
       ]
     });
 
@@ -1448,14 +1462,14 @@ jQuery(function($){
       // Domains
       var optgroup = "<optgroup label='" + lang.domains + "'>";
       $.each(data.domains, function(index, domain){
-        optgroup += "<option value='" + domain + "'>" + domain + "</option>"
+        optgroup += "<option value='" + domain + "'>" + domain + "</option>";
       });
-      optgroup += "</optgroup>"
+      optgroup += "</optgroup>";
       $('#bcc-local-dest').append(optgroup);
       // Alias domains
       var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
       $.each(data.alias_domains, function(index, alias_domain){
-        optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
+        optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>";
       });
       optgroup += "</optgroup>"
       $('#bcc-local-dest').append(optgroup);
@@ -1463,9 +1477,9 @@ jQuery(function($){
       $.each(data.mailboxes, function(mailbox, aliases){
         var optgroup = "<optgroup label='" + mailbox + "'>";
         $.each(aliases, function(index, alias){
-          optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+          optgroup += "<option value='" + alias + "'>" + alias + "</option>";
         });
-        optgroup += "</optgroup>"
+        optgroup += "</optgroup>";
         $('#bcc-local-dest').append(optgroup);
       });
       // Finish
@@ -1477,17 +1491,18 @@ jQuery(function($){
       $('#bcc_table').DataTable().columns.adjust().responsive.recalc();
       return;
     }
-    
+
     var table = $('#bcc_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
       },
@@ -1514,65 +1529,65 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_type,
-            data: 'type',
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_local_dest,
-            data: 'local_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_destinations,
-            data: 'bcc_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_type,
+          data: 'type',
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_local_dest,
+          data: 'local_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_destinations,
+          data: 'bcc_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
 
@@ -1588,15 +1603,16 @@ jQuery(function($){
     }
 
     var table = $('#recipient_map_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
       },
@@ -1605,7 +1621,7 @@ jQuery(function($){
         url: "/api/v1/get/recipient_map/all",
         dataSrc: function(json){
           if (role !== "admin") return null;
-          
+
           $.each(json, function (i, item) {
             item.recipient_map_old = escapeHtml(item.recipient_map_old);
             item.recipient_map_new = escapeHtml(item.recipient_map_new);
@@ -1620,58 +1636,58 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.recipient_map_old,
-            data: 'recipient_map_old',
-            defaultContent: ''
-          },
-          {
-            title: lang.recipient_map_new,
-            data: 'recipient_map_new',
-            defaultContent: '',
-            responsivePriority: 4
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.recipient_map_old,
+          data: 'recipient_map_old',
+          defaultContent: ''
+        },
+        {
+          title: lang.recipient_map_new,
+          data: 'recipient_map_new',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
-    
+
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
     });
@@ -1684,15 +1700,16 @@ jQuery(function($){
     }
 
     var table = $('#tls_policy_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
       },
@@ -1701,7 +1718,7 @@ jQuery(function($){
         url: "/api/v1/get/tls-policy-map/all",
         dataSrc: function(json){
           if (role !== "admin") return null;
-          
+
           $.each(json, function (i, item) {
             item.dest = escapeHtml(item.dest);
             item.policy = '<b>' + escapeHtml(item.policy) + '</b>';
@@ -1721,63 +1738,63 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.tls_map_dest,
-            data: 'dest',
-            defaultContent: '',
-            responsivePriority: 4
-          },
-          {
-            title: lang.tls_map_policy,
-            data: 'policy',
-            defaultContent: ''
-          },
-          {
-            title: lang.tls_map_parameters,
-            data: 'parameters',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.tls_map_dest,
+          data: 'dest',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: lang.tls_map_policy,
+          data: 'policy',
+          defaultContent: ''
+        },
+        {
+          title: lang.tls_map_parameters,
+          data: 'parameters',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
-    
+
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
     });
@@ -1790,15 +1807,16 @@ jQuery(function($){
     }
 
     var table = $('#alias_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
       },
@@ -1849,88 +1867,88 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.alias,
-            data: 'address',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.target_address,
-            data: 'goto',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: '',
-            responsivePriority: 5,
-          },
-          {
-            title: lang.bcc_destinations,
-            data: 'bcc_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.sogo_visible,
-            data: 'sogo_visible',
-            defaultContent: '',
-            render: function(data, type){
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.public_comment,
-            data: 'public_comment',
-            defaultContent: ''
-          },
-          {
-            title: lang.private_comment,
-            data: 'private_comment',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            responsivePriority: 6,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.alias,
+          data: 'address',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.target_address,
+          data: 'goto',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          defaultContent: '',
+          responsivePriority: 5,
+        },
+        {
+          title: lang.bcc_destinations,
+          data: 'bcc_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.sogo_visible,
+          data: 'sogo_visible',
+          defaultContent: '',
+          render: function(data, type){
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.public_comment,
+          data: 'public_comment',
+          defaultContent: ''
+        },
+        {
+          title: lang.private_comment,
+          data: 'private_comment',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          responsivePriority: 6,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
-    
+
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
     });
@@ -1943,10 +1961,11 @@ jQuery(function($){
     }
 
     var table = $('#aliasdomain_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -1978,50 +1997,50 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.alias,
-            data: 'alias_domain',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.target_domain,
-            data: 'target_domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.alias,
+          data: 'alias_domain',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.target_domain,
+          data: 'target_domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
 
@@ -2037,15 +2056,16 @@ jQuery(function($){
     }
 
     var table = $('#sync_job_table').DataTable({
-			responsive: true,
+      responsive: true,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
       },
@@ -2082,9 +2102,9 @@ jQuery(function($){
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
             if (lang['syncjob_'+item.exit_status]) {
-	            item.exit_status = lang['syncjob_'+item.exit_status];
+              item.exit_status = lang['syncjob_'+item.exit_status];
             } else if (item.success != '-') {
-	            item.exit_status = lang.syncjob_check_log;
+              item.exit_status = lang.syncjob_check_log;
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
@@ -2093,87 +2113,87 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.owner,
-            data: 'user2',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: 'Server',
-            data: 'server_w_port',
-            defaultContent: ''
-          },
-          {
-            title: lang.last_run,
-            data: 'last_run',
-            defaultContent: ''
-          },
-          {
-            title: lang.syncjob_last_run_result,
-            data: 'exit_status',
-            defaultContent: ''
-          },
-          {
-            title: 'Log',
-            data: 'log',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.status,
-            data: 'is_running',
-            defaultContent: ''
-          },
-          {
-            title: lang.excludes,
-            data: 'exclude',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.mins_interval,
-            data: 'mins_interval',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.owner,
+          data: 'user2',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: 'Server',
+          data: 'server_w_port',
+          defaultContent: ''
+        },
+        {
+          title: lang.last_run,
+          data: 'last_run',
+          defaultContent: ''
+        },
+        {
+          title: lang.syncjob_last_run_result,
+          data: 'exit_status',
+          defaultContent: ''
+        },
+        {
+          title: 'Log',
+          data: 'log',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+          }
+        },
+        {
+          title: lang.status,
+          data: 'is_running',
+          defaultContent: ''
+        },
+        {
+          title: lang.excludes,
+          data: 'exclude',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.mins_interval,
+          data: 'mins_interval',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
 
@@ -2189,16 +2209,17 @@ jQuery(function($){
     }
 
     var table = $('#filter_table').DataTable({
-			responsive: true,
+      responsive: true,
       autoWidth: false,
       processing: true,
       serverSide: false,
       stateSave: true,
+      pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-filters', '#filter_table');
       },
@@ -2226,64 +2247,64 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 2,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: 'Type',
-            data: 'filter_type',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.owner,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: lang.description,
-            data: 'script_desc',
-            defaultContent: ''
-          },
-          {
-            title: 'Script',
-            data: 'script_data',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 2,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: 'Type',
+          data: 'filter_type',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.owner,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: lang.description,
+          data: 'script_desc',
+          defaultContent: ''
+        },
+        {
+          title: 'Script',
+          data: 'script_data',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
 
@@ -2294,11 +2315,11 @@ jQuery(function($){
 
   function hideTableExpandCollapseBtn(tab, table){
     if ($(table).hasClass('collapsed'))
-      $(tab).find(".table_collapse_option").show(); 
+      $(tab).find(".table_collapse_option").show();
     else
-      $(tab).find(".table_collapse_option").hide(); 
+      $(tab).find(".table_collapse_option").hide();
   }
-  
+
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {

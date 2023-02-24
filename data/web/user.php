@@ -20,6 +20,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     'tfa_data' => $tfa_data,
     'fido2_data' => $fido2_data,
     'lang_user' => json_encode($lang['user']),
+    'lang_datatables' => json_encode($lang['datatables']),
   ];
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {

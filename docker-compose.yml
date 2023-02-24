@@ -64,7 +64,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.60
+      image: mailcow/clamd:1.61
       restart: always
       depends_on:
         - unbound-mailcow
@@ -116,7 +116,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.81
+      image: mailcow/phpfpm:1.82
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -181,7 +181,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.113
+      image: mailcow/sogo:1.115
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -230,7 +230,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.21
+      image: mailcow/dovecot:1.22
       depends_on:
         - mysql-mailcow
       dns:
@@ -411,7 +411,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.83
+      image: mailcow/acme:1.84
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -449,7 +449,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.50
+      image: mailcow/netfilter:1.51
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -538,11 +538,10 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.0
+      image: mailcow/dockerapi:2.01
       security_opt:
         - label=disable
       restart: always
-      oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

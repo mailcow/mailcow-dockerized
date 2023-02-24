@@ -13,6 +13,7 @@ RUN apk add --update --no-cache python3 \
   fastapi \
   uvicorn \
   aiodocker \
+  docker \
   redis 
 
 COPY docker-entrypoint.sh /app/

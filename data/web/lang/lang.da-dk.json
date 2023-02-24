@@ -1,6 +1,6 @@
 {
     "acl": {
-        "alias_domains": "Tilføj kældenavn domæner",
+        "alias_domains": "Tilføj domænealias",
         "app_passwds": "Administrer app-adgangskoder",
         "bcc_maps": "BCC kort",
         "delimiter_action": "Afgrænsning handling",
@@ -22,9 +22,9 @@
         "spam_alias": "Midlertidige aliasser",
         "spam_policy": "Sortliste / hvidliste",
         "spam_score": "Spam-score",
-        "syncjobs": "Synkroniser job",
+        "syncjobs": "Synkroniserings job",
         "tls_policy": "TLS politik",
-        "unlimited_quota": "Ubegrænset quote for mailbokse",
+        "unlimited_quota": "Ubegrænset plads for mailbokse",
         "domain_desc": "Skift domæne beskrivelse"
     },
     "add": {
@@ -33,7 +33,7 @@
         "add": "Tilføj",
         "add_domain_only": "Tilføj kun domæne",
         "add_domain_restart": "Tilføj domæne og genstart SOGo",
-        "alias_address": "Alias adresse (r)",
+        "alias_address": "Alias adresse(r)",
         "alias_address_info": "<small>Fuld e-mail-adresse eller @ eksempel.com for at fange alle beskeder til et domæne (kommasepareret). <b> kun mailcow-domæner</b>.</small>",
         "alias_domain": "Alias-domæne",
         "alias_domain_info": "<small>Kun gyldige domænenavne (kommasepareret).</small>",
@@ -586,7 +586,7 @@
     },
     "login": {
         "delayed": "Login blev forsinket med% s sekunder.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Log ind som postkassebruger for at downloade den anmodede Apple-forbindelsesprofil.",
         "other_logins": "Nøgle login",

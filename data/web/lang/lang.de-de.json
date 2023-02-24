@@ -339,7 +339,8 @@
         "oauth2_add_client": "Füge OAuth2 Client hinzu",
         "api_read_only": "Schreibgeschützter Zugriff",
         "api_read_write": "Lese-Schreib-Zugriff",
-        "oauth2_apps": "OAuth2 Apps"
+        "oauth2_apps": "OAuth2 Apps",
+        "queue_unban": "entsperren"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -366,7 +367,7 @@
         "domain_not_empty": "Domain %s ist nicht leer",
         "domain_not_found": "Domain %s nicht gefunden",
         "domain_quota_m_in_use": "Domain-Speicherplatzlimit muss größer oder gleich %d MiB sein",
-        "extended_sender_acl_denied": "Keine Rechte zum setzen von externen Absenderadressen",
+        "extended_sender_acl_denied": "Keine Rechte zum Setzen von externen Absenderadressen",
         "extra_acl_invalid": "Externe Absenderadresse \"%s\" ist ungültig",
         "extra_acl_invalid_domain": "Externe Absenderadresse \"%s\" verwendet eine ungültige Domain",
         "fido2_verification_failed": "FIDO2-Verifizierung fehlgeschlagen: %s",
@@ -454,17 +455,23 @@
         "totp_verification_failed": "TOTP-Verifizierung fehlgeschlagen",
         "transport_dest_exists": "Transport-Maps-Ziel \"%s\" existiert bereits",
         "webauthn_verification_failed": "WebAuthn-Verifizierung fehlgeschlagen: %s",
+        "webauthn_authenticator_failed": "Der ausgewählte Authenticator wurde nicht gefunden",
+        "webauthn_publickey_failed": "Zu dem ausgewählten Authenticator wurde kein Publickey hinterlegt",
+        "webauthn_username_failed": "Der ausgewählte Authenticator gehört zu einem anderen Konto",
         "unknown": "Ein unbekannter Fehler trat auf",
         "unknown_tfa_method": "Unbekannte TFA-Methode",
         "unlimited_quota_acl": "Unendliche Quota untersagt durch ACL",
         "username_invalid": "Benutzername %s kann nicht verwendet werden",
         "validity_missing": "Bitte geben Sie eine Gültigkeitsdauer an",
         "value_missing": "Bitte alle Felder ausfüllen",
-        "yotp_verification_failed": "Yubico OTP-Verifizierung fehlgeschlagen: %s"
+        "yotp_verification_failed": "Yubico OTP-Verifizierung fehlgeschlagen: %s",
+        "template_exists": "Vorlage %s existiert bereits",
+        "template_id_invalid": "Vorlagen-ID %s ungültig",
+        "template_name_invalid": "Name der Vorlage ungültig"
     },
     "datatables": {
         "collapse_all": "Alle Einklappen",
-        "decimal": "",
+        "decimal": ",",
         "emptyTable": "Keine Daten in der Tabelle vorhanden",
         "expand_all": "Alle Ausklappen",
         "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
@@ -498,7 +505,7 @@
         "current_time": "Systemzeit",
         "disk_usage": "Festplattennutzung",
         "docs": "Dokumente",
-        "error_show_ip": "konnte die öffentlichen IP Adressen nicht auflösen",
+        "error_show_ip": "Konnte die öffentlichen IP Adressen nicht auflösen",
         "external_logs": "Externe Logs",
         "history_all_servers": "History (alle Server)",
         "in_memory_logs": "In-memory Logs",
@@ -651,7 +658,8 @@
         "title": "Objekt bearbeiten",
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
-        "validate_save": "Validieren und speichern"
+        "validate_save": "Validieren und speichern",
+        "pushover_sound": "Ton"
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -692,7 +700,8 @@
         "quarantine": "Quarantäne",
         "restart_netfilter": "Netfilter neustarten",
         "restart_sogo": "SOGo neustarten",
-        "user_settings": "Benutzereinstellungen"
+        "user_settings": "Benutzereinstellungen",
+        "mailcow_system": "System"
     },
     "info": {
         "awaiting_tfa_confirmation": "Warte auf TFA-Verifizierung",
@@ -701,7 +710,7 @@
     },
     "login": {
         "delayed": "Login wurde zur Sicherheit um %s Sekunde/n verzögert.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Anmelden",
         "mobileconfig_info": "Bitte als Mailbox-Benutzer einloggen, um das Verbindungsprofil herunterzuladen.",
         "other_logins": "Key Login",
@@ -1236,7 +1245,8 @@
         "syncjob_EXIT_CONNECTION_FAILURE": "Verbindungsproblem",
         "syncjob_EXIT_TLS_FAILURE": "Problem mit verschlüsselter Verbindung",
         "syncjob_EXIT_AUTHENTICATION_FAILURE": "Authentifizierungsproblem",
-        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Falscher Benutzername oder Passwort"
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Falscher Benutzername oder Passwort",
+        "pushover_sound": "Ton"
     },
     "warning": {
         "cannot_delete_self": "Kann derzeit eingeloggten Benutzer nicht entfernen",
