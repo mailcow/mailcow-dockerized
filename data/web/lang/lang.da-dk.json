@@ -4,15 +4,15 @@
         "app_passwds": "Administrer app-adgangskoder",
         "bcc_maps": "BCC kort",
         "delimiter_action": "Afgrænsning handling",
-        "eas_reset": "Nulstil EAS endheder",
+        "eas_reset": "Nulstil EAS enheder",
         "extend_sender_acl": "Tillad at udvide afsenderens ACL med eksterne adresser",
         "filters": "Filtre",
         "login_as": "Login som mailboks bruger",
-        "prohibited": "Forbudt af ACL",
-        "protocol_access": "Ændre protokol adgang",
+        "prohibited": "Nægtet af ACL",
+        "protocol_access": "Skift protokol adgang",
         "pushover": "Pushover",
-        "quarantine": "Karantæneaktioner",
-        "quarantine_attachments": "Karantæne vedhæftede filer",
+        "quarantine": "Karantænehandlinger",
+        "quarantine_attachments": "Karantænevedhæftede filer",
         "quarantine_notification": "Skift karantænemeddelelser",
         "ratelimit": "Satsgrænse",
         "recipient_maps": "Modtagerkort",
@@ -20,12 +20,15 @@
         "sogo_access": "Tillad styring af SOGo-adgang",
         "sogo_profile_reset": "Nulstil SOGo-profil",
         "spam_alias": "Midlertidige aliasser",
-        "spam_policy": "Sortliste / hvidliste",
+        "spam_policy": "Sortliste/hvidliste",
         "spam_score": "Spam-score",
         "syncjobs": "Synkroniserings job",
         "tls_policy": "TLS politik",
         "unlimited_quota": "Ubegrænset plads for mailbokse",
-        "domain_desc": "Skift domæne beskrivelse"
+        "domain_desc": "Skift domæne beskrivelse",
+        "domain_relayhost": "Skift relæ host for et domæne",
+        "mailbox_relayhost": "Skift relæ-host for en postkasse",
+        "quarantine_category": "Skift kategorien for karantænemeddelelse"
     },
     "add": {
         "activate_filter_warn": "Alle andre filtre deaktiveres, når aktiv er markeret.",
@@ -308,7 +311,9 @@
         "username": "Brugernavn",
         "validate_license_now": "Valider GUID mod licensserver",
         "verify": "Verificere",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "ip_check_opt_in": "Opt-In for brug af tredjepartstjeneste <strong>ipv4.mailcow.email</strong> og <strong>ipv6.mailcow.email</strong> til at finde eksterne IP-adresser.",
+        "queue_unban": "unban"
     },
     "danger": {
         "access_denied": "Adgang nægtet eller ugyldig formular data",
@@ -425,7 +430,8 @@
         "username_invalid": "Brugernavn %s kan ikke bruges",
         "validity_missing": "Tildel venligst en gyldighedsperiode",
         "value_missing": "Angiv alle værdier",
-        "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s"
+        "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s",
+        "webauthn_publickey_failed": "Der er ikke gemt nogen offentlig nøgle for den valgte autentifikator"
     },
     "debug": {
         "chart_this_server": "Diagram (denne server)",
@@ -442,7 +448,8 @@
         "solr_status": "Solr-status",
         "started_on": "Startede den",
         "static_logs": "Statiske logfiler",
-        "system_containers": "System og Beholdere"
+        "system_containers": "System og Beholdere",
+        "error_show_ip": "Kunne ikke finde de offentlige IP-adresser"
     },
     "diagnostics": {
         "cname_from_a": "Værdi afledt af A / AAAA-post. Dette understøttes, så længe posten peger på den korrekte ressource.",
@@ -553,7 +560,11 @@
         "title": "Rediger objekt",
         "unchanged_if_empty": "Lad være tomt, hvis uændret",
         "username": "Brugernavn",
-        "validate_save": "Valider og gem"
+        "validate_save": "Valider og gem",
+        "admin": "Rediger administrator",
+        "lookup_mx": "Destination er et regulært udtryk, der matcher MX-navnet (<code>.*google\\.dk</code> for at dirigere al e-mail, der er målrettet til en MX, der ender på google.dk, over dette hop)",
+        "mailbox_relayhost_info": "Anvendt på postkassen og kun direkte aliasser, og overskriver et domæne relæ-host.",
+        "quota_warning_bcc": "Kvoteadvarsel BCC"
     },
     "footer": {
         "cancel": "Afbestille",
@@ -571,7 +582,7 @@
     "header": {
         "administration": "Konfiguration og detailer",
         "apps": "Apps",
-        "debug": "Systemoplysninger",
+        "debug": "Information",
         "email": "E-Mail",
         "mailcow_config": "Konfiguration",
         "quarantine": "Karantæne",
@@ -739,7 +750,10 @@
         "username": "Brugernavn",
         "waiting": "Venter",
         "weekly": "Ugentlig",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "goto_ham": "Lær som <b>ham</b>",
+        "catch_all": "Fang-alt",
+        "open_logs": "Åben logfiler"
     },
     "oauth2": {
         "access_denied": "Log ind som mailboks ejer for at give adgang via OAuth2.",
@@ -1066,5 +1080,11 @@
         "quota_exceeded_scope": "Domænekvote overskredet: Kun ubegrænsede postkasser kan oprettes i dette domæneomfang.",
         "session_token": "Form nøgle ugyldig: Nøgle passer ikke",
         "session_ua": "Form nøgle ugyldig: Bruger-Agent gyldighedskontrols fejl"
+    },
+    "datatables": {
+        "lengthMenu": "Vis _MENU_ poster",
+        "paginate": {
+            "first": "Først"
+        }
     }
 }
