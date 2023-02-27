@@ -366,6 +366,8 @@ def snat4(snat_target):
           chain.insert_rule(new_rule)
         else:
           for position, rule in enumerate(chain.rules):
+            if not hasattr(rule.target, 'parameter'):
+                continue
             match = all((
               new_rule.get_src() == rule.get_src(),
               new_rule.get_dst() == rule.get_dst(),
