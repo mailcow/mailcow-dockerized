@@ -62,7 +62,7 @@
         "gal": "Global adresseliste",
         "gal_info": "GAL indeholder alle objekter i et domæne og kan ikke redigeres af nogen bruger. Information om ledig / optaget i SOGo mangler, hvis deaktiveret! <b> Genstart SOGo for at anvende ændringer. </b>",
         "generate": "generere",
-        "goto_ham": "Lær som <span class=\"text-success\"><b>ham</b></span>",
+        "goto_ham": "Lær som <span class=\"text-success\"><b>ønsket</b></span>",
         "goto_null": "Kassér e-mail i stilhed",
         "goto_spam": "Lær som <span class=\"text-danger\"><b>spam</b></span>",
         "hostname": "Vært",
@@ -751,7 +751,7 @@
         "waiting": "Venter",
         "weekly": "Ugentlig",
         "yes": "&#10003;",
-        "goto_ham": "Lær som <b>ham</b>",
+        "goto_ham": "Lær som <b>ønsket</b>",
         "catch_all": "Fang-alt",
         "open_logs": "Åben logfiler"
     },
