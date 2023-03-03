@@ -21,39 +21,70 @@ if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep 
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
-for bin in openssl curl docker git awk sha1sum; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+# Check which container engine is available.
+# Check for podman first, because the 'podman-docker' package might be installed providing a dummy 'docker' command.
+if command -v podman > /dev/null 2>&1; then
+    CONTAINER_ENGINE="podman"
+    echo -e "\e[32mFound Podman container engine.\e[0m"
+    echo -e "\e[31mNOTE: Support for Podman is experimental, consider this before deploying to production! \e[0m"
+
+    if [[ -n "${DOCKER_HOST}" ]] && [[ "${DOCKER_HOST}" == "unix://"* ]]; then
+        CONTAINER_SOCKET="${DOCKER_HOST/"unix://"/}"
+    else
+        CONTAINER_SOCKET="/run/user/${UID}/podman/podman.sock"
+    fi
+
+    # To patch the docker-compose file for use with podman
+    EXTRA_REQUIRED_PACKAGES="patch"
+elif command -v docker > /dev/null 2>&1; then
+    CONTAINER_ENGINE="docker"
+    echo -e "\e[32mFound Docker container engine.\e[0m"
+
+    CONTAINER_SOCKET="/var/run/docker.sock"
+    EXTRA_REQUIRED_PACKAGES=""
+else
+    echo "Cannot find container engine (Docker or Podman), exiting..."
+    exit 1
+fi
+
+for bin in openssl curl git awk sha1sum ${EXTRA_REQUIRED_PACKAGES}; do
+  if [[ -z $(which ${bin}) ]]; then
+    echo "Cannot find ${bin}, exiting..."
+    exit 1
+  fi
 done
 
-if docker compose > /dev/null 2>&1; then
+MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE:-"docker-compose"}
+
+if [[ "${CONTAINER_ENGINE}" == "docker" ]] && docker compose > /dev/null 2>&1; then
     if docker compose version --short | grep "^2." > /dev/null 2>&1; then
       COMPOSE_VERSION=native
       echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
       echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
       sleep 2
-      echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually! \e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
-elif docker-compose > /dev/null 2>&1; then
-  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-    if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+elif $MAILCOW_DOCKER_COMPOSE > /dev/null 2>&1; then
+  if ! [[ $(alias $MAILCOW_DOCKER_COMPOSE 2> /dev/null) ]] ; then
+    if $MAILCOW_DOCKER_COMPOSE version --short | grep "^2." > /dev/null 2>&1; then
       COMPOSE_VERSION=standalone
       echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
       echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
       sleep 2
-      echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
+      echo -e "\e[33mNotice: For an automatic update of ${MAILCOW_DOCKER_COMPOSE} please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
   fi
 
 else
-  echo -e "\e[31mCannot find Docker Compose.\e[0m" 
+  echo -e "\e[31mCannot find Docker Compose.\e[0m"
   echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
@@ -173,13 +204,18 @@ else
   echo -e "\033[31mCould not determine branch input..."
   echo -e "\033[31mExiting."
   exit 1
-fi  
+fi
 
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
+
+if [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
+    # Apply patches for usage with Podman
+    bash ./patches-for-podman.sh
+fi
 
 cat << EOF > mailcow.conf
 # ------------------------------
@@ -195,6 +231,9 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 # Only certain password hash algorithm are supported. For a fully list of supported schemes,
 # see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/
 MAILCOW_PASS_SCHEME=BLF-CRYPT
+
+# The directory used to store the data of the used containers (used in case the CUSTOM_STORAGE_LOCATION override is included)
+MAILCOW_STORAGE_DIR=
 
 # ------------------------------
 # SQL database configuration
@@ -228,6 +267,43 @@ HTTPS_PORT=443
 HTTPS_BIND=
 
 # ------------------------------
+# Container environment
+# ------------------------------
+
+# The container engine to use to run this project (docker or podman).
+
+MAILCOW_CONTAINER_ENGINE=${CONTAINER_ENGINE}
+
+# The location of the container socket to use for volume mounts.
+
+MAILCOW_CONTAINER_SOCKET=${CONTAINER_SOCKET}
+
+# Fixed project name
+# Please use lowercase letters only
+
+COMPOSE_PROJECT_NAME=mailcowdockerized
+
+# Used Docker Compose version
+# Switch here between native (compose plugin) and standalone
+# For more information take a look at the mailcow docs regarding the configuration options.
+# Normally this should be untouched but if you decided to use either of those you can switch it manually here.
+# Please be aware that at least one of those variants should be installed on your machine or mailcow will fail.
+
+DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
+
+# Additional override files (relative to the repo root) that need to be taken care of when running mailcow scripts.
+# Comma separated list without spaces!
+# Example: DOCKER_COMPOSE_EXTRA_OVERRIDES=helper-scripts/docker-compose.override.yml.d/CONTAINER_ENGINE_PODMAN/docker-compose.override.yml,helper-scripts/docker-compose.override.yml.d/CUSTOM_STORAGE_LOCATION/docker-compose.override.yml
+
+DOCKER_COMPOSE_EXTRA_OVERRIDES=
+
+# The name of the docker-compose binary to use. This option can be used in case different versions of
+# docker-compose are installed and another binary than 'docker-compose' (default) needs to be used.
+# Example: docker-compose-v2
+
+MAILCOW_DOCKER_COMPOSE=${MAILCOW_DOCKER_COMPOSE}
+
+# ------------------------------
 # Other bindings
 # ------------------------------
 # You should leave that alone
@@ -252,22 +328,9 @@ REDIS_PORT=127.0.0.1:7654
 
 TZ=${MAILCOW_TZ}
 
-# Fixed project name
-# Please use lowercase letters only
-
-COMPOSE_PROJECT_NAME=mailcowdockerized
-
-# Used Docker Compose version
-# Switch here between native (compose plugin) and standalone
-# For more informations take a look at the mailcow docs regarding the configuration options.
-# Normally this should be untouched but if you decided to use either of those you can switch it manually here.
-# Please be aware that at least one of those variants should be installed on your maschine or mailcow will fail.
-
-DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
-
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
-# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+# This should probably only be activated on mail hosts, that are used exclusively by one organisation.
 # Otherwise a user might share data with too many other users.
 ACL_ANYONE=disallow
 

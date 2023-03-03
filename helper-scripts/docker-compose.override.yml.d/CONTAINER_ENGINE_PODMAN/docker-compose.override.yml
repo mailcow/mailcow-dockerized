@@ -1,0 +1,46 @@
+version: '3.9'
+
+# Pre-requisites on the host machine
+#
+# Since the sysctl option cannot be set and podman needs additional privileges to bind
+# to ports lower than 1024, the following options need to be set:
+#   sudo sysctl net.ipv4.ip_unprivileged_port_start=25
+#   sudo sysctl net.core.somaxconn=4096
+#
+# Apparently compose extends instead of overrides (except for volumes), see
+# https://github.com/docker/compose/issues/3729
+# Because of that, the patch-docker-compose-for-podman.sh script exists to remove these options from the original
+# docker-compose.yml
+
+services:
+
+  dovecot-mailcow:
+    cap_add:
+      - SYS_CHROOT
+
+  postfix-mailcow:
+    cap_add:
+      - SYS_CHROOT
+
+  dockerapi-mailcow:
+    volumes:
+      - ${MAILCOW_CONTAINER_SOCKET}:/var/run/docker.sock:ro
+
+  ofelia-mailcow:
+    volumes:
+      - ${MAILCOW_CONTAINER_SOCKET}:/var/run/docker.sock:ro
+
+  ipv6nat-mailcow:
+    image: bash:latest
+    restart: "no"
+    entrypoint: ["echo", "ipv6nat disabled in compose.override.yml"]
+    # Because docker-compose extends instead of overrides, the volume still needs to be overwritten, even when it is not used.
+    volumes:
+      - ${MAILCOW_CONTAINER_SOCKET}:/var/run/docker.sock:ro
+
+networks:
+  mailcow-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
