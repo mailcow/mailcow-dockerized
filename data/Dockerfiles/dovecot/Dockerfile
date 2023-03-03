@@ -21,6 +21,7 @@ RUN groupadd -g 5000 vmail \
   && touch /etc/default/locale \
   && apt-get update \
   && apt-get -y --no-install-recommends install \
+  build-essential \
   apt-transport-https \
   ca-certificates \
   cpanminus \
@@ -61,6 +62,7 @@ RUN groupadd -g 5000 vmail \
   libproc-processtable-perl \
   libreadonly-perl \
   libregexp-common-perl \
+  libssl-dev \
   libsys-meminfo-perl \
   libterm-readkey-perl \
   libtest-deep-perl \
@@ -110,6 +112,8 @@ RUN groupadd -g 5000 vmail \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/* /var/tmp/* /root/.cache/
+# imapsync dependencies
+RUN cpan Crypt::OpenSSL::PKCS12
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
