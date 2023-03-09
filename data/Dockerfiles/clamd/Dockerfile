@@ -1,4 +1,4 @@
-FROM clamav/clamav:1.0_base
+FROM clamav/clamav:1.0.1-1_base
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 

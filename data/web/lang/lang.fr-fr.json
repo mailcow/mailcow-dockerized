@@ -321,7 +321,9 @@
         "admins": "Administrateurs",
         "api_read_only": "Accès lecture-seule",
         "password_policy_lowerupper": "Doit contenir des caractères minuscules et majuscules",
-        "password_policy_numbers": "Doit contenir au moins un chiffre"
+        "password_policy_numbers": "Doit contenir au moins un chiffre",
+        "ip_check": "Vérification IP",
+        "ip_check_disabled": "La vérification IP est désactivée. Vous pouvez l'activer sous<br> <strong>Système > Configuration > Options > Personnaliser</strong>"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -440,7 +442,12 @@
         "username_invalid": "Le nom d'utilisateur %s ne peut pas être utilisé",
         "validity_missing": "Veuillez attribuer une période de validité",
         "value_missing": "Veuillez fournir toutes les valeurs",
-        "yotp_verification_failed": "La vérification Yubico OTP a échoué : %s"
+        "yotp_verification_failed": "La vérification Yubico OTP a échoué : %s",
+        "webauthn_authenticator_failed": "L'authentificateur selectionné est introuvable",
+        "demo_mode_enabled": "Le mode de démonstration est activé",
+        "template_exists": "La template %s existe déja",
+        "template_id_invalid": "Le numéro de template %s est invalide",
+        "template_name_invalid": "Le nom de la template est invalide"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -612,7 +619,7 @@
     },
     "login": {
         "delayed": "La connexion a été retardée de %s secondes.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Connexion",
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte pour télécharger le profil de connexion Apple demandé.",
         "other_logins": "Clé d'authentification",

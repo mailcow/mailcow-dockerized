@@ -8492,6 +8492,7 @@ sub xoauth2
         require HTML::Entities ;
         require JSON ;
         require JSON::WebToken::Crypt::RSA ;
+        require Crypt::OpenSSL::PKCS12;
         require Crypt::OpenSSL::RSA ;
         require Encode::Byte ;
         require IO::Socket::SSL ;
@@ -8532,8 +8533,9 @@ sub xoauth2
 
             $sync->{ debug } and myprint( "Service account: $iss\nKey file: $keyfile\nKey password: $keypass\n");
 
-            # Get private key from p12 file (would be better in perl...)
-            $key = `openssl pkcs12 -in "$keyfile" -nodes -nocerts -passin pass:$keypass -nomacver`;
+            # Get private key from p12 file
+            my $pkcs12 = Crypt::OpenSSL::PKCS12->new_from_file($keyfile);
+            $key = $pkcs12->private_key($keypass);
 
             $sync->{ debug } and myprint( "Private key:\n$key\n");
         }

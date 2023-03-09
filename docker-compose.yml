@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.60
+      image: mailcow/clamd:1.61
       restart: always
       depends_on:
         - unbound-mailcow
@@ -191,7 +191,7 @@ services:
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
+        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
@@ -216,7 +216,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.22
+      image: mailcow/dovecot:1.23
       depends_on:
         - mysql-mailcow
       dns:
@@ -425,7 +425,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.50
+      image: mailcow/netfilter:1.51
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
