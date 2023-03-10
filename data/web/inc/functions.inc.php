@@ -960,12 +960,16 @@ function check_login($user, $pass, $app_passwd_data = false) {
           );
           return "pending";
         } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
+          unset($_SESSION['ldelay']);
           // no authenticators found, login successfull
           // Reactivate TFA if it was set to "deactivate TFA for next login"
           $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
           $stmt->execute(array(':user' => $user));
-
-          unset($_SESSION['ldelay']);
+          $_SESSION['return'][] =  array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $user, '*'),
+            'msg' => array('logged_in_as', $user)
+          );
           return "user";
         }
       } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
