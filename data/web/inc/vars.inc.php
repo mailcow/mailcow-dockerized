@@ -122,7 +122,9 @@ $SHOW_DKIM_PRIV_KEYS = false;
 $MAILCOW_APPS = array(
   array(
     'name' => 'Webmail',
-    'link' => '/SOGo/',
+    'link' => '/SOGo/so/',
+    'user_link' => '/sogo-auth.php?login=%u',
+    'hide' => true
   )
 );
 
