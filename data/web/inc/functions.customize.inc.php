@@ -123,12 +123,14 @@ function customize($_action, $_item, $_data = null) {
           $apps = (array)$_data['app'];
           $links = (array)$_data['href'];
           $user_links = (array)$_data['user_href'];
+          $hide = (array)$_data['hide'];
           $out = array();
-          if (count($apps) == count($links) && count($apps) == count($user_links)) {
+          if (count($apps) == count($links) && count($apps) == count($user_links) && count($apps) == count($hide)) {
             for ($i = 0; $i < count($apps); $i++) {
               $out[] = array($apps[$i] => array(
                 'link' => $links[$i],
-                'user_link' => $user_links[$i]
+                'user_link' => $user_links[$i],
+                'hide' => ($hide[$i] === '0' || $hide[$i] === 0) ? false : true
               ));
             }
             try {

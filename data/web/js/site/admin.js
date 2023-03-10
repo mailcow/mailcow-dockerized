@@ -709,20 +709,34 @@ jQuery(function($){
     }
   })
   // App links
+  // setup eventlistener
+  setAppHideEvent();
+  function setAppHideEvent(){ 
+    $('.app_hide').off('change');
+    $('.app_hide').on('change', function (e) {
+      var value = $(this).is(':checked') ? '1' : '0';
+      console.log(value)
+      $(this).parent().children(':first-child').val(value);
+    })
+  }
   function add_table_row(table_id, type) {
     var row = $('<tr />');
     if (type == "app_link") {
       cols = '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required></td>';
+      cols += '<td><div class="d-flex align-items-center justify-content-center" style="height: 33.5px"><input data-id="app_links" type="hidden" name="hide" value="0"><input class="form-check-input app_hide" type="checkbox" value="1"></div></td>';
       cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
       cols = '<td><input style="text-align:center" class="input-sm input-xs-lg form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
       cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang.remove_row + '</a></td>';
     }
+
     row.append(cols);
     table_id.append(row);
+    if (type == "app_link")
+      setAppHideEvent();
   }
   $('#app_link_table').on('click', 'tr a', function (e) {
     e.preventDefault();
