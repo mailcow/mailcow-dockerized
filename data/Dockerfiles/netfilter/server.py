@@ -541,11 +541,11 @@ def mailcowChainOrder():
               if item.target.name == 'MAILCOW':
                 target_found = True
                 if position > 2:
-                  logCrit('Error in %s chain order: MAILCOW on position %d, restarting container' % (chain.name, position))
+                  logCrit(f'MAILCOW target is in position {position} in the {chain.name} chain, restarting container to fix it...')
                   quit_now = True
                   exit_code = 2
             if not target_found:
-              logCrit('Error in %s chain: MAILCOW target not found, restarting container' % (chain.name))
+              logCrit(f'MAILCOW target not found in {chain.name} chain, restarting container to fix it...')
               quit_now = True
               exit_code = 2
       else:
@@ -555,12 +555,12 @@ def mailcowChainOrder():
             if chain_position is None: continue
 
             if chain_position is False:
-              logCrit('Error in %s %s chain: MAILCOW target not found, restarting container' % (family, chain))
+              logCrit(f'MAILCOW target not found in {family} {chain} table, restarting container to fix it...')
               quit_now = True
               exit_code = 2
 
             if chain_position > 0:
-              logCrit('Error in %s %s chain order: MAILCOW on position %d, restarting container' % (family, chain, chain_position))
+              logCrit(f'MAILCOW target is in position {chain_position} in the {family} {chain} table, restarting container to fix it...')
               quit_now = True
               exit_code = 2
 
@@ -898,8 +898,8 @@ def snat4(snat_target):
                     logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
                     chain.delete_rule(rule)
   
-            table.commit()
-            table.autocommit = True
+          table.commit()
+          table.autocommit = True
         else:
           snat_rule("ip", snat_target)
       except:
