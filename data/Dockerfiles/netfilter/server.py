@@ -334,12 +334,11 @@ def snat_rule(_family: str, snat_target: str):
         if not match:
           # Position 0 , it is a mailcow rule , but it does not have the same parameters
           if delete_nat_rule(_family, chain_name, rule_handle):
-            logInfo(f'Remove rule for source network {saddr_ip}/{saddr_len} to SNAT target {snat_target} from POSTROUTING chain with handle {rule_handle}')
-
+            logInfo(f'Remove rule for source network {saddr_net} to SNAT target {target_net} from {_family} nat {chain_name} chain, rule does not match configured parameters')
       else:
         # Position > 0 and is mailcow rule
         if delete_nat_rule(_family, chain_name, rule_handle):
-          logInfo(f'Remove rule for source network {saddr_ip}/{saddr_len} to SNAT target {snat_target} from POSTROUTING chain with handle {rule_handle}')
+          logInfo(f'Remove rule for source network {saddr_net} to SNAT target {target_net} from {_family} nat {chain_name} chain, rule is at position {rule_position}')
     except:
         logCrit(f"Error running SNAT on {_family}, retrying..." )
   else:
