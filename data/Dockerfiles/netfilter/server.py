@@ -421,11 +421,8 @@ def get_ban_ip_dict(ipaddr: str, _family: str):
   json_command = get_base_dict()
 
   expr_opt = []
-  if re.search(r'/', ipaddr):
-    tmp_data = re.split(r'/', ipaddr)
-    right_dict = {'prefix': {'addr': tmp_data[0], 'len': int(tmp_data[1]) } }
-  else:
-    right_dict = ipaddr
+  ipaddr_net = ipaddress.ip_network(ipaddr)
+  right_dict = {'prefix': {'addr': str(ipaddr_net.network_address), 'len': int(ipaddr_net.prefixlen) } }
 
   left_dict = {'payload': {'protocol': _family, 'field': 'saddr'} }
   match_dict = {'op': '==', 'left': left_dict, 'right': right_dict }
@@ -467,24 +464,15 @@ def get_unban_ip_dict(ipaddr:str, _family: str):
       # ip currently banned
       rule_right = rule["right"]
       if isinstance(rule_right, dict):
-        current_rule_ip = rule_right["prefix"]["addr"]
-        current_rule_len = int(rule_right["prefix"]["len"])
+        current_rule_ip = rule_right["prefix"]["addr"] + '/' + str(rule_right["prefix"]["len"])
       else:
         current_rule_ip = rule_right
-        current_rule_len = 32 if _family == 'ip' else 128
+      current_rule_net = ipaddress.ip_network(current_rule_ip)
 
       # ip to ban
-      if re.search(r'/', ipaddr):
-        tmp_data = re.split(r'/', ipaddr)
-        candidate_ip = tmp_data[0]
-        candidate_len = int(tmp_data[1])
-      else:
-        candidate_ip = ipaddr
-        candidate_len = 32 if _family == 'ip' else 128
+      candidate_net = ipaddress.ip_network(ipaddr)
 
-      if all((current_rule_ip == candidate_ip,
-              current_rule_len and candidate_len,
-              current_rule_len == candidate_len )):
+      if current_rule_net == candidate_net:
         rule_handle = _object["rule"]["handle"]
         break
 
