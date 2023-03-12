@@ -28,6 +28,7 @@ RUN addgroup -g 5000 vmail \
   coreutils \
   jq \
   lua \
+  lua-json \
   lua-cjson \
   lua-socket \
   lua-sql-mysql \

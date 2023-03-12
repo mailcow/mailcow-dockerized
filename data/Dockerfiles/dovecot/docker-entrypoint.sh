@@ -137,113 +137,85 @@ iterate_query = SELECT username FROM mailbox WHERE active = '1' OR active = '2';
 EOF
 
 cat <<EOF > /etc/dovecot/lua/passwd-verify.lua
-function auth_password_verify(req, pass)
-
-  if req.domain == nil then
+function auth_password_verify(request, password)
+  if request.domain == nil then
     return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
   end
 
-  if cur == nil then
-    script_init()
-  end
+  json = require "json"
+  ltn12 = require "ltn12"
+  http = require "socket.http"
+  http.TIMEOUT = 5
+  mysql = require "luasql.mysql"
+  env  = mysql.mysql()
+  con = env:connect("__DBNAME__","__DBUSER__","__DBPASS__","localhost")
 
-  if req.user == nil then
-    req.user = ''
-  end
-
-  respbody = {}
-
+  local req = {
+    username = request.user,
+    password = password
+  }
+  local req_json = json.encode(req)
+  local res = {} 
+  
   -- check against mailbox passwds
-  local cur,errorString = con:execute(string.format([[SELECT password FROM mailbox
-    WHERE username = '%s'
-      AND active = '1'
-      AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(attributes, '$.%s_access')), 1) = '1']], con:escape(req.user), con:escape(req.domain), con:escape(req.service)))
-  local row = cur:fetch ({}, "a")
-  while row do
-    if req.password_verify(req, row.password, pass) == 1 then
-      con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-        VALUES ("%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
-      cur:close()
-      con:close()
-      return dovecot.auth.PASSDB_RESULT_OK, ""
-    end
-    row = cur:fetch (row, "a")
+  local b, c = http.request {
+    method = "POST",
+    url = "https://nginx/api/v1/process/login",
+    source = ltn12.source.string(req_json),
+    headers = {
+      ["content-type"] = "application/json",
+      ["content-length"] = tostring(#req_json)
+    },
+    sink = ltn12.sink.table(res)
+  }
+  local api_response = json.decode(table.concat(res))
+  if api_response.role == 'user' then
+    con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
+      VALUES ("%s", 0, "%s", "%s")]], con:escape(request.service), con:escape(request.user), con:escape(request.real_rip)))
+    con:close()
+    return dovecot.auth.PASSDB_RESULT_OK, "password=" .. password
   end
 
+  
   -- check against app passwds for imap and smtp
   -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
-  if req.service == "smtp" or req.service == "imap" or req.service == "sieve" or req.service == "pop3" then
-    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, %s_access AS has_prot_access, app_passwd.password FROM app_passwd
-      INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
-      WHERE mailbox = '%s'
-        AND app_passwd.active = '1'
-        AND mailbox.active = '1'
-        AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.service), con:escape(req.user), con:escape(req.domain)))
-    local row = cur:fetch ({}, "a")
-    while row do
-      if req.password_verify(req, row.password, pass) == 1 then
-        -- if password is valid and protocol access is 1 OR real_rip matches SOGo, proceed
-        if tostring(req.real_rip) == "__IPV4_SOGO__" then
-          cur:close()
-          con:close()
-          return dovecot.auth.PASSDB_RESULT_OK, ""
-        elseif row.has_prot_access == "1" then
-          con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-            VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
-          cur:close()
-          con:close()
-          return dovecot.auth.PASSDB_RESULT_OK, ""
-        end
+  if request.service == "smtp" or request.service == "imap" or request.service == "sieve" or request.service == "pop3" then
+    req.protocol = {}
+    req.protocol[request.service] = true
+    req_json = json.encode(req)
+
+    req.protocol.ignore_hasaccess = false
+    if tostring(req.real_rip) == "__IPV4_SOGO__" then
+      req.protocol.ignore_hasaccess = true
+    end
+
+    local b, c = http.request {
+      method = "POST",
+      url = "https://nginx/api/v1/process/login",
+      source = ltn12.source.string(req_json),
+      headers = {
+        ["content-type"] = "application/json",
+        ["content-length"] = tostring(#req_json)
+      },
+      sink = ltn12.sink.table(res)
+    }
+    local api_response = json.decode(table.concat(res))
+    if api_response.role == 'user' then
+      if req.protocol.ignore_hasaccess == false then
+        con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
+          VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
       end
-      row = cur:fetch (row, "a")
+      con:close()
+      return dovecot.auth.PASSDB_RESULT_OK, "password=" .. password
     end
   end
-
-  cur:close()
+  
   con:close()
-
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
-
-  -- PoC
-  -- local reqbody = string.format([[{
-  --   "success":0,
-  --   "service":"%s",
-  --   "app_password":false,
-  --   "username":"%s",
-  --   "real_rip":"%s"
-  -- }]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip))
-  -- http.request {
-  --   method = "POST",
-  --   url = "http://nginx:8081/sasl_log.php",
-  --   source = ltn12.source.string(reqbody),
-  --   headers = {
-  --     ["content-type"] = "application/json",
-  --     ["content-length"] = tostring(#reqbody)
-  --   },
-  --   sink = ltn12.sink.table(respbody)
-  -- }
-
 end
 
 function auth_passdb_lookup(req)
    return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, ""
-end
-
-function script_init()
-  mysql = require "luasql.mysql"
-  http = require "socket.http"
-  http.TIMEOUT = 5
-  ltn12 = require "ltn12"
-  env  = mysql.mysql()
-  con = env:connect("__DBNAME__","__DBUSER__","__DBPASS__","localhost")
-  return 0
-end
-
-function script_deinit()
-  con:close()
-  env:close()
 end
 EOF
 

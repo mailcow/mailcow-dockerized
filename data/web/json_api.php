@@ -407,6 +407,26 @@ if (isset($_GET['query'])) {
           );
           echo json_encode($return);
         break;
+        case "login":
+          header('Content-Type: application/json');
+          $post = trim(file_get_contents('php://input'));
+          if ($post) {
+            $post = json_decode($post, true);
+          }
+
+          $return = array("success" => false, "role" => false);
+          if(!isset($post['username']) || !isset($post['password'])){
+            echo json_encode($return); 
+            return;
+          }
+          $result = check_login($post['username'], $post['password'], $post['protocol']);
+          if ($result) {
+            $return = array("success" => true, "role" => $result);
+          }
+
+          echo json_encode($return); 
+          return;
+        break;
       }
     break;
     case "get":
