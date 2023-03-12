@@ -2067,6 +2067,74 @@ function uuid4() {
 
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
+function identity_provider($_action, $_data = null) {
+  global $pdo;
+
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_data),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+
+  switch ($_action) {
+    case 'get':
+      $settings = array();
+      $stmt = $pdo->prepare("SELECT * FROM `identity_provider`;");
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      foreach($rows as $row){
+        $settings[$row["key"]] = $row["value"];
+      }
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $settings),
+        'msg' => 'admin_api_modified'
+      );
+      return $settings;
+    case 'edit':
+      $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version');
+      foreach($required_settings as $setting){
+        if (!$_data[$setting]){
+          return false;
+        }
+      }
+      try {
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => '2'
+        );
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => '3'
+        );
+      } catch (Exception $e){
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data, $e->getMessage()),
+          'msg' => 'post'
+        );
+        return;
+      }
+
+      foreach($_data as $key => $value){
+        if (!in_array($key, $required_settings)){
+          continue;
+        }
+
+        $stmt->bindParam(':key', $key);
+        $stmt->bindParam(':value', $value);
+        $stmt->execute();
+      }
+      return true;
+    break;
+  }
+}
 
 function get_logs($application, $lines = false) {
   if ($lines === false) {
