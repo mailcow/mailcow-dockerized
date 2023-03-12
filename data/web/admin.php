@@ -80,6 +80,9 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
   ];
 }
 
+// identity provider
+$identity_provider_settings = identity_provider('get');
+
 $template = 'admin.twig';
 $template_data = [
   'tfa_data' => $tfa_data,
@@ -106,6 +109,7 @@ $template_data = [
   'ip_check' => customize('get', 'ip_check'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
+  'identity_provider_settings' => $identity_provider_settings,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];
