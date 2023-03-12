@@ -1710,6 +1710,8 @@ if (isset($_GET['query'])) {
             if ($score)
               $score = array("score" => preg_replace("/\s+/", "", $score));
             process_get_return($score);
+          case "identity_provider":
+            process_get_return(identity_provider('get'));
           break;
         break;
         // return no route found if no case is matched
@@ -2082,6 +2084,8 @@ if (isset($_GET['query'])) {
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
+        case "identity_provider":
+          process_edit_return(identity_provider('edit', $attr));
         break;
         // return no route found if no case is matched
         default:

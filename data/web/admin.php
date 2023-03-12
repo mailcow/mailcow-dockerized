@@ -86,6 +86,8 @@ $cors_settings['allowed_origins'] = str_replace(", ", "\n", $cors_settings['allo
 $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_methods']);
 
 $f2b_data = fail2ban('get');
+// identity provider
+$identity_provider_settings = identity_provider('get');
 
 $template = 'admin.twig';
 $template_data = [
@@ -117,6 +119,7 @@ $template_data = [
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+  'identity_provider_settings' => $identity_provider_settings,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];
