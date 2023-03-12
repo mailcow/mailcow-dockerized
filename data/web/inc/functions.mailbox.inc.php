@@ -988,6 +988,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $local_part   = strtolower(trim($_data['local_part']));
           $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $username     = $local_part . '@' . $domain;
+          $authsource   = 'mailcow';
           if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -1004,11 +1005,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
+          if (in_array($_data['authsource'], array('mailcow', 'keycloak'))){
+            $authsource = $_data['authsource'];
+          }
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           $name         = ltrim(rtrim($_data['name'], '>'), '<');
           $tags         = $_data['tags'];
           $quota_m      = intval($_data['quota']);
+          if ($authsource != 'mailcow'){
+            $password = '';
+            $password2 = '';
+            $password_hashed = '';
+          }
           if ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -1129,10 +1138,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (password_check($password, $password2) !== true) {
-            return false;
+          if ($authsource == 'mailcow'){
+            if (password_check($password, $password2) !== true) {
+              return false;
+            }
+            $password_hashed = hash_password($password);
           }
-          $password_hashed = hash_password($password);
           if ($MailboxData['count'] >= $DomainData['mailboxes']) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
@@ -1158,8 +1169,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `quota`, `local_part`, `domain`, `attributes`, `active`)
-            VALUES (:username, :password_hashed, :name, :quota_b, :local_part, :domain, :mailbox_attrs, :active)");
+          $stmt = $pdo->prepare("INSERT INTO `mailbox` (`username`, `password`, `name`, `quota`, `local_part`, `domain`, `attributes`, `authsource`, `active`)
+            VALUES (:username, :password_hashed, :name, :quota_b, :local_part, :domain, :mailbox_attrs, :authsource, :active)");
           $stmt->execute(array(
             ':username' => $username,
             ':password_hashed' => $password_hashed,
@@ -1168,6 +1179,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':local_part' => $local_part,
             ':domain' => $domain,
             ':mailbox_attrs' => $mailbox_attrs,
+            ':authsource' => $authsource,
             ':active' => $active
           ));
           $stmt = $pdo->prepare("UPDATE `mailbox` SET
@@ -4190,6 +4202,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`quota`,
               `mailbox`.`created`,
               `mailbox`.`modified`,
+              `mailbox`.`authsource`,
               `quota2`.`bytes`,
               `attributes`,
               `quota2`.`messages`
@@ -4210,6 +4223,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`quota`,
               `mailbox`.`created`,
               `mailbox`.`modified`,
+              `mailbox`.`authsource`,
               `quota2replica`.`bytes`,
               `attributes`,
               `quota2replica`.`messages`
@@ -4238,6 +4252,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
           $mailboxdata['created'] = $row['created'];
           $mailboxdata['modified'] = $row['modified'];
+          $mailboxdata['authsource'] = ($row['authsource']) ? $row['authsource'] : 'mailcow';
 
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";

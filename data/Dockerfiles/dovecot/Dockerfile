@@ -78,6 +78,7 @@ RUN groupadd -g 5000 vmail \
   libwww-perl \
   lua-sql-mysql \
   lua-socket \
+  lua-json \
   mariadb-client \
   procps \
   python3-pip \

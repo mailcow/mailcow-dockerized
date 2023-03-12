@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "06012023_1924";
+    $db_version = "12032023_1705";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -346,6 +346,7 @@ function init_db_schema() {
           "attributes" => "JSON",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1",
+          "authsource" => "ENUM('mailcow', 'keycloak') DEFAULT 'mailcow'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
