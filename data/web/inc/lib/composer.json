@@ -1,7 +1,6 @@
 {
     "require": {
         "robthree/twofactorauth": "^1.6",
-        "yubico/u2flib-server": "^1.0",
         "phpmailer/phpmailer": "^6.1",
         "php-mime-mail-parser/php-mime-mail-parser": "^7",
         "soundasleep/html2text": "^0.5.0",
@@ -10,6 +9,7 @@
         "bshaffer/oauth2-server-php": "^1.11",
         "mustangostang/spyc": "^0.6.3",
         "directorytree/ldaprecord": "^2.4",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "stevenmaguire/oauth2-keycloak": "^3.2"
     }
 }
