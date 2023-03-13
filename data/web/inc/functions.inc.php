@@ -2068,16 +2068,9 @@ function uuid4() {
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
 function identity_provider($_action, $_data = null) {
+function identity_provider($_action, $_data = null, $hide_secret = false) {
   global $pdo;
 
-  if ($_SESSION['mailcow_cc_role'] != "admin") {
-    $_SESSION['return'][] = array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $_action, $_data),
-      'msg' => 'access_denied'
-    );
-    return false;
-  }
 
   switch ($_action) {
     case 'get':
@@ -2088,13 +2081,20 @@ function identity_provider($_action, $_data = null) {
       foreach($rows as $row){
         $settings[$row["key"]] = $row["value"];
       }
-      $_SESSION['return'][] =  array(
-        'type' => 'success',
-        'log' => array(__FUNCTION__, $_action, $settings),
-        'msg' => 'admin_api_modified'
-      );
+      if ($hide_secret){
+        $settings['client_secret'] = '***********************';
+      }
       return $settings;
     case 'edit':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+
       $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version');
       foreach($required_settings as $setting){
         if (!$_data[$setting]){
