@@ -1611,8 +1611,6 @@ if (isset($_GET['query'])) {
               }
             }
           break;
-          case "identity_provider":
-            process_get_return(identity_provider('get'));
           break;
         break;
         // return no route found if no case is matched
