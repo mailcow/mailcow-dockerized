@@ -1,9 +1,0 @@
-Author: Yubico
-Basename: php-u2flib-server
-Homepage: https://developers.yubico.com/php-u2flib-server
-License: BSD-2-Clause
-Name: Native U2F library in PHP
-Project: php-u2flib-server
-Summary: Native U2F library in PHP
-Yubico-Category: U2F projects
-Travis: https://travis-ci.org/Yubico/php-u2flib-server
