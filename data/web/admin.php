@@ -82,6 +82,8 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
 
 // identity provider
 $identity_provider_settings = identity_provider('get');
+// mbox templates
+$mbox_templates = mailbox('get', 'mailbox_templates');
 
 $template = 'admin.twig';
 $template_data = [
@@ -110,6 +112,7 @@ $template_data = [
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'identity_provider_settings' => $identity_provider_settings,
+  'mbox_templates' => $mbox_templates,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

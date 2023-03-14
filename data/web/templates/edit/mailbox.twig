@@ -17,9 +17,9 @@
       <input type="hidden" value="0" name="sogo_access">
       <input type="hidden" value="0" name="protocol_access">
       <div class="row mb-2">
-        <label class="control-label col-sm-2">{{ lang.edit.full_name }}</label>
+        <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
         <div class="col-sm-10">
-          <span>{{ result.authsource }}</span>
+          <h4><span class="badge bg-primary">{{ result.authsource }}<i class="ms-2 bi bi-person-circle"></i></i></span></h4>
         </div>
       </div>
       <div class="row mb-2">
@@ -188,6 +188,7 @@
           </div>
         </div>
       </div>
+      {% if result.authsource == 'mailcow' %}
       <div class="row">
         <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
         <div class="col-sm-10">
@@ -200,6 +201,7 @@
           <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
         </div>
       </div>
+      {% endif %}
       <div data-acl="{{ acl.extend_sender_acl }}" class="row mb-4">
         <label class="control-label col-sm-2" for="extended_sender_acl">{{ lang.edit.extended_sender_acl }}</label>
         <div class="col-sm-10">

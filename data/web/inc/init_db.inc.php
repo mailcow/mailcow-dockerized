@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "12032023_1705";
+    $db_version = "14032023_1050";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -555,7 +555,7 @@ function init_db_schema() {
       "identity_provider" => array(
         "cols" => array(
           "key" => "VARCHAR(255) NOT NULL",
-          "value" => "VARCHAR(255) NOT NULL",
+          "value" => "TEXT NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
         ),
