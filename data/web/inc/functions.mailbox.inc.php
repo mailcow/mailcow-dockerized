@@ -1044,7 +1044,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $password2 = '';
             $password_hashed = '';
           }
-          if ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0) {
+          if (!$_SESSION['iam_create_login'] && ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1098,7 +1098,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain) && !$_SESSION['iam_create_login']) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1547,7 +1547,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
 
           // check attributes
+          $authsources = array('mailcow', 'keycloak');
           $attr = array();
+          $attr["authsource"]                  = (isset($_data['authsource']) && in_array($_data['authsource'], $authsources)) ? $_data['authsource'] : 'mailcow';
           $attr["quota"]                       = isset($_data['quota']) ? intval($_data['quota']) * 1048576 : 0;
           $attr['tags']                        = (isset($_data['tags'])) ? $_data['tags'] : array();
           $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
@@ -3235,7 +3237,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data["template"]                   = (isset($_data["template"])) ? $_data["template"] : $is_now["template"]; 
             }   
             // check attributes
+            $authsources = array('mailcow', 'keycloak');
             $attr = array();
+            $attr["authsource"]                  = (isset($_data['authsource']) && in_array($_data['authsource'], $authsources)) ? $_data['authsource'] : $is_now['authsource'];
             $attr["quota"]                       = isset($_data['quota']) ? intval($_data['quota']) * 1048576 : 0;
             $attr['tags']                        = (isset($_data['tags'])) ? $_data['tags'] : $is_now['tags'];
             $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : $is_now['quarantine_notification'];
