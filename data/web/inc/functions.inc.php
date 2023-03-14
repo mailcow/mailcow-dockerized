@@ -2071,7 +2071,6 @@ function identity_provider($_action, $_data = null) {
 function identity_provider($_action, $_data = null, $hide_secret = false) {
   global $pdo;
 
-
   switch ($_action) {
     case 'get':
       $settings = array();
@@ -2079,12 +2078,19 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach($rows as $row){
-        $settings[$row["key"]] = $row["value"];
+        if ($row["key"] == 'roles'){
+          $settings['roles'] = json_decode($row["value"]);
+        } else if ($row["key"] == 'templates'){
+          $settings['templates'] = json_decode($row["value"]);
+        } else {
+          $settings[$row["key"]] = $row["value"];
+        }
       }
       if ($hide_secret){
-        $settings['client_secret'] = '***********************';
+        $settings['client_secret'] = '';
       }
       return $settings;
+    break;
     case 'edit':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(
@@ -2094,36 +2100,24 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         );
         return false;
       }
-
+      $data_log = $_data;
+      $data_log['client_secret'] = '*';
+      $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+      
+      // add connection settings      
       $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version');
       foreach($required_settings as $setting){
         if (!$_data[$setting]){
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $data_log),
+            'msg' => 'required_data_missing'
+          );
           return false;
         }
       }
-      try {
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => '2'
-        );
-        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => '3'
-        );
-      } catch (Exception $e){
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_action, $_data, $e->getMessage()),
-          'msg' => 'post'
-        );
-        return;
-      }
-
       foreach($_data as $key => $value){
-        if (!in_array($key, $required_settings)){
+        if (!in_array($key, $required_settings) || $key == 'roles' || $key == 'templates'){
           continue;
         }
 
@@ -2131,7 +2125,70 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         $stmt->bindParam(':value', $value);
         $stmt->execute();
       }
+
+      // add role mappings
+      if ($_data['roles'] && $_data['templates']){
+        if (!is_array($_data['roles'])){
+          $_data['roles'] = array($_data['roles']);
+        }
+        if (!is_array($_data['templates'])){
+          $_data['templates'] = array($_data['templates']);
+        }
+        $roles = array();
+        $templates = array();
+        foreach($_data['roles'] as $role){
+          if ($role){
+            array_push($roles, $role);
+          }
+        }
+        foreach($_data['templates'] as $template){
+          if ($template){
+            array_push($templates, $template);
+          }
+        }
+        if (count($roles) == count($templates)){
+          $roles = json_encode($roles);
+          $templates = json_encode($templates);
+
+          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('roles', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+          $stmt->bindParam(':value', $roles);
+          $stmt->execute();
+          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+          $stmt->bindParam(':value', $templates);
+          $stmt->execute();
+        }
+      }
+
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $data_log),
+        'msg' => array('object_modified', '')
+      );
       return true;
+    break;
+    case 'test':  
+      $identity_provider_settings = identity_provider('get');
+      $url = "{$identity_provider_settings['server_url']}/realms/{$identity_provider_settings['realm']}/protocol/openid-connect/token";
+      $req = http_build_query(array(
+        'grant_type'    => 'password',
+        'client_id'     => $identity_provider_settings['client_id'],
+        'client_secret' => $identity_provider_settings['client_secret'],
+        'username'      => "test",
+        'password'      => "test",
+      ));
+      $curl = curl_init();
+      curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_POST, 1);
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      $res = json_decode(curl_exec($curl), true);
+      curl_close ($curl);
+
+      if ($res["error"] && $res["error"] === 'invalid_grant'){
+        return true;
+      }
+      return false;
     break;
   }
 }
