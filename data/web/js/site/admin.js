@@ -752,4 +752,38 @@ jQuery(function($){
   $('#add_f2b_regex_row').click(function() {
     add_table_row($('#f2b_regex_table'), "f2b_regex");
   });
+  // IAM test connection
+  $('#iam_test_connection').click(async function(e){
+    e.preventDefault();
+    var res = await fetch("/api/v1/get/status/identity-provider", { method:'GET', cache:'no-cache' });
+    res = await res.json();
+    console.log(res);
+    if (res.type === 'success'){
+      return mailcow_alert_box(lang_success.iam_test_connection, 'success');
+    }
+    return mailcow_alert_box(lang_danger.iam_test_connection, 'danger');
+  });
+  $('#iam_rolemap_add').click(async function(e){
+    e.preventDefault();
+
+    var parent = $(this).parent().parent();
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_rolemap_del').off('click');
+    $('.iam_rolemap_del').click(async function(e){
+      e.preventDefault();
+      $(this).parent().remove();
+    });
+  });
+  $('.iam_rolemap_del').click(async function(e){
+    e.preventDefault();
+    $(this).parent().remove();
+  });
 });

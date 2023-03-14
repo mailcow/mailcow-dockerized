@@ -162,6 +162,17 @@ $(document).ready(function() {
       }
     });
   });
+  // @selecting identity provider mbox_add_modal
+  $('#mbox_add_iam').on('change', function(){
+    // toggle password fields
+    if (this.value === 'mailcow'){
+      $('#mbox_add_pwds').removeClass('d-none');
+      $('#mbox_add_pwds').find('.form-control').prop('required', true);
+    } else {
+      $('#mbox_add_pwds').addClass('d-none');
+      $('#mbox_add_pwds').find('.form-control').prop('required', false);
+    }
+  });
   // Sieve data modal
   $('#sieveDataModal').on('show.bs.modal', function(e) {
     var sieveScript = $(e.relatedTarget).data('sieve-script');
@@ -269,6 +280,15 @@ $(document).ready(function() {
   }
   function setMailboxTemplateData(template){
     $("#addInputQuota").val(template.quota / 1048576);
+    $('#mbox_add_iam').selectpicker('val', template.authsource);
+    // toggle password fields
+    if (template.authsource === 'mailcow'){
+      $('#mbox_add_pwds').removeClass('d-none');
+      $('#mbox_add_pwds').find('.form-control').prop('required', true);
+    } else {
+      $('#mbox_add_pwds').addClass('d-none');
+      $('#mbox_add_pwds').find('.form-control').prop('required', false);
+    }
 
     if (template.quarantine_notification === "never"){
       $('#quarantine_notification_never').prop('checked', true);
@@ -1039,7 +1059,16 @@ jQuery(function($){
           title: lang.domain,
           data: 'domain',
           defaultContent: '',
-          className: 'none'
+          className: 'none',
+        },
+        {
+          title: lang.iam,
+          data: 'authsource',
+          defaultContent: '',
+          className: 'none',
+          render: function (data, type) {
+            return '<span class="badge bg-primary">' + data + '<i class="ms-2 bi bi-person-circle"></i></i></span>';
+          }
         },
         {
           title: lang.tls_enforce_in,
@@ -1266,6 +1295,15 @@ jQuery(function($){
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
+        },
+        {
+          title: lang.iam,
+          data: 'attributes.authsource',
+          defaultContent: '',
+          render: function (data, type) {
+            data = data ? '<span class="badge bg-primary">' + data + '<i class="ms-2 bi bi-person-circle"></i></i></span>' : '<i class="bi bi-x-lg"></i>';
+            return data;
+          }
         },
         {
           title: lang.tls_enforce_in,

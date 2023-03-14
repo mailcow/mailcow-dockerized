@@ -1708,6 +1708,19 @@ if (isset($_GET['query'])) {
                     'version' => $GLOBALS['MAILCOW_GIT_VERSION']
                   ));
                 break;
+                case "identity-provider":
+                  if (identity_provider('test')){
+                    echo json_encode(array(
+                      'type' => 'success',
+                      'msg' => 'connection successfull'
+                    ));
+                  } else {
+                    echo json_encode(array(
+                      'type' => 'error',
+                      'msg' => 'connection failed'
+                    ));
+                  }
+                break;
               }
             }
           break;

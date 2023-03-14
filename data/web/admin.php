@@ -88,6 +88,8 @@ $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_method
 $f2b_data = fail2ban('get');
 // identity provider
 $identity_provider_settings = identity_provider('get');
+// mbox templates
+$mbox_templates = mailbox('get', 'mailbox_templates');
 
 $template = 'admin.twig';
 $template_data = [
@@ -120,6 +122,7 @@ $template_data = [
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   'identity_provider_settings' => $identity_provider_settings,
+  'mbox_templates' => $mbox_templates,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];
