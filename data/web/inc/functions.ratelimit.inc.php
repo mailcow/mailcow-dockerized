@@ -92,7 +92,7 @@ function ratelimit($_action, $_scope, $_data = null) {
               );
               continue;
             }
-            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object) && !$_SESSION['iam_create_login']
               || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
