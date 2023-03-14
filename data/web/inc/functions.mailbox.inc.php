@@ -1327,7 +1327,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
             'msg' => array('mailbox_added', htmlspecialchars($username))
           );
-          return true;
         break;
         case 'resource':
           $domain             = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
@@ -5594,4 +5593,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource')) && getenv('SKIP_SOGO') != "y") {
     update_sogo_static_view();
   }
+  
+  return true;
 }
