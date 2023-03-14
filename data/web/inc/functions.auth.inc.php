@@ -133,7 +133,7 @@ function mailcow_mbox_login($user, $pass, $app_passwd_data = false, $is_internal
         AND `app_passwd`.`mailbox` = :user";
     // check if app password has protocol access
     // skip if $app_passwd_data['ignore_hasaccess'] is true and the call is not external
-    if (!$app_passwd_data['ignore_hasaccess'] || !$is_internal){
+    if (!$is_internal || ($is_internal && !$app_passwd_data['ignore_hasaccess'])){
       $app_passwd_query = $app_passwd_query . " AND `app_passwd`.`" . $is_app_passwd . "_access` = '1'";
     }
     // fetch password data
@@ -168,14 +168,11 @@ function mailcow_mbox_login($user, $pass, $app_passwd_data = false, $is_internal
             // Reactivate TFA if it was set to "deactivate TFA for next login"
             $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
             $stmt->execute(array(':user' => $user));
-            if (!$is_internal){
-              // skip log
-              $_SESSION['return'][] =  array(
-                'type' => 'success',
-                'log' => array(__FUNCTION__, $user, '*'),
-                'msg' => array('logged_in_as', $user)
-              );
-            }
+            $_SESSION['return'][] =  array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $user, '*'),
+              'msg' => array('logged_in_as', $user)
+            );
           }
           return "user";
         }
