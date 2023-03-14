@@ -1,4 +1,36 @@
 <?php
+// handle keycloak authentication
+if ($keycloak_provider){
+  if (isset($_GET['keycloak_sso'])){
+    // redirect to keycloak for sso
+    $redirect_uri = keycloak_get_redirect();
+    header('Location: ' . $redirect_uri);
+    die();
+  }
+  if ($_SESSION['keycloak_token'] && $_SESSION['keycloak_refresh_token']) {
+    // Session found, try to refresh
+    $isRefreshed = keycloak_refresh();
+
+    if (!$isRefreshed){
+      // Session could not be refreshed, clear and redirect to keycloak
+      unset_auth_session();
+      $redirect_uri = keycloak_get_redirect();
+      header('Location: ' . $redirect_uri);
+      die();
+    }
+  } elseif ($_GET['code'] && $_GET['state'] === $_SESSION['oauth2state']) {
+    // Check given state against previously stored one to mitigate CSRF attack
+    // Recieved access token in $_GET['code']
+    // extract info and verify user
+    $isValid = keycloak_verify_token();
+
+    if (!$isValid){
+      // Token could not be verified, redirect to keycloak
+      $_SESSION['invalid_keycloak_sso'] = true;
+    }
+  }
+}
+
 // SSO Domain Admin
 if (!empty($_GET['sso_token'])) {
   $username = domain_admin_sso('check', $_GET['sso_token']);
