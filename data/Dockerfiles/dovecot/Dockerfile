@@ -6,7 +6,7 @@ ARG DOVECOT=2.3.19.1
 ARG FLATCURVE=v0.3.2
 ARG XAPIAN=1.4.21
 ENV LC_ALL C
-ENV GOSU_VERSION 1.14
+
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN touch /etc/default/locale \

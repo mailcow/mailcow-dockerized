@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "timezone": "Europe/Berlin",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "commitBody": "Signed-off-by: milkmaker <milkmaker@mailcow.de>",
+  "rebaseWhen": "auto",
+  "labels": ["renovate"],
+  "assignees": [
+    "@magiccc"
+  ],
+  "baseBranches": ["staging"],
+  "enabledManagers": ["github-actions", "regex", "docker-compose"],
+  "ignorePaths": [
+    "data\/web\/inc\/lib\/vendor\/matthiasmullie\/minify\/**"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^helper-scripts\/nextcloud.sh$"],
+      "matchStrings": [
+        "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s.*?_VERSION=(?<currentValue>.*)"
+       ]
+    },
+    {
+      "fileMatch": ["(^|/)Dockerfile[^/]*$"],
+      "matchStrings": [
+        "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s(ENV|ARG) .*?_VERSION=(?<currentValue>.*)\\s"
+       ]
+    }
+  ]
+}

@@ -1,3 +1,13 @@
+const LOCALE = undefined;
+const DATETIME_FORMAT = {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+};
+
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -7,14 +17,7 @@ $(document).ready(function() {
     if (typeof started_s_ago != 'NaN') {
       var started_date = new Date((ts_now - started_s_ago) * 1000);
       if (started_date instanceof Date && !isNaN(started_date)) {
-        var started_local_date = started_date.toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit"
-        });
+        var started_local_date = started_date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
         $(this).text(started_local_date);
       } else {
         $(this).text('-');
@@ -25,20 +28,13 @@ $(document).ready(function() {
   $('.parse_date').each(function(i, parse_date) {
     var started_date = new Date(Date.parse($(this).text()));
     if (typeof started_date != 'NaN') {
-      var started_local_date = started_date.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
+      var started_local_date = started_date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
       $(this).text(started_local_date);
     }
   });
 
   // set update loop container list
-  containersToUpdate = {}
+  containersToUpdate = {};
   // set default ChartJs Font Color
   Chart.defaults.color = '#999';
   // create host cpu and mem charts
@@ -48,13 +44,46 @@ $(document).ready(function() {
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
   $("#maiclow_version").click(function(){
-    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
+    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" || mailcow_info.branch !== "master")
       return;
 
     showVersionModal("Version " + mailcow_info.version_tag, mailcow_info.version_tag);
   })
   // get public ips
-  get_public_ips();
+  $("#host_show_ip").click(function(){
+    $("#host_show_ip").find(".text").addClass("d-none");
+    $("#host_show_ip").find(".spinner-border").removeClass("d-none");
+
+    window.fetch("/api/v1/get/status/host/ip", { method:'GET', cache:'no-cache' }).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(data);
+
+      // display host ips
+      if (data.ipv4)
+        $("#host_ipv4").text(data.ipv4);
+      if (data.ipv6)
+        $("#host_ipv6").text(data.ipv6);
+
+      $("#host_show_ip").addClass("d-none");
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+      $("#host_ipv4").removeClass("d-none");
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").removeClass("text-danger");
+      $("#host_ipv4").addClass("d-block");
+      $("#host_ipv6").addClass("d-block");
+    }).catch(function(error){
+      console.log(error);
+
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").addClass("d-block");
+      $("#host_ipv6").addClass("text-danger");
+      $("#host_ipv6").text(lang_debug.error_show_ip);
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+    });
+  });
   update_container_stats();
 });
 jQuery(function($){
@@ -74,6 +103,13 @@ jQuery(function($){
     var table_name = $(this).data('table');
     $('#' + table_name).DataTable().ajax.reload();
   });
+  function createSortableDate(td, cellData) {
+    $(td).attr({
+      "data-order": cellData,
+      "data-sort": cellData
+    });
+    $(td).html(convertTimestampToLocalFormat(cellData));
+  }
   function draw_autodiscover_logs() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#autodiscover_log') ) {
@@ -81,11 +117,20 @@ jQuery(function($){
       return;
     }
 
-    $('#autodiscover_log').DataTable({
+    var table = $('#autodiscover_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/autodiscover/100",
@@ -99,9 +144,8 @@ jQuery(function($){
           data: 'time',
           defaultContent: '',
           responsivePriority: 1,
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -131,6 +175,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+    });
   }
   function draw_postfix_logs() {
     // just recalc width if instance already exists
@@ -139,11 +187,20 @@ jQuery(function($){
       return;
     }
 
-    $('#postfix_log').DataTable({
+    var table = $('#postfix_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/postfix",
@@ -156,9 +213,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -174,6 +230,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+    });
   }
   function draw_watchdog_logs() {
     // just recalc width if instance already exists
@@ -182,11 +242,20 @@ jQuery(function($){
       return;
     }
 
-    $('#watchdog_log').DataTable({
+    var table = $('#watchdog_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/watchdog",
@@ -199,9 +268,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -221,6 +289,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+    });
   }
   function draw_api_logs() {
     // just recalc width if instance already exists
@@ -229,11 +301,20 @@ jQuery(function($){
       return;
     }
 
-    $('#api_log').DataTable({
+    var table =  $('#api_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/api",
@@ -246,9 +327,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -275,6 +355,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+    });
   }
   function draw_rl_logs() {
     // just recalc width if instance already exists
@@ -283,11 +367,20 @@ jQuery(function($){
       return;
     }
 
-    $('#rl_log').DataTable({
+    var table = $('#rl_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ratelimited",
@@ -305,9 +398,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -367,6 +459,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+    });
   }
   function draw_ui_logs() {
     // just recalc width if instance already exists
@@ -375,11 +471,20 @@ jQuery(function($){
       return;
     }
 
-    $('#ui_logs').DataTable({
+    var table = $('#ui_logs').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ui",
@@ -392,9 +497,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -439,6 +543,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_log');
+    });
   }
   function draw_sasl_logs() {
     // just recalc width if instance already exists
@@ -447,11 +555,20 @@ jQuery(function($){
       return;
     }
 
-    $('#sasl_logs').DataTable({
+    var table = $('#sasl_logs').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sasl",
@@ -480,12 +597,16 @@ jQuery(function($){
           title: lang.login_time,
           data: 'datetime',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data.replace(/-/g, "/")); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            cellData = Math.floor((new Date(cellData.replace(/-/g, "/"))).getTime() / 1000);
+            createSortableDate(td, cellData)
           }
         }
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
     });
   }
   function draw_acme_logs() {
@@ -495,11 +616,20 @@ jQuery(function($){
       return;
     }
 
-    $('#acme_log').DataTable({
+    var table = $('#acme_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/acme",
@@ -512,9 +642,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -525,6 +654,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+    });
   }
   function draw_netfilter_logs() {
     // just recalc width if instance already exists
@@ -533,11 +666,20 @@ jQuery(function($){
       return;
     }
 
-    $('#netfilter_log').DataTable({
+    var table = $('#netfilter_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/netfilter",
@@ -550,9 +692,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -568,6 +709,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+    });
   }
   function draw_sogo_logs() {
     // just recalc width if instance already exists
@@ -576,11 +721,20 @@ jQuery(function($){
       return;
     }
 
-    $('#sogo_log').DataTable({
+    var table = $('#sogo_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sogo",
@@ -593,9 +747,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -611,6 +764,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+    });
   }
   function draw_dovecot_logs() {
     // just recalc width if instance already exists
@@ -619,11 +776,20 @@ jQuery(function($){
       return;
     }
 
-    $('#dovecot_log').DataTable({
+    var table = $('#dovecot_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/dovecot",
@@ -636,9 +802,8 @@ jQuery(function($){
           title: lang.time,
           data: 'time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -653,6 +818,10 @@ jQuery(function($){
           className: 'dtr-col-md text-break'
         }
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
     });
   }
   function rspamd_pie_graph() {
@@ -723,10 +892,20 @@ jQuery(function($){
       return;
     }
 
-    $('#rspamd_history').DataTable({
+    var table = $('#rspamd_history').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rspamd-logs', '#rspamd_history');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/rspamd-history",
@@ -737,11 +916,10 @@ jQuery(function($){
       columns: [
         {
           title: lang.time,
-          data: 'time',
+          data: 'unix_time',
           defaultContent: '',
-          render: function(data, type){
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
@@ -772,12 +950,14 @@ jQuery(function($){
         {
           title: 'Score',
           data: 'score',
-          defaultContent: ''
-        },
-        {
-          title: 'Subject',
-          data: 'header_subject',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'Symbols',
@@ -793,7 +973,14 @@ jQuery(function($){
         {
           title: 'Scan Time',
           data: 'scan_time',
-          defaultContent: ''
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+            $(td).html(cellData.value);
+          }
         },
         {
           title: 'ID',
@@ -807,6 +994,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rspamd-history', '#rspamd_history');
+    });
   }
   function process_table_data(data, table) {
     if (table == 'rspamd_history') {
@@ -818,31 +1009,31 @@ jQuery(function($){
         item.rcpt = escapeHtml(item.rcpt_smtp.join(", "));
       }
       item.symbols = Object.keys(item.symbols).sort(function (a, b) {
-        if (item.symbols[a].score === 0) return 1
-        if (item.symbols[b].score === 0) return -1
+        if (item.symbols[a].score === 0) return 1;
+        if (item.symbols[b].score === 0) return -1;
         if (item.symbols[b].score < 0 && item.symbols[a].score < 0) {
-          return item.symbols[a].score - item.symbols[b].score
+          return item.symbols[a].score - item.symbols[b].score;
         }
         if (item.symbols[b].score > 0 && item.symbols[a].score > 0) {
-          return item.symbols[b].score - item.symbols[a].score
+          return item.symbols[b].score - item.symbols[a].score;
         }
-        return item.symbols[b].score - item.symbols[a].score
+        return item.symbols[b].score - item.symbols[a].score;
       }).map(function(key) {
         var sym = item.symbols[key];
         if (sym.score < 0) {
-          sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)';
         }
         else if (sym.score === 0) {
-          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)';
         }
         else {
-          sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)';
         }
         var str = '<strong>' + key + '</strong> ' + sym.score_formatted;
         if (sym.options) {
           str += ' [' + escapeHtml(sym.options.join(", ")) + "]";
         }
-        return str
+        return str;
       }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
       var scan_time = item.time_real.toFixed(3);
@@ -850,9 +1041,7 @@ jQuery(function($){
         scan_time += ' / ' + item.time_virtual.toFixed(3);
       }
       item.scan_time = {
-        "options": {
-          "sortValue": item.time_real
-        },
+        "sortBy": item.time_real,
         "value": scan_time
       };
       if (item.action === 'clean' || item.action === 'no action') {
@@ -871,9 +1060,7 @@ jQuery(function($){
         score_content = "[ <span class='text-danger'>" + item.score.toFixed(2) + " / " + item.required_score + "</span> ]";
       }
       item.score = {
-        "options": {
-          "sortValue": item.score
-        },
+        "sortBy": item.score,
         "value": score_content
       };
       if (item.user == null) {
@@ -979,20 +1166,19 @@ jQuery(function($){
         }
       });
     }
-    return data
+    return data;
   };
   $('.add_log_lines').on('click', function (e) {
     e.preventDefault();
-    var log_table= $(this).data("table")
-    var new_nrows = $(this).data("nrows")
-    var post_process = $(this).data("post-process")
-    var log_url = $(this).data("log-url")
+    var log_table= $(this).data("table");
+    var new_nrows = $(this).data("nrows");
+    var post_process = $(this).data("post-process");
+    var log_url = $(this).data("log-url");
     if (log_table === undefined || new_nrows === undefined || post_process === undefined || log_url === undefined) {
       console.log("no data-table or data-nrows or log_url or data-post-process attr found");
       return;
     }
 
-    // BUG TODO: loading 100 results in loading 10 - loading 1000 results in loading 100
     if (table = $('#' + log_table).DataTable()) {
       var heading = $('#' + log_table).closest('.card').find('.card-header');
       var load_rows = (table.page.len() + 1) + '-' + (table.page.len() + new_nrows)
@@ -1007,6 +1193,12 @@ jQuery(function($){
       });
     }
   })
+  function hideTableExpandCollapseBtn(tab, table){
+    if ($(table).hasClass('collapsed'))
+      $(tab).find(".table_collapse_option").show();
+    else
+      $(tab).find(".table_collapse_option").hide();
+  }
 
   // detect element visibility changes
   function onVisible(element, callback) {
@@ -1037,7 +1229,6 @@ jQuery(function($){
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
-
 
 
   // start polling host stats if tab is active
@@ -1076,10 +1267,10 @@ jQuery(function($){
               netIOCtx.data.datasets[0].data = [];
               netIOCtx.data.datasets[1].data = [];
               netIOCtx.data.labels = [];
-            
+
               diskIOCtx.update();
               netIOCtx.update();
-              
+
               delete containersToUpdate[container];
             });
           }
@@ -1122,9 +1313,9 @@ function update_stats(timeout=5){
       if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
 
       cpu_chart.data.datasets[0].data.push(data.cpu.usage);
-      if (cpu_chart.data.datasets[0].data.length > 30)  cpu_chart.data.datasets[0].data.shift();
+      if (cpu_chart.data.datasets[0].data.length > 30) cpu_chart.data.datasets[0].data.shift();
       mem_chart.data.datasets[0].data.push(data.memory.usage);
-      if (mem_chart.data.datasets[0].data.length > 30)  mem_chart.data.datasets[0].data.shift();
+      if (mem_chart.data.datasets[0].data.length > 30) mem_chart.data.datasets[0].data.shift();
 
       cpu_chart.update();
       mem_chart.update();
@@ -1136,7 +1327,7 @@ function update_stats(timeout=5){
 }
 // update specific container stats - every n (default 5s) seconds
 function update_container_stats(timeout=5){
-  
+
   if ($('#tab-containers').hasClass('active')) {
     for (let container in containersToUpdate){
       container_id = containersToUpdate[container].id;
@@ -1164,13 +1355,13 @@ function update_container_stats(timeout=5){
           $('#' + container + "_NetIOChart").removeClass('d-none');
           $('#' + container + "_NetIOChart").prev().addClass('d-none');
         }
-          
+
         data = data[data.length -1];
 
         if (prev_stats != null){
           // calc time diff
           var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
-    
+
           // calc disk io b/s
           if ('io_service_bytes_recursive' in prev_stats.blkio_stats && prev_stats.blkio_stats.io_service_bytes_recursive !== null){
             var prev_read_bytes = 0;
@@ -1192,7 +1383,7 @@ function update_container_stats(timeout=5){
             var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
             var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
           }
-    
+
           // calc net io b/s
           if ('networks' in prev_stats){
             var prev_recv_bytes = 0;
@@ -1210,11 +1401,11 @@ function update_container_stats(timeout=5){
             var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
             var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
           }
-    
+
           addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
           addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
         }
-    
+
         // run again in n seconds
         containersToUpdate[container].state = "idle";
       }).catch(err => {
@@ -1225,20 +1416,6 @@ function update_container_stats(timeout=5){
 
   // run again in n seconds
   setTimeout(update_container_stats, timeout * 1000);
-}
-// get public ips
-function get_public_ips(){
-  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    console.log(data);
-
-    // display host ips
-    if (data.ipv4)
-      $("#host_ipv4").text(data.ipv4);
-    if (data.ipv6)
-      $("#host_ipv6").text(data.ipv6);
-  });
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){
@@ -1253,7 +1430,7 @@ function formatUptime(seconds){
   var mFormat = m > 0 ? m + "M " : "";
   var sFormat = s > 0 ? s + "S" : "";
   return dFormat + hFormat + mFormat + sFormat;
-} 
+}
 // format bytes to readable string
 function formatBytes(bytes){
   // b
@@ -1297,28 +1474,28 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
   };
   var optionsNet = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
-             return formatBytes(i);
+            return formatBytes(i);
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
-            display: false
-        }  
+          display: false
+        }
       }
     }
   };
-  
+
   return new Chart(ctx, {
     type: 'line',
     data: dataNet,
@@ -1361,24 +1538,24 @@ function createHostCpuAndMemChart(){
   };
   var optionsCpu = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
              return i.toFixed(0).toString() + "%";
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
-            display: false
-        }  
+          display: false
+        }
       }
     }
   };
@@ -1399,29 +1576,29 @@ function createHostCpuAndMemChart(){
   };
   var optionsMem = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
             return i.toFixed(0).toString() + "%";
           }
-        }  
+        }
       },
       xAxis: {
         grid: {
-            display: false
-        }  
+          display: false
+        }
       }
     }
   };
 
-  
+
   var net_io_chart = new Chart(cpu_ctx, {
     type: 'line',
     data: dataCpu,
@@ -1435,7 +1612,7 @@ function createHostCpuAndMemChart(){
 }
 // check for mailcow updates
 function check_update(current_version, github_repo_url){
-  if (!current_version || !github_repo_url) return false; 
+  if (!current_version || !github_repo_url) return false;
 
   var github_account = github_repo_url.split("/")[3];
   var github_repo_name = github_repo_url.split("/")[4];
@@ -1462,7 +1639,7 @@ function check_update(current_version, github_repo_url){
         $("#mailcow_update_changelog").click(function(){
           if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
             return;
-      
+
           showVersionModal("New Release " + latest_data.tag_name, latest_data.tag_name);
         })
       }
@@ -1485,7 +1662,7 @@ function showVersionModal(title, version){
     type: 'GET',
     url: 'https://api.github.com/repos/' + mailcow_info.project_owner + '/' + mailcow_info.project_repo + '/releases/tags/' + version,
     dataType: 'json',
-    success: function (data) { 
+    success: function (data) {
       var md = window.markdownit();
       var result = md.render(data.body);
       result = parseGithubMarkdownLinks(result);
@@ -1494,7 +1671,7 @@ function showVersionModal(title, version){
       $('#showVersionModal').find(".modal-body").html(`
         <h3>` + data.name + `</h3>
         <span class="mt-4">` + result + `</span>
-        <span><b>Github Link:</b> 
+        <span><b>Github Link:</b>
           <a target="_blank" href="https://github.com/` + mailcow_info.project_owner + `/` + mailcow_info.project_repo + `/releases/tag/` + version + `">` + version + `</a>
         </span>
       `);
@@ -1511,23 +1688,28 @@ function parseGithubMarkdownLinks(inputText) {
 
   replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
   replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
-      if (matched.includes('github.com')){
-        // return short link if it's github link
-        last_uri_path = matched.split('/');
-        last_uri_path = last_uri_path[last_uri_path.length - 1];
+    if (matched.includes('github.com')){
+      // return short link if it's github link
+      last_uri_path = matched.split('/');
+      last_uri_path = last_uri_path[last_uri_path.length - 1];
 
-        // adjust Full Changelog link to match last git version and new git version, if link is a compare link
-        if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
-          matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
-          last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
-        }
-        
-        return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
-      };
+      // adjust Full Changelog link to match last git version and new git version, if link is a compare link
+      if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
+        matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
+        last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
+      }
 
-      // if it's not a github link, return complete link
-      return '<a href="' + matched + '" target="_blank">' + matched + '</a>'; 
+      return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
+    };
+
+    // if it's not a github link, return complete link
+    return '<a href="' + matched + '" target="_blank">' + matched + '</a>';
   });
 
   return replacedText;
+}
+
+function convertTimestampToLocalFormat(timestamp) {
+  var date = new Date(timestamp ? timestamp * 1000 : 0);
+  return date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
 }

@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
@@ -13,6 +13,7 @@ RUN apk add --update --no-cache python3 \
   fastapi \
   uvicorn \
   aiodocker \
+  docker \
   redis 
 
 COPY docker-entrypoint.sh /app/

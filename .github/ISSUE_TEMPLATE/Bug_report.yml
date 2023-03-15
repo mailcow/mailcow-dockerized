@@ -7,8 +7,8 @@ body:
       label: Contribution guidelines
       description: Please read the contribution guidelines before proceeding.
       options:
-        - label: I've read the [contribution guidelines](https://github.com/mailcow/mailcow-dockerized/blob/master/CONTRIBUTING.md) and wholeheartedly agree
-          required: true
+      - label: I've read the [contribution guidelines](https://github.com/mailcow/mailcow-dockerized/blob/master/CONTRIBUTING.md) and wholeheartedly agree
+        required: true
   - type: checkboxes
     attributes:
       label: I've found a bug and checked that ...
@@ -26,70 +26,132 @@ body:
     attributes:
       label: Description
       description: Please provide a brief description of the bug in 1-2 sentences. If applicable, add screenshots to help explain your problem. Very useful for bugs in mailcow UI.
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Logs
-      description: Please take a look at the [official documentation](https://mailcow.github.io/mailcow-dockerized-docs/debug-logs/) and post the last few lines of logs, when the error occurs. For example, docker container logs of affected containers. This will be automatically formatted into code, so no need for backticks.
-      render: bash
+      label: "Logs:"
+      description: "Please take a look at the [official documentation](https://docs.mailcow.email/troubleshooting/debug-logs/) and post the last few lines of logs, when the error occurs. For example, docker container logs of affected containers. This will be automatically formatted into code, so no need for backticks."
+      render: plain text
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Steps to reproduce
-      description: Please describe the steps to reproduce the bug. Screenshots can be added, if helpful.
+      label: "Steps to reproduce:"
+      description: "Please describe the steps to reproduce the bug. Screenshots can be added, if helpful."
+      render: plain text
       placeholder: |-
         1. ...
         2. ...
         3. ...
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## System information
+        ### In this stage we would kindly ask you to attach general system information about your setup.
+  - type: dropdown
+    attributes:
+      label: "Which branch are you using?"
+      description: "#### `git rev-parse --abbrev-ref HEAD`"
+      multiple: false
+      options:
+        - master
+        - nightly
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Operating System:"
+      placeholder: "e.g. Ubuntu 22.04 LTS"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Server/VM specifications:"
+      placeholder: "Memory, CPU Cores"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Is Apparmor, SELinux or similar active?"
+      placeholder: "yes/no"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Virtualization technology:"
+      placeholder: "KVM, VMware, Xen, etc - **LXC and OpenVZ are not supported**"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Docker version:"
+      description: "#### `docker version`"
+      placeholder: "20.10.21"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "docker-compose version or docker compose version:"
+      description: "#### `docker-compose version` or `docker compose version`"
+      placeholder: "v2.12.2"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "mailcow version:"
+      description: "#### ```git describe --tags `git rev-list --tags --max-count=1` ```"
+      placeholder: "2022-08"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Reverse proxy:"
+      placeholder: "e.g. Nginx/Traefik"
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: System information
-      description: In this stage we would kindly ask you to attach general system information about your setup.
-      value: |-
-             | Question | Answer |
-             | --- | --- |
-             | My operating system | I_DO_REPLY_HERE |
-             | Is Apparmor, SELinux or similar active? | I_DO_REPLY_HERE |
-             | Virtualization technology (KVM, VMware, Xen, etc - **LXC and OpenVZ are not supported** | I_DO_REPLY_HERE |
-             | Server/VM specifications (Memory, CPU Cores) | I_DO_REPLY_HERE |
-             | Docker version (`docker version`) | I_DO_REPLY_HERE |
-             | docker-compose version (`docker-compose version`) | I_DO_REPLY_HERE |
-             | mailcow version (```git describe --tags `git rev-list --tags --max-count=1` ```) | I_DO_REPLY_HERE |
-             | Reverse proxy (custom solution) | I_DO_REPLY_HERE |
-
-             Output of `git diff origin/master`, any other changes to the code? If so, **please post them**:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
-
-             All third-party firewalls and custom iptables rules are unsupported. **Please check the Docker docs about how to use Docker with your own ruleset**. Nevertheless, iptabels output can help us to help you:
-             iptables -L -vn:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
-
-             ip6tables -L -vn:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
-
-             iptables -L -vn -t nat:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
-
-             ip6tables -L -vn -t nat:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
-
-             DNS problems? Please run `docker exec -it $(docker ps -qf name=acme-mailcow) dig +short stackoverflow.com @172.22.1.254` (set the IP accordingly, if you changed the internal mailcow network) and post the output:
-             ```
-             YOUR OUTPUT GOES HERE
-             ```
+      label: "Logs of git diff:"
+      description: "#### Output of `git diff origin/master`, any other changes to the code? If so, **please post them**:"
+      render: plain text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Logs of iptables -L -vn:"
+      description: "#### Output of `iptables -L -vn`"
+      render: plain text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Logs of ip6tables -L -vn:"
+      description: "#### Output of `ip6tables -L -vn`"
+      render: plain text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Logs of iptables -L -vn -t nat:"
+      description: "#### Output of `iptables -L -vn -t nat`"
+      render: plain text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Logs of ip6tables -L -vn -t nat:"
+      description: "#### Output of `ip6tables -L -vn -t nat`"
+      render: plain text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "DNS check:"
+      description: "#### Output of `docker exec -it $(docker ps -qf name=acme-mailcow) dig +short stackoverflow.com @172.22.1.254` (set the IP accordingly, if you changed the internal mailcow network)"
+      render: plain text
     validations:
       required: true

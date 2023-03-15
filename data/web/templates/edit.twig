@@ -26,7 +26,7 @@
   var lang_user = {{ lang_user|raw }};
   var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
-  var pagination_size = '{{ pagination_size }}';
+  var pagination_size = Math.trunc('{{ pagination_size }}');
   var table_for_domain = '{{ domain }}';
 </script>
 {% endblock %}

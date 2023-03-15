@@ -1739,7 +1739,7 @@ function verify_tfa_login($username, $_data) {
               $_SESSION['return'][] =  array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $username, '*'),
-                  'msg' => array('webauthn_verification_failed', 'authenticator not found')
+                  'msg' => array('webauthn_authenticator_failed')
               );
               return false;
             } 
@@ -1748,9 +1748,18 @@ function verify_tfa_login($username, $_data) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'publicKey not found')
+                    'msg' => array('webauthn_publickey_failed')
                 );
                 return false;
+            }
+
+            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
+              $_SESSION['return'][] =  array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $username, '*'),
+                  'msg' => array('webauthn_username_failed')
+              );
+              return false;
             }
 
             try {
@@ -1784,19 +1793,10 @@ function verify_tfa_login($username, $_data) {
                 $_SESSION['return'][] =  array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $username, '*'),
-                  'msg' => array('webauthn_verification_failed', 'could not determine user role')
+                  'msg' => array('webauthn_role_failed')
                 );
                 return false;
               }
-            }
-
-            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
-                $_SESSION['return'][] =  array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'user who requests does not match with sql entry')
-                );
-                return false;
             }
 
             $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];

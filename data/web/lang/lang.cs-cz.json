@@ -650,7 +650,7 @@
     },
     "login": {
         "delayed": "Přihlášení zpožděno o %s sekund.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Přihlásit",
         "mobileconfig_info": "Ke stažení profilového souboru se přihlaste jako uživatel schránky.",
         "other_logins": "Přihlášení klíčem",
@@ -889,15 +889,7 @@
         "type": "Typ"
     },
     "queue": {
-        "delete_queue": "Smazat vše",
-        "flush_queue": "Vyprázdnit frontu (opětovně doručit)",
-        "queue_ays": "Potvrďte prosím, že chcete odstranit všechny položky z aktuální fronty.",
-        "queue_deliver_mail": "Doručit",
-        "queue_hold_mail": "Zadržet",
-        "queue_manager": "Správce fronty",
-        "queue_show_message": "Zobrazit zprávu",
-        "queue_unban": "odblokovat",
-        "queue_unhold_mail": "Propustit"
+        "queue_manager": "Správce fronty"
     },
     "ratelimit": {
         "disabled": "Vypnuto",

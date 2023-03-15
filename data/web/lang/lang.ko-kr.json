@@ -777,15 +777,7 @@
         "toggle_all": "선택 반전"
     },
     "queue": {
-        "delete_queue": "전부 삭제",
-        "flush_queue": "큐 비우기",
-        "queue_ays": "현재 대기열에서 모든 항목을 삭제할지 확인하십시오.",
-        "queue_deliver_mail": "Deliver",
-        "queue_hold_mail": "Hold",
-        "queue_manager": "대기열 관리자",
-        "queue_unban": "대기열 밴 해제",
-        "queue_unhold_mail": "Unhold",
-        "queue_show_message": "메시지 표시"
+        "queue_manager": "대기열 관리자"
     },
     "start": {
         "help": "Show/Hide help panel",

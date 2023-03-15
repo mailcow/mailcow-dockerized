@@ -3,9 +3,9 @@
 ############## Begin Function Section ##############
 
 check_online_status() {
-  CHECK_ONLINE_IPS=(1.1.1.1 9.9.9.9 8.8.8.8)
-  for ip in "${CHECK_ONLINE_IPS[@]}"; do
-    if timeout 3 ping -c 1 ${ip} > /dev/null; then
+  CHECK_ONLINE_DOMAINS=('https://github.com' 'https://hub.docker.com')
+  for domain in "${CHECK_ONLINE_DOMAINS[@]}"; do
+    if timeout 6 curl --head --silent --output /dev/null ${domain}; then
       return 0
     fi
   done

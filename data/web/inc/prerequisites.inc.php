@@ -234,7 +234,7 @@ if (!isset($_SESSION['mailcow_locale']) && !isset($_COOKIE['mailcow_locale'])) {
 
     // Try suggest match
     // e.g. suggest en-gb when only en-us is provided
-    if (!isset($_COOKIE['mailcow_locale'])) {
+    if (!isset($_SESSION['mailcow_locale'])) {
       foreach ($lang2pref as $lang => $q) {
         if (array_key_exists(substr($lang, 0, 2), $AVAILABLE_BASE_LANGUAGES)) {
           $_SESSION['mailcow_locale'] = $AVAILABLE_BASE_LANGUAGES[substr($lang, 0, 2)];

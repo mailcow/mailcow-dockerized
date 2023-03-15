@@ -528,6 +528,7 @@
         "pushover_sender_regex": "Uitsluitend een afzender met de volgende regex",
         "pushover_text": "Meldingstekst ({SUBJECT} zal worden vervangen door het onderwerp)",
         "pushover_title": "Meldingstitel",
+        "pushover_sound": "Geluid",
         "pushover_vars": "Wanneer er geen afzenders zijn uitgesloten zullen alle mails doorkomen.<br>Regex-filters en afzendercontroles kunnen individueel worden ingesteld en zullen in volgorde worden verwerkt. Ze zijn niet afhankelijk van elkaar.<br>Bruikbare variabelen voor tekst en titel (neem het gegevensbeschermingsbeleid in acht)",
         "pushover_verify": "Verifieer aanmeldingsgegevens",
         "quota_mb": "Quota (MiB)",
@@ -597,7 +598,7 @@
     },
     "login": {
         "delayed": "Aanmelding vertraagd met %s seconden.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Aanmelden",
         "mobileconfig_info": "Log in als mailboxgebruiker om het Apple-verbindingsprofiel te downloaden.",
         "other_logins": "Meld aan met key",
@@ -658,7 +659,6 @@
         "domain_admins": "Domeinadministrators",
         "domain_aliases": "Domeinaliassen",
         "domain_quota": "Quota",
-        "domain_quota_m": "Totale domeinquota",
         "domains": "Domeinen",
         "edit": "Wijzig",
         "empty": "Geen resultaten",
@@ -815,15 +815,7 @@
         "toggle_all": "Selecteer alles"
     },
     "queue": {
-        "delete_queue": "Verwijder alles",
-        "flush_queue": "Leeg queue",
-        "queue_ays": "Bevestig het verwijderen van alle items uit de queue.",
-        "queue_deliver_mail": "Lever af",
-        "queue_hold_mail": "Houd vast",
-        "queue_manager": "Queue manager",
-        "queue_unban": "hef verbanning op",
-        "queue_unhold_mail": "Geef vrij",
-        "queue_show_message": "Toon item"
+        "queue_manager": "Queue manager"
     },
     "start": {
         "help": "Toon/verberg hulppaneel",
@@ -1015,6 +1007,7 @@
         "pushover_sender_regex": "Uitsluitend een afzender met de volgende regex",
         "pushover_text": "Meldingstekst ({SUBJECT} zal worden vervangen door het onderwerp)",
         "pushover_title": "Meldingstitel",
+        "pushover_sound": "Geluid",
         "pushover_vars": "Wanneer er geen afzenders zijn uitgesloten zullen alle mails doorkomen.<br>Regex-filters en afzendercontroles kunnen individueel worden ingesteld en zullen in volgorde worden verwerkt. Ze zijn niet afhankelijk van elkaar.<br>Bruikbare variabelen voor tekst en titel (let op het gegevensbeschermingsbeleid)",
         "pushover_verify": "Verifieer aanmeldingsgegevens",
         "q_add_header": "Spamfolder",

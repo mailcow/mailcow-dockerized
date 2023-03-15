@@ -14,7 +14,7 @@
     </li>
 
     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.configuration }}</a>
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.options }}</a>
       <ul class="dropdown-menu">
         <li><button class="dropdown-item" data-bs-target="#tab-config-dkim" aria-selected="false" aria-controls="tab-config-dkim" role="tab" data-bs-toggle="tab">{{ lang.admin.dkim_keys }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-fwdhosts" aria-selected="false" aria-controls="tab-config-fwdhosts" role="tab" data-bs-toggle="tab">{{ lang.admin.forwarding_hosts }}</button></li>
@@ -57,7 +57,7 @@
       </div>
     </div> <!-- /col-md-12 -->
   </div> <!-- /row -->
-</div> 
+</div>
 
 {% include 'modals/admin.twig' %}
 
@@ -66,7 +66,7 @@ var lang = {{ lang_admin|raw }};
 var lang_datatables = {{ lang_datatables|raw }};
 var admin_username = '{{ mailcow_cc_username }}';
 var csrf_token = '{{ csrf_token }}';
-var pagination_size = '{{ pagination_size }}';
-var log_pagination_size = '{{ log_pagination_size }}';
+var pagination_size = Math.trunc('{{ pagination_size }}');
+var log_pagination_size = Math.trunc('{{ log_pagination_size }}');
 </script>
 {% endblock %}

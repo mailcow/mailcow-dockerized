@@ -25,24 +25,24 @@ jQuery(function($){
       }
       if (typeof data.symbols !== 'undefined') {
         data.symbols.sort(function (a, b) {
-          if (a.score === 0) return 1
-          if (b.score === 0) return -1
+          if (a.score === 0) return 1;
+          if (b.score === 0) return -1;
           if (b.score < 0 && a.score < 0) {
-            return a.score - b.score
+            return a.score - b.score;
           }
           if (b.score > 0 && a.score > 0) {
-            return b.score - a.score
+            return b.score - a.score;
           }
-          return b.score - a.score
+          return b.score - a.score;
         })
         $.each(data.symbols, function (index, value) {
-          var highlightClass = ''
-          if (value.score > 0) highlightClass = 'negative'
-          else if (value.score < 0) highlightClass = 'positive'
-          else highlightClass = 'neutral'
+          var highlightClass = '';
+          if (value.score > 0) highlightClass = 'negative';
+          else if (value.score < 0) highlightClass = 'positive';
+          else highlightClass = 'neutral';
           $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
         });
-        $('[data-bs-toggle="tooltip"]').tooltip()
+        $('[data-bs-toggle="tooltip"]').tooltip();
       }
       if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
         if (data.action === "add header") {

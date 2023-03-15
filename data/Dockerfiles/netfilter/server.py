@@ -97,9 +97,9 @@ def refreshF2bregex():
     f2bregex[3] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed: (?!.*Connection lost to authentication server).+'
     f2bregex[4] = 'warning: non-SMTP command from .*\[([0-9a-f\.:]+)]:.+'
     f2bregex[5] = 'NOQUEUE: reject: RCPT from \[([0-9a-f\.:]+)].+Protocol error.+'
-    f2bregex[6] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
-    f2bregex[7] = '-login: Aborted login \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    f2bregex[8] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[6] = '-login: Disconnected.+ \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
+    f2bregex[7] = '-login: Aborted login.+ \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[8] = '-login: Aborted login.+ \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
     f2bregex[9] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
     f2bregex[10] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
     r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
@@ -359,21 +359,28 @@ def snat4(snat_target):
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
         new_rule = get_snat4_rule()
-        for position, rule in enumerate(chain.rules):
-          match = all((
-            new_rule.get_src() == rule.get_src(),
-            new_rule.get_dst() == rule.get_dst(),
-            new_rule.target.parameters == rule.target.parameters,
-            new_rule.target.name == rule.target.name
-          ))
-          if position == 0:
-            if not match:
-              logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
-              chain.insert_rule(new_rule)
-          else:
-            if match:
-              logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
-              chain.delete_rule(rule)
+
+        if not chain.rules:
+          # if there are no rules in the chain, insert the new rule directly
+          logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
+          chain.insert_rule(new_rule)
+        else:
+          for position, rule in enumerate(chain.rules):
+            match = all((
+              new_rule.get_src() == rule.get_src(),
+              new_rule.get_dst() == rule.get_dst(),
+              new_rule.target.parameters == rule.target.parameters,
+              new_rule.target.name == rule.target.name
+            ))
+            if position == 0:
+              if not match:
+                logInfo(f'Added POSTROUTING rule for source network {new_rule.src} to SNAT target {snat_target}')
+                chain.insert_rule(new_rule)
+            else:
+              if match:
+                logInfo(f'Remove rule for source network {new_rule.src} to SNAT target {snat_target} from POSTROUTING chain at position {position}')
+                chain.delete_rule(rule)
+
         table.commit()
         table.autocommit = True
       except:

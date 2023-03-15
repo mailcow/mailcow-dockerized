@@ -47,12 +47,14 @@ if (!function_exists('getallheaders'))  {
 }
 
 $headers = getallheaders();
+$json_body = json_decode(file_get_contents('php://input'));
 
 $qid      = $headers['X-Rspamd-Qid'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
 $sender   = $headers['X-Rspamd-From'];
 $ip       = $headers['X-Rspamd-Ip'];
 $subject  = $headers['X-Rspamd-Subject'];
+$messageid= $json_body->message_id;
 $priority = 0;
 
 $symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
@@ -63,6 +65,20 @@ if (is_array($symbols_array)) {
       break;
     }
   }
+}
+
+$sender_address = $json_body->header_from[0];
+$sender_name = '-';
+if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $sender_address, $matches)) {
+	$sender_address = $matches['address'];
+  $sender_name =  trim($matches['name'], '"\' ');
+}
+
+$to_address = $json_body->header_to[0];
+$to_name = '-';
+if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
+	$to_address = $matches['address'];
+  $to_name =  trim($matches['name'], '"\' ');
 }
 
 $rcpt_final_mailboxes = array();
@@ -229,9 +245,16 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     $post_fields = array(
       "token" => $api_data['token'],
       "user" => $api_data['key'],
-      "title" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}'), array($subject, $sender), $title)),
+      "title" => sprintf("%s", str_replace(
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '{MSG_ID}'),
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, $messageid), $title)
+      ),
       "priority" => $priority,
-      "message" => sprintf("%s", str_replace(array('{SUBJECT}', '{SENDER}'), array($subject, $sender), $text))
+      "message" => sprintf("%s", str_replace(
+        array('{SUBJECT}', '{SENDER}', '{SENDER_NAME}', '{SENDER_ADDRESS}', '{TO_NAME}', '{TO_ADDRESS}', '{MSG_ID}', '\n'),
+        array($subject, $sender, $sender_name, $sender_address, $to_name, $to_address, $messageid, PHP_EOL), $text)
+      ),
+      "sound" => $attributes['sound'] ?? "pushover"
     );
     if ($attributes['evaluate_x_prio'] == "1" && $priority == 1) {
       $post_fields['expire'] = 600;

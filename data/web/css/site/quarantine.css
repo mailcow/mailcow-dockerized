@@ -99,4 +99,6 @@ table tbody tr td input[type="checkbox"] {
   font-size:110%;
   margin:20px;
 }
-
+.senders-mw220 {
+  max-width: 220px;
+}

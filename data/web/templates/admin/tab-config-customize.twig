@@ -33,6 +33,20 @@
           </div>
         </div>
       {% endif %}
+      <legend style="padding-top:20px" unselectable="on">{{ lang.admin.ip_check }}</legend><hr />
+      <div id="ip_check">
+        <form class="form" data-id="ip_check" role="form" method="post">
+          <div class="mb-4">
+            <input class="form-check-input" type="checkbox" value="1" name="ip_check_opt_in" id="ip_check_opt_in" {% if ip_check == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="ip_check_opt_in">
+              {{ lang.admin.ip_check_opt_in|raw }}
+            </label>
+          </div>
+          <p><div class="btn-group">
+            <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="admin" data-id="ip_check" data-reload="no" data-api-url='edit/ip_check' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          </div></p>
+        </form>
+      </div>
       <legend>{{ lang.admin.app_links }}</legend><hr />
       <p class="text-muted">{{ lang.admin.merged_vars_hint|raw }}</p>
       <form class="form-inline" data-id="app_links" role="form" method="post">

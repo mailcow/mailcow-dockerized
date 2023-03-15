@@ -199,6 +199,13 @@
     display: none !important;
   }
 
+  div.dataTables_wrapper div.dataTables_length {
+    text-align: left;
+  }
+
+  .senders-mw220 {
+    max-width: 100% !important;
+  }
 }
 
 @media (max-width: 350px) {
