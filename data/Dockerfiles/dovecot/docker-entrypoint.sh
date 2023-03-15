@@ -144,8 +144,8 @@ function auth_password_verify(request, password)
 
   json = require "json"
   ltn12 = require "ltn12"
-  http = require "socket.http"
-  http.TIMEOUT = 5
+  https = require "ssl.https"
+  https.TIMEOUT = 5
   mysql = require "luasql.mysql"
   env  = mysql.mysql()
   con = env:connect("__DBNAME__","__DBUSER__","__DBPASS__","localhost")
@@ -158,7 +158,7 @@ function auth_password_verify(request, password)
   local res = {} 
   
   -- check against mailbox passwds
-  local b, c = http.request {
+  local b, c = https.request {
     method = "POST",
     url = "https://nginx/api/v1/process/login",
     source = ltn12.source.string(req_json),
@@ -189,7 +189,7 @@ function auth_password_verify(request, password)
       req.protocol.ignore_hasaccess = true
     end
 
-    local b, c = http.request {
+    local b, c = https.request {
       method = "POST",
       url = "https://nginx/api/v1/process/login",
       source = ltn12.source.string(req_json),

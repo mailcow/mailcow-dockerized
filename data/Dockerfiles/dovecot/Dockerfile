@@ -36,6 +36,7 @@ RUN addgroup -g 5000 vmail \
   icu-data-full \
   mariadb-connector-c \
   gcompat \
+  lua-sec \
   mariadb-client \
   perl \
   perl-ntlm \
