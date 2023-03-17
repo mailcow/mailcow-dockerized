@@ -67,11 +67,15 @@ def refreshF2boptions():
   if not r.get('F2B_OPTIONS'):
     f2boptions = {}
     f2boptions['ban_time'] = int
+    f2boptions['max_ban_time'] = int
+    f2boptions['ban_time_increment'] = bool
     f2boptions['max_attempts'] = int
     f2boptions['retry_window'] = int
     f2boptions['netban_ipv4'] = int
     f2boptions['netban_ipv6'] = int
     f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or 1800
+    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME') or 10000
+    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT') or True
     f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
     f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
     f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 32
@@ -147,6 +151,7 @@ def ban(address):
   global lock
   refreshF2boptions()
   BAN_TIME = int(f2boptions['ban_time'])
+  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
   MAX_ATTEMPTS = int(f2boptions['max_attempts'])
   RETRY_WINDOW = int(f2boptions['retry_window'])
   NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
@@ -182,7 +187,8 @@ def ban(address):
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
     cur_time = int(round(time.time()))
-    logCrit('Banning %s for %d minutes' % (net, BAN_TIME / 60 * 2 ** bans[net]['ban_counter']))
+    NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+    logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
     if type(ip) is ipaddress.IPv4Address:
       with lock:
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -201,7 +207,7 @@ def ban(address):
         rule.target = target
         if rule not in chain.rules:
           chain.insert_rule(rule)
-    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + BAN_TIME * 2 ** bans[net]['ban_counter'])
+    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
   else:
     logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
@@ -421,6 +427,8 @@ def autopurge():
     time.sleep(10)
     refreshF2boptions()
     BAN_TIME = int(f2boptions['ban_time'])
+    MAX_BAN_TIME = int(f2boptions['max_ban_time'])
+    BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
     MAX_ATTEMPTS = int(f2boptions['max_attempts'])
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
@@ -428,7 +436,9 @@ def autopurge():
         unban(str(net))
     for net in bans.copy():
       if bans[net]['attempts'] >= MAX_ATTEMPTS:
-        if time.time() - bans[net]['last_attempt'] > BAN_TIME * 2 ** bans[net]['ban_counter']:
+        NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+        TIME_SINCE_LAST_ATTEMPT = time.time() - bans[net]['last_attempt']
+        if TIME_SINCE_LAST_ATTEMPT > NET_BAN_TIME or TIME_SINCE_LAST_ATTEMPT > MAX_BAN_TIME:
           unban(net)
 
 def isIpNetwork(address):
