@@ -2078,8 +2078,8 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach($rows as $row){
-        if ($row["key"] == 'roles'){
-          $settings['roles'] = json_decode($row["value"]);
+        if ($row["key"] == 'mappers'){
+          $settings['mappers'] = json_decode($row["value"]);
         } else if ($row["key"] == 'templates'){
           $settings['templates'] = json_decode($row["value"]);
         } else {
@@ -2117,7 +2117,7 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         }
       }
       foreach($_data as $key => $value){
-        if (!in_array($key, $required_settings) || $key == 'roles' || $key == 'templates'){
+        if (!in_array($key, $required_settings) || $key == 'mappers' || $key == 'templates'){
           continue;
         }
 
@@ -2126,19 +2126,19 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         $stmt->execute();
       }
 
-      // add role mappings
-      if ($_data['roles'] && $_data['templates']){
-        if (!is_array($_data['roles'])){
-          $_data['roles'] = array($_data['roles']);
+      // add mappers
+      if ($_data['mappers'] && $_data['templates']){
+        if (!is_array($_data['mappers'])){
+          $_data['mappers'] = array($_data['mappers']);
         }
         if (!is_array($_data['templates'])){
           $_data['templates'] = array($_data['templates']);
         }
-        $roles = array();
+        $mappers = array();
         $templates = array();
-        foreach($_data['roles'] as $role){
-          if ($role){
-            array_push($roles, $role);
+        foreach($_data['mappers'] as $mapper){
+          if ($mapper){
+            array_push($mappers, $mapper);
           }
         }
         foreach($_data['templates'] as $template){
@@ -2146,12 +2146,12 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
             array_push($templates, $template);
           }
         }
-        if (count($roles) == count($templates)){
-          $roles = json_encode($roles);
+        if (count($mappers) == count($templates)){
+          $mappers = json_encode($mappers);
           $templates = json_encode($templates);
 
-          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('roles', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-          $stmt->bindParam(':value', $roles);
+          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('mappers', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+          $stmt->bindParam(':value', $mappers);
           $stmt->execute();
           $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
           $stmt->bindParam(':value', $templates);
