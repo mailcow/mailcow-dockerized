@@ -1048,7 +1048,7 @@
         "spamfilter_table_empty": "Intet data at vise",
         "spamfilter_table_remove": "slet",
         "spamfilter_table_rule": "Regl",
-        "spamfilter_wl": "Hvisliste",
+        "spamfilter_wl": "Hvidliste",
         "spamfilter_wl_desc": "Hvidlistede e-mail-adresser til <b>aldrig</b> at klassificeres som spam. Wildcards kan bruges. Et filter anvendes kun på direkte aliaser (aliaser med en enkelt målpostkasse) eksklusive catch-aliaser og selve en postkasse.",
         "spamfilter_yellow": "Gul: denne besked kan være spam, vil blive tagget som spam og flyttes til din junk-mappe",
         "status": "Status",
