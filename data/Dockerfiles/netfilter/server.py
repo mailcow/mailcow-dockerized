@@ -174,20 +174,15 @@ def ban(address):
   net = ipaddress.ip_network((address + (NETBAN_IPV4 if type(ip) is ipaddress.IPv4Address else NETBAN_IPV6)), strict=False)
   net = str(net)
 
-  if not net in bans or time.time() - bans[net]['last_attempt'] > RETRY_WINDOW:
-    bans[net] = { 'attempts': 0 }
-    active_window = RETRY_WINDOW
-  else:
-    active_window = time.time() - bans[net]['last_attempt']
+  if not net in bans:
+    bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0}
 
   bans[net]['attempts'] += 1
   bans[net]['last_attempt'] = time.time()
 
-  active_window = time.time() - bans[net]['last_attempt']
-
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
     cur_time = int(round(time.time()))
-    logCrit('Banning %s for %d minutes' % (net, BAN_TIME / 60))
+    logCrit('Banning %s for %d minutes' % (net, BAN_TIME / 60 * 2 ** bans[net]['ban_counter']))
     if type(ip) is ipaddress.IPv4Address:
       with lock:
         chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -206,7 +201,7 @@ def ban(address):
         rule.target = target
         if rule not in chain.rules:
           chain.insert_rule(rule)
-    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + BAN_TIME)
+    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + BAN_TIME * 2 ** bans[net]['ban_counter'])
   else:
     logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
@@ -238,7 +233,8 @@ def unban(net):
   r.hdel('F2B_ACTIVE_BANS', '%s' % net)
   r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
   if net in bans:
-    del bans[net]
+    bans[net]['attempts'] = 0
+    bans[net]['ban_counter'] += 1
 
 def permBan(net, unban=False):
   global lock
@@ -432,7 +428,7 @@ def autopurge():
         unban(str(net))
     for net in bans.copy():
       if bans[net]['attempts'] >= MAX_ATTEMPTS:
-        if time.time() - bans[net]['last_attempt'] > BAN_TIME:
+        if time.time() - bans[net]['last_attempt'] > BAN_TIME * 2 ** bans[net]['ban_counter']:
           unban(net)
 
 def isIpNetwork(address):
