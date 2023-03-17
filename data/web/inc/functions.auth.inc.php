@@ -37,7 +37,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   // Validate mailbox user
   // skip log & ldelay if requests comes from dovecot
   $is_dovecot = false;
-  $request_ip =  ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
+  $request_ip =  $_SERVER['REMOTE_ADDR'];
   if ($request_ip == getenv('IPV4_NETWORK').'.250'){
     $is_dovecot = true;
   }
@@ -52,16 +52,32 @@ function check_login($user, $pass, $app_passwd_data = false) {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$row){
     // mbox does not exist, call keycloak login and create mbox if possible
-    $result = keycloak_mbox_login($user, $pass, $is_dovecot, true);
+    $result = keycloak_mbox_login_rest($user, $pass, $is_dovecot, true);
     if ($result){
       return $result;
     }
   } else if ($row['authsource'] == 'keycloak'){
-    $result = keycloak_mbox_login($user, $pass, $is_dovecot);
+    if ($app_passwd_data){
+      // first check if password is app_password
+      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_dovecot);
+      if ($result){
+        return $result;
+      }
+    }
+
+    $result = keycloak_mbox_login_rest($user, $pass, $is_dovecot);
     if ($result){
       return $result;
     }
   } else {
+    if ($app_passwd_data){
+      // first check if password is app_password
+      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_dovecot);
+      if ($result){
+        return $result;
+      }
+    }
+
     $result = mailcow_mbox_login($user, $pass, $app_passwd_data, $is_dovecot);
     if ($result){
       return $result;
@@ -106,42 +122,6 @@ function mailcow_mbox_login($user, $pass, $app_passwd_data = false, $is_internal
   $stmt->execute(array(':user' => $user));
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-  // check if password is app password
-  $is_app_passwd = false;
-  if ($app_passwd_data['eas']){
-    $is_app_passwd = 'eas';
-  } else if ($app_passwd_data['dav']){
-    $is_app_passwd = 'dav';
-  } else if ($app_passwd_data['smtp']){
-    $is_app_passwd = 'smtp';
-  } else if ($app_passwd_data['imap']){
-    $is_app_passwd = 'imap';
-  } else if ($app_passwd_data['sieve']){
-    $is_app_passwd = 'sieve';
-  } else if ($app_passwd_data['pop3']){
-    $is_app_passwd = 'pop3';
-  }
-  if ($is_app_passwd){
-    // fetch app password data
-    $app_passwd_query = "SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
-      INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
-      INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
-      WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
-        AND `mailbox`.`active` = '1'
-        AND `domain`.`active` = '1'
-        AND `app_passwd`.`active` = '1'
-        AND `app_passwd`.`mailbox` = :user";
-    // check if app password has protocol access
-    // skip if $app_passwd_data['ignore_hasaccess'] is true and the call is not external
-    if (!$is_internal || ($is_internal && !$app_passwd_data['ignore_hasaccess'])){
-      $app_passwd_query = $app_passwd_query . " AND `app_passwd`.`" . $is_app_passwd . "_access` = '1'";
-    }
-    // fetch password data
-    $stmt = $pdo->prepare($app_passwd_query);
-    $stmt->execute(array(':user' => $user));
-    $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
-  }
-
   foreach ($rows as $row) { 
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
@@ -176,70 +156,6 @@ function mailcow_mbox_login($user, $pass, $app_passwd_data = false, $is_internal
           }
           return "user";
         }
-      } elseif ($is_app_passwd) {
-        // password is a app password
-        if ($is_internal){
-          // skip log
-          return "user";
-        }
-
-        $service = strtoupper($is_app_passwd);
-        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
-        $stmt->execute(array(
-          ':service' => $service,
-          ':app_id' => $row['app_passwd_id'],
-          ':username' => $user,
-          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
-        ));
-
-        unset($_SESSION['ldelay']);
-        return "user";
-      }
-    }
-  }
-
-  foreach ($rows as $row) { 
-    // verify password
-    if (verify_hash($row['password'], $pass) !== false) {
-      if (!array_key_exists("app_passwd_id", $row)){ 
-        // password is not a app password
-        // check for tfa authenticators
-        $authenticators = get_tfa($user);
-        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 &&
-            $app_passwd_data['eas'] !== true && $app_passwd_data['dav'] !== true) {
-          // authenticators found, init TFA flow
-          $_SESSION['pending_mailcow_cc_username'] = $user;
-          $_SESSION['pending_mailcow_cc_role'] = "user";
-          $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
-          unset($_SESSION['ldelay']);
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $user, '*'),
-            'msg' => array('logged_in_as', $user)
-          );
-          return "pending";
-        } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
-          // no authenticators found, login successfull
-          // Reactivate TFA if it was set to "deactivate TFA for next login"
-          $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
-          $stmt->execute(array(':user' => $user));
-
-          unset($_SESSION['ldelay']);
-          return "user";
-        }
-      } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
-        // password is a app password
-        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
-        $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
-        $stmt->execute(array(
-          ':service' => $service,
-          ':app_id' => $row['app_passwd_id'],
-          ':username' => $user,
-          ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
-        ));
-
-        unset($_SESSION['ldelay']);
-        return "user";
       }
     }
   }
@@ -333,8 +249,76 @@ function mailcow_admin_login($user, $pass){
 
   return false;
 }
+function mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal = false){
+  global $pdo;
 
-function keycloak_mbox_login($user, $pass, $is_internal = false, $create = false){
+  $protocol = false;
+  if ($app_passwd_data['eas']){
+    $protocol = 'eas';
+  } else if ($app_passwd_data['dav']){
+    $protocol = 'dav';
+  } else if ($app_passwd_data['smtp']){
+    $protocol = 'smtp';
+  } else if ($app_passwd_data['imap']){
+    $protocol = 'imap';
+  } else if ($app_passwd_data['sieve']){
+    $protocol = 'sieve';
+  } else if ($app_passwd_data['pop3']){
+    $protocol = 'pop3';
+  }
+
+  // fetch app password data
+  $stmt = $pdo->prepare("SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+    INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
+    INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+    WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
+      AND `mailbox`.`active` = '1'
+      AND `domain`.`active` = '1'
+      AND `app_passwd`.`active` = '1'
+      AND `app_passwd`.`mailbox` = :user
+      :has_access_query"
+  );    
+  // check if app password has protocol access
+  // skip if protocol is false and the call is not external
+  $has_access_query = '';
+  if (!$is_internal || ($is_internal && !empty($protocol))){
+    $has_access_query = " AND `app_passwd`.`" . $protocol . "_access` = '1'";
+  }
+  // fetch password data
+  $stmt->execute(array(
+    ':user' => $user,
+    ':has_access_query' => $has_access_query
+  ));
+  $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
+  
+  foreach ($rows as $row) { 
+    // verify password
+    if (verify_hash($row['password'], $pass) !== false) {
+      if ($is_internal){
+        // skip sasl_log, dovecot does the job
+        return "user";
+      }
+
+      $service = strtoupper($is_app_passwd);
+      $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES (:service, :app_id, :username, :remote_addr)");
+      $stmt->execute(array(
+        ':service' => $service,
+        ':app_id' => $row['app_passwd_id'],
+        ':username' => $user,
+        ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
+      ));
+
+      unset($_SESSION['ldelay']);
+      return "user";
+    }
+  }
+
+  return false;
+}
+
+// ROPC Flow (deprecated oAuth2.1)
+// uses direct user credentials for UI, IMAP and SMTP Auth
+function keycloak_mbox_login_ropc($user, $pass, $is_internal = false, $create = false){
   global $pdo;
 
   $identity_provider_settings = identity_provider('get');
@@ -363,7 +347,7 @@ function keycloak_mbox_login($user, $pass, $is_internal = false, $create = false
       // check if $user is email address, only accept email address as username
       return false;
     }
-    if ($create && !empty($identity_provider_settings['roles'])){
+    if ($create && !empty($identity_provider_settings['mappers'])){
       // try to create mbox on successfull login
       $user_roles = $user_data['realm_access']['roles'];
       $mbox_template = null;
@@ -407,6 +391,117 @@ function keycloak_mbox_login($user, $pass, $is_internal = false, $create = false
     return false;
   }
 }
+// Keycloak REST Api Flow - auth user by mailcow_password attribute
+// This password will be used for direct UI, IMAP and SMTP Auth
+// To use direct user credentials, only Authorization Code Flow is valid
+function keycloak_mbox_login_rest($user, $pass, $is_internal = false, $create = false){
+  global $pdo;
+
+  $identity_provider_settings = identity_provider('get');
+
+  // get access_token for service account of mailcow client
+  $url = "{$identity_provider_settings['server_url']}/realms/{$identity_provider_settings['realm']}/protocol/openid-connect/token";
+  $req = http_build_query(array(
+    'grant_type'    => 'client_credentials',
+    'client_id'     => $identity_provider_settings['client_id'],
+    'client_secret' => $identity_provider_settings['client_secret']
+  ));
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_POST, 1);
+  curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+  $mcclient_res = json_decode(curl_exec($curl), true);
+  $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+  curl_close ($curl);
+  if ($code != 200) {
+    return false;
+  }
+
+  // get the mailcow_password attribute from keycloak user
+  $url = "{$identity_provider_settings['server_url']}/admin/realms/{$identity_provider_settings['realm']}/users";
+  $queryParams = array('email' => $user, 'exact' => true);
+  $queryString = http_build_query($queryParams);
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, $url . '?' . $queryString);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+      'Authorization: Bearer ' . $mcclient_res['access_token'],
+      'Content-Type: application/json'
+  ));
+  $user_res = json_decode(curl_exec($curl), true)[0];
+  $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+  curl_close($curl);
+  if ($code != 200) {
+    return false;
+  }
+
+  
+
+  // validate mailcow_password
+  $mailcow_password = $user_res['attributes']['mailcow_password'][0];
+  if (!verify_hash($mailcow_password, $pass)) {
+    return false;
+  }
+
+  // get mapped template, if not set return false
+  // also return false if no mappers were defined
+  $user_template = $user_data['attributes']['mailcow_template'][0];
+  if ($create && (empty($identity_provider_settings['mappers']) || $user_template)){
+    return false;
+  } else if (!$create) {
+    // login success - dont create mailbox
+    $_SESSION['return'][] =  array(
+      'type' => 'success',
+      'log' => array(__FUNCTION__, $user, '*'),
+      'msg' => array('logged_in_as', $user)
+    );
+    return 'user';
+  }
+
+  // try to create mbox on successfull login
+  $mbox_template = null;
+  // check if matching rolemapping exist
+  foreach ($identity_provider_settings['mappers'] as $index => $mapper){
+    if (in_array($mapper, $identity_provider_settings['mappers'])) {
+      $mbox_template = $identity_provider_settings['templates'][$index];
+      break;
+    }
+  }
+  if (!$mbox_template){
+    // no matching template found
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT * FROM `templates` 
+  WHERE `template` = :template AND type = 'mailbox'");
+  $stmt->execute(array(
+    ":template" => $mbox_template
+  ));
+  $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (empty($mbox_template_data)){
+    return false;
+  }
+
+  $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
+  $mbox_template_data['domain'] = explode('@', $user)[1];
+  $mbox_template_data['local_part'] = explode('@', $user)[0];
+  $mbox_template_data['authsource'] = 'keycloak';
+  $_SESSION['iam_create_login'] = true;
+  $create_res = mailbox('add', 'mailbox', $mbox_template_data);
+  $_SESSION['iam_create_login'] = false;
+  if (!$create_res){
+    return false;
+  }
+
+  $_SESSION['return'][] =  array(
+    'type' => 'success',
+    'log' => array(__FUNCTION__, $user, '*'),
+    'msg' => array('logged_in_as', $user)
+  );
+  return 'user';
+}
+// Authorization Code Flow
 function keycloak_verify_token(){
   global $keycloak_provider;
   global $pdo;
@@ -419,86 +514,113 @@ function keycloak_verify_token(){
       'log' => array(__FUNCTION__),
       'msg' => array('login_failed', $e->getMessage())
     );
-    die($e->getMessage() . " - " . $_GET['code'] . " - " . $_SESSION['oauth2state']);
     return false;
   }
   
-  $login = false;
   $_SESSION['keycloak_token'] = $token->getToken();
   $_SESSION['keycloak_refresh_token'] = $token->getRefreshToken();
   // decode jwt data
   $info = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $token->getToken())[1]))), true);
-  if (in_array("mailbox", $info['realm_access']['roles']) && $info['email']){
-    // token valid, get mailbox
-    $stmt = $pdo->prepare("SELECT * FROM `mailbox`
-      INNER JOIN domain on mailbox.domain = domain.domain
-      WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `mailbox`.`active`='1'
-        AND `domain`.`active`='1'
-        AND `username` = :user
-        AND `authsource`='keycloak'");
-    $stmt->execute(array(':user' => $info['email']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  // check if email address is given
+  if (!$info['email']){
+    return false;
+  }
 
-    if ($row){
-      $_SESSION['mailcow_cc_username'] = $info['email'];
-      $_SESSION['mailcow_cc_role'] = "user";
-      $login = true;
-    } else {
-      $identity_provider_settings = identity_provider('get');
-      if (!empty($identity_provider_settings['roles'])){
-        // try to create mbox on successfull login
-        $user_roles = $info['realm_access']['roles'];
-        $mbox_template = null;
-        // check if matching rolemapping exist
-        foreach ($user_roles as $index => $role){
-          if (in_array($role, $identity_provider_settings['roles'])) {
-            $mbox_template = $identity_provider_settings['templates'][$index];
-            break;
-          }
-        }
-        if ($mbox_template){
-          $stmt = $pdo->prepare("SELECT * FROM `templates` 
-          WHERE `template` = :template AND type = 'mailbox'");
-          $stmt->execute(array(
-            ":template" => $mbox_template
-          ));
-          $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-          if (!empty($mbox_template_data)){
-            $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
-            $mbox_template_data['domain'] = explode('@', $info['email'])[1];
-            $mbox_template_data['local_part'] = explode('@', $info['email'])[0];
-            $mbox_template_data['authsource'] = 'keycloak';
-            $_SESSION['iam_create_login'] = true;
-            $create_res = mailbox('add', 'mailbox', $mbox_template_data);
-            $_SESSION['iam_create_login'] = false;
-            if ($create_res){
-              $_SESSION['mailcow_cc_username'] = $info['email'];
-              $_SESSION['mailcow_cc_role'] = "user";
-              $login = true;
-            }
-          }
-        }
-      }
-    }
-  } 
-
-  if ($login){
+  // token valid, get mailbox
+  $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+    INNER JOIN domain on mailbox.domain = domain.domain
+    WHERE `kind` NOT REGEXP 'location|thing|group'
+      AND `mailbox`.`active`='1'
+      AND `domain`.`active`='1'
+      AND `username` = :user
+      AND `authsource`='keycloak'");
+  $stmt->execute(array(':user' => $info['email']));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($row){
+    // success
+    $_SESSION['mailcow_cc_username'] = $info['email'];
+    $_SESSION['mailcow_cc_role'] = "user";
     $_SESSION['return'][] =  array(
       'type' => 'success',
       'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
       'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
     );
-  } else {
+    return true;
+  }
+  // get mapped template, if not set return false
+  // also return false if no mappers were defined
+  $identity_provider_settings = identity_provider('get');
+  $user_template = $info['mailcow_template'];
+  if (empty($identity_provider_settings['mappers']) || empty($user_template)){
     unset_auth_session();  
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
       'msg' => 'login_failed'
     );
+    return false;
   }
-  return $login;
+  $mbox_template = null;
+  // check if matching rolemapping exist
+  foreach ($identity_provider_settings['mappers'] as $index => $mapper){
+    if ($user_template == $mapper) {
+      $mbox_template = $identity_provider_settings['templates'][$index];
+      break;
+    }
+  }
+  if (!$mbox_template){
+    // no matching template found
+    unset_auth_session();  
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+      'msg' => 'login_failed'
+    );
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT * FROM `templates` 
+  WHERE `template` = :template AND type = 'mailbox'");
+  $stmt->execute(array(
+    ":template" => $mbox_template
+  ));
+  $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (empty($mbox_template_data)){
+    unset_auth_session();  
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+      'msg' => 'login_failed'
+    );
+    return false;
+  }
+
+  // create mailbox
+  $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
+  $mbox_template_data['domain'] = explode('@', $info['email'])[1];
+  $mbox_template_data['local_part'] = explode('@', $info['email'])[0];
+  $mbox_template_data['authsource'] = 'keycloak';
+  $_SESSION['iam_create_login'] = true;
+  $create_res = mailbox('add', 'mailbox', $mbox_template_data);
+  $_SESSION['iam_create_login'] = false;
+  if (!$create_res){
+    unset_auth_session();  
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+      'msg' => 'login_failed'
+    );
+    return false;
+  }
+
+  $_SESSION['mailcow_cc_username'] = $info['email'];
+  $_SESSION['mailcow_cc_role'] = "user";
+  $_SESSION['return'][] =  array(
+    'type' => 'success',
+    'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+    'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
+  );
+  return true;
 }
 function keycloak_refresh(){
   global $keycloak_provider;
@@ -514,20 +636,11 @@ function keycloak_refresh(){
     return false;
   }
 
-
-  $refresh = false;
   $_SESSION['keycloak_token'] = $token->getToken();
   $_SESSION['keycloak_refresh_token'] = $token->getRefreshToken();
   // decode jwt data
   $info = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $_SESSION['keycloak_token'])[1]))), true);
-  if (in_array("mailbox",  $info['realm_access']['roles']) && $info['email']){
-    $_SESSION['mailcow_cc_username'] = $info['email'];
-
-    $_SESSION['mailcow_cc_role'] = "user";
-    $refresh = true;
-  } 
-
-  if (!$refresh){
+  if (!$info['email']){
     unset_auth_session();  
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -536,7 +649,9 @@ function keycloak_refresh(){
     );
   }
 
-  return $refresh;
+  $_SESSION['mailcow_cc_username'] = $info['email'];
+  $_SESSION['mailcow_cc_role'] = "user";
+  return true;
 }
 function keycloak_get_redirect(){
   global $keycloak_provider;

@@ -180,14 +180,13 @@ function auth_password_verify(request, password)
   -- check against app passwds for imap and smtp
   -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
   if request.service == "smtp" or request.service == "imap" or request.service == "sieve" or request.service == "pop3" then
+    skip_sasl_log = true
     req.protocol = {}
-    req.protocol[request.service] = true
-    req_json = json.encode(req)
-
-    req.protocol.ignore_hasaccess = false
-    if tostring(req.real_rip) == "__IPV4_SOGO__" then
-      req.protocol.ignore_hasaccess = true
+    if tostring(req.real_rip) != "__IPV4_SOGO__" then
+      skip_sasl_log = false
+      req.protocol[request.service] = true
     end
+    req_json = json.encode(req)
 
     local b, c = https.request {
       method = "POST",
@@ -201,7 +200,7 @@ function auth_password_verify(request, password)
     }
     local api_response = json.decode(table.concat(res))
     if api_response.role == 'user' then
-      if req.protocol.ignore_hasaccess == false then
+      if skip_sasl_log == true then
         con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
           VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
       end
