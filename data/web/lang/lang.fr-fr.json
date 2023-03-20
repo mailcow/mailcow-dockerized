@@ -24,7 +24,7 @@
         "spam_policy": "Liste Noire/Liste Blanche",
         "spam_score": "Score SPAM",
         "syncjobs": "Tâches de synchronisation",
-        "tls_policy": "Police TLS",
+        "tls_policy": "Politique TLS",
         "unlimited_quota": "Quota illimité pour les boites de courriel",
         "domain_desc": "Modifier la description du domaine",
         "domain_relayhost": "Changer le relais pour un domaine",
@@ -106,7 +106,8 @@
         "validate": "Valider",
         "validation_success": "Validation réussie",
         "bcc_dest_format": "La destination Cci doit être une seule adresse e-mail valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
-        "tags": "Etiquettes"
+        "tags": "Etiquettes",
+        "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application"
     },
     "admin": {
         "access": "Accès",
@@ -585,7 +586,7 @@
         "unchanged_if_empty": "Si non modifié, laisser en blanc",
         "username": "Nom d'utilisateur",
         "validate_save": "Valider et sauver",
-        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut).",
+        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
         "mailbox_relayhost_info": "S'applique uniquement à la boîte aux lettres et aux alias directs, remplace le relayhost du domaine."
     },
     "footer": {
@@ -1088,9 +1089,12 @@
         "username": "Nom d'utilisateur",
         "verify": "Vérification",
         "waiting": "En attente",
-        "week": "Semaine",
+        "week": "semaine",
         "weekly": "Hebdomadaire",
-        "weeks": "semaines"
+        "weeks": "semaines",
+        "months": "mois",
+        "year": "année",
+        "years": "années"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
