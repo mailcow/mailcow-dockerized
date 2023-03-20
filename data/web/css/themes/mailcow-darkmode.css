@@ -20,6 +20,11 @@ legend {
     background-color: #7a7a7a !important;
     border-color: #5c5c5c !important;
 }
+.btn-dark {
+  color: #000 !important;;
+  background-color: #f6f6f6 !important;;
+  border-color: #ddd !important;;
+}
 .btn-check:checked+.btn-secondary, .btn-check:active+.btn-secondary, .btn-secondary:active, .btn-secondary.active, .show>.btn-secondary.dropdown-toggle {
     border-color: #7a7a7a !important;
 }
@@ -299,22 +304,22 @@ a:hover {
 }
 
 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover,
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
   background-color: #7a7a7a !important;
 }
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
   background-color: #7a7a7a !important;
   border: 1.5px solid #5c5c5c !important;
   color: #fff !important;
 }
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before,
 table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
   background-color: #949494;
 }
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.child,
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.child,
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
   background-color: #444444;
 }
@@ -327,7 +332,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
 }
 .btn.btn-outline-secondary {
   color: #fff !important;
-  border-color: #7a7a7a !important;  
+  border-color: #7a7a7a !important;
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
     background-color: #9b9b9b !important;
