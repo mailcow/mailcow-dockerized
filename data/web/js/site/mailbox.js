@@ -1952,6 +1952,10 @@ jQuery(function($){
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
     });
+    
+    table.on( 'draw', function (){
+        $('#alias_table [data-bs-toggle="tooltip"]').tooltip();
+    });
   }
   function draw_aliasdomain_table() {
     // just recalc width if instance already exists
