@@ -332,7 +332,7 @@ def watch():
               logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
               ban(addr)
     except Exception as ex:
-      logWarn('Error reading log line from pubsub')
+      logWarn('Error reading log line from pubsub: %s' % ex)
       quit_now = True
       exit_code = 2
 
