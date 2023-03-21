@@ -30,16 +30,16 @@ echo "MySQL @ ${CONTAINER_ID}"
 SQL_LOOP_C=0
 SQL_CHANGED=0
 SQL_TYPE=$(mysqladmin version -u${DBUSER} -p${DBPASS} --socket=/var/run/mysqld/mysqld.sock | grep -o -m 1 -E 'MySQL|MariaDB' | tr '[:upper:]' '[:lower:]')
-if [[ ${SQL_TYPE} == "mariadb" ]]; then
-    SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mariadb_upgrade"}' --silent -H 'Content-type: application/json')
-elif [[ ${SQL_TYPE} == "mysql" ]]; then
-    SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json')
-fi
 
 until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
   if [ ${SQL_LOOP_C} -gt 4 ]; then
     echo "Tried to upgrade MySQL and failed, giving up after ${SQL_LOOP_C} retries and starting container (oops, not good)"
     break
+  fi
+  if [[ ${SQL_TYPE} == "mariadb" ]]; then
+    SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mariadb_upgrade"}' --silent -H 'Content-type: application/json')
+  elif [[ ${SQL_TYPE} == "mysql" ]]; then
+      SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json')
   fi
   SQL_UPGRADE_STATUS=$(echo ${SQL_FULL_UPGRADE_RETURN} | jq -r .type)
   SQL_LOOP_C=$((SQL_LOOP_C+1))
