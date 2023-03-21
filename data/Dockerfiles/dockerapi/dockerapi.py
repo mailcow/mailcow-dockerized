@@ -321,7 +321,7 @@ class DockerUtils:
   # api call: container_post - post_action: exec - cmd: system - task: mysql_upgrade
   def container_post__exec__system__mysql_upgrade(self, container_id, request_json):
     for container in self.docker_client.containers.list(filters={"id": container_id}):
-      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql-upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
       if sql_return.exit_code == 0:
         matched = False
         for line in sql_return.output.decode('utf-8').split("\n"):
@@ -337,6 +337,27 @@ class DockerUtils:
       else:
         res = { 'type': 'error', 'msg': 'mysql_upgrade: error running command', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")
+      
+  # api call: container_post - post_action: exec - cmd: system - task: mariadb_upgrade (new for 10.6+)
+  def container_post__exec__system__mariadb_upgrade(self, container_id, request_json):
+    for container in self.docker_client.containers.list(filters={"id": container_id}):
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mariadb-upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
+      if sql_return.exit_code == 0:
+        matched = False
+        for line in sql_return.output.decode('utf-8').split("\n"):
+          if 'is already upgraded to' in line:
+            matched = True
+        if matched:
+          res = { 'type': 'success', 'msg':'mariadb_upgrade: already upgraded', 'text': sql_return.output.decode('utf-8')}
+          return Response(content=json.dumps(res, indent=4), media_type="application/json")
+        else:
+          container.restart()
+          res = { 'type': 'warning', 'msg':'mariadb_upgrade: upgrade was applied', 'text': sql_return.output.decode('utf-8')}
+          return Response(content=json.dumps(res, indent=4), media_type="application/json")
+      else:
+        res = { 'type': 'error', 'msg': 'mariadb_upgrade: error running command', 'text': sql_return.output.decode('utf-8')}
+        return Response(content=json.dumps(res, indent=4), media_type="application/json")
+      
   # api call: container_post - post_action: exec - cmd: system - task: mysql_tzinfo_to_sql
   def container_post__exec__system__mysql_tzinfo_to_sql(self, container_id, request_json):
     for container in self.docker_client.containers.list(filters={"id": container_id}):

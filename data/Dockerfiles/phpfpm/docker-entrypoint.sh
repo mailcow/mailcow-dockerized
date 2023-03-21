@@ -29,18 +29,24 @@ done
 echo "MySQL @ ${CONTAINER_ID}"
 SQL_LOOP_C=0
 SQL_CHANGED=0
+SQL_TYPE=$(mysqladmin version -u${DBUSER} -p${DBPASS} --socket=/var/run/mysqld/mysqld.sock | grep -o -m 1 -E 'MySQL|MariaDB' | tr '[:upper:]' '[:lower:]')
+if [[ ${SQL_TYPE} == "mariadb" ]]; then
+    SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mariadb_upgrade"}' --silent -H 'Content-type: application/json')
+elif [[ ${SQL_TYPE} == "mysql" ]]; then
+    SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json')
+fi
+
 until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
   if [ ${SQL_LOOP_C} -gt 4 ]; then
     echo "Tried to upgrade MySQL and failed, giving up after ${SQL_LOOP_C} retries and starting container (oops, not good)"
     break
   fi
-  SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json')
   SQL_UPGRADE_STATUS=$(echo ${SQL_FULL_UPGRADE_RETURN} | jq -r .type)
   SQL_LOOP_C=$((SQL_LOOP_C+1))
   echo "SQL upgrade iteration #${SQL_LOOP_C}"
   if [[ ${SQL_UPGRADE_STATUS} == 'warning' ]]; then
     SQL_CHANGED=1
-    echo "MySQL applied an upgrade, debug output:"
+    echo "${SQL_TYPE} applied an upgrade, debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
     sleep 3
     while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
@@ -49,10 +55,10 @@ until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
     done
     continue
   elif [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; then
-    echo "MySQL is up-to-date - debug output:"
+    echo "${SQL_TYPE} is up-to-date - debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
   else
-    echo "No valid reponse for mysql_upgrade was received, debug output:"
+    echo "No valid reponse for ${SQL_TYPE}_upgrade was received, debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
   fi
 done
