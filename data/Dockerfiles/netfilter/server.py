@@ -66,29 +66,36 @@ def refreshF2boptions():
   global exit_code
   if not r.get('F2B_OPTIONS'):
     f2boptions = {}
-    f2boptions['ban_time'] = int
-    f2boptions['max_ban_time'] = int
-    f2boptions['ban_time_increment'] = bool
-    f2boptions['max_attempts'] = int
-    f2boptions['retry_window'] = int
-    f2boptions['netban_ipv4'] = int
-    f2boptions['netban_ipv6'] = int
-    f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or 1800
-    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME') or 10000
-    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT') or True
-    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
-    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 32
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 128
+    f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
+    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
+    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
+    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
+    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
+    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
+    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
+    verifyF2boptions(f2boptions)
     r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
   else:
     try:
       f2boptions = {}
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
+      verifyF2boptions(f2boptions)
     except ValueError:
       print('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
       exit_code = 2
+
+def verifyF2boptions(f2boptions):
+  verifyF2boption(f2boptions,'ban_time', 1800)
+  verifyF2boption(f2boptions,'max_ban_time', 10000)
+  verifyF2boption(f2boptions,'ban_time_increment', True)
+  verifyF2boption(f2boptions,'max_attempts', 10)
+  verifyF2boption(f2boptions,'retry_window', 600)
+  verifyF2boption(f2boptions,'netban_ipv4', 32)
+  verifyF2boption(f2boptions,'netban_ipv6', 128)
+
+def verifyF2boption(f2boptions, f2boption, f2bdefault):
+  f2boptions[f2boption] = f2boptions[f2boption] if f2boption in f2boptions and f2boptions[f2boption] is not None else f2bdefault
 
 def refreshF2bregex():
   global f2bregex
