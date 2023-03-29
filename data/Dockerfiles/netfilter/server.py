@@ -64,8 +64,10 @@ def refreshF2boptions():
   global f2boptions
   global quit_now
   global exit_code
+
+  f2boptions = {}
+
   if not r.get('F2B_OPTIONS'):
-    f2boptions = {}
     f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
     f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
     f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
@@ -73,17 +75,16 @@ def refreshF2boptions():
     f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
     f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
     f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
-    verifyF2boptions(f2boptions)
-    r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
   else:
     try:
-      f2boptions = {}
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
-      verifyF2boptions(f2boptions)
     except ValueError:
       print('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
       exit_code = 2
+
+  verifyF2boptions(f2boptions)
+  r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
 
 def verifyF2boptions(f2boptions):
   verifyF2boption(f2boptions,'ban_time', 1800)
