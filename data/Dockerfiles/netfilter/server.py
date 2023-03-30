@@ -206,7 +206,7 @@ def ban(address):
         rule.target = target
         if rule not in chain.rules:
           chain.insert_rule(rule)
-    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + BAN_TIME)
+    r.hset('F2B_ACTIVE_BANS', '%s' % address, cur_time + BAN_TIME)
   else:
     logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
