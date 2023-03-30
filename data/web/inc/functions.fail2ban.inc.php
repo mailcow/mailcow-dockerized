@@ -239,7 +239,9 @@ function fail2ban($_action, $_data = null) {
       $is_now = fail2ban('get');
       if (!empty($is_now)) {
         $ban_time = intval((isset($_data['ban_time'])) ? $_data['ban_time'] : $is_now['ban_time']);
+        $ban_time_increment = (isset($_data['ban_time_increment']) && $_data['ban_time_increment'] == "1") ? 1 : 0;
         $max_attempts = intval((isset($_data['max_attempts'])) ? $_data['max_attempts'] : $is_now['max_attempts']);
+        $max_ban_time = intval((isset($_data['max_ban_time'])) ? $_data['max_ban_time'] : $is_now['max_ban_time']);
         $retry_window = intval((isset($_data['retry_window'])) ? $_data['retry_window'] : $is_now['retry_window']);
         $netban_ipv4 = intval((isset($_data['netban_ipv4'])) ? $_data['netban_ipv4'] : $is_now['netban_ipv4']);
         $netban_ipv6 = intval((isset($_data['netban_ipv6'])) ? $_data['netban_ipv6'] : $is_now['netban_ipv6']);
@@ -256,6 +258,8 @@ function fail2ban($_action, $_data = null) {
       }
       $f2b_options = array();
       $f2b_options['ban_time'] = ($ban_time < 60) ? 60 : $ban_time;
+      $f2b_options['ban_time_increment'] = ($ban_time_increment == 1) ? true : false;
+      $f2b_options['max_ban_time'] = ($max_ban_time < 60) ? 60 : $max_ban_time;
       $f2b_options['netban_ipv4'] = ($netban_ipv4 < 8) ? 8 : $netban_ipv4;
       $f2b_options['netban_ipv6'] = ($netban_ipv6 < 8) ? 8 : $netban_ipv6;
       $f2b_options['netban_ipv4'] = ($netban_ipv4 > 32) ? 32 : $netban_ipv4;
