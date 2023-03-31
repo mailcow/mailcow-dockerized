@@ -1608,19 +1608,6 @@ if (isset($_GET['query'])) {
                     'version' => $GLOBALS['MAILCOW_GIT_VERSION']
                   ));
                 break;
-                case "identity-provider":
-                  if (identity_provider('test')){
-                    echo json_encode(array(
-                      'type' => 'success',
-                      'msg' => 'connection successfull'
-                    ));
-                  } else {
-                    echo json_encode(array(
-                      'type' => 'error',
-                      'msg' => 'connection failed'
-                    ));
-                  }
-                break;
               }
             }
           break;
@@ -1777,6 +1764,9 @@ if (isset($_GET['query'])) {
         break;
         case "rlhash":
           echo ratelimit('delete', null, implode($items));
+        break;
+        case "identity-provider":
+          process_delete_return(identity_provider('delete'));
         break;
         // return no route found if no case is matched
         default:
@@ -1980,8 +1970,11 @@ if (isset($_GET['query'])) {
             process_edit_return(edit_user_account($attr));
           }
         break;
-        case "identity_provider":
+        case "identity-provider":
           process_edit_return(identity_provider('edit', $attr));
+        break;
+        case "identity-provider-test":
+          process_edit_return(identity_provider('test', $attr));
         break;
         // return no route found if no case is matched
         default:
