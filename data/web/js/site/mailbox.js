@@ -282,7 +282,7 @@ $(document).ready(function() {
     $("#addInputQuota").val(template.quota / 1048576);
     $('#mbox_add_iam').selectpicker('val', template.authsource);
     // toggle password fields
-    if (template.authsource === 'mailcow'){
+    if (!template.authsource || template.authsource === 'mailcow'){
       $('#mbox_add_pwds').removeClass('d-none');
       $('#mbox_add_pwds').find('.form-control').prop('required', true);
     } else {
