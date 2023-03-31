@@ -87,8 +87,9 @@
           <div class="offset-sm-3 col-sm-9">
             <div class="btn-group">   
               <button id="iam_test_connection" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-play"></i> {{ lang.admin.iam_test_connection }}</button>
-              <button class="btn btn-sm d-block d-sm-inline btn-success" data-item="iam_sso" data-action="edit_selected" data-id="iam_sso" data-api-url='edit/identity_provider' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+              <button class="btn btn-sm d-block d-sm-inline btn-success" data-item="iam_sso" data-action="edit_selected" data-id="iam_sso" data-api-url='edit/identity-provider' data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
             </div>
+            <button class="btn btn-sm d-block d-sm-inline btn-danger ms-2" data-item="identity-provider" data-action="delete_selected" data-id="iam_sso" data-api-url='delete/identity-provider'><i class="bi bi-trash"></i> {{ lang.mailbox.remove }}</button>
           </div>
         </div>
       </form>
