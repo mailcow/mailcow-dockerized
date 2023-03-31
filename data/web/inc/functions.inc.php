@@ -2166,15 +2166,21 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       );
       return true;
     break;
-    case 'test':  
-      $identity_provider_settings = identity_provider('get');
-      $url = "{$identity_provider_settings['server_url']}/realms/{$identity_provider_settings['realm']}/protocol/openid-connect/token";
+    case 'test':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+
+      $url = "{$_data['server_url']}/realms/{$_data['realm']}/protocol/openid-connect/token";
       $req = http_build_query(array(
-        'grant_type'    => 'password',
-        'client_id'     => $identity_provider_settings['client_id'],
-        'client_secret' => $identity_provider_settings['client_secret'],
-        'username'      => "test",
-        'password'      => "test",
+        'grant_type'    => 'client_credentials',
+        'client_id'     => $_data['client_id'],
+        'client_secret' => $_data['client_secret']
       ));
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_URL, $url);
@@ -2182,13 +2188,29 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
       curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-      $res = json_decode(curl_exec($curl), true);
+      $res = curl_exec($curl);
+      $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
       curl_close ($curl);
-
-      if ($res["error"] && $res["error"] === 'invalid_grant'){
-        return true;
+      
+      if ($code != 200) {
+        return false;
       }
-      return false;
+      return true;
+    break;
+    case "delete":
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      
+      $stmt = $pdo->prepare("DELETE FROM identity_provider;");
+      $stmt->execute();
+
+      return true;
     break;
   }
 }

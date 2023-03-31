@@ -755,14 +755,22 @@ jQuery(function($){
   // IAM test connection
   $('#iam_test_connection').click(async function(e){
     e.preventDefault();
-    var res = await fetch("/api/v1/get/status/identity-provider", { method:'GET', cache:'no-cache' });
+    var data = { attr: $('form[data-id="iam_sso"]').serializeObject() };
+    var res = await fetch("/api/v1/edit/identity-provider-test", { 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method:'POST', 
+      cache:'no-cache', 
+      body: JSON.stringify(data) 
+    });
     res = await res.json();
-    console.log(res);
     if (res.type === 'success'){
       return mailcow_alert_box(lang_success.iam_test_connection, 'success');
     }
     return mailcow_alert_box(lang_danger.iam_test_connection, 'danger');
   });
+
   $('#iam_rolemap_add').click(async function(e){
     e.preventDefault();
 
