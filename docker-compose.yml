@@ -169,7 +169,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.115
+      image: mailcow/sogo:1.116
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -425,7 +425,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.51
+      image: mailcow/netfilter:1.52
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -510,7 +510,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.01
+      image: mailcow/dockerapi:2.02
       security_opt:
         - label=disable
       restart: always
