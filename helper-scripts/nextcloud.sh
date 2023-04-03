@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=25.0.4
+NEXTCLOUD_VERSION=26.0.0
 
 echo -ne "Checking prerequisites..."
 sleep 1
@@ -122,7 +122,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     && chmod +x ./data/web/nextcloud/occ
 
   echo -e "\033[33mCreating 'nextcloud' database...\033[0m"
-  NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+  NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
   NC_DBUSER=nextcloud
   NC_DBNAME=nextcloud
 
@@ -138,7 +138,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
   echo ""
   echo -e "\033[33mInstalling Nextcloud...\033[0m"
-  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
   echo -ne "[1/4] Setting correct permissions for www-data"
   docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud"
