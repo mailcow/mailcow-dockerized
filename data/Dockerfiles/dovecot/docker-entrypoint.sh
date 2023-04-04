@@ -182,7 +182,7 @@ function auth_password_verify(request, password)
   if request.service == "smtp" or request.service == "imap" or request.service == "sieve" or request.service == "pop3" then
     skip_sasl_log = true
     req.protocol = {}
-    if tostring(req.real_rip) != "__IPV4_SOGO__" then
+    if tostring(req.real_rip) ~= "__IPV4_SOGO__" then
       skip_sasl_log = false
       req.protocol[request.service] = true
     end
