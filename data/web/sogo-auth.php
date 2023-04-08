@@ -60,7 +60,7 @@ elseif (isset($_GET['login'])) {
           ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
         ));
         // redirect to sogo (sogo will get the correct credentials via nginx auth_request
-        header("Location: /SOGo/so/${login}");
+        header("Location: /SOGo/so/{$login}");
         exit;
       }
     }
