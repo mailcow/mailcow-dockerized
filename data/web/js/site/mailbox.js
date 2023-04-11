@@ -754,7 +754,7 @@ jQuery(function($){
           data: 'attributes.gal',
           defaultContent: '',
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -762,7 +762,7 @@ jQuery(function($){
           data: 'attributes.backupmx',
           defaultContent: '',
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -770,7 +770,7 @@ jQuery(function($){
           data: 'attributes.relay_all_recipients',
           defaultContent: '',
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -778,7 +778,7 @@ jQuery(function($){
           data: 'attributes.relay_unknown_only',
           defaultContent: '',
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -787,7 +787,7 @@ jQuery(function($){
           defaultContent: '',
           responsivePriority: 4,
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
