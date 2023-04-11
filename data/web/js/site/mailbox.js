@@ -607,7 +607,7 @@ jQuery(function($){
           defaultContent: '',
           responsivePriority: 6,
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
           }
         },
         {
