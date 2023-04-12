@@ -160,13 +160,14 @@ function auth_password_verify(request, password)
   -- check against mailbox passwds
   local b, c = https.request {
     method = "POST",
-    url = "https://nginx/api/v1/process/login",
+    url = "https://nginx:9082",
     source = ltn12.source.string(req_json),
     headers = {
       ["content-type"] = "application/json",
       ["content-length"] = tostring(#req_json)
     },
-    sink = ltn12.sink.table(res)
+    sink = ltn12.sink.table(res),
+    insecure = true
   }
   local api_response = json.decode(table.concat(res))
   if api_response.role == 'user' then
@@ -190,13 +191,14 @@ function auth_password_verify(request, password)
 
     local b, c = https.request {
       method = "POST",
-      url = "https://nginx/api/v1/process/login",
+      url = "https://nginx:9082",
       source = ltn12.source.string(req_json),
       headers = {
         ["content-type"] = "application/json",
         ["content-length"] = tostring(#req_json)
       },
-      sink = ltn12.sink.table(res)
+      sink = ltn12.sink.table(res),
+      insecure = true
     }
     local api_response = json.decode(table.concat(res))
     if api_response.role == 'user' then

@@ -2214,6 +2214,25 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
 
       return true;
     break;
+    case "init":
+      $identity_provider_settings = identity_provider('get');
+      $provider = null;
+      if ($identity_provider_settings['server_url'] && $identity_provider_settings['realm'] && $identity_provider_settings['client_id'] &&
+          $identity_provider_settings['client_secret'] && $identity_provider_settings['redirect_url'] && $identity_provider_settings['version']){
+        $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
+          'authServerUrl'         => $identity_provider_settings['server_url'],
+          'realm'                 => $identity_provider_settings['realm'],
+          'clientId'              => $identity_provider_settings['client_id'],
+          'clientSecret'          => $identity_provider_settings['client_secret'],
+          'redirectUri'           => $identity_provider_settings['redirect_url'],
+          'version'               => $identity_provider_settings['version'],                            
+          // 'encryptionAlgorithm'   => 'RS256',                             // optional
+          // 'encryptionKeyPath'     => '../key.pem'                         // optional
+          // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
+        ]);
+      }
+      return $provider;
+    break;
   }
 }
 

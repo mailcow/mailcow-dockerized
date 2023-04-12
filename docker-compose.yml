@@ -120,6 +120,10 @@ services:
         - ./data/web:/web:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
@@ -390,6 +394,10 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
         - ./data/conf/nginx/:/etc/nginx/conf.d/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
