@@ -407,7 +407,6 @@ $(document).ready(function() {
       $('#rl_frame').selectpicker('val', template.rl_frame);
     }
 
-    console.log(template.active)
     if (template.active){
       $('#mbox_active').selectpicker('val', template.active.toString());
     } else {

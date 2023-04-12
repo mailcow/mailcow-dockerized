@@ -2104,8 +2104,10 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       $data_log['client_secret'] = '*';
       $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
       
+      $_data['login_flow'] = (isset($_data['login_flow']) && $_data['login_flow'] == 'ropc') ? 'ropc' : 'rest';
+
       // add connection settings      
-      $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version');
+      $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'login_flow');
       foreach($required_settings as $setting){
         if (!$_data[$setting]){
           $_SESSION['return'][] =  array(
