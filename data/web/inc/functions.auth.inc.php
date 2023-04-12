@@ -9,7 +9,7 @@ function unset_auth_session(){
   unset($_SESSION['pending_mailcow_cc_role']);
   unset($_SESSION['pending_tfa_methods']);
 }
-function check_login($user, $pass, $app_passwd_data = false) {
+function check_login($user, $pass, $app_passwd_data = false, $is_internal = false) {
   global $pdo;
   global $redis;
 
@@ -35,12 +35,6 @@ function check_login($user, $pass, $app_passwd_data = false) {
   }
 
   // Validate mailbox user
-  // skip log & ldelay if requests comes from dovecot
-  $is_dovecot = false;
-  $request_ip =  $_SERVER['REMOTE_ADDR'];
-  if ($request_ip == getenv('IPV4_NETWORK').'.250'){
-    $is_dovecot = true;
-  }
   // check authsource
   $stmt = $pdo->prepare("SELECT authsource FROM `mailbox`
       INNER JOIN domain on mailbox.domain = domain.domain
@@ -54,9 +48,9 @@ function check_login($user, $pass, $app_passwd_data = false) {
     // mbox does not exist, call keycloak login and create mbox if possible
     $identity_provider_settings = identity_provider('get');
     if ($identity_provider_settings['login_flow'] == 'ropc'){
-      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_dovecot, true);
+      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_internal, true);
     } else {
-      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_dovecot, true);
+      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_internal, true);
     }
     if ($result){
       return $result;
@@ -64,7 +58,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   } else if ($row['authsource'] == 'keycloak'){
     if ($app_passwd_data){
       // first check if password is app_password
-      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_dovecot);
+      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal);
       if ($result){
         return $result;
       }
@@ -72,9 +66,9 @@ function check_login($user, $pass, $app_passwd_data = false) {
 
     $identity_provider_settings = identity_provider('get');
     if ($identity_provider_settings['login_flow'] == 'ropc'){
-      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_dovecot);
+      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_internal);
     } else {
-      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_dovecot);
+      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_internal);
     }
     if ($result){
       return $result;
@@ -82,21 +76,20 @@ function check_login($user, $pass, $app_passwd_data = false) {
   } else {
     if ($app_passwd_data){
       // first check if password is app_password
-      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_dovecot);
+      $result = mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal);
       if ($result){
         return $result;
       }
     }
 
-    $result = mailcow_mbox_login($user, $pass, $app_passwd_data, $is_dovecot);
+    $result = mailcow_mbox_login($user, $pass, $app_passwd_data, $is_internal);
     if ($result){
       return $result;
     }
   }
 
-  // skip log and only return false
-  // netfilter uses dovecot error log for banning
-  if ($is_dovecot){
+  // skip log and only return false if it's an internal request
+  if ($is_internal){
     return false;
   }
   if (!isset($_SESSION['ldelay'])) {
