@@ -49,7 +49,7 @@
             <input type="text" class="form-control" id="iam_version" name="version" value="{{ identity_provider_settings.version }}" required>
           </div>
         </div>
-        <div class="row mb-2">
+        <div class="row mb-4">
           <label class="control-label col-sm-3 text-sm-end" for="iam_version">{{ lang.admin.iam_mapping }}:</label>
           <div class="col-4 d-flex mb-2">
             <span class="w-100 me-2">Attribute</span>
@@ -83,13 +83,32 @@
           </div>
           {% endif %}
         </div>
+        <div class="row mb-2">
+          <label class="control-label col-sm-3 text-sm-end">{{ lang.admin.iam_auth_flow }}</label>
+          <div class="col-sm-9">
+            <div class="btn-group">
+              <input type="radio" class="btn-check" name="login_flow" id="iam_login_flow_rest" autocomplete="off" value="rest" {% if  identity_provider_settings.login_flow != 'ropc' %}checked{% endif %}>
+              <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="iam_login_flow_rest">{{ lang.admin.iam_rest_flow }}</label>
+
+              <input type="radio" class="btn-check" name="login_flow" id="iam_login_flow_ropc" autocomplete="off" value="ropc" {% if  identity_provider_settings.login_flow == 'ropc' %}checked{% endif %}>
+              <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="iam_login_flow_ropc">{{ lang.admin.iam_ropc_flow }}</label>
+            </div>
+            <p class="text-muted">
+              <small>
+                {{ lang.admin.iam_auth_flow_info|raw }}<br>
+                {{ lang.admin.iam_auth_flow_rest_info|raw }}<br>
+                {{ lang.admin.iam_auth_flow_ropc_info|raw }}
+              </small>
+            </p>
+          </div>
+        </div>
         <div class="row mt-4 mb-2">
-          <div class="offset-sm-3 col-sm-9">
+          <div class="offset-sm-3 col-sm-9 d-flex">
             <div class="btn-group">   
               <button id="iam_test_connection" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-play"></i> {{ lang.admin.iam_test_connection }}</button>
               <button class="btn btn-sm d-block d-sm-inline btn-success" data-item="iam_sso" data-action="edit_selected" data-id="iam_sso" data-api-url='edit/identity-provider' data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
             </div>
-            <button class="btn btn-sm d-block d-sm-inline btn-danger ms-2" data-item="identity-provider" data-action="delete_selected" data-id="iam_sso" data-api-url='delete/identity-provider'><i class="bi bi-trash"></i> {{ lang.mailbox.remove }}</button>
+            <button class="btn btn-sm d-block d-sm-inline btn-danger ms-auto" data-item="identity-provider" data-action="delete_selected" data-id="iam_sso" data-api-url='delete/identity-provider'><i class="bi bi-trash"></i> {{ lang.mailbox.remove }}</button>
           </div>
         </div>
       </form>
