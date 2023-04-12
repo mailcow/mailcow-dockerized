@@ -52,7 +52,12 @@ function check_login($user, $pass, $app_passwd_data = false) {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$row){
     // mbox does not exist, call keycloak login and create mbox if possible
-    $result = keycloak_mbox_login_rest($user, $pass, $is_dovecot, true);
+    $identity_provider_settings = identity_provider('get');
+    if ($identity_provider_settings['login_flow'] == 'ropc'){
+      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_dovecot, true);
+    } else {
+      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_dovecot, true);
+    }
     if ($result){
       return $result;
     }
@@ -65,7 +70,12 @@ function check_login($user, $pass, $app_passwd_data = false) {
       }
     }
 
-    $result = keycloak_mbox_login_rest($user, $pass, $is_dovecot);
+    $identity_provider_settings = identity_provider('get');
+    if ($identity_provider_settings['login_flow'] == 'ropc'){
+      $result = keycloak_mbox_login_ropc($user, $pass, $identity_provider_settings, $is_dovecot);
+    } else {
+      $result = keycloak_mbox_login_rest($user, $pass, $identity_provider_settings, $is_dovecot);
+    }
     if ($result){
       return $result;
     }
@@ -318,15 +328,14 @@ function mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal
 
 // ROPC Flow (deprecated oAuth2.1)
 // uses direct user credentials for UI, IMAP and SMTP Auth
-function keycloak_mbox_login_ropc($user, $pass, $is_internal = false, $create = false){
+function keycloak_mbox_login_ropc($user, $pass, $iam_settings, $is_internal = false, $create = false){
   global $pdo;
 
-  $identity_provider_settings = identity_provider('get');
-  $url = "{$identity_provider_settings['server_url']}/realms/{$identity_provider_settings['realm']}/protocol/openid-connect/token";
+  $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token";
   $req = http_build_query(array(
     'grant_type'    => 'password',
-    'client_id'     => $identity_provider_settings['client_id'],
-    'client_secret' => $identity_provider_settings['client_secret'],
+    'client_id'     => $iam_settings['client_id'],
+    'client_secret' => $iam_settings['client_secret'],
     'username'      => $user,
     'password'      => $pass,
   ));
@@ -347,36 +356,38 @@ function keycloak_mbox_login_ropc($user, $pass, $is_internal = false, $create = 
       // check if $user is email address, only accept email address as username
       return false;
     }
-    if ($create && !empty($identity_provider_settings['mappers'])){
+    if ($create && !empty($iam_settings['mappers'])){
       // try to create mbox on successfull login
-      $user_roles = $user_data['realm_access']['roles'];
       $mbox_template = null;
-      // check if matching rolemapping exist
-      foreach ($user_roles as $index => $role){
-        if (in_array($role, $identity_provider_settings['roles'])) {
-          $mbox_template = $identity_provider_settings['templates'][$index];
+      // check if matching attribute mapping exists
+      foreach ($iam_settings['mappers'] as $index => $mapper){
+        if (in_array($mapper, $iam_settings['mappers'])) {
+          $mbox_template = $iam_settings['templates'][$index];
           break;
         }
       }
-      if ($mbox_template){
-        $stmt = $pdo->prepare("SELECT * FROM `templates` 
-        WHERE `template` = :template AND type = 'mailbox'");
-        $stmt->execute(array(
-          ":template" => $mbox_template
-        ));
-        $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (!$mbox_template){
+        // no matching template found
+        return false;
+      }
+      
+      $stmt = $pdo->prepare("SELECT * FROM `templates` 
+      WHERE `template` = :template AND type = 'mailbox'");
+      $stmt->execute(array(
+        ":template" => $mbox_template
+      ));
+      $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!empty($mbox_template_data)){
-          $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
-          $mbox_template_data['domain'] = explode('@', $user)[1];
-          $mbox_template_data['local_part'] = explode('@', $user)[0];
-          $mbox_template_data['authsource'] = 'keycloak';
-          $_SESSION['iam_create_login'] = true;
-          $create_res = mailbox('add', 'mailbox', $mbox_template_data);
-          $_SESSION['iam_create_login'] = false;
-          if (!$create_res){
-            return false;
-          }
+      if (!empty($mbox_template_data)){
+        $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
+        $mbox_template_data['domain'] = explode('@', $user)[1];
+        $mbox_template_data['local_part'] = explode('@', $user)[0];
+        $mbox_template_data['authsource'] = 'keycloak';
+        $_SESSION['iam_create_login'] = true;
+        $create_res = mailbox('add', 'mailbox', $mbox_template_data);
+        $_SESSION['iam_create_login'] = false;
+        if (!$create_res){
+          return false;
         }
       }
     }
@@ -394,17 +405,15 @@ function keycloak_mbox_login_ropc($user, $pass, $is_internal = false, $create = 
 // Keycloak REST Api Flow - auth user by mailcow_password attribute
 // This password will be used for direct UI, IMAP and SMTP Auth
 // To use direct user credentials, only Authorization Code Flow is valid
-function keycloak_mbox_login_rest($user, $pass, $is_internal = false, $create = false){
+function keycloak_mbox_login_rest($user, $pass, $iam_settings, $is_internal = false, $create = false){
   global $pdo;
 
-  $identity_provider_settings = identity_provider('get');
-
   // get access_token for service account of mailcow client
-  $url = "{$identity_provider_settings['server_url']}/realms/{$identity_provider_settings['realm']}/protocol/openid-connect/token";
+  $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token";
   $req = http_build_query(array(
     'grant_type'    => 'client_credentials',
-    'client_id'     => $identity_provider_settings['client_id'],
-    'client_secret' => $identity_provider_settings['client_secret']
+    'client_id'     => $iam_settings['client_id'],
+    'client_secret' => $iam_settings['client_secret']
   ));
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, $url);
@@ -420,7 +429,7 @@ function keycloak_mbox_login_rest($user, $pass, $is_internal = false, $create = 
   }
 
   // get the mailcow_password attribute from keycloak user
-  $url = "{$identity_provider_settings['server_url']}/admin/realms/{$identity_provider_settings['realm']}/users";
+  $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
   $queryParams = array('email' => $user, 'exact' => true);
   $queryString = http_build_query($queryParams);
   $curl = curl_init();
@@ -448,7 +457,7 @@ function keycloak_mbox_login_rest($user, $pass, $is_internal = false, $create = 
   // get mapped template, if not set return false
   // also return false if no mappers were defined
   $user_template = $user_data['attributes']['mailcow_template'][0];
-  if ($create && (empty($identity_provider_settings['mappers']) || $user_template)){
+  if ($create && (empty($iam_settings['mappers']) || $user_template)){
     return false;
   } else if (!$create) {
     // login success - dont create mailbox
@@ -462,10 +471,10 @@ function keycloak_mbox_login_rest($user, $pass, $is_internal = false, $create = 
 
   // try to create mbox on successfull login
   $mbox_template = null;
-  // check if matching rolemapping exist
-  foreach ($identity_provider_settings['mappers'] as $index => $mapper){
-    if (in_array($mapper, $identity_provider_settings['mappers'])) {
-      $mbox_template = $identity_provider_settings['templates'][$index];
+  // check if matching attribute mapping exists
+  foreach ($iam_settings['mappers'] as $index => $mapper){
+    if (in_array($mapper, $iam_settings['mappers'])) {
+      $mbox_template = $iam_settings['templates'][$index];
       break;
     }
   }
