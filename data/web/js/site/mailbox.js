@@ -1781,7 +1781,7 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
