@@ -342,6 +342,8 @@ def watch():
                 logInfo('Check if your regular expressions are up to date: https://github.com/mailcow/mailcow-dockerized/issues/5125')
                 continue
               ip = ipaddress.ip_address(addr)
+              if ip in ipaddress.ip_network(os.getenv('IPV4_NETWORK', '172.22.1') + '.0/24') or ip in ipaddress.ip_network(os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64')):
+                continue
               if ip.is_private or ip.is_loopback:
                 logWarn('%s matched rule id: %s, log line: %s´, but was ignored as it is a private or loopback IP' % (addr, rule_id, item['data']))
                 continue
