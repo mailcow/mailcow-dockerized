@@ -337,7 +337,7 @@ jQuery(function($){
           data: 'keep_spam',
           defaultContent: '',
           render: function(data, type){
-            return 'yes'==data?'<i class="bi bi-x-lg"></i>':'no'==data&&'<i class="bi bi-check-lg"></i>';
+            return 'yes'==data?'<i class="bi bi-x-lg"><span class="sorting-value">yes</span></i>':'no'==data&&'<i class="bi bi-check-lg"><span class="sorting-value">no</span></i>';
           }
         },
         {
