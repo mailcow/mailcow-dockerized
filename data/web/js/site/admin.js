@@ -492,8 +492,8 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
