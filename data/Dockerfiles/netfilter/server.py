@@ -325,21 +325,27 @@ def watch():
   global exit_code
 
   while not quit_now:
+    refreshF2bregex()
     try:
       for item in pubsub.listen():
-        refreshF2bregex()
         for rule_id, rule_regex in f2bregex.items():
           if item['data'] and item['type'] == 'message':
             try:
               result = re.search(rule_regex, item['data'])
             except re.error:
-              result = False
+              continue
             if result:
-              addr = result.group(1)
+              try:
+                addr = result.group(1)
+              except IndexError as ex:
+                logWarn('Error parsing log line from pubsub: %s, rule id: %s, log line %s' % (ex, rule_id,  item['data']))
+                logInfo('Check if your regular expressions are up to date: https://github.com/mailcow/mailcow-dockerized/issues/5125')
+                continue
               ip = ipaddress.ip_address(addr)
               if ip.is_private or ip.is_loopback:
+                logWarn('%s matched rule id: %s, log line: %s´, but was ignored as it is a private or loopback IP' % (addr, rule_id, item['data']))
                 continue
-              logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+              logWarn('%s matched rule id: %s, log line: %s' % (addr, rule_id, item['data']))
               ban(addr)
     except Exception as ex:
       logWarn('Error reading log line from pubsub: %s' % ex)
