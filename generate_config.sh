@@ -261,7 +261,7 @@ COMPOSE_PROJECT_NAME=mailcowdockerized
 # Switch here between native (compose plugin) and standalone
 # For more informations take a look at the mailcow docs regarding the configuration options.
 # Normally this should be untouched but if you decided to use either of those you can switch it manually here.
-# Please be aware that at least one of those variants should be installed on your maschine or mailcow will fail.
+# Please be aware that at least one of those variants should be installed on your machine or mailcow will fail.
 
 DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
