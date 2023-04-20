@@ -1021,7 +1021,18 @@ function update_sogo_static_view($mailbox = null) {
   }
   global $pdo;
   global $lang;
-  
+
+  $mailbox_exists = false;
+  if ($mailbox !== null) {
+    // Check if the mailbox exists
+    $stmt = $pdo->prepare("SELECT username FROM mailbox WHERE username = :mailbox AND active = '1'");
+    $stmt->execute(array(':mailbox' => $mailbox));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);  
+    if ($row){
+      $mailbox_exists = true;
+    }
+  }
+
   $query = "REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
             SELECT
               mailbox.username,
@@ -1045,7 +1056,7 @@ function update_sogo_static_view($mailbox = null) {
             WHERE
               mailbox.active = '1'";
   
-  if ($mailbox !== null) {
+  if ($mailbox_exists) {
     $query .= " AND mailbox.username = :mailbox";
     $stmt = $pdo->prepare($query);
     $stmt->execute(array(':mailbox' => $mailbox));
