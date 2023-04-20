@@ -76,7 +76,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.93
+      image: mailcow/rspamd:1.92
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -169,7 +169,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.116
+      image: mailcow/sogo:1.117
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -510,7 +510,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.02
+      image: mailcow/dockerapi:2.03
       security_opt:
         - label=disable
       restart: always
