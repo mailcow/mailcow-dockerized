@@ -342,6 +342,10 @@ div.dataTables_wrapper div.dt-row {
   position: relative;
 }
 
+div.dataTables_wrapper span.sorting-value {
+  display: none;
+}
+
 div.dataTables_scrollHead table.dataTable {
   margin-bottom: 0 !important;
 }
