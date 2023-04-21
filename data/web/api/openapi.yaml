@@ -3176,10 +3176,8 @@ paths:
               example:
                 attr:
                   ban_time: "86400"
-                  ban_time_increment: "1"
                   blacklist: "10.100.6.5/32,10.100.8.4/32"
                   max_attempts: "5"
-                  max_ban_time: "86400"
                   netban_ipv4: "24"
                   netban_ipv6: "64"
                   retry_window: "600"
@@ -3193,16 +3191,10 @@ paths:
                       description: the backlisted ips or hostnames separated by comma
                       type: string
                     ban_time:
-                      description: the time an ip should be banned
+                      description: the time a ip should be banned
                       type: number
-                    ban_time_increment:
-                      description: if the time of the ban should increase each time
-                      type: boolean
                     max_attempts:
                       description: the maximum numbe of wrong logins before a ip is banned
-                      type: number
-                    max_ban_time:
-                      description: the maximum time an ip should be banned
                       type: number
                     netban_ipv4:
                       description: the networks mask to ban for ipv4
@@ -4121,12 +4113,10 @@ paths:
                 response:
                   value:
                     ban_time: 604800
-                    ban_time_increment: 1
                     blacklist: |-
                       45.82.153.37/32
                       92.118.38.52/32
                     max_attempts: 1
-                    max_ban_time: 604800
                     netban_ipv4: 32
                     netban_ipv6: 128
                     perm_bans:

@@ -13,14 +13,6 @@
           <input type="number" class="form-control" id="f2b_ban_time" name="ban_time" value="{{ f2b_data.ban_time }}" required>
         </div>
         <div class="mb-4">
-          <label for="f2b_max_ban_time">{{ lang.admin.f2b_max_ban_time }}:</label>
-          <input type="number" class="form-control" id="f2b_max_ban_time" name="max_ban_time" value="{{ f2b_data.max_ban_time }}" required>
-        </div>
-        <div class="mb-4">
-          <input class="form-check-input" type="checkbox" value="1" name="ban_time_increment" id="f2b_ban_time_increment" {% if f2b_data.ban_time_increment == 1 %}checked{% endif %}>
-          <label class="form-check-label" for="f2b_ban_time_increment">{{ lang.admin.f2b_ban_time_increment }}</label>
-        </div>
-        <div class="mb-4">
           <label for="f2b_max_attempts">{{ lang.admin.f2b_max_attempts }}:</label>
           <input type="number" class="form-control" id="f2b_max_attempts" name="max_attempts" value="{{ f2b_data.max_attempts }}" required>
         </div>

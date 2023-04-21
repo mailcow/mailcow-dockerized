@@ -54,7 +54,6 @@
             <li class="dropdown-header">SMTP</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-            <li><hr class="dropdown-divider"></li>
             <li class="dropdown-header">Sieve</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -62,7 +61,7 @@
           <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
         </div>
         <div class="btn-group d-none d-lg-flex">
-          <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>          
           <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>

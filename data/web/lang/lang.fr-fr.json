@@ -24,7 +24,7 @@
         "spam_policy": "Liste Noire/Liste Blanche",
         "spam_score": "Score SPAM",
         "syncjobs": "Tâches de synchronisation",
-        "tls_policy": "Politique TLS",
+        "tls_policy": "Police TLS",
         "unlimited_quota": "Quota illimité pour les boites de courriel",
         "domain_desc": "Modifier la description du domaine",
         "domain_relayhost": "Changer le relais pour un domaine",
@@ -106,8 +106,7 @@
         "validate": "Valider",
         "validation_success": "Validation réussie",
         "bcc_dest_format": "La destination Cci doit être une seule adresse e-mail valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
-        "tags": "Etiquettes",
-        "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application"
+        "tags": "Etiquettes"
     },
     "admin": {
         "access": "Accès",
@@ -172,13 +171,11 @@
         "edit": "Editer",
         "empty": "Aucun résultat",
         "excludes": "Exclure ces destinataires",
-        "f2b_ban_time": "Durée du bannissement (s)",
-        "f2b_ban_time_increment": "Durée du bannissement est augmentée à chaque bannissement",
+        "f2b_ban_time": "Durée du bannissement(s)",
         "f2b_blacklist": "Réseaux/Domaines sur Liste Noire",
         "f2b_filter": "Filtre(s) Regex",
         "f2b_list_info": "Un hôte ou un réseau sur liste noire l'emportera toujours sur une entité de liste blanche. <b>L'application des mises à jour de liste prendra quelques secondes.</b>",
         "f2b_max_attempts": "Nb max. de tentatives",
-        "f2b_max_ban_time": "Max. durée du bannissement (s)",
         "f2b_netban_ipv4": "Taille du sous-réseau IPv4 pour l'application du bannissement (8-32)",
         "f2b_netban_ipv6": "Taille du sous-réseau IPv6 pour l'application du bannissement (8-128)",
         "f2b_parameters": "Paramètres Fail2ban",
@@ -588,7 +585,7 @@
         "unchanged_if_empty": "Si non modifié, laisser en blanc",
         "username": "Nom d'utilisateur",
         "validate_save": "Valider et sauver",
-        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
+        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut).",
         "mailbox_relayhost_info": "S'applique uniquement à la boîte aux lettres et aux alias directs, remplace le relayhost du domaine."
     },
     "footer": {
@@ -1091,12 +1088,9 @@
         "username": "Nom d'utilisateur",
         "verify": "Vérification",
         "waiting": "En attente",
-        "week": "semaine",
+        "week": "Semaine",
         "weekly": "Hebdomadaire",
-        "weeks": "semaines",
-        "months": "mois",
-        "year": "année",
-        "years": "années"
+        "weeks": "semaines"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",

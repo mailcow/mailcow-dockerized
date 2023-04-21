@@ -176,19 +176,18 @@ remove_obsolete_nginx_ports() {
 }
 
 detect_docker_compose_command(){
-if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
+if ! [ "${DOCKER_COMPOSE_VERSION}" == "native" ] && ! [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
   if docker compose > /dev/null 2>&1; then
       if docker compose version --short | grep "2." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
         echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
         echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
-        sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' $SCRIPT_DIR/mailcow.conf 
         sleep 2
         echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
       else
         echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-        echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+        echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
         exit 1
       fi
   elif docker-compose > /dev/null 2>&1; then
@@ -198,60 +197,26 @@ if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
         COMPOSE_COMMAND="docker-compose"
         echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
         echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-        sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=standalone/' $SCRIPT_DIR/mailcow.conf
         sleep 2
         echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
       else
         echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-        echo -e "\e[31mPlease update/install regarding to this doc site: https://docs.mailcow.email/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+        echo -e "\e[31mPlease update/install regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
         exit 1
       fi
     fi
 
   else
     echo -e "\e[31mCannot find Docker Compose.\e[0m" 
-    echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+    echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
     exit 1
   fi
 
 elif [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
   COMPOSE_COMMAND="docker compose"
-  # Check if Native Compose works and has not been deleted  
-  if ! $COMPOSE_COMMAND > /dev/null 2>&1; then
-    # IF it not exists/work anymore try the other command
-    COMPOSE_COMMAND="docker-compose"
-    if ! $COMPOSE_COMMAND > /dev/null 2>&1 || ! $COMPOSE_COMMAND --version | grep "^2." > /dev/null 2>&1; then
-      # IF it cannot find Standalone in > 2.X, then script stops
-      echo -e "\e[31mCannot find Docker Compose or the Version is lower then 2.X.X.\e[0m" 
-      echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-      exit 1
-    fi
-      # If it finds the standalone Plugin it will use this instead and change the mailcow.conf Variable accordingly
-      echo -e "\e[31mFound different Docker Compose Version then declared in mailcow.conf!\e[0m"
-      echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable from native to standalone\e[0m"
-      sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=standalone/' $SCRIPT_DIR/mailcow.conf 
-      sleep 2
-  fi
-
 
 elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
   COMPOSE_COMMAND="docker-compose"
-  # Check if Standalone Compose works and has not been deleted  
-  if ! $COMPOSE_COMMAND > /dev/null 2>&1 && ! $COMPOSE_COMMAND --version > /dev/null 2>&1 | grep "^2." > /dev/null 2>&1; then
-    # IF it not exists/work anymore try the other command
-    COMPOSE_COMMAND="docker compose"
-    if ! $COMPOSE_COMMAND > /dev/null 2>&1; then
-      # IF it cannot find Native in > 2.X, then script stops
-      echo -e "\e[31mCannot find Docker Compose.\e[0m" 
-      echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
-      exit 1
-    fi
-      # If it finds the native Plugin it will use this instead and change the mailcow.conf Variable accordingly
-      echo -e "\e[31mFound different Docker Compose Version then declared in mailcow.conf!\e[0m"
-      echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable from standalone to native\e[0m"
-      sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' $SCRIPT_DIR/mailcow.conf 
-      sleep 2
-  fi
 fi
 }
 
@@ -361,12 +326,8 @@ while (($#)); do
       echo -e "\e[32mRunning in forced mode...\e[0m"
       FORCE=y
     ;;
-    -d|--dev)
-      echo -e "\e[32mRunning in Developer mode...\e[0m"
-      DEV=y
-    ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -d|--dev, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
@@ -377,7 +338,6 @@ while (($#)); do
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine)
   --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly.
   -f|--force           -   Force update, do not ask questions
-  -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
     exit 1
   esac
@@ -637,7 +597,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Password hash algorithm' >> mailcow.conf
       echo '# Only certain password hash algorithm are supported. For a fully list of supported schemes,' >> mailcow.conf
-      echo '# see https://docs.mailcow.email/models/model-passwd/' >> mailcow.conf
+      echo '# see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/' >> mailcow.conf
       echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
     fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
@@ -657,7 +617,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Optional: Leave empty for none' >> mailcow.conf
       echo '# This value is only used on first order!' >> mailcow.conf
       echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
-      echo '# https://docs.mailcow.email/troubleshooting/debug-reset_tls/' >> mailcow.conf
+      echo '# https://mailcow.github.io/mailcow-dockerized-docs/troubleshooting/debug-reset_tls/' >> mailcow.conf
       echo 'ACME_CONTACT=' >> mailcow.conf
   fi
   elif [[ ${option} == "WEBAUTHN_ONLY_TRUSTED_VENDORS" ]]; then
@@ -767,17 +727,15 @@ elif [ $NEW_BRANCH == "nightly" ] && [ $CURRENT_BRANCH != "nightly" ]; then
   git checkout -f ${BRANCH}
 fi
 
-if [ ! $DEV ]; then
-  echo -e "\e[32mChecking for newer update script...\e[0m"
-  SHA1_1=$(sha1sum update.sh)
-  git fetch origin #${BRANCH}
-  git checkout origin/${BRANCH} update.sh
-  SHA1_2=$(sha1sum update.sh)
-  if [[ ${SHA1_1} != ${SHA1_2} ]]; then
-    echo "update.sh changed, please run this script again, exiting."
-    chmod +x update.sh
-    exit 2
-  fi
+echo -e "\e[32mChecking for newer update script...\e[0m"
+SHA1_1=$(sha1sum update.sh)
+git fetch origin #${BRANCH}
+git checkout origin/${BRANCH} update.sh
+SHA1_2=$(sha1sum update.sh)
+if [[ ${SHA1_1} != ${SHA1_2} ]]; then
+  echo "update.sh changed, please run this script again, exiting."
+  chmod +x update.sh
+  exit 2
 fi
 
 if [ ! $FORCE ]; then
@@ -943,6 +901,9 @@ else
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
+
+# Set DOCKER_COMPOSE_VERSION
+sed -i 's/^DOCKER_COMPOSE_VERSION=$/DOCKER_COMPOSE_VERSION='$DOCKER_COMPOSE_VERSION'/g' mailcow.conf
 
 if [[ ${SKIP_START} == "y" ]]; then
   echo -e "\e[33mNot starting mailcow, please run \"$COMPOSE_COMMAND up -d --remove-orphans\" to start mailcow.\e[0m"

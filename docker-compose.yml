@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.83
+      image: mailcow/phpfpm:1.82
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -169,7 +169,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.117
+      image: mailcow/sogo:1.115
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -425,7 +425,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.52
+      image: mailcow/netfilter:1.51
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -510,7 +510,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.03
+      image: mailcow/dockerapi:2.01
       security_opt:
         - label=disable
       restart: always

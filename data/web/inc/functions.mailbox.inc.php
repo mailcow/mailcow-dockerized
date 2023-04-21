@@ -1264,13 +1264,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
           }
 
-          update_sogo_static_view($username);
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
             'msg' => array('mailbox_added', htmlspecialchars($username))
           );
-          return true;
         break;
         case 'resource':
           $domain             = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
@@ -3132,10 +3130,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('mailbox_modified', $username)
             );
-
-            update_sogo_static_view($username);
           }
-          return true;
         break;
         case 'mailbox_templates':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -5058,15 +5053,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            
-            update_sogo_static_view($username);
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('mailbox_removed', htmlspecialchars($username))
             );
           }
-          return true;
         break;
         case 'mailbox_templates':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -5272,7 +5264,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource')) && getenv('SKIP_SOGO') != "y") {
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'mailbox', 'resource')) && getenv('SKIP_SOGO') != "y") {
     update_sogo_static_view();
   }
 }
