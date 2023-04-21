@@ -380,7 +380,15 @@ class DockerUtils:
     if 'maildir' in request_json:
       for container in self.docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request_json['maildir'])
-        cmd = ["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request_json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request_json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"]
+        vmail_name = request_json['maildir'].replace("'", "'\\''")
+        cmd_vmail = "if [[ -d '/var/vmail/" + vmail_name + "' ]]; then /bin/mv '/var/vmail/" + vmail_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"
+        index_name = request_json['maildir'].split("/")
+        if len(index_name) > 1:
+          index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
+          cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "_index'; fi"
+          cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        else:
+          cmd = ["/bin/bash", "-c", cmd_vmail]
         maildir_cleanup = container.exec_run(cmd, user='vmail')
         return exec_run_handler('generic', maildir_cleanup)
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
