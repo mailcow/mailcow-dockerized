@@ -829,13 +829,10 @@ jQuery(function($){
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
-        console.log(data);
-
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
-        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -951,12 +948,15 @@ jQuery(function($){
           title: 'Score',
           data: 'score',
           defaultContent: '',
+          class: 'text-nowrap',
           createdCell: function(td, cellData) {
             $(td).attr({
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
