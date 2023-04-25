@@ -63,7 +63,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
         unset($_SESSION['index_query_string']);
         if (in_array('mobileconfig', $http_parameters)) {
             if (in_array('only_email', $http_parameters)) {
-                header("Location: /mobileconfig.php?email_only");
+                header("Location: /mobileconfig.php?only_email");
                 die();
             }
             header("Location: /mobileconfig.php");
