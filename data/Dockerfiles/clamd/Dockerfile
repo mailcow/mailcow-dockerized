@@ -1,21 +1,9 @@
-FROM clamav/clamav:1.0.1-1_base
+FROM alpine:3.17
 
-LABEL maintainer "André Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company <info@servercow.de>"
 
-RUN apk upgrade --no-cache \
-  && apk add --update --no-cache \
-  rsync \
-  bind-tools \
-  bash 
+RUN apk update && apk add clamav tini bash
 
-# init
-COPY clamd.sh /clamd.sh
-RUN chmod +x /sbin/tini
+COPY clamd.sh ./
 
-# healthcheck
-COPY healthcheck.sh /healthcheck.sh
-RUN chmod +x /healthcheck.sh
-HEALTHCHECK --start-period=6m CMD "/healthcheck.sh"
-
-ENTRYPOINT []
 CMD ["/sbin/tini", "-g", "--", "/clamd.sh"]
