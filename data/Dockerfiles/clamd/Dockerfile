@@ -1,6 +1,6 @@
 FROM alpine:3.18
 
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer "The Infrastructure Company <info@servercow.de>"
 
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
@@ -10,9 +10,7 @@ RUN apk upgrade --no-cache \
   bash \
   tini
 
-# init
-COPY clamd.sh /clamd.sh
-RUN chmod +x /sbin/tini
+COPY clamd.sh ./
 
 # healthcheck
 COPY healthcheck.sh /healthcheck.sh
