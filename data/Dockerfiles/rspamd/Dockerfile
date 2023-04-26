@@ -1,5 +1,5 @@
 FROM debian:bullseye-slim
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CODENAME=bullseye
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
   dnsutils \
   netcat \
   && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
-  && echo "deb [arch=amd64] https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
+  && echo "deb https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
   && apt-get update \
   && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
   && rm -rf /var/lib/apt/lists/* \

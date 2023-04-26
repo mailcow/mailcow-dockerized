@@ -432,4 +432,8 @@ done
 # May be related to something inside Docker, I seriously don't know
 touch /etc/dovecot/lua/passwd-verify.lua
 
+if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+fi
+
 exec "$@"

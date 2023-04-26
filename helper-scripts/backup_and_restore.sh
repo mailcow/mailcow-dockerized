@@ -53,6 +53,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
 THREADS=$(echo ${THREADS:-1})
+ARCH=$(uname -m)
 
 if ! [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
   echo "Thread input is not a number!"
@@ -96,6 +97,7 @@ function backup() {
   mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
+  touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
   for bin in docker; do
   if [[ -z $(which ${bin}) ]]; then
     >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
@@ -231,12 +233,29 @@ function restore() {
       docker start $(docker ps -aqf name=dovecot-mailcow)
       ;;
     rspamd)
-      docker stop $(docker ps -qf name=rspamd-mailcow)
-      docker run -it --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
-      docker start $(docker ps -aqf name=rspamd-mailcow)
+      if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+        echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
+        sleep 2
+        echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
+        sleep 2
+        docker stop $(docker ps -qf name=rspamd-mailcow)
+        docker run -it --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
+        docker start $(docker ps -aqf name=rspamd-mailcow)
+      elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
+        echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
+        sleep 2
+        echo -e "Skipping rspamd due to compatibility issues!\e[0m"
+      else
+        docker stop $(docker ps -qf name=rspamd-mailcow)
+        docker run -it --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
+        docker start $(docker ps -aqf name=rspamd-mailcow)
+      fi
       ;;
     postfix)
       docker stop $(docker ps -qf name=postfix-mailcow)
@@ -360,9 +379,17 @@ elif [[ ${1} == "restore" ]]; then
       FILE_SELECTION[${i}]="redis"
       ((i++))
     elif [[ ${file} =~ rspamd ]]; then
-      echo "[ ${i} ] - Rspamd data"
-      FILE_SELECTION[${i}]="rspamd"
-      ((i++))
+      if [[ $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+        echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
+        FILE_SELECTION[${i}]="rspamd"
+        ((i++))
+      elif [[ $ARCH != $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
+        echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
+      else
+        echo "[ ${i} ] - Rspamd data"
+        FILE_SELECTION[${i}]="rspamd"
+        ((i++))
+      fi
     elif [[ ${file} =~ postfix ]]; then
       echo "[ ${i} ] - Postfix data"
       FILE_SELECTION[${i}]="postfix"
