@@ -2146,11 +2146,21 @@ function cors($action, $data = null) {
       }    
 
       $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
-      $allowed_origins = !is_array($allowed_origins) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_origins)) : $allowed_origins;
+      $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
+      foreach ($allowed_origins as $origin) {
+        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $action, $data),
+            'msg' => 'cors_invalid_origin'
+          );
+          return false;
+        }
+      }
 
       $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
       $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
-      $available_methods = array('GET', 'POST', 'PUT', 'DELETE', 'OPTION');
+      $available_methods = array('GET', 'POST', 'PUT', 'DELETE');
       foreach ($allowed_methods as $method) {
         if (!in_array($method, $available_methods)) {
           $_SESSION['return'][] = array(
