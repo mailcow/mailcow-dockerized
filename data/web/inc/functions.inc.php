@@ -2131,6 +2131,110 @@ function rspamd_ui($action, $data = null) {
     break;
   }
 }
+function cors($action, $data = null) {
+  global $redis;
+
+  switch ($action) {
+    case "edit":
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }    
+
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = !is_array($allowed_origins) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_origins)) : $allowed_origins;
+
+      $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
+      $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
+      $available_methods = array('GET', 'POST', 'PUT', 'DELETE', 'OPTION');
+      foreach ($allowed_methods as $method) {
+        if (!in_array($method, $available_methods)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $action, $data),
+            'msg' => 'cors_invalid_method'
+          );
+          return false;
+        }
+      }
+
+      try {
+        $redis->hMSet('CORS_SETTINGS', array(
+          'allowed_origins' => implode(', ', $allowed_origins),
+          'allowed_methods' => implode(', ', $allowed_methods)
+        ));   
+      } catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action, $data),
+        'msg' => 'cors_headers_edited'
+      );
+      return true;
+    break;
+    case "get":
+      try {
+        $cors_settings                  = $redis->hMGet('CORS_SETTINGS', array('allowed_origins', 'allowed_methods'));
+      } catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => array('redis_error', $e)
+        );
+      }
+
+      $cors_settings                    = !$cors_settings ? array('allowed_origins' => $_SERVER['SERVER_NAME'], 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
+      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? $_SERVER['SERVER_NAME'] : $cors_settings['allowed_origins'];
+      $cors_settings['allowed_methods'] = empty($cors_settings['allowed_methods']) ? 'GET, POST, PUT, DELETE, OPTION' : $cors_settings['allowed_methods'];
+
+      return $cors_settings;
+    break;
+    case "set_headers":
+      $cors_settings = cors('get');
+      // check if requested origin is in allowed origins
+      $allowed_origins = explode(', ', $cors_settings['allowed_origins']);
+      $cors_settings['allowed_origins'] = $allowed_origins[0];
+      if (in_array('*', $allowed_origins)){
+        $cors_settings['allowed_origins'] = '*';
+      } else if (in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+        $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
+      }
+      // always allow OPTIONS for preflight request
+      $cors_settings["allowed_methods"] = empty($cors_settings["allowed_methods"]) ? 'OPTIONS' : $cors_settings["allowed_methods"] . ', ' . 'OPTIONS';
+
+      header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
+      header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
+      header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
+
+      // Access-Control settings requested, this is just a preflight request
+      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && 
+        isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
+        isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+  
+        $allowed_methods = explode(', ', $cors_settings["allowed_methods"]);
+        if (in_array($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'], $allowed_methods, true))
+          // method allowed send 200 OK
+          http_response_code(200);
+        else
+          // method not allowed send 405 METHOD NOT ALLOWED
+          http_response_code(405);
+
+        exit;
+      }
+    break;
+  }
+}
 
 function get_logs($application, $lines = false) {
   if ($lines === false) {
