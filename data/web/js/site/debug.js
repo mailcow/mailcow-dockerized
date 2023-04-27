@@ -979,7 +979,9 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
