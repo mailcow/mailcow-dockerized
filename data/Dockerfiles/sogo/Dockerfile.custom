@@ -1,0 +1,118 @@
+FROM debian:bullseye-slim AS build
+LABEL maintainer "The Infrastructure Company <info@servercow.de>"
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG SOGO_VERSION=5.8.2
+
+RUN apt update && apt install -y --no-install-recommends \
+libgnustep-base-dev \
+cmake \
+pkg-config \
+make \
+gobjc \
+libz-dev \
+libexpat1-dev \
+zlib1g-dev \
+libpq-dev \
+libcurl4-openssl-dev \
+libsodium-dev \
+libxml2-dev \
+libssl-dev \
+libldap2-dev \
+libzip-dev \
+default-libmysqlclient-dev \
+mariadb-client \
+libmemcached-dev \
+libytnef0 \
+libytnef0-dev \
+libwbxml2-0 \
+libwbxml2-dev \
+curl \
+pkg-config \
+wget \
+git
+
+RUN mkdir /tmp/libwbxml && git clone https://github.com/libwbxml/libwbxml.git /tmp/libwbxml/ \
+&& cd /tmp/libwbxml/ \
+&& cmake . -B/tmp/build/libwbxml -DCMAKE_INSTALL_PREFIX=$prefix \ 
+&& cd /tmp/build/libwbxml \
+&& make \
+&& make install \
+&& ln -s /include/libwbxml-1.0 /usr/include/libwbxml-1.0
+
+RUN cd /tmp && mkdir sope && wget https://packages.sogo.nu/sources/SOPE-${SOGO_VERSION}.tar.gz -O - | tar -xz -C /tmp/sope --strip-components=1 && cd /tmp/sope \
+&& ./configure --with-gnustep --enable-debug --disable-strip \
+&& make \
+&& make install
+
+RUN cd /tmp && mkdir sogo && wget https://packages.sogo.nu/sources/SOGo-${SOGO_VERSION}.tar.gz -O - | tar -xz -C /tmp/sogo --strip-components=1 && cd /tmp/sogo \
+&& ./configure --enable-debug --disable-strip \
+&& make \
+&& make install
+
+RUN cd /tmp/sogo/ActiveSync \
+&& make VERBOSE=1 \
+&& make install
+
+FROM debian:bullseye-slim
+ARG GOSU_VERSION=1.16
+ENV LC_ALL C
+LABEL maintainer "The Infrastructure Company <info@servercow.de>"
+
+RUN apt update && apt install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    gettext \
+    gnupg \
+    mariadb-client \
+    rsync \
+    supervisor \
+    syslog-ng \
+    syslog-ng-core \
+    syslog-ng-mod-redis \
+    dirmngr \
+    netcat \
+    psmisc \
+    wget \
+    patch \
+    && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+    && chmod +x /usr/local/bin/gosu \
+    && gosu nobody true \
+    && mkdir /usr/share/doc/sogo \
+    && touch /usr/share/doc/sogo/empty.sh \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/local/sbin /usr/local/sbin
+COPY --from=build /usr/local/lib /usr/local/lib
+COPY --from=build /usr/lib /usr/lib
+COPY --from=build /lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
+COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
+COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY acl.diff /acl.diff
+COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
+COPY docker-entrypoint.sh /
+
+RUN chmod +x /bootstrap-sogo.sh \
+  /usr/local/sbin/stop-supervisor.sh
+
+RUN echo "/usr/local/lib/sogo" > /etc/ld.so.conf.d/sogo.conf \
+&& ldconfig
+
+RUN groupadd --system sogo && useradd --system --gid sogo sogo \
+   && echo "create directories and enforce permissions" \
+   && install -o sogo -g sogo -m 755 -d /var/run/sogo  \
+   && install -o sogo -g sogo -m 750 -d /var/spool/sogo  \
+   && install -o sogo -g sogo -m 750 -d /var/log/sogo
+
+RUN rm -rf /usr/lib/GNUstep/SOGo
+RUN mkdir -p /usr/lib/GNUstep && ln -s /usr/local/lib/GNUstep/SOGo /usr/lib/GNUstep/SOGo
+RUN ln -s /usr/local/sbin/sogo-tool /usr/sbin/sogo-tool
+RUN ln -s /usr/local/sbin/sogo-ealarms-notify /usr/sbin/sogo-ealarms-notify
+RUN ln -s /usr/local/sbin/sogo-slapd-sockd /usr/sbin/sogo-slapd-sockd 
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
