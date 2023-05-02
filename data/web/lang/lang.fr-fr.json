@@ -588,7 +588,7 @@
         "unchanged_if_empty": "Si non modifié, laisser en blanc",
         "username": "Nom d'utilisateur",
         "validate_save": "Valider et sauver",
-        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
+        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*\\.google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
         "mailbox_relayhost_info": "S'applique uniquement à la boîte aux lettres et aux alias directs, remplace le relayhost du domaine."
     },
     "footer": {

@@ -105,7 +105,8 @@
         "timeout2": "Časový limit pro připojení k lokálnímu serveru",
         "username": "Uživatelské jméno",
         "validate": "Ověřit",
-        "validation_success": "Úspěšně ověřeno"
+        "validation_success": "Úspěšně ověřeno",
+        "tags": "Štítky"
     },
     "admin": {
         "access": "Přístupy",
@@ -333,7 +334,11 @@
         "username": "Uživatelské jméno",
         "validate_license_now": "Ověřit GUID na licenčním serveru",
         "verify": "Ověřit",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "f2b_ban_time_increment": "Délka banu je prodlužována s každým dalším banem",
+        "f2b_max_ban_time": "Maximální délka banu (s)",
+        "ip_check": "Kontrola IP",
+        "ip_check_disabled": "Kontrola IP je vypnuta. Můžete ji zapnout v <br> <strong>System > Nastavení > Options > Přizpůsobení</strong>"
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
@@ -536,7 +541,7 @@
         "inactive": "Neaktivní",
         "kind": "Druh",
         "last_modified": "Naposledy změněn",
-        "lookup_mx": "Cíl je regulární výraz který se shoduje s MX záznamem (<code>.*google\\.com</code> směřuje veškerou poštu na MX které jsou cílem pro google.com přes tento skok)",
+        "lookup_mx": "Cíl je regulární výraz který se shoduje s MX záznamem (<code>.*\\.google\\.com</code> směřuje veškerou poštu na MX které jsou cílem pro google.com přes tento skok)",
         "mailbox": "Úprava mailové schránky",
         "mailbox_quota_def": "Výchozí kvóta schránky",
         "mailbox_relayhost_info": "Aplikované jen na uživatelskou schránku a přímé aliasy, přepisuje předávající server domény.",

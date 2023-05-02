@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=26.0.0
+NEXTCLOUD_VERSION=26.0.1
 
 echo -ne "Checking prerequisites..."
 sleep 1
@@ -97,8 +97,12 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     echo -e "\033[31mError: Nextcloud occ not found. Is Nextcloud installed?\033[0m"
     exit 1
   fi
-  if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
-    echo "Nextcloud seems not to be installed."
+  if grep -Pq 'This version of Nextcloud is not compatible with (?:PHP)?(?>=?)(?:PHP)?(?>.+)' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo -e "\033[31mError: This version of Nextcloud is not compatible with the current PHP version of php-fpm-mailcow, we'll fix it\033[0m"
+    wget -q https://raw.githubusercontent.com/nextcloud/server/v26.0.0/lib/versioncheck.php -O ./data/web/nextcloud/lib/versioncheck.php
+	echo -e "\e[33mPlease restart the update again.\e[0m"
+  elif ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo -e "\033[31mError: Nextcloud seems not to be installed.\033[0m"
     exit 1
   else
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "php /web/nextcloud/updater/updater.phar"

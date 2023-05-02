@@ -9,6 +9,7 @@ import os
 import json
 import asyncio
 import redis
+import platform
 from datetime import datetime
 import logging
 from logging.config import dictConfig
@@ -381,11 +382,14 @@ class DockerUtils:
       for container in self.docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request_json['maildir'])
         vmail_name = request_json['maildir'].replace("'", "'\\''")
-        index_name = request_json['maildir'].split("/")
-        index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
         cmd_vmail = "if [[ -d '/var/vmail/" + vmail_name + "' ]]; then /bin/mv '/var/vmail/" + vmail_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"
-        cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "_index'; fi"
-        cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        index_name = request_json['maildir'].split("/")
+        if len(index_name) > 1:
+          index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
+          cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "_index'; fi"
+          cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        else:
+          cmd = ["/bin/bash", "-c", cmd_vmail]
         maildir_cleanup = container.exec_run(cmd, user='vmail')
         return exec_run_handler('generic', maildir_cleanup)
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
@@ -482,7 +486,8 @@ async def get_host_stats(wait=5):
         "swap": psutil.swap_memory()
       },
       "uptime": time.time() - psutil.boot_time(),
-      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
+      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S"),
+      "architecture": platform.machine()
     }
 
     redis_client.set('host_stats', json.dumps(host_stats), ex=10)

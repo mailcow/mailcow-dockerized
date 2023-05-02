@@ -66,4 +66,6 @@ table tbody tr td input[type="checkbox"] {
   padding: .2em .4em .3em !important;
   background-color: #ececec!important;
 }
-
+.badge.bg-info .bi {
+  font-size: inherit;
+}

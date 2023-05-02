@@ -43,7 +43,7 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
-  $("#maiclow_version").click(function(){
+  $("#mailcow_version").click(function(){
     if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" || mailcow_info.branch !== "master")
       return;
 
@@ -1302,6 +1302,12 @@ function update_stats(timeout=5){
       $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
       $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
       $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+      if (data.architecture == "aarch64"){
+        $("#host_architecture").html('<span data-bs-toggle="tooltip" data-bs-placement="top" title="' + lang_debug.wip +'">' + data.architecture + ' ⚠️</span>');
+      }
+      else {
+        $("#host_architecture").html(data.architecture);
+      }
 
       // update cpu and mem chart
       var cpu_chart = Chart.getChart("host_cpu_chart");
