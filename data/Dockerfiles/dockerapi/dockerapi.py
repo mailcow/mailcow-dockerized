@@ -9,6 +9,7 @@ import os
 import json
 import asyncio
 import redis
+import platform
 from datetime import datetime
 import logging
 from logging.config import dictConfig
@@ -485,7 +486,8 @@ async def get_host_stats(wait=5):
         "swap": psutil.swap_memory()
       },
       "uptime": time.time() - psutil.boot_time(),
-      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
+      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S"),
+      "architecture": platform.machine()
     }
 
     redis_client.set('host_stats', json.dumps(host_stats), ex=10)

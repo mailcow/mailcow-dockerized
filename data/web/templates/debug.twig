@@ -50,6 +50,12 @@
                         </div></td>
                       </tr>
                       <tr>
+                        <td>{{ lang.debug.architecture }}</td>
+                        <td class="text-break"><div>
+                          <p id="host_architecture">-</p>
+                        </div></td>
+                      </tr>
+                      <tr>
                         <td>IPs</td>
                         <td class="text-break">
                           {% if ip_check == 1 %}
@@ -70,7 +76,7 @@
                         <td>Version</td>
                         <td class="text-break">
                           <div class="fw-bolder">
-                            <p ><a href="#" id="maiclow_version">{{ mailcow_info.version_tag }}</a></p>
+                            <p ><a href="#" id="mailcow_version">{{ mailcow_info.version_tag }}</a></p>
                             <p id="mailcow_update"></p>
                           </div>
                         </td>

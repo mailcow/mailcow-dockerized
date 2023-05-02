@@ -498,6 +498,7 @@
         }
     },
     "debug": {
+        "architecture": "Architecture",
         "chart_this_server": "Chart (this server)",
         "containers_info": "Container information",
         "container_running": "Running",
@@ -534,7 +535,8 @@
         "update_available": "There is an update available",
         "no_update_available": "The System is on the latest version",
         "update_failed": "Could not check for an Update",
-        "username": "Username"
+        "username": "Username",
+        "wip": "Currently Work in Progress"
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
