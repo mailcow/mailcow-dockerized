@@ -498,6 +498,7 @@
         }
     },
     "debug": {
+        "architecture": "Architektur",
         "chart_this_server": "Chart (dieser Server)",
         "containers_info": "Container-Information",
         "container_running": "Läuft",
@@ -534,7 +535,8 @@
         "update_available": "Es ist ein Update verfügbar",
         "no_update_available": "Das System ist auf aktuellem Stand",
         "update_failed": "Es konnte nicht nach einem Update gesucht werden",
-        "username": "Benutzername"
+        "username": "Benutzername",
+        "wip": "Aktuell noch in Arbeit"
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
