@@ -35,10 +35,13 @@ RUN addgroup -g 5000 vmail \
   lua5.3-sql-mysql \
   icu-data-full \
   mariadb-connector-c \
-  gcompat \
   lua-sec \
+  mariadb-dev \
+  glib-dev \
+  gcompat \
   mariadb-client \
   perl \
+  perl-dev \
   perl-ntlm \
   perl-cgi \
   perl-crypt-openssl-rsa \
