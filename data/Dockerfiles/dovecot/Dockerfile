@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:edge
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG GOSU_VERSION=1.16
@@ -40,11 +40,14 @@ RUN addgroup -g 5000 vmail \
   make \
   mariadb-connector-c \
   mariadb-dev \
+  glib-dev \
+  gcompat \
   mariadb-client \
 # libressl-dev \
   openssl-dev \
   pcre-dev \
   perl \
+  perl-dev \
   perl-ntlm \
   perl-cgi \
   perl-crypt-openssl-rsa \
@@ -64,7 +67,6 @@ RUN addgroup -g 5000 vmail \
   perl-io-tee \
   perl-ipc-run \
   perl-json-webtoken \
-  #perl-lockfile-simple \
   perl-mail-imapclient \
   perl-module-implementation \
   perl-module-scandeps \
@@ -88,6 +90,7 @@ RUN addgroup -g 5000 vmail \
   perl-test-warn \
   perl-try-tiny \
   perl-unicode-string \
+  perl-proc-processtable \
   perl-app-cpanminus \
   procps \
   python3 \
