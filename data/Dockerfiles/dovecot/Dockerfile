@@ -1,8 +1,6 @@
 FROM debian:bullseye-slim as build
-LABEL maintainer "The Infrastructure Company <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GOSU_VERSION=1.16
 ARG DOVECOT_VERSION=2.3.20
 ARG PIGEONHOLE_VERSION=0.5.20
 ENV LC_ALL C
@@ -90,11 +88,7 @@ RUN touch /etc/default/locale \
   zlib1g-dev \
   pkg-config \
   libsqlite3-dev \
-  liblua5.3-dev \
-  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-  && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true
+  liblua5.3-dev
 
 RUN cd /tmp && wget https://github.com/dovecot/core/archive/refs/tags/${DOVECOT_VERSION}.tar.gz && tar -xzf ${DOVECOT_VERSION}.tar.gz && cd core-${DOVECOT_VERSION} \
   && ./autogen.sh \
@@ -111,6 +105,9 @@ RUN cd /tmp && wget https://github.com/dovecot/pigeonhole/archive/refs/tags/${PI
   && make clean
 
 FROM debian:bullseye-slim
+LABEL maintainer "The Infrastructure Company <info@servercow.de>"
+ARG GOSU_VERSION=1.16
+
 RUN groupadd -g 5000 vmail \
   && groupadd -g 401 dovecot \
   && groupadd -g 402 dovenull \
@@ -129,6 +126,7 @@ RUN groupadd -g 5000 vmail \
   lua-sql-mysql \
   libldap-dev \
   libssl-dev \
+  wget \
   procps \
   python3-pip \
   redis-server \
@@ -187,16 +185,27 @@ RUN groupadd -g 5000 vmail \
   dnsutils \
   build-essential \
   gettext-base -y --no-install-recommends \
-  && pip3 install mysql-connector-python html2text jinja2 redis
+  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true \
+  && pip3 install mysql-connector-python html2text jinja2 redis \
+  && apt-get autoremove --purge -y \
+  && apt-get autoclean
 # imapsync dependencies
 RUN cpan Crypt::OpenSSL::PKCS12
+RUN  rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/* /var/tmp/* /root/.cache/
 COPY --from=build /usr/lib/dovecot /usr/lib/dovecot
 COPY --from=build /usr/bin/doveconf /usr/bin/doveconf
 COPY --from=build /usr/bin/doveadm /usr/bin/doveadm
 COPY --from=build /usr/bin/dovecot-sysreport /usr/bin/dovecot-sysreport
 COPY --from=build /usr/sbin/dovecot /usr/sbin/dovecot
 COPY --from=build /usr/libexec/dovecot/ /usr/libexec/dovecot/
-COPY --from=build /usr/local/bin /usr/local/bin
+COPY --from=build /usr/local/bin/sieve-dump /usr/local/bin/sieve-dump
+COPY --from=build /usr/local/bin/sieve-filter /usr/local/bin/sieve-filter
+COPY --from=build /usr/local/bin/sieve-test /usr/local/bin/sieve-test
+COPY --from=build /usr/local/bin/sievec /usr/local/bin/sievec
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
