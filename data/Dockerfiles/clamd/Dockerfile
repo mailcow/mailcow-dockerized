@@ -10,7 +10,9 @@ RUN apk upgrade --no-cache \
   bash \
   tini
 
-COPY clamd.sh ./
+# init
+COPY clamd.sh /clamd.sh
+RUN chmod +x /sbin/tini
 
 # healthcheck
 COPY healthcheck.sh /healthcheck.sh
