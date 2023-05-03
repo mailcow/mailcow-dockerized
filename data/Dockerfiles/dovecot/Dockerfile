@@ -112,11 +112,7 @@ RUN addgroup -g 5000 vmail \
   zlib1g-dev \
   pkg-config \
   libsqlite3-dev \
-  liblua5.3-dev \
-  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-  && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true
+  liblua5.3-dev
 
 # RUN cpan LockFile::Simple
 
