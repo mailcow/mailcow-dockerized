@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.17
+      image: mailcow/unbound:arm64-dev
       environment:
         - TZ=${TZ}
       volumes:
@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.61
+      image: mailcow/clamd:arm64-dev
       restart: always
       depends_on:
         - unbound-mailcow
@@ -391,7 +391,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.84
+      image: mailcow/acme:arm64-dev
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -427,7 +427,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.52
+      image: mailcow/netfilter:arm64-dev
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -450,7 +450,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.97
+      image: mailcow/watchdog:arm64-dev
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -531,7 +531,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.8.1
+      image: mailcow/solr:dev
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
@@ -547,7 +547,7 @@ services:
             - solr
 
     olefy-mailcow:
-      image: mailcow/olefy:1.11
+      image: mailcow/olefy:arm64-dev
       restart: always
       environment:
         - TZ=${TZ}
