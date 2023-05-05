@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   netcat-traditional \
   && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
-  && echo "deb [arch=amd64] https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
+  && echo "deb https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
   && apt-get update \
   && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
   && rm -rf /var/lib/apt/lists/* \
