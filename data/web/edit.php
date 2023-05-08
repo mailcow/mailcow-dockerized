@@ -47,6 +47,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           $quota_notification_bcc = quota_notification_bcc('get', $domain);
           $rl = ratelimit('get', 'domain', $domain);
           $rlyhosts = relayhost('get');
+          $domain_footer = mailbox('get', 'domain_wide_footer', $domain);
           $template = 'edit/domain.twig';
           $template_data = [
             'acl' => $_SESSION['acl'],
@@ -56,6 +57,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'rlyhosts' => $rlyhosts,
             'dkim' => dkim('details', $domain),
             'domain_details' => $result,
+            'domain_footer' => $domain_footer,
           ];
       }
     }

@@ -503,3 +503,123 @@ rspamd_config:register_symbol({
     end
   end
 })
+
+rspamd_config:register_symbol({
+  name = 'MOO_FOOTER',
+  type = 'prefilter',
+  callback = function(task)
+    local lua_mime = require "lua_mime"
+    local rspamd_logger = require "rspamd_logger"
+    local rspamd_redis = require "rspamd_redis"
+    local ucl = require "ucl"
+    local redis_params = rspamd_parse_redis_server('footer')
+    local envfrom = task:get_from(1)
+    local uname = task:get_user()
+    if not envfrom or not uname then
+      return false
+    end
+    local uname = uname:lower()
+    local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
+
+    local function newline(task)
+      local t = task:get_newlines_type()
+    
+      if t == 'cr' then
+        return '\r'
+      elseif t == 'lf' then
+        return '\n'
+      end
+    
+      return '\r\n'
+    end
+    local function redis_cb_footer(err, data)
+      if err or type(data) ~= 'string' then
+        rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+      else
+        -- parse json string
+        local parser = ucl.parser()
+        local res,err = parser:parse_string(data)
+        if not res then
+          rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+        else
+          local footer = parser:get_object()
+
+          if footer and type(footer) == "table" and (footer.html or footer.plain) then
+            rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s", uname, footer.html, footer.plain)
+  
+            -- add footer
+            local out = {}
+            local rewrite = lua_mime.add_text_footer(task, footer.html, footer.plain) or {}
+        
+            local seen_cte
+            local newline_s = newline(task)
+        
+            local function rewrite_ct_cb(name, hdr)
+              if rewrite.need_rewrite_ct then
+                if name:lower() == 'content-type' then
+                  local nct = string.format('%s: %s/%s; charset=utf-8',
+                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype)
+                  out[#out + 1] = nct
+                  return
+                elseif name:lower() == 'content-transfer-encoding' then
+                  out[#out + 1] = string.format('%s: %s',
+                      'Content-Transfer-Encoding', 'quoted-printable')
+                  seen_cte = true
+                  return
+                end
+              end
+              out[#out + 1] = hdr.raw:gsub('\r?\n?$', '')
+            end
+        
+            task:headers_foreach(rewrite_ct_cb, {full = true})
+        
+            if not seen_cte and rewrite.need_rewrite_ct then
+              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+            end
+        
+            -- End of headers
+            out[#out + 1] = newline_s
+        
+            if rewrite.out then
+              for _,o in ipairs(rewrite.out) do
+                out[#out + 1] = o
+              end
+            else
+              out[#out + 1] = task:get_rawbody()
+            end
+            local out_parts = {}
+            for _,o in ipairs(out) do
+               if type(o) ~= 'table' then
+                 out_parts[#out_parts + 1] = o
+                 out_parts[#out_parts + 1] = newline_s
+               else
+                 out_parts[#out_parts + 1] = o[1]
+                 if o[2] then
+                   out_parts[#out_parts + 1] = newline_s
+                 end
+               end
+            end
+            task:set_message(out_parts)
+          else
+            rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\")", uname, data)
+          end
+        end
+      end
+    end
+
+    local redis_ret_footer = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      env_from_domain, -- hash key
+      false, -- is write
+      redis_cb_footer, --callback
+      'HGET', -- command
+      {"DOMAIN_WIDE_FOOTER", env_from_domain} -- arguments
+    )
+    if not redis_ret_footer then
+      rspamd_logger.infox(rspamd_config, "cannot make request to load footer for domain")
+    end
+
+    return true
+  end,
+  priority = 1
+})
