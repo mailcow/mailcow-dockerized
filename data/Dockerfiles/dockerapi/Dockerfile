@@ -13,6 +13,7 @@ RUN apk add --update --no-cache python3 \
   fastapi \
   uvicorn \
   aiodocker \
+  urllib3==1.26.15\
   docker \
   aioredis 
 RUN mkdir /app/modules
