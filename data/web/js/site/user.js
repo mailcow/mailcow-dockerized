@@ -127,6 +127,20 @@ jQuery(function($){
     }
   }
 
+  
+  function createSortableDate(td, cellData, date_string = false) {
+    if (date_string)
+      var date = new Date(cellData);
+    else
+      var date = new Date(cellData ? cellData * 1000 : 0);
+
+    var timestamp = date.getTime();
+    $(td).attr({
+      "data-order": timestamp,
+      "data-sort": timestamp
+    });
+    $(td).html(date.toLocaleDateString(LOCALE, DATETIME_FORMAT));
+  }
   function draw_tla_table() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#tla_table') ) {
@@ -144,6 +158,7 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order: [[4, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/time_limited_aliases",
@@ -191,18 +206,16 @@ jQuery(function($){
           title: lang.alias_valid_until,
           data: 'validity',
           defaultContent: '',
-          render: function (data, type) {
-            var date = new Date(data ? data * 1000 : 0);
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
           title: lang.created_on,
           data: 'created',
           defaultContent: '',
-          render: function (data, type) {
-            var date = new Date(data.replace(/-/g, "/"));
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData, true)
           }
         },
         {
