@@ -117,6 +117,7 @@ COPY --from=builder "/clamav" "/"
 
 # init
 COPY clamd.sh /clamd.sh
+COPY clamdcheck.sh /usr/local/bin/
 RUN chmod +x /sbin/tini
 
 # healthcheck
