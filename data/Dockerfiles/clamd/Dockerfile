@@ -12,6 +12,7 @@ RUN apk upgrade --no-cache \
 
 # init
 COPY clamd.sh /clamd.sh
+COPY clamdcheck.sh /usr/local/bin/
 RUN chmod +x /sbin/tini
 
 # healthcheck
