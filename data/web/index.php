@@ -29,8 +29,7 @@ $template_data = [
   'oauth2_request' => @$_SESSION['oauth2_request'],
   'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
   'login_delay' => @$_SESSION['ldelay'],
-  'has_keycloak_sso' => ($keycloak_provider) ? true : false,
-  'invalid_keycloak_sso' => $_SESSION['invalid_keycloak_sso']
+  'has_iam_sso' => ($iam_provider) ? true : false
 ];
 
 $js_minifier->add('/web/js/site/index.js');

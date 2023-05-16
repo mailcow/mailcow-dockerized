@@ -26,13 +26,6 @@
         <div class="my-4 alert alert-info ">{{ lang.login.mobileconfig_info }}</div>
         {% endif %}
         <form method="post" autofill="off">
-          {% if invalid_keycloak_sso %}
-          <div class="d-flex mt-3 w-100">
-            <div class="alert alert-danger w-100" role="alert">
-              {{ lang.danger.iam_invalid_sso}}
-            </div>
-          </div>
-          {% endif %}
           <div class="d-flex mt-3">
             <label class="visually-hidden" for="login_user">{{ lang.login.username }}</label>
             <div class="input-group">
@@ -53,8 +46,8 @@
               <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
-                {% if has_keycloak_sso %}
-                <li><a class="dropdown-item" href="/?keycloak_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a></li>
+                {% if has_iam_sso %}
+                <li><a class="dropdown-item" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a></li>
                 {% endif %}
               </ul>
             </div>
