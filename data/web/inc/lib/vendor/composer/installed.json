@@ -217,29 +217,35 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v5.5.1",
-            "version_normalized": "5.5.1.0",
+            "version": "v6.5.0",
+            "version_normalized": "6.5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "83b609028194aa042ea33b5af2d41a7427de80e6"
+                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/83b609028194aa042ea33b5af2d41a7427de80e6",
-                "reference": "83b609028194aa042ea33b5af2d41a7427de80e6",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/e94e7353302b0c11ec3cfff7180cd0b1743975d2",
+                "reference": "e94e7353302b0c11ec3cfff7180cd0b1743975d2",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": "^7.4||^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=4.8 <=9"
+                "guzzlehttp/guzzle": "^6.5||^7.4",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.5",
+                "psr/cache": "^1.0||^2.0",
+                "psr/http-client": "^1.0",
+                "psr/http-factory": "^1.0"
             },
             "suggest": {
+                "ext-sodium": "Support EdDSA (Ed25519) signatures",
                 "paragonie/sodium_compat": "Support EdDSA (Ed25519) signatures when libsodium is not present"
             },
-            "time": "2021-11-08T20:18:51+00:00",
+            "time": "2023-05-12T15:47:07+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -271,7 +277,7 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v5.5.1"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.5.0"
             },
             "install-path": "../firebase/php-jwt"
         },
@@ -1759,29 +1765,30 @@
         },
         {
             "name": "stevenmaguire/oauth2-keycloak",
-            "version": "3.2.0",
-            "version_normalized": "3.2.0.0",
+            "version": "4.0.0",
+            "version_normalized": "4.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stevenmaguire/oauth2-keycloak.git",
-                "reference": "34e4824f5fa26aa8e90f1258859c75570c12d27a"
+                "reference": "05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stevenmaguire/oauth2-keycloak/zipball/34e4824f5fa26aa8e90f1258859c75570c12d27a",
-                "reference": "34e4824f5fa26aa8e90f1258859c75570c12d27a",
+                "url": "https://api.github.com/repos/stevenmaguire/oauth2-keycloak/zipball/05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d",
+                "reference": "05ead6bb6bcd2b6f96dfae87c769dcd3e5f6129d",
                 "shasum": ""
             },
             "require": {
-                "firebase/php-jwt": "~4.0|~5.0",
-                "league/oauth2-client": "^2.0"
+                "firebase/php-jwt": "^4.0 || ^5.0 || ^6.0",
+                "league/oauth2-client": "^2.0",
+                "php": "~7.2 || ~8.0"
             },
             "require-dev": {
-                "mockery/mockery": "~0.9",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.0"
+                "mockery/mockery": "~1.5.0",
+                "phpunit/phpunit": "~9.6.4",
+                "squizlabs/php_codesniffer": "~3.7.0"
             },
-            "time": "2022-12-16T12:46:38+00:00",
+            "time": "2023-03-14T09:43:47+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1816,7 +1823,7 @@
             ],
             "support": {
                 "issues": "https://github.com/stevenmaguire/oauth2-keycloak/issues",
-                "source": "https://github.com/stevenmaguire/oauth2-keycloak/tree/3.2.0"
+                "source": "https://github.com/stevenmaguire/oauth2-keycloak/tree/4.0.0"
             },
             "install-path": "../stevenmaguire/oauth2-keycloak"
         },
