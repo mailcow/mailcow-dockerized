@@ -753,9 +753,9 @@ jQuery(function($){
     add_table_row($('#f2b_regex_table'), "f2b_regex");
   });
   // IAM test connection
-  $('#iam_test_connection').click(async function(e){
+  $('.iam_test_connection').click(async function(e){
     e.preventDefault();
-    var data = { attr: $('form[data-id="iam_sso"]').serializeObject() };
+    var data = { attr: $('form[data-id="' + $(this).data('id') + '"]').serializeObject() };
     var res = await fetch("/api/v1/edit/identity-provider-test", { 
       headers: {
         "Content-Type": "application/json",
@@ -771,7 +771,7 @@ jQuery(function($){
     return mailcow_alert_box(lang_danger.iam_test_connection, 'danger');
   });
 
-  $('#iam_rolemap_add').click(async function(e){
+  $('.iam_rolemap_add').click(async function(e){
     e.preventDefault();
 
     var parent = $(this).parent().parent();
@@ -793,5 +793,16 @@ jQuery(function($){
   $('.iam_rolemap_del').click(async function(e){
     e.preventDefault();
     $(this).parent().remove();
+  });
+  // selecting identity provider
+  $('#iam_provider').on('change', function(){
+    // toggle password fields
+    if (this.value === 'keycloak'){
+      $('#keycloak_settings').removeClass('d-none');
+      $('#generic_oidc_settings').addClass('d-none');
+    } else if (this.value === 'generic-oidc') {
+      $('#keycloak_settings').addClass('d-none');
+      $('#generic_oidc_settings').removeClass('d-none');
+    }
   });
 });
