@@ -178,8 +178,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
-// Init Keycloak Provider
-$keycloak_provider = identity_provider('init');
+// Init Identity Provider
+$iam_provider = identity_provider('init');
 
 // IMAP lib
 // use Ddeboer\Imap\Server;

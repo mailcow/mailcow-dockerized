@@ -1,20 +1,20 @@
 <?php
-// handle keycloak authentication
-if ($keycloak_provider){
-  if (isset($_GET['keycloak_sso'])){
-    // redirect to keycloak for sso
-    $redirect_uri = keycloak_get_redirect();
+// handle iam authentication
+if ($iam_provider){
+  if (isset($_GET['iam_sso'])){
+    // redirect for sso
+    $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
     header('Location: ' . $redirect_uri);
     die();
   }
-  if ($_SESSION['keycloak_token'] && $_SESSION['keycloak_refresh_token']) {
+  if ($_SESSION['iam_token'] && $_SESSION['iam_refresh_token']) {
     // Session found, try to refresh
-    $isRefreshed = keycloak_refresh();
+    $isRefreshed = identity_provider('refresh-token', array('iam_provider' => $iam_provider));
 
     if (!$isRefreshed){
-      // Session could not be refreshed, clear and redirect to keycloak
-      unset_auth_session();
-      $redirect_uri = keycloak_get_redirect();
+      // Session could not be refreshed, clear and redirect to provider
+      clear_session();
+      $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
       header('Location: ' . $redirect_uri);
       die();
     }
@@ -22,12 +22,7 @@ if ($keycloak_provider){
     // Check given state against previously stored one to mitigate CSRF attack
     // Recieved access token in $_GET['code']
     // extract info and verify user
-    $isValid = keycloak_verify_token();
-
-    if (!$isValid){
-      // Token could not be verified, redirect to keycloak
-      $_SESSION['invalid_keycloak_sso'] = true;
-    }
+    identity_provider('verify-sso', array('iam_provider' => $iam_provider));
   }
 }
 
