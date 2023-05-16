@@ -6,7 +6,7 @@ This package provides a base for integrating with [OAuth 2.0](http://oauth.net/2
 [![Source Code](https://img.shields.io/badge/source-thephpleague/oauth2--client-blue.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client)
 [![Latest Version](https://img.shields.io/github/release/thephpleague/oauth2-client.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/github/workflow/status/thephpleague/oauth2-client/CI?label=CI&logo=github&style=flat-square)](https://github.com/thephpleague/oauth2-client/actions?query=workflow%3ACI)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/thephpleague/oauth2-client/continuous-integration.yml?label=CI&logo=github&style=flat-square)](https://github.com/thephpleague/oauth2-client/actions?query=workflow%3ACI)
 [![Codecov Code Coverage](https://img.shields.io/codecov/c/gh/thephpleague/oauth2-client?label=codecov&logo=codecov&style=flat-square)](https://codecov.io/gh/thephpleague/oauth2-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/league/oauth2-client.svg?style=flat-square)](https://packagist.org/packages/league/oauth2-client)
 
