@@ -1361,7 +1361,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               break;
             }
           }
-        
+
           return mailbox('add', 'mailbox', $mailbox_attributes, array('iam_create_login' => true));
         break;
         case 'resource':

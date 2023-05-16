@@ -2316,7 +2316,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         );
         return true;
       }
-    
+
       // get mapped template, if not set return false
       // also return false if no mappers were defined
       $provider = identity_provider('get');
@@ -2330,9 +2330,10 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         );
         return false;
       }
-    
+
       // check if matching attribute exist
-      if (array_search($user_template, $provider['mappers']) === false) {
+      $mapper_key = array_search($user_template, $provider['mappers']);
+      if ($mapper_key === false) {
         clear_session();  
         $_SESSION['return'][] =  array(
           'type' => 'danger',
@@ -2341,13 +2342,13 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         );
         return false;
       }
-    
+
       // create mailbox
       $create_res = mailbox('add', 'mailbox_from_template', array(
         'domain' => explode('@', $info['email'])[1],
         'local_part' => explode('@', $info['email'])[0],
         'authsource' => identity_provider('get')['authsource'],
-        'template' => $user_template
+        'template' => $provider['templates'][$mapper_key]
       ));
       if (!$create_res){
         clear_session();  
