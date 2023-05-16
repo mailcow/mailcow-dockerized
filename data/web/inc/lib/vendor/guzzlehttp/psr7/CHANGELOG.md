@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.4.5 - 2023-04-17
+
+### Fixed
+
+- Prevent possible warnings on unset variables in `ServerRequest::normalizeNestedFileSpec`
+- Fixed `Message::bodySummary` when `preg_match` fails
+- Fixed header validation issue
+
 ## 2.4.4 - 2023-03-09
 
 ### Changed
