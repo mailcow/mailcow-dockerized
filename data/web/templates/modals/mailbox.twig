@@ -11,17 +11,18 @@
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
           <input type="hidden" value="0" name="protocol_access">
+          <input type="hidden" value="mailcow" name="authsource">
 
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end text-sm-end" for="name">{{ lang.add.full_name }}</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="name">
-            </div>
-          </div>
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="local_part">{{ lang.add.mailbox_username }}</label>
             <div class="col-sm-10">
               <input type="text" pattern="[A-Za-z0-9\.!#$%&'*+/=?^_`{|}~-]+" autocorrect="off" autocapitalize="none" class="form-control" name="local_part" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end text-sm-end" for="name">{{ lang.add.full_name }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="name">
             </div>
           </div>
           <div class="row mb-2">
@@ -38,15 +39,6 @@
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="description">{{ lang.mailbox.template }}</label>
             <div class="col-sm-10">
               <select data-live-search="true" id="mailbox_templates" class="form-control" title="{{ lang.mailbox.template }}">
-              </select>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end text-sm-end" for="authsource">{{ lang.admin.iam }}</label>
-            <div class="col-sm-10">
-              <select class="full-width-select" data-live-search="true" id="mbox_add_iam" name="authsource" required>
-                <option selected>mailcow</option>
-                <option>keycloak</option>
               </select>
             </div>
           </div>
@@ -234,15 +226,6 @@
               <div class="input-group mb-3">
                 <input type="text" name="template" class="form-control" aria-label="Text input with dropdown button" value="" />
               </div>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end text-sm-end" for="authsource">{{ lang.admin.iam }}</label>
-            <div class="col-sm-10">
-              <select class="full-width-select" data-live-search="true" id="mbox_template_iam" name="authsource">
-                <option selected>mailcow</option>
-                <option>keycloak</option>
-              </select>
             </div>
           </div>
           <div class="row mb-2">
