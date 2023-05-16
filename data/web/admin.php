@@ -87,7 +87,7 @@ $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_method
 
 $f2b_data = fail2ban('get');
 // identity provider
-$identity_provider_settings = identity_provider('get');
+$iam_settings = identity_provider('get');
 // mbox templates
 $mbox_templates = mailbox('get', 'mailbox_templates');
 
@@ -121,7 +121,7 @@ $template_data = [
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-  'identity_provider_settings' => $identity_provider_settings,
+  'iam_settings' => $iam_settings,
   'mbox_templates' => $mbox_templates,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
