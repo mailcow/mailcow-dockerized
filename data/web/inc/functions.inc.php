@@ -2233,7 +2233,216 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       }
       return $provider;
     break;
+    case "verify-sso":
+      $provider = $_data['iam_provider'];
+    
+      try {
+        $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
+      } catch (Exception $e) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => array('login_failed', $e->getMessage())
+        );
+        return false;
+      }
+      try {
+        $_SESSION['iam_token'] = $token->getToken();
+        $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
+        $info = $provider->getResourceOwner($token)->toArray();
+      } catch (Throwable $e) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => array('login_failed', $e->getMessage())
+        );
+        return false;
+      }
+      
+      // check if email address is given
+      if (empty($info['email'])) return false;
+    
+      // token valid, get mailbox
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+        INNER JOIN domain on mailbox.domain = domain.domain
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active`='1'
+          AND `domain`.`active`='1'
+          AND `username` = :user
+          AND `authsource`='keycloak' OR `authsource`='generic-oidc'");
+      $stmt->execute(array(':user' => $info['email']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row){
+        // success
+        $_SESSION['mailcow_cc_username'] = $info['email'];
+        $_SESSION['mailcow_cc_role'] = "user";
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
+        );
+        return true;
+      }
+    
+      // get mapped template, if not set return false
+      // also return false if no mappers were defined
+      $provider = identity_provider('get');
+      $user_template = $info['mailcow_template'];
+      if (empty($provider['mappers']) || empty($user_template)){
+        clear_session();  
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+    
+      // check if matching attribute exist
+      if (array_search($user_template, $provider['mappers']) === false) {
+        clear_session();  
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+    
+      // create mailbox
+      $create_res = mailbox('add', 'mailbox_from_template', array(
+        'domain' => explode('@', $info['email'])[1],
+        'local_part' => explode('@', $info['email'])[0],
+        'authsource' => identity_provider('get')['authsource'],
+        'template' => $user_template
+      ));
+      if (!$create_res){
+        clear_session();  
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+    
+      $_SESSION['mailcow_cc_username'] = $info['email'];
+      $_SESSION['mailcow_cc_role'] = "user";
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+        'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
+      );
+      return true;
+    break;
+    case "refresh-token":
+      $provider = $_data['iam_provider'];
+
+      try {
+        $token = $provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
+      } catch (Exception $e) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => array('login_failed', $e->getMessage())
+        );
+        return false;
+      }
+      try {
+        $_SESSION['iam_token'] = $token->getToken();
+        $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
+        $info = $provider->getResourceOwner($token)->toArray();
+      } catch (Throwable $e) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => array('login_failed', $e->getMessage())
+        );
+        return false;
+      }
+
+      if (empty($info['email'])){
+        clear_session();  
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+    
+      $_SESSION['mailcow_cc_username'] = $info['email'];
+      $_SESSION['mailcow_cc_role'] = "user";
+      return true;
+    break;
+    case "get-redirect":
+      $provider = $_data['iam_provider'];
+      $authUrl = $provider->getAuthorizationUrl();
+      $_SESSION['oauth2state'] = $provider->getState();
+      return $authUrl;
+    break;
+    case "get-keycloak-admin-token":
+      // get access_token for service account of mailcow client
+      $iam_settings = identity_provider('get');
+      if ($iam_settings['authsource'] !== 'keycloak') return false;
+      if (isset($iam_settings['access_token'])) {
+        // check if access_token is valid
+        $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token/introspect";
+        $req = http_build_query(array(
+          'token'    => $iam_settings['access_token'],
+          'client_id'     => $iam_settings['client_id'],
+          'client_secret' => $iam_settings['client_secret']
+        ));
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        $res = json_decode(curl_exec($curl), true);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close ($curl);
+        if ($code == 200 && $res['active'] == true) {
+          // token is valid
+          return $iam_settings['access_token'];
+        }
+      }
+
+      $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token";
+      $req = http_build_query(array(
+        'grant_type'    => 'client_credentials',
+        'client_id'     => $iam_settings['client_id'],
+        'client_secret' => $iam_settings['client_secret']
+      ));
+      $curl = curl_init();
+      curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_POST, 1);
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+      $res = json_decode(curl_exec($curl), true);
+      $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      curl_close ($curl);
+      if ($code != 200) {
+        return false;
+      }
+      
+      $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+      $stmt->execute(array(
+        ':key' => 'access_token',
+        ':value' => $res['access_token']
+      ));
+      return $res['access_token'];
+    break;
   }
+}
+function clear_session(){
+  session_regenerate_id(true);
+  session_unset();
+  session_destroy();
+  session_write_close();
 }
 
 function get_logs($application, $lines = false) {
