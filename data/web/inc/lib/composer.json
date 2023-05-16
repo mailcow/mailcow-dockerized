@@ -10,7 +10,7 @@
         "mustangostang/spyc": "^0.6.3",
         "directorytree/ldaprecord": "^2.4",
         "twig/twig": "^3.0",
-        "stevenmaguire/oauth2-keycloak": "^3.2",
+        "stevenmaguire/oauth2-keycloak": "^4.0",
         "league/oauth2-client": "^2.7"
     }
 }
