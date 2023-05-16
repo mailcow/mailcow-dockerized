@@ -2069,7 +2069,12 @@ function uuid4() {
 }
 function identity_provider($_action, $_data = null) {
 function identity_provider($_action, $_data = null, $hide_secret = false) {
+function identity_provider($_action, $_data = null, $_extra = null) {
   global $pdo;
+
+  $data_log = $_data;
+  if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
+  if (isset($data_log['access_token'])) $data_log['access_token'] = '*';
 
   switch ($_action) {
     case 'get':
@@ -2078,16 +2083,15 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach($rows as $row){
-        if ($row["key"] == 'mappers'){
-          $settings['mappers'] = json_decode($row["value"]);
-        } else if ($row["key"] == 'templates'){
-          $settings['templates'] = json_decode($row["value"]);
+        if ($row["key"] == 'mappers' || $row["key"] == 'templates'){
+          $settings[$row["key"]] = json_decode($row["value"]);
         } else {
           $settings[$row["key"]] = $row["value"];
         }
       }
-      if ($hide_secret){
+      if ($_extra['hide_sensitive']){
         $settings['client_secret'] = '';
+        $settings['access_token'] = '';
       }
       return $settings;
     break;
@@ -2100,54 +2104,60 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         );
         return false;
       }
-      $data_log = $_data;
-      $data_log['client_secret'] = '*';
-      $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-      
-      $_data['login_flow'] = (isset($_data['login_flow']) && $_data['login_flow'] == 'ropc') ? 'ropc' : 'rest';
+      if (!isset($_data['authsource'])){
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $data_log),
+          'msg' => array('required_data_missing', $setting)
+        );
+        return false;
+      }
+      $_data['authsource'] = strtolower($_data['authsource']);
+      if ($_data['authsource'] != "keycloak" && $_data['authsource'] != "generic-oidc"){
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $data_log),
+          'msg' => array('invalid_authsource', $setting)
+        );
+        return false;
+      }
 
-      // add connection settings      
-      $required_settings = array('server_url', 'authsource', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'login_flow');
+      if ($_data['authsource'] == "keycloak") {
+        $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
+        $_data['periodic_sync'] = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
+        $_data['import_users'] = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+        $required_settings = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users');
+      } else if ($_data['authsource'] == "generic-oidc") {
+        $required_settings = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
+      }
+      
+      $pdo->beginTransaction();
+      $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+      // add connection settings
       foreach($required_settings as $setting){
-        if (!$_data[$setting]){
+        if (!isset($_data[$setting])){
           $_SESSION['return'][] =  array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $data_log),
-            'msg' => 'required_data_missing'
+            'msg' => array('required_data_missing', $setting)
           );
+          $pdo->rollback();
           return false;
         }
-      }
-      foreach($_data as $key => $value){
-        if (!in_array($key, $required_settings) || $key == 'mappers' || $key == 'templates'){
-          continue;
-        }
 
-        $stmt->bindParam(':key', $key);
-        $stmt->bindParam(':value', $value);
+        $stmt->bindParam(':key', $setting);
+        $stmt->bindParam(':value', $_data[$setting]);
         $stmt->execute();
       }
+      $pdo->commit();
 
       // add mappers
       if ($_data['mappers'] && $_data['templates']){
-        if (!is_array($_data['mappers'])){
-          $_data['mappers'] = array($_data['mappers']);
-        }
-        if (!is_array($_data['templates'])){
-          $_data['templates'] = array($_data['templates']);
-        }
-        $mappers = array();
-        $templates = array();
-        foreach($_data['mappers'] as $mapper){
-          if ($mapper){
-            array_push($mappers, $mapper);
-          }
-        }
-        foreach($_data['templates'] as $template){
-          if ($template){
-            array_push($templates, $template);
-          }
-        }
+        $_data['mappers'] = (!is_array($_data['mappers'])) ? array($_data['mappers']) : $_data['mappers'];
+        $_data['templates'] = (!is_array($_data['templates'])) ? array($_data['templates']) : $_data['templates'];
+
+        $mappers = array_filter($_data['mappers']);
+        $templates = array_filter($_data['templates']);
         if (count($mappers) == count($templates)){
           $mappers = json_encode($mappers);
           $templates = json_encode($templates);
@@ -2160,6 +2170,9 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
           $stmt->execute();
         }
       }
+
+      // delete old access_token
+      $stmt = $pdo->query("INSERT INTO identity_provider (`key`, `value`) VALUES ('access_token', '') ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
 
       $_SESSION['return'][] =  array(
         'type' => 'success',
@@ -2178,7 +2191,11 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
         return false;
       }
 
-      $url = "{$_data['server_url']}/realms/{$_data['realm']}/protocol/openid-connect/token";
+      if ($_data['authsource'] == 'keycloak') {
+        $url = "{$_data['server_url']}/realms/{$_data['realm']}/protocol/openid-connect/token";
+      } else {
+        $url = $_data['token_url'];
+      }
       $req = http_build_query(array(
         'grant_type'    => 'client_credentials',
         'client_id'     => $_data['client_id'],
@@ -2215,21 +2232,37 @@ function identity_provider($_action, $_data = null, $hide_secret = false) {
       return true;
     break;
     case "init":
-      $identity_provider_settings = identity_provider('get');
+      $iam_settings = identity_provider('get');
       $provider = null;
-      if ($identity_provider_settings['server_url'] && $identity_provider_settings['realm'] && $identity_provider_settings['client_id'] &&
-          $identity_provider_settings['client_secret'] && $identity_provider_settings['redirect_url'] && $identity_provider_settings['version']){
-        $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
-          'authServerUrl'         => $identity_provider_settings['server_url'],
-          'realm'                 => $identity_provider_settings['realm'],
-          'clientId'              => $identity_provider_settings['client_id'],
-          'clientSecret'          => $identity_provider_settings['client_secret'],
-          'redirectUri'           => $identity_provider_settings['redirect_url'],
-          'version'               => $identity_provider_settings['version'],                            
-          // 'encryptionAlgorithm'   => 'RS256',                             // optional
-          // 'encryptionKeyPath'     => '../key.pem'                         // optional
-          // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
-        ]);
+      if ($iam_settings['authsource'] == 'keycloak'){
+        if ($iam_settings['server_url'] && $iam_settings['realm'] && $iam_settings['client_id'] &&
+            $iam_settings['client_secret'] && $iam_settings['redirect_url'] && $iam_settings['version']){
+          $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
+            'authServerUrl'         => $iam_settings['server_url'],
+            'realm'                 => $iam_settings['realm'],
+            'clientId'              => $iam_settings['client_id'],
+            'clientSecret'          => $iam_settings['client_secret'],
+            'redirectUri'           => $iam_settings['redirect_url'],
+            'version'               => $iam_settings['version'],                            
+            // 'encryptionAlgorithm'   => 'RS256',                             // optional
+            // 'encryptionKeyPath'     => '../key.pem'                         // optional
+            // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
+          ]);
+        }
+      }
+      else if ($iam_settings['authsource'] == 'generic-oidc'){
+        if ($iam_settings['client_id'] && $iam_settings['client_secret'] && $iam_settings['redirect_url'] &&
+            $iam_settings['authorize_url'] && $iam_settings['token_url'] && $iam_settings['userinfo_url']){
+          $provider = new \League\OAuth2\Client\Provider\GenericProvider([
+            'clientId'                => $iam_settings['client_id'],
+            'clientSecret'            => $iam_settings['client_secret'],
+            'redirectUri'             => $iam_settings['redirect_url'],
+            'urlAuthorize'            => $iam_settings['authorize_url'],
+            'urlAccessToken'          => $iam_settings['token_url'],
+            'urlResourceOwnerDetails' => $iam_settings['userinfo_url'],
+            'scopes'                  => 'openid profile email'
+          ]);
+        }
       }
       return $provider;
     break;
