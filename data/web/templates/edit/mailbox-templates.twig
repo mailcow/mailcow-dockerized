@@ -20,15 +20,6 @@
       </div>
     </div>
     <div class="row mb-2">
-      <label class="control-label col-sm-2" for="authsource">{{ lang.admin.iam }}</label>
-      <div class="col-sm-10">
-        <select class="full-width-select" data-live-search="true" id="mbox_template_iam" name="authsource" required>
-          <option {% if template.attributes.authsource == 'mailcow' %}selected{% endif %}>mailcow</option>
-          <option {% if template.attributes.authsource == 'keycloak' %}selected{% endif %}>keycloak</option>
-        </select>
-      </div>
-    </div>
-    <div class="row mb-2">
       <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
       <div class="col-sm-10">
         <div class="form-control tag-box">
