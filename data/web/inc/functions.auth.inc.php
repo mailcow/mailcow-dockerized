@@ -333,26 +333,16 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $is_internal = fa
     return 'user';
   }
 
-  // try to create mbox on successfull login
-  $mbox_template = null;
-  // check if matching attribute mapping exists
-  foreach ($iam_settings['mappers'] as $index => $mapper){
-    if (in_array($mapper, $iam_settings['mappers'])) {
-      $mbox_template = $iam_settings['templates'][$index];
-      break;
-    }
-  }
-  if (!$mbox_template){
-    // no matching template found
-    return false;
-  }
+  // check if matching attribute exist
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  if ($mapper_key === false) return false;
 
   // create mailbox
   $create_res = mailbox('add', 'mailbox_from_template', array(
     'domain' => explode('@', $user)[1],
     'local_part' => explode('@', $user)[0],
     'authsource' => 'keycloak',
-    'template' => $mbox_template
+    'template' => $iam_settings['mappers'][$mapper_key]
   ));
   if (!$create_res) return false;
 
