@@ -1044,7 +1044,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $password2 = '';
             $password_hashed = '';
           }
-          if (!$_SESSION['iam_create_login'] && ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0)) {
+          if (!$_extra['iam_create_login'] && ((!isset($_SESSION['acl']['unlimited_quota']) || $_SESSION['acl']['unlimited_quota'] != "1") && $quota_m === 0)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1098,7 +1098,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain) && !$_SESSION['iam_create_login']) {
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain) && !$_extra['iam_create_login']) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1318,7 +1318,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'object' => $username,
               'rl_frame' => $_data['rl_frame'],
               'rl_value' => $_data['rl_value']
-            ));
+            ), $_extra);
           }
 
           update_sogo_static_view($username);
@@ -1327,6 +1327,42 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
             'msg' => array('mailbox_added', htmlspecialchars($username))
           );
+        break;
+        case 'mailbox_from_template':
+          $stmt = $pdo->prepare("SELECT * FROM `templates` 
+          WHERE `template` = :template AND type = 'mailbox'");
+          $stmt->execute(array(
+            ":template" => $_data['template']
+          ));
+          $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($mbox_template_data)){
+            $_SESSION['return'][] =  array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'template_missing'
+            );
+            return false;
+          }  
+          
+          $mbox_template_data = json_decode($mbox_template_data["attributes"], true);  
+          $mbox_template_data['domain'] = $_data['domain'];
+          $mbox_template_data['local_part'] = $_data['local_part'];
+          $mbox_template_data['authsource'] = $_data['authsource'];
+          $mbox_template_data['quota'] = intval($mbox_template_data['quota'] / 1048576);
+        
+          $mailbox_attributes = array('acl' => array());
+          foreach ($mbox_template_data as $key => $value){
+            switch (true) {
+              case (strpos($key, 'acl_') === 0 && $value != 0):
+                array_push($mailbox_attributes['acl'], str_replace('acl_' , '', $key));
+              break;
+              default:
+                $mailbox_attributes[$key] = $value;
+              break;
+            }
+          }
+        
+          return mailbox('add', 'mailbox', $mailbox_attributes, array('iam_create_login' => true));
         break;
         case 'resource':
           $domain             = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
