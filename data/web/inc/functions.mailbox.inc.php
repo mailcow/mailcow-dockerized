@@ -3196,6 +3196,66 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           return true;
         break;
+        case 'mailbox_from_template':
+          $stmt = $pdo->prepare("SELECT * FROM `templates` 
+          WHERE `template` = :template AND type = 'mailbox'");
+          $stmt->execute(array(
+            ":template" => $_data['template']
+          ));
+          $mbox_template_data = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($mbox_template_data)){
+            $_SESSION['return'][] =  array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'template_missing'
+            );
+            return false;
+          }
+
+          $mbox_template_data = json_decode($mbox_template_data["attributes"], true);  
+          $quarantine_attributes = array('username' => $_data['username']);
+          $tls_attributes = array('username' => $_data['username']);
+          $ratelimit_attributes = array('object' => $_data['username']);
+          $acl_attributes = array('username' => $_data['username'], 'user_acl' => array());
+          $mailbox_attributes = array('username' => $_data['username']);
+          foreach ($mbox_template_data as $key => $value){
+            switch (true) {
+              case (strpos($key, 'quarantine_') === 0):
+                $quarantine_attributes[$key] = $value;
+              break;
+              case (strpos($key, 'tls_') === 0):
+                if ($value == null)
+                  $value = 0;
+                $tls_attributes[$key] = $value;
+              break;
+              case (strpos($key, 'rl_') === 0):
+                $ratelimit_attributes[$key] = $value;
+              break;
+              case (strpos($key, 'acl_') === 0 && $value != 0):
+                array_push($acl_attributes['user_acl'], str_replace('acl_' , '', $key));
+              break;
+              default:
+                $mailbox_attributes[$key] = $value;
+              break;
+            }
+          }
+        
+          $mailbox_attributes['quota'] = intval($mailbox_attributes['quota'] / 1048576);
+          $result = mailbox('edit', 'mailbox', $mailbox_attributes);
+          if ($result === false) return $result;
+          $result = mailbox('edit', 'tls_policy', $tls_attributes);
+          if ($result === false) return $result;
+          $result = mailbox('edit', 'quarantine_notification', $quarantine_attributes);
+          if ($result === false) return $result;
+          $result = mailbox('edit', 'quarantine_category', $quarantine_attributes);
+          if ($result === false) return $result;
+          $result = ratelimit('edit', 'mailbox', $ratelimit_attributes);
+          if ($result === false) return $result;
+          $result = acl('edit', 'user', $acl_attributes);
+          if ($result === false) return $result;
+
+          return true;
+        break;
         case 'mailbox_templates':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
             $_SESSION['return'][] = array(
