@@ -1,10 +1,10 @@
 <?php
-function ratelimit($_action, $_scope, $_data = null) {
+function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
   global $redis;
   $_data_log = $_data;
   switch ($_action) {
     case 'edit':
-      if ((!isset($_SESSION['acl']['ratelimit']) || $_SESSION['acl']['ratelimit'] != "1") && !$_SESSION['iam_create_login']) {
+      if ((!isset($_SESSION['acl']['ratelimit']) || $_SESSION['acl']['ratelimit'] != "1") && !$_extra['iam_create_login']) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -93,7 +93,7 @@ function ratelimit($_action, $_scope, $_data = null) {
               continue;
             }
             if ((!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)
-              || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) && !$_SESSION['iam_create_login']) {
+                || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) && !$_extra['iam_create_login']) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
