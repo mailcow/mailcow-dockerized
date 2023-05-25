@@ -771,7 +771,7 @@ jQuery(function($){
   $('.iam_rolemap_add').click(async function(e){
     e.preventDefault();
 
-    var parent = $(this).parent().parent();
+    var parent = $('#iam_mapping_list')
     $(parent).children().last().clone().appendTo(parent);
     var newChild = $(parent).children().last();
     $(newChild).find('input').val('');
@@ -784,12 +784,14 @@ jQuery(function($){
     $('.iam_rolemap_del').off('click');
     $('.iam_rolemap_del').click(async function(e){
       e.preventDefault();
-      $(this).parent().remove();
+      if ($(this).parent().parent().children().length > 1)
+        $(this).parent().remove();
     });
   });
   $('.iam_rolemap_del').click(async function(e){
     e.preventDefault();
-    $(this).parent().remove();
+    if ($(this).parent().parent().children().length > 1)
+      $(this).parent().remove();
   });
   // selecting identity provider
   $('#iam_provider').on('change', function(){

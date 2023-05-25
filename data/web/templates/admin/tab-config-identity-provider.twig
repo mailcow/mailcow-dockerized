@@ -70,32 +70,34 @@
               <span class="w-100 ms-2">Template</span>
               <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-2 iam_rolemap_add"><i class="bi bi-plus-lg"></i></button>
             </div>
-            {% for key, role in iam_settings.mappers %}
-            <div class="offset-sm-3 col-4 d-flex mb-2">
-              <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
-              <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
-              {% for mbox_template in mbox_templates %}
-                <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
-                  {{ mbox_template.template }}
-                </option>
+            <div id="iam_mapping_list">
+              {% for key, role in iam_settings.mappers %}
+              <div class="offset-sm-3 col-4 d-flex mb-2">
+                <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
+                <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                {% for mbox_template in mbox_templates %}
+                  <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
+                    {{ mbox_template.template }}
+                  </option>
+                {% endfor %}
+                </select>
+                <button class="iam_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-2"><i class="bi bi-x-lg"></i></button>
+              </div>
               {% endfor %}
-              </select>
-              <button class="iam_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-2"><i class="bi bi-x-lg"></i></button>
+              {% if not iam_settings.mappers %}
+              <div class="offset-sm-3 col-4 d-flex mb-2">
+                <input type="text" class="form-control me-2" name="mappers" value="" required>
+                <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                {% for mbox_template in mbox_templates %}
+                  <option>
+                    {{ mbox_template.template }}
+                  </option>
+                {% endfor %}
+                </select>
+                <button class="iam_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-2"><i class="bi bi-x-lg"></i></button>
+              </div>
+              {% endif %}
             </div>
-            {% endfor %}
-            {% if not iam_settings.mappers %}
-            <div class="offset-sm-3 col-4 d-flex mb-2">
-              <input type="text" class="form-control me-2" name="mappers" value="" required>
-              <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
-              {% for mbox_template in mbox_templates %}
-                <option>
-                  {{ mbox_template.template }}
-                </option>
-              {% endfor %}
-              </select>
-              <button class="iam_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-2"><i class="bi bi-x-lg"></i></button>
-            </div>
-            {% endif %}
           </div>
           <div class="row mb-2 mt-4">
             <label class="control-label col-sm-3 text-sm-end"></label>
