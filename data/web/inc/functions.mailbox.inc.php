@@ -3965,6 +3965,39 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           return $aliasdomaindata;
         break;
+        case 'shared_aliases':
+          $shared_aliases = array();
+          $stmt = $pdo->query("SELECT `address` FROM `alias`
+            WHERE `goto` REGEXP ','
+            AND `address` NOT LIKE '@%'
+            AND `goto` != `address`");
+          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          while($row = array_shift($rows)) {
+            $domain = explode("@", $row['address'])[1];
+            if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $shared_aliases[] = $row['address'];
+            }
+          }
+
+          return $shared_aliases;
+        break;
+        case 'direct_aliases':
+          $direct_aliases = array();
+          $stmt = $pdo->query("SELECT `address` FROM `alias`
+            WHERE `goto` NOT LIKE '%,%'
+            AND `address` NOT LIKE '@%'
+            AND `goto` != `address`");
+          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+          while($row = array_shift($rows)) {
+            $domain = explode("@", $row['address'])[1];
+            if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $direct_aliases[] = $row['address'];
+            }
+          }
+
+          return $direct_aliases;
+        break;
         case 'domains':
           $domains = array();
           if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
@@ -4956,9 +4989,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `logged_in_as` = :username");
+            $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as OR `send_as` = :send_as");
             $stmt->execute(array(
-              ':username' => $username
+              ':logged_in_as' => $username,
+              ':send_as' => $username
             ));
             // fk, better safe than sorry
             $stmt = $pdo->prepare("DELETE FROM `user_acl` WHERE `username` = :username");

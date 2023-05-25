@@ -9,6 +9,7 @@ import os
 import json
 import asyncio
 import redis
+import platform
 from datetime import datetime
 import logging
 from logging.config import dictConfig
@@ -370,7 +371,7 @@ class DockerUtils:
         return exec_run_handler('utf8_text_only', sieve_return)
   # api call: container_post - post_action: exec - cmd: sieve - task: print
   def container_post__exec__sieve__print(self, container_id, request_json):
-    if 'username' in request.json and 'script_name' in request_json:
+    if 'username' in request_json and 'script_name' in request_json:
       for container in self.docker_client.containers.list(filters={"id": container_id}):
         cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]  
         sieve_return = container.exec_run(cmd)
@@ -485,7 +486,8 @@ async def get_host_stats(wait=5):
         "swap": psutil.swap_memory()
       },
       "uptime": time.time() - psutil.boot_time(),
-      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
+      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S"),
+      "architecture": platform.machine()
     }
 
     redis_client.set('host_stats', json.dumps(host_stats), ex=10)

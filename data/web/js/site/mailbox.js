@@ -1458,30 +1458,37 @@ jQuery(function($){
   }
   function draw_bcc_table() {
     $.get("/api/v1/get/bcc-destination-options", function(data){
+      var optgroup = "";
       // Domains
-      var optgroup = "<optgroup label='" + lang.domains + "'>";
-      $.each(data.domains, function(index, domain){
-        optgroup += "<option value='" + domain + "'>" + domain + "</option>";
-      });
-      optgroup += "</optgroup>";
-      $('#bcc-local-dest').append(optgroup);
-      // Alias domains
-      var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
-      $.each(data.alias_domains, function(index, alias_domain){
-        optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>";
-      });
-      optgroup += "</optgroup>"
-      $('#bcc-local-dest').append(optgroup);
-      // Mailboxes and aliases
-      $.each(data.mailboxes, function(mailbox, aliases){
-        var optgroup = "<optgroup label='" + mailbox + "'>";
-        $.each(aliases, function(index, alias){
-          optgroup += "<option value='" + alias + "'>" + alias + "</option>";
+      if (data.domains && data.domains.length > 0) {
+        optgroup = "<optgroup label='" + lang.domains + "'>";
+        $.each(data.domains, function(index, domain){
+          optgroup += "<option value='" + domain + "'>" + domain + "</option>";
         });
         optgroup += "</optgroup>";
         $('#bcc-local-dest').append(optgroup);
-      });
-      // Finish
+      }
+      // Alias domains
+      if (data.alias_domains && data.alias_domains.length > 0) {
+        optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+        $.each(data.alias_domains, function(index, alias_domain){
+          optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>";
+        });
+        optgroup += "</optgroup>"
+        $('#bcc-local-dest').append(optgroup);
+      }
+      // Mailboxes and aliases
+      if (data.mailboxes && Object.keys(data.mailboxes).length > 0) {
+        $.each(data.mailboxes, function(mailbox, aliases){
+          optgroup = "<optgroup label='" + mailbox + "'>";
+          $.each(aliases, function(index, alias){
+            optgroup += "<option value='" + alias + "'>" + alias + "</option>";
+          });
+          optgroup += "</optgroup>";
+          $('#bcc-local-dest').append(optgroup);
+        });
+      }
+      // Recreate picker
       $('#bcc-local-dest').selectpicker('refresh');
     });
 
@@ -2326,16 +2333,19 @@ jQuery(function($){
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {
-      element_object = document.querySelector(element);
+      let element_object = document.querySelector(element);
       if (element_object === null) return;
 
-      new IntersectionObserver((entries, observer) => {
+      let observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
+            observer.unobserve(element_object);
           }
         });
-      }).observe(element_object);
+      })
+      
+      observer.observe(element_object);
     });
   }
 

@@ -539,7 +539,7 @@
         "inactive": "Inactiv",
         "kind": "Fel",
         "last_modified": "Ultima modificare",
-        "lookup_mx": "Destinația este o expresie regulată care potrivită cu numele MX (<code>.*google\\.com</code> pentru a direcționa toate e-mailurile vizate către un MX care se termină în google.com peste acest hop)",
+        "lookup_mx": "Destinația este o expresie regulată care potrivită cu numele MX (<code>.*\\.google\\.com</code> pentru a direcționa toate e-mailurile vizate către un MX care se termină în google.com peste acest hop)",
         "mailbox": "Editează căsuța poștală",
         "mailbox_quota_def": "Cota implicită a căsuței poștale",
         "mailbox_relayhost_info": "Aplicat numai căsuței poștale și aliasurilor directe, suprascrie un transport dependent de domeniu.",
