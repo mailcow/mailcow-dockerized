@@ -896,7 +896,7 @@ function edit_user_account($_data) {
   }
   $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
       WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `username` = :user");
+        AND `username` = :user AND authsource = 'mailcow'");
   $stmt->execute(array(':user' => $username));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!verify_hash($row['password'], $password_old)) {
@@ -917,7 +917,7 @@ function edit_user_account($_data) {
     $stmt = $pdo->prepare("UPDATE `mailbox` SET `password` = :password_hashed,
       `attributes` = JSON_SET(`attributes`, '$.force_pw_update', '0'),
       `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
-        WHERE `username` = :username");
+        WHERE `username` = :username AND authsource = 'mailcow'");
     $stmt->execute(array(
       ':password_hashed' => $password_hashed,
       ':username' => $username

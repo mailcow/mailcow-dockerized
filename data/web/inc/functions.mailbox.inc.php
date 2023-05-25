@@ -3165,7 +3165,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt = $pdo->prepare("UPDATE `mailbox` SET
                   `password` = :password_hashed,
                   `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
-                    WHERE `username` = :username");
+                    WHERE `username` = :username AND authsource = 'mailcow'");
               $stmt->execute(array(
                 ':password_hashed' => $password_hashed,
                 ':username' => $username
