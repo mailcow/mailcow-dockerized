@@ -2144,6 +2144,9 @@ function identity_provider($_action, $_data = null, $_extra = null) {
           $pdo->rollback();
           return false;
         }
+        if ($setting == "server_url" || $setting == "authorize_url" || $setting == "token_url" || $setting == "userinfo_url") {
+          $_data[$setting] = rtrim($_data[$setting], '/');
+        }
 
         $stmt->bindParam(':key', $setting);
         $stmt->bindParam(':value', $_data[$setting]);
@@ -2271,15 +2274,6 @@ function identity_provider($_action, $_data = null, $_extra = null) {
     
       try {
         $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
-      } catch (Exception $e) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__),
-          'msg' => array('login_failed', $e->getMessage())
-        );
-        return false;
-      }
-      try {
         $_SESSION['iam_token'] = $token->getToken();
         $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
         $info = $provider->getResourceOwner($token)->toArray();
@@ -2291,7 +2285,6 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         );
         return false;
       }
-      
       // check if email address is given
       if (empty($info['email'])) return false;
     
@@ -2374,15 +2367,6 @@ function identity_provider($_action, $_data = null, $_extra = null) {
 
       try {
         $token = $provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
-      } catch (Exception $e) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__),
-          'msg' => array('login_failed', $e->getMessage())
-        );
-        return false;
-      }
-      try {
         $_SESSION['iam_token'] = $token->getToken();
         $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
         $info = $provider->getResourceOwner($token)->toArray();
