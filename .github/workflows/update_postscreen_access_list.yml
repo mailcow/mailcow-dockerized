@@ -1,0 +1,39 @@
+name: Update postscreen_access.cidr
+
+on:
+  schedule:
+    # Monthly
+    - cron: "0 0 1 * *"
+  workflow_dispatch: # Allow to run workflow manually
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+  
+  
+jobs:
+  Update-postscreen_access_cidr:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Generate postscreen_access.cidr
+      run: |
+          bash helper-scripts/update_postscreen_whitelist.sh
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.mailcow_action_Update_postscreen_access_cidr_pat }}
+        commit-message: update postscreen_access.cidr
+        committer: milkmaker <milkmaker@mailcow.de>
+        author: milkmaker <milkmaker@mailcow.de>
+        signoff: false
+        branch: update/postscreen_access.cidr
+        base: staging
+        delete-branch: true
+        add-paths: |
+          data/conf/postfix/postscreen_access.cidr
+        title: '[Postfix] update postscreen_access.cidr'
+        body: |
+          This PR updates the postscreen_access.cidr using GitHub Actions and [helper-scripts/update_postscreen_whitelist.sh](https://github.com/mailcow/mailcow-dockerized/blob/master/helper-scripts/update_postscreen_whitelist.sh)

@@ -541,7 +541,7 @@
         "inactive": "Neaktivní",
         "kind": "Druh",
         "last_modified": "Naposledy změněn",
-        "lookup_mx": "Cíl je regulární výraz který se shoduje s MX záznamem (<code>.*google\\.com</code> směřuje veškerou poštu na MX které jsou cílem pro google.com přes tento skok)",
+        "lookup_mx": "Cíl je regulární výraz který se shoduje s MX záznamem (<code>.*\\.google\\.com</code> směřuje veškerou poštu na MX které jsou cílem pro google.com přes tento skok)",
         "mailbox": "Úprava mailové schránky",
         "mailbox_quota_def": "Výchozí kvóta schránky",
         "mailbox_relayhost_info": "Aplikované jen na uživatelskou schránku a přímé aliasy, přepisuje předávající server domény.",

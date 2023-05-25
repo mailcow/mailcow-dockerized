@@ -1,13 +1,3 @@
-const LOCALE = undefined;
-const DATETIME_FORMAT = {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit"
-};
-
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -43,7 +33,7 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
-  $("#maiclow_version").click(function(){
+  $("#mailcow_version").click(function(){
     if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" || mailcow_info.branch !== "master")
       return;
 
@@ -829,13 +819,10 @@ jQuery(function($){
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
-        console.log(data);
-
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
-        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -951,12 +938,15 @@ jQuery(function($){
           title: 'Score',
           data: 'score',
           defaultContent: '',
+          class: 'text-nowrap',
           createdCell: function(td, cellData) {
             $(td).attr({
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -979,7 +969,9 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -1302,6 +1294,12 @@ function update_stats(timeout=5){
       $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
       $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
       $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+      if (data.architecture == "aarch64"){
+        $("#host_architecture").html('<span data-bs-toggle="tooltip" data-bs-placement="top" title="' + lang_debug.wip +'">' + data.architecture + ' ⚠️</span>');
+      }
+      else {
+        $("#host_architecture").html(data.architecture);
+      }
 
       // update cpu and mem chart
       var cpu_chart = Chart.getChart("host_cpu_chart");
