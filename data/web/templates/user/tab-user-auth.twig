@@ -97,6 +97,7 @@
           </div>
 
           {# TFA #}
+          {% if mailboxdata.authsource == "mailcow" %}
           <legend class="mt-4">{{ lang.user.authentication }}</legend>
           <hr>
           <div class="row">
@@ -170,6 +171,7 @@
             </div>
             <br>
           </div>
+          {% endif %}
         </div>
         <div class="ms-auto col-xl-3 col-lg-5 col-md-12 col-12 d-flex flex-column well flex-grow-1">
           <legend class="d-flex">

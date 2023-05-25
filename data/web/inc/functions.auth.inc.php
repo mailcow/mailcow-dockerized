@@ -235,7 +235,10 @@ function mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal
     $protocol = 'sieve';
   } else if ($app_passwd_data['pop3']){
     $protocol = 'pop3';
+  } else if (!$is_internal) {
+    return false;
   }
+
 
   // fetch app password data
   $stmt = $pdo->prepare("SELECT `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
@@ -249,11 +252,8 @@ function mailcow_mbox_apppass_login($user, $pass, $app_passwd_data, $is_internal
       :has_access_query"
   );
   // check if app password has protocol access
-  // skip if protocol is false and the call is not external
-  $has_access_query = '';
-  if (!$is_internal || ($is_internal && !empty($protocol))){
-    $has_access_query = " AND `app_passwd`.`" . $protocol . "_access` = '1'";
-  }
+  // skip if protocol is false and the call is internal
+  $has_access_query = ($is_internal && $protocol === false) ? "" : " AND `app_passwd`.`" . $protocol . "_access` = '1'";
   // fetch password data
   $stmt->execute(array(
     ':user' => $user,
