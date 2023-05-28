@@ -16,6 +16,10 @@
 		<parameter type="tag" name="message" regex="message" occurrence="optional">
 			<parameter type="string" name="message-text" />
 		</parameter>
+    
+    <parameter type="tag" name="options" regex="options" occurrence="optional">
+    		<parameter type="stringlist" name="option-strings" />
+		</parameter>
 	</command>
 
 	<command name="denotify">
