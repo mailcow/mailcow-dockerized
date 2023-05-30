@@ -1,5 +1,5 @@
 FROM debian:bullseye-slim
-LABEL maintainer "Andre Peters <andre.peters@tinc.gmbh>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CODENAME=bullseye
