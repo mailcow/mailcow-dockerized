@@ -1,5 +1,5 @@
 FROM alpine:3.17
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 WORKDIR /app
 
