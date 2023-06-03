@@ -6,7 +6,7 @@ SPFTOOLS_DIR=${WORKING_DIR}/spf-tools
 POSTWHITE_DIR=${WORKING_DIR}/postwhite
 POSTWHITE_CONF=${POSTWHITE_DIR}/postwhite.conf
 
-COSTOM_HOSTS="web.de gmx.net mail.de freenet.de arcor.de unity-mail.de"
+CUSTOM_HOSTS='"web.de gmx.net mail.de freenet.de arcor.de unity-mail.de"'
 STATIC_HOSTS=(
     "194.25.134.0/24 permit # t-online.de"
 )
@@ -19,12 +19,19 @@ function set_config() {
     sudo sed -i "s@^\($1\s*=\s*\).*\$@\1$2@" ${POSTWHITE_CONF}
 }
 
-set_config custom_hosts ${COSTOM_HOSTS}
+set_config custom_hosts "${CUSTOM_HOSTS}"
 set_config reload_postfix no
 set_config postfixpath /.
 set_config spftoolspath ${WORKING_DIR}/spf-tools
 set_config whitelist .${SCRIPT_DIR}/../data/conf/postfix/postscreen_access.cidr
 set_config yahoo_static_hosts ${POSTWHITE_DIR}/yahoo_static_hosts.txt
+
+#Fix URL for Yahoo!: https://github.com/stevejenkins/postwhite/issues/59
+sudo sed -i \
+      -e 's#yahoo_url="https://help.yahoo.com/kb/SLN23997.html"#yahoo_url="https://senders.yahooinc.com/outbound-mail-servers/"#' \
+      -e 's#echo "ipv6:$line";#echo "ipv6:$line" | grep -v "ipv6:::";#' \
+      -e 's#`command -v wget`#`command -v skip-wget`#' \
+      ${POSTWHITE_DIR}/scrape_yahoo
 
 cd ${POSTWHITE_DIR}
 ./postwhite ${POSTWHITE_CONF}

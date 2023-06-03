@@ -1,5 +1,5 @@
 FROM php:8.2-fpm-alpine3.17
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced
 ARG APCU_PECL_VERSION=5.1.22

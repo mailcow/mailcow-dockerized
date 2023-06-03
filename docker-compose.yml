@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.83
+      image: mailcow/phpfpm:1.84
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -216,7 +216,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.23
+      image: mailcow/dovecot:1.24
       depends_on:
         - mysql-mailcow
       dns:
@@ -510,7 +510,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.03
+      image: mailcow/dockerapi:2.04
       security_opt:
         - label=disable
       restart: always
