@@ -1,2 +1,6 @@
-listen ${HTTPS_PORT} ssl http2;
-listen [::]:${HTTPS_PORT} ssl http2;
+listen ${HTTPS_PORT} ssl;
+listen [::]:${HTTPS_PORT} ssl;
+
+listen ${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port
+listen [::]:${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port
+add_header Alt-Svc 'h3=":${HTTPS_PORT}"; ma=86400';
