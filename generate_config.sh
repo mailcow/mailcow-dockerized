@@ -449,6 +449,7 @@ ACME_CONTACT=
 WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 
 # Spamhaus Data Query Service Key
+# Optional: Leave empty for none
 # Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist. 
 # If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.
 # Otherwise it will work normally.
