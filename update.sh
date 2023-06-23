@@ -256,18 +256,20 @@ fi
 }
 
 detect_bad_asn() {
-  if curl -s http://fuzzy.mailcow.email/asn_list.txt | grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1); then
+  if curl -s http://fuzzy.mailcow.email/asn_list.txt | grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1) > /dev/null ; then
     if [ -z "$SPAMHAUS_DQS_KEY" ]; then
-      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
-      echo -e "\e[31mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!"
+      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
+      echo -e "\e[33mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!\e[0m"
+      sleep 2
       echo ""
-      echo -e "\e[31mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account"
-      echo -e "\e[31mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!"
+      echo -e "\e[33mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account\e[0m"
+      echo -e "\e[33mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!\e[0m"
+      echo ""
       sleep 2
 
     else
-      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
-      echo -e "\e[33mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key..."
+      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
+      echo -e "\e[32mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key...\e[0m"
     fi
   fi
 }
