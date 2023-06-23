@@ -662,6 +662,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "ADDITIONAL_SERVER_NAMES" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Additional server names for mailcow UI' >> mailcow.conf
       echo '#' >> mailcow.conf
       echo '# Specify alternative addresses for the mailcow UI to respond to' >> mailcow.conf
@@ -673,6 +674,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Lets Encrypt registration contact information' >> mailcow.conf
       echo '# Optional: Leave empty for none' >> mailcow.conf
       echo '# This value is only used on first order!' >> mailcow.conf
@@ -682,6 +684,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "WEBAUTHN_ONLY_TRUSTED_VENDORS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo "# WebAuthn device manufacturer verification" >> mailcow.conf
       echo '# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed' >> mailcow.conf
       echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
@@ -689,7 +692,9 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "SPAMHAUS_DQS_KEY" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo "# Spamhaus Data Query Service Key" >> mailcow.conf
+      echo '# Optional: Leave empty for none' >> mailcow.conf
       echo '# Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist.' >> mailcow.conf
       echo '# If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.' >> mailcow.conf
       echo '# Otherwise it will work as usual.' >> mailcow.conf
@@ -697,6 +702,7 @@ for option in ${CONFIG_ARRAY[@]}; do
     fi
   elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Enable watchdog verbose logging' >> mailcow.conf
       echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
     fi
