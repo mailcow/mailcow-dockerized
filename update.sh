@@ -255,6 +255,23 @@ elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
 fi
 }
 
+detect_bad_asn() {
+  if curl -s http://fuzzy.mailcow.email/asn_list.txt | grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1); then
+    if [ -z "$SPAMHAUS_DQS_KEY" ]; then
+      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
+      echo -e "\e[31mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!"
+      echo ""
+      echo -e "\e[31mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account"
+      echo -e "\e[31mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!"
+      sleep 2
+
+    else
+      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
+      echo -e "\e[33mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key..."
+    fi
+  fi
+}
+
 ############## End Function Section ##############
 
 # Check permissions
@@ -301,7 +318,7 @@ umask 0022
 unset COMPOSE_COMMAND
 unset DOCKER_COMPOSE_VERSION
 
-for bin in curl docker git awk sha1sum; do
+for bin in curl docker git awk sha1sum grep cut whois; do
   if [[ -z $(command -v ${bin}) ]]; then 
   echo "Cannot find ${bin}, exiting..." 
   exit 1;
@@ -442,7 +459,10 @@ CONFIG_ARRAY=(
   "ACME_CONTACT"
   "WATCHDOG_VERBOSE"
   "WEBAUTHN_ONLY_TRUSTED_VENDORS"
+  "SPAMHAUS_DQS_KEY"
 )
+
+detect_bad_asn
 
 sed -i --follow-symlinks '$a\' mailcow.conf
 for option in ${CONFIG_ARRAY[@]}; do
@@ -659,7 +679,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
       echo '# https://docs.mailcow.email/troubleshooting/debug-reset_tls/' >> mailcow.conf
       echo 'ACME_CONTACT=' >> mailcow.conf
-  fi
+    fi
   elif [[ ${option} == "WEBAUTHN_ONLY_TRUSTED_VENDORS" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "# WebAuthn device manufacturer verification" >> mailcow.conf
@@ -667,11 +687,19 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates' >> mailcow.conf
       echo 'WEBAUTHN_ONLY_TRUSTED_VENDORS=n' >> mailcow.conf
     fi
-elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
+  elif [[ ${option} == "SPAMHAUS_DQS_KEY" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "# Spamhaus Data Query Service Key" >> mailcow.conf
+      echo '# Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist.' >> mailcow.conf
+      echo '# If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.' >> mailcow.conf
+      echo '# Otherwise it will work as usual.' >> mailcow.conf
+      echo 'SPAMHAUS_DQS_KEY=' >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_VERBOSE" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo '# Enable watchdog verbose logging' >> mailcow.conf
       echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
-  fi
+    fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
