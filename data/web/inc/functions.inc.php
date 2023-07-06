@@ -2126,7 +2126,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
         $_data['periodic_sync'] = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
         $_data['import_users'] = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
-        $required_settings = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users');
+        $required_settings = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
       } else if ($_data['authsource'] == "generic-oidc") {
         $required_settings = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
       }

@@ -771,10 +771,10 @@ jQuery(function($){
     return mailcow_alert_box(lang_danger.iam_test_connection, 'danger');
   });
 
-  $('.iam_rolemap_add').click(async function(e){
+  $('.iam_rolemap_add_keycloak').click(async function(e){
     e.preventDefault();
 
-    var parent = $('#iam_mapping_list')
+    var parent = $('#iam_keycloak_mapping_list')
     $(parent).children().last().clone().appendTo(parent);
     var newChild = $(parent).children().last();
     $(newChild).find('input').val('');
@@ -784,17 +784,42 @@ jQuery(function($){
     $(newChild).find('select').selectpicker('destroy');
     $(newChild).find('select').selectpicker();
 
-    $('.iam_rolemap_del').off('click');
-    $('.iam_rolemap_del').click(async function(e){
+    $('.iam_keycloak_rolemap_del').off('click');
+    $('.iam_keycloak_rolemap_del').click(async function(e){
       e.preventDefault();
-      if ($(this).parent().parent().children().length > 1)
-        $(this).parent().remove();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
     });
   });
-  $('.iam_rolemap_del').click(async function(e){
+  $('.iam_rolemap_add_generic').click(async function(e){
     e.preventDefault();
-    if ($(this).parent().parent().children().length > 1)
-      $(this).parent().remove();
+
+    var parent = $('#iam_generic_mapping_list')
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_generic_rolemap_del').off('click');
+    $('.iam_generic_rolemap_del').click(async function(e){
+      e.preventDefault();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
+    });
+  });
+  $('.iam_keycloak_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
+  });
+  $('.iam_generic_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
   });
   // selecting identity provider
   $('#iam_provider').on('change', function(){
