@@ -18,7 +18,6 @@ if (file_exists('../../../web/inc/vars.local.inc.php')) {
 }
 require_once '../../../web/inc/lib/vendor/autoload.php';
 
-// Do not show errors, we log to using error_log
 ini_set('error_reporting', 0);
 // Init database
 //$dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
@@ -32,8 +31,8 @@ try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
-  error_log("MAILCOWAUTH: " . $e . PHP_EOL);
-  http_response_code(501);
+  $return = array("success" => false, "role" => '');
+  echo json_encode($return); 
   exit;
 }
 
@@ -48,7 +47,9 @@ $iam_provider = identity_provider('init');
 $result = check_login($post['username'], $post['password'], $post['protocol'], true);
 if ($result) {
   $return = array("success" => true, "role" => $result);
+} else {
+  $return = array("success" => false, "role" => '');
 }
 
 echo json_encode($return); 
-exit();
+exit;
