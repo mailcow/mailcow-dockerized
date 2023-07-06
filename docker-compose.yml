@@ -123,6 +123,7 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/phpfpm/crons:/crons:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
@@ -167,6 +168,11 @@ services:
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
       restart: always
+      labels:
+        ofelia.enabled: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
