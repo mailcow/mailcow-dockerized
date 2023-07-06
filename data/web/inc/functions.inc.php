@@ -2537,6 +2537,20 @@ function get_logs($application, $lines = false) {
       return $data_array;
     }
   }
+  if ($application == "cron-mailcow") {
+    if (isset($from) && isset($to)) {
+      $data = $redis->lRange('CRON_LOG', $from - 1, $to - 1);
+    }
+    else {
+      $data = $redis->lRange('CRON_LOG', 0, $lines);
+    }
+    if ($data) {
+      foreach ($data as $json_line) {
+        $data_array[] = json_decode($json_line, true);
+      }
+      return $data_array;
+    }
+  }
   if ($application == "postfix-mailcow") {
     if (isset($from) && isset($to)) {
       $data = $redis->lRange('POSTFIX_MAILLOG', $from - 1, $to - 1);
