@@ -817,6 +817,66 @@ jQuery(function($){
       hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
     });
   }
+  function draw_cron_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#cron_log') ) {
+      $('#cron_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    var table = $('#cron_log').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-cron-logs', '#cron_log');
+      },
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/cron",
+        dataSrc: function(data){
+          return process_table_data(data, 'general_syslog');
+        }
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
+          }
+        },
+        {
+          title: lang.task,
+          data: 'task',
+          defaultContent: ''
+        },
+        {
+          title: lang.priority,
+          data: 'priority',
+          defaultContent: ''
+        },
+        {
+          title: lang.message,
+          data: 'message',
+          defaultContent: '',
+          className: 'dtr-col-md text-break'
+        }
+      ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-cron-logs', '#cron_log');
+    });
+  }
   function rspamd_pie_graph() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
@@ -1222,6 +1282,7 @@ jQuery(function($){
   onVisible("[id^=ui_logs]", () => draw_ui_logs());
   onVisible("[id^=sasl_logs]", () => draw_sasl_logs());
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
+  onVisible("[id^=cron_log]", () => draw_cron_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 
