@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "14032023_1050";
+    $db_version = "14022023_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1111,7 +1111,7 @@ function init_db_schema() {
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
-        $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE ', `table_schema`, '.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
+        $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE `', `table_schema`, '`.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
           WHERE `constraint_type` = 'FOREIGN KEY' AND `table_name` = :table;");
         $stmt->execute(array(':table' => $table));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

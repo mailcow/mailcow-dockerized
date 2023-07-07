@@ -117,8 +117,8 @@ jQuery(function($){
           data: 'tfa_active',
           defaultContent: '',
             render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -126,8 +126,8 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -260,8 +260,8 @@ jQuery(function($){
           data: 'tfa_active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -269,8 +269,8 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -337,7 +337,7 @@ jQuery(function($){
           data: 'keep_spam',
           defaultContent: '',
           render: function(data, type){
-            return 'yes'==data?'<i class="bi bi-x-lg"></i>':'no'==data&&'<i class="bi bi-check-lg"></i>';
+            return 'yes'==data?'<i class="bi bi-x-lg"><span class="sorting-value">yes</span></i>':'no'==data&&'<i class="bi bi-check-lg"><span class="sorting-value">no</span></i>';
           }
         },
         {
@@ -414,8 +414,8 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -492,8 +492,8 @@ jQuery(function($){
           data: 'active',
           defaultContent: '',
           render: function (data, type) {
-            if(data == 1) return '<i class="bi bi-check-lg"></i>';
-            else return '<i class="bi bi-x-lg"></i>';
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {

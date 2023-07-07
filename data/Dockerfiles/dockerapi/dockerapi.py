@@ -9,6 +9,7 @@ import os
 import json
 import asyncio
 import redis
+import platform
 from datetime import datetime
 import logging
 from logging.config import dictConfig
@@ -370,7 +371,7 @@ class DockerUtils:
         return exec_run_handler('utf8_text_only', sieve_return)
   # api call: container_post - post_action: exec - cmd: sieve - task: print
   def container_post__exec__sieve__print(self, container_id, request_json):
-    if 'username' in request.json and 'script_name' in request_json:
+    if 'username' in request_json and 'script_name' in request_json:
       for container in self.docker_client.containers.list(filters={"id": container_id}):
         cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]  
         sieve_return = container.exec_run(cmd)
@@ -380,7 +381,15 @@ class DockerUtils:
     if 'maildir' in request_json:
       for container in self.docker_client.containers.list(filters={"id": container_id}):
         sane_name = re.sub(r'\W+', '', request_json['maildir'])
-        cmd = ["/bin/bash", "-c", "if [[ -d '/var/vmail/" + request_json['maildir'].replace("'", "'\\''") + "' ]]; then /bin/mv '/var/vmail/" + request_json['maildir'].replace("'", "'\\''") + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"]
+        vmail_name = request_json['maildir'].replace("'", "'\\''")
+        cmd_vmail = "if [[ -d '/var/vmail/" + vmail_name + "' ]]; then /bin/mv '/var/vmail/" + vmail_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "'; fi"
+        index_name = request_json['maildir'].split("/")
+        if len(index_name) > 1:
+          index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
+          cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail/_garbage/" + str(int(time.time())) + "_" + sane_name + "_index'; fi"
+          cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        else:
+          cmd = ["/bin/bash", "-c", cmd_vmail]
         maildir_cleanup = container.exec_run(cmd, user='vmail')
         return exec_run_handler('generic', maildir_cleanup)
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
@@ -477,7 +486,8 @@ async def get_host_stats(wait=5):
         "swap": psutil.swap_memory()
       },
       "uptime": time.time() - psutil.boot_time(),
-      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S")
+      "system_time": system_time.strftime("%d.%m.%Y %H:%M:%S"),
+      "architecture": platform.machine()
     }
 
     redis_client.set('host_stats', json.dumps(host_stats), ex=10)

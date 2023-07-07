@@ -1,3 +1,13 @@
+const LOCALE = undefined;
+const DATETIME_FORMAT = {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+};
+
 $(document).ready(function() {
   // mailcow alert box generator
   window.mailcow_alert_box = function(message, type) {

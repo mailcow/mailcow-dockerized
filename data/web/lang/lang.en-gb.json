@@ -178,10 +178,12 @@
         "empty": "No results",
         "excludes": "Excludes these recipients",
         "f2b_ban_time": "Ban time (s)",
+        "f2b_ban_time_increment": "Ban time is incremented with each ban",
         "f2b_blacklist": "Blacklisted networks/hosts",
         "f2b_filter": "Regex filters",
         "f2b_list_info": "A blacklisted host or network will always outweigh a whitelist entity. <b>List updates will take a few seconds to be applied.</b>",
         "f2b_max_attempts": "Max. attempts",
+        "f2b_max_ban_time": "Max. ban time (s)",
         "f2b_netban_ipv4": "IPv4 subnet size to apply ban on (8-32)",
         "f2b_netban_ipv6": "IPv6 subnet size to apply ban on (8-128)",
         "f2b_parameters": "Fail2ban parameters",
@@ -238,7 +240,7 @@
         "loading": "Please wait...",
         "login_time": "Login time",
         "logo_info": "Your image will be scaled to a height of 40px for the top navigation bar and a max. width of 250px for the start page. A scalable graphic is highly recommended.",
-        "lookup_mx": "Destination is a regular expression to match against MX name (<code>.*google\\.com</code> to route all mail targeted to a MX ending in google.com over this hop)",
+        "lookup_mx": "Destination is a regular expression to match against MX name (<code>.*\\.google\\.com</code> to route all mail targeted to a MX ending in google.com over this hop)",
         "main_name": "\"mailcow UI\" name",
         "merged_vars_hint": "Greyed out rows were merged from <code>vars.(local.)inc.php</code> and cannot be modified.",
         "message": "Message",
@@ -522,6 +524,7 @@
         }
     },
     "debug": {
+        "architecture": "Architecture",
         "chart_this_server": "Chart (this server)",
         "containers_info": "Container information",
         "container_running": "Running",
@@ -558,7 +561,8 @@
         "update_available": "There is an update available",
         "no_update_available": "The System is on the latest version",
         "update_failed": "Could not check for an Update",
-        "username": "Username"
+        "username": "Username",
+        "wip": "Currently Work in Progress"
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
@@ -617,7 +621,7 @@
         "inactive": "Inactive",
         "kind": "Kind",
         "last_modified": "Last modified",
-        "lookup_mx": "Destination is a regular expression to match against MX name (<code>.*google\\.com</code> to route all mail targeted to a MX ending in google.com over this hop)",
+        "lookup_mx": "Destination is a regular expression to match against MX name (<code>.*\\.google\\.com</code> to route all mail targeted to a MX ending in google.com over this hop)",
         "mailbox": "Edit mailbox",
         "mailbox_quota_def": "Default mailbox quota",
         "mailbox_relayhost_info": "Applied to the mailbox and direct aliases only, does override a domain relayhost.",
@@ -736,7 +740,7 @@
     },
     "login": {
         "delayed": "Login was delayed by %s seconds.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
         "other_logins": "Key login",

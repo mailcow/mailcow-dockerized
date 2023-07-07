@@ -24,7 +24,7 @@
         "spam_policy": "Liste Noire/Liste Blanche",
         "spam_score": "Score SPAM",
         "syncjobs": "Tâches de synchronisation",
-        "tls_policy": "Police TLS",
+        "tls_policy": "Politique TLS",
         "unlimited_quota": "Quota illimité pour les boites de courriel",
         "domain_desc": "Modifier la description du domaine",
         "domain_relayhost": "Changer le relais pour un domaine",
@@ -106,7 +106,8 @@
         "validate": "Valider",
         "validation_success": "Validation réussie",
         "bcc_dest_format": "La destination Cci doit être une seule adresse e-mail valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
-        "tags": "Etiquettes"
+        "tags": "Etiquettes",
+        "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application"
     },
     "admin": {
         "access": "Accès",
@@ -171,11 +172,13 @@
         "edit": "Editer",
         "empty": "Aucun résultat",
         "excludes": "Exclure ces destinataires",
-        "f2b_ban_time": "Durée du bannissement(s)",
+        "f2b_ban_time": "Durée du bannissement (s)",
+        "f2b_ban_time_increment": "Durée du bannissement est augmentée à chaque bannissement",
         "f2b_blacklist": "Réseaux/Domaines sur Liste Noire",
         "f2b_filter": "Filtre(s) Regex",
         "f2b_list_info": "Un hôte ou un réseau sur liste noire l'emportera toujours sur une entité de liste blanche. <b>L'application des mises à jour de liste prendra quelques secondes.</b>",
         "f2b_max_attempts": "Nb max. de tentatives",
+        "f2b_max_ban_time": "Max. durée du bannissement (s)",
         "f2b_netban_ipv4": "Taille du sous-réseau IPv4 pour l'application du bannissement (8-32)",
         "f2b_netban_ipv6": "Taille du sous-réseau IPv6 pour l'application du bannissement (8-128)",
         "f2b_parameters": "Paramètres Fail2ban",
@@ -321,7 +324,9 @@
         "admins": "Administrateurs",
         "api_read_only": "Accès lecture-seule",
         "password_policy_lowerupper": "Doit contenir des caractères minuscules et majuscules",
-        "password_policy_numbers": "Doit contenir au moins un chiffre"
+        "password_policy_numbers": "Doit contenir au moins un chiffre",
+        "ip_check": "Vérification IP",
+        "ip_check_disabled": "La vérification IP est désactivée. Vous pouvez l'activer sous<br> <strong>Système > Configuration > Options > Personnaliser</strong>"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -440,7 +445,12 @@
         "username_invalid": "Le nom d'utilisateur %s ne peut pas être utilisé",
         "validity_missing": "Veuillez attribuer une période de validité",
         "value_missing": "Veuillez fournir toutes les valeurs",
-        "yotp_verification_failed": "La vérification Yubico OTP a échoué : %s"
+        "yotp_verification_failed": "La vérification Yubico OTP a échoué : %s",
+        "webauthn_authenticator_failed": "L'authentificateur selectionné est introuvable",
+        "demo_mode_enabled": "Le mode de démonstration est activé",
+        "template_exists": "La template %s existe déja",
+        "template_id_invalid": "Le numéro de template %s est invalide",
+        "template_name_invalid": "Le nom de la template est invalide"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -578,7 +588,7 @@
         "unchanged_if_empty": "Si non modifié, laisser en blanc",
         "username": "Nom d'utilisateur",
         "validate_save": "Valider et sauver",
-        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut).",
+        "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*\\.google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
         "mailbox_relayhost_info": "S'applique uniquement à la boîte aux lettres et aux alias directs, remplace le relayhost du domaine."
     },
     "footer": {
@@ -612,7 +622,7 @@
     },
     "login": {
         "delayed": "La connexion a été retardée de %s secondes.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Connexion",
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte pour télécharger le profil de connexion Apple demandé.",
         "other_logins": "Clé d'authentification",
@@ -1081,9 +1091,12 @@
         "username": "Nom d'utilisateur",
         "verify": "Vérification",
         "waiting": "En attente",
-        "week": "Semaine",
+        "week": "semaine",
         "weekly": "Hebdomadaire",
-        "weeks": "semaines"
+        "weeks": "semaines",
+        "months": "mois",
+        "year": "année",
+        "years": "années"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",

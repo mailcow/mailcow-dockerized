@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=25.0.3
+NEXTCLOUD_VERSION=26.0.1
 
-for bin in curl dirmngr; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+echo -ne "Checking prerequisites..."
+sleep 1
+for bin in curl dirmngr tar bzip2; do
+  if [[ -z $(which ${bin}) ]]; then echo -ne "\r\033[31mCannot find ${bin}, exiting...\033[0m\n"; exit 1; fi
 done
+echo -ne "\r\033[32mFound all prerequisites! Continuing...\033[0m\n"
 
 [[ -z ${1} ]] && NC_HELP=y
 
@@ -94,8 +97,12 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     echo -e "\033[31mError: Nextcloud occ not found. Is Nextcloud installed?\033[0m"
     exit 1
   fi
-  if ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
-    echo "Nextcloud seems not to be installed."
+  if grep -Pq 'This version of Nextcloud is not compatible with (?:PHP)?(?>=?)(?:PHP)?(?>.+)' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo -e "\033[31mError: This version of Nextcloud is not compatible with the current PHP version of php-fpm-mailcow, we'll fix it\033[0m"
+    wget -q https://raw.githubusercontent.com/nextcloud/server/v26.0.0/lib/versioncheck.php -O ./data/web/nextcloud/lib/versioncheck.php
+	echo -e "\e[33mPlease restart the update again.\e[0m"
+  elif ! grep -q 'installed: true' <<<$(docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "/web/nextcloud/occ --no-warnings status"); then
+    echo -e "\033[31mError: Nextcloud seems not to be installed.\033[0m"
     exit 1
   else
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "php /web/nextcloud/updater/updater.phar"
@@ -119,7 +126,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     && chmod +x ./data/web/nextcloud/occ
 
   echo -e "\033[33mCreating 'nextcloud' database...\033[0m"
-  NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+  NC_DBPASS=$(</dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
   NC_DBUSER=nextcloud
   NC_DBNAME=nextcloud
 
@@ -135,7 +142,7 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
 
   echo ""
   echo -e "\033[33mInstalling Nextcloud...\033[0m"
-  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 | head -c 28)
+  ADMIN_NC_PASS=$(</dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
   echo -ne "[1/4] Setting correct permissions for www-data"
   docker exec -it $(docker ps -f name=php-fpm-mailcow -q) /bin/bash -c "chown -R www-data:www-data /web/nextcloud"
@@ -215,5 +222,4 @@ elif [[ ${NC_RESETPW} == "y" ]]; then
       read -p "Enter the username: " NC_USER
     done
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ user:resetpassword ${NC_USER}
-
 fi

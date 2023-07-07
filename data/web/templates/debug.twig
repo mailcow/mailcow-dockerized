@@ -51,6 +51,12 @@
                         </div></td>
                       </tr>
                       <tr>
+                        <td>{{ lang.debug.architecture }}</td>
+                        <td class="text-break"><div>
+                          <p id="host_architecture">-</p>
+                        </div></td>
+                      </tr>
+                      <tr>
                         <td>IPs</td>
                         <td class="text-break">
                           {% if ip_check == 1 %}
@@ -71,7 +77,7 @@
                         <td>Version</td>
                         <td class="text-break">
                           <div class="fw-bolder">
-                            <p ><a href="#" id="maiclow_version">{{ mailcow_info.version_tag }}</a></p>
+                            <p ><a href="#" id="mailcow_version">{{ mailcow_info.version_tag }}</a></p>
                             <p id="mailcow_update"></p>
                           </div>
                         </td>
@@ -613,7 +619,7 @@
               <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="rl_log" data-table="rl_log" href="#">{{ lang.datatables.expand_all }}</a></li>
               <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="rl_log" data-table="rl_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
-            <p class="text-muted">{{ lang.admin.hash_remove_info }}</p>
+            <p class="text-muted">{{ lang.admin.hash_remove_info|raw }}</p>
             <table id="rl_log" class="table table-striped dt-responsive w-100"></table>
           </div>
         </div>

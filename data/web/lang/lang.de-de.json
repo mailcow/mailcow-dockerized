@@ -176,10 +176,12 @@
         "empty": "Keine Einträge vorhanden",
         "excludes": "Diese Empfänger ausschließen",
         "f2b_ban_time": "Bannzeit in Sekunden",
+        "f2b_ban_time_increment": "Bannzeit erhöht sich mit jedem Bann",
         "f2b_blacklist": "Blacklist für Netzwerke und Hosts",
         "f2b_filter": "Regex-Filter",
         "f2b_list_info": "Ein Host oder Netzwerk auf der Blacklist wird immer eine Whitelist-Einheit überwiegen. <b>Die Aktualisierung der Liste dauert einige Sekunden.</b>",
         "f2b_max_attempts": "Max. Versuche",
+        "f2b_max_ban_time": "Maximale Bannzeit in Sekunden",
         "f2b_netban_ipv4": "Netzbereich für IPv4-Banns (8-32)",
         "f2b_netban_ipv6": "Netzbereich für IPv6-Banns (8-128)",
         "f2b_parameters": "Fail2ban-Parameter",
@@ -215,7 +217,7 @@
         "loading": "Bitte warten...",
         "login_time": "Zeit",
         "logo_info": "Die hochgeladene Grafik wird für die Navigationsleiste auf eine Höhe von 40px skaliert. Für die Darstellung auf der Login-Maske beträgt die skalierte Breite maximal 250px. Eine frei skalierbare Grafik (etwa SVG) wird empfohlen.",
-        "lookup_mx": "Ziel mit MX vergleichen (Regex, etwa <code>.*google\\.com</code>, um alle Ziele mit MX *google.com zu routen)",
+        "lookup_mx": "Ziel mit MX vergleichen (Regex, etwa <code>.*\\.google\\.com</code>, um alle Ziele mit MX *google.com zu routen)",
         "main_name": "\"mailcow UI\" Name",
         "merged_vars_hint": "Ausgegraute Reihen wurden aus der Datei <code>vars.(local.)inc.php</code> gelesen und können hier nicht verändert werden.",
         "message": "Nachricht",
@@ -498,6 +500,7 @@
         }
     },
     "debug": {
+        "architecture": "Architektur",
         "chart_this_server": "Chart (dieser Server)",
         "containers_info": "Container-Information",
         "container_running": "Läuft",
@@ -534,7 +537,8 @@
         "update_available": "Es ist ein Update verfügbar",
         "no_update_available": "Das System ist auf aktuellem Stand",
         "update_failed": "Es konnte nicht nach einem Update gesucht werden",
-        "username": "Benutzername"
+        "username": "Benutzername",
+        "wip": "Aktuell noch in Arbeit"
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
@@ -593,7 +597,7 @@
         "inactive": "Inaktiv",
         "kind": "Art",
         "last_modified": "Zuletzt geändert",
-        "lookup_mx": "Ziel mit MX vergleichen (Regex, etwa <code>.*google\\.com</code>, um alle Ziele mit MX *google.com zu routen)",
+        "lookup_mx": "Ziel mit MX vergleichen (Regex, etwa <code>.*\\.google\\.com</code>, um alle Ziele mit MX *google.com zu routen)",
         "mailbox": "Mailbox bearbeiten",
         "mailbox_quota_def": "Standard-Quota einer Mailbox",
         "mailbox_relayhost_info": "Wird auf eine Mailbox und direkte Alias-Adressen angewendet. Überschreibt die Einstellung einer Domain.",
@@ -712,7 +716,7 @@
     },
     "login": {
         "delayed": "Login wurde zur Sicherheit um %s Sekunde/n verzögert.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Anmelden",
         "mobileconfig_info": "Bitte als Mailbox-Benutzer einloggen, um das Verbindungsprofil herunterzuladen.",
         "other_logins": "Key Login",

@@ -4,15 +4,15 @@
         "app_passwds": "Administrer app-adgangskoder",
         "bcc_maps": "BCC kort",
         "delimiter_action": "Afgrænsning handling",
-        "eas_reset": "Nulstil EAS endheder",
+        "eas_reset": "Nulstil EAS enheder",
         "extend_sender_acl": "Tillad at udvide afsenderens ACL med eksterne adresser",
         "filters": "Filtre",
         "login_as": "Login som mailboks bruger",
-        "prohibited": "Forbudt af ACL",
-        "protocol_access": "Ændre protokol adgang",
+        "prohibited": "Nægtet af ACL",
+        "protocol_access": "Skift protokol adgang",
         "pushover": "Pushover",
-        "quarantine": "Karantæneaktioner",
-        "quarantine_attachments": "Karantæne vedhæftede filer",
+        "quarantine": "Karantænehandlinger",
+        "quarantine_attachments": "Karantænevedhæftede filer",
         "quarantine_notification": "Skift karantænemeddelelser",
         "ratelimit": "Satsgrænse",
         "recipient_maps": "Modtagerkort",
@@ -20,12 +20,15 @@
         "sogo_access": "Tillad styring af SOGo-adgang",
         "sogo_profile_reset": "Nulstil SOGo-profil",
         "spam_alias": "Midlertidige aliasser",
-        "spam_policy": "Sortliste / hvidliste",
+        "spam_policy": "Sortliste/hvidliste",
         "spam_score": "Spam-score",
         "syncjobs": "Synkroniserings job",
         "tls_policy": "TLS politik",
         "unlimited_quota": "Ubegrænset plads for mailbokse",
-        "domain_desc": "Skift domæne beskrivelse"
+        "domain_desc": "Skift domæne beskrivelse",
+        "domain_relayhost": "Skift relæ host for et domæne",
+        "mailbox_relayhost": "Skift relæ-host for en postkasse",
+        "quarantine_category": "Skift kategorien for karantænemeddelelse"
     },
     "add": {
         "activate_filter_warn": "Alle andre filtre deaktiveres, når aktiv er markeret.",
@@ -59,7 +62,7 @@
         "gal": "Global adresseliste",
         "gal_info": "GAL indeholder alle objekter i et domæne og kan ikke redigeres af nogen bruger. Information om ledig / optaget i SOGo mangler, hvis deaktiveret! <b> Genstart SOGo for at anvende ændringer. </b>",
         "generate": "generere",
-        "goto_ham": "Lær som <span class=\"text-success\"><b>ham</b></span>",
+        "goto_ham": "Lær som <span class=\"text-success\"><b>ønsket</b></span>",
         "goto_null": "Kassér e-mail i stilhed",
         "goto_spam": "Lær som <span class=\"text-danger\"><b>spam</b></span>",
         "hostname": "Vært",
@@ -80,7 +83,7 @@
         "private_comment": "Privat kommentar",
         "public_comment": "Offentlig kommentar",
         "quota_mb": "Kvota (Mb)",
-        "relay_all": "Send alle modtagere videre",
+        "relay_all": "Besvar alle modtager",
         "relay_all_info": "↪ Hvis du vælger <b> ikke </b> at videresende alle modtagere, skal du tilføje et (\"blind\") postkasse til hver enkelt modtager, der skal videresendes.",
         "relay_domain": "Send dette domæne videre",
         "relay_transport_info": "<div class=\"badge fs-6 bg-info\">Info</div> Du kan definere transportkort til en tilpasset destination for dette domæne. Hvis ikke indstillet, foretages der et MX-opslag.",
@@ -101,7 +104,10 @@
         "timeout2": "Timeout for forbindelse til lokal vært",
         "username": "Brugernavn",
         "validate": "Bekræft",
-        "validation_success": "Valideret med succes"
+        "validation_success": "Valideret med succes",
+        "bcc_dest_format": "BCC-destination skal være en enkelt gyldig e-mail-adresse.<br>Hvis du har brug for at sende en kopi til flere adresser, kan du oprette et alias og bruge det her.",
+        "app_passwd_protocols": "Tilladte protokoller for app adgangskode",
+        "tags": "Tag's"
     },
     "admin": {
         "access": "Adgang",
@@ -308,7 +314,10 @@
         "username": "Brugernavn",
         "validate_license_now": "Valider GUID mod licensserver",
         "verify": "Verificere",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "ip_check_opt_in": "Opt-In for brug af tredjepartstjeneste <strong>ipv4.mailcow.email</strong> og <strong>ipv6.mailcow.email</strong> til at finde eksterne IP-adresser.",
+        "queue_unban": "unban",
+        "admins": "Administratorer"
     },
     "danger": {
         "access_denied": "Adgang nægtet eller ugyldig formular data",
@@ -425,7 +434,8 @@
         "username_invalid": "Brugernavn %s kan ikke bruges",
         "validity_missing": "Tildel venligst en gyldighedsperiode",
         "value_missing": "Angiv alle værdier",
-        "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s"
+        "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s",
+        "webauthn_publickey_failed": "Der er ikke gemt nogen offentlig nøgle for den valgte autentifikator"
     },
     "debug": {
         "chart_this_server": "Diagram (denne server)",
@@ -442,7 +452,8 @@
         "solr_status": "Solr-status",
         "started_on": "Startede den",
         "static_logs": "Statiske logfiler",
-        "system_containers": "System og Beholdere"
+        "system_containers": "System og Beholdere",
+        "error_show_ip": "Kunne ikke finde de offentlige IP-adresser"
     },
     "diagnostics": {
         "cname_from_a": "Værdi afledt af A / AAAA-post. Dette understøttes, så længe posten peger på den korrekte ressource.",
@@ -553,7 +564,11 @@
         "title": "Rediger objekt",
         "unchanged_if_empty": "Lad være tomt, hvis uændret",
         "username": "Brugernavn",
-        "validate_save": "Valider og gem"
+        "validate_save": "Valider og gem",
+        "admin": "Rediger administrator",
+        "lookup_mx": "Destination er et regulært udtryk, der matcher MX-navnet (<code>.*google\\.dk</code> for at dirigere al e-mail, der er målrettet til en MX, der ender på google.dk, over dette hop)",
+        "mailbox_relayhost_info": "Anvendt på postkassen og kun direkte aliasser, og overskriver et domæne relæ-host.",
+        "quota_warning_bcc": "Kvoteadvarsel BCC"
     },
     "footer": {
         "cancel": "Afbestille",
@@ -571,7 +586,7 @@
     "header": {
         "administration": "Konfiguration og detailer",
         "apps": "Apps",
-        "debug": "Systemoplysninger",
+        "debug": "Information",
         "email": "E-Mail",
         "mailcow_config": "Konfiguration",
         "quarantine": "Karantæne",
@@ -586,7 +601,7 @@
     },
     "login": {
         "delayed": "Login blev forsinket med% s sekunder.",
-        "fido2_webauthn": "FIDO2/WebAuthn",
+        "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Log ind som postkassebruger for at downloade den anmodede Apple-forbindelsesprofil.",
         "other_logins": "Nøgle login",
@@ -739,7 +754,10 @@
         "username": "Brugernavn",
         "waiting": "Venter",
         "weekly": "Ugentlig",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "goto_ham": "Lær som <b>ønsket</b>",
+        "catch_all": "Fang-alt",
+        "open_logs": "Åben logfiler"
     },
     "oauth2": {
         "access_denied": "Log ind som mailboks ejer for at give adgang via OAuth2.",
@@ -1030,7 +1048,7 @@
         "spamfilter_table_empty": "Intet data at vise",
         "spamfilter_table_remove": "slet",
         "spamfilter_table_rule": "Regl",
-        "spamfilter_wl": "Hvisliste",
+        "spamfilter_wl": "Hvidliste",
         "spamfilter_wl_desc": "Hvidlistede e-mail-adresser til <b>aldrig</b> at klassificeres som spam. Wildcards kan bruges. Et filter anvendes kun på direkte aliaser (aliaser med en enkelt målpostkasse) eksklusive catch-aliaser og selve en postkasse.",
         "spamfilter_yellow": "Gul: denne besked kan være spam, vil blive tagget som spam og flyttes til din junk-mappe",
         "status": "Status",
@@ -1066,5 +1084,11 @@
         "quota_exceeded_scope": "Domænekvote overskredet: Kun ubegrænsede postkasser kan oprettes i dette domæneomfang.",
         "session_token": "Form nøgle ugyldig: Nøgle passer ikke",
         "session_ua": "Form nøgle ugyldig: Bruger-Agent gyldighedskontrols fejl"
+    },
+    "datatables": {
+        "lengthMenu": "Vis _MENU_ poster",
+        "paginate": {
+            "first": "Først"
+        }
     }
 }
