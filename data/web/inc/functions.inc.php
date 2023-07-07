@@ -2123,12 +2123,17 @@ function identity_provider($_action, $_data = null, $_extra = null) {
       }
 
       if ($_data['authsource'] == "keycloak") {
+        $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
         $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
-        $_data['periodic_sync'] = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
-        $_data['import_users'] = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
-        $required_settings = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
+        $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
+        $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+        $_data['sync_interval']     = isset($_data['sync_interval']) ? intval($_data['sync_interval']) : 15;
+        $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
       } else if ($_data['authsource'] == "generic-oidc") {
-        $required_settings = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
+        $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? rtrim($_data['authorize_url'], '/') : null;
+        $_data['token_url']         = (!empty($_data['token_url'])) ? rtrim($_data['token_url'], '/') : null;
+        $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? rtrim($_data['userinfo_url'], '/') : null;
+        $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
       }
       
       $pdo->beginTransaction();
@@ -2206,6 +2211,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
       ));
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 7);
       curl_setopt($curl, CURLOPT_POST, 1);
       curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
       curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
@@ -2413,6 +2419,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         ));
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 7);
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
@@ -2435,6 +2442,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
       ));
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 7);
       curl_setopt($curl, CURLOPT_POST, 1);
       curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
       curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
