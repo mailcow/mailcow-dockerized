@@ -182,37 +182,34 @@ function mailcow_mbox_login($user, $pass, $app_passwd_data = false, $is_internal
   foreach ($rows as $row) { 
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
-      if (!array_key_exists("app_passwd_id", $row)){ 
-        // password is not a app password
-        // check for tfa authenticators
-        $authenticators = get_tfa($user);
-        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
-          // authenticators found, init TFA flow
-          $_SESSION['pending_mailcow_cc_username'] = $user;
-          $_SESSION['pending_mailcow_cc_role'] = "user";
-          $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+      // check for tfa authenticators
+      $authenticators = get_tfa($user);
+      if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
+        // authenticators found, init TFA flow
+        $_SESSION['pending_mailcow_cc_username'] = $user;
+        $_SESSION['pending_mailcow_cc_role'] = "user";
+        $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+        unset($_SESSION['ldelay']);
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $user, '*'),
+          'msg' => array('logged_in_as', $user)
+        );
+        return "pending";
+      } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
+        // no authenticators found, login successfull
+        if (!$is_internal){
           unset($_SESSION['ldelay']);
+          // Reactivate TFA if it was set to "deactivate TFA for next login"
+          $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
+          $stmt->execute(array(':user' => $user));
           $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $user, '*'),
             'msg' => array('logged_in_as', $user)
           );
-          return "pending";
-        } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
-          // no authenticators found, login successfull
-          if (!$is_internal){
-            unset($_SESSION['ldelay']);
-            // Reactivate TFA if it was set to "deactivate TFA for next login"
-            $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
-            $stmt->execute(array(':user' => $user));
-            $_SESSION['return'][] =  array(
-              'type' => 'success',
-              'log' => array(__FUNCTION__, $user, '*'),
-              'msg' => array('logged_in_as', $user)
-            );
-          }
-          return "user";
         }
+        return "user";
       }
     }
   }
