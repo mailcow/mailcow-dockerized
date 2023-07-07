@@ -4930,7 +4930,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($mailbox_details['domain']) && !empty($mailbox_details['local_part'])) {
               $maildir = $mailbox_details['domain'] . '/' . $mailbox_details['local_part'];
               $exec_fields = array('cmd' => 'maildir', 'task' => 'cleanup', 'maildir' => $maildir);
-              docker('broadcast', 'dovecot-mailcow', 'exec', $exec_fields);
+
+              if (getenv("CLUSTERMODE") == "replication") {
+                // broadcast to each dovecot container
+                docker('broadcast', 'dovecot-mailcow', 'exec', $exec_fields);
+              } else {
+                $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+                if ($maildir_gc['type'] != 'success') {
+                  $_SESSION['return'][] = array(
+                    'type' => 'warning',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => 'Could not move maildir to garbage collector: ' . $maildir_gc['msg']
+                  );
+                }
+              }
             }
             else {
               $_SESSION['return'][] = array(
