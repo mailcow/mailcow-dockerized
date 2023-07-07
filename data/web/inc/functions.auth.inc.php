@@ -299,6 +299,7 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $is_internal = fa
   $queryParams = array('email' => $user, 'exact' => true);
   $queryString = http_build_query($queryParams);
   $curl = curl_init();
+  curl_setopt($curl, CURLOPT_TIMEOUT, 7);
   curl_setopt($curl, CURLOPT_URL, $url . '?' . $queryString);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
@@ -309,6 +310,12 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $is_internal = fa
   $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
   if ($code != 200) {
+    return false;
+  }
+  if (!isset($user_res['attributes']['mailcow_password']) || !is_array($user_res['attributes']['mailcow_password'])){
+    return false;
+  }
+  if (empty($user_res['attributes']['mailcow_password'][0])){
     return false;
   }
 
