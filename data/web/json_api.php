@@ -503,6 +503,15 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
+        break;          
+        case "fail2ban":
+          if (!isset($_SESSION['mailcow_cc_role'])){
+            switch ($object) {
+              case 'banlist':
+                echo fail2ban('banlist', 'get', $extra);
+              break;
+            }
+          }
         break;
       }
       if (isset($_SESSION['mailcow_cc_role'])) {
@@ -1324,6 +1333,9 @@ if (isset($_GET['query'])) {
           break;
           case "fail2ban":
             switch ($object) {
+              case 'banlist':
+                echo fail2ban('banlist', 'get', $extra);
+              break;
               default:
                 $data = fail2ban('get');
                 process_get_return($data);
@@ -1930,7 +1942,14 @@ if (isset($_GET['query'])) {
           process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
         break;
         case "fail2ban":
-          process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+          switch ($object) {
+            case 'banlist':
+              process_edit_return(fail2ban('banlist', 'refresh', $items));
+            break;
+            default:
+              process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+            break;
+          }
         break;
         case "ui_texts":
           process_edit_return(customize('edit', 'ui_texts', $attr));

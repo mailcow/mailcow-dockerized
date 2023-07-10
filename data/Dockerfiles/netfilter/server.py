@@ -16,6 +16,7 @@ import json
 import iptc
 import dns.resolver
 import dns.exception
+import uuid
 
 while True:
   try:
@@ -94,6 +95,7 @@ def verifyF2boptions(f2boptions):
   verifyF2boption(f2boptions,'retry_window', 600)
   verifyF2boption(f2boptions,'netban_ipv4', 32)
   verifyF2boption(f2boptions,'netban_ipv6', 128)
+  verifyF2boption(f2boptions,'banlist_id', str(uuid.uuid4()))
 
 def verifyF2boption(f2boptions, f2boption, f2bdefault):
   f2boptions[f2boption] = f2boptions[f2boption] if f2boption in f2boptions and f2boptions[f2boption] is not None else f2bdefault
