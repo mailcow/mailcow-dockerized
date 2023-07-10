@@ -526,8 +526,9 @@ function logger($_data = false) {
           ':remote' => get_remote_ip()
         ));
       }
-      catch (Exception $e) {
-        // Do nothing
+      catch (PDOException $e) {
+        # handle the exception here, as the exception handler function results in a white page
+        error_log($e->getMessage(), 0);
       }
     }
   }
