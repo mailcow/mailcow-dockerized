@@ -1173,7 +1173,7 @@ jQuery(function($){
 
     if (table = $('#' + log_table).DataTable()) {
       var heading = $('#' + log_table).closest('.card').find('.card-header');
-      var load_rows = (table.data().length + 1) + '-' + (table.data().length + new_nrows)
+      var load_rows = (table.data().count() + 1) + '-' + (table.data().count() + new_nrows)
 
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
