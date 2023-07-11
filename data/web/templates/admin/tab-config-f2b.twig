@@ -42,6 +42,13 @@
             <input type="number" class="form-control" id="f2b_netban_ipv6" name="netban_ipv6" value="{{ f2b_data.netban_ipv6 }}" required>
           </div>
         </div>
+        <div class="mb-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="f2b_manage_external" value="1" name="manage_external" {% if f2b_data.manage_external == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="f2b_manage_external">{{ lang.admin.f2b_manage_external }}</label>
+          </div>
+          <p class="text-muted">{{ lang.admin.f2b_manage_external_info }}</p>
+        </div>
         <hr>
         <p class="text-muted">{{ lang.admin.f2b_list_info|raw }}</p>
         <div class="mb-2">

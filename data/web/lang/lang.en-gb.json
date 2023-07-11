@@ -185,6 +185,8 @@
         "f2b_blacklist": "Blacklisted networks/hosts",
         "f2b_filter": "Regex filters",
         "f2b_list_info": "A blacklisted host or network will always outweigh a whitelist entity. <b>List updates will take a few seconds to be applied.</b>",
+        "f2b_manage_external": "Manage Fail2Ban externally",
+        "f2b_manage_external_info": "Fail2ban will still maintain the banlist, but it will not actively set rules to block traffic. Use the generated banlist below to externally block the traffic.",
         "f2b_max_attempts": "Max. attempts",
         "f2b_max_ban_time": "Max. ban time (s)",
         "f2b_netban_ipv4": "IPv4 subnet size to apply ban on (8-32)",
