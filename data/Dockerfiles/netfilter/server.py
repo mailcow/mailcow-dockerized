@@ -258,49 +258,35 @@ def permBan(net, unban=False):
   global f2boptions
   global lock
   if type(ipaddress.ip_network(net, strict=False)) is ipaddress.IPv4Network:
-    if int(f2boptions['manage_external']) != 1:
-      with lock:
-        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
-        rule = iptc.Rule()
-        rule.src = net
-        target = iptc.Target(rule, "REJECT")
-        rule.target = target
-        if rule not in chain.rules and not unban:
-          logCrit('Add host/network %s to blacklist' % net)
-          chain.insert_rule(rule)
-          r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
-        elif rule in chain.rules and unban:
-          logCrit('Remove host/network %s from blacklist' % net)
-          chain.delete_rule(rule)
-          r.hdel('F2B_PERM_BANS', '%s' % net)
-    elif not unban:
-      logCrit('Add host/network %s to blacklist' % net)
-      r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
-    elif unban:
-      logCrit('Remove host/network %s from blacklist' % net)
-      r.hdel('F2B_PERM_BANS', '%s' % net)
+    with lock:
+      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
+      rule = iptc.Rule()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule not in chain.rules and not unban and int(f2boptions['manage_external']) != 1:
+        logCrit('Add host/network %s to blacklist' % net)
+        chain.insert_rule(rule)
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
+      elif rule in chain.rules and unban:
+        logCrit('Remove host/network %s from blacklist' % net)
+        chain.delete_rule(rule)
+        r.hdel('F2B_PERM_BANS', '%s' % net)
   else:
-    if int(f2boptions['manage_external']) != 1:
-      with lock:
-        chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
-        rule = iptc.Rule6()
-        rule.src = net
-        target = iptc.Target(rule, "REJECT")
-        rule.target = target
-        if rule not in chain.rules and not unban:
-          logCrit('Add host/network %s to blacklist' % net)
-          chain.insert_rule(rule)
-          r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
-        elif rule in chain.rules and unban:
-          logCrit('Remove host/network %s from blacklist' % net)
-          chain.delete_rule(rule)
-          r.hdel('F2B_PERM_BANS', '%s' % net)
-    elif not unban:
-      logCrit('Add host/network %s to blacklist' % net)
-      r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
-    elif unban:
-      logCrit('Remove host/network %s from blacklist' % net)
-      r.hdel('F2B_PERM_BANS', '%s' % net)
+    with lock:
+      chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), 'MAILCOW')
+      rule = iptc.Rule6()
+      rule.src = net
+      target = iptc.Target(rule, "REJECT")
+      rule.target = target
+      if rule not in chain.rules and not unban and int(f2boptions['manage_external']) != 1:
+        logCrit('Add host/network %s to blacklist' % net)
+        chain.insert_rule(rule)
+        r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
+      elif rule in chain.rules and unban:
+        logCrit('Remove host/network %s from blacklist' % net)
+        chain.delete_rule(rule)
+        r.hdel('F2B_PERM_BANS', '%s' % net)
 
 def quit(signum, frame):
   global quit_now
