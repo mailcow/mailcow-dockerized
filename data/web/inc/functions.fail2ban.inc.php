@@ -342,12 +342,14 @@ function fail2ban($_action, $_data = null, $_extra = null) {
           'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
           'msg' => array('redis_error', $e)
         );
+        http_response_code(500);
         return false;
       }
       if (is_array($_extra)) {
         $_extra = $_extra[0];
       }
       if ($_extra != $f2b_options['banlist_id']){
+        http_response_code(404);
         return false;
       }
 
@@ -363,6 +365,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
               'msg' => array('redis_error', $e)
             );
+            http_response_code(500);
             return false;
           }
           $banlist = implode("\n", array_merge($bl, $active_bans));
