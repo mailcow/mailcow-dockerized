@@ -70,6 +70,7 @@ try {
   }
 }
 catch (Exception $e) {
+http_response_code(500);
 ?>
 <center style='font-family:sans-serif;'>Connection to Redis failed.<br /><br />The following error was reported:<br/><?=$e->getMessage();?></center>
 <?php
