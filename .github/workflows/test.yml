@@ -36,7 +36,7 @@ jobs:
       - name: Prepair Image Builds
         run: |
           cp helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
-          docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
+          docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.yml
       - name: Build Docker Images
         run: |
           docker buildx bake --print
