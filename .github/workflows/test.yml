@@ -48,6 +48,11 @@ jobs:
           target: ${{ fromJson(needs.targets.outputs.matrix) }}
 
       steps:
+      - name: tree
+        run: |
+          sudo apt-get install -y tree
+          tree
+          
       - name: Push Images using BuildX Bake
         uses: docker/bake-action@v2
         with:
