@@ -39,6 +39,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
       - name: Build Docker Images
         run: |
-          docker compose build ${image}
+          docker buildx bake --print
+          #docker compose build ${image}
         env:
           image: ${{ matrix.images }}
