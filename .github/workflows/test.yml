@@ -27,8 +27,8 @@ jobs:
       - name: Create matrix
         id: targets
         run: |
-          docker buildx bake ${{ inputs.group }} -f ${{ inputs.file }} --print
-          TARGETS=$(docker buildx bake ${{ inputs.group }} -f ${{ inputs.file }} --print | jq -cr ".group.${{ inputs.group }}.targets")
+          docker buildx bake --print
+          TARGETS=$(docker buildx bake --print | jq -cr ".group.targets")
           echo "matrix=$TARGETS" >> $GITHUB_OUTPUT  
         
       - name: Show matrix
