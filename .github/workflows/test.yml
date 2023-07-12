@@ -43,7 +43,7 @@ jobs:
       - targets
       
       strategy:
-        fail-fast: true
+        fail-fast: false
         matrix:
           target: ${{ fromJson(needs.targets.outputs.matrix) }}
      
