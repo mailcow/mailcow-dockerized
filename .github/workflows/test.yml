@@ -47,14 +47,14 @@ targets:
         run: |
           echo ${{ steps.targets.outputs.matrix }}
       
-    needs:
-      - targets
+        needs:
+         - targets
 
-    # 2.0 - Build a matrix strategy from the retrieved target list
-    strategy:
-      fail-fast: true
-      matrix:
-        target: ${{ fromJson(needs.targets.outputs.matrix) }}
+        # 2.0 - Build a matrix strategy from the retrieved target list
+        strategy:
+        fail-fast: true
+        matrix:
+          target: ${{ fromJson(needs.targets.outputs.matrix) }}
         
       - name: Push Images using BuildX Bake
         uses: docker/bake-action@v2
