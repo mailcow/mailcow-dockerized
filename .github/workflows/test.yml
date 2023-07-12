@@ -1,0 +1,44 @@
+name: Build mailcow Docker Images
+
+on:
+  push:
+    branches: [ "master", "staging" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  docker_image_builds:
+    strategy:
+      matrix:
+        images:
+          - "acme-mailcow"
+          - "clamd-mailcow"
+          - "dockerapi-mailcow"
+          - "dovecot-mailcow"
+          - "netfilter-mailcow"
+          - "olefy-mailcow"
+          - "php-fpm-mailcow"
+          - "postfix-mailcow"
+          - "rspamd-mailcow"
+          - "sogo-mailcow"
+          - "solr-mailcow"
+          - "unbound-mailcow"
+          - "watchdog-mailcow"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Docker
+        run: |
+          curl -sSL https://get.docker.com/ | CHANNEL=stable sudo sh
+          sudo service docker start
+      - name: Prepair Image Builds
+        run: |
+          cp helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
+          docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
+      - name: Build Docker Images
+        run: |
+          docker compose build ${image}
+        env:
+          image: ${{ matrix.images }}
