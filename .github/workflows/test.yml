@@ -9,12 +9,15 @@ permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  docker_image_builds:
+targets:
+    name: Generate targets list from provided bake file
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.targets.outputs.matrix }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v3      
+          
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -33,9 +36,35 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
           rm -v docker-compose.yml && mv -v docker-compose.override.yml docker-compose.yml
         
-      - name: Build and push
-        uses: docker/bake-action@v3.1.0
+      - name: Create matrix
+        id: targets
+        run: |
+          docker buildx bake ${{ inputs.group }} -f ${{ inputs.file }} --print
+          TARGETS=$(docker buildx bake ${{ inputs.group }} -f ${{ inputs.file }} --print | jq -cr ".group.${{ inputs.group }}.targets")
+          echo "matrix=$TARGETS" >> $GITHUB_OUTPUT  
+        
+      - name: Show matrix
+        run: |
+          echo ${{ steps.targets.outputs.matrix }}
+      
+    needs:
+      - targets
+
+    # 2.0 - Build a matrix strategy from the retrieved target list
+    strategy:
+      fail-fast: true
+      matrix:
+        target: ${{ fromJson(needs.targets.outputs.matrix) }}
+        
+      - name: Push Images using BuildX Bake
+        uses: docker/bake-action@v2
         with:
+          files: |
+            ./${{ inputs.file }}
+             ${{ steps.meta.outputs.bake-file }}
+          targets: ${{ matrix.target }}
           push: false
           set: |
+            *.cache-from=type=gha,scope=build-${{ matrix.target }}
+            *.cache-to=type=gha,scope=build-${{ matrix.target }},mode=max
             *.platform=linux/amd64,linux/arm64
