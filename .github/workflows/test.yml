@@ -52,7 +52,7 @@ jobs:
         uses: docker/bake-action@v2
         with:
           files: |
-             ${{ steps.meta.outputs.bake-file }}
+             docker-compose.yml
           targets: ${{ matrix.target }}
           push: false
           set: |
