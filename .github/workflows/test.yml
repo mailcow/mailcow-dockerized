@@ -51,6 +51,8 @@ jobs:
       - name: Push Images using BuildX Bake
         uses: docker/bake-action@v2
         with:
+          files: |
+             ${{ steps.meta.outputs.bake-file }}
           targets: ${{ matrix.target }}
           push: false
           set: |
