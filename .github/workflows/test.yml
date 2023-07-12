@@ -10,37 +10,32 @@ permissions:
 
 jobs:
   docker_image_builds:
-    strategy:
-      matrix:
-        images:
-          - "acme-mailcow"
-          - "clamd-mailcow"
-          - "dockerapi-mailcow"
-          - "dovecot-mailcow"
-          - "netfilter-mailcow"
-          - "olefy-mailcow"
-          - "php-fpm-mailcow"
-          - "postfix-mailcow"
-          - "rspamd-mailcow"
-          - "sogo-mailcow"
-          - "solr-mailcow"
-          - "unbound-mailcow"
-          - "watchdog-mailcow"
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
       - uses: actions/checkout@v3
-      #- name: Setup Docker
-      #  run: |
-      #    curl -sSL https://get.docker.com/ | CHANNEL=stable sudo sh
-      #    sudo service docker start
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      #- name: Login to Docker Hub
+      #  uses: docker/login-action@v2
+      #  with:
+      #    username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #    password: ${{ secrets.DOCKERHUB_TOKEN }}   
+      
       - name: Prepair Image Builds
         run: |
-          cp helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
+          cp -v helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
           docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
-          rm docker-compose.yml && mv docker-compose.override.yml docker-compose.yml
-      - name: Build Docker Images
-        run: |
-          docker buildx bake --print
-          #docker compose build ${image}
-        env:
-          image: ${{ matrix.images }}
+          rm -v docker-compose.yml && mv -v docker-compose.override.yml docker-compose.yml
+        
+      - name: Build and push
+        uses: docker/bake-action@v3.1.0
+        with:
+          push: false
+          set: |
+            *.platform=linux/amd64,linux/arm64
