@@ -37,7 +37,7 @@ jobs:
       
       
   build:
-      name: Get targets list and build
+      name: Build
       runs-on: ubuntu-latest
       needs:
       - targets
@@ -51,9 +51,6 @@ jobs:
       - name: Push Images using BuildX Bake
         uses: docker/bake-action@v2
         with:
-          files: |
-            ./${{ inputs.file }}
-             ${{ steps.meta.outputs.bake-file }}
           targets: ${{ matrix.target }}
           push: false
           set: |
