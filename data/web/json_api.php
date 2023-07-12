@@ -508,6 +508,7 @@ if (isset($_GET['query'])) {
           if (!isset($_SESSION['mailcow_cc_role'])){
             switch ($object) {
               case 'banlist':
+                header('Content-Type: text/plain');
                 echo fail2ban('banlist', 'get', $extra);
               break;
             }
@@ -1334,6 +1335,7 @@ if (isset($_GET['query'])) {
           case "fail2ban":
             switch ($object) {
               case 'banlist':
+                header('Content-Type: text/plain');
                 echo fail2ban('banlist', 'get', $extra);
               break;
               default:
