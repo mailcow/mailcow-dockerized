@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Docker
-        run: |
-          curl -sSL https://get.docker.com/ | CHANNEL=stable sudo sh
-          sudo service docker start
+      #- name: Setup Docker
+      #  run: |
+      #    curl -sSL https://get.docker.com/ | CHANNEL=stable sudo sh
+      #    sudo service docker start
       - name: Prepair Image Builds
         run: |
           cp helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
