@@ -28,7 +28,7 @@ jobs:
         id: targets
         run: |
           docker buildx bake --print
-          TARGETS=$(docker buildx bake --print | jq -cr ".group.targets")
+          TARGETS=$(docker buildx bake --print | jq -cr ".group.default.targets")
           echo "matrix=$TARGETS" >> $GITHUB_OUTPUT  
         
       - name: Show matrix
