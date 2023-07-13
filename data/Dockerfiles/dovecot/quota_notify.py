@@ -2,6 +2,7 @@
 
 import smtplib
 import os
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
@@ -30,6 +31,13 @@ while True:
     time.sleep(3)
   else:
     break
+
+now = datetime.now().toordinal()
+if r.hget('QW_TIME', username):
+  last_notified = int(r.hget('QW_TIME', username))
+  if now - last_notified == 0:
+    print(f"{username} notified recently, not sending notification.")
+    sys.exit(0)
 
 if r.get('QW_HTML'):
   try:
@@ -82,6 +90,8 @@ try:
 except Exception as ex:
   print('Failed to send quota notification: %s' % (ex))
   sys.exit(1)
+
+r.hset("QW_TIME", username, now)
 
 try:
   sys.stdout.close()
