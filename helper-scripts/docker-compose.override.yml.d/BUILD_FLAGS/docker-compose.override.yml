@@ -13,11 +13,7 @@ services:
     build: ./data/Dockerfiles/phpfpm
 
   sogo-mailcow:
-    build:
-      context: ./data/Dockerfiles/sogo
-      dockerfile: Dockerfile
-      args:
-        - SOGO_DEBIAN_REPOSITORY=http://packages.inverse.ca/SOGo/nightly/5/debian/
+    build: ./data/Dockerfiles/sogo
 
   dovecot-mailcow:
     build: ./data/Dockerfiles/dovecot
