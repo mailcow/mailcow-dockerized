@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   targets:
-      name: Generate targets list from provided bake file
+      name: Generate targets list
       runs-on: ubuntu-latest
       outputs:
         matrix: ${{ steps.targets.outputs.matrix }}
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      - name: Prepair Image Builds
+      - name: Prepare bake file
         run: |
           cp -v helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
           docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
@@ -63,16 +63,24 @@ jobs:
       #    username: ${{ secrets.DOCKERHUB_USERNAME }}
       #    password: ${{ secrets.DOCKERHUB_TOKEN }}  
       
-       - name: Prepair Image Builds
+       - name: Prepare bake file
          run: |
           cp -v helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.preride.yml
           docker compose -f docker-compose.yml -f docker-compose.preride.yml config > docker-compose.override.yml
           rm -v docker-compose.yml && mv -v docker-compose.override.yml docker-compose.yml
           
-       - name: Push Images using BuildX Bake
+       - name: Build images (linux/amd64)
          uses: docker/bake-action@v2
          with:
            targets: ${{ matrix.target }}
            push: false
            set: |
-             *.platform=linux/amd64,linux/arm64
+             *.platform=linux/amd64
+             
+       - name: Build images (linux/arm64)
+         uses: docker/bake-action@v2
+         with:
+           targets: ${{ matrix.target }}
+           push: false
+           set: |
+             *.platform=linux/arm64
