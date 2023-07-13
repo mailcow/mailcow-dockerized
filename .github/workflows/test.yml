@@ -17,6 +17,8 @@ jobs:
       steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: 'feat/arm64-cow'
       
       - name: Prepare bake file
         run: |
@@ -50,6 +52,8 @@ jobs:
       steps:
        - name: Checkouts
          uses: actions/checkout@v3
+         with:
+           ref: 'feat/arm64-cow'
       
        - name: Set up QEMU
          uses: docker/setup-qemu-action@v2
