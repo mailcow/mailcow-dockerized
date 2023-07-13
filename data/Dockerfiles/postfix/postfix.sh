@@ -423,6 +423,9 @@ if [ -n "$SPAMHAUS_DQS_KEY" ]; then
       dnsbl.sorbs.net=127.0.0.6*2
       dnsbl.sorbs.net=127.0.0.9*2
       ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.[4..7]*6
+      ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.org=127.0.0.[10;11]*8
+      ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.org=127.0.0.3*4
+      ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.org=127.0.0.2*3
       ${SPAMHAUS_DQS_KEY}.dbl.dq.spamhaus.net=127.0.0.3*4
       ${SPAMHAUS_DQS_KEY}.zrd.dq.spamhaus.net=127.0.0.2*3
 EOF
