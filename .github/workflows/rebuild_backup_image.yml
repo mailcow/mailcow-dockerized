@@ -29,6 +29,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           file: data/Dockerfiles/backup/Dockerfile
           push: true
           tags: mailcow/backup:latest
