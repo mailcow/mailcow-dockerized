@@ -99,9 +99,9 @@
             </a>
             ({{ active_ban.banned_until }}) -
             {% if active_ban.queued_for_unban == 0 %}
-            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
-            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
+            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
+            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}
