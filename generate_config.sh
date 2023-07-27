@@ -33,7 +33,7 @@ if docker compose > /dev/null 2>&1; then
       sleep 2
       echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
@@ -46,14 +46,14 @@ elif docker-compose > /dev/null 2>&1; then
       sleep 2
       echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
   fi
 
 else
-  echo -e "\e[31mCannot find Docker Compose.\e[0m" 
+  echo -e "\e[31mCannot find Docker Compose.\e[0m"
   echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
@@ -173,7 +173,7 @@ else
   echo -e "\033[31mCould not determine branch input..."
   echo -e "\033[31mExiting."
   exit 1
-fi  
+fi
 
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
@@ -430,6 +430,9 @@ ACME_CONTACT=
 # After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed
 # root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates
 WEBAUTHN_ONLY_TRUSTED_VENDORS=n
+
+# To mount rootless docker.sock we need to know current user id
+CURRENT_USER_ID=$UID
 
 EOF
 
