@@ -58,13 +58,13 @@
       <div class="row">
         <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.aliases_send_as_all }}:</div>
         <div class="col-sm-8 col-md-9 col-12">
-          <p>{% if not user_get_alias_details.aliases_send_as_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
+          <p>{% if not user_get_alias_details.aliases_send_as_all %}<i class="bi bi-x-lg"></i>{% else %}{{ user_get_alias_details.aliases_send_as_all }}{% endif %}</p>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.is_catch_all }}:</div>
         <div class="col-sm-8 col-md-9 col-12">
-          <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% endif %}</p>
+          <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% else %}{{ user_get_alias_details.is_catch_all }}{% endif %}</p>
         </div>
       </div>
     </div>
