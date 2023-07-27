@@ -92,16 +92,16 @@
       {% endif %}
       {% for active_ban in f2b_data.active_bans %}
         <p>
-          <span class="badge fs-5 bg-info" style="padding:4px;font-size:85%;">
+          <span class="badge fs-5 bg-info py-0">
             <i class="bi bi-funnel-fill"></i>
             <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank" style="color:white">
               {{ active_ban.network }}
             </a>
             ({{ active_ban.banned_until }}) -
             {% if active_ban.queued_for_unban == 0 %}
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
+            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
+            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+            <a class="btn btn-lg btn-link p-0" style="color: #6fc7e9" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}
