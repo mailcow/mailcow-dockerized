@@ -59,7 +59,7 @@ else
 fi
 
 detect_bad_asn() {
-  if [[ curl -s http://fuzzy.mailcow.email/asn_list.txt |  grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1) ]]; then
+  if curl -s http://fuzzy.mailcow.email/asn_list.txt | grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1) > /dev/null; then
     if ! $SPAMHAUS_DQS_KEY; then
       echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
       echo -e "\e[31mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!"
