@@ -192,5 +192,16 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       }
       return false;
     break;
+    case 'broadcast':
+      $request = array(
+        "api_call" => "container_post",
+        "container_name" => $service_name,
+        "post_action" => $attr1,
+        "request" => $attr2
+      );
+
+      $redis->publish("MC_CHANNEL", json_encode($request));
+      return true;
+    break;
   }
 }
