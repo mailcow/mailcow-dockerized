@@ -32,8 +32,12 @@
                         data-style="btn btn-secondary"
                         name="authsource" class="full-width-select form-control" required>
                           <option value="mailcow" {% if result.authsource == "mailcow" %}selected{% endif %}>mailcow</option>
+                          {% if iam_settings.authsource == 'keycloak' %}
                           <option value="keycloak" {% if result.authsource == "keycloak" %}selected{% endif %}>Keycloak</option>
+                          {% endif %}
+                          {% if iam_settings.authsource == 'generic-oidc' %}
                           <option value="generic-oidc" {% if result.authsource == "generic-oidc" %}selected{% endif %}>Generic-OIDC</option>
+                          {% endif %}
                       </select>
                     </div>
                   </div>
