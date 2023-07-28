@@ -21,7 +21,7 @@ if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep 
 if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
 if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
 
-for bin in openssl curl docker git awk sha1sum; do
+for bin in openssl curl docker git awk sha1sum grep cut whois; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
@@ -57,6 +57,23 @@ else
   echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
+
+detect_bad_asn() {
+  if [[ curl -s http://fuzzy.mailcow.email/asn_list.txt |  grep $(whois -h whois.radb.net $(curl -s http://ipv4.mailcow.email) | grep -i origin | tr -s " " | cut -d " " -f2 | head -1) ]]; then
+    if ! $SPAMHAUS_DQS_KEY; then
+      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
+      echo -e "\e[31mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!"
+      echo ""
+      echo -e "\e[31mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account"
+      echo -e "\e[31mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!"
+      sleep 2
+
+    else
+      echo -e "\e[31mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS blocklists for Postfix."
+      echo -e "\e[33mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key..."
+    fi
+  fi
+}
 
 ### If generate_config.sh is started with --dev or -d it will not check out nightly or master branch and will keep on the current branch
 if [[ ${1} == "--dev" || ${1} == "-d" ]]; then
@@ -431,6 +448,13 @@ ACME_CONTACT=
 # root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates
 WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 
+# Spamhaus Data Query Service Key
+# Optional: Leave empty for none
+# Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist. 
+# If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.
+# Otherwise it will work normally.
+SPAMHAUS_DQS_KEY=
+
 EOF
 
 mkdir -p data/assets/ssl
@@ -503,3 +527,5 @@ else
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
+
+detect_bad_asn
