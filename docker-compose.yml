@@ -297,7 +297,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.68
+      image: mailcow/postfix:1.69
       depends_on:
         - mysql-mailcow
       volumes:
@@ -317,6 +317,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       cap_add:
         - NET_BIND_SERVICE
       ports:
