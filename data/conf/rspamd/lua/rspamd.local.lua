@@ -340,6 +340,10 @@ rspamd_config:register_symbol({
       if not bcc_dest then
         return -- stop
       end
+      -- dot stuff content before sending
+      local email_content = tostring(task:get_content())
+      email_content = string.gsub(email_content, "\r\n%.", "\r\n..")
+      -- send mail
       lua_smtp.sendmail({
         task = task,
         host = os.getenv("IPV4_NETWORK") .. '.253',
@@ -347,8 +351,8 @@ rspamd_config:register_symbol({
         from = task:get_from(stp)[1].addr,
         recipients = bcc_dest,
         helo = 'bcc',
-        timeout = 10,
-      }, task:get_content(), sendmail_cb)
+        timeout = 20,
+      }, email_content, sendmail_cb)
     end
 
     -- determine from

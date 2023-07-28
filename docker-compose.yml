@@ -162,6 +162,7 @@ services:
         - DEV_MODE=${DEV_MODE:-n}
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
+        - CLUSTERMODE=${CLUSTERMODE:-}
       restart: always
       networks:
         mailcow-network:
@@ -510,7 +511,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.04
+      image: mailcow/dockerapi:2.05
       security_opt:
         - label=disable
       restart: always
