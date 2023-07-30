@@ -539,6 +539,9 @@ echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > 
 
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 
+# Append postscreen dnsbl sites to main.cf
+cat /opt/postfix/conf/dns_blocklists.cf >> /opt/postfix/conf/main.cf
+
 if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
   echo "Creating dummy custom_transport.pcre"
   touch /opt/postfix/conf/custom_transport.pcre
