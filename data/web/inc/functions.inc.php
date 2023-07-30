@@ -2122,6 +2122,21 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         return false;
       }
 
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+          WHERE `authsource` != 'mailcow'
+          AND `authsource` IS NOT NULL
+          AND `authsource` != :authsource");  
+      $stmt->execute(array(':authsource' => $_data['authsource']));
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($rows) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $data_log),
+          'msg' => array('authsource_in_use', $setting)
+        );
+        return false;
+      }
+
       if ($_data['authsource'] == "keycloak") {
         $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
         $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
@@ -2235,9 +2250,26 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         return false;
       }
       
-      $stmt = $pdo->prepare("DELETE FROM identity_provider;");
-      $stmt->execute();
+      $stmt = $pdo->query("SELECT * FROM `mailbox`
+          WHERE `authsource` != 'mailcow'
+          AND `authsource` IS NOT NULL");
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($rows) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $data_log),
+          'msg' => array('authsource_in_use', $setting)
+        );
+        return false;
+      }
 
+      $stmt = $pdo->query("DELETE FROM identity_provider;");
+
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $data_log),
+        'msg' => array('item_deleted', '')
+      );
       return true;
     break;
     case "init":
