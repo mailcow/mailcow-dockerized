@@ -387,6 +387,7 @@
         "aliases_in_use": "Max. aliases must be greater or equal to %d",
         "app_name_empty": "App name cannot be empty",
         "app_passwd_id_invalid": "App password ID %s invalid",
+        "authsource_in_use": "The identity provider cannot be changed or deleted as it is currently in use by one or more users.",
         "bcc_empty": "BCC destination cannot be empty",
         "bcc_exists": "A BCC map %s exists for type %s",
         "bcc_must_be_email": "BCC destination %s is not a valid email address",
