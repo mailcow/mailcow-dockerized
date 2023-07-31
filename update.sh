@@ -257,8 +257,8 @@ fi
 
 detect_bad_asn() {
   echo -e "\e[33mDetecting if your IP is listed on Spamhaus Bad ASN List...\e[0m"
-  response=$(curl --connect-timeout 15 --retry 5 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
-  if [ "$response" -eq 403 ]; then
+  response=$(curl --connect-timeout 15 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
+  if [ "$response" -eq 503 ]; then
     if [ -z "$SPAMHAUS_DQS_KEY" ]; then
       echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
       echo -e "\e[33mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!\e[0m"
