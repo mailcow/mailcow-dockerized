@@ -435,6 +435,10 @@ EOF
   fi
 fi
 
+# Append postscreen dnsbl sites to main.cf
+cat /opt/postfix/conf/dns_blocklists.cf >> /opt/postfix/conf/main.cf
+cat /tmp/spamhaus.cf >> /opt/postfix/conf/main.cf
+
 sed -i '/User overrides/q' /opt/postfix/conf/main.cf
 echo >> /opt/postfix/conf/main.cf
 touch /opt/postfix/conf/extra.cf
@@ -442,10 +446,6 @@ sed -i '/myhostname/d' /opt/postfix/conf/extra.cf
 echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > /opt/postfix/conf/extra.cf
 
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
-
-# Append postscreen dnsbl sites to main.cf
-cat /opt/postfix/conf/dns_blocklists.cf >> /opt/postfix/conf/main.cf
-cat /tmp/spamhaus.cf >> /opt/postfix/conf/main.cf
 
 if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
   echo "Creating dummy custom_transport.pcre"
