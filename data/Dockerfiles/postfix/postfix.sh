@@ -435,11 +435,13 @@ EOF
   fi
 fi
 
+sed -i '/User overrides/q' /opt/postfix/conf/main.cf
+
 # Append postscreen dnsbl sites to main.cf
 cat /opt/postfix/conf/dns_blocklists.cf >> /opt/postfix/conf/main.cf
 cat /tmp/spamhaus.cf >> /opt/postfix/conf/main.cf
 
-sed -i '/User overrides/q' /opt/postfix/conf/main.cf
+# Append user overrides
 echo >> /opt/postfix/conf/main.cf
 touch /opt/postfix/conf/extra.cf
 sed -i '/myhostname/d' /opt/postfix/conf/extra.cf
