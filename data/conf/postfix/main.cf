@@ -169,4 +169,4 @@ smtps_smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks,qmqpd_authorized_clients
 
 # DO NOT EDIT ANYTHING BELOW #
-# User overrides #
+# Overrides #
