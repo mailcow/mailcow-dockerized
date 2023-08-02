@@ -425,11 +425,12 @@ EOF
 fi
 DNSBL_CONFIG=$(grep -v '^#' /opt/postfix/conf/dns_blocklists.cf | grep '\S')
 
-echo -e "\e[33mChecking if ASN for your IP is listed for Spamhaus Bad ASN List...\e[0m"
-if [ -n "$SPAMHAUS_DQS_KEY" ]; then
-  echo -e "\e[32mDetected SPAMHAUS_DQS_KEY variable from mailcow.conf...\e[0m"
-  echo -e "\e[33mUsing DQS Blocklists from Spamhaus!\e[0m"
-  SPAMHAUS_DNSBL_CONFIG=$(cat <<EOF
+if [ ! -z "$DNSBL_CONFIG" ]; then
+  echo -e "\e[33mChecking if ASN for your IP is listed for Spamhaus Bad ASN List...\e[0m"
+  if [ -n "$SPAMHAUS_DQS_KEY" ]; then
+    echo -e "\e[32mDetected SPAMHAUS_DQS_KEY variable from mailcow.conf...\e[0m"
+    echo -e "\e[33mUsing DQS Blocklists from Spamhaus!\e[0m"
+    SPAMHAUS_DNSBL_CONFIG=$(cat <<EOF
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.[4..7]*6
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.[10;11]*8
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.3*4
@@ -437,29 +438,29 @@ if [ -n "$SPAMHAUS_DQS_KEY" ]; then
   ${SPAMHAUS_DQS_KEY}.dbl.dq.spamhaus.net=127.0.0.3*4
   ${SPAMHAUS_DQS_KEY}.zrd.dq.spamhaus.net=127.0.0.2*3
 EOF
-  )
-
-else
-  response=$(curl --connect-timeout 15 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
-  if [ "$response" -eq 503 ]; then
-    echo -e "\e[31mThe AS of your IP is listed as a banned AS from Spamhaus!\e[0m"
-    echo -e "\e[33mNo SPAMHAUS_DQS_KEY found... Skipping Spamhaus blocklists entirely!\e[0m"
-    SPAMHAUS_DNSBL_CONFIG=""
-  elif [ "$response" -eq 200 ]; then
-    echo -e "\e[32mThe AS of your IP is NOT listed as a banned AS from Spamhaus!\e[0m"
-    echo -e "\e[33mUsing the open Spamhaus blocklists.\e[0m"
-    SPAMHAUS_DNSBL_CONFIG=$(cat <<EOF
+    )
+  else
+    response=$(curl --connect-timeout 15 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
+    if [ "$response" -eq 503 ]; then
+      echo -e "\e[31mThe AS of your IP is listed as a banned AS from Spamhaus!\e[0m"
+      echo -e "\e[33mNo SPAMHAUS_DQS_KEY found... Skipping Spamhaus blocklists entirely!\e[0m"
+      SPAMHAUS_DNSBL_CONFIG=""
+    elif [ "$response" -eq 200 ]; then
+      echo -e "\e[32mThe AS of your IP is NOT listed as a banned AS from Spamhaus!\e[0m"
+      echo -e "\e[33mUsing the open Spamhaus blocklists.\e[0m"
+      SPAMHAUS_DNSBL_CONFIG=$(cat <<EOF
   zen.spamhaus.org=127.0.0.[10;11]*8
   zen.spamhaus.org=127.0.0.[4..7]*6
   zen.spamhaus.org=127.0.0.3*4
   zen.spamhaus.org=127.0.0.2*3
 EOF
-    )
+      )
 
-  else
-    echo -e "\e[31mWe couldn't determine your AS... (maybe DNS/Network issue?) Response Code: $response\e[0m"
-    echo -e "\e[33mDeactivating Spamhaus DNS Blocklists to be on the safe site!\e[0m"
-    SPAMHAUS_DNSBL_CONFIG=""
+    else
+      echo -e "\e[31mWe couldn't determine your AS... (maybe DNS/Network issue?) Response Code: $response\e[0m"
+      echo -e "\e[33mDeactivating Spamhaus DNS Blocklists to be on the safe site!\e[0m"
+      SPAMHAUS_DNSBL_CONFIG=""
+    fi
   fi
 fi
 
@@ -467,7 +468,9 @@ fi
 sed -i '/Overrides/q' /opt/postfix/conf/main.cf
 echo >> /opt/postfix/conf/main.cf
 # Append postscreen dnsbl sites to main.cf
-echo -e "${DNSBL_CONFIG}\n${SPAMHAUS_DNSBL_CONFIG}" >> /opt/postfix/conf/main.cf
+if [ ! -z "$DNSBL_CONFIG" ]; then
+  echo -e "${DNSBL_CONFIG}\n${SPAMHAUS_DNSBL_CONFIG}" >> /opt/postfix/conf/main.cf
+fi
 # Append user overrides
 echo -e "\n# User Overrides" >> /opt/postfix/conf/main.cf
 touch /opt/postfix/conf/extra.cf
