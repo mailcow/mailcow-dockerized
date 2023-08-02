@@ -435,8 +435,6 @@ if [ ! -z "$DNSBL_CONFIG" ]; then
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.[10;11]*8
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.3*4
   ${SPAMHAUS_DQS_KEY}.zen.dq.spamhaus.net=127.0.0.2*3
-  ${SPAMHAUS_DQS_KEY}.dbl.dq.spamhaus.net=127.0.0.3*4
-  ${SPAMHAUS_DQS_KEY}.zrd.dq.spamhaus.net=127.0.0.2*3
 EOF
     )
   else
