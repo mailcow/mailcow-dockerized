@@ -99,22 +99,23 @@ RUN addgroup -g 5000 vmail \
   supervisor \
   tzdata \
   wget \
-  git \
-  bison \
-  flex \
-  build-essential \
-  autoconf \
-  automake \
-  libtool \
-  make \
-  default-libmysqlclient-dev \
-  libicu-dev \
-  zlib1g-dev \
-  pkg-config \
-  libsqlite3-dev \
-  liblua5.3-dev
+  dovecot \
+  dovecot-dev \
+  dovecot-lmtpd \
+  dovecot-lua \
+  dovecot-ldap \
+  dovecot-mysql \
+  dovecot-sql \
+  dovecot-submissiond \
+  dovecot-pigeonhole-plugin \
+  dovecot-pop3d \
+  dovecot-fts-solr \
+  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true
 
-# RUN cpan LockFile::Simple
+#RUN cpan LockFile::Simple
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
