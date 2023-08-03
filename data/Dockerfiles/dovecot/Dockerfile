@@ -1,211 +1,128 @@
-FROM debian:bullseye-slim as build
+FROM alpine:3.18
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT_VERSION=2.3.20
-ARG PIGEONHOLE_VERSION=0.5.20
-ENV LC_ALL C
-
-
-# Add groups and users before installing Dovecot to not break compatibility
-RUN touch /etc/default/locale \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  dirmngr \
-  gettext \
-  gnupg2 \
-  jq \
-  libauthen-ntlm-perl \
-  libcgi-pm-perl \
-  libcrypt-openssl-rsa-perl \
-  libcrypt-ssleay-perl \
-  libdata-uniqid-perl \
-  libdbd-mysql-perl \
-  libdbi-perl \
-  libdigest-hmac-perl \
-  libdist-checkconflicts-perl \
-  libencode-imaputf7-perl \
-  libfile-copy-recursive-perl \
-  libfile-tail-perl \
-  libhtml-parser-perl \
-  libio-compress-perl \
-  libio-socket-inet6-perl \
-  libio-socket-ssl-perl \
-  libio-tee-perl \
-  libipc-run-perl \
-  libjson-webtoken-perl \
-  liblockfile-simple-perl \
-  libmail-imapclient-perl \
-  libmodule-implementation-perl \
-  libmodule-scandeps-perl \
-  libnet-ssleay-perl \
-  libpackage-stash-perl \
-  libpackage-stash-xs-perl \
-  libpar-packer-perl \
-  libparse-recdescent-perl \
-  libproc-processtable-perl \
-  libreadonly-perl \
-  libregexp-common-perl \
-  libsys-meminfo-perl \
-  libterm-readkey-perl \
-  libtest-deep-perl \
-  libtest-fatal-perl \
-  libtest-mock-guard-perl \
-  libtest-mockobject-perl \
-  libtest-nowarnings-perl \
-  libtest-pod-perl \
-  libtest-requires-perl \
-  libtest-simple-perl \
-  libtest-warn-perl \
-  libtry-tiny-perl \
-  libunicode-string-perl \
-  liburi-perl \
-  libwww-perl \
-  libstemmer-dev \
-  libexttextcat-dev \
-  libldap-dev \
-  libghc-bzlib-dev \
-  lua-sql-mysql \
-  liblz4-dev \
-  libzstd-dev \
-  libexpat-dev \
-  lua-socket \
-  mariadb-client \
-  procps \
-  wget \
-  git \
-  bison \
-  flex \
-  build-essential \
-  autoconf \
-  automake \
-  libtool \
-  make \
-  default-libmysqlclient-dev \
-  libicu-dev \
-  zlib1g-dev \
-  pkg-config \
-  libsqlite3-dev \
-  liblua5.3-dev
-
-RUN cd /tmp && wget https://github.com/dovecot/core/archive/refs/tags/${DOVECOT_VERSION}.tar.gz && tar -xzf ${DOVECOT_VERSION}.tar.gz && cd core-${DOVECOT_VERSION} \
-  && ./autogen.sh \
-  && PANDOC=false ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-ssldir=/etc/ssl --enable-maintainer-mode --with-sql=yes --with-lua=yes --with-mysql --with-ldap --with-solr --with-zstd --with-lz4 --with-ssl=openssl --with-notify=inotify --with-bzlib --with-zlib --enable-hardening --with-stemmer --with-textcat --with-icu \
-  && make -j6 \
-  && make install \
-  && make clean
-
-RUN cd /tmp && wget https://github.com/dovecot/pigeonhole/archive/refs/tags/${PIGEONHOLE_VERSION}.tar.gz && tar -xzf ${PIGEONHOLE_VERSION}.tar.gz && cd pigeonhole-${PIGEONHOLE_VERSION} \
-  && ./autogen.sh \
-  && ./configure --with-dovecot=/usr/lib/dovecot --with-managesieve\ 
-  && make -j6 \
-  && make install \
-  && make clean
-
-FROM debian:bullseye-slim
-LABEL maintainer "The Infrastructure Company <info@servercow.de>"
 ARG GOSU_VERSION=1.16
 
-RUN groupadd -g 5000 vmail \
-  && groupadd -g 401 dovecot \
-  && groupadd -g 402 dovenull \
-  && groupadd -g 999 sogo \
-  && usermod -a -G sogo nobody \
-  && useradd -g vmail -u 5000 vmail -d /var/vmail \
-  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
-  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull \
-  && apt update && apt install lua-socket \
-  mariadb-client \
-  libstemmer-dev \
-  libexttextcat-dev \
-  libicu-dev \
-  libsqlite3-dev \
-  liblua5.3-dev \
-  lua-sql-mysql \
-  libldap-dev \
-  libssl-dev \
-  wget \
-  procps \
-  python3-pip \
-  redis-server \
-  supervisor \
-  syslog-ng \
-  syslog-ng-core \
-  syslog-ng-mod-redis \
-  cpanminus \
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
+# Add groups and users before installing Dovecot to not break compatibility
+RUN addgroup -g 5000 vmail \
+  && addgroup -g 401 dovecot \
+  && addgroup -g 402 dovenull \
+  && sed -i "s/999/99/" /etc/group \
+  && addgroup -g 999 sogo \
+  && addgroup nobody sogo \
+  && adduser -D -u 5000 -G vmail -h /var/vmail vmail \
+  && adduser -D -G dovecot -u 401 -h /dev/null -s /sbin/nologin dovecot \
+  && adduser -D -G dovenull -u 402 -h /dev/null -s /sbin/nologin dovenull \
+  && apk add --no-cache --update \
+  build-base \
+  bash \
+  bind-tools \
+  ca-certificates \
   curl \
-  libauthen-ntlm-perl \
-  libcgi-pm-perl \
-  libcrypt-openssl-rsa-perl \
-  libcrypt-ssleay-perl \
-  libdata-uniqid-perl \
-  libdbd-mysql-perl \
-  libdbi-perl \
-  libdigest-hmac-perl \
-  libdist-checkconflicts-perl \
-  libencode-imaputf7-perl \
-  libfile-copy-recursive-perl \
-  libfile-tail-perl \
-  libhtml-parser-perl \
-  libio-compress-perl \
-  libio-socket-inet6-perl \
-  libio-socket-ssl-perl \
-  libio-tee-perl \
-  libipc-run-perl \
-  libjson-webtoken-perl \
-  liblockfile-simple-perl \
-  libmail-imapclient-perl \
-  libmodule-implementation-perl \
-  libmodule-scandeps-perl \
-  libnet-ssleay-perl \
-  libpackage-stash-perl \
-  libpackage-stash-xs-perl \
-  libpar-packer-perl \
-  libparse-recdescent-perl \
-  libproc-processtable-perl \
-  libreadonly-perl \
-  libregexp-common-perl \
-  libsys-meminfo-perl \
-  libterm-readkey-perl \
-  libtest-deep-perl \
-  libtest-fatal-perl \
-  libtest-mock-guard-perl \
-  libtest-mockobject-perl \
-  libtest-nowarnings-perl \
-  libtest-pod-perl \
-  libtest-requires-perl \
-  libtest-simple-perl \
-  libtest-warn-perl \
-  libtry-tiny-perl \
-  libunicode-string-perl \
-  liburi-perl \
-  libwww-perl \
-  dnsutils \
-  build-essential \
-  gettext-base -y --no-install-recommends \
-  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+  cyrus-sasl-dev \
+  gcc \
+  gettext-dev \
+  gnupg \
+  gnupg-dirmngr \
+  jq \
+  libintl \
+  libssl1.1 \
+  libstdc++ \
+  libxml2-dev \
+  lua \
+  lua-cjson \
+  lua-socket \
+  lua-sql-mysql \
+  lua5.3-sql-mysql \
+  make \
+  mariadb-connector-c \
+  mariadb-dev \
+  glib-dev \
+  gcompat \
+  mariadb-client \
+# libressl-dev \
+  openssl-dev \
+  pcre-dev \
+  perl \
+  perl-dev \
+  perl-ntlm \
+  perl-cgi \
+  perl-crypt-openssl-rsa \
+  perl-utils \
+  perl-crypt-ssleay \
+  perl-data-uniqid \
+  perl-dbd-mysql \
+  perl-dbi \
+  perl-digest-hmac \
+  perl-dist-checkconflicts \
+  perl-encode-imaputf7 \
+  perl-file-copy-recursive \
+  perl-file-tail \
+  perl-io-socket-inet6 \
+  perl-io-gzip \
+  perl-io-socket-ssl \
+  perl-io-tee \
+  perl-ipc-run \
+  perl-json-webtoken \
+  perl-mail-imapclient \
+  perl-module-implementation \
+  perl-module-scandeps \
+  perl-net-ssleay \
+  perl-package-stash \
+  perl-package-stash-xs \
+  perl-par-packer \
+  perl-parse-recdescent \
+  libproc \
+  perl-readonly \
+  perl-regexp-common \
+  perl-sys-meminfo \
+  perl-term-readkey \
+  perl-test-deep \
+  perl-test-fatal \
+  perl-test-mockobject \
+  perl-test-mock-guard \
+  perl-test-pod \
+  perl-test-requires \
+  perl-test-simple \
+  perl-test-warn \
+  perl-try-tiny \
+  perl-unicode-string \
+  perl-proc-processtable \
+  perl-app-cpanminus \
+  procps \
+  python3 \
+  python3-dev \
+  py3-pip \
+  redis \
+  syslog-ng \
+  syslog-ng-redis \
+  syslog-ng-json \
+  supervisor \
+  tzdata \
+  wget \
+  dovecot \
+  dovecot-dev \
+  dovecot-lmtpd \
+  dovecot-lua \
+  dovecot-ldap \
+  dovecot-mysql \
+  dovecot-sql \
+  dovecot-submissiond \
+  dovecot-pigeonhole-plugin \
+  dovecot-pop3d \
+  dovecot-fts-solr \
+  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
   && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true \
-  && pip3 install mysql-connector-python html2text jinja2 redis \
-  && apt-get autoremove --purge -y \
-  && apt-get autoclean
-# imapsync dependencies
-RUN cpan Crypt::OpenSSL::PKCS12
-RUN  rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* /var/tmp/* /root/.cache/
-COPY --from=build /usr/lib/dovecot /usr/lib/dovecot
-COPY --from=build /usr/bin/doveconf /usr/bin/doveconf
-COPY --from=build /usr/bin/doveadm /usr/bin/doveadm
-COPY --from=build /usr/bin/dovecot-sysreport /usr/bin/dovecot-sysreport
-COPY --from=build /usr/sbin/dovecot /usr/sbin/dovecot
-COPY --from=build /usr/libexec/dovecot/ /usr/libexec/dovecot/
-COPY --from=build /usr/local/bin/sieve-dump /usr/local/bin/sieve-dump
-COPY --from=build /usr/local/bin/sieve-filter /usr/local/bin/sieve-filter
-COPY --from=build /usr/local/bin/sieve-test /usr/local/bin/sieve-test
-COPY --from=build /usr/local/bin/sievec /usr/local/bin/sievec
+  && gosu nobody true
+
+RUN cpan LockFile::Simple
+
+RUN pip3 install mysql-connector-python html2text jinja2 redis
+
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
