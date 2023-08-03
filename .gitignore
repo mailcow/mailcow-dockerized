@@ -37,6 +37,7 @@ data/conf/postfix/sni.map
 data/conf/postfix/sni.map.db
 data/conf/postfix/sql
 data/conf/postfix/dns_blocklists.cf
+data/conf/postfix/dnsbl_reply.map
 data/conf/rspamd/custom/*
 data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
