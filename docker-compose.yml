@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.63
+      image: mailcow/clamd:1.62
       restart: always
       depends_on:
         unbound-mailcow:
@@ -107,7 +107,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:nightly-20231011
+      image: mailcow/phpfpm:1.85
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -183,7 +183,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:nightly-20231011
+      image: mailcow/sogo:1.119
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -230,7 +230,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:nightly-20231122
+      image: mailcow/dovecot:1.25
       depends_on:
         - mysql-mailcow
       dns:
@@ -310,7 +310,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:nightly-20231011
+      image: mailcow/postfix:1.72
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -410,11 +410,8 @@ services:
 
     acme-mailcow:
       depends_on:
-        nginx-mailcow:
-          condition: service_started
-        unbound-mailcow:
-          condition: service_healthy
-      image: mailcow/acme:nightly-20231011
+        - nginx-mailcow
+      image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -473,7 +470,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:nightly-20231011
+      image: mailcow/watchdog:1.98
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -542,7 +539,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:nightly-20231018
+      image: mailcow/dockerapi:2.06
       security_opt:
         - label=disable
       restart: always
