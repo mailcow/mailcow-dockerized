@@ -391,7 +391,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.84
+      image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
