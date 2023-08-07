@@ -1086,7 +1086,7 @@
         "forwarding_host_removed": "Forwarding host %s has been removed",
         "global_filter_written": "Filter was successfully written to file",
         "hash_deleted": "Hash deleted",
-        "iam_test_connection": "Connection successfull",
+        "iam_test_connection": "Connection successful",
         "ip_check_opt_in_modified": "IP check was saved successfully",
         "item_deleted": "Item %s successfully deleted",
         "item_released": "Item %s released",
