@@ -1325,8 +1325,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'rl_value' => $_data['rl_value']
             ), $_extra);
           }
-
-          update_sogo_static_view($username);
+       
+          try {
+            update_sogo_static_view($username);
+          }catch (PDOException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => $e->getMessage()
+            );
+          }
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3247,7 +3255,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => array('mailbox_modified', $username)
             );
 
-            update_sogo_static_view($username);
+            try {
+              update_sogo_static_view($username);
+            }catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+            }
           }
           return true;
         break;
@@ -5493,8 +5509,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            
-            update_sogo_static_view($username);
+                 
+            try {
+              update_sogo_static_view($username);
+            }catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+            }
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -5707,8 +5731,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource')) && getenv('SKIP_SOGO') != "y") {
-    update_sogo_static_view();
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource')) && getenv('SKIP_SOGO') != "y") {            
+    try {
+      update_sogo_static_view();
+    }catch (PDOException $e) {
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+        'msg' => $e->getMessage()
+      );
+    }
   }
   
   return true;
