@@ -840,35 +840,54 @@ function update_sogo_static_view($mailbox = null) {
     }
   }
 
-  $query = "REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
-            SELECT
-              mailbox.username,
-              mailbox.domain,
-              mailbox.username,
-              IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.force_pw_update')) = '0',
-                 IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.sogo_access')) = 1, password, '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
-                 '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
-              mailbox.name,
-              mailbox.username,
-              IFNULL(GROUP_CONCAT(ga.aliases ORDER BY ga.aliases SEPARATOR ' '), ''),
-              IFNULL(gda.ad_alias, ''),
-              IFNULL(external_acl.send_as_acl, ''),
-              mailbox.kind,
-              mailbox.multiple_bookings
-            FROM
-              mailbox
-              LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
-              LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
-              LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
-            WHERE
-              mailbox.active = '1'";
+  $subquery = "GROUP BY mailbox.username";
+  if ($mailbox_exists) {
+    $subquery = "AND mailbox.username = :mailbox";
+  }
+  $query = "INSERT INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
+      SELECT
+        mailbox.username,
+        mailbox.domain,
+        mailbox.username,
+        CASE 
+          WHEN mailbox.authsource IS NOT NULL AND mailbox.authsource <> 'mailcow' THEN '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'
+          ELSE 
+            IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.force_pw_update')) = '0',
+              IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.sogo_access')) = 1, password, '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
+              '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321')
+        END AS c_password,
+        mailbox.name,
+        mailbox.username,
+        IFNULL(GROUP_CONCAT(ga.aliases ORDER BY ga.aliases SEPARATOR ' '), ''),
+        IFNULL(gda.ad_alias, ''),
+        IFNULL(external_acl.send_as_acl, ''),
+        mailbox.kind,
+        mailbox.multiple_bookings
+      FROM
+        mailbox
+        LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
+        LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
+        LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
+      WHERE
+        mailbox.active = '1'
+        $subquery
+      ON DUPLICATE KEY UPDATE
+        `domain` = VALUES(`domain`),
+        `c_name` = VALUES(`c_name`),
+        `c_password` = VALUES(`c_password`),
+        `c_cn` = VALUES(`c_cn`),
+        `mail` = VALUES(`mail`),
+        `aliases` = VALUES(`aliases`),
+        `ad_aliases` = VALUES(`ad_aliases`),
+        `ext_acl` = VALUES(`ext_acl`),
+        `kind` = VALUES(`kind`),
+        `multiple_bookings` = VALUES(`multiple_bookings`)";
+
   
   if ($mailbox_exists) {
-    $query .= " AND mailbox.username = :mailbox";
     $stmt = $pdo->prepare($query);
     $stmt->execute(array(':mailbox' => $mailbox));
   } else {
-    $query .= " GROUP BY mailbox.username";
     $stmt = $pdo->query($query);
   }
   
@@ -2143,6 +2162,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
         $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
         $_data['sync_interval']     = isset($_data['sync_interval']) ? intval($_data['sync_interval']) : 15;
+        $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
         $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
       } else if ($_data['authsource'] == "generic-oidc") {
         $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? rtrim($_data['authorize_url'], '/') : null;
