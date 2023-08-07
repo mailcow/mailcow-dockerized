@@ -221,6 +221,16 @@ rspamd_config:register_symbol({
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
 
+    local function remove_moo_tag()
+      local moo_tag_header = task:get_header('X-Moo-Tag', false)
+      if moo_tag_header then
+        task:set_milter_reply({
+          remove_headers = {['X-Moo-Tag'] = 0},
+        })
+      end
+      return true
+    end
+
     if tagged_rcpt and tagged_rcpt[1].options and mailcow_domain then
       local tag = tagged_rcpt[1].options[1]
       rspamd_logger.infox("found tag: %s", tag)
@@ -229,6 +239,7 @@ rspamd_config:register_symbol({
 
       if action ~= 'no action' and action ~= 'greylist' then
         rspamd_logger.infox("skipping tag handler for action: %s", action)
+        remove_moo_tag()
         return true
       end
 
@@ -243,6 +254,7 @@ rspamd_config:register_symbol({
               local function tag_callback_subfolder(err, data)
                 if err or type(data) ~= 'string' then
                   rspamd_logger.infox(rspamd_config, "subfolder tag handler for rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\")", body, data, err)
+                  remove_moo_tag()
                 else
                   rspamd_logger.infox("Add X-Moo-Tag header")
                   task:set_milter_reply({
@@ -261,6 +273,7 @@ rspamd_config:register_symbol({
               )
               if not redis_ret_subfolder then
                 rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+                remove_moo_tag()
               end
 
             else
@@ -268,7 +281,10 @@ rspamd_config:register_symbol({
               local sbj = task:get_header('Subject')
               new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
               task:set_milter_reply({
-                remove_headers = {['Subject'] = 1},
+                remove_headers = {
+                  ['Subject'] = 1,
+                  ['X-Moo-Tag'] = 0
+                },
                 add_headers = {['Subject'] = new_sbj}
               })
             end
@@ -284,6 +300,7 @@ rspamd_config:register_symbol({
           )
           if not redis_ret_subject then
             rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+            remove_moo_tag()
           end
 
         end
@@ -295,6 +312,7 @@ rspamd_config:register_symbol({
           if #rcpt_split == 2 then
             if rcpt_split[1] == 'postmaster' then
               rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
+              remove_moo_tag()
             else
               rspamd_http.request({
                 task=task,
@@ -307,7 +325,8 @@ rspamd_config:register_symbol({
           end
         end
       end
-
+    else
+      remove_moo_tag()
     end
   end,
   priority = 19
