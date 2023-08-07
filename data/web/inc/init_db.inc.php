@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "14022023_1000";
+    $db_version = "30072023_1600";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1426,6 +1426,9 @@ function init_db_schema() {
       )); 
     } 
 
+    // remove old sogo views and triggers
+    $pdo->query("DROP TRIGGER IF EXISTS sogo_update_password");
+
     if (php_sapi_name() == "cli") {
       echo "DB initialization completed" . PHP_EOL;
     } else {
@@ -1450,6 +1453,7 @@ function init_db_schema() {
 }
 if (php_sapi_name() == "cli") {
   include '/web/inc/vars.inc.php';
+  include '/web/inc/functions.inc.php';
   include '/web/inc/functions.docker.inc.php';
   // $now = new DateTime();
   // $mins = $now->getOffset() / 60;
@@ -1471,9 +1475,7 @@ if (php_sapi_name() == "cli") {
   if (intval($res['OK_C']) === 2) {
     // Be more precise when replacing into _sogo_static_view, col orders may change
     try {
-      $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
-        SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings` from sogo_view");
-      $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+      update_sogo_static_view();
       echo "Fixed _sogo_static_view" . PHP_EOL;
     }
     catch ( Exception $e ) {
