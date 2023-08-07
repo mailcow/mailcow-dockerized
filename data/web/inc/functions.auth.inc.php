@@ -47,12 +47,14 @@ function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
 function admin_login($user, $pass){
   global $pdo;
 
-  if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*'),
-      'msg' => 'malformed_username'
-    );
+  if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
+    if (!$is_internal){
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*'),
+        'msg' => 'malformed_username'
+      );
+    }
     return false;
   }
 
@@ -99,12 +101,14 @@ function admin_login($user, $pass){
 function domainadmin_login($user, $pass){
   global $pdo;
 
-  if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*'),
-      'msg' => 'malformed_username'
-    );
+  if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
+    if (!$is_internal){
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*'),
+        'msg' => 'malformed_username'
+      );
+    }
     return false;
   }
 
@@ -315,7 +319,7 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
 
   $is_internal = $extra['is_internal'];
   $create = $extra['create'];
-  
+
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
       $_SESSION['return'][] =  array(
