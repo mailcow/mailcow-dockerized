@@ -157,7 +157,7 @@
           <div class="row mb-2">
             <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_sync_interval }}</label>
             <div class="col-12 col-md-9 col-lg-4">
-              <input class="form-control" type="number" name="sync_interval" style="width: 80px;"  {% if iam_settings.sync_interval %}value="{{ iam_settings.sync_interval }}"{% else %}value="15"{% endif %}>
+              <input class="form-control" type="number" min="1" name="sync_interval" style="width: 80px;"  {% if iam_settings.sync_interval %}value="{{ iam_settings.sync_interval }}"{% else %}value="15"{% endif %}>
             </div>
           </div>
           <div class="row mt-4 mb-2">
