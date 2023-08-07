@@ -73,7 +73,6 @@ $_SESSION['acl']['mailbox_relayhost'] = "1";
 $iam_provider = identity_provider('init');
 $iam_settings = identity_provider('get');
 if (intval($iam_settings['periodic_sync']) != 1 && $iam_settings['import_users'] != 1) {
-  logMsg("warning", "IAM Sync is disabled");
   session_destroy();
   exit;
 }
@@ -91,7 +90,7 @@ if (file_exists($lock_file)) {
     $last_execution = $lock_file_parts[1];
     $elapsed_time = (time() - $last_execution) / 60;
     if ($elapsed_time < intval($iam_settings['sync_interval'])) {
-      logMsg("warning", "Sync Interval not ready (".number_format((float)$elapsed_time, 2, '.', '')."min / ".$iam_settings['sync_interval']."min)");
+      logMsg("warning", "Sync not ready (".number_format((float)$elapsed_time, 2, '.', '')."min / ".$iam_settings['sync_interval']."min)");
       session_destroy();
       exit;
     }
