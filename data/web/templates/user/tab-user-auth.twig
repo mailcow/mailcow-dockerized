@@ -47,11 +47,11 @@
             <div class="col-12 col-md-9 d-flex">
               <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.direct_protocol_access|raw }}"></i>
               <div class="d-flex flex-wrap">
-              {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success m-2">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
-              {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success m-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
-              {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success m-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
-              {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success m-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
-              {% if not skip_sogo %}{% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success m-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}{% endif %}       
+              {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success m-2">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success m-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success m-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success m-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if not skip_sogo %}{% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success m-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}{% endif %}       
               </div>
             </div>
           </div>
