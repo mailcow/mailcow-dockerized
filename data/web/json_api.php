@@ -2,9 +2,9 @@
 /*
    see /api
 */
-
-header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+cors("set_headers");
+header('Content-Type: application/json');
 error_reporting(0);
 
 function api_log($_data) {
@@ -1966,6 +1966,8 @@ if (isset($_GET['query'])) {
         break;
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
+        case "cors":
+          process_edit_return(cors('edit', $attr));
         break;
         // return no route found if no case is matched
         default:

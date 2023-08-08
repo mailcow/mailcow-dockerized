@@ -1,19 +1,19 @@
-FROM debian:bullseye-slim
-LABEL maintainer "Andre Peters <andre.peters@tinc.gmbh>"
+FROM debian:bookworm-slim
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CODENAME=bullseye
+ARG CODENAME=bookworm
 ENV LC_ALL C
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   ca-certificates \
   gnupg2 \
   apt-transport-https \
   dnsutils \
-  netcat \
+  netcat-traditional \
   && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
-  && echo "deb [arch=amd64] https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
+  && echo "deb https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
   && apt-get update \
   && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
   && rm -rf /var/lib/apt/lists/* \

@@ -1,5 +1,5 @@
 FROM debian:bullseye-slim
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL C
@@ -17,10 +17,10 @@ RUN groupadd -g 102 postfix \
 	ca-certificates \
 	curl \
 	dirmngr \
-  dnsutils \
+  	dnsutils \
 	gnupg \
 	libsasl2-modules \
-  mariadb-client \
+  	mariadb-client \
 	perl \
 	postfix \
 	postfix-mysql \
@@ -32,7 +32,7 @@ RUN groupadd -g 102 postfix \
 	syslog-ng \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
-  tzdata \
+  	tzdata \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& touch /etc/default/locale \
   && printf '#!/bin/bash\n/usr/sbin/postconf -c /opt/postfix/conf "$@"' > /usr/local/sbin/postconf \

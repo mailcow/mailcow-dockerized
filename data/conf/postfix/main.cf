@@ -40,34 +40,6 @@ postscreen_blacklist_action = drop
 postscreen_cache_cleanup_interval = 24h
 postscreen_cache_map = proxy:btree:$data_directory/postscreen_cache
 postscreen_dnsbl_action = enforce
-postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
-  hostkarma.junkemailfilter.com=127.0.0.1*-2
-  list.dnswl.org=127.0.[0..255].0*-2
-  list.dnswl.org=127.0.[0..255].1*-4
-  list.dnswl.org=127.0.[0..255].2*-6
-  list.dnswl.org=127.0.[0..255].3*-8
-  ix.dnsbl.manitu.net*2
-  bl.spamcop.net*2
-  bl.suomispam.net*2
-  hostkarma.junkemailfilter.com=127.0.0.2*3
-  hostkarma.junkemailfilter.com=127.0.0.4*2
-  hostkarma.junkemailfilter.com=127.0.1.2*1
-  backscatter.spameatingmonkey.net*2
-  bl.ipv6.spameatingmonkey.net*2
-  bl.spameatingmonkey.net*2
-  b.barracudacentral.org=127.0.0.2*7
-  bl.mailspike.net=127.0.0.2*5
-  bl.mailspike.net=127.0.0.[10;11;12]*4
-  dnsbl.sorbs.net=127.0.0.10*8
-  dnsbl.sorbs.net=127.0.0.5*6
-  dnsbl.sorbs.net=127.0.0.7*3
-  dnsbl.sorbs.net=127.0.0.8*2
-  dnsbl.sorbs.net=127.0.0.6*2
-  dnsbl.sorbs.net=127.0.0.9*2
-  zen.spamhaus.org=127.0.0.[10;11]*8
-  zen.spamhaus.org=127.0.0.[4..7]*6
-  zen.spamhaus.org=127.0.0.3*4
-  zen.spamhaus.org=127.0.0.2*3
 postscreen_dnsbl_threshold = 6
 postscreen_dnsbl_ttl = 5m
 postscreen_greet_action = enforce
@@ -197,4 +169,4 @@ smtps_smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks,qmqpd_authorized_clients
 
 # DO NOT EDIT ANYTHING BELOW #
-# User overrides #
+# Overrides #

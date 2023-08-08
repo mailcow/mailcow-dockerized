@@ -1,4 +1,4 @@
-<div role="tabpanel" class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
+<div class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
   <div class="card mb-4">
     <div class="card-header bg-danger text-white d-flex fs-5">
       <button class="btn d-md-none text-white flex-grow-1 text-start" data-bs-target="#collapse-tab-config-admins" data-bs-toggle="collapse" aria-controls="collapse-tab-config-admins">
@@ -97,6 +97,39 @@
           <div class="col-lg-12">
             <p class="text-muted">{{ lang.admin.api_info|raw }}</p>
           </div>
+          <div class="col-lg-12">
+            <div class="card mb-3">
+              <div class="card-header">
+                <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.cors_settings }}</h4>
+              </div>
+              <div class="card-body">
+                <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" data-id="editcors" method="post">
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2 mb-4" for="allowed_origins">{{ lang.admin.allowed_origins }}</label>
+                    <div class="col-sm-9 mb-4">
+                      <textarea class="form-control textarea-code" rows="7" name="allowed_origins" id="allowed_origins">{{ cors_settings.allowed_origins }}</textarea>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="allowed_methods">{{ lang.admin.allowed_methods }}</label>
+                    <div class="col-sm-9">
+                      <select name="allowed_methods" id="allowed_methods" multiple class="form-control">
+                        <option value="POST"{% if "POST" in cors_settings.allowed_methods  %} selected{% endif %}>POST</option>
+                        <option value="GET"{% if "GET" in cors_settings.allowed_methods  %} selected{% endif %}>GET</option>
+                        <option value="DELETE"{% if "DELETE" in cors_settings.allowed_methods  %} selected{% endif %}>DELETE</option>
+                        <option value="PUT"{% if "PUT" in cors_settings.allowed_methods %} selected{% endif %}>PUT</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="offset-sm-2 col-sm-9">
+                      <button class="btn btn-sm visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline btn-success" data-item="cors" data-api-url="edit/cors" data-id="editcors" data-action="edit_selected" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
           <div class="col-lg-6">
             <div class="card mb-3">
               <div class="card-header">
@@ -194,7 +227,7 @@
 
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
-      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-dadmins" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-dadmins">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-dadmins" data-bs-toggle="collapse" aria-controls="collapse-tab-config-dadmins">
         {{ lang.admin.domain_admins }}
       </button>
       <span class="d-none d-md-block">{{ lang.admin.domain_admins }}</span>
