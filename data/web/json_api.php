@@ -2091,6 +2091,9 @@ if (isset($_GET['query'])) {
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
         break;
+        case "cors":
+          process_edit_return(cors('edit', $attr));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
