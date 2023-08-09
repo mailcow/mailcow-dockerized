@@ -115,10 +115,15 @@ services:
         - ./data/web:/web:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/phpfpm/crons:/crons:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
@@ -164,13 +169,18 @@ services:
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
       restart: always
+      labels:
+        ofelia.enabled: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.119
+      image: mailcow/sogo:nightly-1.119
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -217,7 +227,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.25
+      image: mailcow/dovecot:nightly-1.25
       depends_on:
         - mysql-mailcow
       dns:
@@ -378,6 +388,10 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
         - ./data/conf/nginx/:/etc/nginx/conf.d/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"

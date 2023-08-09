@@ -1,4 +1,31 @@
 <?php
+// handle iam authentication
+if ($iam_provider){
+  if (isset($_GET['iam_sso'])){
+    // redirect for sso
+    $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
+    header('Location: ' . $redirect_uri);
+    die();
+  }
+  if ($_SESSION['iam_token'] && $_SESSION['iam_refresh_token']) {
+    // Session found, try to refresh
+    $isRefreshed = identity_provider('refresh-token', array('iam_provider' => $iam_provider));
+
+    if (!$isRefreshed){
+      // Session could not be refreshed, clear and redirect to provider
+      clear_session();
+      $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
+      header('Location: ' . $redirect_uri);
+      die();
+    }
+  } elseif ($_GET['code'] && $_GET['state'] === $_SESSION['oauth2state']) {
+    // Check given state against previously stored one to mitigate CSRF attack
+    // Recieved access token in $_GET['code']
+    // extract info and verify user
+    identity_provider('verify-sso', array('iam_provider' => $iam_provider));
+  }
+}
+
 // SSO Domain Admin
 if (!empty($_GET['sso_token'])) {
   $username = domain_admin_sso('check', $_GET['sso_token']);

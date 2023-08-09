@@ -11,7 +11,8 @@ $session_var_pass = 'sogo-sso-pass';
 // validate credentials for basic auth requests
 if (isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
   $username = $_SERVER['PHP_AUTH_USER'];
   $password = $_SERVER['PHP_AUTH_PW'];
   $is_eas = false;
@@ -65,8 +66,7 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
-  header('HTTP/1.0 403 Forbidden');
-  echo "Forbidden";
+  header("Location: /SOGo/");
   exit;
 }
 // only check for admin-login on sogo GUI requests

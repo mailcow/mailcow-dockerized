@@ -1,80 +1,83 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<h3>{{ lang.user.user_settings }}</h3>
-<div class="card">
-  <div class="card-header">{{ lang.user.user_settings }}</div>
-  <div class="card-body">
-    <div class="row">
-      <div class="offset-sm-3 col-sm-9">
-        <p><a href="#pwChangeModal" data-bs-toggle="modal">[{{ lang.user.change_password }}]</a></p>
-        <div class="last-login"></div>
-        <span class="clear-last-logins">{{ lang.user.clear_recent_successful_connections }}</span>
-      </div>
-    </div>
-    <hr>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">{{ lang.user.user_settings }}</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="offset-sm-3 col-sm-9">
+            <p><a href="#pwChangeModal" data-bs-toggle="modal">[{{ lang.user.change_password }}]</a></p>
+            <div class="last-ui-login"></div>
+            <span class="clear-last-logins">{{ lang.user.clear_recent_successful_connections }}</span>
+          </div>
+        </div>
+        <hr>
 
-    {# TFA #}
-    <div class="row">
-      <div class="col-sm-3 col-5 text-end">{{ lang.tfa.tfa }}</div>
-      <div class="col-sm-9 col-7">
-        <p id="tfa_pretty">{{ tfa_data.pretty }}</p>
-        {% include 'tfa_keys.twig' %}
-        <br>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 col-5 text-end">{{ lang.tfa.set_tfa }}</div>
-      <div class="col-sm-9 col-7">
-        <select id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
-          <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
-          <option value="webauthn">{{ lang.tfa.webauthn }}</option>
-          <option value="totp">{{ lang.tfa.totp }}</option>
-          <option value="none">{{ lang.tfa.none }}</option>
-        </select>
-      </div>
-    </div>
+        {# TFA #}
+        <div class="row">
+          <div class="col-sm-3 col-5 text-end">{{ lang.tfa.tfa }}</div>
+          <div class="col-sm-9 col-7">
+            <p id="tfa_pretty">{{ tfa_data.pretty }}</p>
+            {% include 'tfa_keys.twig' %}
+            <br>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 col-5 text-end">{{ lang.tfa.set_tfa }}</div>
+          <div class="col-sm-9 col-7">
+            <select id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
+              <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
+              <option value="webauthn">{{ lang.tfa.webauthn }}</option>
+              <option value="totp">{{ lang.tfa.totp }}</option>
+              <option value="none">{{ lang.tfa.none }}</option>
+            </select>
+          </div>
+        </div>
 
-    <hr>
-    {# FIDO2 #}
-    <div class="row">
-      <div class="col-sm-3 col-5 text-end">
-        <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 col-5 text-end">{{ lang.fido2.known_ids }}:</div>
-      <div class="col-sm-9 col-7">
-        <div class="table-responsive">
-          <table class="table table-striped table-hover table-condensed w-100" id="fido2_keys">
-            <tr>
-              <th>ID</th>
-              <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
-            </tr>
-            {% include 'fido2.twig' %}
-        </table>
-      </div>
-      <br>
-    </div>
-  </div>
-    <div class="row">
-      <div class="offset-sm-3 col-sm-9">
-        <div class="btn-group">
-          <button class="btn btn-sm btn-primary" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
-          <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" id="register-fido2-touchid"><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.set_fido2_touchid }}</a></li>
-          </ul>
+        <hr>
+        {# FIDO2 #}
+        <div class="row">
+          <div class="col-sm-3 col-5 text-end">
+            <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 col-5 text-end">{{ lang.fido2.known_ids }}:</div>
+          <div class="col-sm-9 col-7">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover table-condensed w-100" id="fido2_keys">
+                <tr>
+                  <th>ID</th>
+                  <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
+                </tr>
+                {% include 'fido2.twig' %}
+            </table>
+          </div>
+          <br>
         </div>
       </div>
-    </div>
-    <br>
-    <div class="row" id="status-fido2">
-      <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
-      <div class="col-sm-9 col-7">
-        <div id="fido2-alerts">-</div>
+        <div class="row">
+          <div class="offset-sm-3 col-sm-9">
+            <div class="btn-group">
+              <button class="btn btn-sm btn-primary" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
+              <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" id="register-fido2-touchid"><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.set_fido2_touchid }}</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row" id="status-fido2">
+          <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
+          <div class="col-sm-9 col-7">
+            <div id="fido2-alerts">-</div>
+          </div>
+          <br>
+        </div>
       </div>
-      <br>
     </div>
   </div>
 </div>

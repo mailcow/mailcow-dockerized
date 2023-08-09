@@ -35,6 +35,7 @@ RUN addgroup -g 5000 vmail \
   lua \
   lua-cjson \
   lua-socket \
+  lua-sec \
   lua-sql-mysql \
   lua5.3-sql-mysql \
   make \

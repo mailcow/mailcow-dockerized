@@ -80,10 +80,16 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
   ];
 }
 
+// identity provider
+$iam_settings = identity_provider('get');
+// mbox templates
+$mbox_templates = mailbox('get', 'mailbox_templates');
+
 // cors settings
 $cors_settings = cors('get');
 $cors_settings['allowed_origins'] = str_replace(", ", "\n", $cors_settings['allowed_origins']);
 $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_methods']);
+
 
 $template = 'admin.twig';
 $template_data = [
@@ -111,6 +117,8 @@ $template_data = [
   'ip_check' => customize('get', 'ip_check'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
+  'iam_settings' => $iam_settings,
+  'mbox_templates' => $mbox_templates,
   'cors_settings' => $cors_settings,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])

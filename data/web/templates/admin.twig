@@ -7,6 +7,7 @@
       <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.access }}</a>
       <ul class="dropdown-menu">
         <li><button class="dropdown-item active" data-bs-target="#tab-config-admins" aria-selected="false" aria-controls="tab-config-admins" role="tab" data-bs-toggle="tab">{{ lang.admin.admins }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-identity-provider" aria-selected="false" aria-controls="tab-config-identity-provider" role="tab" data-bs-toggle="tab">Identity Provider</button></li>
         <!-- <li><button class="dropdown-item" data-bs-target="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-bs-toggle="tab">{{ lang.admin.admins_ldap }}</button></li> -->
         <li><button class="dropdown-item" data-bs-target="#tab-config-oauth2" aria-selected="false" aria-controls="tab-config-oauth2" role="tab" data-bs-toggle="tab">{{ lang.admin.oauth2_apps }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-rspamd" aria-selected="false" aria-controls="tab-config-rspamd" role="tab" data-bs-toggle="tab">Rspamd UI</button></li>
@@ -40,6 +41,7 @@
     <div class="col-md-12">
       <div class="tab-content" style="padding-top:20px">
         {% include 'admin/tab-config-admins.twig' %}
+        {% include 'admin/tab-config-identity-provider.twig' %}
         {# {% include 'admin/tab-ldap.twig' %} #}
         {% include 'admin/tab-config-oauth2.twig' %}
         {% include 'admin/tab-config-rspamd.twig' %}

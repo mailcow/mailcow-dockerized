@@ -896,6 +896,17 @@ if (isset($_GET['query'])) {
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              case "cron":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('cron-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('cron-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
               case "postfix":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
@@ -1591,6 +1602,7 @@ if (isset($_GET['query'])) {
               }
             }
           break;
+          break;
         break;
         // return no route found if no case is matched
         default:
@@ -1743,6 +1755,9 @@ if (isset($_GET['query'])) {
         break;
         case "rlhash":
           echo ratelimit('delete', null, implode($items));
+        break;
+        case "identity-provider":
+          process_delete_return(identity_provider('delete'));
         break;
         // return no route found if no case is matched
         default:
@@ -1945,6 +1960,12 @@ if (isset($_GET['query'])) {
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
             process_edit_return(edit_user_account($attr));
           }
+        break;
+        case "identity-provider":
+          process_edit_return(identity_provider('edit', $attr));
+        break;
+        case "identity-provider-test":
+          process_edit_return(identity_provider('test', $attr));
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
