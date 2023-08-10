@@ -189,7 +189,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   done
 
   git fetch --all
-  git checkout -f $git_branch
+  git checkout -f $MAILCOW_BRANCH
 
 elif [[ ${SKIP_BRANCH} == y ]]; then
   echo -e "\033[33mEnabled Dev Mode.\033[0m"
