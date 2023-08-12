@@ -244,7 +244,7 @@ async def handle_pubsub_messages(channel: aioredis.client.PubSub):
           else:
             dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
               
-        await asyncio.sleep(0.01)
+        await asyncio.sleep(0.0)
     except asyncio.TimeoutError:
       pass
 
