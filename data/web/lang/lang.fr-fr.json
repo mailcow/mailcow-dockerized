@@ -1096,7 +1096,8 @@
         "weeks": "semaines",
         "months": "mois",
         "year": "année",
-        "years": "années"
+        "years": "années",
+        "with_app_password": "avec le mot de passe de l'application"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
