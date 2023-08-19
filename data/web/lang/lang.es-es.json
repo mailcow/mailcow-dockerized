@@ -20,7 +20,9 @@
         "tls_policy": "Póliza de TLS",
         "unlimited_quota": "Cuota ilimitada para buzones",
         "app_passwds": "Gestionar las contraseñas de aplicaciones",
-        "domain_desc": "Cambiar descripción del dominio"
+        "domain_desc": "Cambiar descripción del dominio",
+        "protocol_access": "Cambiar protocolo de acceso",
+        "quarantine_category": "Cambiar categoría de las notificaciones de cuarentena"
     },
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",
@@ -85,7 +87,13 @@
         "timeout2": "Tiempo de espera para la conexión al host local",
         "username": "Usuario",
         "validate": "Validar",
-        "validation_success": "Validado exitosamente"
+        "validation_success": "Validado exitosamente",
+        "inactive": "Inactivo",
+        "app_name": "Nombre de la App",
+        "app_password": "Añadir contraseña para la app",
+        "public_comment": "Comentarios públicos",
+        "disable_login": "Desactivar login (el correo entrante seguirá activo)",
+        "comment_info": "Los comentarios privados no son visibles al usuario, mientras que los comentarios públicos aparecerán sobre la información general del usuario"
     },
     "admin": {
         "access": "Acceso",
@@ -114,7 +122,7 @@
         "app_name": "Nombre de la app",
         "apps_name": "Nombre \"mailcow Apps\"",
         "arrival_time": "Tiempo de llegada (hora del servidor)",
-        "ban_list_info": "La lista de IPs bloqueadas sigue a continuación: <b> red (tiempo de prohibición restante) - [acciones]</b>.<br/> Las IPs en cola para ser desbloquadas se eliminarán de la lista de bloqueos en unos pocos segundos. <br/> Las etiquetas rojas indican bloqueos permanentes permanentes mediante la inclusión en una lista negra.",
+        "ban_list_info": "Lista de IPs bloqueadas: <b>red (tiempo de prohibición restante) - [acciones]</b>.<br />Las IPs en cola para ser desbloqueadas se eliminarán de la lista de bloqueos en unos pocos segundos.<br />Las etiquetas rojas indican bloqueos permanentes mediante la inclusión en la lista negra.",
         "change_logo": "Cambiar logo",
         "configuration": "Configuración",
         "credentials_transport_warning": "<b>Advertencia</b>: al agregar una nueva entrada de ruta de transporte se actualizarán las credenciales para todas las entradas con una columna de \"siguiente destino\" coincidente.",
@@ -432,7 +440,7 @@
     },
     "header": {
         "administration": "Administración",
-        "debug": "Información del sistema",
+        "debug": "Información",
         "email": "E-Mail",
         "mailcow_config": "Configuración",
         "quarantine": "Cuarentena",
