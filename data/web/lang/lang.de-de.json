@@ -343,7 +343,9 @@
         "api_read_only": "Schreibgeschützter Zugriff",
         "api_read_write": "Lese-Schreib-Zugriff",
         "oauth2_apps": "OAuth2 Apps",
-        "queue_unban": "entsperren"
+        "queue_unban": "entsperren",
+        "allowed_methods": "Access-Control-Allow-Methods",
+        "allowed_origins": "Access-Control-Allow-Origin"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -482,7 +484,7 @@
         "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
         "infoEmpty": "0 bis 0 von 0 Einträgen",
         "infoFiltered": "(gefiltert von _MAX_ Einträgen)",
-        "infoPostFix": "",
+        "infoPostFix": "datatables.infoPostFix",
         "thousands": ".",
         "lengthMenu": "_MENU_ Einträge anzeigen",
         "loadingRecords": "Wird geladen...",
