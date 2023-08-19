@@ -134,10 +134,10 @@
         "admins_ldap": "Amministratori LDAP",
         "advanced_settings": "Impostazioni avanzate",
         "api_allow_from": "Allow API access from these IPs/CIDR network notations",
-        "api_info": "The API is a work in progress. The documentation can be found at <a href=\"/api\">/api</a>",
+        "api_info": "Questa API è in modifica. La documentazione può essere trovata su <a href=\"/api\">/api</a>",
         "api_key": "Chiave API",
         "api_skip_ip_check": "Salta il controllo dell'IP per l'API",
-        "app_links": "App links",
+        "app_links": "Link dell'app",
         "app_name": "Nome dell'app",
         "apps_name": "Nome \"mailcow Apps\"",
         "arrival_time": "Ora di arrivo (ora del server)",
@@ -338,7 +338,8 @@
         "oauth2_apps": "App OAuth2",
         "oauth2_add_client": "Aggiungere il client OAuth2",
         "rsettings_preset_4": "Disattivare Rspamd per un dominio",
-        "options": "Opzioni"
+        "options": "Opzioni",
+        "cors_settings": "Impostazioni CORS"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
