@@ -28,7 +28,7 @@
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="domain_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           {% if mailcow_cc_role == 'admin' %}
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
           {% endif %}
         </div>
       </div>
