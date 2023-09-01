@@ -45,9 +45,7 @@
           <form class="form-inline mb-4" data-id="add_wl_policy_mailbox">
             <div class="input-group" data-acl="{{ acl.spam_policy }}">
               <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-              <span class="input-group-btn">
-                <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"wl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
-              </span>
+              <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"wl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
             </div>
           </form>
           <table id="wl_policy_mailbox_table" class="table table-striped dt-responsive w-100"></table>
@@ -69,9 +67,7 @@
           <form class="form-inline mb-4" data-id="add_bl_policy_mailbox">
             <div class="input-group" data-acl="{{ acl.spam_policy }}">
               <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-              <span class="input-group-btn">
-                <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"bl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
-              </span>
+              <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_mailbox" data-api-url='add/mailbox-policy' data-api-attr='{"username": {{ mailcow_cc_username|json_encode|raw }},"object_list":"bl"}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.spamfilter_table_add }}</button>
             </div>
           </form>
           <table id="bl_policy_mailbox_table" class="table table-striped dt-responsive w-100"></table>

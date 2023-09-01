@@ -71,11 +71,11 @@ legend {
 }
 
 .modal-content {
-    background-color: #1c1c1e;
+    background-color: #2c2c2e;
 }
 
 .modal-header {
-    border-bottom: 1px solid #2c2c2e;
+    border-bottom: 1px solid #999;
 }
 
 .modal-title {
@@ -319,7 +319,11 @@ a:hover {
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
     background-color: #7a7a7a !important;
 }
-
+.btn-check:checked+.btn-light, .btn-check:active+.btn-light, .btn-light:active, .btn-light.active, .show>.btn-light.dropdown-toggle {
+    color: #f2f2f7 !important;
+    background-color: #242424 !important;
+    border-color: #1c1c1e !important;
+}
 .btn-input-missing,
 .btn-input-missing:hover,
 .btn-input-missing:active,
