@@ -42,11 +42,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
 table.dataTable td.dt-control:before {
     background-color: #979797 !important;
 }
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
-    background-color: #fbfbfb;
-}
 table.dataTable.table-striped>tbody>tr>td {
     vertical-align: middle;
 }

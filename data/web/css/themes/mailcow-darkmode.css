@@ -18,6 +18,10 @@ legend {
     border-color: transparent;
 }
 
+.card-body {
+    --bs-card-color: #bbb;
+}
+
 .btn-secondary, .paginate_button, .page-link, .btn-light {
     color: #f2f2f7 !important;
     background-color: #5e5e5e !important;
@@ -71,6 +75,7 @@ legend {
 }
 
 .modal-content {
+    --bs-modal-color: #bbb;
     background-color: #2c2c2e;
 }
 
@@ -79,7 +84,7 @@ legend {
 }
 
 .modal-title {
-    color: #f2f2f7;
+    color: #bbb;
 }
 
 .modal .btn-close {
@@ -431,4 +436,19 @@ table.table, .table-striped>tbody>tr:nth-of-type(odd)>*, tbody tr {
 
 .table>:not(caption)>*>* {
     border-color: #5c5c5c;
+    --bs-table-color-state:#bbb;
+    --bs-table-bg: #3a3a3a;
+}
+.text-muted {
+    --bs-secondary-color: #8e8e93;
+}
+input::placeholder {
+    color: #8e8e93 !important;
+}
+
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%238e8e93' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+.btn-light, .btn-light:hover {
+    background-image: none;
 }
