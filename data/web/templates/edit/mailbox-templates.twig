@@ -9,8 +9,8 @@
     <input type="hidden" value="default" name="sender_acl">
     <input type="hidden" value="0" name="force_pw_update">
     <input type="hidden" value="0" name="sogo_access">
-    <input type="hidden" value="0" name="protocol_access">     
-         
+    <input type="hidden" value="0" name="protocol_access">
+
     <div class="row mb-4">
       <label class="control-label col-sm-2" for="template">{{ lang.mailbox.template }}</label>
       <div class="col-sm-10">
@@ -61,10 +61,10 @@
         <div class="btn-group">
           <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_reject" autocomplete="off" value="reject" {% if template.attributes.quarantine_category == 'reject' %}checked{% endif %}>
           <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_reject">{{ lang.user.q_reject }}</label>
-          
+
           <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_add_header" autocomplete="off" value="add_header" {% if template.attributes.quarantine_category == 'add_header' %}checked{% endif %}>
           <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
-          
+
           <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_all" autocomplete="off" value="all" {% if template.attributes.quarantine_category == 'all' %}checked{% endif %}>
           <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_all">{{ lang.user.q_all }}</label>
         </div>
@@ -77,7 +77,7 @@
         <div class="btn-group">
           <input type="checkbox" class="btn-check" name="tls_enforce_in" id="tls_enforce_in" autocomplete="off" value="1" {% if template.attributes.tls_enforce_in == '1' %}checked{% endif %}>
           <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
-          
+
           <input type="checkbox" class="btn-check" name="tls_enforce_out" id="tls_enforce_out" autocomplete="off" value="1" {% if template.attributes.tls_enforce_out == '1' %}checked{% endif %}>
           <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
         </div>
@@ -97,7 +97,7 @@
     <div class="row mb-4">
       <label class="control-label col-sm-2">ACL</label>
       <div class="col-sm-10">
-        <select id="template_user_acl" name="acl" size="10" multiple class="form-control">                  
+        <select id="template_user_acl" name="acl" size="10" multiple class="form-control">
           <option value="spam_alias" {% if template.attributes.acl_spam_alias == '1' %} selected{% endif %}>{{ lang.acl["spam_alias"] }}</option>
           <option value="tls_policy" {% if template.attributes.acl_tls_policy == '1' %} selected{% endif %}>{{ lang.acl["tls_policy"] }}</option>
           <option value="spam_score" {% if template.attributes.acl_spam_score == '1' %} selected{% endif %}>{{ lang.acl["spam_score"] }}</option>
@@ -140,8 +140,8 @@
     </div>
     <div class="row">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="force_pw_update"{% if template.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"{% if template.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
           <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
         </div>
       </div>
@@ -149,8 +149,8 @@
     {% if not skip_sogo %}
     <div class="row">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="sogo_access"{% if template.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"{% if template.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
           <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
         </div>
       </div>

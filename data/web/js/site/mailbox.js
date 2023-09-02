@@ -466,7 +466,7 @@ jQuery(function($){
 
             item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
             if (role == "admin") {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
@@ -650,7 +650,7 @@ jQuery(function($){
         url: "/api/v1/get/domain/template/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.chkbox = '<input type="checkbox" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
 
             item.attributes.def_quota_for_mbox = humanFileSize(item.attributes.def_quota_for_mbox);
             item.attributes.max_quota_for_mbox = humanFileSize(item.attributes.max_quota_for_mbox);
@@ -881,7 +881,7 @@ jQuery(function($){
               }
             }
             */
-            item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
             if (item.attributes.passwd_update != '0') {
               var last_pw_change = new Date(item.attributes.passwd_update.replace(/-/g, "/"));
               item.last_pw_change = last_pw_change.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
@@ -1149,7 +1149,7 @@ jQuery(function($){
         url: "/api/v1/get/mailbox/template/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.chkbox = '<input type="checkbox" data-id="mailbox_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailbox_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
 
             item.template = escapeHtml(item.template);
             if (item.attributes.rl_frame === "s"){
@@ -1383,7 +1383,7 @@ jQuery(function($){
               '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
             item.description = escapeHtml(item.description);
           });
@@ -1524,7 +1524,7 @@ jQuery(function($){
               '<a href="/edit/bcc/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="bcc" name="multi_select" value="' + item.id + '" />';
             item.local_dest = escapeHtml(item.local_dest);
             item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
@@ -1638,7 +1638,7 @@ jQuery(function($){
               '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
           });
 
           return json;
@@ -1740,7 +1740,7 @@ jQuery(function($){
               '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
           });
 
           return json;
@@ -1839,7 +1839,7 @@ jQuery(function($){
               '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
             if (item.public_comment !== null) {
               item.public_comment = escapeHtml(item.public_comment);
@@ -1962,7 +1962,7 @@ jQuery(function($){
     table.on('responsive-resize', function (e, datatable, columns){
       hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
     });
-    
+
     table.on( 'draw', function (){
         $('#alias_table [data-bs-toggle="tooltip"]').tooltip();
     });
@@ -1999,7 +1999,7 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
             if(item.parent_is_backupmx == '1') {
               item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="badge fs-6 bg-warning">' + lang.alias_domain_backupmx + '</div></span>';
             } else {
@@ -2100,7 +2100,7 @@ jQuery(function($){
               '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
             } else {
@@ -2254,7 +2254,7 @@ jQuery(function($){
               '<a href="/edit/filter/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
 
           return json;
@@ -2382,7 +2382,7 @@ jQuery(function($){
           }
         });
       })
-      
+
       observer.observe(element_object);
     });
   }
