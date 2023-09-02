@@ -64,16 +64,16 @@
     </div>
     <div class="row">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="gal"{% if template.attributes.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="gal"{% if template.attributes.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
           <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="active"{% if template.attributes.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if template.attributes.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
         </div>
       </div>
     </div>
@@ -111,12 +111,12 @@
     <div class="row mb-2">
       <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
       <div class="col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="backupmx"{% if template.attributes.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="backupmx"{% if template.attributes.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
           <br>
-          <label><input type="checkbox" value="1" name="relay_all_recipients"{% if template.attributes.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
+          <label><input type="checkbox" class="form-check-input" value="1" name="relay_all_recipients"{% if template.attributes.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
           <p>{{ lang.edit.relay_all_info|raw }}</p>
-          <label><input type="checkbox" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
+          <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
           <br>
           <p>{{ lang.edit.relay_transport_info|raw }}</p>
         </div>

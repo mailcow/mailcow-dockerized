@@ -146,7 +146,7 @@
                   <div class="row mb-2">
                     <div class="offset-sm-3 col-sm-9">
                       <label>
-                        <input type="checkbox" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                        <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                       </label>
                     </div>
                   </div>
@@ -159,7 +159,7 @@
                   <div class="row mb-2">
                     <div class="offset-sm-3 col-sm-9">
                       <label>
-                        <input type="checkbox" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                        <input type="checkbox" class="form-check-input" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                       </label>
                     </div>
                   </div>
@@ -191,7 +191,7 @@
                   <div class="row mb-2">
                     <div class="offset-sm-3 col-sm-9">
                       <label>
-                        <input type="checkbox" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                        <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
                       </label>
                     </div>
                   </div>
@@ -204,7 +204,7 @@
                   <div class="row mb-2">
                     <div class="offset-sm-3 col-sm-9">
                       <label>
-                        <input type="checkbox" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                        <input type="checkbox" class="form-check-input" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
                       </label>
                     </div>
                   </div>
