@@ -29,7 +29,7 @@
           <div class="form-control tag-box">
             {% for tag in domain_details.tags %}
               <span data-action='delete_selected' data-item="{{ tag|url_encode }}" data-id="domain_tag_{{ tag }}" data-api-url='delete/domain/tag/{{ domain }}' class="badge bg-primary tag-badge btn-badge">
-                <i class="bi bi-tag-fill"></i> 
+                <i class="bi bi-tag-fill"></i>
                 {{ tag }}
               </span>
             {% endfor %}
@@ -91,12 +91,12 @@
       <div class="row mb-2">
         <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
         <div class="col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="backupmx"{% if result.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" value="1" name="backupmx"{% if result.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
             <br>
-            <label><input type="checkbox" value="1" name="relay_all_recipients"{% if result.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
+            <label><input type="checkbox" class="form-check-input" value="1" name="relay_all_recipients"{% if result.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
             <p>{{ lang.edit.relay_all_info|raw }}</p>
-            <label><input type="checkbox" value="1" name="relay_unknown_only"{% if result.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
+            <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if result.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
             <br>
             <p>{{ lang.edit.relay_transport_info|raw }}</p>
             <hr style="margin:25px 0px 0px 0px">
@@ -106,8 +106,8 @@
       {% endif %}
       <div class="row">
         <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="gal"{% if result.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" value="1" name="gal"{% if result.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
             <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
           </div>
         </div>
@@ -115,8 +115,8 @@
       <hr>
       <div class="row mb-2">
         <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
           </div>
         </div>
       </div>
@@ -211,8 +211,8 @@
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
               </div>
             </div>
           </div>

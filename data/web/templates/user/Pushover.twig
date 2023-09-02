@@ -80,8 +80,8 @@
               </div>
             </div>
             <div class="col-sm-12">
-                <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.user.active }}</label>
+                <div class="form-check">
+                  <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.user.active }}</label>
                 </div>
               </div>
               <div class="col-sm-12">
@@ -95,11 +95,11 @@
                   <div class="form-group">
                     <label for="text">{{ lang.user.pushover_sender_regex }}</label>
                     <input type="text" class="form-control mb-4" name="senders_regex" value="{{ pushover_data.senders_regex }}" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
-                    <div class="checkbox">
-                      <label><input type="checkbox" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_evaluate_x_prio|raw }}</label>
+                    <div class="form-check">
+                      <label><input type="checkbox" class="form-check-input" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_evaluate_x_prio|raw }}</label>
                     </div>
-                    <div class="checkbox">
-                      <label><input type="checkbox" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_only_x_prio|raw }}</label>
+                    <div class="form-check">
+                      <label><input type="checkbox" class="form-check-input" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.user.pushover_only_x_prio|raw }}</label>
                     </div>
                   </div>
                 </div>

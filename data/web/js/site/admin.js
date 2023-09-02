@@ -517,7 +517,7 @@ jQuery(function($){
         if (item.used_by_mailboxes == '') { item.in_use_by = item.used_by_domains; }
         else if (item.used_by_domains == '') { item.in_use_by = item.used_by_mailboxes; }
         else { item.in_use_by = item.used_by_mailboxes + '<hr style="margin:5px 0px 5px 0px;">' + item.used_by_domains; }
-        item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'transportstable') {
       $.each(data, function (i, item) {
@@ -532,11 +532,11 @@ jQuery(function($){
           '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
-        item.chkbox = '<input type="checkbox" data-id="transports" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="transports" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'queuetable') {
       $.each(data, function (i, item) {
-        item.chkbox = '<input type="checkbox" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
         rcpts = $.map(item.recipients, function(i) {
           return escapeHtml(i);
         });
@@ -550,7 +550,7 @@ jQuery(function($){
         item.action = '<div class="btn-group">' +
           '<a href="#" data-action="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
-        item.chkbox = '<input type="checkbox" data-id="fwdhosts" name="multi_select" value="' + item.host + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="fwdhosts" name="multi_select" value="' + item.host + '" />';
       });
     } else if (table == 'oauth2clientstable') {
       $.each(data, function (i, item) {
@@ -560,13 +560,13 @@ jQuery(function($){
           '</div>';
         item.scope = "profile";
         item.grant_types = 'refresh_token password authorization_code';
-        item.chkbox = '<input type="checkbox" data-id="oauth2_clients" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="oauth2_clients" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
         item.selected_domains = escapeHtml(item.selected_domains);
         item.selected_domains = item.selected_domains.toString().replace(/,/g, "<br>");
-        item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
           '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
@@ -580,7 +580,7 @@ jQuery(function($){
         } else {
           item.usr = item.username;
         }
-        item.chkbox = '<input type="checkbox" data-id="admins" name="multi_select" value="' + item.username + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
           '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +

@@ -28,7 +28,7 @@
           <div class="form-control tag-box">
             {% for tag in mailbox_details.tags %}
               <span data-action='delete_selected' data-item="{{ tag }}" data-id="mailbox_tag_{{ tag }}" data-api-url='delete/mailbox/tag/{{ mailbox }}' class="badge bg-primary tag-badge btn-badge">
-                <i class="bi bi-tag-fill"></i> 
+                <i class="bi bi-tag-fill"></i>
                 {{ tag }}
               </span>
             {% endfor %}
@@ -236,8 +236,8 @@
       </div>
       <div class="row mt-2">
         <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
             <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
           </div>
         </div>
@@ -245,8 +245,8 @@
       {% if not skip_sogo %}
       <div data-acl="{{ acl.sogo_access }}" class="row">
         <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
             <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
           </div>
         </div>
@@ -329,8 +329,8 @@
                 </div>
               </div>
               <div class="col-sm-12">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if pushover_data.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
               </div>
             </div>
             <div class="col-sm-12">
@@ -343,11 +343,11 @@
               <div id="po_advanced" class="collapse">
                 <label for="text">{{ lang.edit.pushover_sender_regex }}</label>
                 <input type="text" class="form-control mt-2" name="senders_regex" value="{{ pushover_data.senders_regex }}" placeholder="/(.*@example\.org$|^foo@example\.com$)/i" regex="true">
-                <div class="checkbox mt-4">
-                  <label><input type="checkbox" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.edit.pushover_evaluate_x_prio|raw }}</label>
+                <div class="form-check mt-4">
+                  <label><input type="checkbox" class="form-check-input" value="1" name="evaluate_x_prio"{% if pushover_data.attributes.evaluate_x_prio == '1' %} checked{% endif %}> {{ lang.edit.pushover_evaluate_x_prio|raw }}</label>
                 </div>
-                <div class="checkbox mt-2">
-                  <label><input type="checkbox" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.edit.pushover_only_x_prio|raw }}</label>
+                <div class="form-check mt-2">
+                  <label><input type="checkbox" class="form-check-input" value="1" name="only_x_prio"{% if pushover_data.attributes.only_x_prio == '1' %} checked{% endif %}> {{ lang.edit.pushover_only_x_prio|raw }}</label>
                 </div>
               </div>
             </div>

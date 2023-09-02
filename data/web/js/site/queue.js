@@ -48,7 +48,7 @@ jQuery(function($){
       url: "/api/v1/get/mailq/all",
       dataSrc: function(data){
         $.each(data, function (i, item) {
-          item.chkbox = '<input type="checkbox" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
+          item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
           rcpts = $.map(item.recipients, function(i) {
             return escapeHtml(i);
           });

@@ -57,7 +57,7 @@
                       </div>
                       <div class="mt-4 mb-2">
                         <label>
-                          <input type="checkbox" name="active" value="1" {% if rsetting.details.active %}checked{% endif %}> {{ lang.admin.active }}
+                          <input type="checkbox" class="form-check-input" name="active" value="1" {% if rsetting.details.active %}checked{% endif %}> {{ lang.admin.active }}
                         </label>
                       </div>
                       <button class="btn btn-sm btn-success" data-action="edit_selected" data-item="{{ rsetting.details.id }}" data-id="rsettings" data-api-url='edit/rsetting' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
