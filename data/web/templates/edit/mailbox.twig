@@ -379,18 +379,24 @@
     </form>
   </div>
   <div id="mrl" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-rl">
-    <form data-id="mboxratelimit" class="form-inline well" method="post">
-      <div class="row">
-        <div class="col-sm-1">
+    <form data-id="mboxratelimit" class="well" method="post">
+      <div class="row mb-2">
+        <div class="col-sm-2">
           <p class="text-muted">{{ lang.acl.ratelimit }}</p>
         </div>
         <div class="col-sm-10">
-          <input name="rl_value" type="number" autocomplete="off" value="{{ rl.value }}" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-          <select name="rl_frame" class="form-control">
+          <div class="input-group">
+            <input name="rl_value" type="number" autocomplete="off" value="{{ rl.value }}" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+            <select name="rl_frame" class="form-control">
             {% include 'mailbox/rl-frame.twig' %}
-          </select>
+            </select>
+          </div>
+        </div>  
+      </div>
+      <div class="row mb-2">
+        <div class="offset-sm-2 col-sm-10">  
           <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxratelimit" data-item="{{ mailbox }}" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
-          <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+          <p class="text-muted mt-2">{{ lang.edit.mbox_rl_info }}</p>
         </div>
       </div>
     </form>
