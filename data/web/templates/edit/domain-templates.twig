@@ -81,13 +81,12 @@
     <div class="row">
       <label class="control-label col-sm-2">{{ lang.edit.ratelimit }}</label>
       <div class="col-sm-10">
-        <input name="rl_value" type="number" value="{{ template.attributes.rl_value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-        <select name="rl_frame" class="form-control">
-          <option value="s"{% if template.attributes.rl_frame == 's' %} selected{% endif %}>{{ lang.ratelimit.second }}</option>
-          <option value="m"{% if template.attributes.rl_frame == 'm' %} selected{% endif %}>{{ lang.ratelimit.minute }}</option>
-          <option value="h"{% if template.attributes.rl_frame == 'h' %} selected{% endif %}>{{ lang.ratelimit.hour }}</option>
-          <option value="d"{% if template.attributes.rl_frame == 'd' %} selected{% endif %}>{{ lang.ratelimit.day }}</option>
-        </select>
+        <div class="input-group">
+          <input name="rl_value" type="number" value="{{ template.attributes.rl_value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
+          <select name="rl_frame" class="form-control">
+          {% include 'mailbox/rl-frame.twig' %}
+          </select>
+        </div>
       </div>
     </div>
     {% endif %}
