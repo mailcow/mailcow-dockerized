@@ -851,8 +851,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      initComplete: function(){
+      initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
+        filterByDomain(json, 8, table);
       },
       ajax: {
         type: "GET",
@@ -1362,8 +1363,9 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      initComplete: function(){
+      initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#tab-resources', '#resource_table');
+        filterByDomain(json, 5, table);
       },
       ajax: {
         type: "GET",
@@ -1509,8 +1511,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[2, 'desc']],
-      initComplete: function(){
+      initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
+        filterByDomain(json, 6, table);
       },
       ajax: {
         type: "GET",
@@ -1823,8 +1826,9 @@ jQuery(function($){
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[2, 'desc']],
-      initComplete: function(){
+      initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
+        filterByDomain(json, 5, table);
       },
       ajax: {
         type: "GET",
@@ -2328,6 +2332,40 @@ jQuery(function($){
       $(tab).find(".table_collapse_option").show();
     else
       $(tab).find(".table_collapse_option").hide();
+  }
+  
+  function filterByDomain(json, column, table){
+    var tableId = $(table.table().container()).attr('id');
+    // Create the `select` element
+    var select = $('<select class="btn btn-sm btn-xs-lg btn-light text-start mx-2"><option value="">'+lang.all_domains+'</option></select>')
+      .insertBefore(
+        $('#'+tableId+' .dataTables_filter > label > input')
+      )
+      .on( 'change', function(){
+        table.column(column)
+          .search($(this).val())
+          .draw();
+      });
+
+    // get all domains
+    var domains = [];
+    json.forEach(obj => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if(key === 'domain') {
+          domains.push(value)
+        }
+      });
+    });
+    
+    // get unique domain list
+    domains = domains.filter(function(value, index, array) {
+      return array.indexOf(value) === index;
+    });
+    
+    // add domains to select
+    domains.forEach(function(domain) {
+        select.append($('<option>' + domain + '</option>'));
+    });
   }
 
   // detect element visibility changes
