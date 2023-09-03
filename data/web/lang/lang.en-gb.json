@@ -149,6 +149,8 @@
         "ays": "Are you sure you want to proceed?",
         "ban_list_info": "See a list of banned IPs below: <b>network (remaining ban time) - [actions]</b>.<br />IPs queued to be unbanned will be removed from the active ban list within a few seconds.<br />Red labels indicate active permanent bans by blacklisting.",
         "change_logo": "Change logo",
+        "logo_normal_label": "Normal",
+        "logo_dark_label": "Inverted for dark mode",
         "configuration": "Configuration",
         "convert_html_to_text": "Convert HTML to plain text",
         "cors_settings": "CORS Settings",
