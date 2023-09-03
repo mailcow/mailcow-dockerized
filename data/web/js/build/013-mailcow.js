@@ -121,7 +121,7 @@ $(document).ready(function() {
         if (lastTab) {
           $('[data-bs-target="#' + lastTab + '"]').click();
           var tab = $('[id^="' + lastTab + '"]');
-          $(tab).find('.card-body.collapse').collapse('show');
+          $(tab).find('.card-body.collapse:first').collapse('show');
         }
       });
   })();
