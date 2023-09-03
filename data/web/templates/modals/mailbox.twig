@@ -155,14 +155,13 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.acl.ratelimit }}</label>
             <div class="col-sm-10">
-              <input name="rl_value" id="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
-              <select name="rl_frame" id="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
-              <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+              <div class="input-group">
+                <input name="rl_value" id="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" id="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
+              <p class="text-muted mt-1">{{ lang.edit.mbox_rl_info }}</p>
             </div>
           </div>
           <div class="row mb-2">
@@ -325,14 +324,13 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.acl.ratelimit }}</label>
             <div class="col-sm-10">
-              <input name="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
-              <select name="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
-              <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+              <div class="input-group">
+                <input name="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
+              <p class="text-muted mt-1">{{ lang.edit.mbox_rl_info }}</p>
             </div>
           </div>
           <hr>
@@ -462,13 +460,13 @@
           <hr>
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end" for="rl_frame">{{ lang.acl.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" id="addDomain_rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" id="addDomain_rl_frame" class="form-control">
-              {% include 'mailbox/rl-frame.twig' %}
-              </select>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" id="addDomain_rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" id="addDomain_rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
             </div>
           </div>
           <hr>
@@ -600,16 +598,13 @@
           <hr>
           <div class="row">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" type="number" value="" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" type="number" value="" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
             </div>
           </div>
           {% endif %}
@@ -819,13 +814,13 @@
           <hr>
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="rl_frame">{{ lang.acl.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" class="form-control">
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
                 {% include 'mailbox/rl-frame.twig' %}
-              </select>
+                </select>
+              </div>
             </div>
           </div>
           <hr>
