@@ -137,7 +137,7 @@
     <hr>
     <div class="row">
       <div class="col-12 col-sm-2">
-        <p>Domain: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
+        <p>{{ lang.add.domain }}: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
       </div>
       <div class="col-12 col-sm-10">
         <pre class="p-2">{{ dkim.dkim_txt }}</pre>
