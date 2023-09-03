@@ -31,7 +31,10 @@
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-fixed-top p-0">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><img alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}"></a>
+    <a class="navbar-brand" href="/">
+      <img class="main-logo" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}">
+      <img class="main-logo-dark" alt="mailcow-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <i class="bi bi-list fs-3"></i>
     </button>
