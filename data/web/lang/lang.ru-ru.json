@@ -1202,6 +1202,6 @@
         "session_ua": "Неверный токен формы: ошибка проверки User-Agent"
     },
     "datatables": {
-        "infoPostFix": "datatables.infoPostFix"
+        "infoPostFix": ""
     }
 }
