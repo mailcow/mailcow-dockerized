@@ -457,28 +457,27 @@
         "yotp_verification_failed": "Overenie cez OTP Yubico zlyhalo: %s"
     },
     "datatables": {
-      "info": "Záznamy _START_ až _END_ z celkom _TOTAL_",
-      "infoEmpty": "Záznamy 0 až 0 z celkom 0 ",
-      "infoFiltered": "(vyfiltrované spomedzi _MAX_ záznamov)",
-      "infoThousands": " ",
-      "lengthMenu": "Zobraz _MENU_ záznamov",
-      "loadingRecords": "Načítavam...",
-      "processing": "Spracúvam...",
-      "search": "Hľadať:",
-      "zeroRecords": "Nenašli sa žiadne vyhovujúce záznamy",
-      "paginate": {
-        "first": "Prvá",
-        "last": "Posledná",
-        "next": "Nasledujúca",
-        "previous": "Predchádzajúca"
-      },
-      "aria": {
-        "sortAscending": ": aktivujte na zoradenie stĺpca vzostupne",
-        "sortDescending": ": aktivujte na zoradenie stĺpca zostupne"
-      },
-      "emptyTable": "Nie sú k dispozícii žiadne dáta.",
-      "decimal": ",",
-      "thousands": " "
+        "info": "Záznamy _START_ až _END_ z celkom _TOTAL_",
+        "infoEmpty": "Záznamy 0 až 0 z celkom 0 ",
+        "infoFiltered": "(vyfiltrované spomedzi _MAX_ záznamov)",
+        "lengthMenu": "Zobraz _MENU_ záznamov",
+        "loadingRecords": "Načítavam...",
+        "processing": "Spracúvam...",
+        "search": "Hľadať:",
+        "zeroRecords": "Nenašli sa žiadne vyhovujúce záznamy",
+        "paginate": {
+            "first": "Prvá",
+            "last": "Posledná",
+            "next": "Nasledujúca",
+            "previous": "Predchádzajúca"
+        },
+        "aria": {
+            "sortAscending": ": aktivujte na zoradenie stĺpca vzostupne",
+            "sortDescending": ": aktivujte na zoradenie stĺpca zostupne"
+        },
+        "emptyTable": "Nie sú k dispozícii žiadne dáta.",
+        "decimal": ",",
+        "thousands": " "
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",

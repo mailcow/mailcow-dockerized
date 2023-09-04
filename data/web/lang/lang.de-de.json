@@ -484,7 +484,7 @@
         "info": "_START_ bis _END_ von _TOTAL_ Einträgen",
         "infoEmpty": "0 bis 0 von 0 Einträgen",
         "infoFiltered": "(gefiltert von _MAX_ Einträgen)",
-        "infoPostFix": "datatables.infoPostFix",
+        "infoPostFix": "",
         "thousands": ".",
         "lengthMenu": "_MENU_ Einträge anzeigen",
         "loadingRecords": "Wird geladen...",

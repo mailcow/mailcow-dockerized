@@ -1254,7 +1254,7 @@
     },
     "datatables": {
         "decimal": ".",
-        "infoPostFix": "datatables.infoPostFix",
+        "infoPostFix": "",
         "zeroRecords": "Відповідних записів не знайдено",
         "aria": {
             "sortAscending": ": активувати для сортування стовпців за зростанням",
