@@ -14,7 +14,10 @@
         </div>
       </div>
       <div class="card-body">
-        <div class="text-center mailcow-logo mb-4"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
+        <div class="text-center mailcow-logo mb-4">
+          <img class="main-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow">
+          <img class="main-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}" alt="mailcow-logo-dark">
+        </div>
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
         <div class="my-4 alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
         {% endif %}

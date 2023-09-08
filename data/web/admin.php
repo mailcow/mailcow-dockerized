@@ -108,6 +108,7 @@ $template_data = [
   'rsettings' => $rsettings,
   'rspamd_regex_maps' => $rspamd_regex_maps,
   'logo_specs' => customize('get', 'main_logo_specs'),
+  'logo_dark_specs' => customize('get', 'main_logo_dark_specs'),
   'ip_check' => customize('get', 'ip_check'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
