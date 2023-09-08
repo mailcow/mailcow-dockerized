@@ -121,10 +121,21 @@ $(document).ready(function() {
         if (lastTab) {
           $('[data-bs-target="#' + lastTab + '"]').click();
           var tab = $('[id^="' + lastTab + '"]');
-          $(tab).find('.card-body.collapse').collapse('show');
+          $(tab).find('.card-body.collapse:first').collapse('show');
         }
       });
   })();
+  
+  // responsive tabs, scroll to opened tab
+  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
+	  var target = $(e.target);
+	  if($(window).width() <= 767) {
+		  var offset = target.offset().top - 60;
+		  $("html, body").stop().animate({
+		    scrollTop: offset
+		  }, 100);
+	  }
+  });
 
   // IE fix to hide scrollbars when table body is empty
   $('tbody').filter(function (index) {
