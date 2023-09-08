@@ -93,10 +93,10 @@ jQuery(function($){
         dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
 
@@ -154,10 +154,10 @@ jQuery(function($){
         dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
 

@@ -59,20 +59,22 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           ];
       }
     }
-    elseif (isset($_GET["template"])){
-      $domain_template = mailbox('get', 'domain_templates', $_GET["template"]);
+    elseif (isset($_GET['template'])){
+      $domain_template = mailbox('get', 'domain_templates', $_GET['template']);
       if ($domain_template){
         $template_data = [
-          'template' => $domain_template
+          'template' => $domain_template,
+          'rl' => ['frame' => $domain_template['attributes']['rl_frame']],
         ];
         $template = 'edit/domain-templates.twig';
         $result = true;
       }
       else {
-        $mailbox_template = mailbox('get', 'mailbox_templates', $_GET["template"]);
+        $mailbox_template = mailbox('get', 'mailbox_templates', $_GET['template']);
         if ($mailbox_template){
           $template_data = [
-            'template' => $mailbox_template
+            'template' => $mailbox_template,
+            'rl' => ['frame' => $mailbox_template['attributes']['rl_frame']],
           ];
           $template = 'edit/mailbox-templates.twig';
           $result = true;

@@ -1,4 +1,4 @@
-<div class="tab-pane fade show" id="tab-templates-domains" role="tabpanel" aria-labelledby="tab-templates-domains">
+<div class="tab-pane fade" id="tab-templates-domains" role="tabpanel" aria-labelledby="tab-templates-domains">
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
       <button class="btn d-sm-block d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-templates-domains" data-bs-toggle="collapse" aria-controls="collapse-tab-templates-domains">
@@ -10,8 +10,8 @@
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_templates_domain_table" data-table="templates_domain_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
-    <div id="collapse-tab-templates-domains" class="card-body collapse show" data-bs-parent="#mail-content">  
-      <div class="mass-actions-mailbox mb-4">
+    <div id="collapse-tab-templates-domains" class="card-body collapse" data-bs-parent="#mail-content">  
+      <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
         <div class="btn-group">
           <button class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain_template" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
           <button class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
@@ -24,15 +24,15 @@
             {% endif %}
           </ul>
           {% if mailcow_cc_role == 'admin' %}
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainTemplateModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_template }}</a>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addDomainTemplateModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_template }}</button>
           {% endif %}
         </div>
       </div>
       <table id="templates_domain_table" class="table table-striped dt-responsive w-100"></table>  
       <div class="mass-actions-mailbox mt-4">
         <div class="btn-group">
-          <button class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain_template" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
-          <button class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
+          <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain_template" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
+          <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="delete_selected" data-id="domain_template" data-api-url='delete/domain/template' href="#">{{ lang.mailbox.remove }}</a></li>
@@ -42,7 +42,7 @@
             {% endif %}
           </ul>
           {% if mailcow_cc_role == 'admin' %}
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainTemplateModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_template }}</a>
+          <button class="btn btn-sm btn-xs-lg btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainTemplateModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_template }}</button>
           {% endif %}
         </div>
       </div>

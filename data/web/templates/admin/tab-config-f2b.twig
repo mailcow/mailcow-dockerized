@@ -92,28 +92,29 @@
       {% endif %}
       {% for active_ban in f2b_data.active_bans %}
         <p>
-          <span class="badge fs-5 bg-info py-0">
+          <span class="badge fs-7 bg-info d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank" style="color:white">
+            <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank">
               {{ active_ban.network }}
             </a>
-            ({{ active_ban.banned_until }}) -
+            ({{ active_ban.banned_until }})
+          </span>
+          <span class="d-none d-sm-inline"> - </span>
             {% if active_ban.queued_for_unban == 0 %}
-            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
-            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-            <a class="btn btn-lg btn-link p-0 text-info" data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}
-          </span>
         </p>
       {% endfor %}
       <hr>
       {% for perm_ban in f2b_data.perm_bans %}
         <p>
-          <span class="badge fs-5 bg-danger" style="padding: 0.1em 0.4em 0.1em;">
+          <span class="badge fs-7 bg-danger d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank" style="color:white">
+            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank">
               {{ perm_ban.network }}
             </a>
           </span>
