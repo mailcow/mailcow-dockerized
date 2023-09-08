@@ -9,8 +9,7 @@ require_once "vars.inc.php";
 // Getting headers sent by the client.
 ini_set('error_reporting', 0);
 
-//$dsn = $database_type . ':host=' . $database_host . ';dbname=' . $database_name;
-$dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
+$dsn = $database_type . ":host=" . $database_host . ";port=" . $database_port . ";dbname=" . $database_name
 $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

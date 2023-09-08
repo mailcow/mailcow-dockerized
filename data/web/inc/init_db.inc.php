@@ -1443,7 +1443,7 @@ if (php_sapi_name() == "cli") {
   // $hrs = floor($mins / 60);
   // $mins -= $hrs * 60;
   // $offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
-  $dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
+  $dsn = $database_type . ":host=" . $database_host . ";port=" . $database_port . ";dbname=" . $database_name;
   $opt = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

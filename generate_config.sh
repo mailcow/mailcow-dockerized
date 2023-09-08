@@ -227,6 +227,8 @@ MAILCOW_PASS_SCHEME=BLF-CRYPT
 # SQL database configuration
 # ------------------------------
 
+DBHOST=mysql-mailcow
+DBPORT=3306
 DBNAME=mailcow
 DBUSER=mailcow
 

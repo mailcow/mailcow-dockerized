@@ -3,7 +3,7 @@
 function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+while ! mysqladmin status --host=${DBHOST} --port=${DBPORT} -u${DBUSER} -p${DBPASS} --silent; do
   echo "Waiting for SQL..."
   sleep 2
 done
@@ -43,7 +43,7 @@ until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
     echo "MySQL applied an upgrade, debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
     sleep 3
-    while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+    while ! mysqladmin status --host=${DBHOST} --port=${DBPORT} -u${DBUSER} -p${DBPASS} --silent; do
       echo "Waiting for SQL to return, please wait"
       sleep 2
     done
@@ -71,7 +71,7 @@ if [ ${SQL_CHANGED} -eq 1 ]; then
 fi
 
 # Check mysql tz import (master and slave)
-TZ_CHECK=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC') AS time;" -BN 2> /dev/null)
+TZ_CHECK=$(mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC') AS time;" -BN 2> /dev/null)
 if [[ -z ${TZ_CHECK} ]] || [[ "${TZ_CHECK}" == "NULL" ]]; then
   SQL_FULL_TZINFO_IMPORT_RETURN=$(curl --silent --insecure -XPOST https://dockerapi/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_tzinfo_to_sql"}' --silent -H 'Content-type: application/json')
   echo "MySQL mysql_tzinfo_to_sql - debug output:"
@@ -110,11 +110,11 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   while read line
   do
     DOMAIN_ARR+=("$line")
-  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
+  done < <(mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain" -Bs)
   while read line
   do
     DOMAIN_ARR+=("$line")
-  done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
+  done < <(mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT alias_domain FROM alias_domain" -Bs)
 
   if [[ ! -z ${DOMAIN_ARR} ]]; then
   for domain in "${DOMAIN_ARR[@]}"; do
@@ -136,13 +136,13 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     VALIDATED_IPS=$(array_by_comma ${VALIDATED_API_ALLOW_FROM_ARR[*]})
     if [[ ! -z ${VALIDATED_IPS} ]]; then
       if [[ ${API_KEY} != "invalid" ]] && [[ ! -z ${API_KEY} ]]; then
-        mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+        mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 DELETE FROM api WHERE access = 'rw';
 INSERT INTO api (api_key, active, allow_from, access) VALUES ("${API_KEY}", "1", "${VALIDATED_IPS}", "rw");
 EOF
       fi
       if [[ ${API_KEY_READ_ONLY} != "invalid" ]] && [[ ! -z ${API_KEY_READ_ONLY} ]]; then
-        mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+        mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 DELETE FROM api WHERE access = 'ro';
 INSERT INTO api (api_key, active, allow_from, access) VALUES ("${API_KEY_READ_ONLY}", "1", "${VALIDATED_IPS}", "ro");
 EOF
@@ -151,7 +151,7 @@ EOF
   fi
 
   # Create events (master only, STATUS for event on slave will be SLAVESIDE_DISABLED)
-  mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+  mysql --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 DROP EVENT IF EXISTS clean_spamalias;
 DELIMITER //
 CREATE EVENT clean_spamalias
