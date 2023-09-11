@@ -970,7 +970,7 @@
     "queue": {
         "delete": "Queue löschen",
         "flush": "Queue flushen",
-        "info": "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt aufschluss darüber, warum diese nicht zugestellt werden konnte",
+        "info": "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt Aufschluss darüber, warum diese nicht zugestellt werden konnte",
         "legend": "Funktionen der Mailqueue Aktionen:",
         "ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
         "deliver_mail": "Ausliefern",
