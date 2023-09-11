@@ -887,8 +887,22 @@ done
 
 [[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 
+
 # Silently fixing remote url from andryyy to mailcow
 # git remote set-url origin https://github.com/mailcow/mailcow-dockerized
+
+DEFAULT_REPO=https://github.com/mailcow/mailcow-dockerized
+CURRENT_REPO=$(git remote get-url origin)
+if ["$CURRENT_REPO" != "$DEFAULT_REPO"]
+  echo "The Repository currently used is not the default Mailcow Repository."
+  echo "Currently Repository: $CURRENT_REPO"
+  echo "Default Repository:   $DEFAULT_REPO"
+  read -r -p "Should it be changed back to default? [y/N] " repo_response
+  if [[ "$repo_response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    git remote set-url origin $DEFAULT_REPO
+  fi
+fi
+
 echo -e "\e[32mCommitting current status...\e[0m"
 [[ -z "$(git config user.name)" ]] && git config user.name moo
 [[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
