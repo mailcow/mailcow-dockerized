@@ -155,10 +155,12 @@ while (true) {
       logMsg("warning", "No attributes in keycloak found for user " . $user['email']);
       continue;
     }
-    if (count($user['attributes']['mailcow_template']) == 0) {
+    if (!isset($user['attributes']['mailcow_template']) || 
+        !is_array($user['attributes']['mailcow_template']) || 
+        count($user['attributes']['mailcow_template']) == 0) {
       logMsg("warning", "No mailcow_template in keycloak found for user " . $user['email']);
       continue;
-    };
+    }
     $mailcow_template = $user['attributes']['mailcow_template'];
 
     // try get mailbox user
