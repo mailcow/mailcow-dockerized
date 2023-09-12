@@ -509,6 +509,7 @@ rspamd_config:register_symbol({
   type = 'prefilter',
   callback = function(task)
     local lua_mime = require "lua_mime"
+    local lua_util = require "lua_util"
     local rspamd_logger = require "rspamd_logger"
     local rspamd_redis = require "rspamd_redis"
     local ucl = require "ucl"
@@ -546,6 +547,15 @@ rspamd_config:register_symbol({
 
           if footer and type(footer) == "table" and (footer.html or footer.plain) then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s", uname, footer.html, footer.plain)
+            local replacements = {
+              email = uname
+            }
+            if footer.html then
+              footer.html = lua_util.jinja_template(footer.html, replacements, true)
+            end
+            if footer.plain then
+              footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
+            end
   
             -- add footer
             local out = {}
