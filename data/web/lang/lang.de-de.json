@@ -147,6 +147,7 @@
         "change_logo": "Logo ändern",
         "configuration": "Konfiguration",
         "convert_html_to_text": "Konvertiere HTML zu reinem Text",
+        "cors_settings": "CORS Einstellungen",
         "credentials_transport_warning": "<b>Warnung</b>: Das Hinzufügen einer neuen Regel bewirkt die Aktualisierung der Authentifizierungsdaten aller vorhandenen Einträge mit identischem Next Hop.",
         "customer_id": "Kunde",
         "customize": "UI-Anpassung",
@@ -342,7 +343,9 @@
         "api_read_only": "Schreibgeschützter Zugriff",
         "api_read_write": "Lese-Schreib-Zugriff",
         "oauth2_apps": "OAuth2 Apps",
-        "queue_unban": "entsperren"
+        "queue_unban": "entsperren",
+        "allowed_methods": "Access-Control-Allow-Methods",
+        "allowed_origins": "Access-Control-Allow-Origin"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -358,6 +361,8 @@
         "bcc_exists": "Ein BCC-Map-Eintrag %s existiert bereits als Typ %s",
         "bcc_must_be_email": "BCC-Ziel %s ist keine gültige E-Mail-Adresse",
         "comment_too_long": "Kommentarfeld darf maximal 160 Zeichen enthalten",
+        "cors_invalid_method": "Allow-Methods enthält eine ungültige Methode",
+        "cors_invalid_origin": "Allow-Origins enthält eine ungültige Origin",
         "defquota_empty": "Standard-Quota darf nicht 0 sein",
         "demo_mode_enabled": "Demo Mode ist aktiviert",
         "description_invalid": "Ressourcenbeschreibung für %s ist ungültig",
@@ -965,7 +970,7 @@
     "queue": {
         "delete": "Queue löschen",
         "flush": "Queue flushen",
-        "info": "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt aufschluss darüber, warum diese nicht zugestellt werden konnte",
+        "info": "In der Mailqueue befinden sich alle E-Mails, welche auf eine Zustellung warten. Sollte eine E-Mail eine längere Zeit innerhalb der Mailqueue stecken wird diese automatisch vom System gelöscht.<br>Die Fehlermeldung der jeweiligen Mail gibt Aufschluss darüber, warum diese nicht zugestellt werden konnte",
         "legend": "Funktionen der Mailqueue Aktionen:",
         "ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
         "deliver_mail": "Ausliefern",
@@ -1002,6 +1007,7 @@
         "bcc_deleted": "BCC-Map-Einträge gelöscht: %s",
         "bcc_edited": "BCC-Map-Eintrag %s wurde geändert",
         "bcc_saved": "BCC- Map-Eintrag wurde gespeichert",
+        "cors_headers_edited": "CORS Einstellungen wurden erfolgreich gespeichert",
         "db_init_complete": "Datenbankinitialisierung abgeschlossen",
         "delete_filter": "Filter-ID %s wurde gelöscht",
         "delete_filters": "Filter gelöscht: %s",
@@ -1119,7 +1125,7 @@
         "apple_connection_profile_mailonly": "Dieses Verbindungsprofil beinhaltet IMAP- und SMTP-Konfigurationen für ein Apple-Gerät.",
         "apple_connection_profile_with_app_password": "Es wird ein neues App-Passwort erzeugt und in das Profil eingefügt, damit bei der Einrichtung kein Passwort eingegeben werden muss. Geben Sie das Profil nicht weiter, da es einen vollständigen Zugriff auf Ihr Postfach ermöglicht.",
         "change_password": "Passwort ändern",
-        "change_password_hint_app_passwords": "Ihre Mailbox hat {{number_of_app_passwords}} App-Passwörter, die nicht geändert werden. Um diese zu verwalten, gehen Sie bitte zum App-Passwörter-Tab.",
+        "change_password_hint_app_passwords": "Ihre Mailbox hat %d App-Passwörter, die nicht geändert werden. Um diese zu verwalten, gehen Sie bitte zum App-Passwörter-Tab.",
         "clear_recent_successful_connections": "Alle erfolgreichen Verbindungen bereinigen",
         "client_configuration": "Konfigurationsanleitungen für E-Mail-Programme und Smartphones anzeigen",
         "create_app_passwd": "Erstelle App-Passwort",

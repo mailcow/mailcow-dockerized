@@ -1,6 +1,6 @@
 window.onload = function() {
   // Begin Swagger UI call region
-  const ui = SwaggerUIBundle({
+  window.ui = SwaggerUIBundle({
     urls: [{url: "/api/openapi.yaml", name: "mailcow API"}],
     dom_id: '#swagger-ui',
     deepLinking: true,
@@ -15,5 +15,4 @@ window.onload = function() {
   });
   // End Swagger UI call region
 
-  window.ui = ui;
 };

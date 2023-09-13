@@ -49,7 +49,9 @@ function bcc($_action, $_data = null, $_attr = null) {
       }
       elseif (filter_var($local_dest, FILTER_VALIDATE_EMAIL)) {
         $mailbox = mailbox('get', 'mailbox_details', $local_dest);
-        if ($mailbox === false && array_key_exists($local_dest, array_merge($direct_aliases, $shared_aliases)) === false) {
+        $shared_aliases = mailbox('get', 'shared_aliases');
+        $direct_aliases = mailbox('get', 'direct_aliases');
+        if ($mailbox === false && in_array($local_dest, array_merge($direct_aliases, $shared_aliases)) === false) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),

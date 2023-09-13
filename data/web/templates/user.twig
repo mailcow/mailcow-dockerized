@@ -12,11 +12,21 @@
         <li><button class="dropdown-item" role="tab" aria-selected="false" aria-controls="tab-config-f2b" data-bs-toggle="tab" data-bs-target="#tab-user-settings">{{ lang.user.mailbox_settings }}</button></li>
       </ul>
     </li>
+    {% if acl.spam_alias == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="SpamAliases" role="tab" data-bs-toggle="tab" data-bs-target="#SpamAliases">{{ lang.user.spam_aliases }}</button></li>
+    {% endif %}
+    {% if acl.spam_score == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Spamfilter" role="tab" data-bs-toggle="tab" data-bs-target="#Spamfilter">{{ lang.user.spamfilter }}</button></li>
+    {% endif %}
+    {% if acl.syncjobs == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#Syncjobs">{{ lang.user.sync_jobs }}</button></li>
+    {% endif %}
+    {% if acl.app_passwds == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="AppPasswds" role="tab" data-bs-toggle="tab" data-bs-target="#AppPasswds">{{ lang.user.app_passwds }}</button></li>
+    {% endif %}
+    {% if acl.pushover == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Pushover" role="tab" data-bs-toggle="tab" data-bs-target="#Pushover">Pushover API</button></li>
+    {% endif %}
   </ul>
 
   <div class="row">
@@ -25,11 +35,11 @@
         {% include 'user/tab-user-auth.twig' %}
         {% include 'user/tab-user-details.twig' %}
         {% include 'user/tab-user-settings.twig' %}
-        {% include 'user/SpamAliases.twig' %}
-        {% include 'user/Spamfilter.twig' %}
-        {% include 'user/Syncjobs.twig' %}
-        {% include 'user/AppPasswds.twig' %}
-        {% include 'user/Pushover.twig' %}
+        {% if acl.spam_alias == 1 %}{% include 'user/SpamAliases.twig' %}{% endif %}
+        {% if acl.spam_score == 1 %}{% include 'user/Spamfilter.twig' %}{% endif %}
+        {% if acl.syncjobs == 1 %}{% include 'user/Syncjobs.twig' %}{% endif %}
+        {% if acl.app_passwds == 1 %}{% include 'user/AppPasswds.twig' %}{% endif %}
+        {% if acl.pushover == 1 %}{% include 'user/Pushover.twig' %}{% endif %}
       </div>
     </div>
   </div>

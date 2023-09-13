@@ -1,13 +1,3 @@
-const LOCALE = undefined;
-const DATETIME_FORMAT = {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit"
-};
-
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -829,13 +819,10 @@ jQuery(function($){
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
-        console.log(data);
-
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
-        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -951,12 +938,15 @@ jQuery(function($){
           title: 'Score',
           data: 'score',
           defaultContent: '',
+          class: 'text-nowrap',
           createdCell: function(td, cellData) {
             $(td).attr({
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -979,7 +969,9 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -1181,7 +1173,7 @@ jQuery(function($){
 
     if (table = $('#' + log_table).DataTable()) {
       var heading = $('#' + log_table).closest('.card').find('.card-header');
-      var load_rows = (table.data().length + 1) + '-' + (table.data().length + new_nrows)
+      var load_rows = (table.data().count() + 1) + '-' + (table.data().count() + new_nrows)
 
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }

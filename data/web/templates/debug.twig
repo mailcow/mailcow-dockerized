@@ -37,7 +37,8 @@
           <div class="card-body">
             <div class="row">
               <div class="col-sm-12 col-md-4 d-flex flex-column">
-                <img class="img-responsive my-auto m-auto" alt="mailcow-logo" style="max-width: 85%; max-height: 85%;" src="{{ logo|default('/img/cow_mailcow.svg') }}">
+                <img class="main-logo img-responsive my-auto m-auto" alt="mailcow-logo" style="max-width: 85%; max-height: 85%;" src="{{ logo|default('/img/cow_mailcow.svg') }}">
+                <img class="main-logo-dark img-responsive my-auto m-auto" alt="mailcow-logo-dark" style="max-width: 85%; max-height: 85%;" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
               </div>
               <div class="col-sm-12 col-md-8">
                 <div class="table-responsive" style="margin-top: 10px;">
@@ -497,8 +498,8 @@
             <legend>{{ lang.debug.history_all_servers }}</legend><hr />
             <a class="btn btn-sm btn-secondary dropdown-toggle mb-4" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd_history" data-nrows="100" href="#">+ 100</a></li>
-              <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd_history" data-nrows="1000" href="#">+ 1000</a></li>
+              <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="100" href="#">+ 100</a></li>
+              <li><a class="dropdown-item add_log_lines" data-post-process="rspamd_history" data-table="rspamd_history" data-log-url="rspamd-history" data-nrows="1000" href="#">+ 1000</a></li>
               <li class="table_collapse_option"><hr class="dropdown-divider"></li>
               <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.expand_all }}</a></li>
               <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="rspamd_history" data-table="rspamd_history" href="#">{{ lang.datatables.collapse_all }}</a></li>
