@@ -585,7 +585,7 @@
         "domain_admin": "Edit domain administrator",
         "domain_footer": "Domain wide footer",
         "domain_footer_html": "HTML footer",
-        "domain_footer_info": "Domain wide footers will be added to all emails sent from the specified domain.",
+        "domain_footer_info": "Domain-wide footers are added to all outgoing emails associated with an address within this domain. <br> The following variables can be used for the footer:",
         "domain_footer_plain": "PLAIN footer",
         "domain_quota": "Domain quota",
         "domains": "Domains",
