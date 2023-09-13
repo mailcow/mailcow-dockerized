@@ -280,11 +280,11 @@
                   <div class="col-sm-12">
                     <h4>{{ lang.edit.domain_footer }}</h4>
                     <p>{{ lang.edit.domain_footer_info|raw }}</p>
-                    <pre>{= auth_user =}   - Authenticated Username specified by an MTA
-{= from_user =}   - Parsed user part of email headers, e.g for "moo@mailcow.tld" it returns "moo"
-{= from_name =}   - Parsed name of email headers, e.g for "Mailcow &lt;moo@mailcow.tld&gt;" it returns "Mailcow"
-{= from_addr =}   - Parsed address part of email headers
-{= from_domain =} - Parsed domain part of email headers</pre>
+                    <pre>{{ lang.edit.domain_footer_info_vars.auth_user }}
+{{ lang.edit.domain_footer_info_vars.from_user }}
+{{ lang.edit.domain_footer_info_vars.from_name }}
+{{ lang.edit.domain_footer_info_vars.from_addr }}
+{{ lang.edit.domain_footer_info_vars.from_domain }}</pre>
                     <form class="form-horizontal mt-4" data-id="domain_footer">
                       <div class="row mb-2">
                         <label class="control-label col-sm-2" for="domain_footer_html">{{ lang.edit.domain_footer_html }}:</label>
