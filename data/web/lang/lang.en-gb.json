@@ -586,6 +586,13 @@
         "domain_footer": "Domain wide footer",
         "domain_footer_html": "HTML footer",
         "domain_footer_info": "Domain-wide footers are added to all outgoing emails associated with an address within this domain. <br> The following variables can be used for the footer:",
+        "domain_footer_info_vars": {
+            "auth_user": "{= auth_user =}   - Authenticated Username specified by an MTA",
+            "from_user": "{= from_user =}   - From user part of envelope, e.g for \"moo@mailcow.tld\" it returns \"moo\"",
+            "from_name": "{= from_name =}   - From name of envelope, e.g for \"Mailcow &lt;moo@mailcow.tld&gt;\" it returns \"Mailcow\"",
+            "from_addr": "{= from_addr =}   - From address part of envelope",
+            "from_domain": "{= from_domain =} - From domain part of envelope"
+        },
         "domain_footer_plain": "PLAIN footer",
         "domain_quota": "Domain quota",
         "domains": "Domains",
