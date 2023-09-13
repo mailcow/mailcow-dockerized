@@ -543,8 +543,21 @@ rspamd_config:register_symbol({
 
           if footer and type(footer) == "table" and (footer.html or footer.plain) then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s", uname, footer.html, footer.plain)
+
+            local envfrom_mime = task:get_from(2)
+            local from_name = ""
+            if envfrom_mime and envfrom_mime[1].name then
+              from_name = envfrom_mime[1].name
+            elseif envfrom and envfrom[1].name then
+              from_name = envfrom[1].name
+            end
+
             local replacements = {
-              email = uname
+              auth_user = uname,
+              from_user = envfrom[1].user,
+              from_name = from_name,
+              from_addr = envfrom[1].addr,
+              from_domain = envfrom[1].domain:lower()
             }
             if footer.html then
               footer.html = lua_util.jinja_template(footer.html, replacements, true)
