@@ -268,6 +268,47 @@
             </div>
         </div>
       </div>
+      <div id="dfooter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-footer">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-footer" data-bs-toggle="collapse" aria-controls="collapse-tab-footer">
+                {{ lang.edit.domain_footer }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-footer" class="card-body collapse" data-bs-parent="#domain-content">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <h4>{{ lang.edit.domain_footer }}</h4>
+                    <p>{{ lang.edit.domain_footer_info|raw }}</p>
+                    <pre>{= auth_user =}   - Authenticated Username specified by an MTA
+{= from_user =}   - Parsed user part of email headers, e.g for "moo@mailcow.tld" it returns "moo"
+{= from_name =}   - Parsed name of email headers, e.g for "Mailcow &lt;moo@mailcow.tld&gt;" it returns "Mailcow"
+{= from_addr =}   - Parsed address part of email headers
+{= from_domain =} - Parsed domain part of email headers</pre>
+                    <form class="form-horizontal mt-4" data-id="domain_footer">
+                      <div class="row mb-2">
+                        <label class="control-label col-sm-2" for="domain_footer_html">{{ lang.edit.domain_footer_html }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_html" name="footer_html">{{ domain_footer.html }}</textarea>
+                        </div>
+                      </div>
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2" for="domain_footer_plain">{{ lang.edit.domain_footer_plain }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_plain" name="footer_plain">{{ domain_footer.plain }}</textarea>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="domain_footer" data-item="domain_footer" data-api-url='edit/domain-wide-footer' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
     </div>
 </div>
 {% else %}
