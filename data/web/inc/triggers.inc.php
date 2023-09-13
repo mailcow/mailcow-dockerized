@@ -63,7 +63,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
         unset($_SESSION['index_query_string']);
         if (in_array('mobileconfig', $http_parameters)) {
             if (in_array('only_email', $http_parameters)) {
-                header("Location: /mobileconfig.php?email_only");
+                header("Location: /mobileconfig.php?only_email");
                 die();
             }
             header("Location: /mobileconfig.php");
@@ -121,9 +121,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     if ($_FILES['main_logo']['error'] == 0) {
       customize('add', 'main_logo', $_FILES);
     }
+    if ($_FILES['main_logo_dark']['error'] == 0) {
+      customize('add', 'main_logo_dark', $_FILES);
+    }
 	}
 	if (isset($_POST["reset_main_logo"])) {
     customize('delete', 'main_logo');
+    customize('delete', 'main_logo_dark');
 	}
   // Some actions will not be available via API
 	if (isset($_POST["license_validate_now"])) {
