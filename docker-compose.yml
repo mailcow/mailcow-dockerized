@@ -124,6 +124,8 @@ services:
         - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
         - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
         - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
+        - ./data/web/inc/functions.mailbox.inc.php:/mailcowauth/functions.mailbox.inc.php:z
+        - ./data/web/inc/functions.ratelimit.inc.php:/mailcowauth/functions.ratelimit.inc.php:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
