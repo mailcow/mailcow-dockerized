@@ -178,7 +178,7 @@ function user_login($user, $pass, $extra = null){
   // user does not exist, try call keycloak login and create user if possible via rest flow
   if (!$row){
     $iam_settings = identity_provider('get');
-    if ($iam_settings['authsource'] == 'keycloak' && intval($iam_settings['mailboxpassword_flow']) == 1){
+    if ($iam_settings['authsource'] == 'keycloak' && intval($iam_settings['mailpassword_flow']) == 1){
       $result = keycloak_mbox_login_rest($user, $pass, $iam_settings, array('is_internal' => $is_internal, 'create' => true));
       if ($result !== false) return $result;
     }
@@ -190,7 +190,7 @@ function user_login($user, $pass, $extra = null){
   if ($row['authsource'] == 'keycloak'){
     // user authsource is keycloak, try using via rest flow
     $iam_settings = identity_provider('get');
-    if (intval($iam_settings['mailboxpassword_flow']) == 1){
+    if (intval($iam_settings['mailpassword_flow']) == 1){
       $result = keycloak_mbox_login_rest($user, $pass, $iam_settings, array('is_internal' => $is_internal));
       return $result;
     } else {
@@ -367,8 +367,8 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
 
   // get mapped template, if not set return false
   // also return false if no mappers were defined
-  $user_template = $user_data['attributes']['mailcow_template'][0];
-  if ($create && (empty($iam_settings['mappers']) || $user_template)){
+  $user_template = $user_res['attributes']['mailcow_template'][0];
+  if ($create && (empty($iam_settings['mappers']) || !$user_template)){
     return false;
   } else if (!$create) {
     // login success - dont create mailbox
@@ -393,11 +393,6 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
   ));
   if (!$create_res) return false;
 
-  // check if created mailbox from template is even active
-  // maybe dont even create it if active != 1
-  if ($mailbox_attributes['active'] != 1){
-    return false;
-  }
 
   $_SESSION['return'][] =  array(
     'type' => 'success',
