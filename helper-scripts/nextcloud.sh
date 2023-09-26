@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=27.1.0
+NEXTCLOUD_VERSION=27.1.1
 
 echo -ne "Checking prerequisites..."
 sleep 1
