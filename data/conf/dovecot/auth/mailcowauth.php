@@ -43,6 +43,7 @@ catch (PDOException $e) {
 require_once 'functions.inc.php';
 require_once 'functions.auth.inc.php';
 require_once 'sessions.inc.php';
+require_once 'functions.mailbox.inc.php';
 
 // Init provider
 $iam_provider = identity_provider('init');
