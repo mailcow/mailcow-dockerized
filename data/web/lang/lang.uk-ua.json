@@ -521,7 +521,7 @@
         "cname_from_a": "Значення, отримане із запису A/AAAA. Це підтримується, поки запис вказує на правильний ресурс.",
         "dns_records": "Записи DNS",
         "dns_records_data": "Значення",
-        "dns_records_docs": "Також перегляньте <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite/prerequisite-dns/\">документацію</a>.",
+        "dns_records_docs": "Також перегляньте <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">документацію</a>.",
         "dns_records_name": "Назва",
         "dns_records_status": "Статус",
         "optional": "Цей запис необов'язковий.",
