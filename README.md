@@ -13,7 +13,7 @@ Or just spread the word: moo.
 
 ## Info, documentation and support
 
-Please see [the official documentation](https://mailcow.github.io/mailcow-dockerized-docs/) for installation and support instructions. 🐄
+Please see [the official documentation](https://docs.mailcow.email/) for installation and support instructions. 🐄
 
 🐛 **If you found a critical security issue, please mail us to [info at servercow.de](mailto:info@servercow.de).**
 
