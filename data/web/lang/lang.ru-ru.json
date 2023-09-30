@@ -618,7 +618,18 @@
         "username": "Имя пользователя",
         "validate_save": "Подтвердить и сохранить",
         "sogo_access_info": "Единый вход из интерфейса почты продолжает работать. Эта настройка не влияет на доступ ко всем другим службам, а также не удаляет или изменяет существующий профиль пользователя SOGo.",
-        "app_passwd_protocols": "Разрешенные протоколы для пароля приложения"
+        "app_passwd_protocols": "Разрешенные протоколы для пароля приложения",
+        "domain_footer_info": "Нижние колонтитулы на уровне домена добавляются ко всем исходящим электронным письмам, связанным с адресом в этом домене. <br> Для нижнего колонтитула можно использовать следующие переменные:",
+        "domain_footer_info_vars": {
+            "from_name": "{= from_name =} - Из названия envelope, например, для \"Mailcow &lt;moo@mailcow.tld&gt;\" возвращается \"Mailcow\"",
+            "auth_user": "{= auth_user =} - Аутентифицированное имя пользователя, указанное MTA",
+            "from_user": "{= from_user =} - Из пользовательской части envelope, например, для \"moo@mailcow.tld\" возвращается \"moo\"",
+            "from_addr": "{= from_addr =} - Из адресной части envelope",
+            "from_domain": "{= from_domain =} - из доменной части envelope"
+        },
+        "domain_footer": "Нижний колонтитул домена",
+        "domain_footer_html": "HTML нижний колонтитул",
+        "domain_footer_plain": "ПРОСТОЙ нижний колонтитул"
     },
     "fido2": {
         "confirm": "Подтвердить",
@@ -999,7 +1010,8 @@
         "verified_totp_login": "Авторизация TOTP пройдена",
         "verified_webauthn_login": "Авторизация WebAuthn пройдена",
         "verified_yotp_login": "Авторизация Yubico OTP пройдена",
-        "cors_headers_edited": "Настройки CORS сохранены"
+        "cors_headers_edited": "Настройки CORS сохранены",
+        "domain_footer_modified": "Изменения в нижнем колонтитуле домена %s сохранены"
     },
     "tfa": {
         "api_register": "%s использует Yubico Cloud API. Пожалуйста, получите ключ API для вашего ключа <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">здесь</a>",
