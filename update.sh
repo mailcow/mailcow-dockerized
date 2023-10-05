@@ -418,10 +418,24 @@ detect_docker_compose_command
 
 [[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 DOTS=${MAILCOW_HOSTNAME//[^.]};
-if [ ${#DOTS} -lt 2 ]; then
-  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!"
-  echo "Please change it to a FQDN and run $COMPOSE_COMMAND down followed by $COMPOSE_COMMAND up -d"
+if [ ${#DOTS} -lt 1 ]; then
+  echo -e "\e[31mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!\e[0m"
+  sleep 1
+  echo "Please change it to a FQDN and redeploy the stack with $COMPOSE_COMMAND up -d"
   exit 1
+elif [[ "${MAILCOW_HOSTNAME: -1}" == "." ]]; then
+  echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is ending with a dot. This is not a valid FQDN!"
+  exit 1
+elif [ ${#DOTS} -eq 1 ]; then
+  echo -e "\e[33mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) does not contain a Subdomain. This is not fully tested and may cause issues.\e[0m"
+  echo "Find more information about why this message exists here: https://github.com/mailcow/mailcow-dockerized/issues/1572"
+  read -r -p "Do you want to proceed anyway? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK. Procceding."
+  else
+    echo "OK. Exiting."
+    exit 1
+  fi
 fi
 
 if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
@@ -874,8 +888,22 @@ done
 
 [[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 
+
 # Silently fixing remote url from andryyy to mailcow
-git remote set-url origin https://github.com/mailcow/mailcow-dockerized
+# git remote set-url origin https://github.com/mailcow/mailcow-dockerized
+
+DEFAULT_REPO=https://github.com/mailcow/mailcow-dockerized
+CURRENT_REPO=$(git remote get-url origin)
+if [ "$CURRENT_REPO" != "$DEFAULT_REPO" ]; then 
+  echo "The Repository currently used is not the default Mailcow Repository."
+  echo "Currently Repository: $CURRENT_REPO"
+  echo "Default Repository:   $DEFAULT_REPO"
+  read -r -p "Should it be changed back to default? [y/N] " repo_response
+  if [[ "$repo_response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    git remote set-url origin $DEFAULT_REPO
+  fi
+fi
+
 echo -e "\e[32mCommitting current status...\e[0m"
 [[ -z "$(git config user.name)" ]] && git config user.name moo
 [[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
