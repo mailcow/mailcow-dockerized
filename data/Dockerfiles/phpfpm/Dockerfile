@@ -6,7 +6,7 @@ ARG APCU_PECL_VERSION=5.1.22
 # renovate: datasource=github-tags depName=Imagick/imagick versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG IMAGICK_PECL_VERSION=3.7.0
 # renovate: datasource=github-tags depName=php/pecl-mail-mailparse versioning=semver-coerced extractVersion=^v(?<version>.*)$
-ARG MAILPARSE_PECL_VERSION=3.1.4
+ARG MAILPARSE_PECL_VERSION=v3.1.6
 # renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MEMCACHED_PECL_VERSION=3.2.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=^v(?<version>.*)$
