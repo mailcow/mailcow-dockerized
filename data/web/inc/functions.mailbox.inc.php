@@ -1250,9 +1250,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
           }
           else {
-            $stmt = $pdo->prepare("INSERT INTO `user_acl` (`username`) VALUES (:username)");
+            $stmt = $pdo->prepare("INSERT INTO `user_acl` 
+              (`username`, `spam_alias`, `tls_policy`, `spam_score`, `spam_policy`, `delimiter_action`, `syncjobs`, `eas_reset`, `sogo_profile_reset`,
+               `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`) 
+              VALUES (:username, :spam_alias, :tls_policy, :spam_score, :spam_policy, :delimiter_action, :syncjobs, :eas_reset, :sogo_profile_reset,
+               :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds) ");
             $stmt->execute(array(
-              ':username' => $username
+              ':username' => $username,
+              ':spam_alias' => 0,
+              ':tls_policy' => 0,
+              ':spam_score' => 0,
+              ':spam_policy' => 0,
+              ':delimiter_action' => 0,
+              ':syncjobs' => 0,
+              ':eas_reset' => 0,
+              ':sogo_profile_reset' => 0,
+              ':pushover' => 0,
+              ':quarantine' => 0,
+              ':quarantine_attachments' => 0,
+              ':quarantine_notification' => 0,
+              ':quarantine_category' => 0,
+              ':app_passwds' => 0
             ));
           }
 
@@ -1533,20 +1551,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['acl'] = (array)$_data['acl'];
-            $attr['acl_spam_alias'] = 1;
-            $attr['acl_tls_policy'] = 1;
-            $attr['acl_spam_score'] = 1;
-            $attr['acl_spam_policy'] = 1;
-            $attr['acl_delimiter_action'] = 1;
+            $attr['acl_spam_alias'] = 0;
+            $attr['acl_tls_policy'] = 0;
+            $attr['acl_spam_score'] = 0;
+            $attr['acl_spam_policy'] = 0;
+            $attr['acl_delimiter_action'] = 0;
             $attr['acl_syncjobs'] = 0;
-            $attr['acl_eas_reset'] = 1;
+            $attr['acl_eas_reset'] = 0;
             $attr['acl_sogo_profile_reset'] = 0;
-            $attr['acl_pushover'] = 1;
-            $attr['acl_quarantine'] = 1;
-            $attr['acl_quarantine_attachments'] = 1;
-            $attr['acl_quarantine_notification'] = 1;
-            $attr['acl_quarantine_category'] = 1;
-            $attr['acl_app_passwds'] = 1;
+            $attr['acl_pushover'] = 0;
+            $attr['acl_quarantine'] = 0;
+            $attr['acl_quarantine_attachments'] = 0;
+            $attr['acl_quarantine_notification'] = 0;
+            $attr['acl_quarantine_category'] = 0;
+            $attr['acl_app_passwds'] = 0;
           }
 
 
