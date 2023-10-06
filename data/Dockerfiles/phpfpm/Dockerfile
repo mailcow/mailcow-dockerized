@@ -12,7 +12,7 @@ ARG MEMCACHED_PECL_VERSION=3.2.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG REDIS_PECL_VERSION=5.3.7
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=^v(?<version>.*)$
-ARG COMPOSER_VERSION=2.5.5
+ARG COMPOSER_VERSION=2.6.5
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \
