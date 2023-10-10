@@ -352,7 +352,7 @@ SKIP_LETS_ENCRYPT=n
 
 # Create seperate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
-# see https://wiki.dovecot.org/SSL/SNIClientSupport
+# see https://doc.dovecot.org/admin_manual/ssl/sni_support
 ENABLE_SSL_SNI=n
 
 # Skip IPv4 check in ACME container - y/n
