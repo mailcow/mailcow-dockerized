@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.17
+      image: mailcow/unbound:1.18
       environment:
         - TZ=${TZ}
       volumes:
@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.84
+      image: mailcow/phpfpm:1.85
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -217,7 +217,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.24
+      image: mailcow/dovecot:1.25
       depends_on:
         - mysql-mailcow
       dns:
@@ -297,7 +297,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.71
+      image: mailcow/postfix:1.72
       depends_on:
         - mysql-mailcow
       volumes:
@@ -391,7 +391,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.84
+      image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -450,7 +450,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.97
+      image: mailcow/watchdog:1.98
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
