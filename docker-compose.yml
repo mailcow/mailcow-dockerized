@@ -569,7 +569,7 @@ services:
     
     ##### Will be removed soon #####
     solr-mailcow:
-      image: mailcow/solr:1.8.2
+      image: mailcow/solr:nightly-20231011
       restart: always
       depends_on:
         - netfilter-mailcow
@@ -588,7 +588,7 @@ services:
     ################################
 
     olefy-mailcow:
-      image: mailcow/olefy:1.12
+      image: mailcow/olefy:nightly-20231011
       restart: always
       environment:
         - TZ=${TZ}
