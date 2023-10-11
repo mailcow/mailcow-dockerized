@@ -61,7 +61,9 @@ services:
       image: mailcow/clamd:1.62
       restart: always
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
+          restart: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -299,7 +301,11 @@ services:
     postfix-mailcow:
       image: mailcow/postfix:1.72
       depends_on:
-        - mysql-mailcow
+        mysql-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
+          restart: true
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -390,7 +396,10 @@ services:
 
     acme-mailcow:
       depends_on:
-        - nginx-mailcow
+        nginx-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
       image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -461,6 +470,13 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
+      depends_on:
+        - postfix-mailcow
+        - dovecot-mailcow
+        - mysql-mailcow
+        - acme-mailcow
+        - redis-mailcow
+
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
