@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=26.0.2
+NEXTCLOUD_VERSION=27.1.2
 
 echo -ne "Checking prerequisites..."
 sleep 1
@@ -178,6 +178,8 @@ elif [[ ${NC_INSTALL} == "y" ]]; then
     /web/nextcloud/occ --no-warnings config:system:set mail_domain --value=${MAILCOW_HOSTNAME}; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtphost --value=postfix; \
     /web/nextcloud/occ --no-warnings config:system:set mail_smtpport --value=588; \
+    /web/nextcloud/occ --no-warnings config:system:set mail_smtpstreamoptions ssl verify_peer --value=false --type=boolean
+    /web/nextcloud/occ --no-warnings config:system:set mail_smtpstreamoptions ssl verify_peer_name --value=false --type=boolean
     /web/nextcloud/occ --no-warnings db:convert-filecache-bigint -n"
 
     # Not installing by default, broke too often

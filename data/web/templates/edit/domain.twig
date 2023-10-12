@@ -2,233 +2,315 @@
 
 {% block inner_content %}
 {% if result %}
-<ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dedit">{{ lang.edit.domain }}</button></li>
-  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dratelimit">{{ lang.edit.ratelimit }}</button></li>
-  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dspamfilter">{{ lang.edit.spam_filter }}</button></li>
-  <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
-</ul>
-<hr>
-<div class="tab-content">
-  <div id="dedit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="domain-edit">
-    <form data-id="editdomain" class="form-horizontal" role="form" method="post">
-      <input type="hidden" value="0" name="active">
-      <input type="hidden" value="0" name="backupmx">
-      <input type="hidden" value="0" name="gal">
-      <input type="hidden" value="0" name="relay_all_recipients">
-      <input type="hidden" value="0" name="relay_unknown_only">
-      <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
-        <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" name="description" value="{{ result.description }}">
+<div id="domain-content" class="responsive-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dedit">{{ lang.edit.domain }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dratelimit">{{ lang.edit.ratelimit }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dspamfilter">{{ lang.edit.spam_filter }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dfooter">{{ lang.edit.domain_footer }}</button></li>
+    </ul>
+    <hr class="d-none d-md-block">
+    <div class="tab-content">
+      <div id="dedit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="domain-edit">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-dedit" data-bs-toggle="collapse" aria-controls="collapse-tab-dedit">
+                {{ lang.edit.domain }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-dedit" class="card-body collapse show" data-bs-parent="#domain-content">
+                <form data-id="editdomain" class="form-horizontal" role="form" method="post">
+                  <input type="hidden" value="0" name="active">
+                  <input type="hidden" value="0" name="backupmx">
+                  <input type="hidden" value="0" name="gal">
+                  <input type="hidden" value="0" name="relay_all_recipients">
+                  <input type="hidden" value="0" name="relay_unknown_only">
+                  <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
+                    <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="description" value="{{ result.description }}">
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
+                    <div class="col-sm-10">
+                      <div class="form-control tag-box">
+                        {% for tag in domain_details.tags %}
+                          <span data-action='delete_selected' data-item="{{ tag|url_encode }}" data-id="domain_tag_{{ tag }}" data-api-url='delete/domain/tag/{{ domain }}' class="badge bg-primary tag-badge btn-badge">
+                            <i class="bi bi-tag-fill"></i>
+                            {{ tag }}
+                          </span>
+                        {% endfor %}
+                        <input type="text" class="tag-input">
+                        <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
+                        <input type="hidden" value="" name="tags" class="tag-values" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
+                    <div class="col-sm-10">
+                      <select data-acl="{{ acl.domain_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
+                        {% for rlyhost in rlyhosts %}
+                          <option
+                            style="{% if rlyhost.active != '1' %}background: #ff4136; color: #fff{% endif %}"
+                            {% if result.relayhost == rlyhost.id %} selected{% endif %}
+                            value="{{ rlyhost.id }}">
+                            ID {{ rlyhost.id }}: {{ rlyhost.hostname }} ({{ rlyhost.username }})
+                          </option>
+                        {% endfor %}
+                        <option value=""{% if not result.relayhost %} selected{% endif %}>
+                          {{ lang.edit.none_inherit }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  {% if mailcow_cc_role == 'admin' %}
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="aliases" value="{{ result.max_num_aliases_for_domain }}">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="mailboxes">{{ lang.edit.max_mailboxes }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="mailboxes" value="{{ result.max_num_mboxes_for_domain }}">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="defquota">{{ lang.edit.mailbox_quota_def }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="defquota" value="{{ (result.def_quota_for_mbox / 1048576) }}">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="maxquota">{{ lang.edit.max_quota }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="maxquota" value="{{ (result.max_quota_for_mbox / 1048576) }}">
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="quota">{{ lang.edit.domain_quota }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="quota" value="{{ (result.max_quota_for_domain / 1048576) }}">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="backupmx"{% if result.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
+                        <br>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="relay_all_recipients"{% if result.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
+                        <p>{{ lang.edit.relay_all_info|raw }}</p>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if result.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
+                        <br>
+                        <p>{{ lang.edit.relay_transport_info|raw }}</p>
+                        <hr style="margin:25px 0px 0px 0px">
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                  <div class="row">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="gal"{% if result.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
+                        <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="offset-sm-2 col-sm-10">
+                      <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                    </div>
+                  </div>
+                </form>
+                {% if dkim %}
+                <hr>
+                <div class="row">
+                  <div class="col-12 col-sm-2">
+                    <p>{{ lang.add.domain }}: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
+                  </div>
+                  <div class="col-12 col-sm-10">
+                    <pre class="p-2">{{ dkim.dkim_txt }}</pre>
+                  </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
       </div>
-      <div class="row mb-4">
-        <label class="control-label col-sm-2">{{ lang.add.tags }}</label>
-        <div class="col-sm-10">
-          <div class="form-control tag-box">
-            {% for tag in domain_details.tags %}
-              <span data-action='delete_selected' data-item="{{ tag|url_encode }}" data-id="domain_tag_{{ tag }}" data-api-url='delete/domain/tag/{{ domain }}' class="badge bg-primary tag-badge btn-badge">
-                <i class="bi bi-tag-fill"></i> 
-                {{ tag }}
-              </span>
-            {% endfor %}
-            <input type="text" class="tag-input">
-            <span class="btn tag-add"><i class="bi bi-plus-lg"></i></span>
-            <input type="hidden" value="" name="tags" class="tag-values" />
-          </div>
+      <div id="dratelimit" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-ratelimit">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-ratelimit" data-bs-toggle="collapse" aria-controls="collapse-tab-ratelimit">
+                {{ lang.edit.ratelimit }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-ratelimit" class="card-body collapse" data-bs-parent="#domain-content">
+                <form data-id="domratelimit" class="well" method="post">
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.ratelimit }}</label>
+                    <div class="col-sm-10">
+                      <div class="input-group">
+                        <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control placeholder="{{ lang.ratelimit.disabled }}">
+                        <select name="rl_frame" class="form-control">
+                        {% include 'mailbox/rl-frame.twig' %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
         </div>
       </div>
-      <div class="row mb-2">
-        <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
-        <div class="col-sm-10">
-          <select data-acl="{{ acl.domain_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
-            {% for rlyhost in rlyhosts %}
-              <option
-                style="{% if rlyhost.active != '1' %}background: #ff4136; color: #fff{% endif %}"
-                {% if result.relayhost == rlyhost.id %} selected{% endif %}
-                value="{{ rlyhost.id }}">
-                ID {{ rlyhost.id }}: {{ rlyhost.hostname }} ({{ rlyhost.username }})
-              </option>
-            {% endfor %}
-            <option value=""{% if not result.relayhost %} selected{% endif %}>
-              {{ lang.edit.none_inherit }}
-            </option>
-          </select>
+      <div id="dspamfilter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-spamfilter">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-spamfilter" data-bs-toggle="collapse" aria-controls="collapse-tab-spamfilter">
+                {{ lang.edit.spam_filter }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-spamfilter" class="card-body collapse" data-bs-parent="#domain-content">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4>{{ lang.user.spamfilter_wl }}</h4>
+                    <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
+                    <form class="form-inline mb-4" data-id="add_wl_policy_domain">
+                      <div class="input-group" data-acl="{{ acl.spam_policy }}">
+                        <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+                        <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"wl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
+                      </div>
+                    </form>
+                    <table id="wl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
+                    <div class="mass-actions-user">
+                      <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+                        <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+                        <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <h4>{{ lang.user.spamfilter_bl }}</h4>
+                    <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
+                    <form class="form-inline mb-4" data-id="add_bl_policy_domain">
+                      <div class="input-group" data-acl="{{ acl.spam_policy }}">
+                        <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
+                        <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"bl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
+                      </div>
+                    </form>
+                    <table id="bl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
+                    <div class="mass-actions-user">
+                      <div class="btn-group" data-acl="{{ acl.spam_policy }}">
+                        <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+                        <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a></li>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
         </div>
       </div>
-      {% if mailcow_cc_role == 'admin' %}
-      <div class="row mb-2">
-        <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
-        <div class="col-sm-10">
-          <input type="number" class="form-control" name="aliases" value="{{ result.max_num_aliases_for_domain }}">
+      <div id="dqwbcc" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-qwbcc">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-qwbcc" data-bs-toggle="collapse" aria-controls="collapse-tab-qwbcc">
+                {{ lang.edit.quota_warning_bcc }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-qwbcc" class="card-body collapse" data-bs-parent="#domain-content">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <h4>{{ lang.edit.quota_warning_bcc }}</h4>
+                    <p>{{ lang.edit.quota_warning_bcc_info|raw }}</p>
+                    <form class="form-horizontal" data-id="quota_bcc">
+                      <input type="hidden" value="0" name="active">
+                      <div class="row mb-2">
+                        <label class="control-label col-sm-2" for="script_data">{{ lang.edit.target_address|raw }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="bcc_rcpt" name="bcc_rcpt">{{ quota_notification_bcc.bcc_rcpts|join("\n") }}</textarea>
+                        </div>
+                      </div>
+                      <div class="row mb-4">
+                        <div class="offset-sm-2 col-sm-10">
+                          <div class="form-check">
+                            <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
         </div>
       </div>
-      <div class="row mb-2">
-        <label class="control-label col-sm-2" for="mailboxes">{{ lang.edit.max_mailboxes }}</label>
-        <div class="col-sm-10">
-          <input type="number" class="form-control" name="mailboxes" value="{{ result.max_num_mboxes_for_domain }}">
+      <div id="dfooter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-footer">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-footer" data-bs-toggle="collapse" aria-controls="collapse-tab-footer">
+                {{ lang.edit.domain_footer }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-footer" class="card-body collapse" data-bs-parent="#domain-content">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <h4>{{ lang.edit.domain_footer }}</h4>
+                    <p>{{ lang.edit.domain_footer_info|raw }}</p>
+                    <pre>{{ lang.edit.domain_footer_info_vars.auth_user }}
+{{ lang.edit.domain_footer_info_vars.from_user }}
+{{ lang.edit.domain_footer_info_vars.from_name }}
+{{ lang.edit.domain_footer_info_vars.from_addr }}
+{{ lang.edit.domain_footer_info_vars.from_domain }}</pre>
+                    <form class="form-horizontal mt-4" data-id="domain_footer">
+                      <div class="row mb-2">
+                        <label class="control-label col-sm-2" for="domain_footer_html">{{ lang.edit.domain_footer_html }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_html" name="footer_html">{{ domain_footer.html }}</textarea>
+                        </div>
+                      </div>
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2" for="domain_footer_plain">{{ lang.edit.domain_footer_plain }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_plain" name="footer_plain">{{ domain_footer.plain }}</textarea>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="domain_footer" data-item="domain_footer" data-api-url='edit/domain-wide-footer' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="row mb-2">
-        <label class="control-label col-sm-2" for="defquota">{{ lang.edit.mailbox_quota_def }}</label>
-        <div class="col-sm-10">
-          <input type="number" class="form-control" name="defquota" value="{{ (result.def_quota_for_mbox / 1048576) }}">
-        </div>
-      </div>
-      <div class="row mb-2">
-        <label class="control-label col-sm-2" for="maxquota">{{ lang.edit.max_quota }}</label>
-        <div class="col-sm-10">
-          <input type="number" class="form-control" name="maxquota" value="{{ (result.max_quota_for_mbox / 1048576) }}">
-        </div>
-      </div>
-      <div class="row mb-4">
-        <label class="control-label col-sm-2" for="quota">{{ lang.edit.domain_quota }}</label>
-        <div class="col-sm-10">
-          <input type="number" class="form-control" name="quota" value="{{ (result.max_quota_for_domain / 1048576) }}">
-        </div>
-      </div>
-      <div class="row mb-2">
-        <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
-        <div class="col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="backupmx"{% if result.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
-            <br>
-            <label><input type="checkbox" value="1" name="relay_all_recipients"{% if result.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
-            <p>{{ lang.edit.relay_all_info|raw }}</p>
-            <label><input type="checkbox" value="1" name="relay_unknown_only"{% if result.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
-            <br>
-            <p>{{ lang.edit.relay_transport_info|raw }}</p>
-            <hr style="margin:25px 0px 0px 0px">
-          </div>
-        </div>
-      </div>
-      {% endif %}
-      <div class="row">
-        <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="gal"{% if result.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
-            <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <div class="row mb-2">
-        <div class="offset-sm-2 col-sm-10">
-          <div class="checkbox">
-            <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
-          </div>
-        </div>
-      </div>
-      <div class="row mb-2">
-        <div class="offset-sm-2 col-sm-10">
-          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editdomain" data-item="{{ domain }}" data-api-url='edit/domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="offset-sm-2 col-sm-10">
-          <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-          <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
-        </div>
-      </div>
-    </form>
-    {% if dkim %}
-    <hr>
-    <div class="row">
-      <div class="col-12 col-sm-2">
-        <p>Domain: <strong>{{ result.domain_name }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
-      </div>
-      <div class="col-12 col-sm-10">
-        <pre class="p-2">{{ dkim.dkim_txt }}</pre>
       </div>
     </div>
-    {% endif %}
-  </div>
-  <div id="dratelimit" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-ratelimit">
-    <form data-id="domratelimit" class="form-inline well" method="post">
-      <div class="row">
-        <div class="col-12">
-          <label class="control-label mb-2">{{ lang.edit.ratelimit }}</label>
-          <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-          <select name="rl_frame" class="form-control">
-            {% include 'mailbox/rl-frame.twig' %}
-          </select>
-          <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div id="dspamfilter" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-spamfilter">
-    <div class="row">
-      <div class="col-sm-6">
-        <h4>{{ lang.user.spamfilter_wl }}</h4>
-        <p>{{ lang.user.spamfilter_wl_desc|raw }}</p>
-        <form class="form-inline mb-4" data-id="add_wl_policy_domain">
-          <div class="input-group" data-acl="{{ acl.spam_policy }}">
-            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-            <span class="input-group-btn">
-                      <button class="btn btn-secondary" data-action="add_item" data-id="add_wl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"wl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
-                    </span>
-          </div>
-        </form>
-        <table id="wl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
-        <div class="mass-actions-user">
-          <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_wl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_wl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-6">
-        <h4>{{ lang.user.spamfilter_bl }}</h4>
-        <p>{{ lang.user.spamfilter_bl_desc|raw }}</p>
-        <form class="form-inline mb-4" data-id="add_bl_policy_domain">
-          <div class="input-group" data-acl="{{ acl.spam_policy }}">
-            <input type="text" class="form-control" name="object_from" placeholder="*@example.org" required>
-            <span class="input-group-btn">
-                      <button class="btn btn-secondary" data-action="add_item" data-id="add_bl_policy_domain" data-api-url='add/domain-policy' data-api-attr='{"domain":"{{ domain }}","object_list":"bl"}' href="#">{{ lang.user.spamfilter_table_add }}</button>
-                    </span>
-          </div>
-        </form>
-        <table id="bl_policy_domain_table" class="table table-striped dt-responsive w-100"></table>
-        <div class="mass-actions-user">
-          <div class="btn-group" data-acl="{{ acl.spam_policy }}">
-            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-secondary" id="toggle_multi_select_all" data-id="policy_bl_domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-            <a class="btn btn-xs-half d-block d-sm-inline btn-sm btn-danger" data-action="delete_selected" data-id="policy_bl_domain" data-api-url='delete/domain-policy' href="#">{{ lang.mailbox.remove }}</a></li>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="dqwbcc" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-qwbcc">
-    <div class="row">
-      <div class="col-sm-12">
-        <h4>{{ lang.edit.quota_warning_bcc }}</h4>
-        <p>{{ lang.edit.quota_warning_bcc_info|raw }}</p>
-        <form class="form-horizontal" data-id="quota_bcc">
-          <input type="hidden" value="0" name="active">
-          <div class="row mb-2">
-            <label class="control-label col-sm-2" for="script_data">{{ lang.edit.target_address|raw }}:</label>
-            <div class="col-sm-10">
-              <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="bcc_rcpt" name="bcc_rcpt">{{ quota_notification_bcc.bcc_rcpts|join("\n") }}</textarea>
-            </div>
-          </div>
-          <div class="row mb-4">
-            <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active"{% if quota_notification_bcc.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="offset-sm-2 col-sm-10">
-              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="quota_bcc" data-item="quota_bcc" data-api-url='edit/quota_notification_bcc' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
 {% else %}
   {{ parent() }}

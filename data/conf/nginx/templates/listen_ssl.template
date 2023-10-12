@@ -1,5 +1,6 @@
 listen ${HTTPS_PORT} ssl;
 listen [::]:${HTTPS_PORT} ssl;
+http2 on;
 
 listen ${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port
 listen [::]:${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port

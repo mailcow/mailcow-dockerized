@@ -14,7 +14,10 @@
         </div>
       </div>
       <div class="card-body">
-        <div class="text-center mailcow-logo mb-4"><img src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow"></div>
+        <div class="text-center mailcow-logo mb-4">
+          <img class="main-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow">
+          <img class="main-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}" alt="mailcow-logo-dark">
+        </div>
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
         <div class="my-4 alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
         {% endif %}
@@ -37,11 +40,14 @@
               <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="{{ lang.login.password }}" required="" autocomplete="current-password">
             </div>
           </div>
-          <div class="d-flex mt-4" style="position: relative">
-            <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
-            <button type="button" class="btn btn-xs-lg btn-success ms-2" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</button>
+          <div class="d-flex justify-content-between mt-4" style="position: relative">
+            <div class="d-grid gap-2 d-sm-block">
+              <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
+              <button type="button" class="btn btn-xs-lg btn-success" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</button>
+            </div>
             {% if not oauth2_request %}
-            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-xs-lg btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="d-grid d-sm-block">
+            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span>
             </button>
             <ul class="dropdown-menu ms-auto login">
@@ -53,6 +59,7 @@
                 </li>
               {% endfor %}
             </ul>
+            </div>
             {% endif %}
           </div>
         </form>
@@ -62,19 +69,15 @@
         <div class="my-4" id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) %}
         <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
-        <div class="my-2 d-flex flex-wrap apps">
+        <div class="my-2 d-grid gap-2 d-sm-block apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}
-            <div class="m-2">
-              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-block">{{ app.name }}</a>
-            </div>
-          {% endif %}
+              <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary">{{ app.name }}</a>
+            {% endif %}
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-              <div class="m-2">
-                <a href="{{ val }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
-              </div>
+              <a href="{{ val }}" role="button" class="btn btn-primary">{{ key }}</a>
             {% endfor %}
           {% endfor %}
         </div>

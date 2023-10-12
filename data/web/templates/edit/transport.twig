@@ -32,15 +32,15 @@
   </div>
   <div class="row mb-2">
     <div class="offset-sm-2 col-sm-10">
-      <div class="checkbox">
-        <label><input type="checkbox" value="1" name="is_mx_based"{% if result.is_mx_based == '1' %} checked{% endif %}> {{ lang.edit.lookup_mx|raw }}</label>
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="is_mx_based"{% if result.is_mx_based == '1' %} checked{% endif %}> {{ lang.edit.lookup_mx|raw }}</label>
       </div>
     </div>
   </div>
   <div class="row mb-2">
     <div class="offset-sm-2 col-sm-10">
-      <div class="checkbox">
-        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
       </div>
     </div>
   </div>

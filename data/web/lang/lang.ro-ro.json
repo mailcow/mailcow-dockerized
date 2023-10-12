@@ -106,7 +106,8 @@
         "timeout2": "Timeout pentru conectarea la gazda locală",
         "username": "Nume de utilizator",
         "validate": "Validează",
-        "validation_success": "Validat cu succes"
+        "validation_success": "Validat cu succes",
+        "tags": "Etichete"
     },
     "admin": {
         "access": "Acces",
@@ -334,7 +335,15 @@
         "username": "Nume de utilizator",
         "validate_license_now": "Validează GUID cu serverul de licență",
         "verify": "Verifică",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "cors_settings": "Setări CORS",
+        "f2b_ban_time_increment": "Timpul de blocare creşte cu fiecare blocare",
+        "f2b_max_ban_time": "Max. timp de blocare (s)",
+        "ip_check": "Verificaţie IP",
+        "ip_check_disabled": "Verificarea IP este dezactivată. Puteţi activa la<br> <strong>Sistem > Configuraţie > Opţiuni > Personalizează</strong>",
+        "ip_check_opt_in": "Alegeţi să folosiţi servicile <strong>ipv4.mailcow.email</strong> şi <strong>ipv6.mailcow.email</strong> să rezolvaţi addrese IP externale.",
+        "options": "Opţiuni",
+        "queue_unban": "retractează interzicere"
     },
     "danger": {
         "access_denied": "Accesul a fost respins sau datele formularului sunt invalide",
@@ -453,7 +462,16 @@
         "username_invalid": "Numele de utilizator %s nu poate fi utilizat",
         "validity_missing": "Atribuie o perioadă de valabilitate",
         "value_missing": "Furnizează toate valorile",
-        "yotp_verification_failed": "Verificarea Yubico OTP a eșuat: %s"
+        "yotp_verification_failed": "Verificarea Yubico OTP a eșuat: %s",
+        "cors_invalid_method": "Aveţi specificaţi 'Allow-Method' invalid",
+        "webauthn_authenticator_failed": "Authentificator selectat nu a fost găsit",
+        "webauthn_publickey_failed": "Nici-o cheie publică a fost salvată pentru authenticatorul selectat",
+        "webauthn_username_failed": "Authenticatorul selectat aparţine la alt cont",
+        "demo_mode_enabled": "Mod de demonstraţie este activ",
+        "extended_sender_acl_denied": "lipseşte ACL pentru setarea adrese externe",
+        "template_exists": "Şablon %s deja există",
+        "template_id_invalid": "Şablon ID %s este invalid",
+        "template_name_invalid": "Nume de şablon este invalid"
     },
     "debug": {
         "chart_this_server": "Grafic (acest server)",
@@ -486,7 +504,7 @@
         "cname_from_a": "Valoare derivată din înregistrarea A/AAAA. Acest lucru este acceptat atâta timp cât înregistrarea indică resursele corecte.",
         "dns_records": "Înregistrări DNS",
         "dns_records_24hours": "Rețineți că modificările aduse DNS-ului pot dura până la 24 de ore pentru a reflecta corect starea lor curentă pe această pagină. Acest mecanism este conceput ca o modalitate să vezi ușor cum să îți configurezi înregistrările DNS și să verifici dacă toate înregistrările sunt stocate corect în DNS.",
-        "dns_records_docs": "Vă rugăm să consultați și <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite/prerequisite-dns/\">documentația</a>.",
+        "dns_records_docs": "Vă rugăm să consultați și <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">documentația</a>.",
         "dns_records_data": "Date corecte",
         "dns_records_name": "Nume",
         "dns_records_status": "Stare curentă",
@@ -641,7 +659,7 @@
     "header": {
         "administration": "Configurație și detalii",
         "apps": "Aplicații",
-        "debug": "Informații Sistem",
+        "debug": "Informaţie",
         "email": "E-Mail",
         "mailcow_config": "Configurație",
         "quarantine": "Carantină",
@@ -1038,7 +1056,7 @@
         "apple_connection_profile_mailonly": "Acest profil de conexiune include parametrii de configurare IMAP și SMTP pentru dispozitivele Apple.",
         "apple_connection_profile_with_app_password": "O nouă parolă pentru aplicație este generată și adăugată la profil, astfel încât să nu fie necesară introducerea unei parole la configurarea dispozitivului. Vă rugăm să nu partajați fișierul, deoarece oferă acces deplin la căsuța dvs. poștală.",
         "change_password": "Schimbă parola",
-        "change_password_hint_app_passwords": "Contul dvs. are {{number_of_app_passwords}} parole de aplicație care nu vor fi modificate. Pentru a le gestiona, accesați secțiunea Parole aplicație.",
+        "change_password_hint_app_passwords": "Contul dvs. are %d parole de aplicație care nu vor fi modificate. Pentru a le gestiona, accesați secțiunea Parole aplicație.",
         "clear_recent_successful_connections": "Ștergeți conexiunile reușite văzute",
         "client_configuration": "Afișează ghidurile de configurare pentru clienții de email și smartphone-uri",
         "create_app_passwd": "Crează parola aplicației",
@@ -1187,5 +1205,9 @@
         "quota_exceeded_scope": "Cota de spațiu a domeniului depășită: Numai căsuțe poștale nelimitate pot fi create pe acest domeniu.",
         "session_token": "Token formular invalid: Nepotrivire token",
         "session_ua": "Token formular invalid: Eroare validare utilizator-agent"
+    },
+    "datatables": {
+        "expand_all": "Expandează tot",
+        "decimal": ","
     }
 }

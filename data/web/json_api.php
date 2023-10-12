@@ -2,9 +2,9 @@
 /*
    see /api
 */
-
-header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+cors("set_headers");
+header('Content-Type: application/json');
 error_reporting(0);
 
 function api_log($_data) {
@@ -1867,6 +1867,9 @@ if (isset($_GET['query'])) {
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
         break;
+        case "domain-wide-footer":
+          process_edit_return(mailbox('edit', 'domain_wide_footer', $attr));
+        break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
         break;
@@ -1945,6 +1948,9 @@ if (isset($_GET['query'])) {
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
             process_edit_return(edit_user_account($attr));
           }
+        break;
+        case "cors":
+          process_edit_return(cors('edit', $attr));
         break;
         // return no route found if no case is matched
         default:

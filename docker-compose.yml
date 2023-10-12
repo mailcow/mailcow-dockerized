@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.17
+      image: mailcow/unbound:1.18
       environment:
         - TZ=${TZ}
       volumes:
@@ -58,10 +58,12 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.61
+      image: mailcow/clamd:1.62
       restart: always
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
+          restart: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -106,7 +108,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.84
+      image: mailcow/phpfpm:1.85
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -162,6 +164,7 @@ services:
         - DEV_MODE=${DEV_MODE:-n}
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
+        - CLUSTERMODE=${CLUSTERMODE:-}
       restart: always
       networks:
         mailcow-network:
@@ -169,7 +172,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.117
+      image: mailcow/sogo:1.119
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -216,7 +219,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.24
+      image: mailcow/dovecot:1.25
       depends_on:
         - mysql-mailcow
       dns:
@@ -296,9 +299,13 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.68
+      image: mailcow/postfix:1.72
       depends_on:
-        - mysql-mailcow
+        mysql-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
+          restart: true
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -316,6 +323,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       cap_add:
         - NET_BIND_SERVICE
       ports:
@@ -389,8 +397,11 @@ services:
 
     acme-mailcow:
       depends_on:
-        - nginx-mailcow
-      image: mailcow/acme:1.84
+        nginx-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
+      image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -449,7 +460,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.97
+      image: mailcow/watchdog:1.98
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -460,6 +471,13 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
+      depends_on:
+        - postfix-mailcow
+        - dovecot-mailcow
+        - mysql-mailcow
+        - acme-mailcow
+        - redis-mailcow
+
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -511,7 +529,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.04
+      image: mailcow/dockerapi:2.05
       security_opt:
         - label=disable
       restart: always
