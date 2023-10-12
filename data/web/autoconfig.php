@@ -23,6 +23,13 @@ else {
   $port = substr($_SERVER['HTTP_HOST'], $domain_port+1);
 }
 
+if (isset($_GET['emailaddress'])) {
+   $emailaddress_at = strpos($_GET['emailaddress'], '@');
+   if ($emailaddress_at !== FALSE) {
+      $domain = substr($_GET['emailaddress'], $emailaddress_at + 1);
+   }
+}
+
 header('Content-Type: application/xml');
 ?>
 <?= '<?xml version="1.0"?>'; ?>
