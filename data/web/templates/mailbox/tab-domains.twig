@@ -12,7 +12,7 @@
     </div>
     <div id="collapse-tab-domains" class="card-body collapse show" data-bs-parent="#mail-content">
       {#<div class="mass-actions-mailbox" data-actions-header="true"></div>#}      
-      <div class="mass-actions-mailbox mb-4">
+      <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
         <div class="btn-group">
           <button class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
           <button class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
@@ -28,15 +28,15 @@
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="domain_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           {% if mailcow_cc_role == 'admin' %}
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</a>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
           {% endif %}
         </div>
       </div>
       <table id="domain_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox mt-4">
         <div class="btn-group">
-          <button class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
-          <button class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
+          <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="domain" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</button>
+          <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</button>
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
@@ -49,7 +49,7 @@
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="domain_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           {% if mailcow_cc_role == 'admin' %}
-            <button class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
+            <button class="btn btn-sm btn-xs-lg btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addDomainModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_domain }}</button>
           {% endif %}
         </div>
       </div>

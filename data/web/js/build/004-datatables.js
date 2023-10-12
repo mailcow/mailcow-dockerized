@@ -15801,7 +15801,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 		paginationEl.empty();
 	}
 	else {
-		paginationEl = hostEl.html('<ul/>').children('ul').addClass('pagination');
+		paginationEl = hostEl.html('<ul/>').children('ul').addClass('pagination pagination-sm');
 	}
 
 	attach(

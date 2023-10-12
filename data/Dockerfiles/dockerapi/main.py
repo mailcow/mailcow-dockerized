@@ -198,8 +198,8 @@ async def handle_pubsub_messages(channel: aioredis.client.PubSub):
 
   while True:
     try:
-      async with async_timeout.timeout(1):
-        message = await channel.get_message(ignore_subscribe_messages=True)
+      async with async_timeout.timeout(60):
+        message = await channel.get_message(ignore_subscribe_messages=True, timeout=30)
         if message is not None:
           # Parse message
           data_json = json.loads(message['data'].decode('utf-8'))
@@ -244,7 +244,7 @@ async def handle_pubsub_messages(channel: aioredis.client.PubSub):
           else:
             dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
               
-        await asyncio.sleep(0.01)
+        await asyncio.sleep(0.0)
     except asyncio.TimeoutError:
       pass
 
