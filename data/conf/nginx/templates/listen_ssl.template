@@ -5,3 +5,5 @@ http2 on;
 listen ${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port
 listen [::]:${HTTPS_PORT} quic reuseport; # reuseport should only be specified once per port
 add_header Alt-Svc 'h3=":${HTTPS_PORT}"; ma=86400';
+http3 on;
+quic_retry on;
