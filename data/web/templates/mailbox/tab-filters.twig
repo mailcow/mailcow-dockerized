@@ -11,7 +11,7 @@
       </div>
     </div>
     <div id="collapse-tab-filters" class="card-body collapse" data-bs-parent="#mail-content">
-      <div class="mass-actions-mailbox mb-4">
+      <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
         <div class="btn-group" data-acl="{{ acl.filters }}">
           <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
@@ -34,8 +34,8 @@
       <table id="filter_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox mt-4 mb-4">
         <div class="btn-group" data-acl="{{ acl.filters }}">
-          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="filter_item" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="filter_item" data-api-url='edit/filter' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -48,7 +48,7 @@
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="filter_table">{{ lang.datatables.expand_all }}</a></li>
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="filter_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addFilterModalAdmin"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_filter }}</a>
         </div>
       </div>
       <div class="{% if mailcow_cc_role != 'admin' %}hidden{% endif %}">
@@ -64,8 +64,8 @@
               <div class="row mt-2">
                 <div class="col-sm-10 add_filter_btns">
                   <div class="btn-group">
-                    <button class="btn btn-sm btn-xs-half btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
-                    <button class="btn btn-sm btn-xs-half btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
                   </div>
                 </div>
               </div>
@@ -82,8 +82,8 @@
               <div class="row mt-2">
                 <div class="col-sm-10 add_filter_btns">
                   <div class="btn-group">
-                    <button class="btn btn-sm btn-xs-half btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
-                    <button class="btn btn-sm btn-xs-half btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary validate_sieve" href="#">{{ lang.add.validate }}</button>
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
                   </div>
                 </div>
               </div>

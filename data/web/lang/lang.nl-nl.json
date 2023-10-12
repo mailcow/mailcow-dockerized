@@ -102,7 +102,9 @@
         "timeout2": "Time-out voor verbinding met lokale hosts",
         "username": "Gebruikersnaam",
         "validate": "Verifieer",
-        "validation_success": "Succesvol geverifieerd"
+        "validation_success": "Succesvol geverifieerd",
+        "tags": "Tags",
+        "bcc_dest_format": "BCC-bestemming moet één geldig e-mailadres zijn.<br>Als u een kopie naar meerdere adressen wilt sturen, maak dan een alias aan en gebruik die hier."
     },
     "admin": {
         "access": "Toegang",
@@ -310,7 +312,32 @@
         "upload": "Upload",
         "username": "Gebruikersnaam",
         "validate_license_now": "Valideer licentie",
-        "verify": "Verifieer"
+        "verify": "Verifieer",
+        "logo_normal_label": "Normaal",
+        "logo_dark_label": "Omgekeerd voor donkere modus",
+        "cors_settings": "CORS instellingen",
+        "is_mx_based": "MX gebasseerd",
+        "password_length": "Wachtwoordlengte",
+        "password_policy": "Wachtwoordbeleid",
+        "password_policy_chars": "Moet tenminste één alfanumeriek karakter bevatten",
+        "password_policy_length": "Minimale wachtwoord lengte is %d",
+        "ip_check": "IP controle",
+        "ip_check_disabled": "IP controle is uitgeschakeld. Je kan het inschakelen onder<br> <strong>Systeem > Configuratie > Opties > Aanpassen</strong>",
+        "oauth2_apps": "OAuth2 applicaties",
+        "oauth2_add_client": "Voeg OAuth2 client toe",
+        "options": "Opties",
+        "password_policy_lowerupper": "Moet hoofdletters en kleine letters bevatten",
+        "password_policy_numbers": "Moet ten minste één nummer bevatten",
+        "password_policy_special_chars": "Moet tenminste één speciaal teken bevatten",
+        "relay_rcpt": "\"Aan:\" adres",
+        "rsettings_preset_4": "Rspamd voor domein uitschakelen",
+        "service": "Dienst",
+        "success": "Succes",
+        "admins": "Administrators",
+        "admins_ldap": "LDAP administrators",
+        "api_read_only": "Alleen-lezen toegang",
+        "api_read_write": "Lees en schrijf toegang",
+        "login_time": "Login tijd"
     },
     "danger": {
         "access_denied": "Toegang geweigerd of ongeldige gegevens",
@@ -429,7 +456,14 @@
         "username_invalid": "Gebruikersnaam %s kan niet worden gebruikt",
         "validity_missing": "Wijs een geldigheidstermijn toe",
         "value_missing": "Niet alle waarden zijn ingevuld",
-        "yotp_verification_failed": "Yubico OTP-verificatie mislukt: %s"
+        "yotp_verification_failed": "Yubico OTP-verificatie mislukt: %s",
+        "cors_invalid_method": "Ongeldige Allow-Method opgegeven",
+        "webauthn_authenticator_failed": "De geselecteerde authenticator kon niet wordcen gevonden",
+        "webauthn_publickey_failed": "Er was geen publieke sleutel opgeslagen voor de geselecteerde authenticator",
+        "demo_mode_enabled": "Demo modus is ingeschakeld",
+        "template_exists": "Sjabloon %s bestaat al",
+        "template_id_invalid": "Sjabloon ID %s ongeldig",
+        "template_name_invalid": "Sjabloon naam ongeldig"
     },
     "debug": {
         "chart_this_server": "Grafiek (deze server)",
@@ -452,13 +486,31 @@
         "uptime": "Uptime",
         "started_on": "Gestart op",
         "static_logs": "Statische logs",
-        "system_containers": "Systeem & containers"
+        "system_containers": "Systeem & containers",
+        "container_running": "Actief",
+        "container_disabled": "Container gestopt of uitgeschakeld",
+        "container_stopped": "Gestopt",
+        "current_time": "Systeemtijd",
+        "error_show_ip": "Kon het publieke IP adres niet resolven",
+        "login_time": "Tijd",
+        "memory": "Geheugen",
+        "show_ip": "Toon publiek IP",
+        "success": "Succes",
+        "timezone": "Tijdzone",
+        "update_available": "Er is een update beschikbaar",
+        "no_update_available": "Het systeem heeft de laatste versie",
+        "update_failed": "Kon niet op updates controleren",
+        "username": "Gebruikersnaam",
+        "wip": "Momenteel werk in uitvoering",
+        "architecture": "Architectuur",
+        "cores": "Kernen",
+        "service": "Dienst"
     },
     "diagnostics": {
         "cname_from_a": "Waarde afgeleid van een A- of AAAA-vermelding.",
         "dns_records": "DNS-configuratie",
         "dns_records_24hours": "Houd er rekening mee dat wijzigingen aan DNS tot wel 24 uur in beslag kunnen nemen voordat ze op deze pagina worden weergegeven. Deze informatie is bedoeld om gemakkelijk te bekijken of de DNS-configuratie aan de eisen voldoet.",
-        "dns_records_docs": "Raadpleeg ook <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite/prerequisite-dns/\">de documentatie</a>.",
+        "dns_records_docs": "Raadpleeg ook <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">de documentatie</a>.",
         "dns_records_data": "Correcte gegevens",
         "dns_records_name": "Naam",
         "dns_records_status": "Huidige staat",
@@ -567,7 +619,15 @@
         "title": "Wijzig object",
         "unchanged_if_empty": "Laat leeg wanneer ongewijzigd",
         "username": "Gebruikersnaam",
-        "validate_save": "Verifieer en sla op"
+        "validate_save": "Verifieer en sla op",
+        "domain_footer_info": "Domeinwijde voetteksten worden toegevoegd aan alle uitgaande e-mails die zijn gekoppeld aan een adres binnen dit domein. <br> De volgende variabelen kunnen worden gebruikt voor de voettekst:",
+        "admin": "Bewerk administrator",
+        "app_passwd_protocols": "Toegestane protocollen voor app wachtwoord",
+        "created_on": "Gemaakt op",
+        "acl": "ACL (Toestemming)",
+        "domain_footer": "Domeinbreede footer",
+        "domain_footer_html": "HTML footer",
+        "mailbox_relayhost_info": "Wordt alleen toegepast op de mailbox en directe aliassen, maar heft een domein relayhost op."
     },
     "footer": {
         "cancel": "Annuleren",
@@ -1082,5 +1142,29 @@
         "quota_exceeded_scope": "Domeinquota overschreden: Voor dit domein kunnen uitsluitend onbeperkte mailboxen aangemaakt worden.",
         "session_token": "Token ongeldig: komt niet overeen",
         "session_ua": "Token ongeldig: gebruikersagentvalidatie mislukt"
+    },
+    "datatables": {
+        "emptyTable": "Geen data beschikbaar in tabel",
+        "expand_all": "Alles uitbreiden",
+        "paginate": {
+            "last": "Laatste",
+            "next": "Volgende",
+            "previous": "Vorige",
+            "first": "Eerste"
+        },
+        "aria": {
+            "sortAscending": ": activeer om kolommen oplopend te sorteren",
+            "sortDescending": ": activeer om kolommen aflopend te sorteren"
+        },
+        "collapse_all": "Alle samenvoegen",
+        "decimal": ".",
+        "info": "_START_ tot _END_ van _TOTAL_ worden getoond",
+        "infoEmpty": "0 tot 0 van 0 items worden getoond",
+        "thousands": ",",
+        "lengthMenu": "Toon _MENU_ items",
+        "loadingRecords": "Laden...",
+        "processing": "Wachten alstublieft..",
+        "search": "Zoeken:",
+        "zeroRecords": "Geen overeenkomsten gevonden"
     }
 }

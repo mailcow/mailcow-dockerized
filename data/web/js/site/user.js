@@ -127,7 +127,7 @@ jQuery(function($){
     }
   }
 
-  
+
   function createSortableDate(td, cellData, date_string = false) {
     if (date_string)
       var date = new Date(cellData);
@@ -169,11 +169,11 @@ jQuery(function($){
               item.action = '<div class="btn-group">' +
                 '<a href="#" data-action="delete_selected" data-id="single-tla" data-api-url="delete/time_limited_alias" data-item="' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
               item.address = escapeHtml(item.address);
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
               item.action = '<span>-</span>';
             }
           });
@@ -263,11 +263,11 @@ jQuery(function($){
                 '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             }
             else {
               item.action = '<span>-</span>';
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
             if (item.is_running == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
@@ -420,11 +420,11 @@ jQuery(function($){
                 '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-apppasswd" data-api-url="delete/app-passwd" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="apppasswd" name="multi_select" value="' + item.id + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="apppasswd" name="multi_select" value="' + item.id + '" />';
             }
             else {
               item.action = '<span>-</span>';
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 
@@ -503,13 +503,13 @@ jQuery(function($){
           console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
             }
             if (acl_data.spam_policy === 0) {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 
@@ -574,13 +574,13 @@ jQuery(function($){
           console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
             }
             if (acl_data.spam_policy === 0) {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 

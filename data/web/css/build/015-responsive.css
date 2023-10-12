@@ -38,7 +38,7 @@
 
 
 @media (max-width: 767px) {
-  .responsive-tabs .tab-pane {
+  .responsive-tabs .tab-pane:not(.rsettings) {
       display: block !important;
       opacity: 1;
   }
@@ -205,6 +205,19 @@
 
   .senders-mw220 {
     max-width: 100% !important;
+  }
+  
+  table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+  table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before,
+  table.dataTable td.dt-control:before {
+      height: 2rem;
+      width: 2rem;
+      line-height: 2rem;
+      margin-top: -15px;
+  }
+  
+  li .dtr-data {
+      padding: 0;
   }
 }
 

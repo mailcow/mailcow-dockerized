@@ -357,6 +357,7 @@ button[aria-expanded='true'] > .caret {
 }
 
 .progress {
+  height: 16px;
   background-color: #d5d5d5;
 }
 
@@ -369,4 +370,23 @@ button[aria-expanded='true'] > .caret {
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
     background-color: #f0f0f0 !important;
+}
+.btn-check:checked+.btn-light, .btn-check:active+.btn-light, .btn-light:active, .btn-light.active, .show>.btn-light.dropdown-toggle {    
+    color: #fff;
+    background-color: #555;
+    background-image: none;
+    border-color: #4d4d4d;
+}
+.btn-check:checked+.btn-light:focus, .btn-check:active+.btn-light:focus, .btn-light:active:focus, .btn-light.active:focus, .show>.btn-light.dropdown-toggle:focus,
+.btn-check:focus+.btn-light, .btn-light:focus {
+    box-shadow: none;
+}
+.btn-group>.btn:not(:last-of-type) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.badge.bg-info > a,
+.badge.bg-danger > a {
+    color: #fff !important;
+    text-decoration: none;
 }

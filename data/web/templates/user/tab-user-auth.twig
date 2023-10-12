@@ -129,20 +129,20 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br />{{ lang.user.with_app_password }}:</div>
+        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br class="d-none d-lg-block" />{{ lang.user.with_app_password }}:</div>
         <div class="col-md-9 col-12">
           <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}</p>
+          <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }}<br /> {{ lang.user.apple_connection_profile_with_app_password }}</p>
           {% if not skip_sogo %}
           <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?app_password">{{ lang.user.email_and_dav }}</a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_complete }} {{ lang.user.apple_connection_profile_with_app_password }}</p>
+          <p class="text-muted">{{ lang.user.apple_connection_profile_complete }}<br /> {{ lang.user.apple_connection_profile_with_app_password }}</p>
           {% endif %}
         </div>
       </div>
       <hr>
       <div class="row">
         <div class="offset-sm-3 col-sm-9">
-          <p><a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
+          <p><a target="_blank" href="https://docs.mailcow.email/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
           <p><a href="#userFilterModal" data-bs-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
           <hr>
           <h4 class="recent-login-success">{{ lang.user.recent_successful_connections }}</h4>

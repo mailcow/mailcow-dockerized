@@ -3,7 +3,23 @@
         "bcc_maps": "BCC maps",
         "filters": "Filtres",
         "recipient_maps": "Recipient maps",
-        "syncjobs": "Feines de sincronització"
+        "syncjobs": "Feines de sincronització",
+        "quarantine_category": "Canvia la categoria de les notificacions de quarantena",
+        "quarantine_notification": "Canvia les notificacions de quarantena",
+        "sogo_profile_reset": "Restableix el prefil SOGo",
+        "alias_domains": "Afegir àlies de domini",
+        "app_passwds": "Gestiona les contrasenyes de les aplicacions",
+        "domain_desc": "Canvia la descripció del domini",
+        "eas_reset": "Restableix els dispositius EAS",
+        "login_as": "Inicia sessió com a usuari de la bústia de correu",
+        "prohibited": "Prohibit per ACL",
+        "protocol_access": "Canvia el protocol d'accés",
+        "quarantine": "Accions de quarantena",
+        "quarantine_attachments": "Fitxers adjunts en quarantena",
+        "spam_alias": "Àlies temporals",
+        "spam_score": "Puntuació de correu brossa",
+        "tls_policy": "Política TLS",
+        "unlimited_quota": "Quota ilimitada per bústies de correo"
     },
     "add": {
         "activate_filter_warn": "All other filters will be deactivated, when active is checked.",
@@ -55,7 +71,9 @@
         "target_domain": "Domini destí:",
         "username": "Username",
         "validate": "Validar",
-        "validation_success": "Validated successfully"
+        "validation_success": "Validated successfully",
+        "app_name": "Nom de l'aplicació",
+        "app_password": "Afegir contrasenya a l'aplicació"
     },
     "admin": {
         "access": "Accés",
@@ -259,7 +277,7 @@
     },
     "footer": {
         "cancel": "Cancel·lar",
-        "confirm_delete": "Confirma l'esborrat ",
+        "confirm_delete": "Confirma l'esborrat",
         "delete_now": "Esborrar ara",
         "delete_these_items": "Si et plau confirma els canvis al objecte amb id:",
         "loading": "Si et plau espera ...",

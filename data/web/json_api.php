@@ -1867,6 +1867,9 @@ if (isset($_GET['query'])) {
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
         break;
+        case "domain-wide-footer":
+          process_edit_return(mailbox('edit', 'domain_wide_footer', $attr));
+        break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
         break;

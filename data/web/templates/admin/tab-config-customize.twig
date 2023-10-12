@@ -10,22 +10,26 @@
       <legend><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend><hr />
       <p class="text-muted">{{ lang.admin.logo_info }}</p>
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
-        <p>
-          <input class="mb-4" type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml"><br>
-          <button name="submit_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
-        </p>
+        <div class="mb-4">
+          <label for="main_logo_input" class="form-label">{{ lang.admin.logo_normal_label }}</label>
+          <input class="form-control" id="main_logo_input" type="file" name="main_logo" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml">
+        </div>
+        <div class="mb-4">
+          <label for="main_logo_dark_input" class="form-label">{{ lang.admin.logo_dark_label }}</label>
+          <input class="form-control" id="main_logo_dark_input" type="file" name="main_logo_dark" accept="image/gif, image/jpeg, image/pjpeg, image/x-png, image/png, image/svg+xml">
+        </div>
+
+        <button name="submit_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary"><i class="bi bi-upload"></i> {{ lang.admin.upload }}</button>
       </form>
-      {% if logo %}
-        <div class="row">
+      {% if logo or logo_dark %}
+        <div class="row mt-4">
           <div class="col-sm-4">
-            <div class="thumbnail">
-              <img class="img-thumbnail" src="{{ logo }}" alt="mailcow logo">
-              <div class="caption">
-                <span class="badge fs-5 bg-info">{{ logo_specs.geometry.width }}x{{ logo_specs.geometry.height }} px</span>
-                <span class="badge fs-5 bg-info">{{ logo_specs.mimetype }}</span>
-                <span class="badge fs-5 bg-info">{{ logo_specs.fileSize }}</span>
-              </div>
-            </div>
+            {% if logo %}
+              {% include 'admin/customize/logo.twig' %}
+            {% endif %}
+            {% if logo_dark %}
+              {% include 'admin/customize/logo.twig' with {'logo': logo_dark, 'logo_specs': logo_dark_specs, 'dark': 1} %}
+            {% endif %}
             <hr>
             <form class="form-inline" role="form" method="post">
               <p><button name="reset_main_logo" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary">{{ lang.admin.reset_default }}</button></p>
@@ -111,7 +115,7 @@
               </div>
             </div>
             <p><textarea class="form-control" id="ui_announcement_text" name="ui_announcement_text" rows="7">{{ ui_texts.ui_announcement_text }}</textarea></p>
-            <div class="checkbox">
+            <div class="form-check">
               <label>
                 <input type="checkbox" name="ui_announcement_active" class="form-check-input" {% if ui_texts.ui_announcement_active == 1 %}checked{% endif %}> {{ lang.admin.ui_header_announcement_active }}
               </label>

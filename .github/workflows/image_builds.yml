@@ -28,7 +28,7 @@ jobs:
           - "watchdog-mailcow"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Docker
         run: |
           curl -sSL https://get.docker.com/ | CHANNEL=stable sudo sh
