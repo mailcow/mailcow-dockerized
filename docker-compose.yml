@@ -58,12 +58,11 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.62
+      image: mailcow/clamd:1.63
       restart: always
       depends_on:
         unbound-mailcow:
           condition: service_healthy
-          restart: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -305,7 +304,6 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-          restart: true
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
