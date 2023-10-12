@@ -746,7 +746,7 @@ olefy_checks() {
 }
 
 # Notify about start
-if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
+if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]] && [[ ${WATCHDOG_NOTIFY_START} =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   mail_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
 fi
 
