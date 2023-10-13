@@ -15,10 +15,10 @@
         <form style="display:inline;" method="post">
           <input type="hidden" name="unset_fido2_key" value="{{ key_info.cid }}">
           <div class="btn-group">
-            <a href="#" class="btn btn-xs btn-secondary" data-cid="{{ key_info.cid }}" data-subject="{{ key_info.subject|base64_encode }}" data-bs-toggle="modal" data-bs-target="#fido2ChangeFn">
+            <a href="#" class="btn btn-sm btn-xs-lg btn-secondary" data-cid="{{ key_info.cid }}" data-subject="{{ key_info.subject|base64_encode }}" data-bs-toggle="modal" data-bs-target="#fido2ChangeFn">
               <i class="bi bi-pencil-fill"></i> {{ lang.fido2.rename }}
             </a>
-            <a href="#" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger">
+            <a href="#" onClick='return confirm("{{ lang.admin.ays }}")?$(this).closest("form").submit():"";' class="btn btn-sm btn-xs-lg btn-danger">
               <i class="bi bi-trash"></i> {{ lang.admin.remove }}
             </a>
           </div>

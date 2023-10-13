@@ -34,7 +34,7 @@ if docker compose > /dev/null 2>&1; then
       echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
 elif docker-compose > /dev/null 2>&1; then
@@ -47,14 +47,14 @@ elif docker-compose > /dev/null 2>&1; then
       echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
-      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/i_u_m/i_u_m_install/\e[0m"
       exit 1
     fi
   fi
 
 else
   echo -e "\e[31mCannot find Docker Compose.\e[0m" 
-  echo -e "\e[31mPlease install it regarding to this doc site: https://mailcow.github.io/mailcow-dockerized-docs/i_u_m/i_u_m_install/\e[0m"
+  echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/i_u_m/i_u_m_install/\e[0m"
   exit 1
 fi
 
@@ -109,9 +109,24 @@ echo "Press enter to confirm the detected value '[value]' where applicable or en
 while [ -z "${MAILCOW_HOSTNAME}" ]; do
   read -p "Mail server hostname (FQDN) - this is not your mail domain, but your mail servers hostname: " -e MAILCOW_HOSTNAME
   DOTS=${MAILCOW_HOSTNAME//[^.]};
-  if [ ${#DOTS} -lt 2 ] && [ ! -z ${MAILCOW_HOSTNAME} ]; then
-    echo "${MAILCOW_HOSTNAME} is not a FQDN"
-    MAILCOW_HOSTNAME=
+  if [ ${#DOTS} -lt 1 ]; then
+    echo -e "\e[31mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!\e[0m"
+    sleep 1
+    echo "Please change it to a FQDN and redeploy the stack with docker(-)compose up -d"
+    exit 1
+  elif [[ "${MAILCOW_HOSTNAME: -1}" == "." ]]; then
+    echo "MAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is ending with a dot. This is not a valid FQDN!"
+    exit 1
+  elif [ ${#DOTS} -eq 1 ]; then
+    echo -e "\e[33mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) does not contain a Subdomain. This is not fully tested and may cause issues.\e[0m"
+    echo "Find more information about why this message exists here: https://github.com/mailcow/mailcow-dockerized/issues/1572"
+    read -r -p "Do you want to proceed anyway? [y/N] " response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      echo "OK. Procceding."
+    else
+      echo "OK. Exiting."
+      exit 1
+    fi
   fi
 done
 
@@ -220,7 +235,7 @@ MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
 # Only certain password hash algorithm are supported. For a fully list of supported schemes,
-# see https://mailcow.github.io/mailcow-dockerized-docs/models/model-passwd/
+# see https://docs.mailcow.email/models/model-passwd/
 MAILCOW_PASS_SCHEME=BLF-CRYPT
 
 # ------------------------------
@@ -246,7 +261,7 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # IMPORTANT: Do not use port 8081, 9081, 9082 or 65510!
 # Example: HTTP_BIND=1.2.3.4
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
-# For IPv6 see https://mailcow.github.io/mailcow-dockerized-docs/post_installation/firststeps-ip_bindings/
+# For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
 
 HTTP_PORT=80
 HTTP_BIND=
@@ -275,7 +290,7 @@ REDIS_PORT=127.0.0.1:7654
 
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
-# Use the row named 'TZ database name' + pay attention for 'Notes' row
+# Use the column named 'TZ identifier' + pay attention for the column named 'Notes'
 
 TZ=${MAILCOW_TZ}
 
@@ -337,7 +352,7 @@ SKIP_LETS_ENCRYPT=n
 
 # Create seperate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
-# see https://wiki.dovecot.org/SSL/SNIClientSupport
+# see https://doc.dovecot.org/admin_manual/ssl/sni_support
 ENABLE_SSL_SNI=n
 
 # Skip IPv4 check in ACME container - y/n
@@ -450,7 +465,7 @@ DOVECOT_MASTER_PASS=
 # Optional: Leave empty for none
 # This value is only used on first order!
 # Setting it at a later point will require the following steps:
-# https://mailcow.github.io/mailcow-dockerized-docs/troubleshooting/debug-reset_tls/
+# https://docs.mailcow.email/troubleshooting/debug-reset_tls/
 ACME_CONTACT=
 
 # WebAuthn device manufacturer verification

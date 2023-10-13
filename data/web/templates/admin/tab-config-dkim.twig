@@ -20,7 +20,7 @@
       {% for domain, domain_data in dkim_domains %}
         {% if domain_data.dkim %}
           <div class="row collapse show dkim_key_valid">
-            <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ domain }}"></div>
+            <div class="col-md-1"><input type="checkbox" class="form-check-input" data-id="dkim" name="multi_select" value="{{ domain }}"></div>
             <div class="col-md-3">
               <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong>
               <p class="dkim-label"><span class="badge fs-6 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
@@ -31,7 +31,7 @@
             <div class="col-md-8">
               <textarea class="form-control" rows="6" readonly>{{ domain_data.dkim.dkim_txt }}</textarea>
               <small>
-                <i class="bi bi-arrow-return-right"></i> 
+                <i class="bi bi-arrow-return-right"></i>
                 <a href="#" data-bs-toggle="modal" data-bs-target="#showDKIMprivKey" id="dkim_priv" data-priv-key="{{ domain_data.dkim.privkey }}"> {{ lang.admin.dkim_private_key }}</a>
               </small>
             </div>
@@ -50,7 +50,7 @@
         {% for alias_domain, alias_domain_data in domain_data.alias_domains %}
           {% if alias_domain_data.dkim %}
             <div class="row collapse in dkim_key_valid">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ alias_domain }}"></div>
+              <div class="col-md-1"><input type="checkbox" class="form-check-input" data-id="dkim" name="multi_select" value="{{ alias_domain }}"></div>
               <div class="col-md-2 offset-md-1">
                 <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong></small>
                 <p class="dkim-label"><span class="badge fs-6 bg-success">{{ lang.admin.dkim_key_valid }}</span></p>
@@ -78,7 +78,7 @@
       {% endfor %}
       {% for blind, data in dkim_blind_domains|filter(data => data.dkim is not null) %}
         <div class="row collapse in dkim_key_unused">
-          <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="{{ blind }}"></div>
+          <div class="col-md-1"><input type="checkbox" class="form-check-input" data-id="dkim" name="multi_select" value="{{ blind }}"></div>
           <div class="col-md-3">
             <p>{{ lang.admin.domain }}: <strong>{{ blind }}</strong>
             <p class="dkim-label"><span class="badge fs-6 bg-warning">{{ lang.admin.dkim_key_unused }}</span></p>
@@ -114,7 +114,7 @@
         </div>
         <div class="row mb-4">
           <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-            <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size" title="{{ lang.admin.dkim_key_length }}" required>
+            <select data-style="btn btn-light btn-sm" class="form-control" id="key_size" name="key_size" title="{{ lang.admin.dkim_key_length }}" required>
               <option data-subtext="bits">1024</option>
               <option data-subtext="bits">2048</option>
             </select>
@@ -143,7 +143,7 @@
           </div>
           <div class="mb-2">
             <label>
-              <input type="checkbox" name="overwrite_existing" value="1"> {{ lang.admin.dkim_overwrite_key }}
+              <input type="checkbox" class="form-check-input" name="overwrite_existing" value="1"> {{ lang.admin.dkim_overwrite_key }}
             </label>
           </div>
           <button class="btn btn-sm d-block d-sm-inline btn-secondary" data-action="add_item" data-id="dkim_import" data-api-url='add/dkim_import' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.import }}</button>
@@ -159,7 +159,7 @@
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="from_domain">{{ lang.admin.dkim_from }}:</label>
             <div class="col-sm-10 col-md-6 col-lg-4 col-xl-3">
-              <select data-style="btn btn-secondary btn-sm"
+              <select data-style="btn btn-light btn-sm"
                       data-live-search="true"
                       data-id="dkim_duplicate"
                       title="{{ lang.admin.dkim_from_title }}"
@@ -175,7 +175,7 @@
             <div class="col-sm-10 col-md-6 col-lg-4 col-xl-3">
               <select
                 data-live-search="true"
-                data-style="btn btn-secondary btn-sm"
+                data-style="btn btn-light btn-sm"
                 data-id="dkim_duplicate"
                 title="{{ lang.admin.dkim_to_title }}"
                 name="to_domain" id="to_domain" class="full-width-select form-control" multiple required>

@@ -121,10 +121,21 @@ $(document).ready(function() {
         if (lastTab) {
           $('[data-bs-target="#' + lastTab + '"]').click();
           var tab = $('[id^="' + lastTab + '"]');
-          $(tab).find('.card-body.collapse').collapse('show');
+          $(tab).find('.card-body.collapse:first').collapse('show');
         }
       });
   })();
+  
+  // responsive tabs, scroll to opened tab
+  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
+	  var target = $(e.target);
+	  if($(window).width() <= 767) {
+		  var offset = target.offset().top - 60;
+		  $("html, body").stop().animate({
+		    scrollTop: offset
+		  }, 100);
+	  }
+  });
 
   // IE fix to hide scrollbars when table body is empty
   $('tbody').filter(function (index) {
@@ -314,19 +325,28 @@ $(document).ready(function() {
   $('#dark-mode-toggle').click(toggleDarkMode);
   if ($('#dark-mode-theme').length) {
     $('#dark-mode-toggle').prop('checked', true);
+    $('.main-logo').addClass('d-none');
+    $('.main-logo-dark').removeClass('d-none');
     if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
     if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
+  } else {
+    $('.main-logo').removeClass('d-none');
+    $('.main-logo-dark').addClass('d-none');
   }
   function toggleDarkMode(){
     if($('#dark-mode-theme').length){
       $('#dark-mode-theme').remove();
       $('#dark-mode-toggle').prop('checked', false);
+      $('.main-logo').removeClass('d-none');
+      $('.main-logo-dark').addClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
       localStorage.setItem('theme', 'light');
     }else{
       $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
       $('#dark-mode-toggle').prop('checked', true);
+      $('.main-logo').addClass('d-none');
+      $('.main-logo-dark').removeClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
       localStorage.setItem('theme', 'dark');

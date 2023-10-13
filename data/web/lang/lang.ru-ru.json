@@ -338,7 +338,13 @@
         "yes": "&#10003;",
         "queue_unban": "разблокировать",
         "f2b_ban_time_increment": "Время бана увеличивается с каждым баном",
-        "f2b_max_ban_time": "Максимальное время блокировки"
+        "f2b_max_ban_time": "Максимальное время блокировки",
+        "allowed_origins": "Access-Control-Allow-Origin",
+        "cors_settings": "Настройки CORS",
+        "allowed_methods": "Access-Control-Allow-Methods",
+        "ip_check": "Проверить IP",
+        "ip_check_disabled": "Проверка IP отключена. Вы можете включить его в разделе <br> <strong>Система > Конфигурация > Параметры > Настроить</strong>.",
+        "ip_check_opt_in": "Согласие на использование сторонних служб <strong>ipv4.mailcow.email</strong> и <strong>ipv6.mailcow.email</strong> для разрешения внешних IP-адресов."
     },
     "danger": {
         "access_denied": "Доступ запрещён, или указаны неверные данные",
@@ -457,7 +463,10 @@
         "username_invalid": "Имя пользователя %s нельзя использовать",
         "validity_missing": "Пожалуйста, назначьте срок действия",
         "value_missing": "Пожалуйста заполните все поля",
-        "yotp_verification_failed": "Ошибка валидации Yubico OTP: %s"
+        "yotp_verification_failed": "Ошибка валидации Yubico OTP: %s",
+        "cors_invalid_method": "Указан недопустимый метод разрешения",
+        "demo_mode_enabled": "Демонстрационный режим включен",
+        "cors_invalid_origin": "Указан неверный Allow-Origin"
     },
     "debug": {
         "chart_this_server": "Диаграмма (текущий сервер)",
@@ -491,7 +500,7 @@
         "dns_records": "Записи DNS",
         "dns_records_24hours": "Обратите внимание, что для внесения изменений в DNS может потребоваться до 24 часов, чтобы правильно отобразить их текущее состояние на этой странице. Эта страница предназначен для того, чтобы вы могли легко увидеть, как настроить записи DNS и проверить, все ли записи правильно занесены в DNS.",
         "dns_records_data": "Значение",
-        "dns_records_docs": "Пожалуйста, ознакомьтесь с <a target=\"_blank\" href=\"https://mailcow.github.io/mailcow-dockerized-docs/prerequisite/prerequisite-dns/\">документацией</a>.",
+        "dns_records_docs": "Пожалуйста, ознакомьтесь с <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">документацией</a>.",
         "dns_records_name": "Название",
         "dns_records_status": "Статус",
         "dns_records_type": "Тип",
@@ -542,7 +551,7 @@
         "inactive": "Неактивный",
         "kind": "Тип",
         "last_modified": "Последние изменения",
-        "lookup_mx": "Назначение на основе резовинга MX записи по регулярному выражению (<code>.*\\.example\\.com$</code> для маршрутизации всей почты через этот хост, если MX заканчивающийся на example.com)",
+        "lookup_mx": "Назначение на основе резолвинга MX записи по регулярному выражению (<code>.*\\.example\\.com$</code> для маршрутизации всей почты через этот хост, если MX заканчивающийся на example.com)",
         "mailbox": "Изменение почтового аккаунта",
         "mailbox_quota_def": "Квота по умолчанию",
         "mailbox_relayhost_info": "Применяется только к почтовому ящику и личным псевдонимам, вне зависимости от настроек маршрутизации на уровне домена.",
@@ -607,7 +616,20 @@
         "title": "Изменение объекта",
         "unchanged_if_empty": "Если без изменений - оставьте пустым",
         "username": "Имя пользователя",
-        "validate_save": "Подтвердить и сохранить"
+        "validate_save": "Подтвердить и сохранить",
+        "sogo_access_info": "Единый вход из интерфейса почты продолжает работать. Эта настройка не влияет на доступ ко всем другим службам, а также не удаляет или изменяет существующий профиль пользователя SOGo.",
+        "app_passwd_protocols": "Разрешенные протоколы для пароля приложения",
+        "domain_footer_info": "Нижние колонтитулы на уровне домена добавляются ко всем исходящим электронным письмам, связанным с адресом в этом домене. <br> Для нижнего колонтитула можно использовать следующие переменные:",
+        "domain_footer_info_vars": {
+            "from_name": "{= from_name =} - Из названия envelope, например, для \"Mailcow &lt;moo@mailcow.tld&gt;\" возвращается \"Mailcow\"",
+            "auth_user": "{= auth_user =} - Аутентифицированное имя пользователя, указанное MTA",
+            "from_user": "{= from_user =} - Из пользовательской части envelope, например, для \"moo@mailcow.tld\" возвращается \"moo\"",
+            "from_addr": "{= from_addr =} - Из адресной части envelope",
+            "from_domain": "{= from_domain =} - из доменной части envelope"
+        },
+        "domain_footer": "Нижний колонтитул домена",
+        "domain_footer_html": "HTML нижний колонтитул",
+        "domain_footer_plain": "ПРОСТОЙ нижний колонтитул"
     },
     "fido2": {
         "confirm": "Подтвердить",
@@ -987,7 +1009,9 @@
         "verified_fido2_login": "Авторизация FIDO2 пройдена",
         "verified_totp_login": "Авторизация TOTP пройдена",
         "verified_webauthn_login": "Авторизация WebAuthn пройдена",
-        "verified_yotp_login": "Авторизация Yubico OTP пройдена"
+        "verified_yotp_login": "Авторизация Yubico OTP пройдена",
+        "cors_headers_edited": "Настройки CORS сохранены",
+        "domain_footer_modified": "Изменения в нижнем колонтитуле домена %s сохранены"
     },
     "tfa": {
         "api_register": "%s использует Yubico Cloud API. Пожалуйста, получите ключ API для вашего ключа <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">здесь</a>",
@@ -1169,7 +1193,12 @@
         "weekly": "Раз в неделю",
         "weeks": "недели",
         "year": "год",
-        "years": "лет"
+        "years": "лет",
+        "allowed_protocols": "Разрешенные протоколы",
+        "apple_connection_profile_with_app_password": "Новый пароль приложения генерируется и добавляется в профиль, поэтому при настройке устройства не требуется вводить пароль. Не предоставляйте доступ к файлу, поскольку он предоставляет полный доступ к вашему почтовому ящику.",
+        "direct_protocol_access": "Этот пользователь почтового ящика имеет <b>прямой, внешний доступ</b> к следующим протоколам и приложениям. Эта настройка контролируется вашим администратором. Для предоставления доступа к отдельным протоколам и приложениям могут быть созданы пароли приложений.<br> Кнопка \"Вход в веб-почту\" обеспечивает единый вход в SOGo и всегда доступна.",
+        "with_app_password": "с паролем приложения",
+        "change_password_hint_app_passwords": "В вашей учетной записи есть {{number_of_app_passwords}} паролей приложений, которые не будут изменены. Чтобы управлять ими, перейдите на вкладку \"Пароли приложений\"."
     },
     "warning": {
         "cannot_delete_self": "Вы не можете удалить сами себя",
@@ -1183,5 +1212,8 @@
         "quota_exceeded_scope": "Квота домена превышена: могут быть созданы только почтовые ящики без лимита.",
         "session_token": "Неверный токен формы: несоответствие токена",
         "session_ua": "Неверный токен формы: ошибка проверки User-Agent"
+    },
+    "datatables": {
+        "infoPostFix": ""
     }
 }

@@ -486,7 +486,7 @@ fi
 # Append user overrides
 echo -e "\n# User Overrides" >> /opt/postfix/conf/main.cf
 touch /opt/postfix/conf/extra.cf
-sed -i '/myhostname/d' /opt/postfix/conf/extra.cf
+sed -i '/\$myhostname/! { /myhostname/d }' /opt/postfix/conf/extra.cf
 echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > /opt/postfix/conf/extra.cf
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 
