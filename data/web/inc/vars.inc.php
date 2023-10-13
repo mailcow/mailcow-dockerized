@@ -43,6 +43,9 @@ $autodiscover_config = array(
   // Please don't use STARTTLS-enabled service ports in the "port" variable.
   // The autodiscover service will always point to SMTPS and IMAPS (TLS-wrapped services).
   // The autoconfig service will additionally announce the STARTTLS-enabled ports, specified in the "tlsport" variable.
+  // In order to disable one of the ports from being presented in the autodiscovery procss, set portDisabled or tlsPortDisabled to true.
+  // For example, in vars.local.inc.php add:
+  // $autodiscover_config['pop3']['tlsportDisabled'] = true;
   'imap' => array(
     'server' => $mailcow_hostname,
     'port' => (int)filter_var(substr(getenv('IMAPS_PORT'), strrpos(getenv('IMAPS_PORT'), ':')), FILTER_SANITIZE_NUMBER_INT),

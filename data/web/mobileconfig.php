@@ -68,6 +68,24 @@ if (isset($_GET['app_password'])) {
   $app_password = false;
 }
 
+if (isset($autodiscover_config['imap']['portDisabled'])
+  && $autodiscover_config['imap']['portDisabled'] === TRUE
+  && !isset($autodiscover_config['imap']['tlsportDisabled'])
+  || $autodiscover_config['imap']['tlsportDisabled'] !== TRUE) {
+  $imap_port = $autodiscover_config['imap']['tlsport'];
+} else {
+  $imap_port = $autodiscover_config['imap']['port'];
+}
+
+if (isset($autodiscover_config['smtp']['portDisabled'])
+  && $autodiscover_config['smtp']['portDisabled'] === TRUE
+  && !isset($autodiscover_config['smtp']['tlsportDisabled'])
+  || $autodiscover_config['smtp']['tlsportDisabled'] !== TRUE) {
+  $smtp_port = $autodiscover_config['smtp']['tlsport'];
+} else {
+  $smtp_port = $autodiscover_config['smtp']['port'];
+}
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -89,7 +107,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <key>IncomingMailServerHostName</key>
         <string><?=$autodiscover_config['imap']['server']?></string>
         <key>IncomingMailServerPortNumber</key>
-        <integer><?=$autodiscover_config['imap']['port']?></integer>
+        <integer><?=$imap_port?></integer>
         <key>IncomingMailServerUseSSL</key>
         <true/>
         <key>IncomingMailServerUsername</key>
@@ -103,7 +121,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <key>OutgoingMailServerHostName</key>
         <string><?=$autodiscover_config['smtp']['server']?></string>
         <key>OutgoingMailServerPortNumber</key>
-        <integer><?=$autodiscover_config['smtp']['port']?></integer>
+        <integer><?=$smtp_port?></integer>
         <key>OutgoingMailServerUseSSL</key>
         <true/>
         <key>OutgoingMailServerUsername</key>
