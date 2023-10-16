@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:edge
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG GOSU_VERSION=1.16
@@ -29,7 +29,6 @@ RUN addgroup -g 5000 vmail \
   gnupg-dirmngr \
   jq \
   libintl \
-  libssl1.1 \
   libstdc++ \
   libxml2-dev \
   lua \
@@ -95,7 +94,10 @@ RUN addgroup -g 5000 vmail \
   procps \
   python3 \
   python3-dev \
-  py3-pip \
+  py3-mysqlclient \
+  py3-html2text \
+  py3-jinja2 \
+  py3-redis \
   redis \
   syslog-ng \
   syslog-ng-redis \
@@ -120,8 +122,6 @@ RUN addgroup -g 5000 vmail \
   && gosu nobody true
 
 RUN cpan LockFile::Simple
-
-RUN pip3 install mysql-connector-python html2text jinja2 redis
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
