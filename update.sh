@@ -454,6 +454,7 @@ CONFIG_ARRAY=(
   "SKIP_CLAMD"
   "SKIP_IP_CHECK"
   "ADDITIONAL_SAN"
+  "ACME_IGNORE_AUTOCONFS"
   "DOVEADM_PORT"
   "IPV4_NETWORK"
   "IPV6_NETWORK"
@@ -494,6 +495,11 @@ for option in ${CONFIG_ARRAY[@]}; do
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=" >> mailcow.conf
+    fi
+  if [[ ${option} == "ACME_IGNORE_AUTOCONFS=" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo "ACME_IGNORE_AUTOCONFS=n" >> mailcow.conf
     fi
   elif [[ ${option} == "COMPOSE_PROJECT_NAME" ]]; then
     if ! grep -q ${option} mailcow.conf; then
