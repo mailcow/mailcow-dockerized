@@ -32,51 +32,44 @@ prefetch_images() {
 }
 
 docker_garbage() {
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
   IMGS_TO_DELETE=()
-  for container in $(grep -oP "image: \Kmailcow.+" "${SCRIPT_DIR}/docker-compose.yml"); do
-    REPOSITORY=${container/:*}
-    TAG=${container/*:}
-    V_MAIN=${container/*.}
-    V_SUB=${container/*.}
-    EXISTING_TAGS=$(docker images | grep ${REPOSITORY} | awk '{ print $2 }')
-    for existing_tag in ${EXISTING_TAGS[@]}; do
-      V_MAIN_EXISTING=${existing_tag/*.}
-      V_SUB_EXISTING=${existing_tag/*.}
-      # Not an integer
-      [[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
-      [[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
 
-      if [[ $V_MAIN_EXISTING == "latest" ]]; then
-        echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_MAIN_EXISTING -lt $V_MAIN ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_SUB_EXISTING -lt $V_SUB ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+  declare -A IMAGES_INFO
+  COMPOSE_IMAGES=($(grep -oP "image: \Kmailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
+
+  for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep 'mailcow/'); do
+      ID=$(echo $existing_image | cut -d ':' -f 1)
+      REPOSITORY=$(echo $existing_image | cut -d ':' -f 2)
+      TAG=$(echo $existing_image | cut -d ':' -f 3)
+
+      if [[ " ${COMPOSE_IMAGES[@]} " =~ " ${REPOSITORY}:${TAG} " ]]; then
+          continue
+      else
+          IMGS_TO_DELETE+=("$ID")
+          IMAGES_INFO["$ID"]="$REPOSITORY:$TAG"
       fi
-    done
   done
 
   if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
-    echo "Run the following command to delete unused image tags:"
-    echo
-    echo "    docker rmi ${IMGS_TO_DELETE[*]}"
-    echo
-    if [ ! $FORCE ]; then
-      read -r -p "Do you want to delete old image tags right now? [y/N] " response
-      if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-        docker rmi ${IMGS_TO_DELETE[*]}
+      echo "The following unused mailcow images were found:"
+      for id in "${IMGS_TO_DELETE[@]}"; do
+          echo "    ${IMAGES_INFO[$id]} ($id)"
+      done
+
+      if [ ! $FORCE ]; then
+          read -r -p "Do you want to delete them to free up some space? [y/N] " response
+          if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+              docker rmi ${IMGS_TO_DELETE[*]}
+          else
+              echo "OK, skipped."
+          fi
       else
-        echo "OK, skipped."
+          echo "Running in forced mode! Force removing old mailcow images..."
+          docker rmi ${IMGS_TO_DELETE[*]}
       fi
-    else
-      echo "Running image removal without extra confirmation due to force mode."
-      docker rmi ${IMGS_TO_DELETE[*]}
-    fi
-    echo -e "\e[32mFurther cleanup...\e[0m"
-    echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
+      echo -e "\e[32mFurther cleanup...\e[0m"
+      echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
   fi
 }
 
