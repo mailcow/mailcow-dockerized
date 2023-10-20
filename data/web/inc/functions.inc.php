@@ -2165,9 +2165,9 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
         $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
       } else if ($_data['authsource'] == "generic-oidc") {
-        $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? rtrim($_data['authorize_url'], '/') : null;
-        $_data['token_url']         = (!empty($_data['token_url'])) ? rtrim($_data['token_url'], '/') : null;
-        $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? rtrim($_data['userinfo_url'], '/') : null;
+        $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
+        $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
+        $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
         $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
       }
       
@@ -2183,9 +2183,6 @@ function identity_provider($_action, $_data = null, $_extra = null) {
           );
           $pdo->rollback();
           return false;
-        }
-        if ($setting == "server_url" || $setting == "authorize_url" || $setting == "token_url" || $setting == "userinfo_url") {
-          $_data[$setting] = rtrim($_data[$setting], '/');
         }
 
         $stmt->bindParam(':key', $setting);
