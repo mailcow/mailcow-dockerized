@@ -2108,6 +2108,10 @@ function identity_provider($_action, $_data = null, $_extra = null) {
           $settings[$row["key"]] = $row["value"];
         }
       }
+      // return default client_scopes for generic-oidc if none is set
+      if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
+        $settings["client_scopes"] = "openid profile email";
+      }
       if ($_extra['hide_sensitive']){
         $settings['client_secret'] = '';
         $settings['access_token'] = '';
@@ -2168,7 +2172,8 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
         $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
         $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
-        $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url');
+        $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email";
+        $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes');
       }
       
       $pdo->beginTransaction();
@@ -2318,7 +2323,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
             'urlAuthorize'            => $iam_settings['authorize_url'],
             'urlAccessToken'          => $iam_settings['token_url'],
             'urlResourceOwnerDetails' => $iam_settings['userinfo_url'],
-            'scopes'                  => 'openid profile email'
+            'scopes'                  => $iam_settings['client_scopes']
           ]);
         }
       }

@@ -207,10 +207,16 @@
               </div>
             </div>
           </div>
-          <div class="row mb-4">
+          <div class="row mb-2">
             <label class="control-label col-md-3 text-sm-end" for="iam_redirect_url">{{ lang.admin.iam_redirect_url }}:</label>
             <div class="col-12 col-md-9 col-lg-4">
               <input type="text" class="form-control" id="iam_redirect_url" name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-md-3 text-sm-end" for="iam_client_scopes">{{ lang.admin.iam_client_scopes }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" placeholder="openid profile email" class="form-control" id="iam_client_scopes" name="client_scopes" value="{{ iam_settings.client_scopes }}">
             </div>
           </div>
           <div class="row mb-2">

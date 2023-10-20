@@ -217,6 +217,7 @@
         "iam_auth_flow_info": "In addition to the Authorization Code Flow (Standard Flow in Keycloak), which is used for Single-Sign On login, mailcow also supports Authentication Flow with direct Credentials. The Mailpassword Flow attempts to validate the user's credentials by using the Keycloak Admin REST API. mailcow retrieves the hashed password from the <code>mailcow_password</code> attribute, which is mapped in Keycloak.",
         "iam_client_id": "Client ID",
         "iam_client_secret": "Client Secret",
+        "iam_client_scopes": "Client Scopes",
         "iam_description": "Configure an external OIDC Provider for Authentication<br>User's mailboxes will be automatically created upon their first login, provided that an attribute mapping has been set.",
         "iam_extra_permission": "For the following settings to work, the mailcow client in Keycloak needs a <code>Service account</code> and the permission to <code>view-users</code>.",
         "iam_import_users": "Import Users",
