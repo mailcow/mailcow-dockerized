@@ -1591,6 +1591,12 @@ if (isset($_GET['query'])) {
               }
             }
           break;
+          case "spam-score":
+            $score = mailbox('get', 'spam_score', $object);
+            if ($score)
+              $score = array("score" => preg_replace("/\s+/", "", $score));
+            process_get_return($score);
+          break;
         break;
         // return no route found if no case is matched
         default:

@@ -5646,6 +5646,40 @@ paths:
                       items:
                         type: string
       summary: Edit Cross-Origin Resource Sharing (CORS) settings
+  "/api/v1/get/spam-score/{mailbox}":
+    get:
+      parameters:
+        - description: name of mailbox or empty for current user - admin user will retrieve the global spam filter score
+          in: path
+          name: mailbox
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    spam_score: "8,15"
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        Using this endpoint you can get the global spam filter score or the spam filter score of a certain mailbox.
+      operationId: Get mailbox or global spam filter score
+      summary: Get mailbox or global spam filter score
 
 tags:
   - name: Domains
