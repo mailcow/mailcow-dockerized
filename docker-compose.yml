@@ -230,7 +230,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:dev
+      image: mailcow/dovecot:nightly-20231024
       depends_on:
         - mysql-mailcow
       dns:
