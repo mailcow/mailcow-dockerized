@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 if(file_exists('inc/vars.local.inc.php')) {
   include_once 'inc/vars.local.inc.php';
