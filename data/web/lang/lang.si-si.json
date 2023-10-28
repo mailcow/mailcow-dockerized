@@ -494,7 +494,24 @@
         "last_modified": "Nazadnje spremenjeno",
         "history_all_servers": "Zgodovina (vsi strežniki)",
         "in_memory_logs": "In-memory dnevniki",
-        "jvm_memory_solr": "JVM zasedenost spomina"
+        "jvm_memory_solr": "JVM zasedenost spomina",
+        "service": "Servis",
+        "show_ip": "Prikaži javni IP",
+        "size": "Velikost",
+        "solr_dead": "Solr se zaganja, je onemogočen ali se je ustavil.",
+        "solr_status": "Status Solr",
+        "started_at": "Zagnano ob",
+        "started_on": "Zagnano na",
+        "static_logs": "Statični dnevniki",
+        "success": "Uspešno",
+        "system_containers": "Sistem in Containerji",
+        "timezone": "Časovni pas",
+        "uptime": "Čas delovanja",
+        "update_available": "Posodobitev je na voljo",
+        "no_update_available": "Sistem je na najnovejši verziji",
+        "update_failed": "Ni mogoče preveriti za posodobitve",
+        "username": "Uporabniško ime",
+        "wip": "Trenutno v delu"
     },
     "datatables": {
         "infoFiltered": "(filtrirano od _MAX_ skupaj zapisov)",
@@ -520,5 +537,20 @@
             "sortAscending": ": aktivirajte za razvrstitev stolpca naraščajoče",
             "sortDescending": ": aktivirajte za razvrstitev stolpca padajoče"
         }
+    },
+    "diagnostics": {
+        "cname_from_a": "Vrednost pridobljena iz A/AAAA zapisa. To je podprto, če zapis kaže na pravilen resurs.",
+        "dns_records": "DNS zapisi",
+        "dns_records_24hours": "Prosim upoštevajte, da lahko traja do 24 ur da se spremembe v DNS pravilno prikažejo na tej strani. Namen je da lahko enostavno vidite, kako konfigurirati svoje DNS zapise in preverite ali so vaši zapisi pravilno shranjeni v DNS.",
+        "dns_records_data": "Pravilni podatki",
+        "dns_records_docs": "Prosim preverite tudi <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentacijo</a>.",
+        "dns_records_name": "Ime",
+        "dns_records_status": "Trenutno stanje",
+        "dns_records_type": "Vrsta",
+        "optional": "Ta zapis je opcijski."
+    },
+    "edit": {
+        "acl": "ACL (Dovoljenje)",
+        "active": "Aktivno"
     }
 }
