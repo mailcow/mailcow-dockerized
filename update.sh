@@ -886,7 +886,7 @@ done
 # git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 
 DEFAULT_REPO=https://github.com/mailcow/mailcow-dockerized
-CURRENT_REPO=$(git remote get-url origin)
+CURRENT_REPO=$(git config --get remote.origin.url)
 if [ "$CURRENT_REPO" != "$DEFAULT_REPO" ]; then 
   echo "The Repository currently used is not the default Mailcow Repository."
   echo "Currently Repository: $CURRENT_REPO"
