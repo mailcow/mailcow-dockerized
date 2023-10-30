@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.92
+      image: mailcow/rspamd:1.93
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -526,7 +526,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.05
+      image: mailcow/dockerapi:2.06
       security_opt:
         - label=disable
       restart: always

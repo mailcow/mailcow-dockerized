@@ -97,6 +97,7 @@ $AVAILABLE_LANGUAGES = array(
   'lv-lv' => 'latviešu (Latvian)',
   'nl-nl' => 'Nederlands (Dutch)',
   'pl-pl' => 'Język Polski (Polish)',
+  'pt-br' => 'Português brasileiro (Brazilian Portuguese)',
   'pt-pt' => 'Português (Portuguese)',
   'ro-ro' => 'Română (Romanian)',
   'ru-ru' => 'Pусский (Russian)',
