@@ -2248,8 +2248,8 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         clear_session();  
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
-          'msg' => 'login_failed'
+          'log' => array(__FUNCTION__, $info['email']),
+          'msg' => array('login_failed', 'empty attribute mapping or missing template attribute')
         );
         return false;
       }
@@ -2260,8 +2260,8 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         clear_session();  
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
-          'msg' => 'login_failed'
+          'log' => array(__FUNCTION__, $info['email']),
+          'msg' => array('login_failed', 'specified template not found')
         );
         return false;
       }
@@ -2277,8 +2277,8 @@ function identity_provider($_action, $_data = null, $_extra = null) {
         clear_session();  
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
-          'msg' => 'login_failed'
+          'log' => array(__FUNCTION__, $info['email']),
+          'msg' => array('login_failed', 'mailbox creation failed')
         );
         return false;
       }
