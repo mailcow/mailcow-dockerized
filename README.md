@@ -25,7 +25,7 @@ Please see [the official documentation](https://docs.mailcow.email/) for install
 
 [Telegram mailcow Off-Topic channel](https://t.me/mailcowOfftopic)
 
-[Official Twitter Account](https://twitter.com/mailcow_email)
+[Official 𝕏 (Twitter) Account](https://twitter.com/mailcow_email)
 
 Telegram desktop clients are available for [multiple platforms](https://desktop.telegram.org). You can search the groups history for keywords.
 
