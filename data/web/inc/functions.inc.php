@@ -2355,7 +2355,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
           AND `mailbox`.`active`='1'
           AND `domain`.`active`='1'
           AND `username` = :user
-          AND `authsource`='keycloak' OR `authsource`='generic-oidc'");
+          AND (`authsource`='keycloak' OR `authsource`='generic-oidc')");
       $stmt->execute(array(':user' => $info['email']));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row){
