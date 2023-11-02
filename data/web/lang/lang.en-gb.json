@@ -873,7 +873,7 @@
         "sieve_preset_5": "Auto responder (vacation)",
         "sieve_preset_6": "Reject mail with reponse",
         "sieve_preset_7": "Redirect and keep/drop",
-        "sieve_preset_8": "Discard message sent to an alias address the sender is part of",
+        "sieve_preset_8": "Redirect e-mail from a specific sender, mark as read and sort into subfolder",
         "sieve_preset_header": "Please see the example presets below. For more details see <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
         "sogo_visible": "Alias is visible in SOGo",
         "sogo_visible_n": "Hide alias in SOGo",

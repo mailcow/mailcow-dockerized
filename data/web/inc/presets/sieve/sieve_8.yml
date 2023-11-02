@@ -1,0 +1,18 @@
+headline: lang.sieve_preset_8
+content: |
+  require "fileinto";
+  require "mailbox";
+  require "variables";
+  require "subaddress";
+  require "envelope";
+  require "duplicate";
+  require "imap4flags";
+  if header :matches "To" "*mail@domain.tld*" {
+    redirect "anothermail@anotherdomain.tld";
+    setflag "\\seen"; /* Mark mail as read */
+    fileInto "INBOX/SubFolder"; /* Move mail on subfolder after */
+  } else {
+    # The rest goes into INBOX
+    # default is "implicit keep", we do it explicitly here
+    keep;
+  }
