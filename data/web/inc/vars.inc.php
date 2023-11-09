@@ -242,6 +242,7 @@ $IMAPSYNC_OPTIONS = array(
     'authuser2', 
     'debugcontent', 
     'disarmreadreceipts', 
+    'dry',
     'logdir',
     'debugcrossduplicates', 
     'maxsize',
