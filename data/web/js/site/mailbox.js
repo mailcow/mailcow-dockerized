@@ -435,7 +435,7 @@ jQuery(function($){
     var table = $('#domain_table').DataTable({
       responsive: true,
       processing: true,
-      serverSide: false,
+      serverSide: true,
       stateSave: true,
       pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
@@ -447,9 +447,9 @@ jQuery(function($){
       },
       ajax: {
         type: "GET",
-        url: "/api/v1/get/domain/all",
+        url: "/api/v1/get/domain/datatables",
         dataSrc: function(json){
-          $.each(json, function(i, item) {
+          $.each(json.data, function(i, item) {
             item.domain_name = escapeHtml(item.domain_name);
 
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
@@ -498,7 +498,7 @@ jQuery(function($){
             }
           });
 
-          return json;
+          return json.data;
         }
       },
       columns: [
@@ -528,17 +528,20 @@ jQuery(function($){
         {
           title: lang.aliases,
           data: 'aliases',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: lang.mailboxes,
           data: 'mailboxes',
+          searchable: false,
           responsivePriority: 4,
           defaultContent: ''
         },
         {
           title: lang.domain_quota,
           data: 'quota',
+          searchable: false,
           defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
@@ -548,6 +551,8 @@ jQuery(function($){
         {
           title: lang.stats,
           data: 'stats',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
@@ -557,21 +562,29 @@ jQuery(function($){
         {
           title: lang.mailbox_defquota,
           data: 'def_quota_for_mbox',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.mailbox_quota,
           data: 'max_quota_for_mbox',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: 'RL',
           data: 'rl',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.backup_mx,
           data: 'backupmx',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           redner: function (data, type){
             return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
@@ -580,30 +593,40 @@ jQuery(function($){
         {
           title: lang.domain_admins,
           data: 'domain_admins',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.created_on,
           data: 'created',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.last_modified,
           data: 'modified',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: 'Tags',
           data: 'tags',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.active,
           data: 'active',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           responsivePriority: 6,
           render: function (data, type) {
@@ -613,6 +636,8 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
+          searchable: false,
+          orderable: false,
           className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
