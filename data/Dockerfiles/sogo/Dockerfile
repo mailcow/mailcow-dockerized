@@ -4,7 +4,7 @@ LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 ARG DEBIAN_FRONTEND=noninteractive
 ARG SOGO_DEBIAN_REPOSITORY=http://packages.sogo.nu/nightly/5/debian/
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.16
+ARG GOSU_VERSION=1.17
 ENV LC_ALL C
 
 # Prerequisites
