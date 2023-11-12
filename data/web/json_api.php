@@ -1046,6 +1046,39 @@ if (isset($_GET['query'])) {
           break;
           case "mailbox":
             switch ($object) {
+              case "datatables":
+                $table = ['mailbox', 'm'];
+                $primaryKey = 'username';
+                $columns = [
+                  ['db' => 'username', 'dt' => 2],
+                  ['db' => 'quota', 'dt' => 3],
+                ];
+
+                require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
+                global $pdo;
+                if($_SESSION['mailcow_cc_role'] === 'admin') {
+                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns, null, "(`m`.`kind` = '' OR `m`.`kind` = NULL)");
+                } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns,
+                    'INNER JOIN domain_admins as da ON da.domain = m.domain',
+                    [
+                      'condition' => "(`m`.`kind` = '' OR `m`.`kind` = NULL) AND `da`.`active` = 1 AND `da`.`username` = :username",
+                      'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
+                    ]);
+                }
+
+                if (!empty($data['data'])) {
+                  $mailboxData = [];
+                  foreach ($data['data'] as $mailbox) {
+                    if ($details = mailbox('get', 'mailbox_details', $mailbox[2])) {
+                      $mailboxData[] = $details;
+                    }
+                  }
+                  $data['data'] = $mailboxData;
+                }
+
+                process_get_return($data);
+              break;
               case "all":
               case "reduced":
                 $tags = null;
