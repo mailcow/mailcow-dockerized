@@ -58,6 +58,7 @@
         "domain": "Domain",
         "domain_matches_hostname": "Domain %s matches hostname",
         "domain_quota_m": "Total domain quota (MiB)",
+        "dry": "Simulate synchronization",
         "enc_method": "Encryption method",
         "exclude": "Exclude objects (regex)",
         "full_name": "Full name",
