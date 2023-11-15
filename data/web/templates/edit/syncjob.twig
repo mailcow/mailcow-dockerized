@@ -11,6 +11,7 @@
     <input type="hidden" value="0" name="skipcrossduplicates">
     <input type="hidden" value="0" name="active">
     <input type="hidden" value="0" name="subscribeall">
+    <input type="hidden" value="0" name="dry">
     <div class="row mb-2">
       <label class="control-label col-sm-2" for="host1">{{ lang.edit.hostname }}</label>
       <div class="col-sm-10">
@@ -95,7 +96,7 @@
     <div class="row mb-4">
       <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--dry --some-param=xy --other-param=yx">
+        <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--some-param=xy --other-param=yx">
         <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
       </div>
     </div>
@@ -138,6 +139,13 @@
       <div class="offset-sm-2 col-sm-10">
         <div class="form-check">
           <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall"{% if result.subscribeall == '1' %} checked{% endif %}> {{ lang.add.subscribeall }} (--subscribeall)</label>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="dry"{% if result.dry == '1' %} checked{% endif %}> {{ lang.add.dry }} (--dry)</label>
         </div>
       </div>
     </div>

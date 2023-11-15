@@ -75,7 +75,8 @@ my $sth = $dbh->prepare("SELECT id,
   custom_params,
   subscribeall,
   timeout1,
-  timeout2
+  timeout2,
+  dry
     FROM imapsync
       WHERE active = 1
         AND is_running = 0
@@ -111,6 +112,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   $subscribeall        = @$row[18];
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
+  $dry                 = @$row[21];
 
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
@@ -148,6 +150,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   "--host2", "localhost",
   "--user2", $user2 . '*' . trim($master_user),
   "--passfile2", $passfile2->filename,
+  ($dry eq "1" ? ('--dry') : ()),
   '--no-modulesversion',
   '--noreleasecheck'];
 
