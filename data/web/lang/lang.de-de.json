@@ -58,6 +58,7 @@
         "domain": "Domain",
         "domain_matches_hostname": "Domain %s darf nicht dem Hostnamen entsprechen",
         "domain_quota_m": "Domain-Speicherplatz gesamt (MiB)",
+        "dry": "Simuliere Synchronisation (Probedurchlauf)",
         "enc_method": "Verschlüsselung",
         "exclude": "Elemente ausschließen (Regex)",
         "full_name": "Vor- und Nachname",
