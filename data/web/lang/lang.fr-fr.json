@@ -326,7 +326,11 @@
         "password_policy_lowerupper": "Doit contenir des caractères minuscules et majuscules",
         "password_policy_numbers": "Doit contenir au moins un chiffre",
         "ip_check": "Vérification IP",
-        "ip_check_disabled": "La vérification IP est désactivée. Vous pouvez l'activer sous<br> <strong>Système > Configuration > Options > Personnaliser</strong>"
+        "ip_check_disabled": "La vérification IP est désactivée. Vous pouvez l'activer sous<br> <strong>Système > Configuration > Options > Personnaliser</strong>",
+        "logo_normal_label": "Normal",
+        "logo_dark_label": "Inversé pour le mode sombre",
+        "allowed_methods": "Access-Control-Allow-Methods",
+        "allowed_origins": "Access-Control-Allow-Origin"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
