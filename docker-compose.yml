@@ -545,7 +545,7 @@ services:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.8.1
+      image: mailcow/solr:1.8.2
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
