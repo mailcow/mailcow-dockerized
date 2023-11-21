@@ -891,9 +891,14 @@ if [ "$CURRENT_REPO" != "$DEFAULT_REPO" ]; then
   echo "The Repository currently used is not the default Mailcow Repository."
   echo "Currently Repository: $CURRENT_REPO"
   echo "Default Repository:   $DEFAULT_REPO"
-  read -r -p "Should it be changed back to default? [y/N] " repo_response
-  if [[ "$repo_response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    git remote set-url origin $DEFAULT_REPO
+  if [ ! $FORCE ]; then
+    read -r -p "Should it be changed back to default? [y/N] " repo_response
+    if [[ "$repo_response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      git remote set-url origin $DEFAULT_REPO
+    fi
+  else
+      echo "Running in forced mode... setting Repo to default!"
+      git remote set-url origin $DEFAULT_REPO
   fi
 fi
 
