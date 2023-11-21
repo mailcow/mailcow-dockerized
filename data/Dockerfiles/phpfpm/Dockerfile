@@ -3,15 +3,15 @@ LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG APCU_PECL_VERSION=5.1.22
-# renovate: datasource=github-tags depName=Imagick/imagick versioning=semver-coerced extractVersion=^v(?<version>.*)$
+# renovate: datasource=github-tags depName=Imagick/imagick versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG IMAGICK_PECL_VERSION=3.7.0
 # renovate: datasource=github-tags depName=php/pecl-mail-mailparse versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MAILPARSE_PECL_VERSION=3.1.6
 # renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MEMCACHED_PECL_VERSION=3.2.0
-# renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=^v(?<version>.*)$
+# renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG REDIS_PECL_VERSION=6.0.1
-# renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=^v(?<version>.*)$
+# renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.6.5
 
 RUN apk add -U --no-cache autoconf \

@@ -1684,7 +1684,7 @@ function showVersionModal(title, version){
 function parseGithubMarkdownLinks(inputText) {
   var replacedText, replacePattern1;
 
-  replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+  replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])(?![^<]*>)/gim;
   replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
     if (matched.includes('github.com')){
       // return short link if it's github link

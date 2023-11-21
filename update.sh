@@ -32,51 +32,44 @@ prefetch_images() {
 }
 
 docker_garbage() {
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
   IMGS_TO_DELETE=()
-  for container in $(grep -oP "image: \Kmailcow.+" "${SCRIPT_DIR}/docker-compose.yml"); do
-    REPOSITORY=${container/:*}
-    TAG=${container/*:}
-    V_MAIN=${container/*.}
-    V_SUB=${container/*.}
-    EXISTING_TAGS=$(docker images | grep ${REPOSITORY} | awk '{ print $2 }')
-    for existing_tag in ${EXISTING_TAGS[@]}; do
-      V_MAIN_EXISTING=${existing_tag/*.}
-      V_SUB_EXISTING=${existing_tag/*.}
-      # Not an integer
-      [[ ! $V_MAIN_EXISTING =~ ^[0-9]+$ ]] && continue
-      [[ ! $V_SUB_EXISTING =~ ^[0-9]+$ ]] && continue
 
-      if [[ $V_MAIN_EXISTING == "latest" ]]; then
-        echo "Found deprecated label \"latest\" for repository $REPOSITORY, it should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_MAIN_EXISTING -lt $V_MAIN ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
-      elif [[ $V_SUB_EXISTING -lt $V_SUB ]]; then
-        echo "Found tag $existing_tag for $REPOSITORY, which is older than the current tag $TAG and should be deleted."
-        IMGS_TO_DELETE+=($REPOSITORY:$existing_tag)
+  declare -A IMAGES_INFO
+  COMPOSE_IMAGES=($(grep -oP "image: \Kmailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
+
+  for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep 'mailcow/'); do
+      ID=$(echo $existing_image | cut -d ':' -f 1)
+      REPOSITORY=$(echo $existing_image | cut -d ':' -f 2)
+      TAG=$(echo $existing_image | cut -d ':' -f 3)
+
+      if [[ " ${COMPOSE_IMAGES[@]} " =~ " ${REPOSITORY}:${TAG} " ]]; then
+          continue
+      else
+          IMGS_TO_DELETE+=("$ID")
+          IMAGES_INFO["$ID"]="$REPOSITORY:$TAG"
       fi
-    done
   done
 
   if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
-    echo "Run the following command to delete unused image tags:"
-    echo
-    echo "    docker rmi ${IMGS_TO_DELETE[*]}"
-    echo
-    if [ ! $FORCE ]; then
-      read -r -p "Do you want to delete old image tags right now? [y/N] " response
-      if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-        docker rmi ${IMGS_TO_DELETE[*]}
+      echo "The following unused mailcow images were found:"
+      for id in "${IMGS_TO_DELETE[@]}"; do
+          echo "    ${IMAGES_INFO[$id]} ($id)"
+      done
+
+      if [ ! $FORCE ]; then
+          read -r -p "Do you want to delete them to free up some space? [y/N] " response
+          if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+              docker rmi ${IMGS_TO_DELETE[*]}
+          else
+              echo "OK, skipped."
+          fi
       else
-        echo "OK, skipped."
+          echo "Running in forced mode! Force removing old mailcow images..."
+          docker rmi ${IMGS_TO_DELETE[*]}
       fi
-    else
-      echo "Running image removal without extra confirmation due to force mode."
-      docker rmi ${IMGS_TO_DELETE[*]}
-    fi
-    echo -e "\e[32mFurther cleanup...\e[0m"
-    echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
+      echo -e "\e[32mFurther cleanup...\e[0m"
+      echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
   fi
 }
 
@@ -181,8 +174,8 @@ if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
       if docker compose version --short | grep "2." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
-        echo -e "\e[31mFound Docker Compose Plugin (native).\e[0m"
-        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
+        echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
+        echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
         sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' $SCRIPT_DIR/mailcow.conf 
         sleep 2
         echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
@@ -196,8 +189,8 @@ if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
       if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=standalone
         COMPOSE_COMMAND="docker-compose"
-        echo -e "\e[31mFound Docker Compose Standalone.\e[0m"
-        echo -e "\e[31mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
+        echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
+        echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
         sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=standalone/' $SCRIPT_DIR/mailcow.conf
         sleep 2
         echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
@@ -893,7 +886,7 @@ done
 # git remote set-url origin https://github.com/mailcow/mailcow-dockerized
 
 DEFAULT_REPO=https://github.com/mailcow/mailcow-dockerized
-CURRENT_REPO=$(git remote get-url origin)
+CURRENT_REPO=$(git config --get remote.origin.url)
 if [ "$CURRENT_REPO" != "$DEFAULT_REPO" ]; then 
   echo "The Repository currently used is not the default Mailcow Repository."
   echo "Currently Repository: $CURRENT_REPO"
@@ -904,34 +897,38 @@ if [ "$CURRENT_REPO" != "$DEFAULT_REPO" ]; then
   fi
 fi
 
-echo -e "\e[32mCommitting current status...\e[0m"
-[[ -z "$(git config user.name)" ]] && git config user.name moo
-[[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
-[[ ! -z $(git ls-files data/conf/rspamd/override.d/worker-controller-password.inc) ]] && git rm data/conf/rspamd/override.d/worker-controller-password.inc
-git add -u
-git commit -am "Before update on ${DATE}" > /dev/null
-echo -e "\e[32mFetching updated code from remote...\e[0m"
-git fetch origin #${BRANCH}
-echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
-git config merge.defaultToUpstream true
-git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
-# Need to use a variable to not pass return codes of if checks
-MERGE_RETURN=$?
-if [[ ${MERGE_RETURN} == 128 ]]; then
-  echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
-  exit 1
-elif [[ ${MERGE_RETURN} == 1 ]]; then
-  echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
-  git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
-  git add -A
-  git commit -m "After update on ${DATE}" > /dev/null
-  git checkout .
-  echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
-elif [[ ${MERGE_RETURN} != 0 ]]; then
-  echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
-  echo
-  echo "Run $COMPOSE_COMMAND up -d to restart your stack without updates or try again after fixing the mentioned errors."
-  exit 1
+if [ ! $DEV ]; then
+  echo -e "\e[32mCommitting current status...\e[0m"
+  [[ -z "$(git config user.name)" ]] && git config user.name moo
+  [[ -z "$(git config user.email)" ]] && git config user.email moo@cow.moo
+  [[ ! -z $(git ls-files data/conf/rspamd/override.d/worker-controller-password.inc) ]] && git rm data/conf/rspamd/override.d/worker-controller-password.inc
+  git add -u
+  git commit -am "Before update on ${DATE}" > /dev/null
+  echo -e "\e[32mFetching updated code from remote...\e[0m"
+  git fetch origin #${BRANCH}
+  echo -e "\e[32mMerging local with remote code (recursive, strategy: \"${MERGE_STRATEGY:-theirs}\", options: \"patience\"...\e[0m"
+  git config merge.defaultToUpstream true
+  git merge -X${MERGE_STRATEGY:-theirs} -Xpatience -m "After update on ${DATE}"
+  # Need to use a variable to not pass return codes of if checks
+  MERGE_RETURN=$?
+  if [[ ${MERGE_RETURN} == 128 ]]; then
+    echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
+    exit 1
+  elif [[ ${MERGE_RETURN} == 1 ]]; then
+    echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
+    git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
+    git add -A
+    git commit -m "After update on ${DATE}" > /dev/null
+    git checkout .
+    echo -e "\e[32mRemoved and recreated files if necessary.\e[0m"
+  elif [[ ${MERGE_RETURN} != 0 ]]; then
+    echo -e "\e[31m\nOh no, something went wrong. Please check the error message above.\e[0m"
+    echo
+    echo "Run $COMPOSE_COMMAND up -d to restart your stack without updates or try again after fixing the mentioned errors."
+    exit 1
+  fi
+elif [ $DEV ]; then
+  echo -e "\e[33mDEVELOPER MODE: Not creating a git diff and commiting it to prevent development stuff within a backup diff...\e[0m"
 fi
 
 echo -e "\e[32mFetching new images, if any...\e[0m"
