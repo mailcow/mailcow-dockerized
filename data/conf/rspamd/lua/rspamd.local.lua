@@ -631,15 +631,19 @@ rspamd_config:register_symbol({
             end
             local out_parts = {}
             for _,o in ipairs(out) do
-               if type(o) ~= 'table' then
-                 out_parts[#out_parts + 1] = o
-                 out_parts[#out_parts + 1] = newline_s
-               else
-                 out_parts[#out_parts + 1] = o[1]
-                 if o[2] then
-                   out_parts[#out_parts + 1] = newline_s
-                 end
-               end
+              if type(o) ~= 'table' then
+                out_parts[#out_parts + 1] = o
+                out_parts[#out_parts + 1] = newline_s
+              else
+                local removePrefix = "--\x0D\x0AContent-Type"
+                if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
+                  o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
+                end
+                out_parts[#out_parts + 1] = o[1]
+                if o[2] then
+                  out_parts[#out_parts + 1] = newline_s
+                end
+              end
             end
             task:set_message(out_parts)
           else
