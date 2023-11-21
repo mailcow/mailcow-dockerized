@@ -564,7 +564,7 @@ rspamd_config:register_symbol({
         else
           local footer = parser:get_object()
 
-          if footer and type(footer) == "table" and (footer.html or footer.plain) then
+          if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s", uname, footer.html, footer.plain)
 
             local envfrom_mime = task:get_from(2)
