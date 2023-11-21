@@ -10,7 +10,7 @@ ARG MAILPARSE_PECL_VERSION=3.1.6
 # renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MEMCACHED_PECL_VERSION=3.2.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG REDIS_PECL_VERSION=6.0.1
+ARG REDIS_PECL_VERSION=6.0.2
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.6.5
 
