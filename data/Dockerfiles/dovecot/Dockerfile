@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG DOVECOT=2.3.21
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG GOSU_VERSION=1.16
+ARG GOSU_VERSION=1.17
 ENV LC_ALL C
 
 
