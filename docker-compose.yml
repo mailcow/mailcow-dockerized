@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:nightly-20231011
+      image: mailcow/rspamd:nightly-20231122
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -230,7 +230,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:nightly-20231024
+      image: mailcow/dovecot:nightly-20231122
       depends_on:
         - mysql-mailcow
       dns:

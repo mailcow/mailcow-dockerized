@@ -325,6 +325,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $timeout2             = intval($_data['timeout2']);
           $skipcrossduplicates  = intval($_data['skipcrossduplicates']);
           $automap              = intval($_data['automap']);
+          $dry                  = intval($_data['dry']);
           $port1                = $_data['port1'];
           $host1                = strtolower($_data['host1']);
           $password1            = $_data['password1'];
@@ -435,8 +436,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `custom_params`, `active`)
-            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :custom_params, :active)");
+          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `dry`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `custom_params`, `active`)
+            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :dry, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :custom_params, :active)");
           $stmt->execute(array(
             ':user2' => $username,
             ':custom_params' => $custom_params,
@@ -450,6 +451,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':skipcrossduplicates' => $skipcrossduplicates,
             ':maxbytespersecond' => $maxbytespersecond,
             ':subscribeall' => $subscribeall,
+            ':dry' => $dry,
             ':subfolder2' => $subfolder2,
             ':host1' => $host1,
             ':authmech1' => 'PLAIN',
@@ -2094,6 +2096,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $success = (isset($_data['success'])) ? NULL : $is_now['success'];
               $delete2duplicates = (isset($_data['delete2duplicates'])) ? intval($_data['delete2duplicates']) : $is_now['delete2duplicates'];
               $subscribeall = (isset($_data['subscribeall'])) ? intval($_data['subscribeall']) : $is_now['subscribeall'];
+              $dry = (isset($_data['dry'])) ? intval($_data['dry']) : $is_now['dry'];
               $delete1 = (isset($_data['delete1'])) ? intval($_data['delete1']) : $is_now['delete1'];
               $delete2 = (isset($_data['delete2'])) ? intval($_data['delete2']) : $is_now['delete2'];
               $automap = (isset($_data['automap'])) ? intval($_data['automap']) : $is_now['automap'];
@@ -2227,6 +2230,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `timeout1` = :timeout1,
               `timeout2` = :timeout2,
               `subscribeall` = :subscribeall,
+              `dry` = :dry,
               `active` = :active
                 WHERE `id` = :id");
             $stmt->execute(array(
@@ -2252,6 +2256,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':timeout1' => $timeout1,
               ':timeout2' => $timeout2,
               ':subscribeall' => $subscribeall,
+              ':dry' => $dry,
               ':active' => $active,
             ));
             $_SESSION['return'][] = array(
