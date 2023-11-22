@@ -32,6 +32,7 @@ services:
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
         - MYSQL_INITDB_SKIP_TZINFO=1
+        - MARIADB_AUTO_UPGRADE=1
       restart: always
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
