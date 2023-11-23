@@ -209,7 +209,7 @@
         "include_exclude_info": "Ve výchozím nastavení (bez výběru), jsou adresovány <b>všechny mailové schránky</b>",
         "includes": "Zahrnout tyto přijemce",
         "ip_check": "Kontrola IP",
-        "ip_check_disabled": "Kontrola IP je vypnuta. Můžete ji zapnout v <br> <strong>System > Nastavení > Options > Přizpůsobení</strong>",
+        "ip_check_disabled": "Kontrola IP je zakázána. Můžete ji povolit v nabídce<br> <strong>Systém > Nastavení > Možnosti > Přizpůsobení</strong>",
         "ip_check_opt_in": "Přihlásit se k používání služby třetí strany <strong>ipv4.mailcow.email</strong> a <strong>ipv6.mailcow.email</strong> pro zjištění externích IP adres.",
         "is_mx_based": "Na základě MX",
         "last_applied": "Naposledy použité",
