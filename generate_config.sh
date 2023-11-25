@@ -26,7 +26,7 @@ for bin in openssl curl docker git awk sha1sum grep cut; do
 done
 
 if docker compose > /dev/null 2>&1; then
-    if docker compose version --short | grep "^2." > /dev/null 2>&1; then
+    if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
       COMPOSE_VERSION=native
       echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
       echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
