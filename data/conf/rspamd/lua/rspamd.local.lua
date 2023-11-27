@@ -527,20 +527,21 @@ rspamd_config:register_symbol({
   name = 'MOO_FOOTER',
   type = 'prefilter',
   callback = function(task)
+    local cjson = require "cjson"
     local lua_mime = require "lua_mime"
     local lua_util = require "lua_util"
     local rspamd_logger = require "rspamd_logger"
-    local rspamd_redis = require "rspamd_redis"
-    local ucl = require "ucl"
-    local redis_params = rspamd_parse_redis_server('footer')
+    local rspamd_http = require "rspamd_http"
     local envfrom = task:get_from(1)
     local uname = task:get_user()
     if not envfrom or not uname then
       return false
     end
     local uname = uname:lower()
-    local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
+    local env_from_domain = envfrom[1].domain:lower()
+    local env_from_addr = envfrom[1].addr:lower()
 
+    -- determine newline type
     local function newline(task)
       local t = task:get_newlines_type()
     
@@ -552,20 +553,19 @@ rspamd_config:register_symbol({
     
       return '\r\n'
     end
-    local function redis_cb_footer(err, data)
+    -- retrieve footer
+    local function footer_cb(err_message, code, data, headers)
       if err or type(data) ~= 'string' then
         rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
       else
+        
         -- parse json string
-        local parser = ucl.parser()
-        local res,err = parser:parse_string(data)
-        if not res then
+        local footer = cjson.decode(data)
+        if not footer then
           rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
         else
-          local footer = parser:get_object()
-
           if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
-            rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s", uname, footer.html, footer.plain)
+            rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s, vars=%s", uname, footer.html, footer.plain, footer.vars)
 
             local envfrom_mime = task:get_from(2)
             local from_name = ""
@@ -575,6 +575,7 @@ rspamd_config:register_symbol({
               from_name = envfrom[1].name
             end
 
+            -- default replacements
             local replacements = {
               auth_user = uname,
               from_user = envfrom[1].user,
@@ -582,10 +583,20 @@ rspamd_config:register_symbol({
               from_addr = envfrom[1].addr,
               from_domain = envfrom[1].domain:lower()
             }
-            if footer.html then
+            -- add custom mailbox attributes
+            if footer.vars and type(footer.vars) == "string" then
+              local footer_vars = cjson.decode(footer.vars)
+
+              if type(footer_vars) == "table" then
+                for key, value in pairs(footer_vars) do
+                  replacements[key] = value
+                end
+              end
+            end
+            if footer.html and footer.html ~= "" then
               footer.html = lua_util.jinja_template(footer.html, replacements, true)
             end
-            if footer.plain then
+            if footer.plain and footer.plain ~= "" then
               footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
             end
   
@@ -653,17 +664,14 @@ rspamd_config:register_symbol({
       end
     end
 
-    local redis_ret_footer = rspamd_redis_make_request(task,
-      redis_params, -- connect params
-      env_from_domain, -- hash key
-      false, -- is write
-      redis_cb_footer, --callback
-      'HGET', -- command
-      {"DOMAIN_WIDE_FOOTER", env_from_domain} -- arguments
-    )
-    if not redis_ret_footer then
-      rspamd_logger.infox(rspamd_config, "cannot make request to load footer for domain")
-    end
+    -- fetch footer
+    rspamd_http.request({
+      task=task,
+      url='http://nginx:8081/footer.php',
+      body='',
+      callback=footer_cb,
+      headers={Domain=env_from_domain,Username=uname,From=env_from_addr},
+    })
 
     return true
   end,
