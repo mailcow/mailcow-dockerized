@@ -3408,6 +3408,36 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $domains = $_data['domains'];
           }
 
+          $footers = array();
+          $footers['html'] = isset($_data['html']) ? $_data['html'] : '';
+          $footers['plain'] = isset($_data['plain']) ? $_data['plain'] : '';
+          $footers['mbox_exclude'] = array();
+          if (isset($_data["mbox_exclude"])){
+            if (!is_array($_data["mbox_exclude"])) {
+              $_data["mbox_exclude"] = array($_data["mbox_exclude"]);
+            }
+            foreach ($_data["mbox_exclude"] as $mailbox) {
+              if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('username_invalid', $mailbox)
+                );
+                continue;
+              }
+              $is_now = mailbox('get', 'mailbox_details', $mailbox);            
+              if(empty($is_now)){
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('username_invalid', $mailbox)
+                );
+                continue;
+              }
+              
+              array_push($footers['mbox_exclude'], $mailbox);
+            }
+          }
           foreach ($domains as $domain) {
             $domain = idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
             if (!is_valid_domain_name($domain)) {
@@ -3427,26 +3457,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
 
-            $footers = array();
-            $footers['html'] = isset($_data['html']) ? $_data['html'] : '';
-            $footers['plain'] = isset($_data['plain']) ? $_data['plain'] : '';
-            $footers['mbox_exclude'] = array();
-            if (isset($_data["mbox_exclude"])){
-              if (!is_array($_data["mbox_exclude"])) {
-                $_data["mbox_exclude"] = array($_data["mbox_exclude"]);
-              }
-              foreach ($_data["mbox_exclude"] as $mailbox) {
-                if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
-                  $_SESSION['return'][] = array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                    'msg' => array('username_invalid', $mailbox)
-                  );
-                } else {
-                  array_push($footers['mbox_exclude'], $mailbox);
-                }
-              }
-            }
             try {
               $stmt = $pdo->prepare("DELETE FROM `domain_wide_footer` WHERE `domain`= :domain");
               $stmt->execute(array(':domain' => $domain));
