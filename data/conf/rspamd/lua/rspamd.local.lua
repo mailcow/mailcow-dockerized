@@ -538,7 +538,8 @@ rspamd_config:register_symbol({
       return false
     end
     local uname = uname:lower()
-    local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
+    local env_from_domain = envfrom[1].domain:lower()
+    local env_from_addr = envfrom[1].addr:lower()
 
     -- determine newline type
     local function newline(task)
@@ -669,7 +670,7 @@ rspamd_config:register_symbol({
       url='http://nginx:8081/footer.php',
       body='',
       callback=footer_cb,
-      headers={Domain=env_from_domain,Username=uname},
+      headers={Domain=env_from_domain,Username=uname,From=env_from_addr},
     })
 
     return true
