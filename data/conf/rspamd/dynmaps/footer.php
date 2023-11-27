@@ -43,6 +43,8 @@ $headers = getallheaders();
 $domain = $headers['Domain'];
 // Get Username
 $username = $headers['Username'];
+// Get From
+$from = $headers['From'];
 // define empty footer
 $empty_footer = json_encode(array(
   'html' => '',
@@ -50,7 +52,7 @@ $empty_footer = json_encode(array(
   'vars' => array()
 ));
 
-error_log("FOOTER: checking for domain " . $domain . " and user " . $username . PHP_EOL);
+error_log("FOOTER: checking for domain " . $domain . ", user " . $username . " and address " . $from . PHP_EOL);
 
 try {
   $stmt = $pdo->prepare("SELECT `plain`, `html`, `mbox_exclude` FROM `domain_wide_footer` 
@@ -59,7 +61,7 @@ try {
     ':domain' => $domain
   ));
   $footer = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (in_array($username, json_decode($footer['mbox_exclude']))){
+  if (in_array($from, json_decode($footer['mbox_exclude']))){
     $footer = false;
   }
   if (empty($footer)){
