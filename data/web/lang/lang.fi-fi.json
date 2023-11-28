@@ -891,5 +891,17 @@
         "no_active_admin": "Viimeistä aktiivista järjestelmänvalvojaa ei voi poistaa käytöstä",
         "session_token": "Lomakkeen tunnus sanoma ei kelpaa: tunnus sanoman risti riita",
         "session_ua": "Lomakkeen tunnus sanoma ei kelpaa: käyttäjä agentin tarkistus virhe"
+    },
+    "datatables": {
+        "emptyTable": "Tietoja ei ole saatavilla taulukossa",
+        "expand_all": "Laajenna kaikki",
+        "lengthMenu": "Näytä menu merkinnät",
+        "loadingRecords": "Ladataan...",
+        "processing": "Ole hyvä ja odota...",
+        "search": "Etsi:",
+        "paginate": {
+            "first": "Ensimmäinen",
+            "last": "Edellinen"
+        }
     }
 }
