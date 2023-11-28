@@ -171,7 +171,7 @@ remove_obsolete_nginx_ports() {
 detect_docker_compose_command(){
 if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
   if docker compose > /dev/null 2>&1; then
-      if docker compose version --short | grep "2." > /dev/null 2>&1; then
+      if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
         echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
