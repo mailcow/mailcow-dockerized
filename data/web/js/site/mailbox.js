@@ -1002,7 +1002,6 @@ jQuery(function($){
           title: lang.last_mail_login,
           data: 'last_mail_login',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           responsivePriority: 7,
           render: function (data, type) {
@@ -1016,18 +1015,15 @@ jQuery(function($){
           title: lang.last_pw_change,
           data: 'last_pw_change',
           searchable: false,
-          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.in_use,
           data: 'in_use.value',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           responsivePriority: 9,
-          className: 'dt-data-w100',
-          orderData: 24
+          className: 'dt-data-w100'
         },
         {
           title: lang.fname,
@@ -1093,7 +1089,6 @@ jQuery(function($){
           title: lang.msg_num,
           data: 'messages',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           responsivePriority: 5
         },
@@ -1119,7 +1114,6 @@ jQuery(function($){
           title: lang.active,
           data: 'active',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           responsivePriority: 4,
           render: function (data, type) {
