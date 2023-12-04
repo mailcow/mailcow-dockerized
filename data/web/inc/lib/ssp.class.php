@@ -43,7 +43,7 @@ class SSP {
                     }
 				}
 				else {
-                    if(!empty($column['db'])){
+                    if(!empty($column['db']) && (!isset($column['dummy']) || $column['dummy'] !== true)){
                         $row[ $column['dt'] ] = $data[$i][ $columns[$j]['db'] ];
                     }
                     else{
@@ -115,10 +115,12 @@ class SSP {
 	 */
 	static function order ( $tableAS, $request, $columns )
 	{
+    	$select = '';
 		$order = '';
 
 		if ( isset($request['order']) && count($request['order']) ) {
-			$orderBy = array();
+    		$selects = [];
+			$orderBy = [];
 			$dtColumns = self::pluck( $columns, 'dt' );
 
 			for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
@@ -133,17 +135,26 @@ class SSP {
 					$dir = $request['order'][$i]['dir'] === 'asc' ?
 						'ASC' :
 						'DESC';
-
-					$orderBy[] = '`'.$tableAS.'`.`'.$column['db'].'` '.$dir;
+						
+                    if(isset($column['order_subquery'])) {
+        				$selects[] = '('.$column['order_subquery'].') AS `'.$column['db'].'_count`';
+        				$orderBy[] = '`'.$column['db'].'_count` '.$dir;
+    				} else {
+					    $orderBy[] = '`'.$tableAS.'`.`'.$column['db'].'` '.$dir;
+					}
 				}
 			}
+
+            if ( count( $selects ) ) {
+                $select = ', '.implode(', ', $selects);
+            }
 
 			if ( count( $orderBy ) ) {
 				$order = 'ORDER BY '.implode(', ', $orderBy);
 			}
 		}
 
-		return $order;
+		return [$select, $order];
 	}
 
 
@@ -257,13 +268,14 @@ class SSP {
     }
 
 		// Build the SQL query string from the request
+		list($select, $order) = self::order( $tablesAS, $request, $columns );
 		$limit = self::limit( $request, $columns );
-		$order = self::order( $tablesAS, $request, $columns );
 		$where = self::filter( $tablesAS, $request, $columns, $bindings );
 
 		// Main query to actually get the data
 		$data = self::sql_exec( $db, $bindings,
 			"SELECT `$tablesAS`.`".implode("`, `$tablesAS`.`", self::pluck($columns, 'db'))."`
+			 $select
 			 FROM `$table` AS `$tablesAS`
 			 $where
 			 $order
@@ -348,8 +360,8 @@ class SSP {
     }
 
 		// Build the SQL query string from the request
+		list($select, $order) = self::order( $tablesAS, $request, $columns );
 		$limit = self::limit( $request, $columns );
-		$order = self::order( $tablesAS, $request, $columns );
 		$where = self::filter( $tablesAS, $request, $columns, $bindings );
 
 		// whereResult can be a simple string, or an assoc. array with a
@@ -373,6 +385,7 @@ class SSP {
 		// Main query to actually get the data
 		$data = self::sql_exec( $db, $bindings,
 			"SELECT  `$tablesAS`.`".implode("`, `$tablesAS`.`", self::pluck($columns, 'db'))."`
+			 $select
 			 FROM `$table` AS `$tablesAS`
 			 $join
 			 $where
@@ -555,6 +568,9 @@ class SSP {
 		for ( $i=0, $len=count($a) ; $i<$len ; $i++ ) {
  			if ( empty($a[$i][$prop]) && $a[$i][$prop] !== 0 ) {
 				continue;
+			}
+			if ( $prop == 'db' && isset($a[$i]['dummy']) && $a[$i]['dummy'] === true ) {
+    			continue;
 			}
 
 			//removing the $out array index confuses the filter method in doing proper binding,
