@@ -528,9 +528,14 @@ if (isset($_GET['query'])) {
                 $primaryKey = 'domain';
                 $columns = [
                   ['db' => 'domain', 'dt' => 2],
-                  ['db' => 'aliases', 'dt' => 3],
-                  ['db' => 'mailboxes', 'dt' => 4],
-                  ['db' => 'quota', 'dt' => 5],
+                  ['db' => 'aliases', 'dt' => 3, 'order_subquery' => "SELECT COUNT(*) FROM `alias` WHERE (`domain`= `d`.`domain` OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = `d`.`domain`)) AND `address` NOT IN (SELECT `username` FROM `mailbox`)"],
+                  ['db' => 'mailboxes', 'dt' => 4, 'order_subquery' => "SELECT COUNT(*) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
+                  ['db' => 'quota', 'dt' => 5, 'order_subquery' => "SELECT COALESCE(SUM(`mailbox`.`quota`), 0) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
+                  ['db' => 'stats', 'dt' => 6, 'dummy' => true, 'order_subquery' => "SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` IN (SELECT `username` FROM `mailbox` WHERE `domain` = `d`.`domain`)"],
+                  ['db' => 'defquota', 'dt' => 7],
+                  ['db' => 'maxquota', 'dt' => 8],
+                  ['db' => 'backupmx', 'dt' => 10],
+                  ['db' => 'active', 'dt' => 15],
                 ];
 
                 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';

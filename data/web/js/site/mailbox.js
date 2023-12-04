@@ -552,7 +552,6 @@ jQuery(function($){
           title: lang.stats,
           data: 'stats',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
@@ -563,14 +562,12 @@ jQuery(function($){
           title: lang.mailbox_defquota,
           data: 'def_quota_for_mbox',
           searchable: false,
-          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.mailbox_quota,
           data: 'max_quota_for_mbox',
           searchable: false,
-          orderable: false,
           defaultContent: ''
         },
         {
@@ -584,10 +581,9 @@ jQuery(function($){
           title: lang.backup_mx,
           data: 'backupmx',
           searchable: false,
-          orderable: false,
           defaultContent: '',
-          redner: function (data, type){
-            return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
+          render: function (data, type){
+            return 1==data ? '<i class="bi bi-check-lg"></i>' : 0==data && '<i class="bi bi-x-lg"></i>';
           }
         },
         {
@@ -626,7 +622,6 @@ jQuery(function($){
           title: lang.active,
           data: 'active',
           searchable: false,
-          orderable: false,
           defaultContent: '',
           responsivePriority: 6,
           render: function (data, type) {
