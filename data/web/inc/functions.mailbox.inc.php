@@ -3264,6 +3264,62 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           );
           return true;
         break;
+        case 'mailbox_custom_attribute':
+          $_data['attribute'] = isset($_data['attribute']) ? $_data['attribute'] : array();
+          $_data['attribute'] = is_array($_data['attribute']) ? $_data['attribute'] : array($_data['attribute']);
+          $_data['attribute'] = array_map(function($value) { return str_replace(' ', '', $value); }, $_data['attribute']);
+          $_data['value']     = isset($_data['value']) ? $_data['value'] : array();
+          $_data['value']     = is_array($_data['value']) ? $_data['value'] : array($_data['value']);
+          $attributes         = (object)array_combine($_data['attribute'], $_data['value']);
+          $mailboxes          = is_array($_data['mailboxes']) ? $_data['mailboxes'] : array($_data['mailboxes']);
+
+          foreach ($mailboxes as $mailbox) {
+            if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('username_invalid', $mailbox)
+              );
+              continue;
+            }
+            $is_now = mailbox('get', 'mailbox_details', $mailbox);            
+            if(!empty($is_now)){
+              if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $is_now['domain'])) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'access_denied'
+                );
+                continue;
+              }
+            }
+            else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+
+            $stmt = $pdo->prepare("UPDATE `mailbox`
+              SET `custom_attributes` = :custom_attributes
+              WHERE username = :username");
+            $stmt->execute(array(
+              ":username" => $mailbox,
+              ":custom_attributes" => json_encode($attributes)
+            ));             
+            
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('mailbox_modified', $mailbox)
+            );
+          }
+          
+          return true;
+        break;
         case 'resource':
           if (!is_array($_data['name'])) {
             $names = array();
@@ -3343,44 +3399,89 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
           }
         break;
-        case 'domain_wide_footer':
-          $domain = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
-          if (!is_valid_domain_name($domain)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'domain_invalid'
-            );
-            return false;
+        case 'domain_wide_footer':  
+          if (!is_array($_data['domains'])) {
+            $domains = array();
+            $domains[] = $_data['domains'];
           }
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'access_denied'
-            );
-            return false;
+          else {
+            $domains = $_data['domains'];
           }
 
           $footers = array();
-          $footers['html'] = isset($_data['footer_html']) ? $_data['footer_html'] : '';
-          $footers['plain'] = isset($_data['footer_plain']) ? $_data['footer_plain'] : '';
-          try {
-            $redis->hSet('DOMAIN_WIDE_FOOTER', $domain, json_encode($footers));
+          $footers['html'] = isset($_data['html']) ? $_data['html'] : '';
+          $footers['plain'] = isset($_data['plain']) ? $_data['plain'] : '';
+          $footers['mbox_exclude'] = array();
+          if (isset($_data["mbox_exclude"])){
+            if (!is_array($_data["mbox_exclude"])) {
+              $_data["mbox_exclude"] = array($_data["mbox_exclude"]);
+            }
+            foreach ($_data["mbox_exclude"] as $mailbox) {
+              if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('username_invalid', $mailbox)
+                );
+                continue;
+              }
+              $is_now = mailbox('get', 'mailbox_details', $mailbox);            
+              if(empty($is_now)){
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('username_invalid', $mailbox)
+                );
+                continue;
+              }
+              
+              array_push($footers['mbox_exclude'], $mailbox);
+            }
           }
-          catch (RedisException $e) {
+          foreach ($domains as $domain) {
+            $domain = idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
+            if (!is_valid_domain_name($domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_invalid'
+              );
+              return false;
+            }
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              return false;
+            }
+
+            try {
+              $stmt = $pdo->prepare("DELETE FROM `domain_wide_footer` WHERE `domain`= :domain");
+              $stmt->execute(array(':domain' => $domain));
+              $stmt = $pdo->prepare("INSERT INTO `domain_wide_footer` (`domain`, `html`, `plain`, `mbox_exclude`) VALUES (:domain, :html, :plain, :mbox_exclude)");
+              $stmt->execute(array(
+                ':domain' => $domain,
+                ':html' => $footers['html'],
+                ':plain' => $footers['plain'],
+                ':mbox_exclude' => json_encode($footers['mbox_exclude']),
+              ));
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+              return false;
+            }
             $_SESSION['return'][] = array(
-              'type' => 'danger',
+              'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('redis_error', $e)
+              'msg' => array('domain_footer_modified', htmlspecialchars($domain))
             );
-            return false;
           }
-          $_SESSION['return'][] = array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('domain_footer_modified', htmlspecialchars($domain))
-          );
         break;
       }
     break;
@@ -3934,13 +4035,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
-          $stmt = $pdo->prepare("SELECT `id` FROM `alias` WHERE `address` != `goto` AND `domain` = :domain");
+          $stmt = $pdo->prepare("SELECT `id`, `address` FROM `alias` WHERE `address` != `goto` AND `domain` = :domain");
           $stmt->execute(array(
             ':domain' => $_data,
           ));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
-            $aliases[] = $row['id'];
+            if ($_extra == "address"){
+              $aliases[] = $row['address'];
+            } else {
+              $aliases[] = $row['id'];
+            }
           }
           return $aliases;
         break;
@@ -4292,6 +4397,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`modified`,
               `quota2`.`bytes`,
               `attributes`,
+              `custom_attributes`,
               `quota2`.`messages`
                 FROM `mailbox`, `quota2`, `domain`
                   WHERE (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)
@@ -4312,6 +4418,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `mailbox`.`modified`,
               `quota2replica`.`bytes`,
               `attributes`,
+              `custom_attributes`,
               `quota2replica`.`messages`
                 FROM `mailbox`, `quota2replica`, `domain`
                   WHERE (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)
@@ -4334,6 +4441,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['quota'] = $row['quota'];
           $mailboxdata['messages'] = $row['messages'];
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
+          $mailboxdata['custom_attributes'] = json_decode($row['custom_attributes'], true);
           $mailboxdata['quota_used'] = intval($row['bytes']);
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
           $mailboxdata['created'] = $row['created'];
@@ -4514,19 +4622,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           try {
-            $footers = $redis->hGet('DOMAIN_WIDE_FOOTER', $domain);
-            $footers = json_decode($footers, true);
+            $stmt = $pdo->prepare("SELECT `html`, `plain`, `mbox_exclude` FROM `domain_wide_footer`
+              WHERE `domain` = :domain");
+            $stmt->execute(array(
+              ':domain' => $domain
+            ));
+            $footer = $stmt->fetch(PDO::FETCH_ASSOC);
           }
-          catch (RedisException $e) {
+          catch (PDOException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('redis_error', $e)
+              'msg' => $e->getMessage()
             );
             return false;
           }
 
-          return $footers;
+          return $footer;
         break;
       }
     break;

@@ -168,7 +168,7 @@
                     <label class="control-label col-sm-2">{{ lang.edit.ratelimit }}</label>
                     <div class="col-sm-10">
                       <div class="input-group">
-                        <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control placeholder="{{ lang.ratelimit.disabled }}">
+                        <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
                         <select name="rl_frame" class="form-control">
                         {% include 'mailbox/rl-frame.twig' %}
                         </select>
@@ -285,23 +285,41 @@
 {{ lang.edit.domain_footer_info_vars.from_user }}
 {{ lang.edit.domain_footer_info_vars.from_name }}
 {{ lang.edit.domain_footer_info_vars.from_addr }}
-{{ lang.edit.domain_footer_info_vars.from_domain }}</pre>
+{{ lang.edit.domain_footer_info_vars.from_domain }}
+{{ lang.edit.domain_footer_info_vars.custom }}</pre>
                     <form class="form-horizontal mt-4" data-id="domain_footer">
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2" for="mbox_exclude">{{ lang.edit.mbox_exclude }}</label>
+                        <div class="col-sm-10">
+                          <select data-live-search="true" data-width="100%" style="width:100%" id="editMboxExclude" name="mbox_exclude" size="10" multiple>
+                            {% for mailbox in mailboxes %}
+                              <option value="{{ mailbox }}" {% if mailbox in domain_footer.mbox_exclude %}selected{% endif %}>
+                                {{ mailbox }}
+                              </option>
+                            {% endfor %}
+                            {% for alias in aliases %}
+                              <option data-subtext="Alias" value="{{ alias }}" {% if alias in domain_footer.mbox_exclude %}selected{% endif %}>
+                                {{ alias }}
+                              </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
                       <div class="row mb-2">
                         <label class="control-label col-sm-2" for="domain_footer_html">{{ lang.edit.domain_footer_html }}:</label>
                         <div class="col-sm-10">
-                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_html" name="footer_html">{{ domain_footer.html }}</textarea>
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_html" name="html">{{ domain_footer.html }}</textarea>
                         </div>
                       </div>
                       <div class="row mb-4">
                         <label class="control-label col-sm-2" for="domain_footer_plain">{{ lang.edit.domain_footer_plain }}:</label>
                         <div class="col-sm-10">
-                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_plain" name="footer_plain">{{ domain_footer.plain }}</textarea>
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="10" id="domain_footer_plain" name="plain">{{ domain_footer.plain }}</textarea>
                         </div>
                       </div>
                       <div class="row">
                         <div class="offset-sm-2 col-sm-10">
-                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="domain_footer" data-item="domain_footer" data-api-url='edit/domain-wide-footer' data-api-attr='{"domain":"{{ domain }}"}' href="#">{{ lang.edit.save }}</button>
+                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="domain_footer" data-item="{{ domain }}" data-api-url='edit/domain/footer' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
                         </div>
                       </div>
                     </form>

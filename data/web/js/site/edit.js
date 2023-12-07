@@ -199,6 +199,23 @@ jQuery(function($){
     });
   }
 
+  function add_table_row(table_id, type) {
+    var row = $('<tr />');
+    if (type == "mbox_attr") {
+      cols = '<td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="attribute" required></td>';
+      cols += '<td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="value" required></td>';
+      cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang_admin.remove_row + '</a></td>';
+    }
+    row.append(cols);
+    table_id.append(row);
+  }
+  $('#mbox_attr_table').on('click', 'tr a', function (e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+  $('#add_mbox_attr_row').click(function() {
+    add_table_row($('#mbox_attr_table'), "mbox_attr");
+  });
 
   // detect element visibility changes
   function onVisible(element, callback) {

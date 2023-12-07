@@ -1,6 +1,6 @@
 {
     "acl": {
-        "alias_domains": "Adicionar domínios de alias",
+        "alias_domains": "Adicionar domínios alternativos",
         "app_passwds": "Gerenciar senhas de aplicativos",
         "bcc_maps": "Mapas BCC",
         "delimiter_action": "Ação delimitadora",
@@ -107,7 +107,8 @@
         "timeout2": "Tempo limite para conexão com o host local",
         "username": "Nome de usuário",
         "validate": "Validar",
-        "validation_success": "Validado com sucesso"
+        "validation_success": "Validado com sucesso",
+        "dry": "Simular sincronização"
     },
     "admin": {
         "access": "Acesso",
@@ -681,7 +682,9 @@
         "title": "Editar objeto",
         "unchanged_if_empty": "Se inalterado, deixe em branco",
         "username": "Nome de usuário",
-        "validate_save": "Valide e salve"
+        "validate_save": "Valide e salve",
+        "custom_attributes": "Atributos personalizados",
+        "mbox_exclude": "Excluir caixas de email"
     },
     "fido2": {
         "confirm": "Confirme",
@@ -873,7 +876,7 @@
         "sieve_preset_5": "Resposta automática (férias)",
         "sieve_preset_6": "Rejeitar e-mail com resposta",
         "sieve_preset_7": "Redirecionar e manter/soltar",
-        "sieve_preset_8": "Descartar mensagem enviada para um endereço de alias do qual o remetente faz parte",
+        "sieve_preset_8": "Redirecionar e-mail de um remetente específico, marcar como lido e classificar em subpasta",
         "sieve_preset_header": "Veja os exemplos de predefinições abaixo. Para obter mais detalhes, consulte a <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a>.",
         "sogo_visible": "O alias é visível no SoGo",
         "sogo_visible_n": "Ocultar alias no SoGo",
@@ -1277,7 +1280,9 @@
         "weeks": "semanas",
         "with_app_password": "com senha do aplicativo",
         "year": "ano",
-        "years": "anos"
+        "years": "anos",
+        "attribute": "Atributo",
+        "value": "Valor"
     },
     "warning": {
         "cannot_delete_self": "Não é possível excluir o usuário conectado",
