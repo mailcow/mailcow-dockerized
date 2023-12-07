@@ -5,6 +5,7 @@
 <div id="mailbox-content" class="responsive-tabs">
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#medit">{{ lang.edit.mailbox }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mattr">{{ lang.edit.custom_attributes }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mpushover">{{ lang.edit.pushover }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#macl">{{ lang.edit.acl }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mrl">{{ lang.edit.ratelimit }}</button></li>
@@ -273,6 +274,37 @@
                   </div>
                 </form>
             </div>
+        </div>
+      </div>
+      <div id="mattr" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-attr">
+        <div class="card mb-4">
+          <div class="card-header d-flex d-md-none fs-5">
+            <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-mattr" data-bs-toggle="collapse" aria-controls="collapse-tab-mattr">
+              {{ lang.edit.mailbox }} <span class="badge bg-info table-lines"></span>
+            </button>
+          </div>
+          <div id="collapse-tab-mattr" class="card-body collapse show" data-bs-parent="#mailbox-content">
+            <form class="form-inline" data-id="mbox_attr" role="form" method="post">
+              <table class="table table-condensed" style="white-space: nowrap;" id="mbox_attr_table">
+                <tr>
+                  <th>{{ lang.user.attribute }}</th>
+                  <th>{{ lang.user.value }}</th>
+                  <th style="width:100px;">&nbsp;</th>
+                </tr>
+                {% for key, val in result.custom_attributes %}
+                  <tr>
+                    <td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="attribute" required value="{{ key }}"></td>
+                    <td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="value" required value="{{ val }}"></td>
+                    <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">{{ lang.admin.remove_row }}</a></td>
+                  </tr>
+                {% endfor %}
+              </table>
+              <p><div class="btn-group">
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="{{ mailbox }}" data-id="mbox_attr" data-api-url='edit/mailbox/custom-attribute' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" type="button" id="add_mbox_attr_row">{{ lang.admin.add_row }}</button>
+              </div></p>
+            </form>
+          </div>
         </div>
       </div>
       <div id="mpushover" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-pushover">

@@ -3137,6 +3137,86 @@ paths:
                     type: string
               type: object
       summary: Update domain
+  /api/v1/edit/domain/footer:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                  - log:
+                      - mailbox
+                      - edit
+                      - domain_wide_footer
+                      - domains:
+                          - mailcow.tld
+                        html: "<br>foo {= foo =}"
+                        plain: "<foo {= foo =}"
+                        mbox_exclude:
+                          - moo@mailcow.tld
+                      - null
+                    msg:
+                      - domain_footer_modified
+                      - mailcow.tld
+                    type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: >-
+        You can update the footer of one or more domains per request.
+      operationId: Update domain wide footer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  html: "<br>foo {= foo =}"
+                  plain: "foo {= foo =}"
+                  mbox_exclude:
+                    - moo@mailcow.tld
+                items: mailcow.tld
+              properties:
+                attr:
+                  properties:
+                    html:
+                      description: Footer text in HTML format
+                      type: string
+                    plain:
+                      description: Footer text in PLAIN text format
+                      type: string
+                    mbox_exclude:
+                      description: Array of mailboxes to exclude from domain wide footer
+                      type: object
+                  type: object
+                items:
+                  description: contains a list of domain names where you want to update the footer
+                  type: array
+                  items:
+                    type: string
+              type: object
+      summary: Update domain wide footer
   /api/v1/edit/fail2ban:
     post:
       responses:
@@ -3336,6 +3416,86 @@ paths:
                   type: object
               type: object
       summary: Update mailbox
+  /api/v1/edit/mailbox/custom-attribute:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                  - log:
+                      - mailbox
+                      - edit
+                      - mailbox_custom_attribute
+                      - mailboxes:
+                          - moo@mailcow.tld
+                        attribute:
+                          - role
+                          - foo
+                        value:
+                          - cow
+                          - bar
+                      - null
+                    msg:
+                      - mailbox_modified
+                      - moo@mailcow.tld
+                    type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        You can update custom attributes of one or more mailboxes per request.
+      operationId: Update mailbox custom attributes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  attribute:
+                    - role
+                    - foo
+                  value:
+                    - cow
+                    - bar
+                items:
+                  - moo@mailcow.tld
+              properties:
+                attr:
+                  properties:
+                    attribute:
+                      description: Array of attribute keys
+                      type: object
+                    value:
+                      description: Array of attribute values
+                      type: object
+                  type: object
+                items:
+                  description: contains list of mailboxes you want update
+                  type: object
+              type: object
+      summary: Update mailbox custom attributes
   /api/v1/edit/mailq:
     post:
       responses:
@@ -5581,6 +5741,7 @@ paths:
                         sogo_access: "1"
                         tls_enforce_in: "0"
                         tls_enforce_out: "0"
+                      custom_attributes: {}
                       domain: domain3.tld
                       is_relayed: 0
                       local_part: info
@@ -5646,6 +5807,40 @@ paths:
                       items:
                         type: string
       summary: Edit Cross-Origin Resource Sharing (CORS) settings
+  "/api/v1/get/spam-score/{mailbox}":
+    get:
+      parameters:
+        - description: name of mailbox or empty for current user - admin user will retrieve the global spam filter score
+          in: path
+          name: mailbox
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    spam_score: "8,15"
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        Using this endpoint you can get the global spam filter score or the spam filter score of a certain mailbox.
+      operationId: Get mailbox or global spam filter score
+      summary: Get mailbox or global spam filter score
 
 tags:
   - name: Domains

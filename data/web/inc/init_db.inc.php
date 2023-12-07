@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "15112023_1536";
+    $db_version = "21112023_1644";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -267,6 +267,20 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "domain_wide_footer" => array(
+        "cols" => array(
+          "domain" => "VARCHAR(255) NOT NULL",
+          "html" => "LONGTEXT",
+          "plain" => "LONGTEXT",
+          "mbox_exclude" => "JSON NOT NULL DEFAULT ('[]')",
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "tags_domain" => array(
         "cols" => array(
           "tag_name" => "VARCHAR(255) NOT NULL",
@@ -344,6 +358,7 @@ function init_db_schema() {
           "local_part" => "VARCHAR(255) NOT NULL",
           "domain" => "VARCHAR(255) NOT NULL",
           "attributes" => "JSON",
+          "custom_attributes" => "JSON NOT NULL DEFAULT ('{}')",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
