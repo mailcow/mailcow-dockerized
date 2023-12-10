@@ -346,7 +346,9 @@
         "oauth2_apps": "OAuth2 Apps",
         "queue_unban": "entsperren",
         "allowed_methods": "Access-Control-Allow-Methods",
-        "allowed_origins": "Access-Control-Allow-Origin"
+        "allowed_origins": "Access-Control-Allow-Origin",
+        "logo_dark_label": "Invertiert für den Darkmode",
+        "logo_normal_label": "Normal"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -675,7 +677,11 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton"
+        "pushover_sound": "Ton",
+        "domain_footer_info_vars": {
+            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
+            "from_user": "{= from_user =}   - Von Teil des Benutzers z.B. \"moo@mailcow.tld\" wird \"moo\" zurückgeben."
+        }
     },
     "fido2": {
         "confirm": "Bestätigen",
