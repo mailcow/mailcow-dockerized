@@ -18,7 +18,7 @@ jobs:
 
         steps:
             -   name: "Checkout code"
-                uses: actions/checkout@v2
+                uses: actions/checkout@v4
 
             -   name: "Set-up PHP"
                 uses: shivammathur/setup-php@v2
@@ -33,7 +33,7 @@ jobs:
                 run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             -   name: Cache dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v3
                 with:
                     path: ${{ steps.composercache.outputs.dir }}
                     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -54,7 +54,7 @@ jobs:
 
         steps:
             - name: "Checkout code"
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: "Run DOCtor-RST"
               uses: docker://oskarstark/doctor-rst

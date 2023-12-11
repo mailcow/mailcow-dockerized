@@ -127,50 +127,57 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="dry" checked> {{ lang.add.dry }} (--dry)</label>
               </div>
             </div>
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -228,8 +235,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -285,15 +292,13 @@
             <label class="control-label col-sm-3" for="user_old_pass">{{ lang.user.password_now }}</label>
             <div class="col-sm-9">
               <input type="password" class="form-control" name="user_old_pass" autocomplete="off" required>
+              {% if number_of_app_passwords > 0 %}
+                <div class="invalid-feedback d-block">
+                  {{ lang.user.change_password_hint_app_passwords|format(number_of_app_passwords) }}
+                </div>
+              {% endif %}
             </div>
           </div>
-          {% if number_of_app_passwords > 0 %}
-            <div class="row mb-2">
-              <div class="offset-sm-3 col-sm-9">
-                <small>{{ lang.user.change_password_hint_app_passwords | replace({'{{number_of_app_passwords}}': number_of_app_passwords}) }}</small>
-              </div>
-            </div>
-          {% endif %}
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.change_password }}</button>

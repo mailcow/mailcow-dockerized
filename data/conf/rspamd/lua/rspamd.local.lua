@@ -221,6 +221,16 @@ rspamd_config:register_symbol({
     local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
     local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
 
+    local function remove_moo_tag()
+      local moo_tag_header = task:get_header('X-Moo-Tag', false)
+      if moo_tag_header then
+        task:set_milter_reply({
+          remove_headers = {['X-Moo-Tag'] = 0},
+        })
+      end
+      return true
+    end
+
     if tagged_rcpt and tagged_rcpt[1].options and mailcow_domain then
       local tag = tagged_rcpt[1].options[1]
       rspamd_logger.infox("found tag: %s", tag)
@@ -229,6 +239,7 @@ rspamd_config:register_symbol({
 
       if action ~= 'no action' and action ~= 'greylist' then
         rspamd_logger.infox("skipping tag handler for action: %s", action)
+        remove_moo_tag()
         return true
       end
 
@@ -243,6 +254,7 @@ rspamd_config:register_symbol({
               local function tag_callback_subfolder(err, data)
                 if err or type(data) ~= 'string' then
                   rspamd_logger.infox(rspamd_config, "subfolder tag handler for rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\")", body, data, err)
+                  remove_moo_tag()
                 else
                   rspamd_logger.infox("Add X-Moo-Tag header")
                   task:set_milter_reply({
@@ -261,6 +273,7 @@ rspamd_config:register_symbol({
               )
               if not redis_ret_subfolder then
                 rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+                remove_moo_tag()
               end
 
             else
@@ -268,7 +281,10 @@ rspamd_config:register_symbol({
               local sbj = task:get_header('Subject')
               new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
               task:set_milter_reply({
-                remove_headers = {['Subject'] = 1},
+                remove_headers = {
+                  ['Subject'] = 1,
+                  ['X-Moo-Tag'] = 0
+                },
                 add_headers = {['Subject'] = new_sbj}
               })
             end
@@ -284,6 +300,7 @@ rspamd_config:register_symbol({
           )
           if not redis_ret_subject then
             rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+            remove_moo_tag()
           end
 
         end
@@ -295,6 +312,7 @@ rspamd_config:register_symbol({
           if #rcpt_split == 2 then
             if rcpt_split[1] == 'postmaster' then
               rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
+              remove_moo_tag()
             else
               rspamd_http.request({
                 task=task,
@@ -307,7 +325,8 @@ rspamd_config:register_symbol({
           end
         end
       end
-
+    else
+      remove_moo_tag()
     end
   end,
   priority = 19
@@ -502,4 +521,159 @@ rspamd_config:register_symbol({
       task:set_flag('no_stat')
     end
   end
+})
+
+rspamd_config:register_symbol({
+  name = 'MOO_FOOTER',
+  type = 'prefilter',
+  callback = function(task)
+    local cjson = require "cjson"
+    local lua_mime = require "lua_mime"
+    local lua_util = require "lua_util"
+    local rspamd_logger = require "rspamd_logger"
+    local rspamd_http = require "rspamd_http"
+    local envfrom = task:get_from(1)
+    local uname = task:get_user()
+    if not envfrom or not uname then
+      return false
+    end
+    local uname = uname:lower()
+    local env_from_domain = envfrom[1].domain:lower()
+    local env_from_addr = envfrom[1].addr:lower()
+
+    -- determine newline type
+    local function newline(task)
+      local t = task:get_newlines_type()
+    
+      if t == 'cr' then
+        return '\r'
+      elseif t == 'lf' then
+        return '\n'
+      end
+    
+      return '\r\n'
+    end
+    -- retrieve footer
+    local function footer_cb(err_message, code, data, headers)
+      if err or type(data) ~= 'string' then
+        rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+      else
+        
+        -- parse json string
+        local footer = cjson.decode(data)
+        if not footer then
+          rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+        else
+          if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
+            rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s, vars=%s", uname, footer.html, footer.plain, footer.vars)
+
+            local envfrom_mime = task:get_from(2)
+            local from_name = ""
+            if envfrom_mime and envfrom_mime[1].name then
+              from_name = envfrom_mime[1].name
+            elseif envfrom and envfrom[1].name then
+              from_name = envfrom[1].name
+            end
+
+            -- default replacements
+            local replacements = {
+              auth_user = uname,
+              from_user = envfrom[1].user,
+              from_name = from_name,
+              from_addr = envfrom[1].addr,
+              from_domain = envfrom[1].domain:lower()
+            }
+            -- add custom mailbox attributes
+            if footer.vars and type(footer.vars) == "string" then
+              local footer_vars = cjson.decode(footer.vars)
+
+              if type(footer_vars) == "table" then
+                for key, value in pairs(footer_vars) do
+                  replacements[key] = value
+                end
+              end
+            end
+            if footer.html and footer.html ~= "" then
+              footer.html = lua_util.jinja_template(footer.html, replacements, true)
+            end
+            if footer.plain and footer.plain ~= "" then
+              footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
+            end
+  
+            -- add footer
+            local out = {}
+            local rewrite = lua_mime.add_text_footer(task, footer.html, footer.plain) or {}
+        
+            local seen_cte
+            local newline_s = newline(task)
+        
+            local function rewrite_ct_cb(name, hdr)
+              if rewrite.need_rewrite_ct then
+                if name:lower() == 'content-type' then
+                  local nct = string.format('%s: %s/%s; charset=utf-8',
+                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype)
+                  out[#out + 1] = nct
+                  return
+                elseif name:lower() == 'content-transfer-encoding' then
+                  out[#out + 1] = string.format('%s: %s',
+                      'Content-Transfer-Encoding', 'quoted-printable')
+                  seen_cte = true
+                  return
+                end
+              end
+              out[#out + 1] = hdr.raw:gsub('\r?\n?$', '')
+            end
+        
+            task:headers_foreach(rewrite_ct_cb, {full = true})
+        
+            if not seen_cte and rewrite.need_rewrite_ct then
+              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+            end
+        
+            -- End of headers
+            out[#out + 1] = newline_s
+        
+            if rewrite.out then
+              for _,o in ipairs(rewrite.out) do
+                out[#out + 1] = o
+              end
+            else
+              out[#out + 1] = task:get_rawbody()
+            end
+            local out_parts = {}
+            for _,o in ipairs(out) do
+              if type(o) ~= 'table' then
+                out_parts[#out_parts + 1] = o
+                out_parts[#out_parts + 1] = newline_s
+              else
+                local removePrefix = "--\x0D\x0AContent-Type"
+                if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
+                  o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
+                end
+                out_parts[#out_parts + 1] = o[1]
+                if o[2] then
+                  out_parts[#out_parts + 1] = newline_s
+                end
+              end
+            end
+            task:set_message(out_parts)
+          else
+            rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\")", uname, data)
+          end
+        end
+      end
+    end
+
+    -- fetch footer
+    rspamd_http.request({
+      task=task,
+      url='http://nginx:8081/footer.php',
+      body='',
+      callback=footer_cb,
+      headers={Domain=env_from_domain,Username=uname,From=env_from_addr},
+    })
+
+    return true
+  end,
+  priority = 1
 })
