@@ -391,3 +391,11 @@ function addTag(tagAddElem, tag = null){
   $(tagValuesElem).val(JSON.stringify(value_tags));
   $(tagInputElem).val('');
 }
+function copyToClipboard(id) {
+  var copyText = document.getElementById(id);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  // only works with https connections
+  navigator.clipboard.writeText(copyText.value);
+  mailcow_alert_box(lang.copy_to_clipboard, "success");
+}
