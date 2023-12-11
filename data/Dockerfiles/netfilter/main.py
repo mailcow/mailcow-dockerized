@@ -167,8 +167,12 @@ def ban(address):
   if not net in bans:
     bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0}
 
+  current_attempt = time.time()
+  if current_attempt - bans[net]['last_attempt'] > RETRY_WINDOW:
+    bans[net]['attempts'] = 0
+
   bans[net]['attempts'] += 1
-  bans[net]['last_attempt'] = time.time()
+  bans[net]['last_attempt'] = current_attempt
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
     cur_time = int(round(time.time()))
