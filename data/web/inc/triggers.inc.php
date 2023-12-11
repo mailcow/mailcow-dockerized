@@ -1,4 +1,15 @@
 <?php
+// SSO Domain Admin
+if (!empty($_GET['sso_token'])) {
+  $username = domain_admin_sso('check', $_GET['sso_token']);
+
+  if ($username !== false) {
+    $_SESSION['mailcow_cc_username'] = $username;
+    $_SESSION['mailcow_cc_role'] = 'domainadmin';
+    header('Location: /mailbox');
+  }
+}
+
 if (isset($_POST["verify_tfa_login"])) {
   if (verify_tfa_login($_SESSION['pending_mailcow_cc_username'], $_POST)) {
     $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
@@ -6,7 +17,7 @@ if (isset($_POST["verify_tfa_login"])) {
     unset($_SESSION['pending_mailcow_cc_username']);
     unset($_SESSION['pending_mailcow_cc_role']);
     unset($_SESSION['pending_tfa_methods']);
-	
+
     header("Location: /user");
   } else {
     unset($_SESSION['pending_mailcow_cc_username']);
@@ -34,7 +45,7 @@ if (isset($_POST["quick_delete"])) {
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	$login_user = strtolower(trim($_POST["login_user"]));
 	$as = check_login($login_user, $_POST["pass_user"]);
-  
+
 	if ($as == "admin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
@@ -52,7 +63,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
         unset($_SESSION['index_query_string']);
         if (in_array('mobileconfig', $http_parameters)) {
             if (in_array('only_email', $http_parameters)) {
-                header("Location: /mobileconfig.php?email_only");
+                header("Location: /mobileconfig.php?only_email");
                 die();
             }
             header("Location: /mobileconfig.php");
@@ -110,9 +121,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     if ($_FILES['main_logo']['error'] == 0) {
       customize('add', 'main_logo', $_FILES);
     }
+    if ($_FILES['main_logo_dark']['error'] == 0) {
+      customize('add', 'main_logo_dark', $_FILES);
+    }
 	}
 	if (isset($_POST["reset_main_logo"])) {
     customize('delete', 'main_logo');
+    customize('delete', 'main_logo_dark');
 	}
   // Some actions will not be available via API
 	if (isset($_POST["license_validate_now"])) {

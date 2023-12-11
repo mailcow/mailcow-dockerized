@@ -42,11 +42,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
 table.dataTable td.dt-control:before {
     background-color: #979797 !important;
 }
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.child, 
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
-    background-color: #fbfbfb;
-}
 table.dataTable.table-striped>tbody>tr>td {
     vertical-align: middle;
 }
@@ -77,4 +72,22 @@ li .dtr-data {
 table.dataTable>tbody>tr.child span.dtr-title {
     width: 30%;
     max-width: 250px;
+}
+
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+div.dataTables_wrapper div.dataTables_length {
+    text-align: right;
+}
+.dataTables_paginate, .dataTables_length, .dataTables_filter {
+    margin: 10px 0!important;
+}
+
+td.dt-text-right {
+    text-align: end !important;
+}
+th.dt-text-right {
+    text-align: end !important;
 }

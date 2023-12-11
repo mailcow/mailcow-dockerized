@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   description: >-
     mailcow is complete e-mailing solution with advanced antispam, antivirus,
@@ -699,6 +699,38 @@ paths:
                   type: string
               type: object
       summary: Create Domain Admin user
+  /api/v1/add/sso/domain-admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    token: "591F6D-5C3DD2-7455CD-DAF1C1-AA4FCC"
+          description: OK
+          headers: { }
+      tags:
+        - Single Sign-On
+      description: >-
+        Using this endpoint you can issue a token for Domain Admin user. This token can be used for
+        autologin Domain Admin user by using query_string var sso_token={token}. Token expiration time is 30s
+      operationId: Issue Domain Admin SSO token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                username: testadmin
+              properties:
+                username:
+                  description: the username for the admin user
+                  type: object
+              type: object
+      summary: Issue Domain Admin SSO token
   /api/v1/edit/da-acl:
     post:
       responses:
@@ -1999,7 +2031,7 @@ paths:
                 - domain.tld
                 - domain2.tld
               properties:
-                items: 
+                items:
                   type: array
                   items:
                     type: string
@@ -2993,7 +3025,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   type: object
                   properties:
                     log:
@@ -3105,6 +3137,86 @@ paths:
                     type: string
               type: object
       summary: Update domain
+  /api/v1/edit/domain/footer:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                  - log:
+                      - mailbox
+                      - edit
+                      - domain_wide_footer
+                      - domains:
+                          - mailcow.tld
+                        html: "<br>foo {= foo =}"
+                        plain: "<foo {= foo =}"
+                        mbox_exclude:
+                          - moo@mailcow.tld
+                      - null
+                    msg:
+                      - domain_footer_modified
+                      - mailcow.tld
+                    type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: >-
+        You can update the footer of one or more domains per request.
+      operationId: Update domain wide footer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  html: "<br>foo {= foo =}"
+                  plain: "foo {= foo =}"
+                  mbox_exclude:
+                    - moo@mailcow.tld
+                items: mailcow.tld
+              properties:
+                attr:
+                  properties:
+                    html:
+                      description: Footer text in HTML format
+                      type: string
+                    plain:
+                      description: Footer text in PLAIN text format
+                      type: string
+                    mbox_exclude:
+                      description: Array of mailboxes to exclude from domain wide footer
+                      type: object
+                  type: object
+                items:
+                  description: contains a list of domain names where you want to update the footer
+                  type: array
+                  items:
+                    type: string
+              type: object
+      summary: Update domain wide footer
   /api/v1/edit/fail2ban:
     post:
       responses:
@@ -3144,8 +3256,10 @@ paths:
               example:
                 attr:
                   ban_time: "86400"
+                  ban_time_increment: "1"
                   blacklist: "10.100.6.5/32,10.100.8.4/32"
                   max_attempts: "5"
+                  max_ban_time: "86400"
                   netban_ipv4: "24"
                   netban_ipv6: "64"
                   retry_window: "600"
@@ -3159,10 +3273,16 @@ paths:
                       description: the backlisted ips or hostnames separated by comma
                       type: string
                     ban_time:
-                      description: the time a ip should be banned
+                      description: the time an ip should be banned
                       type: number
+                    ban_time_increment:
+                      description: if the time of the ban should increase each time
+                      type: boolean
                     max_attempts:
                       description: the maximum numbe of wrong logins before a ip is banned
+                      type: number
+                    max_ban_time:
+                      description: the maximum time an ip should be banned
                       type: number
                     netban_ipv4:
                       description: the networks mask to ban for ipv4
@@ -3296,6 +3416,86 @@ paths:
                   type: object
               type: object
       summary: Update mailbox
+  /api/v1/edit/mailbox/custom-attribute:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                  - log:
+                      - mailbox
+                      - edit
+                      - mailbox_custom_attribute
+                      - mailboxes:
+                          - moo@mailcow.tld
+                        attribute:
+                          - role
+                          - foo
+                        value:
+                          - cow
+                          - bar
+                      - null
+                    msg:
+                      - mailbox_modified
+                      - moo@mailcow.tld
+                    type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        You can update custom attributes of one or more mailboxes per request.
+      operationId: Update mailbox custom attributes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  attribute:
+                    - role
+                    - foo
+                  value:
+                    - cow
+                    - bar
+                items:
+                  - moo@mailcow.tld
+              properties:
+                attr:
+                  properties:
+                    attribute:
+                      description: Array of attribute keys
+                      type: object
+                    value:
+                      description: Array of attribute values
+                      type: object
+                  type: object
+                items:
+                  description: contains list of mailboxes you want update
+                  type: object
+              type: object
+      summary: Update mailbox custom attributes
   /api/v1/edit/mailq:
     post:
       responses:
@@ -4081,10 +4281,12 @@ paths:
                 response:
                   value:
                     ban_time: 604800
+                    ban_time_increment: 1
                     blacklist: |-
                       45.82.153.37/32
                       92.118.38.52/32
                     max_attempts: 1
+                    max_ban_time: 604800
                     netban_ipv4: 32
                     netban_ipv6: 128
                     perm_bans:
@@ -5539,6 +5741,7 @@ paths:
                         sogo_access: "1"
                         tls_enforce_in: "0"
                         tls_enforce_out: "0"
+                      custom_attributes: {}
                       domain: domain3.tld
                       is_relayed: 0
                       local_part: info
@@ -5560,6 +5763,84 @@ paths:
       description: You can list all mailboxes existing in system for a specific domain.
       operationId: Get mailboxes of a domain
       summary: Get mailboxes of a domain
+  /api/v1/edit/cors:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: "success"
+                      log: ["cors", "edit", {"allowed_origins": ["*", "mail.mailcow.tld"], "allowed_methods": ["POST", "GET", "DELETE", "PUT"]}]
+                      msg: "cors_headers_edited"
+          description: OK
+          headers: { }
+      tags:
+        - Cross-Origin Resource Sharing (CORS)
+      description: >-
+        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API. 
+        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests. 
+        By editing the CORS settings, you can specify which domains and which methods are permitted to access the API resources from outside the mailcow domain.
+      operationId: Edit Cross-Origin Resource Sharing (CORS) settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  allowed_origins: ["*", "mail.mailcow.tld"]
+                  allowed_methods: ["POST", "GET", "DELETE", "PUT"]
+              properties:
+                attr:
+                  type: object
+                  properties:
+                    allowed_origins:
+                      type: array
+                      items:
+                        type: string
+                    allowed_methods:
+                      type: array
+                      items:
+                        type: string
+      summary: Edit Cross-Origin Resource Sharing (CORS) settings
+  "/api/v1/get/spam-score/{mailbox}":
+    get:
+      parameters:
+        - description: name of mailbox or empty for current user - admin user will retrieve the global spam filter score
+          in: path
+          name: mailbox
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    spam_score: "8,15"
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        Using this endpoint you can get the global spam filter score or the spam filter score of a certain mailbox.
+      operationId: Get mailbox or global spam filter score
+      summary: Get mailbox or global spam filter score
 
 tags:
   - name: Domains
@@ -5586,6 +5867,8 @@ tags:
     description: Manage DKIM keys
   - name: Domain admin
     description: Create or udpdate domain admin users
+  - name: Single Sign-On
+    description: Issue tokens for users
   - name: Address Rewriting
     description: Create BCC maps or recipient maps
   - name: Outgoing TLS Policy Map Overrides
@@ -5602,3 +5885,5 @@ tags:
     description: Get the status of your cow
   - name: Ratelimits
     description: Edit domain ratelimits
+  - name: Cross-Origin Resource Sharing (CORS)
+    description: Manage Cross-Origin Resource Sharing (CORS) settings

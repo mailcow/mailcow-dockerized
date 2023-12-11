@@ -1,12 +1,18 @@
-FROM php:8.1-fpm-alpine3.17
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+FROM php:8.2-fpm-alpine3.17
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
-ENV APCU_PECL 5.1.22
-ENV IMAGICK_PECL 3.7.0
-ENV MAILPARSE_PECL 3.1.4
-ENV MEMCACHED_PECL 3.2.0
-ENV REDIS_PECL 5.3.7
-ENV COMPOSER 2.4.4
+# renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
+ARG APCU_PECL_VERSION=5.1.22
+# renovate: datasource=github-tags depName=Imagick/imagick versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG IMAGICK_PECL_VERSION=3.7.0
+# renovate: datasource=github-tags depName=php/pecl-mail-mailparse versioning=semver-coerced extractVersion=^v(?<version>.*)$
+ARG MAILPARSE_PECL_VERSION=3.1.6
+# renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
+ARG MEMCACHED_PECL_VERSION=3.2.0
+# renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG REDIS_PECL_VERSION=6.0.1
+# renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG COMPOSER_VERSION=2.6.5
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \
@@ -46,6 +52,7 @@ RUN apk add -U --no-cache autoconf \
   libxpm-dev \
   libzip \
   libzip-dev \
+  linux-headers \
   make \
   mysql-client \
   openldap-dev \
@@ -55,11 +62,11 @@ RUN apk add -U --no-cache autoconf \
   samba-client \
   zlib-dev \
   tzdata \
-  && pecl install mailparse-${MAILPARSE_PECL} \
-  && pecl install redis-${REDIS_PECL} \
-  && pecl install memcached-${MEMCACHED_PECL} \
-  && pecl install APCu-${APCU_PECL} \
-  && pecl install imagick-${IMAGICK_PECL} \
+  && pecl install APCu-${APCU_PECL_VERSION} \
+  && pecl install imagick-${IMAGICK_PECL_VERSION} \
+  && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
+  && pecl install memcached-${MEMCACHED_PECL_VERSION} \
+  && pecl install redis-${REDIS_PECL_VERSION} \
   && docker-php-ext-enable apcu imagick memcached mailparse redis \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
@@ -69,10 +76,10 @@ RUN apk add -U --no-cache autoconf \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets sysvsem zip bcmath gmp \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
-  && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER} \
+  && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
@@ -93,6 +100,7 @@ RUN apk add -U --no-cache autoconf \
     libxml2-dev \
     libxpm-dev \
     libzip-dev \
+    linux-headers \
     make \
     openldap-dev \
     pcre-dev \

@@ -2,9 +2,9 @@
 /*
    see /api
 */
-
-header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+cors("set_headers");
+header('Content-Type: application/json');
 error_reporting(0);
 
 function api_log($_data) {
@@ -288,6 +288,18 @@ if (isset($_GET['query'])) {
         case "domain-admin":
           process_add_return(domain_admin('add', $attr));
         break;
+        case "sso":
+          switch ($object) {
+            case "domain-admin":
+              $data = domain_admin_sso('issue', $attr);
+              if($data) {
+                echo json_encode($data);
+                exit(0);
+              }
+              process_add_return($data);
+            break;
+          }
+        break;
         case "admin":
           process_add_return(admin('add', $attr));
         break;
@@ -491,6 +503,16 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
+        break;          
+        case "fail2ban":
+          if (!isset($_SESSION['mailcow_cc_role'])){
+            switch ($object) {
+              case 'banlist':
+                header('Content-Type: text/plain');
+                echo fail2ban('banlist', 'get', $extra);
+              break;
+            }
+          }
         break;
       }
       if (isset($_SESSION['mailcow_cc_role'])) {
@@ -554,6 +576,15 @@ if (isset($_GET['query'])) {
             switch ($object) {
               case "html":
                 $password_complexity_rules = password_complexity('html');
+                if ($password_complexity_rules !== false) {
+                  process_get_return($password_complexity_rules);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+              default:
+                $password_complexity_rules = password_complexity('get');
                 if ($password_complexity_rules !== false) {
                   process_get_return($password_complexity_rules);
                 }
@@ -1303,6 +1334,10 @@ if (isset($_GET['query'])) {
           break;
           case "fail2ban":
             switch ($object) {
+              case 'banlist':
+                header('Content-Type: text/plain');
+                echo fail2ban('banlist', 'get', $extra);
+              break;
               default:
                 $data = fail2ban('get');
                 process_get_return($data);
@@ -1544,14 +1579,15 @@ if (isset($_GET['query'])) {
                   } 
                   else if ($extra == "ip") {
                     // get public ips
+                    
                     $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($curl, CURLOPT_POST, 0);
+                    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
+                    curl_setopt($curl, CURLOPT_URL, 'http://ipv4.mailcow.email');
                     $ipv4 = curl_exec($curl);
                     curl_setopt($curl, CURLOPT_URL, 'http://ipv6.mailcow.email');
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_POST, 0);
                     $ipv6 = curl_exec($curl);
                     $ips = array(
                       "ipv4" => $ipv4,
@@ -1568,6 +1604,12 @@ if (isset($_GET['query'])) {
                 break;
               }
             }
+          break;
+          case "spam-score":
+            $score = mailbox('get', 'spam_score', $object);
+            if ($score)
+              $score = array("score" => preg_replace("/\s+/", "", $score));
+            process_get_return($score);
           break;
         break;
         // return no route found if no case is matched
@@ -1845,6 +1887,7 @@ if (isset($_GET['query'])) {
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
         break;
+        break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
         break;
@@ -1855,6 +1898,9 @@ if (isset($_GET['query'])) {
           switch ($object) {
             case "template":
               process_edit_return(mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            case "custom-attribute":
+              process_edit_return(mailbox('edit', 'mailbox_custom_attribute', array_merge(array('mailboxes' => $items), $attr)));
             break;
             default:
               process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
@@ -1874,6 +1920,9 @@ if (isset($_GET['query'])) {
           switch ($object) {
             case "template":
               process_edit_return(mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            case "footer":
+              process_edit_return(mailbox('edit', 'domain_wide_footer', array_merge(array('domains' => $items), $attr)));
             break;
             default:
               process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
@@ -1908,10 +1957,20 @@ if (isset($_GET['query'])) {
           process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
         break;
         case "fail2ban":
-          process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+          switch ($object) {
+            case 'banlist':
+              process_edit_return(fail2ban('banlist', 'refresh', $items));
+            break;
+            default:
+              process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+            break;
+          }
         break;
         case "ui_texts":
           process_edit_return(customize('edit', 'ui_texts', $attr));
+        break;
+        case "ip_check":
+          process_edit_return(customize('edit', 'ip_check', $attr));
         break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
@@ -1920,6 +1979,9 @@ if (isset($_GET['query'])) {
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
             process_edit_return(edit_user_account($attr));
           }
+        break;
+        case "cors":
+          process_edit_return(cors('edit', $attr));
         break;
         // return no route found if no case is matched
         default:

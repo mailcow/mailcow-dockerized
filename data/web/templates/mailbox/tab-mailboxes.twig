@@ -1,4 +1,4 @@
-<div role="tabpanel" class="tab-pane fade" id="tab-mailboxes" role="tabpanel" aria-labelledby="tab-mailboxes">
+<div class="tab-pane fade" id="tab-mailboxes" role="tabpanel" aria-labelledby="tab-mailboxes">
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
       <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-mailboxes" data-bs-toggle="collapse" aria-controls="collapse-tab-mailboxes">
@@ -11,14 +11,14 @@
       </div>
     </div>
     <div id="collapse-tab-mailboxes" class="card-body collapse" data-bs-parent="#mail-content">
-      <div class="mass-actions-mailbox mb-4">
+      <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
         <div class="btn-group d-flex d-lg-none">
           <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
-            <li><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
             <li class="dropdown-header">{{ lang.mailbox.mailbox }}</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -54,6 +54,7 @@
             <li class="dropdown-header">SMTP</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li class="dropdown-header">Sieve</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -61,11 +62,11 @@
           <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
         </div>
         <div class="btn-group d-none d-lg-flex">
-          <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>          
+          <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <div class="btn-group">
             <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailbox }}</a>
@@ -127,12 +128,12 @@
       <table id="mailbox_table" class="table table-striped dt-responsive w-100"></table>
       <div class="mass-actions-mailbox mt-4">
         <div class="btn-group d-flex d-lg-none">
-          <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
-            <li><hr class="dropdown-divider"></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><hr class="dropdown-divider"></li>
             <li class="dropdown-header">{{ lang.mailbox.mailbox }}</li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
@@ -172,14 +173,14 @@
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":1}' href="#">{{ lang.mailbox.activate }}</a></li>
             <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"sieve_access":0}' href="#">{{ lang.mailbox.deactivate }}</a></li>
           </ul>
-          <a class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
+          <a class="btn btn-sm btn-xs-lg btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxModal"><i class="bi bi-plus-lg"></i> {{ lang.mailbox.add_mailbox }}</a>
         </div>
         <div class="btn-group d-none d-lg-flex">
           <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
-            <li><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="mailbox_table">{{ lang.datatables.expand_all }}</a></li>
+            <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="mailbox_table">{{ lang.datatables.collapse_all }}</a></li>
           </ul>
           <div class="btn-group">
             <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailbox }}</a>

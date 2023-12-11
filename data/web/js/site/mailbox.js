@@ -77,7 +77,7 @@ $(document).ready(function() {
         $('.dns-modal-body').html(xhr.responseText);
       }
     });
-  }); 
+  });
   // @Open Domain add modal
   $('#addDomainModal').on('show.bs.modal', function(e) {
     $.ajax({
@@ -85,24 +85,24 @@ $(document).ready(function() {
       data: {},
       dataType: 'json',
       success: async function(data){
-        $('#domain_templates').find('option').remove(); 
+        $('#domain_templates').find('option').remove();
         $('#domain_templates').selectpicker('destroy');
         $('#domain_templates').selectpicker();
         for (var i = 0; i < data.length; i++){
           if (data[i].template === "Default"){
-            $('#domain_templates').prepend($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': true
+            $('#domain_templates').prepend($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': true
             }));
             setDomainTemplateData(data[i].attributes);
           } else {
-            $('#domain_templates').append($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': false
+            $('#domain_templates').append($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': false
             }));
           }
         };
@@ -127,24 +127,24 @@ $(document).ready(function() {
       data: {},
       dataType: 'json',
       success: async function(data){
-        $('#mailbox_templates').find('option').remove(); 
+        $('#mailbox_templates').find('option').remove();
         $('#mailbox_templates').selectpicker('destroy');
         $('#mailbox_templates').selectpicker();
         for (var i = 0; i < data.length; i++){
           if (data[i].template === "Default"){
-            $('#mailbox_templates').prepend($('<option>', { 
-                'value': data[i].id,
-                'text': data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': true
+            $('#mailbox_templates').prepend($('<option>', {
+              'value': data[i].id,
+              'text': data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': true
             }));
             setMailboxTemplateData(data[i].attributes);
           } else {
-            $('#mailbox_templates').append($('<option>', { 
-                value: data[i].id,
-                text : data[i].template,
-                'data-attributes': JSON.stringify(data[i].attributes),
-                'selected': false
+            $('#mailbox_templates').append($('<option>', {
+              value: data[i].id,
+              text : data[i].template,
+              'data-attributes': JSON.stringify(data[i].attributes),
+              'selected': false
             }));
           }
         };
@@ -229,20 +229,20 @@ $(document).ready(function() {
     } else {
       $('#addDomain_gal').prop('checked', false);
     }
-    
+
     if (template.active == 1){
       $('#addDomain_active').prop('checked', true);
     } else {
       $('#addDomain_active').prop('checked', false);
     }
-    
+
     $("#addDomain_rl_value").val(template.rl_value);
     $('#addDomain_rl_frame').selectpicker('val', template.rl_frame);
     $("#dkim_selector").val(template.dkim_selector);
     if (!template.key_size)
       template.key_size = 2048;
     $('#key_size').selectpicker('val', template.key_size.toString());
-    
+
     if (template.backupmx == 1){
       $('#addDomain_relay_domain').prop('checked', true);
     } else {
@@ -259,7 +259,7 @@ $(document).ready(function() {
       $('#addDomain_relay_unknown_only').prop('checked', false);
     }
 
-    
+
     // load tags
     $('#addDomain_tags').val("");
     $($('#addDomain_tags').parent().find(".tag-values")[0]).val("");
@@ -404,7 +404,7 @@ $(document).ready(function() {
     } else {
       $('#sogo_access').prop('checked', false);
     }
-    
+
     // load tags
     $('#addMailbox_tags').val("");
     $($('#addMailbox_tags').parent().find(".tag-values")[0]).val("");
@@ -417,11 +417,11 @@ jQuery(function($){
   // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
   function unix_time_format(i){return""==i?'<i class="bi bi-x"></i>':new Date(i?1e3*i:0).toLocaleDateString(void 0,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"})}
-  
+
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
-    
+
     if ($.fn.DataTable.isDataTable('#' + table_name))
       $('#' + table_name).DataTable().ajax.reload();
   });
@@ -433,9 +433,18 @@ jQuery(function($){
     }
 
     var table = $('#domain_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/all",
@@ -457,16 +466,16 @@ jQuery(function($){
 
             item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
             item.action = '<div class="btn-group">';
             if (role == "admin") {
-              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                  '<a href="#dnsInfoModal" class="btn btn-sm btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                  '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-lg btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
             else {
-              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-xs btn-xs-half btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
+              item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-lg btn-xs-half btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
 
             if (Array.isArray(item.tags)){
@@ -598,18 +607,22 @@ jQuery(function($){
           defaultContent: '',
           responsivePriority: 6,
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
           }
         },
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
         },
       ]
-    });  
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
+    });
   }
   function draw_templates_domain_table() {
     // just recalc width if instance already exists
@@ -618,18 +631,26 @@ jQuery(function($){
       return;
     }
 
-    $('#templates_domain_table').DataTable({
-			responsive : true,
+    var table = $('#templates_domain_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-templates-domains', '#templates_domain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/domain/template/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.chkbox = '<input type="checkbox" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
 
             item.attributes.def_quota_for_mbox = humanFileSize(item.attributes.def_quota_for_mbox);
             item.attributes.max_quota_for_mbox = humanFileSize(item.attributes.max_quota_for_mbox);
@@ -647,495 +668,17 @@ jQuery(function($){
             }
             item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
 
-            
+
             if (item.template.toLowerCase() == "default"){
               item.action = '<div class="btn-group">' +
-              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '</div>';
-            }
-            else{
-              item.action = '<div class="btn-group">' +
-              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/domain/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '</div>';
-            }
-
-            if (Array.isArray(item.attributes.tags)){
-              var tags = '';
-              for (var i = 0; i < item.attributes.tags.length; i++)
-                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.attributes.tags[i]) + '</span>';
-              item.attributes.tags = tags;
-            } else {
-              item.attributes.tags = '';
-            }
-          });
-
-          return json;
-        }
-      },
-      columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: "ID",
-            data: 'id',
-            responsivePriority: 2,
-            defaultContent: ''
-          },
-          {
-            title: lang.template,
-            data: 'template',
-            responsivePriority: 3,
-            defaultContent: ''
-          },              
-          {
-            title: lang.max_aliases,
-            data: 'attributes.max_num_aliases_for_domain',
-            defaultContent: '',
-          },             
-          {
-            title: lang.max_mailboxes,
-            data: 'attributes.max_num_mboxes_for_domain',
-            defaultContent: '',
-          },             
-          {
-            title: lang.mailbox_defquota,
-            data: 'attributes.def_quota_for_mbox',
-            defaultContent: '',
-          },               
-          {
-            title: lang.max_quota,
-            data: 'attributes.max_quota_for_mbox',
-            defaultContent: '',
-          },            
-          {
-            title: lang.domain_quota_total,
-            data: 'attributes.max_quota_for_domain',
-            defaultContent: '',
-          },          
-          {
-            title: lang.gal,
-            data: 'attributes.gal',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.backup_mx,
-            data: 'attributes.backupmx',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.relay_all,
-            data: 'attributes.relay_all_recipients',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.relay_unknown,
-            data: 'attributes.relay_unknown_only',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },           
-          {
-            title: lang.active,
-            data: 'attributes.active',
-            defaultContent: '',
-            responsivePriority: 4,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
-            }
-          },               
-          {
-            title: 'rl_frame',
-            data: 'attributes.rl_frame',
-            defaultContent: '',
-            class: 'none',
-          },             
-          {
-            title: 'rl_value',
-            data: 'attributes.rl_value',
-            defaultContent: '',
-            class: 'none',
-          },            
-          {
-            title: lang.dkim_domains_selector,
-            data: 'attributes.dkim_selector',
-            defaultContent: '',
-            class: 'none',
-          },            
-          {
-            title: lang.dkim_key_length,
-            data: 'attributes.key_size',
-            defaultContent: '',
-            class: 'none',
-          }, 
-          {
-            title: 'Tags',
-            data: 'attributes.tags',
-            defaultContent: '',
-            className: 'none'
-          },    
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
-            responsivePriority: 6,
-            defaultContent: ''
-          },
-      ]
-    });
-  }
-  function draw_mailbox_table() {
-    // just recalc width if instance already exists
-    if ($.fn.DataTable.isDataTable('#mailbox_table') ) {
-      $('#mailbox_table').DataTable().columns.adjust().responsive.recalc();
-      return;
-    }
-
-    $('#mailbox_table').DataTable({
-			responsive : true,
-      processing: true,
-      serverSide: false,
-      language: lang_datatables,
-      ajax: {
-        type: "GET",
-        url: "/api/v1/get/mailbox/reduced",
-        dataSrc: function(json){
-          $.each(json, function (i, item) {
-            item.quota = item.quota_used + "/" + item.quota;
-            item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
-            /*
-            if (!item.rl) {
-              item.rl = '∞';
-            } else {
-              item.rl = $.map(item.rl, function(e){
-                return e;
-              }).join('/1');
-              if (item.rl_scope === 'domain') {
-                item.rl = '<i class="bi bi-arrow-return-right"></i> ' + item.rl + ' (via ' + item.domain + ')';
-              }
-            }
-            */
-            item.chkbox = '<input type="checkbox" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
-            if (item.attributes.passwd_update != '0') {
-              var last_pw_change = new Date(item.attributes.passwd_update.replace(/-/g, "/"));
-              item.last_pw_change = last_pw_change.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
-            } else {
-              item.last_pw_change = '-';
-            }
-            item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            if (item.attributes.quarantine_notification === 'never') {
-              item.quarantine_notification = lang.never;
-            } else if (item.attributes.quarantine_notification === 'hourly') {
-              item.quarantine_notification = lang.hourly;
-            } else if (item.attributes.quarantine_notification === 'daily') {
-              item.quarantine_notification = lang.daily;
-            } else if (item.attributes.quarantine_notification === 'weekly') {
-              item.quarantine_notification = lang.weekly;
-            }
-            if (item.attributes.quarantine_category === 'reject') {
-              item.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
-            } else if (item.attributes.quarantine_category === 'add_header') {
-              item.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
-            } else if (item.attributes.quarantine_category === 'all') {
-              item.quarantine_category = lang.q_all;
-            }
-            if (acl_data.login_as === 1) {
-
-              item.action = '<div class="btn-group">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-half btn-success"><i class="bi bi-person-fill"></i> Login</a>';
-              if (ALLOW_ADMIN_EMAIL_LOGIN) {
-                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-half btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
-              }
-              item.action += '</div>';
             }
             else {
-            item.action = '<div class="btn-group">' +
-              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              item.action = '<div class="btn-group">' +
+              '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/domain/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            }
-            item.in_use = '<div class="progress">' +
-              '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
-              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>';
-            item.username = escapeHtml(item.username);
-            
-            if (Array.isArray(item.tags)){
-              var tags = '';
-              for (var i = 0; i < item.tags.length; i++)
-                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
-              item.tags = tags;
-            } else {
-              item.tags = '';
-            }
-          });
-
-          return json;
-        }
-      },
-      columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.domain_quota,
-            data: 'quota',
-            responsivePriority: 8,
-            defaultContent: '',
-            render: function (data, type) {
-              data = data.split("/");
-              var of_q = (data[1] == 0 ? "∞" : humanFileSize(data[1]));
-              return humanFileSize(data[0]) + " / " + of_q;
-            }
-          },
-          {
-            title: lang.last_mail_login,
-            data: 'last_mail_login',
-            defaultContent: '',
-            responsivePriority: 7,
-            render: function (data, type) {
-              res = data.split("/");
-              return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-                '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-                '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
-            }
-          },
-          {
-            title: lang.last_pw_change,
-            data: 'last_pw_change',
-            defaultContent: ''
-          },
-          {
-            title: lang.in_use,
-            data: 'in_use',
-            defaultContent: '',
-            responsivePriority: 9,
-            className: 'dt-data-w100'
-          },
-          {
-            title: lang.fname,
-            data: 'name',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.tls_enforce_in,
-            data: 'tls_enforce_in',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.tls_enforce_out,
-            data: 'tls_enforce_out',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'SMTP',
-            data: 'smtp_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'IMAP',
-            data: 'imap_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'POP3',
-            data: 'pop3_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'SIEVE',
-            data: 'sieve_access',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.quarantine_notification,
-            data: 'quarantine_notification',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.quarantine_category,
-            data: 'quarantine_category',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.msg_num,
-            data: 'messages',
-            defaultContent: '',
-            responsivePriority: 5
-          },
-          {
-            title: lang.created_on,
-            data: 'created',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.last_modified,
-            data: 'modified',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: 'Tags',
-            data: 'tags',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            responsivePriority: 4,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
-            responsivePriority: 6,
-            defaultContent: ''
-          },
-      ]
-    });
-  }
-  function draw_templates_mbox_table() {
-    // just recalc width if instance already exists
-    if ($.fn.DataTable.isDataTable('#templates_mbox_table') ) {
-      $('#templates_mbox_table').DataTable().columns.adjust().responsive.recalc();
-      return;
-    }
-
-    $('#templates_mbox_table').DataTable({
-			responsive : true,
-      processing: true,
-      serverSide: false,
-      language: lang_datatables,
-      order:[[2, 'desc']],
-      ajax: {
-        type: "GET",
-        url: "/api/v1/get/mailbox/template/all",
-        dataSrc: function(json){
-          $.each(json, function (i, item) {
-            item.chkbox = '<input type="checkbox" data-id="mailbox_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
-
-            item.template = escapeHtml(item.template);
-            if (item.attributes.rl_frame === "s"){
-              item.attributes.rl_frame = lang_rl.second;
-            } else if (item.attributes.rl_frame === "m"){
-              item.attributes.rl_frame = lang_rl.minute;
-            } else if (item.attributes.rl_frame === "h"){
-              item.attributes.rl_frame = lang_rl.hour;
-            } else if (item.attributes.rl_frame === "d"){
-              item.attributes.rl_frame = lang_rl.day;
-            }
-            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
-
-            item.attributes.quota = humanFileSize(item.attributes.quota);
-
-            item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
-            item.attributes.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.attributes.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.attributes.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.attributes.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            if (item.attributes.quarantine_notification === 'never') {
-              item.attributes.quarantine_notification = lang.never;
-            } else if (item.attributes.quarantine_notification === 'hourly') {
-              item.attributes.quarantine_notification = lang.hourly;
-            } else if (item.attributes.quarantine_notification === 'daily') {
-              item.attributes.quarantine_notification = lang.daily;
-            } else if (item.attributes.quarantine_notification === 'weekly') {
-              item.attributes.quarantine_notification = lang.weekly;
-            }
-            if (item.attributes.quarantine_category === 'reject') {
-              item.attributes.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
-            } else if (item.attributes.quarantine_category === 'add_header') {
-              item.attributes.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
-            } else if (item.attributes.quarantine_category === 'all') {
-              item.attributes.quarantine_category = lang.q_all;
-            }
-
-            
-            if (item.template.toLowerCase() == "default"){
-                item.action = '<div class="btn-group">' +
-                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                  '</div>';
-            }
-            else {
-                  item.action = '<div class="btn-group">' +
-                  '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                  '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-                  '</div>';              
             }
 
             if (Array.isArray(item.attributes.tags)){
@@ -1180,12 +723,532 @@ jQuery(function($){
           data: 'template',
           responsivePriority: 3,
           defaultContent: ''
-        },              
+        },
+        {
+          title: lang.max_aliases,
+          data: 'attributes.max_num_aliases_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.max_mailboxes,
+          data: 'attributes.max_num_mboxes_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.mailbox_defquota,
+          data: 'attributes.def_quota_for_mbox',
+          defaultContent: '',
+        },
+        {
+          title: lang.max_quota,
+          data: 'attributes.max_quota_for_mbox',
+          defaultContent: '',
+        },
+        {
+          title: lang.domain_quota_total,
+          data: 'attributes.max_quota_for_domain',
+          defaultContent: '',
+        },
+        {
+          title: lang.gal,
+          data: 'attributes.gal',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.backup_mx,
+          data: 'attributes.backupmx',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.relay_all,
+          data: 'attributes.relay_all_recipients',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.relay_unknown,
+          data: 'attributes.relay_unknown_only',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.active,
+          data: 'attributes.active',
+          defaultContent: '',
+          responsivePriority: 4,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: 'rl_frame',
+          data: 'attributes.rl_frame',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: 'rl_value',
+          data: 'attributes.rl_value',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: lang.dkim_domains_selector,
+          data: 'attributes.dkim_selector',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: lang.dkim_key_length,
+          data: 'attributes.key_size',
+          defaultContent: '',
+          class: 'none',
+        },
+        {
+          title: 'Tags',
+          data: 'attributes.tags',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 6,
+          defaultContent: ''
+        },
+      ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-templates-domains', '#templates_domain_table');
+    });
+  }
+  function draw_mailbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#mailbox_table') ) {
+      $('#mailbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    var table = $('#mailbox_table').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      initComplete: function(settings, json){
+        hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
+        filterByDomain(json, 8, table);
+      },
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/mailbox/reduced",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
+            item.quota = {
+              sortBy: item.quota_used,
+              value: item.quota
+            }
+            item.quota.value = (item.quota.value == 0 ? "∞" : humanFileSize(item.quota.value));
+            item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
+
+            item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
+            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
+            /*
+            if (!item.rl) {
+              item.rl = '∞';
+            } else {
+              item.rl = $.map(item.rl, function(e){
+                return e;
+              }).join('/1');
+              if (item.rl_scope === 'domain') {
+                item.rl = '<i class="bi bi-arrow-return-right"></i> ' + item.rl + ' (via ' + item.domain + ')';
+              }
+            }
+            */
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailbox" name="multi_select" value="' + encodeURIComponent(item.username) + '" />';
+            if (item.attributes.passwd_update != '0') {
+              var last_pw_change = new Date(item.attributes.passwd_update.replace(/-/g, "/"));
+              item.last_pw_change = last_pw_change.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+            } else {
+              item.last_pw_change = '-';
+            }
+            item.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"></i>';
+            item.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            if (item.attributes.quarantine_notification === 'never') {
+              item.quarantine_notification = lang.never;
+            } else if (item.attributes.quarantine_notification === 'hourly') {
+              item.quarantine_notification = lang.hourly;
+            } else if (item.attributes.quarantine_notification === 'daily') {
+              item.quarantine_notification = lang.daily;
+            } else if (item.attributes.quarantine_notification === 'weekly') {
+              item.quarantine_notification = lang.weekly;
+            }
+            if (item.attributes.quarantine_category === 'reject') {
+              item.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
+            } else if (item.attributes.quarantine_category === 'add_header') {
+              item.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
+            } else if (item.attributes.quarantine_category === 'all') {
+              item.quarantine_category = lang.q_all;
+            }
+            if (acl_data.login_as === 1) {
+
+              item.action = '<div class="btn-group">' +
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-lg btn-xs-half btn-success"><i class="bi bi-person-fill"></i> Login</a>';
+              if (ALLOW_ADMIN_EMAIL_LOGIN) {
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-lg btn-xs-half btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
+              }
+              item.action += '</div>';
+            }
+            else {
+            item.action = '<div class="btn-group">' +
+              '<a href="/edit/mailbox/' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '</div>';
+            }
+            item.in_use = {
+              sortBy: item.percent_in_use,
+              value: '<div class="progress">' +
+              '<div class="progress-bar-mailbox progress-bar progress-bar-' + item.percent_class + '" role="progressbar" aria-valuenow="' + item.percent_in_use + '" aria-valuemin="0" aria-valuemax="100" ' +
+              'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
+            };
+            item.username = escapeHtml(item.username);
+
+            if (Array.isArray(item.tags)){
+              var tags = '';
+              for (var i = 0; i < item.tags.length; i++)
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+              item.tags = tags;
+            } else {
+              item.tags = '';
+            }
+          });
+
+          return json;
+        }
+      },
+      columns: [
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.domain_quota,
+          data: 'quota.value',
+          responsivePriority: 8,
+          defaultContent: '',
+          orderData: 23
+        },
+        {
+          title: lang.last_mail_login,
+          data: 'last_mail_login',
+          defaultContent: '',
+          responsivePriority: 7,
+          render: function (data, type) {
+            res = data.split("/");
+            return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+              '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
+              '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+          }
+        },
+        {
+          title: lang.last_pw_change,
+          data: 'last_pw_change',
+          defaultContent: ''
+        },
+        {
+          title: lang.in_use,
+          data: 'in_use.value',
+          defaultContent: '',
+          responsivePriority: 9,
+          className: 'dt-data-w100',
+          orderData: 24
+        },
+        {
+          title: lang.fname,
+          data: 'name',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.tls_enforce_in,
+          data: 'tls_enforce_in',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.tls_enforce_out,
+          data: 'tls_enforce_out',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'SMTP',
+          data: 'smtp_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'IMAP',
+          data: 'imap_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'POP3',
+          data: 'pop3_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'SIEVE',
+          data: 'sieve_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.quarantine_notification,
+          data: 'quarantine_notification',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.quarantine_category,
+          data: 'quarantine_category',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.msg_num,
+          data: 'messages',
+          defaultContent: '',
+          responsivePriority: 5
+        },
+        {
+          title: lang.created_on,
+          data: 'created',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.last_modified,
+          data: 'modified',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'Tags',
+          data: 'tags',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          responsivePriority: 4,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 6,
+          defaultContent: ''
+        },
+        {
+          title: "",
+          data: 'quota.sortBy',
+          defaultContent: '',
+          className: "d-none"
+        },
+        {
+          title: "",
+          data: 'in_use.sortBy',
+          defaultContent: '',
+          className: "d-none"
+        },
+      ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
+    });
+  }
+  function draw_templates_mbox_table() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#templates_mbox_table') ) {
+      $('#templates_mbox_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    var table = $('#templates_mbox_table').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
+      },
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/mailbox/template/all",
+        dataSrc: function(json){
+          $.each(json, function (i, item) {
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailbox_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+
+            item.template = escapeHtml(item.template);
+            if (item.attributes.rl_frame === "s"){
+              item.attributes.rl_frame = lang_rl.second;
+            } else if (item.attributes.rl_frame === "m"){
+              item.attributes.rl_frame = lang_rl.minute;
+            } else if (item.attributes.rl_frame === "h"){
+              item.attributes.rl_frame = lang_rl.hour;
+            } else if (item.attributes.rl_frame === "d"){
+              item.attributes.rl_frame = lang_rl.day;
+            }
+            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
+
+            item.attributes.quota = humanFileSize(item.attributes.quota);
+
+            item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_in == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_out == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.pop3_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.imap_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.smtp_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sieve_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_access == 1 ? '1' : '0') + '</span></i>';
+            if (item.attributes.quarantine_notification === 'never') {
+              item.attributes.quarantine_notification = lang.never;
+            } else if (item.attributes.quarantine_notification === 'hourly') {
+              item.attributes.quarantine_notification = lang.hourly;
+            } else if (item.attributes.quarantine_notification === 'daily') {
+              item.attributes.quarantine_notification = lang.daily;
+            } else if (item.attributes.quarantine_notification === 'weekly') {
+              item.attributes.quarantine_notification = lang.weekly;
+            }
+            if (item.attributes.quarantine_category === 'reject') {
+              item.attributes.quarantine_category = '<span class="text-danger">' + lang.q_reject + '</span>';
+            } else if (item.attributes.quarantine_category === 'add_header') {
+              item.attributes.quarantine_category = '<span class="text-warning">' + lang.q_add_header + '</span>';
+            } else if (item.attributes.quarantine_category === 'all') {
+              item.attributes.quarantine_category = lang.q_all;
+            }
+
+            if (item.template.toLowerCase() == "default"){
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '</div>';
+            }
+            else {
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit/template/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-template" data-api-url="delete/mailbox/template" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                '</div>';
+            }
+
+            if (Array.isArray(item.attributes.tags)){
+              var tags = '';
+              for (var i = 0; i < item.attributes.tags.length; i++)
+                tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.attributes.tags[i]) + '</span>';
+              item.attributes.tags = tags;
+            } else {
+              item.attributes.tags = '';
+            }
+          });
+
+          return json;
+        }
+      },
+      columns: [
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: "ID",
+          data: 'id',
+          responsivePriority: 2,
+          defaultContent: ''
+        },
+        {
+          title: lang.template,
+          data: 'template',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
         {
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
-        },             
+        },
         {
           title: lang.tls_enforce_in,
           data: 'attributes.tls_enforce_in',
@@ -1232,7 +1295,7 @@ jQuery(function($){
           data: 'attributes.quarantine_category',
           defaultContent: '',
           className: 'none'
-        },            
+        },
         {
           title: lang.force_pw_update,
           data: 'attributes.force_pw_update',
@@ -1241,42 +1304,46 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
           }
-        },            
+        },
         {
           title: "rl_frame",
           data: 'attributes.rl_frame',
           defaultContent: '',
           class: 'none',
-        },           
+        },
         {
           title: 'rl_value',
           data: 'attributes.rl_value',
           defaultContent: '',
           class: 'none',
-        }, 
+        },
         {
           title: 'Tags',
           data: 'attributes.tags',
           defaultContent: '',
           className: 'none'
-        },           
+        },
         {
           title: lang.active,
           data: 'attributes.active',
           defaultContent: '',
           responsivePriority: 4,
           render: function (data, type) {
-            return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
           }
-        },     
+        },
         {
           title: lang.action,
           data: 'action',
-          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
         },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-templates-mbox', '#templates_mbox_table');
     });
   }
   function draw_resource_table() {
@@ -1286,10 +1353,20 @@ jQuery(function($){
       return;
     }
 
-    $('#resource_table').DataTable({
+    var table = $('#resource_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(settings, json){
+        hideTableExpandCollapseBtn('#tab-resources', '#resource_table');
+        filterByDomain(json, 5, table);
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/resource/all",
@@ -1303,10 +1380,10 @@ jQuery(function($){
               item.multiple_bookings = '<span id="active-script" class="badge fs-6 bg-danger">' + lang.booking_custom_short + ' (' + item.multiple_bookings + ')</span>';
             }
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/resource/' + encodeURIComponent(item.name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-resource" data-api-url="delete/resource" data-item="' + item.name + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="resource" name="multi_select" value="' + encodeURIComponent(item.name) + '" />';
             item.name = escapeHtml(item.name);
             item.description = escapeHtml(item.description);
           });
@@ -1315,94 +1392,105 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.description,
-            data: 'description',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.alias,
-            data: 'name',
-            defaultContent: ''
-          },
-          {
-            title: lang.kind,
-            data: 'kind',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.multiple_bookings,
-            data: 'multiple_bookings',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            responsivePriority: 5,
-            defaultContent: '',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right'
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.description,
+          data: 'description',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.alias,
+          data: 'name',
+          defaultContent: ''
+        },
+        {
+          title: lang.kind,
+          data: 'kind',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.multiple_bookings,
+          data: 'multiple_bookings',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          responsivePriority: 5,
+          defaultContent: '',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right'
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-resources', '#resource_table');
     });
   }
   function draw_bcc_table() {
     $.get("/api/v1/get/bcc-destination-options", function(data){
+      var optgroup = "";
       // Domains
-      var optgroup = "<optgroup label='" + lang.domains + "'>";
-      $.each(data.domains, function(index, domain){
-        optgroup += "<option value='" + domain + "'>" + domain + "</option>"
-      });
-      optgroup += "</optgroup>"
-      $('#bcc-local-dest').append(optgroup);
+      if (data.domains && data.domains.length > 0) {
+        optgroup = "<optgroup label='" + lang.domains + "'>";
+        $.each(data.domains, function(index, domain){
+          optgroup += "<option value='" + domain + "'>" + domain + "</option>";
+        });
+        optgroup += "</optgroup>";
+        $('#bcc-local-dest').append(optgroup);
+      }
       // Alias domains
-      var optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
-      $.each(data.alias_domains, function(index, alias_domain){
-        optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>"
-      });
-      optgroup += "</optgroup>"
-      $('#bcc-local-dest').append(optgroup);
-      // Mailboxes and aliases
-      $.each(data.mailboxes, function(mailbox, aliases){
-        var optgroup = "<optgroup label='" + mailbox + "'>";
-        $.each(aliases, function(index, alias){
-          optgroup += "<option value='" + alias + "'>" + alias + "</option>"
+      if (data.alias_domains && data.alias_domains.length > 0) {
+        optgroup = "<optgroup label='" + lang.domain_aliases + "'>";
+        $.each(data.alias_domains, function(index, alias_domain){
+          optgroup += "<option value='" + alias_domain + "'>" + alias_domain + "</option>";
         });
         optgroup += "</optgroup>"
         $('#bcc-local-dest').append(optgroup);
-      });
-      // Finish
+      }
+      // Mailboxes and aliases
+      if (data.mailboxes && Object.keys(data.mailboxes).length > 0) {
+        $.each(data.mailboxes, function(mailbox, aliases){
+          optgroup = "<optgroup label='" + mailbox + "'>";
+          $.each(aliases, function(index, alias){
+            optgroup += "<option value='" + alias + "'>" + alias + "</option>";
+          });
+          optgroup += "</optgroup>";
+          $('#bcc-local-dest').append(optgroup);
+        });
+      }
+      // Recreate picker
       $('#bcc-local-dest').selectpicker('refresh');
     });
 
@@ -1411,22 +1499,32 @@ jQuery(function($){
       $('#bcc_table').DataTable().columns.adjust().responsive.recalc();
       return;
     }
-    
-    $('#bcc_table').DataTable({
+
+    var table = $('#bcc_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(settings, json){
+        hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
+        filterByDomain(json, 6, table);
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/bcc/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/bcc/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/bcc/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-bcc" data-api-url="delete/bcc" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="bcc" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="bcc" name="multi_select" value="' + item.id + '" />';
             item.local_dest = escapeHtml(item.local_dest);
             item.bcc_dest = escapeHtml(item.bcc_dest);
             if (item.type == 'sender') {
@@ -1440,66 +1538,70 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_type,
-            data: 'type',
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_local_dest,
-            data: 'local_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.bcc_destinations,
-            data: 'bcc_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':(0==data?'<i class="bi bi-x-lg"></i>':2==data&&'&#8212;');
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_type,
+          data: 'type',
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_local_dest,
+          data: 'local_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.bcc_destinations,
+          data: 'bcc_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#collapse-tab-bcc', '#bcc_table');
     });
   }
   function draw_recipient_map_table() {
@@ -1509,81 +1611,94 @@ jQuery(function($){
       return;
     }
 
-    $('#recipient_map_table').DataTable({
+    var table = $('#recipient_map_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/recipient_map/all",
         dataSrc: function(json){
           if (role !== "admin") return null;
-          
+
           $.each(json, function (i, item) {
             item.recipient_map_old = escapeHtml(item.recipient_map_old);
             item.recipient_map_new = escapeHtml(item.recipient_map_new);
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/recipient_map/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-recipient_map" data-api-url="delete/recipient_map" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="recipient_map" name="multi_select" value="' + item.id + '" />';
           });
 
           return json;
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.recipient_map_old,
-            data: 'recipient_map_old',
-            defaultContent: ''
-          },
-          {
-            title: lang.recipient_map_new,
-            data: 'recipient_map_new',
-            defaultContent: '',
-            responsivePriority: 4
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.recipient_map_old,
+          data: 'recipient_map_old',
+          defaultContent: ''
+        },
+        {
+          title: lang.recipient_map_new,
+          data: 'recipient_map_new',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#collapse-tab-bcc-filters', '#recipient_map_table');
     });
   }
   function draw_tls_policy_table() {
@@ -1593,17 +1708,26 @@ jQuery(function($){
       return;
     }
 
-    $('#tls_policy_table').DataTable({
+    var table = $('#tls_policy_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/tls-policy-map/all",
         dataSrc: function(json){
           if (role !== "admin") return null;
-          
+
           $.each(json, function (i, item) {
             item.dest = escapeHtml(item.dest);
             item.policy = '<b>' + escapeHtml(item.policy) + '</b>';
@@ -1613,71 +1737,75 @@ jQuery(function($){
               item.parameters = '<code>' + escapeHtml(item.parameters) + '</code>';
             }
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/tls_policy_map/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-tls-policy-map" data-api-url="delete/tls-policy-map" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tls-policy-map" name="multi_select" value="' + item.id + '" />';
           });
 
           return json;
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.tls_map_dest,
-            data: 'dest',
-            defaultContent: '',
-            responsivePriority: 4
-          },
-          {
-            title: lang.tls_map_policy,
-            data: 'policy',
-            defaultContent: ''
-          },
-          {
-            title: lang.tls_map_parameters,
-            data: 'parameters',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.tls_map_dest,
+          data: 'dest',
+          defaultContent: '',
+          responsivePriority: 4
+        },
+        {
+          title: lang.tls_map_policy,
+          data: 'policy',
+          defaultContent: ''
+        },
+        {
+          title: lang.tls_map_parameters,
+          data: 'parameters',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-tls-policy', '#tls_policy_table');
     });
   }
   function draw_alias_table() {
@@ -1687,21 +1815,31 @@ jQuery(function($){
       return;
     }
 
-    $('#alias_table').DataTable({
+    var table = $('#alias_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(settings, json){
+        hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
+        filterByDomain(json, 5, table);
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias/all",
         dataSrc: function(json){
           $.each(json, function (i, item) {
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/alias/' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
             if (item.public_comment !== null) {
               item.public_comment = escapeHtml(item.public_comment);
@@ -1739,86 +1877,94 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.alias,
-            data: 'address',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.target_address,
-            data: 'goto',
-            defaultContent: ''
-          },
-          {
-            title: lang.domain,
-            data: 'domain',
-            defaultContent: '',
-            responsivePriority: 5,
-          },
-          {
-            title: lang.bcc_destinations,
-            data: 'bcc_dest',
-            defaultContent: ''
-          },
-          {
-            title: lang.sogo_visible,
-            data: 'sogo_visible',
-            defaultContent: '',
-            render: function(data, type){
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.public_comment,
-            data: 'public_comment',
-            defaultContent: ''
-          },
-          {
-            title: lang.private_comment,
-            data: 'private_comment',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            responsivePriority: 6,
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.alias,
+          data: 'address',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.target_address,
+          data: 'goto',
+          defaultContent: ''
+        },
+        {
+          title: lang.domain,
+          data: 'domain',
+          defaultContent: '',
+          responsivePriority: 5,
+        },
+        {
+          title: lang.bcc_destinations,
+          data: 'bcc_dest',
+          defaultContent: ''
+        },
+        {
+          title: lang.sogo_visible,
+          data: 'sogo_visible',
+          defaultContent: '',
+          render: function(data, type){
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.public_comment,
+          data: 'public_comment',
+          defaultContent: ''
+        },
+        {
+          title: lang.private_comment,
+          data: 'private_comment',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          responsivePriority: 6,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
+    });
+
+    table.on( 'draw', function (){
+        $('#alias_table [data-bs-toggle="tooltip"]').tooltip();
     });
   }
   function draw_aliasdomain_table() {
@@ -1828,10 +1974,19 @@ jQuery(function($){
       return;
     }
 
-    $('#aliasdomain_table').DataTable({
+    var table = $('#aliasdomain_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-domain-aliases', '#aliasdomain_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/alias-domain/all",
@@ -1840,11 +1995,11 @@ jQuery(function($){
             item.alias_domain = escapeHtml(item.alias_domain);
 
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-              '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
+              '<a href="/edit/aliasdomain/' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-alias-domain" data-api-url="delete/alias-domain" data-item="' + encodeURIComponent(item.alias_domain) + '" class="btn btn-sm btn-xs-lg btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-lg btn-xs-third btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.alias_domain) + '"><i class="bi bi-globe2"></i> DNS</a></div>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias-domain" name="multi_select" value="' + encodeURIComponent(item.alias_domain) + '" />';
             if(item.parent_is_backupmx == '1') {
               item.target_domain = '<span><a href="/edit/domain/' + item.target_domain + '">' + item.target_domain + '</a> <div class="badge fs-6 bg-warning">' + lang.alias_domain_backupmx + '</div></span>';
             } else {
@@ -1856,51 +2011,55 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: lang.alias,
-            data: 'alias_domain',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.target_domain,
-            data: 'target_domain',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: lang.alias,
+          data: 'alias_domain',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.target_domain,
+          data: 'target_domain',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-domain-aliases', '#aliasdomain_table');
     });
   }
   function draw_sync_job_table() {
@@ -1910,11 +2069,20 @@ jQuery(function($){
       return;
     }
 
-    $('#sync_job_table').DataTable({
+    var table = $('#sync_job_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
@@ -1929,10 +2097,10 @@ jQuery(function($){
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + escapeHtml(item.host1) + ':' + escapeHtml(item.port1);
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             if (item.is_running == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
             } else {
@@ -1948,9 +2116,9 @@ jQuery(function($){
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
             if (lang['syncjob_'+item.exit_status]) {
-	            item.exit_status = lang['syncjob_'+item.exit_status];
+              item.exit_status = lang['syncjob_'+item.exit_status];
             } else if (item.success != '-') {
-	            item.exit_status = lang.syncjob_check_log;
+              item.exit_status = lang.syncjob_check_log;
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
@@ -1959,88 +2127,92 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: lang.owner,
-            data: 'user2',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: 'Server',
-            data: 'server_w_port',
-            defaultContent: ''
-          },
-          {
-            title: lang.last_run,
-            data: 'last_run',
-            defaultContent: ''
-          },
-          {
-            title: lang.syncjob_last_run_result,
-            data: 'exit_status',
-            defaultContent: ''
-          },
-          {
-            title: 'Log',
-            data: 'log',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>';
-            }
-          },
-          {
-            title: lang.status,
-            data: 'is_running',
-            defaultContent: ''
-          },
-          {
-            title: lang.excludes,
-            data: 'exclude',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.mins_interval,
-            data: 'mins_interval',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.owner,
+          data: 'user2',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: 'Server',
+          data: 'server_w_port',
+          defaultContent: ''
+        },
+        {
+          title: lang.last_run,
+          data: 'last_run',
+          defaultContent: ''
+        },
+        {
+          title: lang.syncjob_last_run_result,
+          data: 'exit_status',
+          defaultContent: ''
+        },
+        {
+          title: 'Log',
+          data: 'log',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.status,
+          data: 'is_running',
+          defaultContent: ''
+        },
+        {
+          title: lang.excludes,
+          data: 'exclude',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.mins_interval,
+          data: 'mins_interval',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
+    });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
     });
   }
   function draw_filter_table() {
@@ -2051,11 +2223,20 @@ jQuery(function($){
     }
 
     var table = $('#filter_table').DataTable({
+      responsive: true,
       autoWidth: false,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order:[[2, 'desc']],
+      order: [[2, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-filters', '#filter_table');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/filters/all",
@@ -2070,91 +2251,139 @@ jQuery(function($){
             item.script_data = '<pre class="text-break" style="margin:0px">' + escapeHtml(item.script_data) + '</pre>'
             item.filter_type = '<div class="badge fs-6 bg-secondary">' + item.filter_type.charAt(0).toUpperCase() + item.filter_type.slice(1).toLowerCase() + '</div>'
             item.action = '<div class="btn-group">' +
-              '<a href="/edit/filter/' + item.id + '" class="btn btn-sm btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-              '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+              '<a href="/edit/filter/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#" data-action="delete_selected" data-id="single-filter" data-api-url="delete/filter" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
-            item.chkbox = '<input type="checkbox" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="filter_item" name="multi_select" value="' + item.id + '" />'
           });
 
           return json;
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 1
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: '',
-            responsivePriority: 2
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            responsivePriority: 2,
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            responsivePriority: 3,
-            defaultContent: ''
-          },
-          {
-            title: 'Type',
-            data: 'filter_type',
-            responsivePriority: 4,
-            defaultContent: ''
-          },
-          {
-            title: lang.owner,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: lang.description,
-            data: 'script_desc',
-            defaultContent: ''
-          },
-          {
-            title: 'Script',
-            data: 'script_data',
-            defaultContent: '',
-            className: 'none'
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-body-right',
-            responsivePriority: 5,
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 1
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: '',
+          responsivePriority: 2
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          responsivePriority: 2,
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: 'Type',
+          data: 'filter_type',
+          responsivePriority: 4,
+          defaultContent: ''
+        },
+        {
+          title: lang.owner,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: lang.description,
+          data: 'script_desc',
+          defaultContent: ''
+        },
+        {
+          title: 'Script',
+          data: 'script_data',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
+          responsivePriority: 5,
+          defaultContent: ''
+        },
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-filters', '#filter_table');
+    });
   };
+
+  function hideTableExpandCollapseBtn(tab, table){
+    if ($(table).hasClass('collapsed'))
+      $(tab).find(".table_collapse_option").show();
+    else
+      $(tab).find(".table_collapse_option").hide();
+  }
+  
+  function filterByDomain(json, column, table){
+    var tableId = $(table.table().container()).attr('id');
+    // Create the `select` element
+    var select = $('<select class="btn btn-sm btn-xs-lg btn-light text-start mx-2"><option value="">'+lang.all_domains+'</option></select>')
+      .insertBefore(
+        $('#'+tableId+' .dataTables_filter > label > input')
+      )
+      .on( 'change', function(){
+        table.column(column)
+          .search($(this).val())
+          .draw();
+      });
+
+    // get all domains
+    var domains = [];
+    json.forEach(obj => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if(key === 'domain') {
+          domains.push(value)
+        }
+      });
+    });
+    
+    // get unique domain list
+    domains = domains.filter(function(value, index, array) {
+      return array.indexOf(value) === index;
+    });
+    
+    // add domains to select
+    domains.forEach(function(domain) {
+        select.append($('<option>' + domain + '</option>'));
+    });
+  }
 
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {
-      element_object = document.querySelector(element);
+      let element_object = document.querySelector(element);
       if (element_object === null) return;
 
-      new IntersectionObserver((entries, observer) => {
+      let observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if(entry.intersectionRatio > 0) {
             callback(element_object);
+            observer.unobserve(element_object);
           }
         });
-      }).observe(element_object);
+      })
+
+      observer.observe(element_object);
     });
   }
 

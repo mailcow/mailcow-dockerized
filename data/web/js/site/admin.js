@@ -47,16 +47,16 @@ jQuery(function($){
       $('button[data-id="' + regex_map_id + '"]').attr({"disabled": false});
     }
   });
-	$('.textarea-code').on('keyup', function() {
+  $('.textarea-code').on('keyup', function() {
     $('.submit_rspamd_regex').attr({"disabled": true});
-	});
+  });
   $("#show_rspamd_global_filters").click(function() {
     $.get("inc/ajax/show_rspamd_global_filters.php");
     $("#confirm_show_rspamd_global_filters").hide();
     $("#rspamd_global_filters").removeClass("d-none");
   });
   $("#super_delete").click(function() { return confirm(lang.queue_ays); });
-  
+
   $(".refresh_table").on('click', function(e) {
     e.preventDefault();
     var table_name = $(this).data('table');
@@ -70,8 +70,14 @@ jQuery(function($){
     }
 
     $('#domainadminstable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -81,55 +87,55 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: lang.admin_domains,
-            data: 'selected_domains',
-            defaultContent: '',
-          },
-          {
-            title: "TFA",
-            data: 'tfa_active',
-            defaultContent: '',
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: lang.admin_domains,
+          data: 'selected_domains',
+          defaultContent: '',
+        },
+        {
+          title: "TFA",
+          data: 'tfa_active',
+          defaultContent: '',
             render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
       ],
       initComplete: function(settings, json){
       }
@@ -143,8 +149,14 @@ jQuery(function($){
     }
 
     $('#oauth2clientstable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -154,47 +166,47 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            defaultContent: ''
-          },
-          {
-            title: lang.oauth2_client_id,
-            data: 'client_id',
-            defaultContent: ''
-          },
-          {
-            title: lang.oauth2_client_secret,
-            data: 'client_secret',
-            defaultContent: ''
-          },
-          {
-            title: lang.oauth2_redirect_uri,
-            data: 'redirect_uri',
-            defaultContent: ''
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          defaultContent: ''
+        },
+        {
+          title: lang.oauth2_client_id,
+          data: 'client_id',
+          defaultContent: ''
+        },
+        {
+          title: lang.oauth2_client_secret,
+          data: 'client_secret',
+          defaultContent: ''
+        },
+        {
+          title: lang.oauth2_redirect_uri,
+          data: 'redirect_uri',
+          defaultContent: ''
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
       ]
     });
   }
@@ -206,8 +218,14 @@ jQuery(function($){
     }
 
     $('#adminstable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -217,50 +235,50 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: "TFA",
-            data: 'tfa_active',
-            defaultContent: '',
-            render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            defaultContent: '',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right'
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: "TFA",
+          data: 'tfa_active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          defaultContent: '',
+          className: 'dt-sm-head-hidden dt-text-right'
+        },
       ]
     });
   }
@@ -272,8 +290,14 @@ jQuery(function($){
     }
 
     $('#forwardinghoststable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -283,42 +307,45 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: lang.host,
-            data: 'host',
-            defaultContent: ''
-          },
-          {
-            title: lang.source,
-            data: 'source',
-            defaultContent: ''
-          },
-          {
-            title: lang.spamfilter,
-            data: 'keep_spam',
-            defaultContent: ''
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: lang.host,
+          data: 'host',
+          defaultContent: ''
+        },
+        {
+          title: lang.source,
+          data: 'source',
+          defaultContent: ''
+        },
+        {
+          title: lang.spamfilter,
+          data: 'keep_spam',
+          defaultContent: '',
+          render: function(data, type){
+            return 'yes'==data?'<i class="bi bi-x-lg"><span class="sorting-value">yes</span></i>':'no'==data&&'<i class="bi bi-check-lg"><span class="sorting-value">no</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
       ]
     });
   }
@@ -330,8 +357,14 @@ jQuery(function($){
     }
 
     $('#relayhoststable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -341,56 +374,56 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            defaultContent: ''
-          },
-          {
-            title: lang.host,
-            data: 'hostname',
-            defaultContent: ''
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: lang.in_use_by,
-            data: 'in_use_by',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          defaultContent: ''
+        },
+        {
+          title: lang.host,
+          data: 'hostname',
+          defaultContent: ''
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: lang.in_use_by,
+          data: 'in_use_by',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
       ]
     });
   }
@@ -402,8 +435,14 @@ jQuery(function($){
     }
 
     $('#transportstable').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -413,56 +452,56 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'id',
-            defaultContent: ''
-          },
-          {
-            title: lang.destination,
-            data: 'destination',
-            defaultContent: ''
-          },
-          {
-            title: lang.nexthop,
-            data: 'nexthop',
-            defaultContent: ''
-          },
-          {
-            title: lang.username,
-            data: 'username',
-            defaultContent: ''
-          },
-          {
-            title: lang.active,
-            data: 'active',
-            defaultContent: '',
-            render: function (data, type) {
-              if(data == 1) return '<i class="bi bi-check-lg"></i>';
-              else return '<i class="bi bi-x-lg"></i>'
-            }
-          },
-          {
-            title: lang.action,
-            data: 'action',
-            className: 'text-md-end dt-sm-head-hidden dt-body-right',
-            defaultContent: ''
-          },
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          defaultContent: ''
+        },
+        {
+          title: lang.destination,
+          data: 'destination',
+          defaultContent: ''
+        },
+        {
+          title: lang.nexthop,
+          data: 'nexthop',
+          defaultContent: ''
+        },
+        {
+          title: lang.username,
+          data: 'username',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
       ]
     });
   }
@@ -471,14 +510,14 @@ jQuery(function($){
     if (table == 'relayhoststable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
-          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="sender-dependent" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/relayhost/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-rlyhost" data-api-url="delete/relayhost" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         if (item.used_by_mailboxes == '') { item.in_use_by = item.used_by_domains; }
         else if (item.used_by_domains == '') { item.in_use_by = item.used_by_mailboxes; }
         else { item.in_use_by = item.used_by_mailboxes + '<hr style="margin:5px 0px 5px 0px;">' + item.used_by_domains; }
-        item.chkbox = '<input type="checkbox" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="rlyhosts" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'transportstable') {
       $.each(data, function (i, item) {
@@ -489,49 +528,49 @@ jQuery(function($){
           item.username = '<i style="color:#' + intToRGB(hashCode(item.nexthop)) + ';" class="bi bi-square-fill"></i> ' + item.username;
         }
         item.action = '<div class="btn-group">' +
-          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
-          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#testTransportModal" data-transport-id="' + encodeURI(item.id) + '" data-transport-type="transport-map" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-caret-right-fill"></i> Test</a>' +
+          '<a href="/edit/transport/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-transport" data-api-url="delete/transport" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
-        item.chkbox = '<input type="checkbox" data-id="transports" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="transports" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'queuetable') {
       $.each(data, function (i, item) {
-        item.chkbox = '<input type="checkbox" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
         rcpts = $.map(item.recipients, function(i) {
           return escapeHtml(i);
         });
         item.recipients = rcpts.join('<hr style="margin:1px!important">');
         item.action = '<div class="btn-group">' +
-          '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.queue_show_message + '</a>' +
+          '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-xs-lg btn-secondary">' + lang.queue_show_message + '</a>' +
           '</div>';
       });
     } else if (table == 'forwardinghoststable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="#" data-action="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-fwdhost" data-api-url="delete/fwdhost" data-item="' + encodeURI(item.host) + '" class="btn btn-xs btn-xs-lg btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
-        item.chkbox = '<input type="checkbox" data-id="fwdhosts" name="multi_select" value="' + item.host + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="fwdhosts" name="multi_select" value="' + item.host + '" />';
       });
     } else if (table == 'oauth2clientstable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.scope = "profile";
         item.grant_types = 'refresh_token password authorization_code';
-        item.chkbox = '<input type="checkbox" data-id="oauth2_clients" name="multi_select" value="' + item.id + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="oauth2_clients" name="multi_select" value="' + item.id + '" />';
       });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
         item.selected_domains = escapeHtml(item.selected_domains);
         item.selected_domains = item.selected_domains.toString().replace(/,/g, "<br>");
-        item.chkbox = '<input type="checkbox" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
-          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-          '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
+          '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
           '</div>';
       });
     } else if (table == 'adminstable') {
@@ -541,10 +580,10 @@ jQuery(function($){
         } else {
           item.usr = item.username;
         }
-        item.chkbox = '<input type="checkbox" data-id="admins" name="multi_select" value="' + item.username + '" />';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="admins" name="multi_select" value="' + item.username + '" />';
         item.action = '<div class="btn-group">' +
-          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-          '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '<a href="/edit/admin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-admin" data-api-url="delete/admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
       });
     }
@@ -612,15 +651,15 @@ jQuery(function($){
     $(this).prop("disabled",true);
     $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
     $.ajax({
-        type: 'GET',
-        url: 'inc/ajax/relay_check.php',
-        dataType: 'text',
-        data: $('#test_relayhost_form').serialize(),
-        complete: function (data) {
-          $('#test_relayhost_result').html(data.responseText);
-          $('#test_relayhost').prop("disabled",false);
-          $('#test_relayhost').text(prev);
-        }
+      type: 'GET',
+      url: 'inc/ajax/relay_check.php',
+      dataType: 'text',
+      data: $('#test_relayhost_form').serialize(),
+      complete: function (data) {
+        $('#test_relayhost_result').html(data.responseText);
+        $('#test_relayhost').prop("disabled",false);
+        $('#test_relayhost').text(prev);
+      }
     });
   })
   // Transport
@@ -638,15 +677,15 @@ jQuery(function($){
     $(this).prop("disabled",true);
     $(this).html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div> ');
     $.ajax({
-        type: 'GET',
-        url: 'inc/ajax/transport_check.php',
-        dataType: 'text',
-        data: $('#test_transport_form').serialize(),
-        complete: function (data) {
-          $('#test_transport_result').html(data.responseText);
-          $('#test_transport').prop("disabled",false);
-          $('#test_transport').text(prev);
-        }
+      type: 'GET',
+      url: 'inc/ajax/transport_check.php',
+      dataType: 'text',
+      data: $('#test_transport_form').serialize(),
+      complete: function (data) {
+        $('#test_transport_result').html(data.responseText);
+        $('#test_transport').prop("disabled",false);
+        $('#test_transport').text(prev);
+      }
     });
   })
   // DKIM private key modal
@@ -690,9 +729,9 @@ jQuery(function($){
     $(this).parents('tr').remove();
   });
   $('#add_app_link_row').click(function() {
-      add_table_row($('#app_link_table'), "app_link");
+    add_table_row($('#app_link_table'), "app_link");
   });
   $('#add_f2b_regex_row').click(function() {
-      add_table_row($('#f2b_regex_table'), "f2b_regex");
+    add_table_row($('#f2b_regex_table'), "f2b_regex");
   });
 });

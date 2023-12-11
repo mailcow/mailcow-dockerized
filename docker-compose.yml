@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.17
+      image: mailcow/unbound:1.18
       environment:
         - TZ=${TZ}
       volumes:
@@ -58,10 +58,11 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.60
+      image: mailcow/clamd:1.63
       restart: always
       depends_on:
-        - unbound-mailcow
+        unbound-mailcow:
+          condition: service_healthy
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -76,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.92
+      image: mailcow/rspamd:1.94
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -106,7 +107,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.81
+      image: mailcow/phpfpm:1.85
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -162,6 +163,7 @@ services:
         - DEV_MODE=${DEV_MODE:-n}
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
+        - CLUSTERMODE=${CLUSTERMODE:-}
       restart: always
       networks:
         mailcow-network:
@@ -169,7 +171,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.113
+      image: mailcow/sogo:1.119
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -191,7 +193,7 @@ services:
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:Z
+        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
@@ -216,7 +218,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.21
+      image: mailcow/dovecot:1.26
       depends_on:
         - mysql-mailcow
       dns:
@@ -296,9 +298,12 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.68
+      image: mailcow/postfix:1.72
       depends_on:
-        - mysql-mailcow
+        mysql-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -316,6 +321,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       cap_add:
         - NET_BIND_SERVICE
       ports:
@@ -388,8 +394,11 @@ services:
 
     acme-mailcow:
       depends_on:
-        - nginx-mailcow
-      image: mailcow/acme:1.83
+        nginx-mailcow:
+          condition: service_started
+        unbound-mailcow:
+          condition: service_healthy
+      image: mailcow/acme:1.85
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -425,7 +434,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.50
+      image: mailcow/netfilter:1.53
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -459,6 +468,13 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
+      depends_on:
+        - postfix-mailcow
+        - dovecot-mailcow
+        - mysql-mailcow
+        - acme-mailcow
+        - redis-mailcow
+
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -512,11 +528,10 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.0
+      image: mailcow/dockerapi:2.06
       security_opt:
         - label=disable
       restart: always
-      oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

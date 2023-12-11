@@ -16,9 +16,9 @@
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
-              <li><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
@@ -37,15 +37,15 @@
           </p>
           {% endif %}
         </p>
-        <table id="quarantinetable" class="table table-striped"></table>
+        <table id="quarantinetable" class="table table-striped w-100"></table>
         <div class="mass-actions-quarantine mt-4">
           <div class="btn-group" data-acl="{{ acl.quarantine }}">
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
             <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
-              <li><hr class="dropdown-divider"></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
+              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
+              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
@@ -66,7 +66,7 @@ var acl = '{{ acl_json|raw }}';
 var lang = {{ lang_quarantine|raw }};
 var lang_datatables = {{ lang_datatables|raw }};
 var csrf_token = '{{ csrf_token }}';
-var pagination_size = '{{ pagination_size }}';
+var pagination_size = Math.trunc('{{ pagination_size }}');
 var role = '{{ role }}';
 </script>
 {% endblock %}

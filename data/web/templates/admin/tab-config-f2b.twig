@@ -1,7 +1,7 @@
-<div role="tabpanel" class="tab-pane fade" id="tab-config-f2b" role="tabpanel" aria-labelledby="tab-config-f2b">
+<div class="tab-pane fade" id="tab-config-f2b" role="tabpanel" aria-labelledby="tab-config-f2b">
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
-      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-f2b" data-bs-toggle="collapse" aria-controls="ollapse-tab-config-f2b">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-f2b" data-bs-toggle="collapse" aria-controls="collapse-tab-config-f2b">
         {{ lang.admin.f2b_parameters }}
       </button>
       <span class="d-none d-md-block">{{ lang.admin.f2b_parameters }}</span>
@@ -11,6 +11,14 @@
         <div class="mb-4">
           <label for="f2b_ban_time">{{ lang.admin.f2b_ban_time }}:</label>
           <input type="number" class="form-control" id="f2b_ban_time" name="ban_time" value="{{ f2b_data.ban_time }}" required>
+        </div>
+        <div class="mb-4">
+          <label for="f2b_max_ban_time">{{ lang.admin.f2b_max_ban_time }}:</label>
+          <input type="number" class="form-control" id="f2b_max_ban_time" name="max_ban_time" value="{{ f2b_data.max_ban_time }}" required>
+        </div>
+        <div class="mb-4">
+          <input class="form-check-input" type="checkbox" value="1" name="ban_time_increment" id="f2b_ban_time_increment" {% if f2b_data.ban_time_increment == 1 %}checked{% endif %}>
+          <label class="form-check-label" for="f2b_ban_time_increment">{{ lang.admin.f2b_ban_time_increment }}</label>
         </div>
         <div class="mb-4">
           <label for="f2b_max_attempts">{{ lang.admin.f2b_max_attempts }}:</label>
@@ -33,6 +41,13 @@
             <span class="input-group-text">/</span>
             <input type="number" class="form-control" id="f2b_netban_ipv6" name="netban_ipv6" value="{{ f2b_data.netban_ipv6 }}" required>
           </div>
+        </div>
+        <div class="mb-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="f2b_manage_external" value="1" name="manage_external" {% if f2b_data.manage_external == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="f2b_manage_external">{{ lang.admin.f2b_manage_external }}</label>
+          </div>
+          <p class="text-muted">{{ lang.admin.f2b_manage_external_info }}</p>
         </div>
         <hr>
         <p class="text-muted">{{ lang.admin.f2b_list_info|raw }}</p>
@@ -82,14 +97,25 @@
       {% if not f2b_data.active_bans and not f2b_data.perm_bans %}
         <i>{{ lang.admin.no_active_bans }}</i>
       {% endif %}
+      <form class="form-inline" data-id="f2b_banlist" role="form" method="post">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" aria-label="Banlist url" value="{{ f2b_banlist_url}}" id="banlist_url">
+          {% if is_https %}
+          <button class="btn btn-secondary" type="button" onclick="copyToClipboard('banlist_url')"><i class="bi bi-clipboard"></i></button>
+          {% endif %}
+          <button class="btn btn-secondary" type="button" data-action="edit_selected" data-item="{{ f2b_data.banlist_id }}" data-id="f2b_banlist" data-api-url='edit/fail2ban/banlist' data-api-attr='{}'><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+      </form>
       {% for active_ban in f2b_data.active_bans %}
         <p>
-          <span class="badge fs-5 bg-info" style="padding:4px;font-size:85%;">
+          <span class="badge fs-7 bg-info d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank" style="color:white">
+            <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank">
               {{ active_ban.network }}
             </a>
-            ({{ active_ban.banned_until }}) -
+            ({{ active_ban.banned_until }})
+          </span>
+          <span class="d-none d-sm-inline"> - </span>
             {% if active_ban.queued_for_unban == 0 %}
             <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
             <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
@@ -97,15 +123,14 @@
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}
-          </span>
         </p>
       {% endfor %}
       <hr>
       {% for perm_ban in f2b_data.perm_bans %}
         <p>
-          <span class="badge fs-5 bg-danger" style="padding: 0.1em 0.4em 0.1em;">
+          <span class="badge fs-7 bg-danger d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank" style="color:white">
+            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank">
               {{ perm_ban.network }}
             </a>
           </span>

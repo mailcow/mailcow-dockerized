@@ -1,6 +1,6 @@
 FROM alpine:3.17
 
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 WORKDIR /app
 
@@ -13,9 +13,13 @@ RUN apk add --update --no-cache python3 \
   fastapi \
   uvicorn \
   aiodocker \
-  redis 
+  docker \
+  aioredis 
+RUN mkdir /app/modules
 
 COPY docker-entrypoint.sh /app/
-COPY dockerapi.py /app/
+COPY main.py /app/main.py
+COPY modules/ /app/modules/
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
+CMD exec python main.py

@@ -1,10 +1,13 @@
 FROM debian:bullseye-slim
-LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.19.1
+# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG DOVECOT=2.3.21
+# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG GOSU_VERSION=1.16
 ENV LC_ALL C
-ENV GOSU_VERSION 1.14
+
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN groupadd -g 5000 vmail \
@@ -18,6 +21,7 @@ RUN groupadd -g 5000 vmail \
   && touch /etc/default/locale \
   && apt-get update \
   && apt-get -y --no-install-recommends install \
+  build-essential \
   apt-transport-https \
   ca-certificates \
   cpanminus \
@@ -58,6 +62,7 @@ RUN groupadd -g 5000 vmail \
   libproc-processtable-perl \
   libreadonly-perl \
   libregexp-common-perl \
+  libssl-dev \
   libsys-meminfo-perl \
   libterm-readkey-perl \
   libtest-deep-perl \
@@ -107,6 +112,8 @@ RUN groupadd -g 5000 vmail \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/* /var/tmp/* /root/.cache/
+# imapsync dependencies
+RUN cpan Crypt::OpenSSL::PKCS12
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
