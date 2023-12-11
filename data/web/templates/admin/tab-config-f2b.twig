@@ -42,6 +42,13 @@
             <input type="number" class="form-control" id="f2b_netban_ipv6" name="netban_ipv6" value="{{ f2b_data.netban_ipv6 }}" required>
           </div>
         </div>
+        <div class="mb-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="f2b_manage_external" value="1" name="manage_external" {% if f2b_data.manage_external == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="f2b_manage_external">{{ lang.admin.f2b_manage_external }}</label>
+          </div>
+          <p class="text-muted">{{ lang.admin.f2b_manage_external_info }}</p>
+        </div>
         <hr>
         <p class="text-muted">{{ lang.admin.f2b_list_info|raw }}</p>
         <div class="mb-2">
@@ -90,6 +97,15 @@
       {% if not f2b_data.active_bans and not f2b_data.perm_bans %}
         <i>{{ lang.admin.no_active_bans }}</i>
       {% endif %}
+      <form class="form-inline" data-id="f2b_banlist" role="form" method="post">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" aria-label="Banlist url" value="{{ f2b_banlist_url}}" id="banlist_url">
+          {% if is_https %}
+          <button class="btn btn-secondary" type="button" onclick="copyToClipboard('banlist_url')"><i class="bi bi-clipboard"></i></button>
+          {% endif %}
+          <button class="btn btn-secondary" type="button" data-action="edit_selected" data-item="{{ f2b_data.banlist_id }}" data-id="f2b_banlist" data-api-url='edit/fail2ban/banlist' data-api-attr='{}'><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+      </form>
       {% for active_ban in f2b_data.active_bans %}
         <p>
           <span class="badge fs-7 bg-info d-block d-sm-inline-block">
