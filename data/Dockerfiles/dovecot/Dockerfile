@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.19
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG GOSU_VERSION=1.16
@@ -74,6 +74,7 @@ RUN addgroup -g 5000 vmail \
   perl-package-stash-xs \
   perl-par-packer \
   perl-parse-recdescent \
+  perl-lockfile-simple --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
   libproc \
   perl-readonly \
   perl-regexp-common \
@@ -121,7 +122,7 @@ RUN addgroup -g 5000 vmail \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true
 
-RUN cpan LockFile::Simple
+# RUN cpan LockFile::Simple
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
