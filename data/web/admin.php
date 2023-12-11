@@ -80,6 +80,13 @@ foreach ($RSPAMD_MAPS['regex'] as $rspamd_regex_desc => $rspamd_regex_map) {
   ];
 }
 
+// cors settings
+$cors_settings = cors('get');
+$cors_settings['allowed_origins'] = str_replace(", ", "\n", $cors_settings['allowed_origins']);
+$cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_methods']);
+
+$f2b_data = fail2ban('get');
+
 $template = 'admin.twig';
 $template_data = [
   'tfa_data' => $tfa_data,
@@ -96,15 +103,20 @@ $template_data = [
   'domains' => $domains,
   'all_domains' => $all_domains,
   'mailboxes' => $mailboxes,
-  'f2b_data' => fail2ban('get'),
+  'f2b_data' => $f2b_data,
+  'f2b_banlist_url' => getBaseUrl() . "/api/v1/get/fail2ban/banlist/" . $f2b_data['banlist_id'],
   'q_data' => quarantine('settings'),
   'qn_data' => quota_notification('get'),
   'rsettings_map' => file_get_contents('http://nginx:8081/settings.php'),
   'rsettings' => $rsettings,
   'rspamd_regex_maps' => $rspamd_regex_maps,
   'logo_specs' => customize('get', 'main_logo_specs'),
+  'logo_dark_specs' => customize('get', 'main_logo_dark_specs'),
+  'ip_check' => customize('get', 'ip_check'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
+  'cors_settings' => $cors_settings,
+  'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

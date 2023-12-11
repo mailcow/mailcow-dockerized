@@ -1,5 +1,5 @@
 <?php
-function fail2ban($_action, $_data = null) {
+function fail2ban($_action, $_data = null, $_extra = null) {
   global $redis;
   $_data_log = $_data;
   switch ($_action) {
@@ -239,12 +239,15 @@ function fail2ban($_action, $_data = null) {
       $is_now = fail2ban('get');
       if (!empty($is_now)) {
         $ban_time = intval((isset($_data['ban_time'])) ? $_data['ban_time'] : $is_now['ban_time']);
+        $ban_time_increment = (isset($_data['ban_time_increment']) && $_data['ban_time_increment'] == "1") ? 1 : 0;
         $max_attempts = intval((isset($_data['max_attempts'])) ? $_data['max_attempts'] : $is_now['max_attempts']);
+        $max_ban_time = intval((isset($_data['max_ban_time'])) ? $_data['max_ban_time'] : $is_now['max_ban_time']);
         $retry_window = intval((isset($_data['retry_window'])) ? $_data['retry_window'] : $is_now['retry_window']);
         $netban_ipv4 = intval((isset($_data['netban_ipv4'])) ? $_data['netban_ipv4'] : $is_now['netban_ipv4']);
         $netban_ipv6 = intval((isset($_data['netban_ipv6'])) ? $_data['netban_ipv6'] : $is_now['netban_ipv6']);
         $wl = (isset($_data['whitelist'])) ? $_data['whitelist'] : $is_now['whitelist'];
         $bl = (isset($_data['blacklist'])) ? $_data['blacklist'] : $is_now['blacklist'];
+        $manage_external = (isset($_data['manage_external'])) ? intval($_data['manage_external']) : 0;
       }
       else {
         $_SESSION['return'][] = array(
@@ -256,12 +259,16 @@ function fail2ban($_action, $_data = null) {
       }
       $f2b_options = array();
       $f2b_options['ban_time'] = ($ban_time < 60) ? 60 : $ban_time;
+      $f2b_options['ban_time_increment'] = ($ban_time_increment == 1) ? true : false;
+      $f2b_options['max_ban_time'] = ($max_ban_time < 60) ? 60 : $max_ban_time;
       $f2b_options['netban_ipv4'] = ($netban_ipv4 < 8) ? 8 : $netban_ipv4;
       $f2b_options['netban_ipv6'] = ($netban_ipv6 < 8) ? 8 : $netban_ipv6;
       $f2b_options['netban_ipv4'] = ($netban_ipv4 > 32) ? 32 : $netban_ipv4;
       $f2b_options['netban_ipv6'] = ($netban_ipv6 > 128) ? 128 : $netban_ipv6;
       $f2b_options['max_attempts'] = ($max_attempts < 1) ? 1 : $max_attempts;
       $f2b_options['retry_window'] = ($retry_window < 1) ? 1 : $retry_window;
+      $f2b_options['banlist_id'] = $is_now['banlist_id'];
+      $f2b_options['manage_external'] = ($manage_external > 0) ? 1 : 0;
       try {
         $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
         $redis->Del('F2B_WHITELIST');
@@ -324,6 +331,72 @@ function fail2ban($_action, $_data = null) {
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'f2b_modified'
       );
+    break;
+    case 'banlist':
+      try {
+        $f2b_options = json_decode($redis->Get('F2B_OPTIONS'), true);
+      } 
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
+          'msg' => array('redis_error', $e)
+        );
+        http_response_code(500);
+        return false;
+      }
+      if (is_array($_extra)) {
+        $_extra = $_extra[0];
+      }
+      if ($_extra != $f2b_options['banlist_id']){
+        http_response_code(404);
+        return false;
+      }
+
+      switch ($_data) {
+        case 'get':
+          try {
+            $bl = $redis->hKeys('F2B_BLACKLIST');
+            $active_bans = $redis->hKeys('F2B_ACTIVE_BANS');
+          } 
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
+              'msg' => array('redis_error', $e)
+            );
+            http_response_code(500);
+            return false;
+          }
+          $banlist = implode("\n", array_merge($bl, $active_bans));
+          return $banlist;
+        break;
+        case 'refresh':
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            return false;
+          }
+
+          $f2b_options['banlist_id'] = uuid4();
+          try {
+            $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
+          } 
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
+            'msg' => 'f2b_banlist_refreshed'
+          );
+          return true;
+        break;
+      }
     break;
   }
 }

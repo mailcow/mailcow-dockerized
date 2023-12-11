@@ -1,13 +1,3 @@
-const LOCALE = undefined;
-const DATETIME_FORMAT = {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit"
-};
-
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -34,7 +24,7 @@ $(document).ready(function() {
   });
 
   // set update loop container list
-  containersToUpdate = {}
+  containersToUpdate = {};
   // set default ChartJs Font Color
   Chart.defaults.color = '#999';
   // create host cpu and mem charts
@@ -43,15 +33,47 @@ $(document).ready(function() {
   if (mailcow_info.branch === "master"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
-  $("#maiclow_version").click(function(){
-    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" ||
-       mailcow_info.branch !== "master")
+  $("#mailcow_version").click(function(){
+    if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin" || mailcow_info.branch !== "master")
       return;
 
     showVersionModal("Version " + mailcow_info.version_tag, mailcow_info.version_tag);
   })
   // get public ips
-  get_public_ips();
+  $("#host_show_ip").click(function(){
+    $("#host_show_ip").find(".text").addClass("d-none");
+    $("#host_show_ip").find(".spinner-border").removeClass("d-none");
+
+    window.fetch("/api/v1/get/status/host/ip", { method:'GET', cache:'no-cache' }).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(data);
+
+      // display host ips
+      if (data.ipv4)
+        $("#host_ipv4").text(data.ipv4);
+      if (data.ipv6)
+        $("#host_ipv6").text(data.ipv6);
+
+      $("#host_show_ip").addClass("d-none");
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+      $("#host_ipv4").removeClass("d-none");
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").removeClass("text-danger");
+      $("#host_ipv4").addClass("d-block");
+      $("#host_ipv6").addClass("d-block");
+    }).catch(function(error){
+      console.log(error);
+
+      $("#host_ipv6").removeClass("d-none");
+      $("#host_ipv6").addClass("d-block");
+      $("#host_ipv6").addClass("text-danger");
+      $("#host_ipv6").text(lang_debug.error_show_ip);
+      $("#host_show_ip").find(".text").removeClass("d-none");
+      $("#host_show_ip").find(".spinner-border").addClass("d-none");
+    });
+  });
   update_container_stats();
 });
 jQuery(function($){
@@ -85,11 +107,20 @@ jQuery(function($){
       return;
     }
 
-    $('#autodiscover_log').DataTable({
+    var table = $('#autodiscover_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/autodiscover/100",
@@ -134,6 +165,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-autodiscover-logs', '#autodiscover_log');
+    });
   }
   function draw_postfix_logs() {
     // just recalc width if instance already exists
@@ -142,11 +177,20 @@ jQuery(function($){
       return;
     }
 
-    $('#postfix_log').DataTable({
+    var table = $('#postfix_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/postfix",
@@ -176,6 +220,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-postfix-logs', '#postfix_log');
+    });
   }
   function draw_watchdog_logs() {
     // just recalc width if instance already exists
@@ -184,11 +232,20 @@ jQuery(function($){
       return;
     }
 
-    $('#watchdog_log').DataTable({
+    var table = $('#watchdog_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/watchdog",
@@ -222,6 +279,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-watchdog-logs', '#watchdog_log');
+    });
   }
   function draw_api_logs() {
     // just recalc width if instance already exists
@@ -230,11 +291,20 @@ jQuery(function($){
       return;
     }
 
-    $('#api_log').DataTable({
+    var table =  $('#api_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/api",
@@ -275,6 +345,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-api-logs', '#api_log');
+    });
   }
   function draw_rl_logs() {
     // just recalc width if instance already exists
@@ -283,11 +357,20 @@ jQuery(function($){
       return;
     }
 
-    $('#rl_log').DataTable({
+    var table = $('#rl_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ratelimited",
@@ -366,6 +449,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rl-logs', '#rl_log');
+    });
   }
   function draw_ui_logs() {
     // just recalc width if instance already exists
@@ -374,11 +461,20 @@ jQuery(function($){
       return;
     }
 
-    $('#ui_logs').DataTable({
+    var table = $('#ui_logs').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/ui",
@@ -437,6 +533,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-ui-logs', '#ui_log');
+    });
   }
   function draw_sasl_logs() {
     // just recalc width if instance already exists
@@ -445,11 +545,20 @@ jQuery(function($){
       return;
     }
 
-    $('#sasl_logs').DataTable({
+    var table = $('#sasl_logs').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sasl",
@@ -485,6 +594,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sasl-logs', '#sasl_logs');
+    });
   }
   function draw_acme_logs() {
     // just recalc width if instance already exists
@@ -493,11 +606,20 @@ jQuery(function($){
       return;
     }
 
-    $('#acme_log').DataTable({
+    var table = $('#acme_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/acme",
@@ -522,6 +644,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-acme-logs', '#acme_log');
+    });
   }
   function draw_netfilter_logs() {
     // just recalc width if instance already exists
@@ -530,11 +656,20 @@ jQuery(function($){
       return;
     }
 
-    $('#netfilter_log').DataTable({
+    var table = $('#netfilter_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/netfilter",
@@ -564,6 +699,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-netfilter-logs', '#netfilter_log');
+    });
   }
   function draw_sogo_logs() {
     // just recalc width if instance already exists
@@ -572,11 +711,20 @@ jQuery(function($){
       return;
     }
 
-    $('#sogo_log').DataTable({
+    var table = $('#sogo_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/sogo",
@@ -606,6 +754,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-sogo-logs', '#sogo_log');
+    });
   }
   function draw_dovecot_logs() {
     // just recalc width if instance already exists
@@ -614,11 +766,20 @@ jQuery(function($){
       return;
     }
 
-    $('#dovecot_log').DataTable({
+    var table = $('#dovecot_log').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/dovecot",
@@ -648,19 +809,20 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-dovecot-logs', '#dovecot_log');
+    });
   }
   function rspamd_pie_graph() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
       async: true,
       success: function(data){
-        console.log(data);
-
         var total = 0;
         $(data).map(function(){total += this[1];});
         var labels = $.makeArray($(data).map(function(){return this[0] + ' ' + Math.round(this[1]/total * 100) + '%';}));
         var values = $.makeArray($(data).map(function(){return this[1];}));
-        console.log(values);
 
         var graphdata = {
           labels: labels,
@@ -717,11 +879,20 @@ jQuery(function($){
       return;
     }
 
-    $('#rspamd_history').DataTable({
+    var table = $('#rspamd_history').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       order: [[0, 'desc']],
+      initComplete: function(){
+        hideTableExpandCollapseBtn('#tab-rspamd-logs', '#rspamd_history');
+      },
       ajax: {
         type: "GET",
         url: "/api/v1/get/logs/rspamd-history",
@@ -767,12 +938,15 @@ jQuery(function($){
           title: 'Score',
           data: 'score',
           defaultContent: '',
+          class: 'text-nowrap',
           createdCell: function(td, cellData) {
             $(td).attr({
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -795,7 +969,9 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-            $(td).html(cellData.value);
+          },    
+          render: function (data) {
+            return data.value;
           }
         },
         {
@@ -810,6 +986,10 @@ jQuery(function($){
         }
       ]
     });
+
+    table.on('responsive-resize', function (e, datatable, columns){
+      hideTableExpandCollapseBtn('#tab-rspamd-history', '#rspamd_history');
+    });
   }
   function process_table_data(data, table) {
     if (table == 'rspamd_history') {
@@ -821,31 +1001,31 @@ jQuery(function($){
         item.rcpt = escapeHtml(item.rcpt_smtp.join(", "));
       }
       item.symbols = Object.keys(item.symbols).sort(function (a, b) {
-        if (item.symbols[a].score === 0) return 1
-        if (item.symbols[b].score === 0) return -1
+        if (item.symbols[a].score === 0) return 1;
+        if (item.symbols[b].score === 0) return -1;
         if (item.symbols[b].score < 0 && item.symbols[a].score < 0) {
-          return item.symbols[a].score - item.symbols[b].score
+          return item.symbols[a].score - item.symbols[b].score;
         }
         if (item.symbols[b].score > 0 && item.symbols[a].score > 0) {
-          return item.symbols[b].score - item.symbols[a].score
+          return item.symbols[b].score - item.symbols[a].score;
         }
-        return item.symbols[b].score - item.symbols[a].score
+        return item.symbols[b].score - item.symbols[a].score;
       }).map(function(key) {
         var sym = item.symbols[key];
         if (sym.score < 0) {
-          sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span class="text-success"><b>' + sym.score + '</b></span>)';
         }
         else if (sym.score === 0) {
-          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span><b>' + sym.score + '</b></span>)';
         }
         else {
-          sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)'
+          sym.score_formatted = '(<span class="text-danger"><b>' + sym.score + '</b></span>)';
         }
         var str = '<strong>' + key + '</strong> ' + sym.score_formatted;
         if (sym.options) {
           str += ' [' + escapeHtml(sym.options.join(", ")) + "]";
         }
-        return str
+        return str;
       }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
       var scan_time = item.time_real.toFixed(3);
@@ -978,14 +1158,14 @@ jQuery(function($){
         }
       });
     }
-    return data
+    return data;
   };
   $('.add_log_lines').on('click', function (e) {
     e.preventDefault();
-    var log_table= $(this).data("table")
-    var new_nrows = $(this).data("nrows")
-    var post_process = $(this).data("post-process")
-    var log_url = $(this).data("log-url")
+    var log_table= $(this).data("table");
+    var new_nrows = $(this).data("nrows");
+    var post_process = $(this).data("post-process");
+    var log_url = $(this).data("log-url");
     if (log_table === undefined || new_nrows === undefined || post_process === undefined || log_url === undefined) {
       console.log("no data-table or data-nrows or log_url or data-post-process attr found");
       return;
@@ -993,7 +1173,7 @@ jQuery(function($){
 
     if (table = $('#' + log_table).DataTable()) {
       var heading = $('#' + log_table).closest('.card').find('.card-header');
-      var load_rows = (table.page.len() + 1) + '-' + (table.page.len() + new_nrows)
+      var load_rows = (table.data().count() + 1) + '-' + (table.data().count() + new_nrows)
 
       $.get('/api/v1/get/logs/' + log_url + '/' + load_rows).then(function(data){
         if (data.length === undefined) { mailcow_alert_box(lang.no_new_rows, "info"); return; }
@@ -1005,6 +1185,12 @@ jQuery(function($){
       });
     }
   })
+  function hideTableExpandCollapseBtn(tab, table){
+    if ($(table).hasClass('collapsed'))
+      $(tab).find(".table_collapse_option").show();
+    else
+      $(tab).find(".table_collapse_option").hide();
+  }
 
   // detect element visibility changes
   function onVisible(element, callback) {
@@ -1035,7 +1221,6 @@ jQuery(function($){
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
-
 
 
   // start polling host stats if tab is active
@@ -1109,6 +1294,12 @@ function update_stats(timeout=5){
       $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
       $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
       $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+      if (data.architecture == "aarch64"){
+        $("#host_architecture").html('<span data-bs-toggle="tooltip" data-bs-placement="top" title="' + lang_debug.wip +'">' + data.architecture + ' ⚠️</span>');
+      }
+      else {
+        $("#host_architecture").html(data.architecture);
+      }
 
       // update cpu and mem chart
       var cpu_chart = Chart.getChart("host_cpu_chart");
@@ -1120,9 +1311,9 @@ function update_stats(timeout=5){
       if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
 
       cpu_chart.data.datasets[0].data.push(data.cpu.usage);
-      if (cpu_chart.data.datasets[0].data.length > 30)  cpu_chart.data.datasets[0].data.shift();
+      if (cpu_chart.data.datasets[0].data.length > 30) cpu_chart.data.datasets[0].data.shift();
       mem_chart.data.datasets[0].data.push(data.memory.usage);
-      if (mem_chart.data.datasets[0].data.length > 30)  mem_chart.data.datasets[0].data.shift();
+      if (mem_chart.data.datasets[0].data.length > 30) mem_chart.data.datasets[0].data.shift();
 
       cpu_chart.update();
       mem_chart.update();
@@ -1224,20 +1415,6 @@ function update_container_stats(timeout=5){
   // run again in n seconds
   setTimeout(update_container_stats, timeout * 1000);
 }
-// get public ips
-function get_public_ips(){
-  window.fetch("/api/v1/get/status/host/ip", {method:'GET',cache:'no-cache'}).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    console.log(data);
-
-    // display host ips
-    if (data.ipv4)
-      $("#host_ipv4").text(data.ipv4);
-    if (data.ipv6)
-      $("#host_ipv6").text(data.ipv6);
-  });
-}
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){
   seconds = Number(seconds);
@@ -1295,23 +1472,23 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
   };
   var optionsNet = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
-             return formatBytes(i);
+            return formatBytes(i);
           }
         }
       },
       xAxis: {
         grid: {
-            display: false
+          display: false
         }
       }
     }
@@ -1359,13 +1536,13 @@ function createHostCpuAndMemChart(){
   };
   var optionsCpu = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
@@ -1375,7 +1552,7 @@ function createHostCpuAndMemChart(){
       },
       xAxis: {
         grid: {
-            display: false
+          display: false
         }
       }
     }
@@ -1397,13 +1574,13 @@ function createHostCpuAndMemChart(){
   };
   var optionsMem = {
     interaction: {
-        mode: 'index'
+      mode: 'index'
     },
     scales: {
       yAxis: {
         min: 0,
         grid: {
-            display: false
+          display: false
         },
         ticks: {
           callback: function(i, index, ticks) {
@@ -1413,7 +1590,7 @@ function createHostCpuAndMemChart(){
       },
       xAxis: {
         grid: {
-            display: false
+          display: false
         }
       }
     }
@@ -1507,24 +1684,24 @@ function showVersionModal(title, version){
 function parseGithubMarkdownLinks(inputText) {
   var replacedText, replacePattern1;
 
-  replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+  replacePattern1 = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])(?![^<]*>)/gim;
   replacedText = inputText.replace(replacePattern1, (matched, index, original, input_string) => {
-      if (matched.includes('github.com')){
-        // return short link if it's github link
-        last_uri_path = matched.split('/');
-        last_uri_path = last_uri_path[last_uri_path.length - 1];
+    if (matched.includes('github.com')){
+      // return short link if it's github link
+      last_uri_path = matched.split('/');
+      last_uri_path = last_uri_path[last_uri_path.length - 1];
 
-        // adjust Full Changelog link to match last git version and new git version, if link is a compare link
-        if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
-          matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
-          last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
-        }
+      // adjust Full Changelog link to match last git version and new git version, if link is a compare link
+      if (matched.includes('/compare/') && mailcow_info.last_version_tag !== ''){
+        matched = matched.replace(last_uri_path,  mailcow_info.last_version_tag + '...' + mailcow_info.version_tag);
+        last_uri_path = mailcow_info.last_version_tag + '...' + mailcow_info.version_tag;
+      }
 
-        return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
-      };
+      return '<a href="' + matched + '" target="_blank">' + last_uri_path + '</a><br>';
+    };
 
-      // if it's not a github link, return complete link
-      return '<a href="' + matched + '" target="_blank">' + matched + '</a>';
+    // if it's not a github link, return complete link
+    return '<a href="' + matched + '" target="_blank">' + matched + '</a>';
   });
 
   return replacedText;

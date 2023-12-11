@@ -1,3 +1,13 @@
+const LOCALE = undefined;
+const DATETIME_FORMAT = {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+};
+
 $(document).ready(function() {
   // mailcow alert box generator
   window.mailcow_alert_box = function(message, type) {
@@ -12,14 +22,22 @@ $(document).ready(function() {
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
 
-  $(".generate_password").click(function( event ) {
+  $(".generate_password").click(async function( event ) {   
+    try { 
+      var password_policy = await window.fetch("/api/v1/get/passwordpolicy", { method:'GET', cache:'no-cache' });
+      var password_policy = await password_policy.json();
+      random_passwd_length = password_policy.length;
+    } catch(err) {
+      var random_passwd_length = 8;
+    }
+
     event.preventDefault();
     $('[data-hibp]').trigger('input');
     if (typeof($(this).closest("form").data('pwgen-length')) == "number") {
       var random_passwd = GPW.pronounceable($(this).closest("form").data('pwgen-length'))
     }
     else {
-      var random_passwd = GPW.pronounceable(8)
+      var random_passwd = GPW.pronounceable(random_passwd_length)
     }
     $(this).closest("form").find('[data-pwgen-field]').attr('type', 'text');
     $(this).closest("form").find('[data-pwgen-field]').val(random_passwd);
@@ -103,10 +121,21 @@ $(document).ready(function() {
         if (lastTab) {
           $('[data-bs-target="#' + lastTab + '"]').click();
           var tab = $('[id^="' + lastTab + '"]');
-          $(tab).find('.card-body.collapse').collapse('show');
+          $(tab).find('.card-body.collapse:first').collapse('show');
         }
       });
   })();
+  
+  // responsive tabs, scroll to opened tab
+  $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
+	  var target = $(e.target);
+	  if($(window).width() <= 767) {
+		  var offset = target.offset().top - 60;
+		  $("html, body").stop().animate({
+		    scrollTop: offset
+		  }, 100);
+	  }
+  });
 
   // IE fix to hide scrollbars when table body is empty
   $('tbody').filter(function (index) {
@@ -278,6 +307,8 @@ $(document).ready(function() {
   $.extend($.fn.dataTable.defaults, {
     responsive: true
   });
+  // disable default datatable click listener
+  $(document).off('click', 'tbody>tr');
 
   // tag boxes
   $('.tag-box .tag-add').click(function(){
@@ -294,19 +325,28 @@ $(document).ready(function() {
   $('#dark-mode-toggle').click(toggleDarkMode);
   if ($('#dark-mode-theme').length) {
     $('#dark-mode-toggle').prop('checked', true);
+    $('.main-logo').addClass('d-none');
+    $('.main-logo-dark').removeClass('d-none');
     if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
     if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
+  } else {
+    $('.main-logo').removeClass('d-none');
+    $('.main-logo-dark').addClass('d-none');
   }
   function toggleDarkMode(){
     if($('#dark-mode-theme').length){
       $('#dark-mode-theme').remove();
       $('#dark-mode-toggle').prop('checked', false);
+      $('.main-logo').removeClass('d-none');
+      $('.main-logo-dark').addClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
       localStorage.setItem('theme', 'light');
     }else{
       $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
       $('#dark-mode-toggle').prop('checked', true);
+      $('.main-logo').addClass('d-none');
+      $('.main-logo-dark').removeClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
       localStorage.setItem('theme', 'dark');
@@ -350,4 +390,12 @@ function addTag(tagAddElem, tag = null){
   value_tags.push(tag);
   $(tagValuesElem).val(JSON.stringify(value_tags));
   $(tagInputElem).val('');
+}
+function copyToClipboard(id) {
+  var copyText = document.getElementById(id);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  // only works with https connections
+  navigator.clipboard.writeText(copyText.value);
+  mailcow_alert_box(lang.copy_to_clipboard, "success");
 }

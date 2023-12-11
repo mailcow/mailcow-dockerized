@@ -79,6 +79,9 @@ EOF
   redis-cli -h redis-mailcow SLAVEOF NO ONE
 fi
 
+# Provide additional lua modules
+ln -s /usr/lib/$(uname -m)-linux-gnu/liblua5.1-cjson.so.0.0.0 /usr/lib/rspamd/cjson.so
+
 chown -R _rspamd:_rspamd /var/lib/rspamd \
   /etc/rspamd/local.d \
   /etc/rspamd/override.d \

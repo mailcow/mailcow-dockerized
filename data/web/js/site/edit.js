@@ -2,7 +2,7 @@ $(document).ready(function() {
   $(".arrow-toggle").on('click', function(e) { e.preventDefault(); $(this).find('.arrow').toggleClass("animation"); });
   $("#pushover_delete").click(function() { return confirm(lang.delete_ays); });
   $(".goto_checkbox").click(function( event ) {
-   $("form[data-id='editalias'] .goto_checkbox").not(this).prop('checked', false);
+    $("form[data-id='editalias'] .goto_checkbox").not(this).prop('checked', false);
     if ($("form[data-id='editalias'] .goto_checkbox:checked").length > 0) {
       $('#textarea_alias_goto').prop('disabled', true);
     }
@@ -64,7 +64,7 @@ $(document).ready(function() {
     console.log($(tagsEl).val())
     var tags = JSON.parse($(tagsEl).val());
     $(tagsEl).val("");
-    
+
     for (var i = 0; i < tags.length; i++)
       addTag($('#tags'), tags[i]);
   }
@@ -78,8 +78,14 @@ jQuery(function($){
   }
   function draw_wl_policy_domain_table() {
     $('#wl_policy_domain_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -87,10 +93,10 @@ jQuery(function($){
         dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled title="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
 
@@ -98,43 +104,49 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'prefid',
-            defaultContent: ''
-          },
-          {
-            title: lang_user.spamfilter_table_rule,
-            data: 'value',
-            defaultContent: ''
-          },
-          {
-            title: 'Scope',
-            data: 'object',
-            defaultContent: ''
-          }
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'prefid',
+          defaultContent: ''
+        },
+        {
+          title: lang_user.spamfilter_table_rule,
+          data: 'value',
+          defaultContent: ''
+        },
+        {
+          title: 'Scope',
+          data: 'object',
+          defaultContent: ''
+        }
       ]
     });
   }
   function draw_bl_policy_domain_table() {
     $('#bl_policy_domain_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -142,10 +154,10 @@ jQuery(function($){
         dataSrc: function(data){
           $.each(data, function (i, item) {
             if (!validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_domain" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled tooltip="' + lang_user.spamfilter_table_domain_policy + '" />';
             }
           });
 
@@ -153,41 +165,58 @@ jQuery(function($){
         }
       },
       columns: [
-          {
-            // placeholder, so checkbox will not block child row toggle
-            title: '',
-            data: null,
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: '',
-            data: 'chkbox',
-            searchable: false,
-            orderable: false,
-            defaultContent: ''
-          },
-          {
-            title: 'ID',
-            data: 'prefid',
-            defaultContent: ''
-          },
-          {
-            title: lang_user.spamfilter_table_rule,
-            data: 'value',
-            defaultContent: ''
-          },
-          {
-            title: 'Scope',
-            data: 'object',
-            defaultContent: ''
-          }
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'prefid',
+          defaultContent: ''
+        },
+        {
+          title: lang_user.spamfilter_table_rule,
+          data: 'value',
+          defaultContent: ''
+        },
+        {
+          title: 'Scope',
+          data: 'object',
+          defaultContent: ''
+        }
       ]
     });
   }
 
-  
+  function add_table_row(table_id, type) {
+    var row = $('<tr />');
+    if (type == "mbox_attr") {
+      cols = '<td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="attribute" required></td>';
+      cols += '<td><input class="input-sm input-xs-lg form-control" data-id="mbox_attr" type="text" name="value" required></td>';
+      cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang_admin.remove_row + '</a></td>';
+    }
+    row.append(cols);
+    table_id.append(row);
+  }
+  $('#mbox_attr_table').on('click', 'tr a', function (e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+  $('#add_mbox_attr_row').click(function() {
+    add_table_row($('#mbox_attr_table'), "mbox_attr");
+  });
+
   // detect element visibility changes
   function onVisible(element, callback) {
     $(document).ready(function() {

@@ -127,6 +127,20 @@ jQuery(function($){
     }
   }
 
+
+  function createSortableDate(td, cellData, date_string = false) {
+    if (date_string)
+      var date = new Date(cellData);
+    else
+      var date = new Date(cellData ? cellData * 1000 : 0);
+
+    var timestamp = date.getTime();
+    $(td).attr({
+      "data-order": timestamp,
+      "data-sort": timestamp
+    });
+    $(td).html(date.toLocaleDateString(LOCALE, DATETIME_FORMAT));
+  }
   function draw_tla_table() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#tla_table') ) {
@@ -135,9 +149,16 @@ jQuery(function($){
     }
 
     $('#tla_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order: [[4, 'desc']],
       ajax: {
         type: "GET",
         url: "/api/v1/get/time_limited_aliases",
@@ -148,11 +169,11 @@ jQuery(function($){
               item.action = '<div class="btn-group">' +
                 '<a href="#" data-action="delete_selected" data-id="single-tla" data-api-url="delete/time_limited_alias" data-item="' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
               item.address = escapeHtml(item.address);
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
               item.action = '<span>-</span>';
             }
           });
@@ -160,7 +181,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -185,24 +206,22 @@ jQuery(function($){
           title: lang.alias_valid_until,
           data: 'validity',
           defaultContent: '',
-          render: function (data, type) {
-            var date = new Date(data ? data * 1000 : 0); 
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
           }
         },
         {
           title: lang.created_on,
           data: 'created',
           defaultContent: '',
-          render: function (data, type) {
-            var date = new Date(data.replace(/-/g, "/"));
-            return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData, true)
           }
         },
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]
@@ -216,8 +235,14 @@ jQuery(function($){
     }
 
     $('#sync_job_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -238,11 +263,11 @@ jQuery(function($){
                 '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
             }
             else {
               item.action = '<span>-</span>';
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
             if (item.is_running == 1) {
               item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
@@ -259,9 +284,9 @@ jQuery(function($){
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
             if (lang['syncjob_'+item.exit_status]) {
-	            item.exit_status = lang['syncjob_'+item.exit_status];
+              item.exit_status = lang['syncjob_'+item.exit_status];
             } else if (item.success != '-') {
-	            item.exit_status = lang.syncjob_check_log;
+              item.exit_status = lang.syncjob_check_log;
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
@@ -269,7 +294,7 @@ jQuery(function($){
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -351,7 +376,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: '',
           responsivePriority: 5
         }
@@ -366,8 +391,14 @@ jQuery(function($){
     }
 
     $('#app_passwd_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -389,18 +420,18 @@ jQuery(function($){
                 '<a href="/edit/app-passwd/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-apppasswd" data-api-url="delete/app-passwd" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
-              item.chkbox = '<input type="checkbox" data-id="apppasswd" name="multi_select" value="' + item.id + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="apppasswd" name="multi_select" value="' + item.id + '" />';
             }
             else {
               item.action = '<span>-</span>';
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -442,7 +473,7 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
-          className: 'text-md-end dt-sm-head-hidden dt-body-right',
+          className: 'dt-sm-head-hidden dt-text-right',
           defaultContent: ''
         }
       ]
@@ -456,8 +487,14 @@ jQuery(function($){
     }
 
     $('#wl_policy_mailbox_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -466,20 +503,20 @@ jQuery(function($){
           console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled title="' + lang.spamfilter_table_domain_policy + '" />';
             }
             if (acl_data.spam_policy === 0) {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',
@@ -521,8 +558,14 @@ jQuery(function($){
     }
 
     $('#bl_policy_mailbox_table').DataTable({
+      responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -531,20 +574,20 @@ jQuery(function($){
           console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
-              item.chkbox = '<input type="checkbox" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';
             }
             else {
-              item.chkbox = '<input type="checkbox" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled tooltip="' + lang.spamfilter_table_domain_policy + '" />';
             }
             if (acl_data.spam_policy === 0) {
-              item.chkbox = '<input type="checkbox" disabled />';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
           });
 
           return data;
         }
       },
-      columns: [          
+      columns: [
         {
           // placeholder, so checkbox will not block child row toggle
           title: '',

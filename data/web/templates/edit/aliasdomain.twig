@@ -2,7 +2,7 @@
 
 {% block inner_content %}
 {% if result %}
-<h4>{{ lang.edit.edit_alias_domain }}</h4>
+<h4 class="mb-4">{{ lang.edit.edit_alias_domain }}</h4>
 <form class="form-horizontal" data-id="editaliasdomain" role="form" method="post">
   <input type="hidden" value="0" name="active">
   <div class="row mb-2">
@@ -17,8 +17,8 @@
   </div>
   <div class="row mb-2">
     <div class="offset-sm-2 col-sm-10">
-      <div class="checkbox">
-        <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
       </div>
     </div>
   </div>
@@ -31,17 +31,19 @@
 <hr>
 <form data-id="domratelimit" class="form-inline well" method="post">
   <label class="control-label mb-2">{{ lang.acl.ratelimit }}</label>
-  <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-  <select name="rl_frame" class="form-control">
+  <div class="input-group mb-4">
+    <input name="rl_value" type="number" value="{{ rl.value }}" autocomplete="off" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+    <select name="rl_frame" class="form-control">
     {% include 'mailbox/rl-frame.twig' %}
-  </select>
+    </select>
+  </div>
   <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ alias_domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
 </form>
 {% if dkim %}
 <hr>
 <div class="row">
   <div class="col-12 col-sm-2">
-    <p>Domain: <strong>{{ result.alias_domain }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
+    <p>{{ lang.add.domain }}: <strong>{{ result.alias_domain }}</strong> ({{ dkim.dkim_selector }}._domainkey)</p>
   </div>
   <div class="col-12 col-sm-10">
     <pre class="p-2">{{ dkim.dkim_txt }}</pre>

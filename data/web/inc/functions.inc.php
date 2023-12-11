@@ -526,8 +526,9 @@ function logger($_data = false) {
           ':remote' => get_remote_ip()
         ));
       }
-      catch (Exception $e) {
-        // Do nothing
+      catch (PDOException $e) {
+        # handle the exception here, as the exception handler function results in a white page
+        error_log($e->getMessage(), 0);
       }
     }
   }
@@ -1015,20 +1016,58 @@ function formatBytes($size, $precision = 2) {
   }
   return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
 }
-function update_sogo_static_view() {
+function update_sogo_static_view($mailbox = null) {
   if (getenv('SKIP_SOGO') == "y") {
     return true;
   }
   global $pdo;
   global $lang;
-  $stmt = $pdo->query("SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_NAME = 'sogo_view'");
-  $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-  if ($num_results != 0) {
-    $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
-      SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings` from sogo_view");
-    $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+
+  $mailbox_exists = false;
+  if ($mailbox !== null) {
+    // Check if the mailbox exists
+    $stmt = $pdo->prepare("SELECT username FROM mailbox WHERE username = :mailbox AND active = '1'");
+    $stmt->execute(array(':mailbox' => $mailbox));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);  
+    if ($row){
+      $mailbox_exists = true;
+    }
   }
+
+  $query = "REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
+            SELECT
+              mailbox.username,
+              mailbox.domain,
+              mailbox.username,
+              IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.force_pw_update')) = '0',
+                 IF(JSON_UNQUOTE(JSON_VALUE(attributes, '$.sogo_access')) = 1, password, '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
+                 '{SSHA256}A123A123A321A321A321B321B321B123B123B321B432F123E321123123321321'),
+              mailbox.name,
+              mailbox.username,
+              IFNULL(GROUP_CONCAT(ga.aliases ORDER BY ga.aliases SEPARATOR ' '), ''),
+              IFNULL(gda.ad_alias, ''),
+              IFNULL(external_acl.send_as_acl, ''),
+              mailbox.kind,
+              mailbox.multiple_bookings
+            FROM
+              mailbox
+              LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
+              LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
+              LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
+            WHERE
+              mailbox.active = '1'";
+  
+  if ($mailbox_exists) {
+    $query .= " AND mailbox.username = :mailbox";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute(array(':mailbox' => $mailbox));
+  } else {
+    $query .= " GROUP BY mailbox.username";
+    $stmt = $pdo->query($query);
+  }
+  
+  $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+  
   flush_memcached();
 }
 function edit_user_account($_data) {
@@ -1739,7 +1778,7 @@ function verify_tfa_login($username, $_data) {
               $_SESSION['return'][] =  array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $username, '*'),
-                  'msg' => array('webauthn_verification_failed', 'authenticator not found')
+                  'msg' => array('webauthn_authenticator_failed')
               );
               return false;
             } 
@@ -1748,9 +1787,18 @@ function verify_tfa_login($username, $_data) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'publicKey not found')
+                    'msg' => array('webauthn_publickey_failed')
                 );
                 return false;
+            }
+
+            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
+              $_SESSION['return'][] =  array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $username, '*'),
+                  'msg' => array('webauthn_username_failed')
+              );
+              return false;
             }
 
             try {
@@ -1784,19 +1832,10 @@ function verify_tfa_login($username, $_data) {
                 $_SESSION['return'][] =  array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $username, '*'),
-                  'msg' => array('webauthn_verification_failed', 'could not determine user role')
+                  'msg' => array('webauthn_role_failed')
                 );
                 return false;
               }
-            }
-
-            if ($process_webauthn['username'] != $_SESSION['pending_mailcow_cc_username']){
-                $_SESSION['return'][] =  array(
-                    'type' => 'danger',
-                    'log' => array(__FUNCTION__, $username, '*'),
-                    'msg' => array('webauthn_verification_failed', 'user who requests does not match with sql entry')
-                );
-                return false;
             }
 
             $_SESSION["mailcow_cc_username"] = $process_webauthn['username'];
@@ -2092,6 +2131,135 @@ function rspamd_ui($action, $data = null) {
       }
     break;
   }
+}
+function cors($action, $data = null) {
+  global $redis;
+
+  switch ($action) {
+    case "edit":
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }    
+
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
+      foreach ($allowed_origins as $origin) {
+        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $action, $data),
+            'msg' => 'cors_invalid_origin'
+          );
+          return false;
+        }
+      }
+
+      $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
+      $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
+      $available_methods = array('GET', 'POST', 'PUT', 'DELETE');
+      foreach ($allowed_methods as $method) {
+        if (!in_array($method, $available_methods)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $action, $data),
+            'msg' => 'cors_invalid_method'
+          );
+          return false;
+        }
+      }
+
+      try {
+        $redis->hMSet('CORS_SETTINGS', array(
+          'allowed_origins' => implode(', ', $allowed_origins),
+          'allowed_methods' => implode(', ', $allowed_methods)
+        ));   
+      } catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action, $data),
+        'msg' => 'cors_headers_edited'
+      );
+      return true;
+    break;
+    case "get":
+      try {
+        $cors_settings                  = $redis->hMGet('CORS_SETTINGS', array('allowed_origins', 'allowed_methods'));
+      } catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $data),
+          'msg' => array('redis_error', $e)
+        );
+      }
+
+      $cors_settings                    = !$cors_settings ? array('allowed_origins' => $_SERVER['SERVER_NAME'], 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
+      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? $_SERVER['SERVER_NAME'] : $cors_settings['allowed_origins'];
+      $cors_settings['allowed_methods'] = empty($cors_settings['allowed_methods']) ? 'GET, POST, PUT, DELETE, OPTION' : $cors_settings['allowed_methods'];
+
+      return $cors_settings;
+    break;
+    case "set_headers":
+      $cors_settings = cors('get');
+      // check if requested origin is in allowed origins
+      $allowed_origins = explode(', ', $cors_settings['allowed_origins']);
+      $cors_settings['allowed_origins'] = $allowed_origins[0];
+      if (in_array('*', $allowed_origins)){
+        $cors_settings['allowed_origins'] = '*';
+      } else if (in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+        $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
+      }
+      // always allow OPTIONS for preflight request
+      $cors_settings["allowed_methods"] = empty($cors_settings["allowed_methods"]) ? 'OPTIONS' : $cors_settings["allowed_methods"] . ', ' . 'OPTIONS';
+
+      header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
+      header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
+      header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
+
+      // Access-Control settings requested, this is just a preflight request
+      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && 
+        isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
+        isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+  
+        $allowed_methods = explode(', ', $cors_settings["allowed_methods"]);
+        if (in_array($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'], $allowed_methods, true))
+          // method allowed send 200 OK
+          http_response_code(200);
+        else
+          // method not allowed send 405 METHOD NOT ALLOWED
+          http_response_code(405);
+
+        exit;
+      }
+    break;
+  }
+}
+function getBaseURL() {
+  $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+  $host = $_SERVER['HTTP_HOST'];
+  $base_url = $protocol . '://' . $host;
+
+  return $base_url;
+}
+function uuid4() {
+  $data = openssl_random_pseudo_bytes(16);
+
+  $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+  $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+  return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
 
 function get_logs($application, $lines = false) {

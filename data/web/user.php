@@ -20,6 +20,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'doma
     'tfa_data' => $tfa_data,
     'fido2_data' => $fido2_data,
     'lang_user' => json_encode($lang['user']),
+    'lang_datatables' => json_encode($lang['datatables']),
   ];
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
@@ -61,16 +62,18 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
     $user_domains = array_merge($user_domains, $user_alias_domains);
   }
 
-  $template = 'user.twig';
+  // get number of app passwords
   $number_of_app_passwords = 0;
   foreach (app_passwd("get") as $app_password)
   {
       $app_password = app_passwd("details", $app_password['id']);
       if ($app_password['active'])
       {
-          ++$number_of_app_passwords;
+          $number_of_app_passwords++;
       }
   }
+
+  $template = 'user.twig';
   $template_data = [
     'acl' => $_SESSION['acl'],
     'acl_json' => json_encode($_SESSION['acl']),

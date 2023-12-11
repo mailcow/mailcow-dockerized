@@ -6,4 +6,4 @@
   -subj /CN=dockerapi/O=mailcow \
   -addext subjectAltName=DNS:dockerapi`
 
-`uvicorn --host 0.0.0.0 --port 443 --ssl-certfile=/app/dockerapi_cert.pem --ssl-keyfile=/app/dockerapi_key.pem dockerapi:app`
+exec "$@"
