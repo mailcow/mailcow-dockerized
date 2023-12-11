@@ -19,9 +19,11 @@ fi
 
 if [[ "${WATCHDOG_VERBOSE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   SMTP_VERBOSE="--verbose"
+  CURL_VERBOSE="--verbose"
   set -xv
 else
   SMTP_VERBOSE=""
+  CURL_VERBOSE=""
   exec 2>/dev/null
 fi
 
@@ -168,10 +170,10 @@ function notify_error() {
     fi
 
     # Replace subject and body placeholders
-    WEBHOOK_BODY=$(echo ${WATCHDOG_NOTIFY_WEBHOOK_BODY} | sed "s/\$SUBJECT\|\${SUBJECT}/$SUBJECT/g" | sed "s/\$BODY\|\${BODY}/$BODY/")
+    WEBHOOK_BODY=$(echo ${WATCHDOG_NOTIFY_WEBHOOK_BODY} | sed "s|\$SUBJECT\|\${SUBJECT}|$SUBJECT|g" | sed "s|\$BODY\|\${BODY}|$BODY|")
     
     # POST to webhook
-    curl -X POST -H "Content-Type: application/json" -d "${WEBHOOK_BODY}" ${WATCHDOG_NOTIFY_WEBHOOK}
+    curl -X POST -H "Content-Type: application/json" ${CURL_VERBOSE} -d "${WEBHOOK_BODY}" ${WATCHDOG_NOTIFY_WEBHOOK}
 
     log_msg "Sent notification using webhook"
   fi
