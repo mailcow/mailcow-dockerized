@@ -2,7 +2,7 @@
 
 {% block inner_content %}
 {% if result %}
-  <h4>{{ lang.edit.syncjob }}</h4>
+  <h4 class="mb-4">{{ lang.edit.syncjob }}</h4>
   <form class="form-horizontal" data-id="editsyncjob" role="form" method="post">
     <input type="hidden" value="0" name="delete2duplicates">
     <input type="hidden" value="0" name="delete1">
@@ -11,6 +11,7 @@
     <input type="hidden" value="0" name="skipcrossduplicates">
     <input type="hidden" value="0" name="active">
     <input type="hidden" value="0" name="subscribeall">
+    <input type="hidden" value="0" name="dry">
     <div class="row mb-2">
       <label class="control-label col-sm-2" for="host1">{{ lang.edit.hostname }}</label>
       <div class="col-sm-10">
@@ -95,56 +96,63 @@
     <div class="row mb-4">
       <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--dry --some-param=xy --other-param=yx">
+        <input type="text" class="form-control" name="custom_params" id="custom_params" value="{{ result.custom_params }}" placeholder="--some-param=xy --other-param=yx">
         <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="delete2duplicates"{% if result.delete2duplicates == '1' %} checked{% endif %}> {{ lang.edit.delete2duplicates }} (--delete2duplicates)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates"{% if result.delete2duplicates == '1' %} checked{% endif %}> {{ lang.edit.delete2duplicates }} (--delete2duplicates)</label>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="delete1"{% if result.delete1 == '1' %} checked{% endif %}> {{ lang.edit.delete1 }} (--delete1)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="delete1"{% if result.delete1 == '1' %} checked{% endif %}> {{ lang.edit.delete1 }} (--delete1)</label>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="delete2"{% if result.delete2 == '1' %} checked{% endif %}> {{ lang.edit.delete2 }} (--delete2)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="delete2"{% if result.delete2 == '1' %} checked{% endif %}> {{ lang.edit.delete2 }} (--delete2)</label>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="automap"{% if result.automap == '1' %} checked{% endif %}> {{ lang.edit.automap }} (--automap)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="automap"{% if result.automap == '1' %} checked{% endif %}> {{ lang.edit.automap }} (--automap)</label>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="skipcrossduplicates"{% if result.skipcrossduplicates == '1' %} checked{% endif %}> {{ lang.edit.skipcrossduplicates }} (--skipcrossduplicates)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"{% if result.skipcrossduplicates == '1' %} checked{% endif %}> {{ lang.edit.skipcrossduplicates }} (--skipcrossduplicates)</label>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="subscribeall"{% if result.subscribeall == '1' %} checked{% endif %}> {{ lang.add.subscribeall }} (--subscribeall)</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall"{% if result.subscribeall == '1' %} checked{% endif %}> {{ lang.add.subscribeall }} (--subscribeall)</label>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="dry"{% if result.dry == '1' %} checked{% endif %}> {{ lang.add.dry }} (--dry)</label>
         </div>
       </div>
     </div>
     <div class="row mb-4">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
         </div>
       </div>
     </div>

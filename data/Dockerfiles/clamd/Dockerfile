@@ -1,6 +1,6 @@
-FROM clamav/clamav:1.0.1-1_base
+FROM clamav/clamav:1.0.3_base
 
-LABEL maintainer "André Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \

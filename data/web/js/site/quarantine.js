@@ -77,7 +77,7 @@ jQuery(function($){
               '<a href="#" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-info show_qid_info"><i class="bi bi-file-earmark-text"></i> ' + lang.show_item + '</a>' +
               '</div>';
             }
-            item.chkbox = '<input type="checkbox" data-id="qitems" name="multi_select" value="' + item.id + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="qitems" name="multi_select" value="' + item.id + '" />';
           });
 
           return data;
@@ -220,7 +220,7 @@ jQuery(function($){
             if (value.score > 0) highlightClass = 'negative';
             else if (value.score < 0) highlightClass = 'positive';
             else highlightClass = 'neutral';
-            $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+            $('#qid_detail_symbols').append('<span data-bs-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? escapeHtml(value.options.join(', ')) : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
           });
           $('[data-bs-toggle="tooltip"]').tooltip();
         }
@@ -295,3 +295,7 @@ jQuery(function($){
       $(".table_collapse_option").hide();
   }
 });
+
+
+
+

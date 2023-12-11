@@ -64,16 +64,16 @@
     </div>
     <div class="row">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="gal"{% if template.attributes.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="gal"{% if template.attributes.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
           <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
         </div>
       </div>
     </div>
     <div class="row mb-2">
       <div class="offset-sm-2 col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="active"{% if template.attributes.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if template.attributes.active == '1' %} checked{% endif %}{% if mailcow_cc_role != 'admin' %} disabled{% endif %}> {{ lang.edit.active }}</label>
         </div>
       </div>
     </div>
@@ -81,13 +81,12 @@
     <div class="row">
       <label class="control-label col-sm-2">{{ lang.edit.ratelimit }}</label>
       <div class="col-sm-10">
-        <input name="rl_value" type="number" value="{{ template.attributes.rl_value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-        <select name="rl_frame" class="form-control">
-          <option value="s"{% if template.attributes.rl_frame == 's' %} selected{% endif %}>{{ lang.ratelimit.second }}</option>
-          <option value="m"{% if template.attributes.rl_frame == 'm' %} selected{% endif %}>{{ lang.ratelimit.minute }}</option>
-          <option value="h"{% if template.attributes.rl_frame == 'h' %} selected{% endif %}>{{ lang.ratelimit.hour }}</option>
-          <option value="d"{% if template.attributes.rl_frame == 'd' %} selected{% endif %}>{{ lang.ratelimit.day }}</option>
-        </select>
+        <div class="input-group">
+          <input name="rl_value" type="number" value="{{ template.attributes.rl_value }}" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
+          <select name="rl_frame" class="form-control">
+          {% include 'mailbox/rl-frame.twig' %}
+          </select>
+        </div>
       </div>
     </div>
     {% endif %}
@@ -101,7 +100,7 @@
     <div class="row mb-4">
       <label class="control-label col-sm-2" for="key_size">{{ lang.admin.dkim_key_length }}</label>
       <div class="col-sm-10">
-        <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size">
+        <select data-style="btn btn-light" class="form-control" id="key_size" name="key_size">
           <option value="1024" data-subtext="bits" {% if template.attributes.key_size == 1024 %} selected{% endif %}>1024</option>
           <option value="2048" data-subtext="bits" {% if template.attributes.key_size == 2048 %} selected{% endif %}>2048</option>
         </select>
@@ -111,12 +110,12 @@
     <div class="row mb-2">
       <label class="control-label col-sm-2">{{ lang.edit.backup_mx_options }}</label>
       <div class="col-sm-10">
-        <div class="checkbox">
-          <label><input type="checkbox" value="1" name="backupmx"{% if template.attributes.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="backupmx"{% if template.attributes.backupmx == '1' %} checked{% endif %}> {{ lang.edit.relay_domain }}</label>
           <br>
-          <label><input type="checkbox" value="1" name="relay_all_recipients"{% if template.attributes.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
+          <label><input type="checkbox" class="form-check-input" value="1" name="relay_all_recipients"{% if template.attributes.relay_all_recipients == '1' %} checked{% endif %}> {{ lang.edit.relay_all }}</label>
           <p>{{ lang.edit.relay_all_info|raw }}</p>
-          <label><input type="checkbox" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
+          <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
           <br>
           <p>{{ lang.edit.relay_transport_info|raw }}</p>
         </div>

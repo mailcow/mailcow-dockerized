@@ -18,7 +18,11 @@
         "transport_dest_format": "Szintaxis: pelda.hu, .pelda.hu, *, fiok@pelda.hu (több érték esetén vesszővel elválasztva)",
         "upload": "Feltöltés",
         "username": "Felhasználónév",
-        "verify": "Ellenőrzés"
+        "verify": "Ellenőrzés",
+        "activate_api": "API aktiválása",
+        "activate_send": "Küldés gomb aktiválása",
+        "add": "Hozzáad",
+        "active": "Aktív"
     },
     "edit": {
         "active": "Aktív",
@@ -385,9 +389,23 @@
     "acl": {
         "delimiter_action": "Elhatárolás",
         "alias_domains": "Alias domainek hozzáadása",
-        "app_passwds": "Alkalmazás jelszavak kezelése"
+        "app_passwds": "Alkalmazás jelszavak kezelése",
+        "domain_desc": "Domain leírás módosítása",
+        "filters": "Szűrők",
+        "login_as": "Bejelentkezés mint",
+        "quarantine": "Karantén műveletek",
+        "bcc_maps": "BCC címek",
+        "domain_relayhost": "Relayhost megváltoztatása egy domainhez",
+        "protocol_access": "Protokoll-hozzáférés módosítása",
+        "quarantine_attachments": "Karantén mellékletek",
+        "quarantine_category": "Karantén értesítési kategória módosítása",
+        "quarantine_notification": "Karantén értesítések módosítása"
     },
     "diagnostics": {
         "dns_records": "DNS bejegyzések"
+    },
+    "add": {
+        "username": "Felhasználónév",
+        "validation_success": "Sikeres ellenőrzés"
     }
 }

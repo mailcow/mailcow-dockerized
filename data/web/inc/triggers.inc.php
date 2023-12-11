@@ -121,9 +121,13 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     if ($_FILES['main_logo']['error'] == 0) {
       customize('add', 'main_logo', $_FILES);
     }
+    if ($_FILES['main_logo_dark']['error'] == 0) {
+      customize('add', 'main_logo_dark', $_FILES);
+    }
 	}
 	if (isset($_POST["reset_main_logo"])) {
     customize('delete', 'main_logo');
+    customize('delete', 'main_logo_dark');
 	}
   // Some actions will not be available via API
 	if (isset($_POST["license_validate_now"])) {

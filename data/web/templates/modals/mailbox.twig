@@ -78,16 +78,16 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_never" autocomplete="off" value="never">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_never">{{ lang.user.never }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_notification_never">{{ lang.user.never }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_hourly" autocomplete="off" value="hourly">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_hourly">{{ lang.user.hourly }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_notification_hourly">{{ lang.user.hourly }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_daily" autocomplete="off" value="daily">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_daily">{{ lang.user.daily }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_notification_daily">{{ lang.user.daily }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="quarantine_notification_weekly" autocomplete="off" value="weekly">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_notification_weekly">{{ lang.user.weekly }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_notification_weekly">{{ lang.user.weekly }}</label>
               </div>
               <p class="text-muted"><small>{{ lang.user.quarantine_notification_info }}</small></p>
             </div>
@@ -97,13 +97,13 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_reject" autocomplete="off" value="reject">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_reject">{{ lang.user.q_reject }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_category_reject">{{ lang.user.q_reject }}</label>
+
                 <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_add_header" autocomplete="off" value="add_header">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
+
                 <input type="radio" class="btn-check" name="quarantine_category" id="quarantine_category_all" autocomplete="off" value="all">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="quarantine_category_all">{{ lang.user.q_all }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="quarantine_category_all">{{ lang.user.q_all }}</label>
               </div>
               <p class="text-muted"><small>{{ lang.user.quarantine_category_info }}</small></p>
             </div>
@@ -113,10 +113,10 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="checkbox" class="btn-check" name="tls_enforce_in" id="tls_enforce_in" autocomplete="off" value="1">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
+
                 <input type="checkbox" class="btn-check" name="tls_enforce_out" id="tls_enforce_out" autocomplete="off" value="1">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
               </div>
             </div>
           </div>
@@ -155,14 +155,13 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.acl.ratelimit }}</label>
             <div class="col-sm-10">
-              <input name="rl_value" id="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
-              <select name="rl_frame" id="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
-              <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+              <div class="input-group">
+                <input name="rl_value" id="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" id="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
+              <p class="text-muted mt-1">{{ lang.edit.mbox_rl_info }}</p>
             </div>
           </div>
           <div class="row mb-2">
@@ -176,8 +175,8 @@
           </div>
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="force_pw_update" id="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update" id="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
                 <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
               </div>
             </div>
@@ -185,8 +184,8 @@
           {% if not skip_sogo %}
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="sogo_access" id="sogo_access"> {{ lang.edit.sogo_access }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access" id="sogo_access"> {{ lang.edit.sogo_access }}</label>
                 <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
               </div>
             </div>
@@ -216,7 +215,7 @@
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
-          <input type="hidden" value="0" name="protocol_access">     
+          <input type="hidden" value="0" name="protocol_access">
 
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="template">{{ lang.mailbox.template }}</label>
@@ -248,16 +247,16 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="radio" class="btn-check" name="quarantine_notification" id="template_quarantine_notification_never" autocomplete="off" value="never">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_notification_never">{{ lang.user.never }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_notification_never">{{ lang.user.never }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="template_quarantine_notification_hourly" autocomplete="off" value="hourly">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_notification_hourly">{{ lang.user.hourly }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_notification_hourly">{{ lang.user.hourly }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="template_quarantine_notification_daily" autocomplete="off" value="daily">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_notification_daily">{{ lang.user.daily }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_notification_daily">{{ lang.user.daily }}</label>
 
                 <input type="radio" class="btn-check" name="quarantine_notification" id="template_quarantine_notification_weekly" autocomplete="off" value="weekly">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_notification_weekly">{{ lang.user.weekly }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_notification_weekly">{{ lang.user.weekly }}</label>
               </div>
               <p class="text-muted"><small>{{ lang.user.quarantine_notification_info }}</small></p>
             </div>
@@ -267,13 +266,13 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="radio" class="btn-check" name="quarantine_category" id="template_quarantine_category_reject" autocomplete="off" value="reject" >
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_category_reject">{{ lang.user.q_reject }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_category_reject">{{ lang.user.q_reject }}</label>
+
                 <input type="radio" class="btn-check" name="quarantine_category" id="template_quarantine_category_add_header" autocomplete="off" value="add_header">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_category_add_header">{{ lang.user.q_add_header }}</label>
+
                 <input type="radio" class="btn-check" name="quarantine_category" id="template_quarantine_category_all" autocomplete="off" value="all">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_quarantine_category_all">{{ lang.user.q_all }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_quarantine_category_all">{{ lang.user.q_all }}</label>
               </div>
               <p class="text-muted"><small>{{ lang.user.quarantine_category_info }}</small></p>
             </div>
@@ -283,10 +282,10 @@
             <div class="col-sm-10">
               <div class="btn-group">
                 <input type="checkbox" class="btn-check" name="tls_enforce_in" id="template_tls_enforce_in" autocomplete="off" value="1">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
-                
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_tls_enforce_in">{{ lang.user.tls_enforce_in }}</label>
+
                 <input type="checkbox" class="btn-check" name="tls_enforce_out" id="template_tls_enforce_out" autocomplete="off" value="1">
-                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-secondary" for="template_tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
+                <label class="btn btn-sm btn-xs-quart d-block d-sm-inline btn-light" for="template_tls_enforce_out">{{ lang.user.tls_enforce_out }}</label>
               </div>
             </div>
           </div>
@@ -304,7 +303,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">ACL</label>
             <div class="col-sm-10">
-              <select id="template_user_acl" name="acl" size="10" multiple class="form-control">                  
+              <select id="template_user_acl" name="acl" size="10" multiple class="form-control">
                 <option value="spam_alias" selected>{{ lang.acl["spam_alias"] }}</option>
                 <option value="tls_policy" selected>{{ lang.acl["tls_policy"] }}</option>
                 <option value="spam_score" selected>{{ lang.acl["spam_score"] }}</option>
@@ -325,14 +324,13 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.acl.ratelimit }}</label>
             <div class="col-sm-10">
-              <input name="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
-              <select name="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
-              <p class="text-muted mt-3">{{ lang.edit.mbox_rl_info }}</p>
+              <div class="input-group">
+                <input name="rl_value" type="number" autocomplete="off" value="" class="form-control mb-2" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
+              <p class="text-muted mt-1">{{ lang.edit.mbox_rl_info }}</p>
             </div>
           </div>
           <hr>
@@ -347,8 +345,8 @@
           </div>
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
                 <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
               </div>
             </div>
@@ -356,8 +354,8 @@
           {% if not skip_sogo %}
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="sogo_access"> {{ lang.edit.sogo_access }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"> {{ lang.edit.sogo_access }}</label>
                 <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
               </div>
             </div>
@@ -445,8 +443,8 @@
           {% if not skip_sogo %}
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" id="addDomain_gal" value="1" name="gal" checked> {{ lang.edit.gal }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addDomain_gal" value="1" name="gal" checked> {{ lang.edit.gal }}</label>
                 <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
               </div>
             </div>
@@ -454,21 +452,21 @@
           {% endif %}
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" id="addDomain_active" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addDomain_active" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <hr>
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end" for="rl_frame">{{ lang.acl.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" id="addDomain_rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" id="addDomain_rl_frame" class="form-control">
-              {% include 'mailbox/rl-frame.twig' %}
-              </select>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" id="addDomain_rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" id="addDomain_rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
             </div>
           </div>
           <hr>
@@ -481,7 +479,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="key_size">{{ lang.admin.dkim_key_length }}</label>
             <div class="col-sm-10">
-              <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size">
+              <select data-style="btn btn-light" class="form-control" id="key_size" name="key_size">
                 <option data-subtext="bits" value="1024">1024</option>
                 <option data-subtext="bits" value="2048" selected>2048</option>
               </select>
@@ -491,12 +489,12 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.add.backup_mx_options }}</label>
             <div class="col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" id="addDomain_relay_domain" value="1" name="backupmx"> {{ lang.add.relay_domain }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addDomain_relay_domain" value="1" name="backupmx"> {{ lang.add.relay_domain }}</label>
                 <br>
-                <label><input type="checkbox" id="addDomain_relay_all" value="1" name="relay_all_recipients"> {{ lang.add.relay_all }}</label>
+                <label><input type="checkbox" class="form-check-input" id="addDomain_relay_all" value="1" name="relay_all_recipients"> {{ lang.add.relay_all }}</label>
                 <p>{{ lang.add.relay_all_info|raw }}</p>
-                <label><input type="checkbox" id="addDomain_relay_unknown_only" value="1" name="relay_unknown_only"> {{ lang.add.relay_unknown_only }}</label>
+                <label><input type="checkbox" class="form-check-input" id="addDomain_relay_unknown_only" value="1" name="relay_unknown_only"> {{ lang.add.relay_unknown_only }}</label>
                 <br>
                 <p>{{ lang.add.relay_transport_info|raw }}</p>
               </div>
@@ -508,7 +506,6 @@
               {% if not skip_sogo %}
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"tags": []}' href="#">{{ lang.add.add_domain_only }}</button>
               <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"restart_sogo":"1", "tags": []}' href="#">{{ lang.add.add_domain_restart }}</button>
-              <div class="clearfix visible-xs"></div>
               {% else %}
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_domain" data-api-url='add/domain' data-api-attr='{"tags": []}' href="#">{{ lang.add.add }}</button>
               {% endif %}
@@ -584,32 +581,29 @@
           </div>
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="gal" checked> {{ lang.add.gal }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="gal" checked> {{ lang.add.gal }}</label>
                 <small class="text-muted">{{ lang.add.gal_info|raw }}</small>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <hr>
           <div class="row">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" type="number" value="" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" class="form-control">
-                <option value="s">{{ lang.ratelimit.second }}</option>
-                <option value="m">{{ lang.ratelimit.minute }}</option>
-                <option value="h">{{ lang.ratelimit.hour }}</option>
-                <option value="d">{{ lang.ratelimit.day }}</option>
-              </select>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" type="number" value="" autocomplete="off" class="form-control mb-4" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
+                {% include 'mailbox/rl-frame.twig' %}
+                </select>
+              </div>
             </div>
           </div>
           {% endif %}
@@ -623,7 +617,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="key_size">{{ lang.admin.dkim_key_length }}</label>
             <div class="col-sm-10">
-              <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size" name="key_size">
+              <select data-style="btn btn-light" class="form-control" id="key_size" name="key_size">
                 <option data-subtext="bits">1024</option>
                 <option data-subtext="bits" selected>2048</option>
               </select>
@@ -633,12 +627,12 @@
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.backup_mx_options }}</label>
             <div class="col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="backupmx"> {{ lang.edit.relay_domain }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="backupmx"> {{ lang.edit.relay_domain }}</label>
                 <br>
-                <label><input type="checkbox" value="1" name="relay_all_recipients"> {{ lang.edit.relay_all }}</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="relay_all_recipients"> {{ lang.edit.relay_all }}</label>
                 <p>{{ lang.edit.relay_all_info|raw }}</p>
-                <label><input type="checkbox" value="1" name="relay_unknown_only"> {{ lang.edit.relay_unknown_only }}</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"> {{ lang.edit.relay_unknown_only }}</label>
                 <br>
                 <p>{{ lang.edit.relay_transport_info|raw }}</p>
               </div>
@@ -708,8 +702,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -746,19 +740,19 @@
             <div class="col-sm-10">
               <textarea id="textarea_alias_goto" autocorrect="off" autocapitalize="none" class="form-control" rows="5" id="goto" name="goto" required></textarea>
               <p>{{ lang.add.target_address_info|raw }}</p>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null"> {{ lang.add.goto_null }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_null"> {{ lang.add.goto_null }}</label>
               </div>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_spam"> {{ lang.add.goto_spam|raw }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_spam"> {{ lang.add.goto_spam|raw }}</label>
               </div>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham"> {{ lang.add.goto_ham|raw }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_ham"> {{ lang.add.goto_ham|raw }}</label>
               </div>
               {% if not skip_sogo %}
               <hr>
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="sogo_visible" checked> {{ lang.edit.sogo_visible }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_visible" checked> {{ lang.edit.sogo_visible }}</label>
               </div>
               <p class="text-muted">{{ lang.edit.sogo_visible_info }}</p>
               {% endif %}
@@ -766,8 +760,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -811,21 +805,21 @@
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
           <hr>
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="rl_frame">{{ lang.acl.ratelimit }}</label>
-            <div class="col-sm-7">
-              <input name="rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
-            </div>
-            <div class="col-sm-3">
-              <select name="rl_frame" class="form-control">
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input name="rl_value" type="number" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+                <select name="rl_frame" class="form-control">
                 {% include 'mailbox/rl-frame.twig' %}
-              </select>
+                </select>
+              </div>
             </div>
           </div>
           <hr>
@@ -838,7 +832,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end" for="key_size2">{{ lang.admin.dkim_key_length }}</label>
             <div class="col-sm-10">
-              <select data-style="btn btn-secondary btn-sm" class="form-control" id="key_size2" name="key_size">
+              <select data-style="btn btn-light" class="form-control" id="key_size2" name="key_size">
                 <option data-subtext="bits">1024</option>
                 <option data-subtext="bits" selected>2048</option>
               </select>
@@ -961,56 +955,63 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end" for="custom_params">{{ lang.add.custom_params }}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="custom_params" placeholder="--dry --some-param=xy --other-param=yx">
+              <input type="text" class="form-control" name="custom_params" placeholder="--some-param=xy --other-param=yx">
               <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
               </div>
             </div>
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="dry"> {{ lang.add.dry }} (--dry)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -1068,8 +1069,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -1121,8 +1122,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -1162,8 +1163,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>
@@ -1218,8 +1219,8 @@
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>

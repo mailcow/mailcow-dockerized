@@ -2,6 +2,8 @@
 
 [![Translation status](https://translate.mailcow.email/widgets/mailcow-dockerized/-/translation/svg-badge.svg)](https://translate.mailcow.email/engage/mailcow-dockerized/)
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/mailcow_email.svg?style=social&label=Follow%20%40mailcow_email)](https://twitter.com/mailcow_email)
+![Mastodon Follow](https://img.shields.io/mastodon/follow/109388212176073348?domain=https%3A%2F%2Fmailcow.social&label=Follow%20%40doncow%40mailcow.social&link=https%3A%2F%2Fmailcow.social%2F%40doncow)
+
 
 ## Want to support mailcow?
 
@@ -13,7 +15,7 @@ Or just spread the word: moo.
 
 ## Info, documentation and support
 
-Please see [the official documentation](https://mailcow.github.io/mailcow-dockerized-docs/) for installation and support instructions. 🐄
+Please see [the official documentation](https://docs.mailcow.email/) for installation and support instructions. 🐄
 
 🐛 **If you found a critical security issue, please mail us to [info at servercow.de](mailto:info@servercow.de).**
 
@@ -25,7 +27,9 @@ Please see [the official documentation](https://mailcow.github.io/mailcow-docker
 
 [Telegram mailcow Off-Topic channel](https://t.me/mailcowOfftopic)
 
-[Official Twitter Account](https://twitter.com/mailcow_email)
+[Official 𝕏 (Twitter) Account](https://twitter.com/mailcow_email)
+
+[Official Mastodon Account](https://mailcow.social/@doncow)
 
 Telegram desktop clients are available for [multiple platforms](https://desktop.telegram.org). You can search the groups history for keywords.
 

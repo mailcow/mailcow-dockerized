@@ -2,9 +2,9 @@ FROM debian:bullseye-slim
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced
-ARG DOVECOT=2.3.20
-# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced
+# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG DOVECOT=2.3.21
+# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG GOSU_VERSION=1.16
 ENV LC_ALL C
 

@@ -12,7 +12,7 @@
   "baseBranches": ["staging"],
   "enabledManagers": ["github-actions", "regex", "docker-compose"],
   "ignorePaths": [
-    "data\/web\/inc\/lib\/vendor\/matthiasmullie\/minify\/**"
+    "data\/web\/inc\/lib\/vendor\/**"
   ],
   "regexManagers": [
     {
@@ -24,7 +24,7 @@
     {
       "fileMatch": ["(^|/)Dockerfile[^/]*$"],
       "matchStrings": [
-        "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s(ENV|ARG) .*?_VERSION=(?<currentValue>.*)\\s"
+        "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s(ENV|ARG) .*?_VERSION=(?<currentValue>.*)\\s"
        ]
     }
   ]
