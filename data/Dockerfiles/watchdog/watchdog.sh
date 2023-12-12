@@ -770,7 +770,9 @@ olefy_checks() {
 }
 
 # Notify about start
-notify_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
+if [[ ${WATCHDOG_NOTIFY_START} =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  notify_error "watchdog-mailcow" "Watchdog started monitoring mailcow."
+fi
 
 # Create watchdog agents
 
