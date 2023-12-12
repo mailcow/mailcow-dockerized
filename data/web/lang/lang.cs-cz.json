@@ -107,7 +107,8 @@
         "username": "Uživatelské jméno",
         "validate": "Ověřit",
         "validation_success": "Úspěšně ověřeno",
-        "tags": "Štítky"
+        "tags": "Štítky",
+        "dry": "Simulovat synchronizaci"
     },
     "admin": {
         "access": "Přístupy",
@@ -147,6 +148,8 @@
         "ays": "Opravdu chcete pokračovat?",
         "ban_list_info": "Seznam blokovaných IP adres je zobrazen níže: <b>síť (zbývající čas blokování) - [akce]</b>.<br />IP adresy zařazené pro odblokování budou z aktivního seznamu odebrány během několika sekund.<br />Červeně označené položky jsou pernamentní bloky z blacklistu.",
         "change_logo": "Změnit logo",
+        "logo_normal_label": "Normální",
+        "logo_dark_label": "Inverzní pro tmavý režim",
         "configuration": "Nastavení",
         "convert_html_to_text": "Převést HTML do prostého textu",
         "credentials_transport_warning": "<b>Upozornění</b>: Přidání položky do transportní mapy aktualizuje také přihlašovací údaje všech záznamů s odpovídajícím skokem.",
@@ -206,6 +209,9 @@
         "include_exclude": "Zahrnout/Vyloučit",
         "include_exclude_info": "Ve výchozím nastavení (bez výběru), jsou adresovány <b>všechny mailové schránky</b>",
         "includes": "Zahrnout tyto přijemce",
+        "ip_check": "Kontrola IP",
+        "ip_check_disabled": "Kontrola IP je zakázána. Můžete ji povolit v nabídce<br> <strong>Systém > Nastavení > Možnosti > Přizpůsobení</strong>",
+        "ip_check_opt_in": "Přihlásit se k používání služby třetí strany <strong>ipv4.mailcow.email</strong> a <strong>ipv6.mailcow.email</strong> pro zjištění externích IP adres.",
         "is_mx_based": "Na základě MX",
         "last_applied": "Naposledy použité",
         "license_info": "Licence není povinná, pomůžete však dalšímu vývoji.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Registrujte si své GUID</a>, nebo si <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">zaplaťte podporu pro svou instalaci mailcow.</a>",
@@ -213,7 +219,7 @@
         "loading": "Prosím čekejte...",
         "login_time": "Čas přihlášení",
         "logo_info": "Obrázek bude zmenšen na výšku 40 pixelů pro horní navigační lištu a na max. šířku 250 pixelů pro úvodní stránku.",
-        "lookup_mx": "Ověřit cíl proti MX záznamu (.outlook.com bude směrovat všechnu poštu pro MX *.outlook.com přes tento uzel)",
+        "lookup_mx": "Cíl je regulární výraz, který se porovná s názvem MX (<code>.*\\.google\\.com</code> pro směrování veškeré pošty cílené na MX, který končí na google.com přes tento skok)",
         "main_name": "Název webu (\"mailcow UI\")",
         "merged_vars_hint": "Šedé řádky byly přidány z <code>vars.(local.)inc.php</code> a zde je nelze upravit.",
         "message": "Zpráva",
@@ -232,6 +238,7 @@
         "oauth2_renew_secret": "Vytvořit nový tajný klíč",
         "oauth2_revoke_tokens": "Odvolat všechny klientské tokeny",
         "optional": "volitelné",
+        "options": "Možnosti",
         "password": "Heslo",
         "password_length": "Délka hesla",
         "password_policy": "Politika hesel",
@@ -338,8 +345,8 @@
         "yes": "&#10003;",
         "f2b_ban_time_increment": "Délka banu je prodlužována s každým dalším banem",
         "f2b_max_ban_time": "Maximální délka banu (s)",
-        "ip_check": "Kontrola IP",
-        "ip_check_disabled": "Kontrola IP je vypnuta. Můžete ji zapnout v <br> <strong>System > Nastavení > Options > Přizpůsobení</strong>"
+        "cors_settings": "Nastavení CORS",
+        "queue_unban": "zrušit ban"
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
@@ -443,6 +450,9 @@
         "target_domain_invalid": "Cílová doména %s je neplatná",
         "targetd_not_found": "Cílová doména %s nenalezena",
         "targetd_relay_domain": "Cílová doména %s je předávaná",
+        "template_exists": "Šablona %s již existuje",
+        "template_id_invalid": "Šablona ID %s je neplatná",
+        "template_name_invalid": "Název šablony je neplatný",
         "temp_error": "Dočasná chyba",
         "text_empty": "Text nesmí být prázdný",
         "tfa_token_invalid": "Neplatný TFA token",
@@ -458,30 +468,39 @@
         "username_invalid": "Uživatelské jméno %s nelze použít",
         "validity_missing": "Zdejte dobu platnosti",
         "value_missing": "Prosím, uveďte všechny hodnoty",
-        "yotp_verification_failed": "Yubico OTP ověření selhalo: %s"
+        "yotp_verification_failed": "Yubico OTP ověření selhalo: %s",
+        "webauthn_authenticator_failed": "Zvolený ověřovací prostředek nebyl nalezen",
+        "cors_invalid_method": "Zadaná neplatná metoda Allow-Method",
+        "cors_invalid_origin": "Zadán neplatný Allow-Origin",
+        "webauthn_publickey_failed": "Pro vybraný ověřovací prostředek nebyl uložen žádný veřejný klíč",
+        "webauthn_username_failed": "Zvolený ověřovací prostředek patří k jinému účtu",
+        "extended_sender_acl_denied": "chybějící ACL pro nastavení externích adres odesílatele",
+        "demo_mode_enabled": "Demo režim je zapnutý"
     },
     "datatables": {
-      "emptyTable": "Tabulka neobsahuje žádná data",
-      "info": "Zobrazuji _START_ až _END_ z celkem _TOTAL_ záznamů",
-      "infoEmpty": "Zobrazuji 0 až 0 z 0 záznamů",
-      "infoFiltered": "(filtrováno z celkem _MAX_ záznamů)",
-      "loadingRecords": "Načítám...",
-      "zeroRecords": "Žádné záznamy nebyly nalezeny",
-      "paginate": {
-        "first": "První",
-        "last": "Poslední",
-        "next": "Další",
-        "previous": "Předchozí"
-      },
-      "aria": {
-        "sortAscending": ": aktivujte pro seřazení vzestupně",
-        "sortDescending": ": aktivujte pro seřazení sestupně"
-      },
-      "lengthMenu": "Zobrazit _MENU_ výsledků",
-      "processing": "Zpracovávání...",
-      "search": "Vyhledávání:",
-      "decimal": ",",
-      "thousands": " "
+        "emptyTable": "Tabulka neobsahuje žádná data",
+        "info": "Zobrazuji _START_ až _END_ z celkem _TOTAL_ záznamů",
+        "infoEmpty": "Zobrazuji 0 až 0 z 0 záznamů",
+        "infoFiltered": "(filtrováno z celkem _MAX_ záznamů)",
+        "loadingRecords": "Načítám...",
+        "zeroRecords": "Žádné záznamy nebyly nalezeny",
+        "paginate": {
+            "first": "První",
+            "last": "Poslední",
+            "next": "Další",
+            "previous": "Předchozí"
+        },
+        "aria": {
+            "sortAscending": ": aktivujte pro seřazení vzestupně",
+            "sortDescending": ": aktivujte pro seřazení sestupně"
+        },
+        "lengthMenu": "Zobrazit _MENU_ výsledků",
+        "processing": "Zpracovávání...",
+        "search": "Vyhledávání:",
+        "decimal": ",",
+        "thousands": " ",
+        "collapse_all": "Sbalit vše",
+        "expand_all": "Rozbalit vše"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -508,7 +527,20 @@
         "success": "Úspěch",
         "system_containers": "Systém a kontejnery",
         "uptime": "Doba běhu",
-        "username": "Uživatelské meno"
+        "username": "Uživatelské meno",
+        "architecture": "Architektura",
+        "error_show_ip": "Nepodařilo se přeložit veřejné IP adresy",
+        "show_ip": "Zobrazit veřejné IP adresy",
+        "container_running": "Běží",
+        "container_stopped": "Zastaven",
+        "current_time": "Systémový čas",
+        "timezone": "Časové pásmo",
+        "update_available": "K dispozici je aktualizace",
+        "no_update_available": "Systém je na nejnovější verzi",
+        "update_failed": "Nepodařilo se zkontrolovat aktualizace",
+        "wip": "Nedokončená vývojová verze",
+        "memory": "Paměť",
+        "container_disabled": "Kontejner je zastaven nebo zakázán"
     },
     "diagnostics": {
         "cname_from_a": "Hodnota odvozena z A/AAAA záznamu. Lze použít, pokud záznam ukazuje na správný zdroj.",
@@ -633,7 +665,19 @@
         "title": "Úprava objektu",
         "unchanged_if_empty": "Pokud se nemění, ponechte prázdné",
         "username": "Uživatelské jméno",
-        "validate_save": "Ověřit a uložit"
+        "validate_save": "Ověřit a uložit",
+        "domain_footer_info": "Patičky pro celou doménu se přidávají ke všem odchozím e-mailům spojeným s adresou v rámci této domény. <br> Pro patičku lze použít následující proměnné:",
+        "domain_footer_info_vars": {
+            "from_name": "{= from_name =}   - Jméno odesílatele, např. pro \"Mailcow &lt;moo@mailcow.tld&gt;\" vrátí \"Mailcow\"",
+            "auth_user": "{= auth_user =} - Ověřené uživatelské jméno zadané MTA",
+            "from_user": "{= from_user =}    - uživatelská část odesílatele, např. pro \"moo@mailcow.tld\" vrátí \"moo\"",
+            "from_domain": "{= from_domain =} - Doména odesílatele",
+            "from_addr": "{= from_addr =} - E-mailová adresa odesílatele"
+        },
+        "domain_footer": "Patička pro celou doménu",
+        "domain_footer_html": "HTML text",
+        "domain_footer_plain": "Prostý text",
+        "pushover_sound": "Zvukové upozornění"
     },
     "fido2": {
         "confirm": "Potvrdit",
@@ -670,6 +714,7 @@
         "apps": "Aplikace",
         "debug": "Systémové informace",
         "email": "E-Mail",
+        "mailcow_system": "Systém",
         "mailcow_config": "Nastavení",
         "quarantine": "Karanténa",
         "restart_netfilter": "Restartovat netfilter",
@@ -705,6 +750,7 @@
         "add_mailbox": "Přidat mailovou schránku",
         "add_recipient_map_entry": "Přidat mapu příjemce",
         "add_resource": "Přidat zdroj",
+        "add_template": "Přidat šablonu",
         "add_tls_policy_map": "Přidat mapu TLS pravidel",
         "address_rewriting": "Přepisování adres",
         "alias": "Alias",
@@ -747,6 +793,7 @@
         "domain": "Doména",
         "domain_admins": "Správci domén",
         "domain_aliases": "Doménové aliasy",
+        "domain_templates": "Šablony domén",
         "domain_quota": "Kvóta",
         "domain_quota_total": "Celková kvóta domény",
         "domains": "Domény",
@@ -775,6 +822,7 @@
         "mailbox_defaults": "Výchozí nastavení",
         "mailbox_defaults_info": "Definuje výchozí nastavení pro nové schránky",
         "mailbox_defquota": "Výchozí velikost schránky",
+        "mailbox_templates": "Šablony schránek",
         "mailbox_quota": "Max. velikost schránky",
         "mailboxes": "Mailové schránky",
         "max_aliases": "Max. počet aliasů",
@@ -842,6 +890,8 @@
         "table_size_show_n": "Zobrazit %s položek",
         "target_address": "Cílová adresa",
         "target_domain": "Cílová doména",
+        "templates": "Šablony",
+        "template": "Šablona",
         "tls_enforce_in": "Vynutit TLS pro příchozí",
         "tls_enforce_out": "Vynutit TLS pro odchozí",
         "tls_map_dest": "Cíl",
@@ -857,7 +907,8 @@
         "username": "Uživatelské jméno",
         "waiting": "Čekání",
         "weekly": "Každý týden",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "relay_unknown": "Předávání neexistujících schránek"
     },
     "oauth2": {
         "access_denied": "K udělení přístupu se přihlašte jako vlastník mailové schránky.",
@@ -922,7 +973,19 @@
         "type": "Typ"
     },
     "queue": {
-        "queue_manager": "Správce fronty"
+        "queue_manager": "Správce fronty",
+        "delete": "Vymazat vše",
+        "info": "Poštovní fronta obsahuje všechny e-maily, které čekají na doručení. Pokud e-mail uvízne v poštovní frontě na delší dobu, systém jej automaticky odstraní.<br>Chybové hlášení příslušného e-mailu poskytuje informace o tom, proč se e-mail nepodařilo doručit.",
+        "flush": "Vyprázdnit frontu",
+        "legend": "Funkce operací poštovní fronty:",
+        "ays": "Potvrďte, že chcete opravdu odstranit všechny položky z aktuální fronty.",
+        "deliver_mail": "Doručit",
+        "deliver_mail_legend": "Opětovný pokus o doručení vybraných e-mailů.",
+        "hold_mail": "Podržet",
+        "hold_mail_legend": "Podrží vybrané e-maily. (Zabrání dalším pokusům o doručení)",
+        "show_message": "Zobrazit zprávu",
+        "unhold_mail": "Uvolnit",
+        "unhold_mail_legend": "Uvolnit vybrané e-maily k doručení. (Pouze v případě předchozího podržení)"
     },
     "ratelimit": {
         "disabled": "Vypnuto",
@@ -1006,6 +1069,9 @@
         "settings_map_added": "Přidána položka mapování nastavení",
         "settings_map_removed": "Položka mapování nastavení: %s smazána",
         "sogo_profile_reset": "SOGo profil uživatele %s vyresetován",
+        "template_added": "Přidána šablona %s",
+        "template_modified": "Změny šablony %s byly uloženy",
+        "template_removed": "Šablona ID %s byla odstraněna",
         "tls_policy_map_entry_deleted": "Položka mapy TLS pravidel ID %s smazána",
         "tls_policy_map_entry_saved": "Položka mapy TLS pravidel \"%s\" uložena",
         "ui_texts": "Změny UI textů uloženy",
@@ -1013,7 +1079,9 @@
         "verified_fido2_login": "Ověřené FIDO2 přihlášení",
         "verified_totp_login": "TOTP přihlášení ověřeno",
         "verified_webauthn_login": "WebAuthn přihlášení ověřeno",
-        "verified_yotp_login": "Yubico OTP přihlášení ověřeno"
+        "verified_yotp_login": "Yubico OTP přihlášení ověřeno",
+        "cors_headers_edited": "Nastavení CORS byla uložena",
+        "domain_footer_modified": "Změny patičky domény %s byly uloženy"
     },
     "tfa": {
         "api_register": "%s používá Yubico Cloud API. Prosím získejte API klíč pro své Yubico <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ZDE</a>",
@@ -1199,7 +1267,8 @@
         "weeks": "týdny",
         "with_app_password": "s heslem aplikace",
         "year": "rok",
-        "years": "let"
+        "years": "let",
+        "pushover_sound": "Zvukové upozornění"
     },
     "warning": {
         "cannot_delete_self": "Nelze smazat právě přihlášeného uživatele",
