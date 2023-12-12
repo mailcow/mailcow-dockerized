@@ -503,6 +503,16 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
+        break;          
+        case "fail2ban":
+          if (!isset($_SESSION['mailcow_cc_role'])){
+            switch ($object) {
+              case 'banlist':
+                header('Content-Type: text/plain');
+                echo fail2ban('banlist', 'get', $extra);
+              break;
+            }
+          }
         break;
       }
       if (isset($_SESSION['mailcow_cc_role'])) {
@@ -1324,6 +1334,10 @@ if (isset($_GET['query'])) {
           break;
           case "fail2ban":
             switch ($object) {
+              case 'banlist':
+                header('Content-Type: text/plain');
+                echo fail2ban('banlist', 'get', $extra);
+              break;
               default:
                 $data = fail2ban('get');
                 process_get_return($data);
@@ -1590,6 +1604,12 @@ if (isset($_GET['query'])) {
                 break;
               }
             }
+          break;
+          case "spam-score":
+            $score = mailbox('get', 'spam_score', $object);
+            if ($score)
+              $score = array("score" => preg_replace("/\s+/", "", $score));
+            process_get_return($score);
           break;
         break;
         // return no route found if no case is matched
@@ -1867,8 +1887,6 @@ if (isset($_GET['query'])) {
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
         break;
-        case "domain-wide-footer":
-          process_edit_return(mailbox('edit', 'domain_wide_footer', $attr));
         break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
@@ -1880,6 +1898,9 @@ if (isset($_GET['query'])) {
           switch ($object) {
             case "template":
               process_edit_return(mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            case "custom-attribute":
+              process_edit_return(mailbox('edit', 'mailbox_custom_attribute', array_merge(array('mailboxes' => $items), $attr)));
             break;
             default:
               process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
@@ -1899,6 +1920,9 @@ if (isset($_GET['query'])) {
           switch ($object) {
             case "template":
               process_edit_return(mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
+            break;
+            case "footer":
+              process_edit_return(mailbox('edit', 'domain_wide_footer', array_merge(array('domains' => $items), $attr)));
             break;
             default:
               process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
@@ -1933,7 +1957,14 @@ if (isset($_GET['query'])) {
           process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
         break;
         case "fail2ban":
-          process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+          switch ($object) {
+            case 'banlist':
+              process_edit_return(fail2ban('banlist', 'refresh', $items));
+            break;
+            default:
+              process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+            break;
+          }
         break;
         case "ui_texts":
           process_edit_return(customize('edit', 'ui_texts', $attr));

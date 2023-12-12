@@ -58,12 +58,11 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.62
+      image: mailcow/clamd:1.63
       restart: always
       depends_on:
         unbound-mailcow:
           condition: service_healthy
-          restart: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -78,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.92
+      image: mailcow/rspamd:1.94
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -172,7 +171,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.119
+      image: mailcow/sogo:1.120
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -219,7 +218,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.25
+      image: mailcow/dovecot:1.26
       depends_on:
         - mysql-mailcow
       dns:
@@ -305,7 +304,6 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-          restart: true
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -436,7 +434,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.52
+      image: mailcow/netfilter:1.53
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -459,7 +457,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.98
+      image: mailcow/watchdog:1.99
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -490,6 +488,8 @@ services:
         - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
         - WATCHDOG_NOTIFY_START=${WATCHDOG_NOTIFY_START:-y}
         - WATCHDOG_SUBJECT=${WATCHDOG_SUBJECT:-Watchdog ALERT}
+        - WATCHDOG_NOTIFY_WEBHOOK=${WATCHDOG_NOTIFY_WEBHOOK:-}
+        - WATCHDOG_NOTIFY_WEBHOOK_BODY=${WATCHDOG_NOTIFY_WEBHOOK_BODY:-}
         - WATCHDOG_EXTERNAL_CHECKS=${WATCHDOG_EXTERNAL_CHECKS:-n}
         - WATCHDOG_MYSQL_REPLICATION_CHECKS=${WATCHDOG_MYSQL_REPLICATION_CHECKS:-n}
         - WATCHDOG_VERBOSE=${WATCHDOG_VERBOSE:-n}
@@ -529,7 +529,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.05
+      image: mailcow/dockerapi:2.06
       security_opt:
         - label=disable
       restart: always

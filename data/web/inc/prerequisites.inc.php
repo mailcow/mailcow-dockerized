@@ -70,6 +70,8 @@ try {
   }
 }
 catch (Exception $e) {
+// Stop when redis is not available
+http_response_code(500);
 ?>
 <center style='font-family:sans-serif;'>Connection to Redis failed.<br /><br />The following error was reported:<br/><?=$e->getMessage();?></center>
 <?php
@@ -98,6 +100,7 @@ try {
 }
 catch (PDOException $e) {
 // Stop when SQL connection fails
+http_response_code(500);
 ?>
 <center style='font-family:sans-serif;'>Connection to database failed.<br /><br />The following error was reported:<br/>  <?=$e->getMessage();?></center>
 <?php
@@ -105,6 +108,7 @@ exit;
 }
 // Stop when dockerapi is not available
 if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
+  http_response_code(500);
 ?>
 <center style='font-family:sans-serif;'>Connection to dockerapi container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
 <?php

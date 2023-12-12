@@ -58,6 +58,7 @@
         "domain": "Domain",
         "domain_matches_hostname": "Domain %s darf nicht dem Hostnamen entsprechen",
         "domain_quota_m": "Domain-Speicherplatz gesamt (MiB)",
+        "dry": "Synchronisation simulieren",
         "enc_method": "Verschlüsselung",
         "exclude": "Elemente ausschließen (Regex)",
         "full_name": "Vor- und Nachname",
@@ -147,6 +148,7 @@
         "change_logo": "Logo ändern",
         "configuration": "Konfiguration",
         "convert_html_to_text": "Konvertiere HTML zu reinem Text",
+        "copy_to_clipboard": "Text wurde in die Zwischenablage kopiert!",
         "cors_settings": "CORS Einstellungen",
         "credentials_transport_warning": "<b>Warnung</b>: Das Hinzufügen einer neuen Regel bewirkt die Aktualisierung der Authentifizierungsdaten aller vorhandenen Einträge mit identischem Next Hop.",
         "customer_id": "Kunde",
@@ -180,6 +182,8 @@
         "f2b_blacklist": "Blacklist für Netzwerke und Hosts",
         "f2b_filter": "Regex-Filter",
         "f2b_list_info": "Ein Host oder Netzwerk auf der Blacklist wird immer eine Whitelist-Einheit überwiegen. <b>Die Aktualisierung der Liste dauert einige Sekunden.</b>",
+        "f2b_manage_external": "Fail2Ban extern verwalten",
+        "f2b_manage_external_info": "Fail2ban wird die Banlist weiterhin pflegen, jedoch werden keine aktiven Regeln zum blockieren gesetzt. Die unten generierte Banlist, kann verwendet werden, um den Datenverkehr extern zu blockieren.",
         "f2b_max_attempts": "Max. Versuche",
         "f2b_max_ban_time": "Maximale Bannzeit in Sekunden",
         "f2b_netban_ipv4": "Netzbereich für IPv4-Banns (8-32)",
@@ -345,7 +349,9 @@
         "oauth2_apps": "OAuth2 Apps",
         "queue_unban": "entsperren",
         "allowed_methods": "Access-Control-Allow-Methods",
-        "allowed_origins": "Access-Control-Allow-Origin"
+        "allowed_origins": "Access-Control-Allow-Origin",
+        "logo_dark_label": "Invertiert für den Darkmode",
+        "logo_normal_label": "Normal"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -573,6 +579,7 @@
         "client_secret": "Client-Secret",
         "comment_info": "Ein privater Kommentar ist für den Benutzer nicht einsehbar. Ein öffentlicher Kommentar wird als Tooltip im Interface des Benutzers angezeigt.",
         "created_on": "Erstellt am",
+        "custom_attributes": "benutzerdefinierte Attribute",
         "delete1": "Lösche Nachricht nach Übertragung vom Quell-Server",
         "delete2": "Lösche Nachrichten von Ziel-Server, die nicht auf Quell-Server vorhanden sind",
         "delete2duplicates": "Lösche Duplikate im Ziel",
@@ -613,6 +620,7 @@
         "max_quota": "Max. Größe per Mailbox (MiB)",
         "maxage": "Maximales Alter in Tagen einer Nachricht, die kopiert werden soll<br><small>(0 = alle Nachrichten kopieren)</small>",
         "maxbytespersecond": "Max. Übertragungsrate in Bytes/s (0 für unlimitiert)",
+        "mbox_exclude": "Mailboxen ausschließen",
         "mbox_rl_info": "Dieses Limit wird auf den SASL Loginnamen angewendet und betrifft daher alle Absenderadressen, die der eingeloggte Benutzer verwendet. Bei Mailbox Ratelimit überwiegt ein Domain-weites Ratelimit.",
         "mins_interval": "Intervall (min)",
         "multiple_bookings": "Mehrfaches Buchen",
@@ -672,7 +680,11 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton"
+        "pushover_sound": "Ton",
+        "domain_footer_info_vars": {
+            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
+            "from_user": "{= from_user =}   - Von Teil des Benutzers z.B. \"moo@mailcow.tld\" wird \"moo\" zurückgeben."
+        }
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -857,7 +869,7 @@
         "sieve_preset_5": "Auto-Responder (Vacation, Urlaub)",
         "sieve_preset_6": "E-Mails mit Nachricht abweisen",
         "sieve_preset_7": "Weiterleiten und behalten oder verwerfen",
-        "sieve_preset_8": "Nachricht verwerfen, wenn Absender und Alias-Ziel identisch sind.",
+        "sieve_preset_8": "E-Mail eines bestimmten Absenders umleiten, als gelesen markieren und in Unterordner sortieren",
         "sieve_preset_header": "Beispielinhalte zur Einsicht stehen nachstehend bereit. Siehe auch <a href=\"https://de.wikipedia.org/wiki/Sieve\" target=\"_blank\">Wikipedia</a>.",
         "sogo_visible": "Alias Sichtbarkeit in SOGo",
         "sogo_visible_n": "Alias in SOGo verbergen",
@@ -1026,6 +1038,7 @@
         "domain_removed": "Domain %s wurde entfernt",
         "dovecot_restart_success": "Dovecot wurde erfolgreich neu gestartet",
         "eas_reset": "ActiveSync Gerät des Benutzers %s wurde zurückgesetzt",
+        "f2b_banlist_refreshed": "Banlist ID wurde erfolgreich erneuert.",
         "f2b_modified": "Änderungen an Fail2ban-Parametern wurden gespeichert",
         "forwarding_host_added": "Weiterleitungs-Host %s wurde hinzugefügt",
         "forwarding_host_removed": "Weiterleitungs-Host %s wurde entfernt",
@@ -1124,6 +1137,7 @@
         "apple_connection_profile_complete": "Dieses Verbindungsprofil beinhaltet neben IMAP- und SMTP-Konfigurationen auch Pfade für die Konfiguration von CalDAV (Kalender) und CardDAV (Adressbücher) für ein Apple-Gerät.",
         "apple_connection_profile_mailonly": "Dieses Verbindungsprofil beinhaltet IMAP- und SMTP-Konfigurationen für ein Apple-Gerät.",
         "apple_connection_profile_with_app_password": "Es wird ein neues App-Passwort erzeugt und in das Profil eingefügt, damit bei der Einrichtung kein Passwort eingegeben werden muss. Geben Sie das Profil nicht weiter, da es einen vollständigen Zugriff auf Ihr Postfach ermöglicht.",
+        "attribute": "Attribut",
         "change_password": "Passwort ändern",
         "change_password_hint_app_passwords": "Ihre Mailbox hat %d App-Passwörter, die nicht geändert werden. Um diese zu verwalten, gehen Sie bitte zum App-Passwörter-Tab.",
         "clear_recent_successful_connections": "Alle erfolgreichen Verbindungen bereinigen",
@@ -1243,6 +1257,7 @@
         "tls_policy_warning": "<strong>Vorsicht:</strong> Entscheiden Sie sich unverschlüsselte Verbindungen abzulehnen, kann dies dazu führen, dass Kontakte Sie nicht mehr erreichen.<br>Nachrichten, die die Richtlinie nicht erfüllen, werden durch einen Hard-Fail im Mailsystem abgewiesen.<br>Diese Einstellung ist aktiv für die primäre Mailbox, für alle Alias-Adressen, die dieser Mailbox <b>direkt zugeordnet</b> sind (lediglich eine einzige Ziel-Adresse) und der Adressen, die sich aus Alias-Domains ergeben. Ausgeschlossen sind temporäre Aliasse (\"Spam-Alias-Adressen\"), Catch-All Alias-Adressen sowie Alias-Adressen mit mehreren Zielen.",
         "user_settings": "Benutzereinstellungen",
         "username": "Benutzername",
+        "value": "Wert",
         "verify": "Verifizieren",
         "waiting": "Warte auf Ausführung",
         "week": "Woche",

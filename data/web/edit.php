@@ -58,6 +58,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'dkim' => dkim('details', $domain),
             'domain_details' => $result,
             'domain_footer' => $domain_footer,
+            'mailboxes' => mailbox('get', 'mailboxes', $_GET["domain"]),
+            'aliases' => mailbox('get', 'aliases', $_GET["domain"], 'address')
           ];
       }
     }
@@ -218,6 +220,7 @@ $js_minifier->add('/web/js/site/pwgen.js');
 $template_data['result'] = $result;
 $template_data['return_to'] = $_SESSION['return_to'];
 $template_data['lang_user'] = json_encode($lang['user']);
+$template_data['lang_admin'] = json_encode($lang['admin']);
 $template_data['lang_datatables'] = json_encode($lang['datatables']);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

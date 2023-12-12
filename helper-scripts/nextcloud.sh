@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=27.1.2
+NEXTCLOUD_VERSION=27.1.4
 
 echo -ne "Checking prerequisites..."
 sleep 1
@@ -106,6 +106,10 @@ elif [[ ${NC_UPDATE} == "y" ]]; then
     exit 1
   else
     docker exec -it -u www-data $(docker ps -f name=php-fpm-mailcow -q) bash -c "php /web/nextcloud/updater/updater.phar"
+    NC_SUBD=$(docker exec -i -u www-data $(docker ps -f name=php-fpm-mailcow -q) /web/nextcloud/occ config:system:get overwritehost)
+    mv ./data/conf/nginx/nextcloud.conf ./data/conf/nginx/nextcloud.conf-$(date +%s).bak
+    cp ./data/assets/nextcloud/nextcloud.conf ./data/conf/nginx/
+    sed -i "s/NC_SUBD/${NC_SUBD}/g" ./data/conf/nginx/nextcloud.conf
   fi
 
 elif [[ ${NC_INSTALL} == "y" ]]; then
