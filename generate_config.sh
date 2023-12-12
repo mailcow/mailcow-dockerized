@@ -408,6 +408,9 @@ USE_WATCHDOG=y
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
 
+# Send a notification when the watchdog is started.
+WATCHDOG_NOTIFY_START=y
+
 # Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.
 #WATCHDOG_SUBJECT=
 
