@@ -345,7 +345,10 @@
         "allowed_methods": "Access-Control-Allow-Methods",
         "ip_check": "Проверить IP",
         "ip_check_disabled": "Проверка IP отключена. Вы можете включить его в разделе <br> <strong>Система > Конфигурация > Параметры > Настроить</strong>.",
-        "ip_check_opt_in": "Согласие на использование сторонних служб <strong>ipv4.mailcow.email</strong> и <strong>ipv6.mailcow.email</strong> для разрешения внешних IP-адресов."
+        "ip_check_opt_in": "Согласие на использование сторонних служб <strong>ipv4.mailcow.email</strong> и <strong>ipv6.mailcow.email</strong> для разрешения внешних IP-адресов.",
+        "f2b_manage_external": "Внешнее управление Fail2Ban",
+        "f2b_manage_external_info": "Fail2ban по-прежнему будет вести банлист, но не будет активно устанавливать правила для блокировки трафика. Используйте сгенерированный ниже банлист для внешнего блокирования трафика.",
+        "copy_to_clipboard": "Текст скопирован в буфер обмена!"
     },
     "danger": {
         "access_denied": "Доступ запрещён, или указаны неверные данные",
@@ -1015,7 +1018,8 @@
         "verified_webauthn_login": "Авторизация WebAuthn пройдена",
         "verified_yotp_login": "Авторизация Yubico OTP пройдена",
         "cors_headers_edited": "Настройки CORS сохранены",
-        "domain_footer_modified": "Изменения в нижнем колонтитуле домена %s сохранены"
+        "domain_footer_modified": "Изменения в нижнем колонтитуле домена %s сохранены",
+        "f2b_banlist_refreshed": "Идентификатор банлиста был успешно обновлен."
     },
     "tfa": {
         "api_register": "%s использует Yubico Cloud API. Пожалуйста, получите ключ API для вашего ключа <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">здесь</a>",
