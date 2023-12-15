@@ -1114,7 +1114,8 @@ jQuery(function($){
           title: "",
           data: 'in_use.sortBy',
           defaultContent: '',
-          className: "d-none"
+          className: "d-none",
+          type: "num"
         },
       ]
     });
