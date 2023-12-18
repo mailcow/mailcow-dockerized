@@ -434,7 +434,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.53
+      image: mailcow/netfilter:1.54
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -457,7 +457,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.99
+      image: mailcow/watchdog:2.00
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
