@@ -148,6 +148,7 @@
         "change_logo": "Logo ändern",
         "configuration": "Konfiguration",
         "convert_html_to_text": "Konvertiere HTML zu reinem Text",
+        "copy_to_clipboard": "Text wurde in die Zwischenablage kopiert!",
         "cors_settings": "CORS Einstellungen",
         "credentials_transport_warning": "<b>Warnung</b>: Das Hinzufügen einer neuen Regel bewirkt die Aktualisierung der Authentifizierungsdaten aller vorhandenen Einträge mit identischem Next Hop.",
         "customer_id": "Kunde",
@@ -181,6 +182,8 @@
         "f2b_blacklist": "Blacklist für Netzwerke und Hosts",
         "f2b_filter": "Regex-Filter",
         "f2b_list_info": "Ein Host oder Netzwerk auf der Blacklist wird immer eine Whitelist-Einheit überwiegen. <b>Die Aktualisierung der Liste dauert einige Sekunden.</b>",
+        "f2b_manage_external": "Fail2Ban extern verwalten",
+        "f2b_manage_external_info": "Fail2ban wird die Banlist weiterhin pflegen, jedoch werden keine aktiven Regeln zum blockieren gesetzt. Die unten generierte Banlist, kann verwendet werden, um den Datenverkehr extern zu blockieren.",
         "f2b_max_attempts": "Max. Versuche",
         "f2b_max_ban_time": "Maximale Bannzeit in Sekunden",
         "f2b_netban_ipv4": "Netzbereich für IPv4-Banns (8-32)",
@@ -346,7 +349,9 @@
         "oauth2_apps": "OAuth2 Apps",
         "queue_unban": "entsperren",
         "allowed_methods": "Access-Control-Allow-Methods",
-        "allowed_origins": "Access-Control-Allow-Origin"
+        "allowed_origins": "Access-Control-Allow-Origin",
+        "logo_dark_label": "Invertiert für den Darkmode",
+        "logo_normal_label": "Normal"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -675,7 +680,11 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton"
+        "pushover_sound": "Ton",
+        "domain_footer_info_vars": {
+            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
+            "from_user": "{= from_user =}   - Von Teil des Benutzers z.B. \"moo@mailcow.tld\" wird \"moo\" zurückgeben."
+        }
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -1029,6 +1038,7 @@
         "domain_removed": "Domain %s wurde entfernt",
         "dovecot_restart_success": "Dovecot wurde erfolgreich neu gestartet",
         "eas_reset": "ActiveSync Gerät des Benutzers %s wurde zurückgesetzt",
+        "f2b_banlist_refreshed": "Banlist ID wurde erfolgreich erneuert.",
         "f2b_modified": "Änderungen an Fail2ban-Parametern wurden gespeichert",
         "forwarding_host_added": "Weiterleitungs-Host %s wurde hinzugefügt",
         "forwarding_host_removed": "Weiterleitungs-Host %s wurde entfernt",

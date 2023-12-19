@@ -441,7 +441,10 @@ CONFIG_ARRAY=(
   "SKIP_SOGO"
   "USE_WATCHDOG"
   "WATCHDOG_NOTIFY_EMAIL"
+  "WATCHDOG_NOTIFY_WEBHOOK"
+  "WATCHDOG_NOTIFY_WEBHOOK_BODY"
   "WATCHDOG_NOTIFY_BAN"
+  "WATCHDOG_NOTIFY_START"
   "WATCHDOG_EXTERNAL_CHECKS"
   "WATCHDOG_SUBJECT"
   "SKIP_CLAMD"
@@ -623,11 +626,32 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "#MAILDIR_SUB=Maildir" >> mailcow.conf
       echo "MAILDIR_SUB=" >> mailcow.conf
     fi
+  elif [[ ${option} == "WATCHDOG_NOTIFY_WEBHOOK" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Send notifications to a webhook URL that receives a POST request with the content type "application/json".' >> mailcow.conf
+      echo '# You can use this to send notifications to services like Discord, Slack and others.' >> mailcow.conf
+      echo '#WATCHDOG_NOTIFY_WEBHOOK=https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_NOTIFY_WEBHOOK_BODY" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# JSON body included in the webhook POST request. Needs to be in single quotes.' >> mailcow.conf
+      echo '# Following variables are available: SUBJECT, BODY' >> mailcow.conf
+      WEBHOOK_BODY='{"username": "mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}'
+      echo "#WATCHDOG_NOTIFY_WEBHOOK_BODY='${WEBHOOK_BODY}'" >> mailcow.conf
+    fi
   elif [[ ${option} == "WATCHDOG_NOTIFY_BAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Notify about banned IP. Includes whois lookup.' >> mailcow.conf
       echo "WATCHDOG_NOTIFY_BAN=y" >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_NOTIFY_START" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Send a notification when the watchdog is started.' >> mailcow.conf
+      echo "WATCHDOG_NOTIFY_START=y" >> mailcow.conf
     fi
   elif [[ ${option} == "WATCHDOG_SUBJECT" ]]; then
     if ! grep -q ${option} mailcow.conf; then

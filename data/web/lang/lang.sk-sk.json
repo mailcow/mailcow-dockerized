@@ -107,7 +107,8 @@
         "username": "Používateľské meno",
         "validate": "Overiť",
         "validation_success": "Úspešne overené",
-        "tags": "Štítky"
+        "tags": "Štítky",
+        "dry": "Simulovať synchronizáciu"
     },
     "admin": {
         "access": "Prístup",
@@ -486,7 +487,9 @@
         },
         "emptyTable": "Nie sú k dispozícii žiadne dáta.",
         "decimal": ",",
-        "thousands": " "
+        "thousands": " ",
+        "collapse_all": "Zbaliť všetko",
+        "expand_all": "Rozbaliť všetko"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -639,7 +642,18 @@
         "title": "Upraviť objekt",
         "unchanged_if_empty": "Ak nemeníte, nechajte prázdne",
         "username": "Používateľské meno",
-        "validate_save": "Validovať a uložiť"
+        "validate_save": "Validovať a uložiť",
+        "domain_footer_info_vars": {
+            "from_addr": "{= from_addr =} - E-mailová adresa odosielateľa",
+            "from_domain": "{= from_domain =} - Doména odosielateľa",
+            "auth_user": "{= auth_user =} - Prihlasovacie meno odosielateľa",
+            "from_user": "{= from_user =}   - Používateľská časť e-mailovej adresy odosielateľa, napr. pre \"moo@mailcow.tld\" vráti \"moo\"",
+            "from_name": "{= from_name =}   - Meno odosielateľa, napr. pre \"Mailcow &lt;moo@mailcow.tld&gt;\" vráti \"Mailcow\""
+        },
+        "domain_footer": "Pätička pre celú doménu",
+        "domain_footer_html": "HTML text",
+        "domain_footer_info": "Pätička pre celú doménu sa pridáva do všetkých odchádzajúcich e-mailov spojených s adresou v rámci tejto domény. <br> Pre pätičku je možné použiť nasledujúce premenné:",
+        "domain_footer_plain": "Obyčajný text"
     },
     "fido2": {
         "confirm": "Potvrdiť",
@@ -934,7 +948,19 @@
         "type": "Typ"
     },
     "queue": {
-        "queue_manager": "Správca fronty"
+        "queue_manager": "Správca fronty",
+        "delete": "Vymazať všetko",
+        "flush": "Vyprázdnit frontu",
+        "info": "Poštová fronta obsahuje všetky e-maily, ktoré čakajú na doručenie. Ak e-mail uviazne v poštovej fronte na dlhší čas, systém ho automaticky vymaže.<br>Chybové hlásenie príslušného e-mailu poskytuje informácie o tom, prečo sa e-mail nepodarilo doručiť.",
+        "legend": "Možnosti akcií nad poštovou frontou:",
+        "ays": "Potvrďte, že chcete naozaj odstrániť všetky položky z aktuálnej fronty.",
+        "deliver_mail": "Doručiť",
+        "deliver_mail_legend": "Pokus o opätovné doručenie vybraných e-mailov.",
+        "show_message": "Zobraziť správu",
+        "unhold_mail": "Uvoľniť",
+        "unhold_mail_legend": "Uvoľniť vybrané e-maily na doručenie. (Len v prípade predchádzajúceho podržania)",
+        "hold_mail": "Podržať",
+        "hold_mail_legend": "Podržať vybrané e-maily. (Zabráni ďalším pokusom o doručenie)"
     },
     "ratelimit": {
         "disabled": "Vypnuté",
@@ -1028,7 +1054,8 @@
         "verified_fido2_login": "Overené FIDO2 prihlásenie",
         "verified_totp_login": "Overené TOTP prihlásenie",
         "verified_webauthn_login": "Overené WebAuthn prihlásenie",
-        "verified_yotp_login": "Overené Yubico OTP prihlásenie"
+        "verified_yotp_login": "Overené Yubico OTP prihlásenie",
+        "domain_footer_modified": "Zmeny v pätičke domény %s boli uložené"
     },
     "tfa": {
         "api_register": "%s využíva Yubico Cloud API. Prosím, zaobstarajte si API kľúč pre váš kľúč <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">tu</a>",
