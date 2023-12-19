@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ❓ Community-driven support
+  - name: ❓ Community-driven support (Free)
     url: https://docs.mailcow.email/#get-support
     about: Please use the community forum for questions or assistance
+  - name: 🔥 Premium Support (Paid)
+    url: https://www.servercow.de/mailcow?lang=en#support
+    about: Buy a support subscription for any critical issues and get assisted by the mailcow Team. See conditions!
   - name: 🚨 Report a security vulnerability
-    url: https://www.servercow.de/anfrage?lang=en
+    url: "mailto:info@servercow.de?subject=mailcow: dockerized Security Vulnerability"
     about: Please give us appropriate time to verify, respond and fix before disclosure.
