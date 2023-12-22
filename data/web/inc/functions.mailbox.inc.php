@@ -3411,6 +3411,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $footers = array();
           $footers['html'] = isset($_data['html']) ? $_data['html'] : '';
           $footers['plain'] = isset($_data['plain']) ? $_data['plain'] : '';
+          $footers['skip_replies'] = isset($_data['skip_replies']) ? (int)$_data['skip_replies'] : 0;
           $footers['mbox_exclude'] = array();
           if (isset($_data["mbox_exclude"])){
             if (!is_array($_data["mbox_exclude"])) {
@@ -3460,12 +3461,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             try {
               $stmt = $pdo->prepare("DELETE FROM `domain_wide_footer` WHERE `domain`= :domain");
               $stmt->execute(array(':domain' => $domain));
-              $stmt = $pdo->prepare("INSERT INTO `domain_wide_footer` (`domain`, `html`, `plain`, `mbox_exclude`) VALUES (:domain, :html, :plain, :mbox_exclude)");
+              $stmt = $pdo->prepare("INSERT INTO `domain_wide_footer` (`domain`, `html`, `plain`, `mbox_exclude`, `skip_replies`) VALUES (:domain, :html, :plain, :mbox_exclude, :skip_replies)");
               $stmt->execute(array(
                 ':domain' => $domain,
                 ':html' => $footers['html'],
                 ':plain' => $footers['plain'],
                 ':mbox_exclude' => json_encode($footers['mbox_exclude']),
+                ':skip_replies' => $footers['skip_replies'],
               ));
             }
             catch (PDOException $e) {
@@ -4622,7 +4624,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           try {
-            $stmt = $pdo->prepare("SELECT `html`, `plain`, `mbox_exclude` FROM `domain_wide_footer`
+            $stmt = $pdo->prepare("SELECT `html`, `plain`, `mbox_exclude`, `skip_replies` FROM `domain_wide_footer`
               WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain

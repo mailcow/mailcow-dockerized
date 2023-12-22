@@ -592,6 +592,7 @@
         "domain_footer_html": "HTML footer",
         "domain_footer_info": "Domain wide footer werden allen ausgehenden E-Mails hinzugefügt, die einer Adresse innerhalb dieser Domain gehört.<br>Die folgenden Variablen können für den Footer benutzt werden:",
         "domain_footer_plain": "PLAIN footer",
+        "domain_footer_skip_replies": "Ignoriere Footer bei Antwort E-Mails",
         "domain_quota": "Domain Speicherplatz gesamt (MiB)",
         "domains": "Domains",
         "dont_check_sender_acl": "Absender für Domain %s u. Alias-Domain nicht prüfen",
@@ -680,11 +681,7 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton",
-        "domain_footer_info_vars": {
-            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
-            "from_user": "{= from_user =}   - Von Teil des Benutzers z.B. \"moo@mailcow.tld\" wird \"moo\" zurückgeben."
-        }
+        "pushover_sound": "Ton"
     },
     "fido2": {
         "confirm": "Bestätigen",
