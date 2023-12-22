@@ -600,6 +600,7 @@
             "custom": "{= foo =}         - If mailbox has the custom attribute \"foo\" with value \"bar\" it returns \"bar\""
         },
         "domain_footer_plain": "PLAIN footer",
+        "domain_footer_skip_replies": "Ignore footer on reply e-mails",
         "domain_quota": "Domain quota",
         "domains": "Domains",
         "dont_check_sender_acl": "Disable sender check for domain %s (+ alias domains)",
