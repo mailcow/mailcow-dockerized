@@ -177,6 +177,7 @@ class SSP {
 	{
 		$globalSearch = array();
 		$columnSearch = array();
+		$joins = array();
 		$dtColumns = self::pluck( $columns, 'dt' );
 
 		if ( isset($request['search']) && $request['search']['value'] != '' ) {
@@ -184,13 +185,19 @@ class SSP {
 
 			for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
 				$requestColumn = $request['columns'][$i];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+				$columnIdx = array_search( $i, $dtColumns );
 				$column = $columns[ $columnIdx ];
 
 				if ( $requestColumn['searchable'] == 'true' ) {
 					if(!empty($column['db'])){
-						$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
-						$globalSearch[] = "`".$tablesAS."`.`".$column['db']."` LIKE ".$binding;
+    					$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
+    					
+    					if(isset($column['search']['join'])) {
+            				$joins[] = $column['search']['join'];
+            				$globalSearch[] = $column['search']['where_column'].' LIKE '.$binding;
+        				} else {
+						    $globalSearch[] = "`".$tablesAS."`.`".$column['db']."` LIKE ".$binding;
+						}
 					}
 				}
 			}
@@ -227,12 +234,17 @@ class SSP {
 				implode(' AND ', $columnSearch) :
 				$where .' AND '. implode(' AND ', $columnSearch);
 		}
+		
+		$join = '';
+		if( count($joins) ) {
+    		$join = implode(' ', $joins);
+		}
 
 		if ( $where !== '' ) {
 			$where = 'WHERE '.$where;
 		}
 
-		return $where;
+		return [$join, $where];
 	}
 
 
@@ -270,13 +282,14 @@ class SSP {
 		// Build the SQL query string from the request
 		list($select, $order) = self::order( $tablesAS, $request, $columns );
 		$limit = self::limit( $request, $columns );
-		$where = self::filter( $tablesAS, $request, $columns, $bindings );
+		list($join, $where) = self::filter( $tablesAS, $request, $columns, $bindings );
 
 		// Main query to actually get the data
 		$data = self::sql_exec( $db, $bindings,
 			"SELECT `$tablesAS`.`".implode("`, `$tablesAS`.`", self::pluck($columns, 'db'))."`
 			 $select
 			 FROM `$table` AS `$tablesAS`
+			 $join
 			 $where
 			 $order
 			 $limit"
@@ -284,15 +297,16 @@ class SSP {
 
 		// Data set length after filtering
 		$resFilterLength = self::sql_exec( $db, $bindings,
-			"SELECT COUNT(`{$primaryKey}`)
+			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
+			 $join
 			 $where"
 		);
 		$recordsFiltered = $resFilterLength[0][0];
 
 		// Total data set length
 		$resTotalLength = self::sql_exec( $db,
-			"SELECT COUNT(`{$primaryKey}`)
+			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`"
 		);
 		$recordsTotal = $resTotalLength[0][0];
@@ -362,7 +376,7 @@ class SSP {
 		// Build the SQL query string from the request
 		list($select, $order) = self::order( $tablesAS, $request, $columns );
 		$limit = self::limit( $request, $columns );
-		$where = self::filter( $tablesAS, $request, $columns, $bindings );
+		list($join_filter, $where) = self::filter( $tablesAS, $request, $columns, $bindings );
 
 		// whereResult can be a simple string, or an assoc. array with a
 		// condition and bindings
@@ -388,7 +402,9 @@ class SSP {
 			 $select
 			 FROM `$table` AS `$tablesAS`
 			 $join
+			 $join_filter
 			 $where
+			 GROUP BY `{$tablesAS}`.`{$primaryKey}`
 			 $order
 			 $limit"
 		);
@@ -398,18 +414,22 @@ class SSP {
 			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
 			 $join
-			 $where"
+			 $join_filter
+			 $where
+			 GROUP BY `{$tablesAS}`.`{$primaryKey}`"
 		);
-		$recordsFiltered = $resFilterLength[0][0];
+		$recordsFiltered = (isset($resFilterLength[0])) ? $resFilterLength[0][0] : 0;
 
 		// Total data set length
 		$resTotalLength = self::sql_exec( $db, $bindings,
 			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
       $join
-      $where"
+      $join_filter
+      $where
+      GROUP BY `{$tablesAS}`.`{$primaryKey}`"
 		);
-		$recordsTotal = $resTotalLength[0][0];
+		$recordsTotal = (isset($resTotalLength[0])) ? $resTotalLength[0][0] : 0;
 
 		/*
 		 * Output
