@@ -613,7 +613,7 @@ jQuery(function($){
         {
           title: 'Tags',
           data: 'tags',
-          searchable: false,
+          searchable: true,
           orderable: false,
           defaultContent: '',
           className: 'none'
@@ -1107,6 +1107,7 @@ jQuery(function($){
         {
           title: 'Tags',
           data: 'tags',
+          searchable: true,
           defaultContent: '',
           className: 'none'
         },
