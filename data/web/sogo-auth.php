@@ -45,7 +45,7 @@ elseif (isset($_GET['login'])) {
   $login = html_entity_decode(rawurldecode($_GET["login"]));
   if (isset($_SESSION['mailcow_cc_role']) &&
     (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
-    if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+    if (is_valid_mailbox_name($login)) {
       if (user_get_alias_details($login) !== false) {
         // load master password
         $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
@@ -71,6 +71,7 @@ elseif (isset($_GET['login'])) {
 }
 // only check for admin-login on sogo GUI requests
 elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   session_start();
   // extract email address from "/SOGo/so/user@domain/xy"
@@ -83,8 +84,7 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
   foreach($email_list as $email) {
     // check if this email is in session allowed list
     if (
-        !empty($email) &&
-        filter_var($email, FILTER_VALIDATE_EMAIL) &&
+        is_valid_mailbox_name($email) &&
         is_array($_SESSION[$session_var_user_allowed]) &&
         in_array($email, $_SESSION[$session_var_user_allowed])
     ) {

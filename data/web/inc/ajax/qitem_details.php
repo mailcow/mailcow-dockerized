@@ -22,7 +22,7 @@ function rrmdir($src) {
 function addAddresses(&$list, $mail, $headerName) {
   $addresses = $mail->getAddresses($headerName);
   foreach ($addresses as $address) {
-    if (filter_var($address['address'], FILTER_VALIDATE_EMAIL)) {
+    if (is_valid_mailbox_name($address['address'])) {
       $list[] = array('address' => $address['address'], 'type' => $headerName);
     }
   }

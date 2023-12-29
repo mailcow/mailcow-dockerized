@@ -83,7 +83,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 if (isset($_SESSION['mailcow_cc_role']) && (isset($_SESSION['acl']['login_as']) && $_SESSION['acl']['login_as'] == "1")) {
 	if (isset($_GET["duallogin"])) {
     $duallogin = html_entity_decode(rawurldecode($_GET["duallogin"]));
-    if (filter_var($duallogin, FILTER_VALIDATE_EMAIL)) {
+    if (is_valid_mailbox_name($duallogin)) {
       if (!empty(mailbox('get', 'mailbox_details', $duallogin))) {
         $_SESSION["dual-login"]["username"] = $_SESSION['mailcow_cc_username'];
         $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];

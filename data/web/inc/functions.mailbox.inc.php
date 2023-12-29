@@ -19,7 +19,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data['username']) && is_valid_mailbox_name($_data['username'])) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -194,7 +194,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data['username']) && is_valid_mailbox_name($_data['username'])) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -292,7 +292,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data['username']) && is_valid_mailbox_name($_data['username'])) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -731,7 +731,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 unset($gotos[$i]);
                 continue;
               }
-              if (!filter_var($goto, FILTER_VALIDATE_EMAIL) === true) {
+              if (!is_valid_mailbox_name($goto) === true) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -809,7 +809,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
+            if ((!is_valid_mailbox_name($address) === true) && !empty($local_part)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -827,7 +827,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `active`)
               VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :active)");
-            if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
+            if (!is_valid_mailbox_name($address) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
                 ':public_comment' => $public_comment,
@@ -990,15 +990,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $local_part   = strtolower(trim($_data['local_part']));
           $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $username     = $local_part . '@' . $domain;
-          if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'mailbox_invalid'
-            );
-            return false;
-          }
-          if (empty($_data['local_part'])) {
+          if (!is_valid_mailbox_name($username)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1300,7 +1292,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $kind               = $_data['kind'];
           $multiple_bookings  = intval($_data['multiple_bookings']);
           $active = intval($_data['active']);
-          if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
+          if (!is_valid_mailbox_name($name)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1666,7 +1658,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+            if (!is_valid_mailbox_name($username) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1720,7 +1712,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+            if (!is_valid_mailbox_name($username) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1779,7 +1771,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+            if (!is_valid_mailbox_name($username) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1950,7 +1942,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+            if (!is_valid_mailbox_name($username) || !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2373,7 +2365,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 continue;
               }
-              if ((!filter_var($address, FILTER_VALIDATE_EMAIL) === true) && !empty($local_part)) {
+              if ((!is_valid_mailbox_name($address) === true)) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2443,7 +2435,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 if (empty($goto)) {
                   continue;
                 }
-                if (!filter_var($goto, FILTER_VALIDATE_EMAIL)) {
+                if (!is_valid_mailbox_name($goto)) {
                   $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2823,7 +2815,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $usernames = $_data['username'];
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2916,7 +2908,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   if (substr($extra_acl, 0, 1) === "@") {
                     $extra_acl = ltrim($extra_acl, '@');
                   }
-                  if (!filter_var($extra_acl, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name($extra_acl)) {
+                  if (!is_valid_mailbox_name($extra_acl) && !is_valid_domain_name($extra_acl)) {
                     $_SESSION['return'][] = array(
                       'type' => 'danger',
                       'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -2926,7 +2918,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                     continue;
                   }
                   $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
-                  if (filter_var($extra_acl, FILTER_VALIDATE_EMAIL)) {
+                  if (is_valid_mailbox_name($extra_acl)) {
                     $extra_acl_domain = idn_to_ascii(substr(strstr($extra_acl, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
                     if (in_array($extra_acl_domain, $domains)) {
                       $_SESSION['return'][] = array(
@@ -2994,7 +2986,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 // Check items in POST array and skip invalid
                 foreach ($sender_acl_domain_admin as $key => $val) {
                   // Check for invalid domain or email format or not *
-                  if (!filter_var($val, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name(ltrim($val, '@')) && $val != '*') {
+                  if (!is_valid_mailbox_name($val) && !is_valid_domain_name(ltrim($val, '@')) && $val != '*') {
                     $_SESSION['return'][] = array(
                       'type' => 'danger',
                       'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3040,7 +3032,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                     continue;
                   }
                   // Check if user has alias access (if object is email)
-                  if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                  if (is_valid_mailbox_name($val)) {
                     if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
                       $_SESSION['return'][] = array(
                         'type' => 'danger',
@@ -3274,7 +3266,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxes          = is_array($_data['mailboxes']) ? $_data['mailboxes'] : array($_data['mailboxes']);
 
           foreach ($mailboxes as $mailbox) {
-            if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($mailbox)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3344,7 +3336,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($name)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3417,7 +3409,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data["mbox_exclude"] = array($_data["mbox_exclude"]);
             }
             foreach ($_data["mbox_exclude"] as $mailbox) {
-              if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+              if (!is_valid_mailbox_name($mailbox)) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3550,11 +3542,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(':logged_in_as' => $_data));
           $address_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($address_row = array_shift($address_rows)) {
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && !hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (is_valid_mailbox_name($address_row['send_as']) && !hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['ro'][] = $address_row['send_as'];
               continue;
             }
-            if (filter_var($address_row['send_as'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
+            if (is_valid_mailbox_name($address_row['send_as']) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $address_row['send_as'])) {
               $data['sender_acl_addresses']['rw'][] = $address_row['send_as'];
               continue;
             }
@@ -3604,7 +3596,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (in_array($row['address'], $data['fixed_sender_aliases'])) {
               continue;
             }
-            if (filter_var($row['address'], FILTER_VALIDATE_EMAIL) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
+            if (is_valid_mailbox_name($row['address']) && hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
               $data['sender_acl_addresses']['selectable'][] = $row['address'];
             }
           }
@@ -3664,7 +3656,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'tls_policy':
           $attrs = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3683,7 +3675,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'quarantine_notification':
           $attrs = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3699,7 +3691,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'quarantine_category':
           $attrs = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3715,7 +3707,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'filters':
           $filters = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3762,7 +3754,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'active_user_sieve':
           $filter_details = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3838,7 +3830,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'syncjobs':
           $syncjobdata = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3897,7 +3889,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           curl_close($curl);
           $policydata = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3924,7 +3916,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'time_limited_aliases':
           $tladata = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -3946,7 +3938,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         break;
         case 'delimiter_action':
           $policydata = array();
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }
@@ -4087,7 +4079,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['domain'] = $row['domain'];
           $aliasdata['goto'] = $row['goto'];
           $aliasdata['address'] = $row['address'];
-          (!filter_var($aliasdata['address'], FILTER_VALIDATE_EMAIL)) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
+          (!is_valid_mailbox_name($aliasdata['address'])) ? $aliasdata['is_catch_all'] = 1 : $aliasdata['is_catch_all'] = 0;
           $aliasdata['active'] = $row['active'];
           $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
@@ -5118,7 +5110,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $usernames = $_data['username'];
           }
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -5361,7 +5353,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $names = $_data['name'];
           }
           foreach ($names as $name) {
-            if (!filter_var($name, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($name)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -5478,7 +5470,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           $wasModified = false;
           foreach ($usernames as $username) {
-            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            if (!is_valid_mailbox_name($username)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),

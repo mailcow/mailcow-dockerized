@@ -5,7 +5,7 @@ function app_passwd($_action, $_data = null) {
   $_data_log = $_data;
   !isset($_data_log['app_passwd']) ?: $_data_log['app_passwd'] = '*';
   !isset($_data_log['app_passwd2']) ?: $_data_log['app_passwd2'] = '*';
-  if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+  if (isset($_data['username']) && is_valid_mailbox_name($_data['username'])) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
       $_SESSION['return'][] = array(
         'type' => 'danger',

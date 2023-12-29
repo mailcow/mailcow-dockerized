@@ -9,13 +9,13 @@ error_reporting(0);
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
   $transport_id = intval($_GET['transport_id']);
   $transport_type = $_GET['transport_type'];
-  if (isset($_GET['mail_from']) && filter_var($_GET['mail_from'], FILTER_VALIDATE_EMAIL)) {
+  if (isset($_GET['mail_from']) && is_valid_mailbox_name($_GET['mail_from'])) {
     $mail_from = $_GET['mail_from'];
   }
   else {
     $mail_from = "relay@example.org";
   }
-  if (isset($_GET['mail_rcpt']) && filter_var($_GET['mail_rcpt'], FILTER_VALIDATE_EMAIL)) {
+  if (isset($_GET['mail_rcpt']) && is_valid_mailbox_name($_GET['mail_rcpt'])) {
     $mail_rcpt = $_GET['mail_rcpt'];
   }
   else {

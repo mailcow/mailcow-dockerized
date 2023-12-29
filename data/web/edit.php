@@ -108,7 +108,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         ];
     }
     elseif (isset($_GET['mailbox'])){
-      if(filter_var(html_entity_decode(rawurldecode($_GET["mailbox"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["mailbox"])) {
+      if(is_valid_mailbox_name(html_entity_decode(rawurldecode($_GET["mailbox"])))) {
         // edit mailbox
         $mailbox = html_entity_decode(rawurldecode($_GET["mailbox"]));
         $result = mailbox('get', 'mailbox_details', $mailbox);
@@ -146,7 +146,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template = 'edit/transport.twig';
         $template_data = ['transport' => $transport];
     }
-    elseif (isset($_GET['resource']) && filter_var(html_entity_decode(rawurldecode($_GET["resource"])), FILTER_VALIDATE_EMAIL) && !empty($_GET["resource"])) {
+    elseif (isset($_GET['resource']) && is_valid_mailbox_name(html_entity_decode(rawurldecode($_GET["resource"])))) {
         $resource = html_entity_decode(rawurldecode($_GET["resource"]));
         $result = mailbox('get', 'resource_details', $resource);
         $template = 'edit/resource.twig';
