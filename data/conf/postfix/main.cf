@@ -84,6 +84,7 @@ smtp_tls_security_level = dane
 smtpd_data_restrictions = reject_unauth_pipelining, permit
 smtpd_delay_reject = yes
 smtpd_error_sleep_time = 10s
+smtpd_forbid_bare_newline = yes
 smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
