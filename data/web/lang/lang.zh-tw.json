@@ -647,7 +647,9 @@
         "username": "使用者名稱",
         "validate_save": "驗證並儲存",
         "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
-        "custom_attributes": "自訂屬性"
+        "custom_attributes": "自訂屬性",
+        "mbox_exclude": "排除信箱",
+        "pushover_sound": "聲音"
     },
     "fido2": {
         "confirm": "確認",
@@ -686,7 +688,10 @@
         "quarantine": "隔離",
         "restart_netfilter": "重新啟動 netfilter",
         "restart_sogo": "重新啟動 SOGo",
-        "user_settings": "使用者設定"
+        "user_settings": "使用者設定",
+        "email": "電子郵件",
+        "mailcow_system": "系統",
+        "mailcow_config": "配置"
     },
     "info": {
         "awaiting_tfa_confirmation": "等待 TFA 確認",
@@ -869,7 +874,13 @@
         "username": "使用者名稱",
         "waiting": "等待中",
         "weekly": "每週",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "templates": "範本",
+        "domain_templates": "域模板",
+        "add_template": "新增模板",
+        "mailbox_templates": "信箱模板",
+        "relay_unknown": "轉發未知信箱",
+        "template": "範本"
     },
     "oauth2": {
         "access_denied": "請使用信箱使用者登入來進行 OAuth2 授權",
@@ -1026,7 +1037,11 @@
         "verified_yotp_login": "Yubico OTP 登入驗證成功",
         "template_removed": "模板 ID %s 已刪除",
         "template_added": "新增了模板 %s",
-        "template_modified": "模板 %s 的變更已儲存"
+        "template_modified": "模板 %s 的變更已儲存",
+        "cors_headers_edited": "CORS 設定已儲存",
+        "domain_footer_modified": "網域頁尾 %s 的變更已儲存",
+        "f2b_banlist_refreshed": "禁止清單 ID 已成功刷新。",
+        "ip_check_opt_in_modified": "IP檢查已成功儲存"
     },
     "tfa": {
         "api_register": "%s 使用 Yubico Cloud API，請在<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">這裡</a>為這把金鑰獲取 API 金鑰",
@@ -1252,6 +1267,21 @@
         "expand_all": "展開全部",
         "info": "顯示 _START_ 到 _END_ 條，共 _TOTAL_ 條",
         "collapse_all": "全部折疊",
-        "emptyTable": "表中沒有可用數據"
+        "emptyTable": "表中沒有可用數據",
+        "thousands": ",",
+        "decimal": "."
+    },
+    "queue": {
+        "deliver_mail_legend": "嘗試重新投遞選定的郵件。",
+        "show_message": "顯示訊息",
+        "unban": "解除禁令隊列",
+        "legend": "郵件隊列操作功能：",
+        "delete": "刪除所有",
+        "flush": "刷新隊列",
+        "info": "郵件隊列包含所有等待投遞的電子郵件。 如果電子郵件長時間滯留在郵件隊列中，系統會自動將其刪除。<br>對應郵件的錯誤訊息會提供有關郵件無法送達的原因的資訊。",
+        "ays": "請確認您要刪除目前隊列中的所有項目。",
+        "deliver_mail": "遞送",
+        "queue_manager": "隊列管理器",
+        "unhold_mail_legend": "釋放選定的郵件以供投遞。 （需事先持有）"
     }
 }
