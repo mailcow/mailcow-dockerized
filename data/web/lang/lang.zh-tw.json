@@ -107,7 +107,8 @@
         "timeout2": "本地主機連線逾時時間",
         "username": "使用者名稱",
         "validate": "驗證",
-        "validation_success": "驗證成功"
+        "validation_success": "驗證成功",
+        "dry": "模擬同步"
     },
     "admin": {
         "access": "存取",
@@ -335,7 +336,22 @@
         "username": "使用者名稱",
         "validate_license_now": "與證書伺服器驗證 GUID",
         "verify": "驗證",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "f2b_manage_external_info": "Fail2ban仍會維護禁令列表，但不會主動設定規則來阻止流量。 使用下面產生的禁止清單從外部阻止流量。",
+        "allowed_origins": "存取控制允許來源",
+        "logo_dark_label": "深色模式",
+        "logo_normal_label": "標準",
+        "f2b_ban_time_increment": "禁令時間會隨著每次禁令增加",
+        "copy_to_clipboard": "文字已複製到剪貼簿！",
+        "cors_settings": "CORS 設定",
+        "f2b_manage_external": "外部管理 Fail2Ban",
+        "f2b_max_ban_time": "最大限度。 禁止時間(s)",
+        "allowed_methods": "存取控制允許方法",
+        "ip_check": "IP檢查",
+        "ip_check_opt_in": "選擇使用第三方服務 <strong>ipv4.mailcow.email</strong> 和 <strong>ipv6.mailcow.email</strong> 來解析外部 IP 位址。",
+        "ip_check_disabled": "IP 檢查已停用。 您可以在<br> <strong>系統 > 配置 > 選項 > 自訂</strong>下啟用它",
+        "options": "選項",
+        "queue_unban": "解除禁令"
     },
     "danger": {
         "access_denied": "存取拒絕或表單資料有誤",
@@ -454,7 +470,17 @@
         "username_invalid": "使用者名稱 %s 無法使用",
         "validity_missing": "請設定有效期",
         "value_missing": "請填入所有欄位",
-        "yotp_verification_failed": "Yubico OTP 認證失敗: %s"
+        "yotp_verification_failed": "Yubico OTP 認證失敗: %s",
+        "webauthn_authenticator_failed": "找不到所選的驗證器",
+        "webauthn_publickey_failed": "沒有為選定的身份驗證器儲存公鑰",
+        "webauthn_username_failed": "所選驗證器屬於另一個帳戶",
+        "cors_invalid_method": "指定的允許方法無效",
+        "cors_invalid_origin": "指定的允許來源無效",
+        "demo_mode_enabled": "演示模式已啟用",
+        "extended_sender_acl_denied": "缺少設定外部寄件者地址的 ACL",
+        "template_exists": "模板 %s 已存在",
+        "template_id_invalid": "範本 ID %s 無效",
+        "template_name_invalid": "模板名稱無效"
     },
     "debug": {
         "chart_this_server": "圖表 (此伺服器)",
@@ -473,7 +499,7 @@
         "restart_container": "重新啟動",
         "service": "服務",
         "size": "大小",
-        "solr_dead": "Solr 正在啟動、停用或已停止運行",
+        "solr_dead": "Solr 正在啟動,停用或已停止運行.",
         "solr_status": "Solr 狀態",
         "started_at": "啟動於",
         "started_on": "啟動於",
@@ -481,7 +507,19 @@
         "success": "成功",
         "system_containers": "系統和容器",
         "uptime": "運行時間",
-        "username": "使用者名稱"
+        "username": "使用者名稱",
+        "architecture": "結構",
+        "current_time": "系統時間",
+        "container_running": "正在執行",
+        "memory": "記憶",
+        "container_disabled": "容器停止或停用",
+        "container_stopped": "已停止",
+        "cores": "核心",
+        "error_show_ip": "無法解析公用IP位址",
+        "show_ip": "顯示公網IP",
+        "update_available": "有可用更新",
+        "no_update_available": "系統已經是最新版本",
+        "update_failed": "無法檢查更新"
     },
     "diagnostics": {
         "cname_from_a": "由 A/AAAA 紀錄獲取。只要紀錄指向正確的資源，此功能就會持續運作。",
@@ -607,7 +645,11 @@
         "title": "編輯物件",
         "unchanged_if_empty": "如果不更改則留空",
         "username": "使用者名稱",
-        "validate_save": "驗證並儲存"
+        "validate_save": "驗證並儲存",
+        "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
+        "custom_attributes": "自訂屬性",
+        "mbox_exclude": "排除信箱",
+        "pushover_sound": "聲音"
     },
     "fido2": {
         "confirm": "確認",
@@ -646,7 +688,10 @@
         "quarantine": "隔離",
         "restart_netfilter": "重新啟動 netfilter",
         "restart_sogo": "重新啟動 SOGo",
-        "user_settings": "使用者設定"
+        "user_settings": "使用者設定",
+        "email": "電子郵件",
+        "mailcow_system": "系統",
+        "mailcow_config": "配置"
     },
     "info": {
         "awaiting_tfa_confirmation": "等待 TFA 確認",
@@ -829,7 +874,13 @@
         "username": "使用者名稱",
         "waiting": "等待中",
         "weekly": "每週",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "templates": "範本",
+        "domain_templates": "域模板",
+        "add_template": "新增模板",
+        "mailbox_templates": "信箱模板",
+        "relay_unknown": "轉發未知信箱",
+        "template": "範本"
     },
     "oauth2": {
         "access_denied": "請使用信箱使用者登入來進行 OAuth2 授權",
@@ -929,7 +980,7 @@
         "delete_filters": "過濾器 %s 已刪除",
         "deleted_syncjob": "同步任務 ID %s 已刪除",
         "deleted_syncjobs": "同步任務 %s 已刪除",
-        "dkim_added": " DKIM 金鑰 %s 已儲存",
+        "dkim_added": "DKIM 金鑰 %s 已儲存",
         "domain_add_dkim_available": "DKIM 金鑰已存在",
         "dkim_duplicated": "域名的 DKIM 金鑰 %s 已複製到 %s",
         "dkim_removed": " DKIM 金鑰 %s 已刪除",
@@ -976,14 +1027,21 @@
         "settings_map_added": "設定規則已新增",
         "settings_map_removed": "設定規則 ID %s 已刪除",
         "sogo_profile_reset": "使用者 %s 的 SOGo 個人頁面已重設",
-        "tls_policy_map_entry_deleted": " TLS 規則 ID %s 已刪除",
+        "tls_policy_map_entry_deleted": "TLS 規則 ID %s 已刪除",
         "tls_policy_map_entry_saved": "TLS 規則 \"%s\" 已儲存",
         "ui_texts": "UI 內文更改已儲存",
         "upload_success": "檔案已成功上傳",
         "verified_fido2_login": "FIDO2 登入驗證成功",
         "verified_totp_login": "TOTP 登入驗證成功",
         "verified_webauthn_login": "WebAuthn 登入驗證成功",
-        "verified_yotp_login": "Yubico OTP 登入驗證成功"
+        "verified_yotp_login": "Yubico OTP 登入驗證成功",
+        "template_removed": "模板 ID %s 已刪除",
+        "template_added": "新增了模板 %s",
+        "template_modified": "模板 %s 的變更已儲存",
+        "cors_headers_edited": "CORS 設定已儲存",
+        "domain_footer_modified": "網域頁尾 %s 的變更已儲存",
+        "f2b_banlist_refreshed": "禁止清單 ID 已成功刷新。",
+        "ip_check_opt_in_modified": "IP檢查已成功儲存"
     },
     "tfa": {
         "api_register": "%s 使用 Yubico Cloud API，請在<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">這裡</a>為這把金鑰獲取 API 金鑰",
@@ -1171,7 +1229,9 @@
         "weeks": "週",
         "with_app_password": "使用應用程式密碼",
         "year": "年",
-        "years": "年"
+        "years": "年",
+        "attribute": "屬性",
+        "pushover_sound": "聲音"
     },
     "warning": {
         "cannot_delete_self": "不能刪除已登入的使用者",
@@ -1185,5 +1245,43 @@
         "quota_exceeded_scope": "域名容量配額已滿: 此域名現在只能創建無限容量的信箱。",
         "session_token": "表單驗證失敗: 驗證碼錯誤",
         "session_ua": "表單驗證失敗: User-Agent 校驗錯誤"
+    },
+    "datatables": {
+        "infoEmpty": "顯示 0 到 0 個條目，共 0 個條目",
+        "infoFiltered": "（從_MAX_個總條目中過濾）",
+        "lengthMenu": "顯示_選單_條目",
+        "loadingRecords": "載入中...",
+        "processing": "請稍等...",
+        "search": "搜尋:",
+        "zeroRecords": "未找到符合的記錄",
+        "paginate": {
+            "first": "第一的",
+            "last": "最後的",
+            "next": "下一個",
+            "previous": "上一個"
+        },
+        "aria": {
+            "sortAscending": "：啟動以升序對列進行排序",
+            "sortDescending": "：啟動以降序對列進行排序"
+        },
+        "expand_all": "展開全部",
+        "info": "顯示 _START_ 到 _END_ 條，共 _TOTAL_ 條",
+        "collapse_all": "全部折疊",
+        "emptyTable": "表中沒有可用數據",
+        "thousands": ",",
+        "decimal": "."
+    },
+    "queue": {
+        "deliver_mail_legend": "嘗試重新投遞選定的郵件。",
+        "show_message": "顯示訊息",
+        "unban": "解除禁令隊列",
+        "legend": "郵件隊列操作功能：",
+        "delete": "刪除所有",
+        "flush": "刷新隊列",
+        "info": "郵件隊列包含所有等待投遞的電子郵件。 如果電子郵件長時間滯留在郵件隊列中，系統會自動將其刪除。<br>對應郵件的錯誤訊息會提供有關郵件無法送達的原因的資訊。",
+        "ays": "請確認您要刪除目前隊列中的所有項目。",
+        "deliver_mail": "遞送",
+        "queue_manager": "隊列管理器",
+        "unhold_mail_legend": "釋放選定的郵件以供投遞。 （需事先持有）"
     }
 }

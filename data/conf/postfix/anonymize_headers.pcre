@@ -12,7 +12,8 @@ if /^\s*Received: from.* \(.*rspamd-mailcow.*mailcow-network.*\).*\(Postcow\)/
   REPLACE Received: from rspamd (rspamd $3) by $4 (Postcow) with $5
 endif
 /^\s*X-Enigmail/        IGNORE
-/^\s*X-Mailer/          IGNORE
+# Not removing Mailer by default, might be signed
+#/^\s*X-Mailer/          IGNORE
 /^\s*X-Originating-IP/  IGNORE
 /^\s*X-Forward/         IGNORE
 # Not removing UA by default, might be signed
