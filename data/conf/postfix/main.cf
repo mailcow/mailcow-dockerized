@@ -11,6 +11,7 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtpd_relay_restrictions = permit_mynetworks,
   permit_sasl_authenticated,
   defer_unauth_destination
+smtpd_forbid_bare_newline = yes
 # alias maps are auto-generated in postfix.sh on startup
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
