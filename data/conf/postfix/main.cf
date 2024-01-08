@@ -85,6 +85,7 @@ smtp_tls_security_level = dane
 smtpd_data_restrictions = reject_unauth_pipelining, permit
 smtpd_delay_reject = yes
 smtpd_error_sleep_time = 10s
+smtpd_forbid_bare_newline = yes
 smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
@@ -161,7 +162,8 @@ transport_maps = pcre:/opt/postfix/conf/custom_transport.pcre,
   proxy:mysql:/opt/postfix/conf/sql/mysql_relay_ne.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no
-postscreen_discard_ehlo_keywords = silent-discard, dsn
+postscreen_discard_ehlo_keywords = silent-discard, dsn, chunking
+smtpd_discard_ehlo_keywords = chunking
 compatibility_level = 2
 smtputf8_enable = no
 # Define protocols for SMTPS and submission service
