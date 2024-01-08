@@ -15,6 +15,7 @@ RUN apk add --virtual .build-deps \
   openssl-dev \
 && apk add -U python3 \
   iptables \
+  iptables-dev \
   ip6tables \
   xtables-addons \
   nftables \

@@ -10,12 +10,13 @@ RUN apk add --update --no-cache python3 \
   openssl \
   tzdata \
   py3-psutil \
+  py3-redis \
+  py3-async-timeout \
 && pip3 install --upgrade pip \
   fastapi \
   uvicorn \
   aiodocker \
-  docker \
-  aioredis 
+  docker
 RUN mkdir /app/modules
 
 COPY docker-entrypoint.sh /app/
