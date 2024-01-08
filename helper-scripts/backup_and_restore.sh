@@ -2,12 +2,55 @@
 
 DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
-if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
-  BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
+if [[ ${1} == "help" ]]; then
+  cat << END_OF_HELP
+  Script usage:
+
+  - Specify 'backup' or 'restore' mode:
+    backup_and_restore.sh backup
+    backup_and_restore.sh restore
+
+  - If you 'backup', you also have to specify what to backup.
+     Use 'backup' to see the backup options you can use.
+
+     backup_and_restore.sh backup
+
+  The script also comes with support for environment variables.
+
+  Available environment variables:
+    THREADS: Allows you to specify how many threads to backup with.
+      example: THREADS=4 backup_and_restore.sh backup all
+
+    NODATE: Allows you to omit the date stamped folder.
+      example: NODATE=1 backup_and_restore.sh backup all
+
+      IMPORTANT: If you'd like to restore a NODATE=1 backup, you have to
+      use NODATE=1 for restoring as well! Otherwise, mailcow will only
+      look for timestamped folders, which you will not have.
+
+  You can combine the variables as well.
+    example: THREADS=4 NODATE=1 backup_and_restore.sh backup all
+
+  To do a full backup with the script, in an example "/backup/" folder:
+    echo "/backup/" | backup_and_restore.sh backup all
+
+  To do a full backup with 4 threads:
+    echo "/backup/" | THREADS=4 NODATE=1 backup_and_restore.sh backup all
+
+  To do a full backup with all available threads:
+    echo "/backup/" | THREADS=\`getconf _NPROCESSORS_ONLN\` NODATE=1 backup_and_restore.sh backup all
+
+END_OF_HELP
+  exit 0
 fi
 
-if [[ ! ${1} =~ (backup|restore) ]]; then
-  echo "First parameter needs to be 'backup' or 'restore'"
+if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
+  BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
+  echo $BACKUP_LOCATION
+fi
+
+if [[ ! ${1} =~ (backup|restore|help) ]]; then
+  echo "First parameter needs to be 'backup' or 'restore' or 'help'"
   exit 1
 fi
 
@@ -93,9 +136,18 @@ fi
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-  mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
-  chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
-  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
+
+  if [[ -z "$NODATE" ]]; then
+    # No NODATE defined so we backup normally
+    FINAL_BACKUP_LOCATION="${BACKUP_LOCATION}/mailcow-${DATE}"
+  else
+    # NODATE so we will not timestamp a backup folder
+    FINAL_BACKUP_LOCATION="${BACKUP_LOCATION}/"
+  fi
+
+  mkdir -p "${FINAL_BACKUP_LOCATION}"
+  chmod 755 "${FINAL_BACKUP_LOCATION}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${FINAL_BACKUP_LOCATION}"
   for bin in docker; do
   if [[ -z $(which ${bin}) ]]; then
     >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
@@ -106,32 +158,32 @@ function backup() {
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${FINAL_BACKUP_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
@@ -148,7 +200,7 @@ function backup() {
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+          -v ${FINAL_BACKUP_LOCATION}:/backup:z \
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
           mariabackup --prepare --target-dir=/backup_mariadb ; \
           chown -R 999:999 /backup_mariadb ; \
@@ -320,15 +372,31 @@ if [[ ${1} == "backup" ]]; then
 elif [[ ${1} == "restore" ]]; then
   i=1
   declare -A FOLDER_SELECTION
-  if [[ $(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
-    echo "Selected backup location has no subfolders"
-    exit 1
+
+  if [[ -z "$NODATE" ]]; then
+    # Normal backup mode, check if any timestamped folders exist at backup location
+    if [[ $(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
+      echo "Selected backup location has no timestamped subfolders"
+      exit 1
+    fi
+    for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
+      echo "[ ${i} ] - ${folder}"
+      FOLDER_SELECTION[${i}]="${folder}"
+      ((i++))
+    done
+  else
+    # NODATE set, any sub-folder will be shown to user
+    if [[ $(find ${BACKUP_LOCATION}/* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
+      echo "Selected backup location has no subfolders"
+      exit 1
+    fi
+    for folder in $(ls -d ${BACKUP_LOCATION}/*/); do
+      echo "[ ${i} ] - ${folder}"
+      FOLDER_SELECTION[${i}]="${folder}"
+      ((i++))
+    done
   fi
-  for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
-    echo "[ ${i} ] - ${folder}"
-    FOLDER_SELECTION[${i}]="${folder}"
-    ((i++))
-  done
+
   echo
   input_sel=0
   while [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
