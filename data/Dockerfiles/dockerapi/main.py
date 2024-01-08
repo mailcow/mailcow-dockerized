@@ -5,13 +5,13 @@ import json
 import uuid
 import async_timeout
 import asyncio
-import aioredis
 import aiodocker
 import docker
 import logging
 from logging.config import dictConfig
 from fastapi import FastAPI, Response, Request
 from modules.DockerApi import DockerApi
+from redis import asyncio as aioredis
 
 dockerapi = None
 app = FastAPI()
