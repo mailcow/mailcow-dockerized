@@ -1,5 +1,5 @@
 FROM alpine:3.19
-LABEL maintainer "André Peters <andre.peters@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # Installation
 RUN apk add --update \
