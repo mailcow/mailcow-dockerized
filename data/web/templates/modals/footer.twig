@@ -155,7 +155,7 @@
 
             {% if pending_tfa_authmechs["totp"] is defined and pending_tfa_authmechs["u2f"] is not defined %}
               <li class="nav-item">
-                <a class="nav-link {% if pending_tfa_authmechs["totp"] %}active{% endif %}" href="#tfa_tab_totp" data-bs-toggle="tab" id="pending_tfa_tab_totp"><i class="bi bi-clock-history"></i> Time based OTP</a>
+                <a class="nav-link {% if pending_tfa_authmechs["totp"] %}active{% endif %}" href="#tfa_tab_totp" data-bs-toggle="tab" id="pending_tfa_tab_totp"><i class="bi bi-clock-history"></i> Time-based OTP</a>
               </li>
             {% endif %}
 
@@ -173,7 +173,7 @@
                     <form role="form" method="post" id="webauthn_auth_form">
                       <legend class="mt-2 mb-2">
                           <i class="bi bi-shield-fill-check"></i>
-                          Authenticators
+                          {{ lang.tfa.authenticators }}
                           <hr />
                       </legend>
                       <div class="list-group">
@@ -216,7 +216,7 @@
                     <form role="form" method="post">
                       <legend class="mt-2 mb-2">
                           <i class="bi bi-shield-fill-check"></i>
-                          Authenticate
+                          {{ lang.tfa.authenticators }}
                           <hr />
                       </legend>
                       <div class="collapse show pending-tfa-collapse" id="collapseYubiTFA">
@@ -244,7 +244,7 @@
                     <form role="form" method="post">        
                       <legend class="mt-2 mb-2">
                           <i class="bi bi-shield-fill-check"></i>
-                          Authenticators
+                          {{ lang.tfa.authenticators }}
                           <hr />
                       </legend>
                       <div class="list-group">
