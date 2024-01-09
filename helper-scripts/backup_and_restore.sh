@@ -54,10 +54,10 @@ COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
 THREADS=$(echo ${THREADS:-1})
 
-if ! [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
+if ! [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
   echo "Thread input is not a number!"
   exit 1
-elif [[ "${THREADS}" =~ ^[1-9]+$ ]] ; then
+elif [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
   echo "Using ${THREADS} Thread(s) for this run."
   echo "Notice: You can set the Thread count with the THREADS Variable before you run this script."
 fi
