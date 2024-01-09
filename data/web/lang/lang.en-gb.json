@@ -1100,6 +1100,7 @@
         "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
+        "authenticators": "Authenticators",
         "api_register": "%s uses the Yubico Cloud API. Please get an API key for your key <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
         "confirm": "Confirm",
         "confirm_totp_token": "Please confirm your changes by entering the generated token",

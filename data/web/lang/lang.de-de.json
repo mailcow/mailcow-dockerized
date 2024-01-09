@@ -1093,6 +1093,7 @@
         "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert"
     },
     "tfa": {
+        "authenticators": "Authentikatoren",
         "api_register": "%s verwendet die Yubico-Cloud-API. Ein API-Key für den Yubico-Stick kann <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">hier</a> bezogen werden.",
         "confirm": "Bestätigen",
         "confirm_totp_token": "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens",
