@@ -305,6 +305,14 @@
                           </select>
                         </div>
                       </div>
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2" for="domain_footer_skip_replies">{{ lang.edit.domain_footer_skip_replies }}:</label>
+                        <div class="col-sm-10">
+                          <div class="form-check">
+                            <label><input type="checkbox" class="form-check-input" value="1" id="domain_footer_skip_replies" name="skip_replies"{% if domain_footer.skip_replies == '1' %} checked{% endif %}></label>
+                          </div>
+                        </div>
+                      </div>
                       <div class="row mb-2">
                         <label class="control-label col-sm-2" for="domain_footer_html">{{ lang.edit.domain_footer_html }}:</label>
                         <div class="col-sm-10">
