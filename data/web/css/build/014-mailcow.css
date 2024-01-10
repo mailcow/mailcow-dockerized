@@ -228,8 +228,8 @@ legend {
 	margin-top: 20px;
 }
 .slave-info {
-  padding: 15px 0px 15px 15px;
   font-weight: bold;
+  color: orange;
 }
 .alert-hr {
   margin:3px 0px;
