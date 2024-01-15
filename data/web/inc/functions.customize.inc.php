@@ -2,6 +2,7 @@
 function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
+  global $LOGO_LIMITS;
   
   switch ($_action) {
     case 'add':
@@ -32,6 +33,23 @@ function customize($_action, $_item, $_data = null) {
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_item, $_data),
                   'msg' => 'img_tmp_missing'
+                );
+                return false;
+              }
+              if ($_data[$_item]['size'] > $LOGO_LIMITS['max_size']) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_item, $_data),
+                  'msg' => 'img_size_exceeded'
+                );
+                return false;
+              }
+              list($width, $height) = getimagesize($_data[$_item]['tmp_name']);
+              if ($width > $LOGO_LIMITS['max_width'] || $height > $LOGO_LIMITS['max_height']) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_item, $_data),
+                  'msg' => 'img_dimensions_exceeded'
                 );
                 return false;
               }
