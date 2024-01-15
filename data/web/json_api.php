@@ -414,15 +414,6 @@ if (isset($_GET['query'])) {
       }
     break;
     case "get":
-      function process_get_return($data, $object = true) {
-        if ($object === true) {
-          $ret_str = '{}';
-        }
-        else {
-          $ret_str = '[]';
-        }
-        echo (!isset($data) || empty($data)) ? $ret_str : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-      }
       // only allow GET requests to GET API endpoints
       assert_method("GET");
       switch ($category) {
