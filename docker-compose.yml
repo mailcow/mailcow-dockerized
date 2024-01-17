@@ -58,7 +58,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.63
+      image: mailcow/clamd:1.64
       restart: always
       depends_on:
         unbound-mailcow:
@@ -77,7 +77,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.94
+      image: mailcow/rspamd:1.95
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -171,7 +171,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.120
+      image: mailcow/sogo:1.121
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -203,7 +203,7 @@ services:
       labels:
         ofelia.enabled: "true"
         ofelia.job-exec.sogo_sessions.schedule: "@every 1m"
-        ofelia.job-exec.sogo_sessions.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool expire-sessions $${SOGO_EXPIRE_SESSION} || exit 0\""
+        ofelia.job-exec.sogo_sessions.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool -v expire-sessions $${SOGO_EXPIRE_SESSION} || exit 0\""
         ofelia.job-exec.sogo_ealarms.schedule: "@every 1m"
         ofelia.job-exec.sogo_ealarms.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds || exit 0\""
         ofelia.job-exec.sogo_eautoreply.schedule: "@every 5m"
@@ -218,7 +218,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.26
+      image: mailcow/dovecot:1.27
       depends_on:
         - mysql-mailcow
       dns:
@@ -298,7 +298,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.73
+      image: mailcow/postfix:1.74
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -547,8 +547,10 @@ services:
           aliases:
             - dockerapi
 
+    
+    ##### Will be removed soon #####
     solr-mailcow:
-      image: mailcow/solr:1.8.1
+      image: mailcow/solr:1.8.2
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
@@ -562,6 +564,7 @@ services:
         mailcow-network:
           aliases:
             - solr
+    ################################
 
     olefy-mailcow:
       image: mailcow/olefy:1.12
