@@ -2,6 +2,7 @@
 
 PATH=${PATH}:/opt/bin
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
+LOCAL_ARCH=$(uname -m)
 export LC_ALL=C
 
 echo
@@ -148,6 +149,9 @@ else
   echo -e "\e[31mCannot find any Docker Compose on remote, exiting...\e[0m"
   exit 1
 fi
+
+ REMOTE_ARCH=$(ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" ${REMOTE_SSH_HOST} -p ${REMOTE_SSH_PORT} "uname -m") 
+
 }
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -163,6 +167,17 @@ echo
 echo -e "\033[1mFound compose project name ${CMPS_PRJ} for ${MAILCOW_HOSTNAME}\033[0m"
 echo -e "\033[1mFound SQL ${SQLIMAGE}\033[0m"
 echo
+
+# Print Message if Local Arch and Remote Arch is not the same
+if [[ $LOCAL_ARCH != $REMOTE_ARCH ]]; then
+  echo
+  echo -e "\e[1;33m!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
+  echo -e "\e[3;33mDetected Architecture missmatch from source to destination...\e[0m"
+  echo -e "\e[3;33mYour backup is transferred but some volumes might be skipped!\e[0m"
+  echo -e "\e[1;33m!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
+  echo
+  sleep 2
+fi
 
 # Make sure destination exists, rsync can fail under some circumstances
 echo -e "\033[1mPreparing remote...\033[0m"
@@ -248,8 +263,21 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
     # Cleanup
     rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
 
-  else
+  elif [[ "${vol}" =~ "rspamd-vol-1" ]]; then
+    # Exclude rspamd-vol-1 if the Architectures are not the same on source and destination due to compatibility issues.
+    if [[ $LOCAL_ARCH == $REMOTE_ARCH ]]; then
+      echo -e "\033[1mSynchronizing ${vol} from local ${mountpoint}...\033[0m"
+      rsync --delete --info=progress2 -aH -e "ssh -o StrictHostKeyChecking=no \
+        -i \"${REMOTE_SSH_KEY}\" \
+        -p ${REMOTE_SSH_PORT}" \
+        "${mountpoint}/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
+    else
+      echo -e "\e[1;31mSkipping ${vol} from local maschine due to incompatiblity between different architecture...\e[0m"
+      sleep 2
+      continue
+    fi
 
+  else
     echo -e "\033[1mSynchronizing ${vol} from local ${mountpoint}...\033[0m"
     rsync --delete --info=progress2 -aH -e "ssh -o StrictHostKeyChecking=no \
       -i \"${REMOTE_SSH_KEY}\" \

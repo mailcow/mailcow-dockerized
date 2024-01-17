@@ -3,11 +3,10 @@
 import smtplib
 import os
 import sys
-import mysql.connector
+import MySQLdb
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
-import cgi
 import jinja2
 from jinja2 import Template
 import json
@@ -50,7 +49,7 @@ try:
   def query_mysql(query, headers = True, update = False):
     while True:
       try:
-        cnx = mysql.connector.connect(unix_socket = '/var/run/mysqld/mysqld.sock', user=os.environ.get('DBUSER'), passwd=os.environ.get('DBPASS'), database=os.environ.get('DBNAME'), charset="utf8mb4", collation="utf8mb4_general_ci")
+        cnx = MySQLdb.connect(user=os.environ.get('DBUSER'), password=os.environ.get('DBPASS'), database=os.environ.get('DBNAME'), charset="utf8mb4", collation="utf8mb4_general_ci")
       except Exception as ex:
         print('%s - trying again...'  % (ex))
         time.sleep(3)
