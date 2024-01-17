@@ -291,13 +291,14 @@ class SSP {
 			 FROM `$table` AS `$tablesAS`
 			 $join
 			 $where
+			 GROUP BY `{$tablesAS}`.`{$primaryKey}`
 			 $order
 			 $limit"
 		);
 
 		// Data set length after filtering
 		$resFilterLength = self::sql_exec( $db, $bindings,
-			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
+			"SELECT COUNT(DISTINCT `{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
 			 $join
 			 $where"
@@ -411,12 +412,11 @@ class SSP {
 
 		// Data set length after filtering
 		$resFilterLength = self::sql_exec( $db, $bindings,
-			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
+			"SELECT COUNT(DISTINCT `{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
 			 $join
 			 $join_filter
-			 $where
-			 GROUP BY `{$tablesAS}`.`{$primaryKey}`"
+			 $where"
 		);
 		$recordsFiltered = (isset($resFilterLength[0])) ? $resFilterLength[0][0] : 0;
 
@@ -424,10 +424,9 @@ class SSP {
 		$resTotalLength = self::sql_exec( $db, $bindings,
 			"SELECT COUNT(`{$tablesAS}`.`{$primaryKey}`)
 			 FROM   `$table` AS `$tablesAS`
-      $join
-      $join_filter
-      $where
-      GROUP BY `{$tablesAS}`.`{$primaryKey}`"
+			 $join
+			 $join_filter
+			 $where"
 		);
 		$recordsTotal = (isset($resTotalLength[0])) ? $resTotalLength[0][0] : 0;
 
