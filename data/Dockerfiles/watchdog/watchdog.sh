@@ -716,8 +716,8 @@ rspamd_checks() {
 From: watchdog@localhost
 
 Empty
-' | usr/bin/curl --max-time 10 -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan | jq -rc .default.required_score)
-    if [[ ${SCORE} != "9999" ]]; then
+' | usr/bin/curl --max-time 10 -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan | jq -rc .default.required_score | sed 's/\..*//' )
+    if [[ ${SCORE} -ne 9999 ]]; then
       echo "Rspamd settings check failed, score returned: ${SCORE}" 2>> /tmp/rspamd-mailcow 1>&2
       err_count=$(( ${err_count} + 1))
     else

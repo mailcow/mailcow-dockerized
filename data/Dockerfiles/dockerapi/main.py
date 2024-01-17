@@ -5,16 +5,63 @@ import json
 import uuid
 import async_timeout
 import asyncio
-import aioredis
 import aiodocker
 import docker
 import logging
 from logging.config import dictConfig
 from fastapi import FastAPI, Response, Request
 from modules.DockerApi import DockerApi
+from redis import asyncio as aioredis
+from contextlib import asynccontextmanager
 
 dockerapi = None
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+  global dockerapi
+
+  # Initialize a custom logger
+  logger = logging.getLogger("dockerapi")
+  logger.setLevel(logging.INFO)
+  # Configure the logger to output logs to the terminal
+  handler = logging.StreamHandler()
+  handler.setLevel(logging.INFO)
+  formatter = logging.Formatter("%(levelname)s:     %(message)s")
+  handler.setFormatter(formatter)
+  logger.addHandler(handler)
+
+  logger.info("Init APP")
+
+  # Init redis client
+  if os.environ['REDIS_SLAVEOF_IP'] != "":
+    redis_client = redis = await aioredis.from_url(f"redis://{os.environ['REDIS_SLAVEOF_IP']}:{os.environ['REDIS_SLAVEOF_PORT']}/0")
+  else:
+    redis_client = redis = await aioredis.from_url("redis://redis-mailcow:6379/0")
+
+  # Init docker clients
+  sync_docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
+  async_docker_client = aiodocker.Docker(url='unix:///var/run/docker.sock')
+
+  dockerapi = DockerApi(redis_client, sync_docker_client, async_docker_client, logger)
+
+  logger.info("Subscribe to redis channel")
+  # Subscribe to redis channel
+  dockerapi.pubsub = redis.pubsub()
+  await dockerapi.pubsub.subscribe("MC_CHANNEL")
+  asyncio.create_task(handle_pubsub_messages(dockerapi.pubsub))
+
+
+  yield
+
+  # Close docker connections
+  dockerapi.sync_docker_client.close()
+  await dockerapi.async_docker_client.close()
+
+  # Close redis
+  await dockerapi.pubsub.unsubscribe("MC_CHANNEL")
+  await dockerapi.redis_client.close()
+
+app = FastAPI(lifespan=lifespan)
 
 # Define Routes
 @app.get("/host/stats")
@@ -144,53 +191,7 @@ async def post_container_update_stats(container_id : str):
 
   stats = json.loads(await dockerapi.redis_client.get(container_id + '_stats'))
   return Response(content=json.dumps(stats, indent=4), media_type="application/json")
-
-# Events
-@app.on_event("startup")
-async def startup_event():
-  global dockerapi
-
-  # Initialize a custom logger
-  logger = logging.getLogger("dockerapi")
-  logger.setLevel(logging.INFO)
-  # Configure the logger to output logs to the terminal
-  handler = logging.StreamHandler()
-  handler.setLevel(logging.INFO)
-  formatter = logging.Formatter("%(levelname)s:     %(message)s")
-  handler.setFormatter(formatter)
-  logger.addHandler(handler)
-
-  logger.info("Init APP")
-
-  # Init redis client
-  if os.environ['REDIS_SLAVEOF_IP'] != "":
-    redis_client = redis = await aioredis.from_url(f"redis://{os.environ['REDIS_SLAVEOF_IP']}:{os.environ['REDIS_SLAVEOF_PORT']}/0")
-  else:
-    redis_client = redis = await aioredis.from_url("redis://redis-mailcow:6379/0")
-
-  # Init docker clients
-  sync_docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
-  async_docker_client = aiodocker.Docker(url='unix:///var/run/docker.sock')
-
-  dockerapi = DockerApi(redis_client, sync_docker_client, async_docker_client, logger)
-
-  logger.info("Subscribe to redis channel")
-  # Subscribe to redis channel
-  dockerapi.pubsub = redis.pubsub()
-  await dockerapi.pubsub.subscribe("MC_CHANNEL")
-  asyncio.create_task(handle_pubsub_messages(dockerapi.pubsub))
-
-@app.on_event("shutdown")
-async def shutdown_event():
-  global dockerapi
-
-  # Close docker connections
-  dockerapi.sync_docker_client.close()
-  await dockerapi.async_docker_client.close()
-
-  # Close redis
-  await dockerapi.pubsub.unsubscribe("MC_CHANNEL")
-  await dockerapi.redis_client.close()
+  
 
 # PubSub Handler
 async def handle_pubsub_messages(channel: aioredis.client.PubSub):

@@ -126,6 +126,15 @@ $MAILCOW_APPS = array(
   )
 );
 
+// Logo max file size in bytes
+$LOGO_LIMITS['max_size'] = 15 * 1024 * 1024; // 15MB
+
+// Logo max width in pixels
+$LOGO_LIMITS['max_width'] = 1920;
+
+// Logo max height in pixels
+$LOGO_LIMITS['max_height'] = 1920;
+
 // Rows until pagination begins
 $PAGINATION_SIZE = 25;
 
