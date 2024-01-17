@@ -477,12 +477,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => 'access_denied'
             );
             return false;
-          }   
+          }
           $DOMAIN_DEFAULT_ATTRIBUTES = null;
           if ($_data['template']){
             $DOMAIN_DEFAULT_ATTRIBUTES = mailbox('get', 'domain_templates', $_data['template'])['attributes'];
           }
-          if (empty($DOMAIN_DEFAULT_ATTRIBUTES)){
+          if (empty($DOMAIN_DEFAULT_ATTRIBUTES)) {
             $DOMAIN_DEFAULT_ATTRIBUTES = mailbox('get', 'domain_templates')[0]['attributes'];
           }
 
@@ -634,12 +634,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $_data['rl_value'] = (isset($_data['rl_value'])) ? intval($_data['rl_value']) : $DOMAIN_DEFAULT_ATTRIBUTES['rl_value'];
-          $_data['rl_frame'] = (isset($_data['rl_frame'])) ? intval($_data['rl_frame']) : $DOMAIN_DEFAULT_ATTRIBUTES['rl_frame'];
+          $_data['rl_frame'] = (isset($_data['rl_frame'])) ? $_data['rl_frame'] : $DOMAIN_DEFAULT_ATTRIBUTES['rl_frame'];
           if (!empty($_data['rl_value']) && !empty($_data['rl_frame'])){
             ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $domain));
           }
           $_data['key_size'] = (isset($_data['key_size'])) ? intval($_data['key_size']) : $DOMAIN_DEFAULT_ATTRIBUTES['key_size'];
-          $_data['dkim_selector'] = (isset($_data['dkim_selector'])) ? intval($_data['dkim_selector']) : $DOMAIN_DEFAULT_ATTRIBUTES['dkim_selector'];
+          $_data['dkim_selector'] = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : $DOMAIN_DEFAULT_ATTRIBUTES['dkim_selector'];
           if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
             if (!empty($redis->hGet('DKIM_SELECTORS', $domain))) {
               $_SESSION['return'][] = array(
@@ -1021,13 +1021,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($name)) {
             $name = $local_part;
           }
-          $MAILBOX_DEFAULT_ATTRIBUTES = null;
+          $template_attr = null;
           if ($_data['template']){
-            $MAILBOX_DEFAULT_ATTRIBUTES = mailbox('get', 'mailbox_templates', $_data['template'])['attributes'];
+            $template_attr = mailbox('get', 'mailbox_templates', $_data['template'])['attributes'];
           }
-          if (empty($MAILBOX_DEFAULT_ATTRIBUTES)){
-            $MAILBOX_DEFAULT_ATTRIBUTES = mailbox('get', 'mailbox_templates')[0]['attributes'];
+          if (empty($template_attr)) {
+            $template_attr = mailbox('get', 'mailbox_templates')[0]['attributes'];
           }
+          $MAILBOX_DEFAULT_ATTRIBUTES = array_merge($MAILBOX_DEFAULT_ATTRIBUTES, $template_attr);
+
           $password     = $_data['password'];
           $password2    = $_data['password2'];
           $name         = ltrim(rtrim($_data['name'], '>'), '<');
