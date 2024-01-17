@@ -394,7 +394,9 @@
         "goto_invalid": "Goto address %s is invalid",
         "ham_learn_error": "Ham learn error: %s",
         "imagick_exception": "Error: Imagick exception while reading image",
+        "img_dimensions_exceeded": "Image exceeds the maximum image size",
         "img_invalid": "Cannot validate image file",
+        "img_size_exceeded": "Image exceeds the maximum file size",
         "img_tmp_missing": "Cannot validate image file: Temporary file not found",
         "invalid_bcc_map_type": "Invalid BCC map type",
         "invalid_destination": "Destination format \"%s\" is invalid",
@@ -600,6 +602,7 @@
             "custom": "{= foo =}         - If mailbox has the custom attribute \"foo\" with value \"bar\" it returns \"bar\""
         },
         "domain_footer_plain": "PLAIN footer",
+        "domain_footer_skip_replies": "Ignore footer on reply e-mails",
         "domain_quota": "Domain quota",
         "domains": "Domains",
         "dont_check_sender_acl": "Disable sender check for domain %s (+ alias domains)",
@@ -1099,6 +1102,7 @@
         "verified_yotp_login": "Verified Yubico OTP login"
     },
     "tfa": {
+        "authenticators": "Authenticators",
         "api_register": "%s uses the Yubico Cloud API. Please get an API key for your key <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
         "confirm": "Confirm",
         "confirm_totp_token": "Please confirm your changes by entering the generated token",

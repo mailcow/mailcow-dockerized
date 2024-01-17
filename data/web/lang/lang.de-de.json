@@ -394,7 +394,9 @@
         "goto_invalid": "Ziel-Adresse %s ist ungültig",
         "ham_learn_error": "Ham Lernfehler: %s",
         "imagick_exception": "Fataler Bildverarbeitungsfehler",
+        "img_dimensions_exceeded": "Grafik überschreitet die maximale Bildgröße",
         "img_invalid": "Grafik konnte nicht validiert werden",
+        "img_size_exceeded": "Grafik überschreitet die maximale Dateigröße",
         "img_tmp_missing": "Grafik konnte nicht validiert werden: Erstellung temporärer Datei fehlgeschlagen.",
         "invalid_bcc_map_type": "Ungültiger BCC-Map-Typ",
         "invalid_destination": "Ziel-Format \"%s\" ist ungültig",
@@ -588,10 +590,19 @@
         "disable_login": "Login verbieten (Mails werden weiterhin angenommen)",
         "domain": "Domain bearbeiten",
         "domain_admin": "Domain-Administrator bearbeiten",
-        "domain_footer": "Domain wide footer",
-        "domain_footer_html": "HTML footer",
-        "domain_footer_info": "Domain wide footer werden allen ausgehenden E-Mails hinzugefügt, die einer Adresse innerhalb dieser Domain gehört.<br>Die folgenden Variablen können für den Footer benutzt werden:",
-        "domain_footer_plain": "PLAIN footer",
+        "domain_footer": "Domänenweite Fußzeile",
+        "domain_footer_html": "Fußzeile im HTML Format",
+        "domain_footer_info": "Domänenweite Footer (Domain wide footer) werden allen ausgehenden E-Mails hinzugefügt, die einer Adresse innerhalb dieser Domain gehört.<br>Die folgenden Variablen können für die Fußzeile benutzt werden:",
+        "domain_footer_info_vars": {
+            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
+            "from_user": "{= from_user =}   - Absender Teil der E-Mail z.B. für \"moo@mailcow.tld\" wird \"moo\" zurückgeben.",
+            "from_name": "{= from_name =}   - Namen des Absenders z.B. für \"Mailcow &lt;moo@mailcow.tld&gt;\", wird \"Mailcow\" zurückgegeben.",
+            "from_addr": "{= from_addr =}   - Adresse des Absenders.",
+            "from_domain": "{= from_domain =} - Domain des Absenders",
+            "custom": "{= foo =}         - Wenn die Mailbox das benutzerdefinierte Attribut \"foo\" mit dem Wert \"bar\" hat, wird \"bar\" zurückgegeben."
+        },
+        "domain_footer_plain": "Fußzeile im PLAIN Format",
+        "domain_footer_skip_replies": "Ignoriere Footer bei Antwort E-Mails",
         "domain_quota": "Domain Speicherplatz gesamt (MiB)",
         "domains": "Domains",
         "dont_check_sender_acl": "Absender für Domain %s u. Alias-Domain nicht prüfen",
@@ -680,11 +691,7 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton",
-        "domain_footer_info_vars": {
-            "auth_user": "{= auth_user =}   - Angemeldeter Benutzername vom MTA",
-            "from_user": "{= from_user =}   - Von Teil des Benutzers z.B. \"moo@mailcow.tld\" wird \"moo\" zurückgeben."
-        }
+        "pushover_sound": "Ton"
     },
     "fido2": {
         "confirm": "Bestätigen",
@@ -1088,6 +1095,7 @@
         "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert"
     },
     "tfa": {
+        "authenticators": "Authentikatoren",
         "api_register": "%s verwendet die Yubico-Cloud-API. Ein API-Key für den Yubico-Stick kann <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">hier</a> bezogen werden.",
         "confirm": "Bestätigen",
         "confirm_totp_token": "Bitte bestätigen Sie die Änderung durch Eingabe eines generierten Tokens",

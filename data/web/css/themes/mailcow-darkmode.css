@@ -175,6 +175,9 @@ pre {
     background-color: #282828;
     border: 1px solid #555;
 }
+.form-control {
+    background-color: transparent;
+}
 input.form-control, textarea.form-control {
     color: #e2e2e2 !important;
     background-color: #424242 !important;

@@ -1,119 +1,115 @@
-FROM debian:bullseye-slim
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+FROM alpine:3.19
+LABEL maintainer "The Infrastructure Company GmbH GmbH <info@servercow.de>"
 
-ARG DEBIAN_FRONTEND=noninteractive
-# renovate: datasource=github-tags depName=dovecot/core versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG DOVECOT=2.3.21
-# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=(?<version>.*)$
+# renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.16
-ENV LC_ALL C
 
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
 
 # Add groups and users before installing Dovecot to not break compatibility
-RUN groupadd -g 5000 vmail \
-  && groupadd -g 401 dovecot \
-  && groupadd -g 402 dovenull \
-  && groupadd -g 999 sogo \
-  && usermod -a -G sogo nobody \
-  && useradd -g vmail -u 5000 vmail -d /var/vmail \
-  && useradd -c "Dovecot unprivileged user" -d /dev/null -u 401 -g dovecot -s /bin/false dovecot \
-  && useradd -c "Dovecot login user" -d /dev/null -u 402 -g dovenull -s /bin/false dovenull \
-  && touch /etc/default/locale \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
-  build-essential \
-  apt-transport-https \
+RUN addgroup -g 5000 vmail \
+  && addgroup -g 401 dovecot \
+  && addgroup -g 402 dovenull \
+  && sed -i "s/999/99/" /etc/group \
+  && addgroup -g 999 sogo \
+  && addgroup nobody sogo \
+  && adduser -D -u 5000 -G vmail -h /var/vmail vmail \
+  && adduser -D -G dovecot -u 401 -h /dev/null -s /sbin/nologin dovecot \
+  && adduser -D -G dovenull -u 402 -h /dev/null -s /sbin/nologin dovenull \
+  && apk add --no-cache --update \
+  bash \
+  bind-tools \
+  findutils \
+  envsubst \
   ca-certificates \
-  cpanminus \
   curl \
-  dnsutils \
-  dirmngr \
-  gettext \
-  gnupg2 \
   jq \
-  libauthen-ntlm-perl \
-  libcgi-pm-perl \
-  libcrypt-openssl-rsa-perl \
-  libcrypt-ssleay-perl \
-  libdata-uniqid-perl \
-  libdbd-mysql-perl \
-  libdbi-perl \
-  libdigest-hmac-perl \
-  libdist-checkconflicts-perl \
-  libencode-imaputf7-perl \
-  libfile-copy-recursive-perl \
-  libfile-tail-perl \
-  libhtml-parser-perl \
-  libio-compress-perl \
-  libio-socket-inet6-perl \
-  libio-socket-ssl-perl \
-  libio-tee-perl \
-  libipc-run-perl \
-  libjson-webtoken-perl \
-  liblockfile-simple-perl \
-  libmail-imapclient-perl \
-  libmodule-implementation-perl \
-  libmodule-scandeps-perl \
-  libnet-ssleay-perl \
-  libpackage-stash-perl \
-  libpackage-stash-xs-perl \
-  libpar-packer-perl \
-  libparse-recdescent-perl \
-  libproc-processtable-perl \
-  libreadonly-perl \
-  libregexp-common-perl \
-  libssl-dev \
-  libsys-meminfo-perl \
-  libterm-readkey-perl \
-  libtest-deep-perl \
-  libtest-fatal-perl \
-  libtest-mock-guard-perl \
-  libtest-mockobject-perl \
-  libtest-nowarnings-perl \
-  libtest-pod-perl \
-  libtest-requires-perl \
-  libtest-simple-perl \
-  libtest-warn-perl \
-  libtry-tiny-perl \
-  libunicode-string-perl \
-  liburi-perl \
-  libwww-perl \
-  lua-sql-mysql \
+  lua \
+  lua-cjson \
   lua-socket \
+  lua-sql-mysql \
+  lua5.3-sql-mysql \
+  icu-data-full \
+  mariadb-connector-c \
+  gcompat \
   mariadb-client \
+  perl \
+  perl-ntlm \
+  perl-cgi \
+  perl-crypt-openssl-rsa \
+  perl-utils \
+  perl-crypt-ssleay \
+  perl-data-uniqid \
+  perl-dbd-mysql \
+  perl-dbi \
+  perl-digest-hmac \
+  perl-dist-checkconflicts \
+  perl-encode-imaputf7 \
+  perl-file-copy-recursive \
+  perl-file-tail \
+  perl-io-socket-inet6 \
+  perl-io-gzip \
+  perl-io-socket-ssl \
+  perl-io-tee \
+  perl-ipc-run \
+  perl-json-webtoken \
+  perl-mail-imapclient \
+  perl-module-implementation \
+  perl-module-scandeps \
+  perl-net-ssleay \
+  perl-package-stash \
+  perl-package-stash-xs \
+  perl-par-packer \
+  perl-parse-recdescent \
+  perl-lockfile-simple --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+  libproc \
+  perl-readonly \
+  perl-regexp-common \
+  perl-sys-meminfo \
+  perl-term-readkey \
+  perl-test-deep \
+  perl-test-fatal \
+  perl-test-mockobject \
+  perl-test-mock-guard \
+  perl-test-pod \
+  perl-test-requires \
+  perl-test-simple \
+  perl-test-warn \
+  perl-try-tiny \
+  perl-unicode-string \
+  perl-proc-processtable \
+  perl-app-cpanminus \
   procps \
-  python3-pip \
-  redis-server \
-  supervisor \
+  python3 \
+  py3-mysqlclient \
+  py3-html2text \
+  py3-jinja2 \
+  py3-redis \
+  redis \
   syslog-ng \
-  syslog-ng-core \
-  syslog-ng-mod-redis \
+  syslog-ng-redis \
+  syslog-ng-json \
+  supervisor \
+  tzdata \
   wget \
-  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-  && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true \
-  && apt-key adv --fetch-keys https://repo.dovecot.org/DOVECOT-REPO-GPG \
-  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/bullseye bullseye main" > /etc/apt/sources.list.d/dovecot.list \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
-  dovecot-lua \
-  dovecot-managesieved \
-  dovecot-sieve \
+  dovecot \
+  dovecot-dev \
   dovecot-lmtpd \
+  dovecot-lua \
   dovecot-ldap \
   dovecot-mysql \
-  dovecot-core \
+  dovecot-sql \
+  dovecot-submissiond \
+  dovecot-pigeonhole-plugin \
   dovecot-pop3d \
-  dovecot-imapd \
-  dovecot-solr \
-  && pip3 install mysql-connector-python html2text jinja2 redis \
-  && apt-get autoremove --purge -y \
-  && apt-get autoclean \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* /var/tmp/* /root/.cache/
-# imapsync dependencies
-RUN cpan Crypt::OpenSSL::PKCS12
+  dovecot-fts-solr \
+  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true
+
+# RUN cpan LockFile::Simple
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh

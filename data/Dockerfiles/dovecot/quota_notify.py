@@ -55,7 +55,7 @@ try:
   msg.attach(text_part)
   msg.attach(html_part)
   msg['To'] = username
-  p = Popen(['/usr/lib/dovecot/dovecot-lda', '-d', username, '-o', '"plugin/quota=maildir:User quota:noenforcing"'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+  p = Popen(['/usr/libexec/dovecot/dovecot-lda', '-d', username, '-o', '"plugin/quota=maildir:User quota:noenforcing"'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
   p.communicate(input=bytes(msg.as_string(), 'utf-8'))
 
   domain = username.split("@")[-1]

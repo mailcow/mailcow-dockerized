@@ -1,10 +1,10 @@
 FROM debian:bullseye-slim
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG SOGO_DEBIAN_REPOSITORY=http://packages.sogo.nu/nightly/5/debian/
+ARG SOGO_DEBIAN_REPOSITORY=http://www.axis.cz/linux/debian
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.16
+ARG GOSU_VERSION=1.17
 ENV LC_ALL C
 
 # Prerequisites
@@ -32,7 +32,7 @@ RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
   && mkdir /usr/share/doc/sogo \
   && touch /usr/share/doc/sogo/empty.sh \
   && apt-key adv --keyserver keys.openpgp.org --recv-key 74FFC6D72B925A34B5D356BDF8A27B36A6E2EAE9 \
-  && echo "deb ${SOGO_DEBIAN_REPOSITORY} bullseye bullseye" > /etc/apt/sources.list.d/sogo.list \
+  && echo "deb [trusted=yes] ${SOGO_DEBIAN_REPOSITORY} bullseye sogo-v5" > /etc/apt/sources.list.d/sogo.list \
   && apt-get update && apt-get install -y --no-install-recommends \
     sogo \
     sogo-activesync \

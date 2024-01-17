@@ -1,8 +1,9 @@
-FROM alpine:3.17
+FROM alpine:3.19
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 WORKDIR /app
 
+ARG PIP_BREAK_SYSTEM_PACKAGES=1
 ENV XTABLES_LIBDIR /usr/lib/xtables
 ENV PYTHON_IPTABLES_XTABLES_VERSION 12
 ENV IPTABLES_LIBDIR /usr/lib
@@ -14,6 +15,7 @@ RUN apk add --virtual .build-deps \
   openssl-dev \
 && apk add -U python3 \
   iptables \
+  iptables-dev \
   ip6tables \
   xtables-addons \
   nftables \

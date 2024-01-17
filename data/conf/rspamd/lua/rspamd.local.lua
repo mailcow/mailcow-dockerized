@@ -567,6 +567,14 @@ rspamd_config:register_symbol({
           if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s, vars=%s", uname, footer.html, footer.plain, footer.vars)
 
+            if footer.skip_replies ~= 0 then
+              in_reply_to = task:get_header_raw('in-reply-to')
+              if in_reply_to then
+                rspamd_logger.infox(rspamd_config, "mail is a reply - skip footer")
+                return
+              end
+            end
+
             local envfrom_mime = task:get_from(2)
             local from_name = ""
             if envfrom_mime and envfrom_mime[1].name then

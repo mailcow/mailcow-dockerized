@@ -49,13 +49,14 @@ $from = $headers['From'];
 $empty_footer = json_encode(array(
   'html' => '',
   'plain' => '',
+  'skip_replies' => 0,
   'vars' => array()
 ));
 
 error_log("FOOTER: checking for domain " . $domain . ", user " . $username . " and address " . $from . PHP_EOL);
 
 try {
-  $stmt = $pdo->prepare("SELECT `plain`, `html`, `mbox_exclude` FROM `domain_wide_footer` 
+  $stmt = $pdo->prepare("SELECT `plain`, `html`, `mbox_exclude`, `skip_replies` FROM `domain_wide_footer` 
     WHERE `domain` = :domain");
   $stmt->execute(array(
     ':domain' => $domain
