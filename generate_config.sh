@@ -363,7 +363,7 @@ SKIP_IP_CHECK=n
 
 SKIP_HTTP_VERIFICATION=n
 
-# Skip DNS check in Unbound container - y/n
+# Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n
 
 SKIP_UNBOUND_HEALTHCHECK=n
 
