@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Skipping DNS check
-if [[ "${SKIP_DNS_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    SKIP_DNS_CHECK=y
+# Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!)
+if [[ "${SKIP_UNBOUND_HEALTHCHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    SKIP_UNBOUND_HEALTHCHECK=y
 fi
 
 # Declare log function for logfile inside container
@@ -71,7 +71,7 @@ function check_netcat() {
 
 }
 
-if [[ ${SKIP_DNS_CHECK} == "y" ]]; then
+if [[ ${SKIP_UNBOUND_HEALTHCHECK} == "y" ]]; then
     log_to_file "Healthcheck: ALL CHECKS WERE SKIPPED! Unbound is healthy!"
     exit 0
 fi
