@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Skipping DNS check
+if [[ "${SKIP_DNS_CHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    SKIP_DNS_CHECK=y
+fi
+
 # Declare log function for logfile inside container
 function log_to_file() {
     echo "$(date +"%Y-%m-%d %H:%M:%S"): $1" > /var/log/healthcheck.log
@@ -65,6 +70,11 @@ function check_netcat() {
     return 0
 
 }
+
+if [[ ${SKIP_DNS_CHECK} == "y" ]]; then
+    log_to_file "Healthcheck: ALL CHECKS WERE SKIPPED! Unbound is healthy!"
+    exit 0
+fi
 
 # run checks, if check is not returning 0 (return value if check is ok), healthcheck will exit with 1 (marked in docker as unhealthy)
 check_ping

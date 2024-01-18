@@ -363,6 +363,10 @@ SKIP_IP_CHECK=n
 
 SKIP_HTTP_VERIFICATION=n
 
+# Skip DNS check in Unbound container - y/n
+
+SKIP_DNS_CHECK=n
+
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
 
 SKIP_CLAMD=${SKIP_CLAMD}
