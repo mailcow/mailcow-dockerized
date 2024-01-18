@@ -2,6 +2,9 @@
 
 ############## Begin Function Section ##############
 
+INITRC=$(rc-service -V >/dev/null 2>&1 && echo openrc || echo systemd)
+echo "Detected ${INITRC} system"
+
 check_online_status() {
   CHECK_ONLINE_DOMAINS=('https://github.com' 'https://hub.docker.com')
   for domain in "${CHECK_ONLINE_DOMAINS[@]}"; do
@@ -116,11 +119,12 @@ migrate_docker_nat() {
       echo "Working on IPv6 NAT, please wait..."
       echo ${NAT_CONFIG} > /etc/docker/daemon.json
       ip6tables -F -t nat
-      [[ -e /etc/alpine-release ]] && rc-service docker restart || systemctl restart docker.service
+      [[ ${INITRC} == "openrc" ]] && rc-service docker restart || systemctl restart docker.service
       if [[ $? -ne 0 ]]; then
         echo -e "\e[31mError:\e[0m Failed to activate IPv6 NAT! Reverting and exiting."
         rm /etc/docker/daemon.json
-        if [[ -e /etc/alpine-release ]]; then
+        if [[ ${INITRC} == "openrc" ]]; then
+          rc-service docker zap
           rc-service docker restart
         else
           systemctl reset-failed docker.service
