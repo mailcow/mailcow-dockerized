@@ -23,7 +23,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 # healthcheck (nslookup)
 COPY healthcheck.sh /healthcheck.sh
 RUN chmod +x /healthcheck.sh
-HEALTHCHECK --interval=5s --timeout=10s CMD [ "/healthcheck.sh" ]
+HEALTHCHECK --interval=5s --timeout=30s CMD [ "/healthcheck.sh" ]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
