@@ -2,6 +2,13 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+
+function parse_email($email) {
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+  $a = strrpos($email, '@');
+  return array('local' => substr($email, 0, $a), 'domain' => substr(substr($email, $a), 1));
+}
+
 function quarantine($_action, $_data = null) {
 	global $pdo;
 	global $redis;
@@ -465,42 +472,68 @@ function quarantine($_action, $_data = null) {
           }
           elseif ($release_format == 'raw') {
             $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/', 'X-Pre-Release-Spam-Flag $1', $row['msg']);
-            $postfix_talk = array(
-              array('220', 'HELO quarantine' . chr(10)),
-              array('250', 'MAIL FROM: ' . $sender . chr(10)),
-              array('250', 'RCPT TO: ' . $row['rcpt'] . chr(10)),
-              array('250', 'DATA' . chr(10)),
-              array('354', str_replace("\n.", '', $row['msg']) . chr(10) . '.' . chr(10)),
-              array('250', 'QUIT' . chr(10)),
-              array('221', '')
-            );
-            // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
-            if (!$smtp_connection) {
+            $parser = new PhpMimeMailParser\Parser();
+            $parser->setText($row['msg']);
+            $subject = $parser->getHeader('subject');
+            $text = $parser->getMessageBody('text');
+            // $html = $parser->getMessageBody('html');
+            $html = $parser->getMessageBody('htmlEmbedded');
+            try {
+              $mail = new PHPMailer(true);
+              $mail->XMailer = false;
+              $mail->isSMTP();
+              $mail->SMTPDebug = 0;
+              $mail->SMTPOptions = array(
+                'ssl' => array(
+                  'verify_peer' => false,
+                  'verify_peer_name' => false,
+                  'allow_self_signed' => true
+                )
+              );
+              $mail->Host = $postfix;
+              $mail->Port = 590;
+              $mail->Hostname = "quarantine";
+              $mail->setFrom($sender);
+              $mail->CharSet = 'UTF-8';
+              $mail->Subject = $subject;
+              $mail->addAddress($row['rcpt']);
+              if ($html) {
+                $mail->IsHTML(true);
+                $mail->Body = $html;
+                if ($text) {
+                  $mail->AltBody = $text;
+                }
+              } else {
+                $mail->IsHTML(false);
+                $mail->Body = $text;
+              }
+              $sender_domain = parse_email($sender)['domain'];
+              try {
+                if ($redis->hGet('DOMAIN_MAP', $sender_domain)) {
+                  $selector = $redis->hGet('DKIM_SELECTORS', $sender_domain);
+                  if ($selector) {
+                    $dkim_key = $redis->hGet('DKIM_PRIV_KEYS', sprintf("%s.%s", $selector, $sender_domain));
+                    $mail->DKIM_copyHeaderFields = false;
+                    $mail->DKIM_domain = $sender_domain;
+                    $mail->DKIM_private_string = $dkim_key; // Make sure to protect the key from being publicly accessible!
+                    $mail->DKIM_selector = $selector;
+                    $mail->DKIM_identity = $mail->From;
+                  }
+                }
+              } catch (RedisException $e) {
+                error_log("QUARANTINE: " . $e . PHP_EOL);
+                http_response_code(504);
+                exit;
+              }
+              $mail->send();
+            } catch (phpmailerException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
-                'msg' => 'Cannot connect to Postfix'
+                'msg' => array('release_send_failed', $e->errorMessage())
               );
-              return false;
+              continue;
             }
-            for ($i=0; $i < count($postfix_talk); $i++) {
-              $smtp_resource = fgets($smtp_connection, 256); 
-              if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
-                $ret = substr($smtp_resource, 0, 3);
-                $ret = (empty($ret)) ? '-' : $ret;
-                $_SESSION['return'][] = array(
-                  'type' => 'warning',
-                  'log' => array(__FUNCTION__, $_action, $_data_log),
-                  'msg' => 'Postfix returned SMTP code ' . $smtp_resource . ', expected ' . $postfix_talk[$i][0]
-                );
-                return false;
-              }
-              if ($postfix_talk[$i][1] !== '')  {
-                fputs($smtp_connection, $postfix_talk[$i][1]);
-              }
-            }
-            fclose($smtp_connection);
           }
           $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE `id` = :id");
           $stmt->execute(array(
