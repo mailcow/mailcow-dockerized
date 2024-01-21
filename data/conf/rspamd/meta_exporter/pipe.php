@@ -90,55 +90,57 @@ catch (RedisException $e) {
   exit;
 }
 
-// If the sender is managed by mailcow, quarantine and skip the rest
-// TODO: check if outgoing quarantine is enabled along with domain map
+// If the sender is managed by mailcow, only if the mail is rejected, quarantine and skip further processing
+// TODO: per domain outgoing quarantine
 try {
-  $domain = parse_email($sender)['domain'];
-  if ($redis->hGet('DOMAIN_MAP', $domain)) {
-    foreach (json_decode($rcpts, true) as $rcpt) {
-      error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt . PHP_EOL);
-      try {
-        $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`)
-          VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes)");
-        $stmt->execute(
-          array(
-            ':qid' => $qid,
-            ':subject' => $subject,
-            ':score' => $score,
-            ':sender' => $sender,
-            ':rcpt' => $rcpt,
-            ':symbols' => $symbols,
-            ':user' => $user,
-            ':ip' => $ip,
-            ':msg' => $raw_data,
-            ':action' => $action,
-            ':fuzzy_hashes' => $fuzzy
-          )
-        );
-        $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
-          SELECT `id`
-          FROM (
+  if ($redis->Get('Q_OUTGOING_ENABLED') == 'on') {
+    $domain = parse_email($sender)['domain'];
+    if ($redis->hGet('DOMAIN_MAP', $domain) && $action == "reject") {
+      error_log("QUARANTINE: quarantine pipe: processing quarantine message for sender " . $sender . PHP_EOL);
+      foreach (json_decode($rcpts, true) as $rcpt) {
+        try {
+          $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`)
+            VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes)");
+          $stmt->execute(
+            array(
+              ':qid' => $qid,
+              ':subject' => $subject,
+              ':score' => $score,
+              ':sender' => $sender,
+              ':rcpt' => $rcpt,
+              ':symbols' => $symbols,
+              ':user' => $user,
+              ':ip' => $ip,
+              ':msg' => $raw_data,
+              ':action' => $action,
+              ':fuzzy_hashes' => $fuzzy
+            )
+          );
+          $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
             SELECT `id`
-            FROM `quarantine`
-            WHERE `rcpt` = :rcpt2
-            ORDER BY id DESC
-            LIMIT :retention_size
-          ) x 
-        );');
-        $stmt->execute(
-          array(
-            ':rcpt' => $rcpt,
-            ':rcpt2' => $rcpt,
-            ':retention_size' => $retention_size
-          )
-        );
-      } catch (PDOException $e) {
-        error_log("QUARANTINE: " . $e->getMessage() . PHP_EOL);
-        http_response_code(503);
-        exit;
+            FROM (
+              SELECT `id`
+              FROM `quarantine`
+              WHERE `rcpt` = :rcpt2
+              ORDER BY id DESC
+              LIMIT :retention_size
+            ) x 
+          );');
+          $stmt->execute(
+            array(
+              ':rcpt' => $rcpt,
+              ':rcpt2' => $rcpt,
+              ':retention_size' => $retention_size
+            )
+          );
+        } catch (PDOException $e) {
+          error_log("QUARANTINE: " . $e->getMessage() . PHP_EOL);
+          http_response_code(503);
+          exit;
+        }
       }
+      exit;
     }
-    exit;
   }
 } 
 catch (RedisException $e) {
