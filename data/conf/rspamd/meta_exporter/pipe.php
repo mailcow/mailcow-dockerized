@@ -90,8 +90,7 @@ catch (RedisException $e) {
   exit;
 }
 
-// If the sender is managed by mailcow, only if the mail is rejected, quarantine and skip further processing
-// TODO: per domain outgoing quarantine
+// If the sender is a mailcow user and outgoing quarantine is enabled, quarantine the message and skip further processing
 try {
   if ($redis->Get('Q_OUTGOING_ENABLED') == 'on') {
     $domain = parse_email($sender)['domain'];
@@ -139,6 +138,7 @@ try {
           exit;
         }
       }
+      // The sender is a single person, and has been successfully processed, no need to process further
       exit;
     }
   }

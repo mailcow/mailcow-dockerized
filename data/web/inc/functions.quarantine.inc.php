@@ -478,7 +478,6 @@ function quarantine($_action, $_data = null) {
             $parser->setText($row['msg']);
             $subject = $parser->getHeader('subject');
             $text = $parser->getMessageBody('text');
-            // $html = $parser->getMessageBody('html');
             $html = $parser->getMessageBody('htmlEmbedded');
             try {
               $mail = new PHPMailer(true);
@@ -517,7 +516,7 @@ function quarantine($_action, $_data = null) {
                     $dkim_key = $redis->hGet('DKIM_PRIV_KEYS', sprintf("%s.%s", $selector, $sender_domain));
                     $mail->DKIM_copyHeaderFields = false;
                     $mail->DKIM_domain = $sender_domain;
-                    $mail->DKIM_private_string = $dkim_key; // Make sure to protect the key from being publicly accessible!
+                    $mail->DKIM_private_string = $dkim_key;
                     $mail->DKIM_selector = $selector;
                     $mail->DKIM_identity = $mail->From;
                   }
