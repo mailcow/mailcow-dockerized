@@ -116,11 +116,11 @@ migrate_docker_nat() {
       echo "Working on IPv6 NAT, please wait..."
       echo ${NAT_CONFIG} > /etc/docker/daemon.json
       ip6tables -F -t nat
-      [[ -e /etc/alpine-release ]] && rc-service docker restart || systemctl restart docker.service
+      [[ -e /etc/rc.conf ]] && rc-service docker restart || systemctl restart docker.service
       if [[ $? -ne 0 ]]; then
         echo -e "\e[31mError:\e[0m Failed to activate IPv6 NAT! Reverting and exiting."
         rm /etc/docker/daemon.json
-        if [[ -e /etc/alpine-release ]]; then
+        if [[ -e /etc/rc.conf ]]; then
           rc-service docker restart
         else
           systemctl reset-failed docker.service
