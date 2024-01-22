@@ -457,7 +457,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:2.01
+      image: mailcow/watchdog:2.02
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
