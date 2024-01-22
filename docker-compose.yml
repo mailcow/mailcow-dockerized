@@ -2,9 +2,10 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.19.1
+      image: mailcow/unbound:1.20
       environment:
         - TZ=${TZ}
+        - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
       volumes:
         - ./data/hooks/unbound:/hooks:Z
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
@@ -107,7 +108,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.86
+      image: mailcow/phpfpm:1.87
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -398,7 +399,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: mailcow/acme:1.86
+      image: mailcow/acme:1.87
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -457,7 +458,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:2.01
+      image: mailcow/watchdog:2.02
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
