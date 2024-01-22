@@ -480,6 +480,7 @@ CONFIG_ARRAY=(
   "WATCHDOG_VERBOSE"
   "WEBAUTHN_ONLY_TRUSTED_VENDORS"
   "SPAMHAUS_DQS_KEY"
+  "SKIP_UNBOUND_HEALTHCHECK"
 )
 
 detect_bad_asn
@@ -746,6 +747,12 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo '# Enable watchdog verbose logging' >> mailcow.conf
       echo 'WATCHDOG_VERBOSE=n' >> mailcow.conf
+    fi
+  elif [[ ${option} == "SKIP_UNBOUND_HEALTHCHECK" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n' >> mailcow.conf
+      echo 'SKIP_UNBOUND_HEALTHCHECK=n' >> mailcow.conf
     fi
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
