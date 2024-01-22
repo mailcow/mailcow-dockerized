@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.18
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # Installation
