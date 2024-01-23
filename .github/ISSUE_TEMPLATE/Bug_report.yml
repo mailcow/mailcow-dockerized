@@ -62,6 +62,16 @@ body:
         - nightly
     validations:
       required: true
+  - type: dropdown
+    attributes:
+      label: "Which architecture are you using?"
+      description: "#### `uname -m`"
+      multiple: false
+      options:
+        - x86
+        - ARM64 (aarch64)
+    validations:
+      required: true
   - type: input
     attributes:
       label: "Operating System:"
