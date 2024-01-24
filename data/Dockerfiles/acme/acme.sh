@@ -442,7 +442,7 @@ while true; do
 
         # archive ecdsa cert (if exists)
         mkdir -p ${BACKUP_DIR_ECDSA}/
-        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem && -f ${ACME_BASE}/${EXISTING_CERT}/domains ]] && cp ${ACME_BASE}/${EXISTING_CERT}/domains ${BACKUP_DIR_ECDSA}/
+        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem && -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-domains ]] && cp ${ACME_BASE}/${EXISTING_CERT}/ecdsa-domains ${BACKUP_DIR_ECDSA}/
         [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem ${BACKUP_DIR_ECDSA}/
         [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-key.pem ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-key.pem ${BACKUP_DIR_ECDSA}/
         [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-acme.csr ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-acme.csr ${BACKUP_DIR_ECDSA}/
@@ -460,28 +460,15 @@ while true; do
   # reload on new or changed certificates
   if [[ "${CERT_CHANGED}" == "1" ]]; then
     rm -f "${ACME_BASE}/force_renew" 2> /dev/null
-    RELOAD_LOOP_C=1
-    while [[ "${POSTFIX_CERT_SERIAL}" == "${POSTFIX_CERT_SERIAL_NEW}" ]] || [[ "${DOVECOT_CERT_SERIAL}" == "${DOVECOT_CERT_SERIAL_NEW}" ]] || [[ "${POSTFIX_CERT_SERIAL_ECDSA}" == "${POSTFIX_CERT_SERIAL_NEW_ECDSA}" ]] || [[ "${DOVECOT_CERT_SERIAL_ECDSA}" == "${DOVECOT_CERT_SERIAL_NEW_ECDSA}" ]] || [[ ${#POSTFIX_CERT_SERIAL_NEW} -ne 36 ]] || [[ ${#DOVECOT_CERT_SERIAL_NEW} -ne 36 ]] || [[ ${#POSTFIX_CERT_SERIAL_NEW_ECDSA} -ne 36 ]] || [[ ${#DOVECOT_CERT_SERIAL_NEW_ECDSA} -ne 36 ]]; do
-      log_f "Reloading or restarting services... (${RELOAD_LOOP_C})"
-      RELOAD_LOOP_C=$((RELOAD_LOOP_C + 1))
-      CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
-      log_f "Waiting for containers to settle..."
-      sleep 10
-      until nc -z dovecot 143; do
-        sleep 1
-      done
-      until nc -z postfix 25; do
-        sleep 1
-      done
-      POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      POSTFIX_CERT_SERIAL_NEW_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      DOVECOT_CERT_SERIAL_NEW_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      if [[ ${RELOAD_LOOP_C} -gt 3 ]]; then
-        log_f "Some services do return old end dates, something went wrong!"
-        ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
-        break;
-      fi
+    log_f "Reloading or restarting services... (${RELOAD_LOOP_C})"
+    CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
+    log_f "Waiting for containers to settle..."
+    sleep 10
+    until nc -z dovecot 143; do
+      sleep 1
+    done
+    until nc -z postfix 25; do
+      sleep 1
     done
   fi
 
