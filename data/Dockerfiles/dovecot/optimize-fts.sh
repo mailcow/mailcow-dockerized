@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ && ! "${FLATCURVE_EXPERIMENTAL}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+if [[ "${SKIP_FLATCURVE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     exit 0
 else
     doveadm fts optimize -A
