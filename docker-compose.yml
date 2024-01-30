@@ -165,7 +165,7 @@ services:
         - API_KEY_READ_ONLY=${API_KEY_READ_ONLY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
+        - SKIP_FLATCURVE=${SKIP_FLATCURVE:-y}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
@@ -267,7 +267,7 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-7200}
         - ACL_ANYONE=${ACL_ANYONE:-disallow}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
+        - SKIP_FLATCURVE=${SKIP_FLATCURVE:-y}
         - MAILDIR_SUB=${MAILDIR_SUB:-}
         - MASTER=${MASTER:-y}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
@@ -558,28 +558,6 @@ services:
           aliases:
             - dockerapi
 
-
-    ##### Will be removed soon #####
-    solr-mailcow:
-      image: mailcow/solr:1.8.3
-      restart: always
-      depends_on:
-        - netfilter-mailcow
-      volumes:
-        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
-      ports:
-        - "${SOLR_PORT:-127.0.0.1:18983}:8983"
-      environment:
-        - TZ=${TZ}
-        - SOLR_HEAP=${SOLR_HEAP:-1024}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
-        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-n}
-      networks:
-        mailcow-network:
-          aliases:
-            - solr
-    ################################
-
     olefy-mailcow:
       image: mailcow/olefy:1.13
       restart: always
@@ -636,7 +614,6 @@ services:
         - netfilter-mailcow
         - watchdog-mailcow
         - dockerapi-mailcow
-        - solr-mailcow
       environment:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
@@ -668,7 +645,6 @@ volumes:
   mysql-socket-vol-1:
   redis-vol-1:
   rspamd-vol-1:
-  solr-vol-1:
   postfix-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
