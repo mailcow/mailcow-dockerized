@@ -481,6 +481,7 @@ CONFIG_ARRAY=(
   "WEBAUTHN_ONLY_TRUSTED_VENDORS"
   "SPAMHAUS_DQS_KEY"
   "SKIP_UNBOUND_HEALTHCHECK"
+  "DISABLE_NETFILTER_ISOLATION_RULE"
 )
 
 detect_bad_asn
@@ -754,6 +755,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n' >> mailcow.conf
       echo 'SKIP_UNBOUND_HEALTHCHECK=n' >> mailcow.conf
     fi
+  elif [[ ${option} == "DISABLE_NETFILTER_ISOLATION_RULE" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n' >> mailcow.conf
+      echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
+      echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
+    fi 
   elif ! grep -q ${option} mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
     echo "${option}=n" >> mailcow.conf
