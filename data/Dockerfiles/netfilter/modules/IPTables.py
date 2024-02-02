@@ -219,7 +219,7 @@ class IPTables:
 
       # insert mailcow isolation rule
       rule = iptc.Rule()
-      rule.in_interface = f'! {_interface}'
+      rule.in_interface = f'!{_interface}'
       rule.out_interface = _interface
       rule.protocol = 'tcp'
       rule.create_target("DROP")
@@ -234,7 +234,7 @@ class IPTables:
       if _allow != "":
         rule = iptc.Rule()
         rule.src = _allow
-        rule.in_interface = f'! {_interface}'
+        rule.in_interface = f'!{_interface}'
         rule.out_interface = _interface
         rule.protocol = 'tcp'
         rule.create_target("ACCEPT")
