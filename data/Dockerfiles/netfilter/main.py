@@ -228,12 +228,12 @@ def clear():
       logger.logWarn('Error clearing redis keys F2B_ACTIVE_BANS and F2B_PERM_BANS: %s' % ex)
 
 def watch():
-  logger.logInfo('Watching Redis channel F2B_CHANNEL')
-  pubsub.subscribe('F2B_CHANNEL')
-
+  global pubsub
   global quit_now
   global exit_code
-  global pubsub
+
+  logger.logInfo('Watching Redis channel F2B_CHANNEL')
+  pubsub.subscribe('F2B_CHANNEL')
 
   while not quit_now:
     try:
