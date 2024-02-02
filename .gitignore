@@ -13,6 +13,7 @@ data/conf/dovecot/acl_anyone
 data/conf/dovecot/dovecot-master.passwd
 data/conf/dovecot/dovecot-master.userdb
 data/conf/dovecot/extra.conf
+data/conf/dovecot/mail_replica.conf
 data/conf/dovecot/global_sieve_*
 data/conf/dovecot/last_login
 data/conf/dovecot/lua

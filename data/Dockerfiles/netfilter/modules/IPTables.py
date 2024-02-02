@@ -1,5 +1,6 @@
 import iptc
 import time
+import os
 
 class IPTables:
   def __init__(self, chain_name, logger):
@@ -211,3 +212,41 @@ class IPTables:
     target = rule.create_target("SNAT")
     target.to_source = snat_target
     return rule
+
+  def create_mailcow_isolation_rule(self, _interface:str, _dports:list, _allow:str = ""):
+    try:
+      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), self.chain_name)
+
+      # insert mailcow isolation rule
+      rule = iptc.Rule()
+      rule.in_interface = f'! {_interface}'
+      rule.out_interface = _interface
+      rule.protocol = 'tcp'
+      rule.create_target("DROP")
+      match = rule.create_match("multiport")
+      match.dports = ','.join(map(str, _dports))
+
+      if rule in chain.rules:
+        chain.delete_rule(rule)
+      chain.insert_rule(rule, position=0)
+
+      # insert mailcow isolation exception rule
+      if _allow != "":
+        rule = iptc.Rule()
+        rule.src = _allow
+        rule.in_interface = f'! {_interface}'
+        rule.out_interface = _interface
+        rule.protocol = 'tcp'
+        rule.create_target("ACCEPT")
+        match = rule.create_match("multiport")
+        match.dports = ','.join(map(str, _dports))
+
+        if rule in chain.rules:
+          chain.delete_rule(rule)
+        chain.insert_rule(rule, position=0)
+
+
+      return True
+    except Exception as e:
+      self.logger.logCrit(f"Error adding {self.chain_name} isolation: {e}")
+      return False
