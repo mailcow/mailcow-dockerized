@@ -494,6 +494,9 @@ WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 # Otherwise it will work normally.
 SPAMHAUS_DQS_KEY=
 
+# Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
+# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
+DISABLE_NETFILTER_ISOLATION_RULE=n
 EOF
 
 mkdir -p data/assets/ssl

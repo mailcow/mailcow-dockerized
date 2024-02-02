@@ -1,5 +1,6 @@
 import nftables
 import ipaddress
+import os
 
 class NFTables:
   def __init__(self, chain_name, logger):
@@ -266,6 +267,17 @@ class NFTables:
 
     return self.nft_exec_dict(delete_command)
 
+  def delete_filter_rule(self, _family:str, _chain: str, _handle:str):
+    delete_command = self.get_base_dict()
+    _rule_opts = {'family': _family,
+                  'table': 'filter',
+                  'chain': _chain,
+                  'handle': _handle  }
+    _delete = {'delete': {'rule': _rule_opts} }
+    delete_command["nftables"].append(_delete)
+
+    return self.nft_exec_dict(delete_command)
+
   def snat_rule(self, _family: str, snat_target: str, source_address: str):
     chain_name = self.nft_chain_names[_family]['nat']['postrouting']
 
@@ -381,7 +393,7 @@ class NFTables:
           break
     return chain_handle
 
-  def get_rules_handle(self, _family: str, _table: str, chain_name: str):
+  def get_rules_handle(self, _family: str, _table: str, chain_name: str, _comment_filter = "mailcow"):
     rule_handle = []
     # Command: 'nft list chain {family} {table} {chain_name}'
     _chain_opts = {'family': _family, 'table': _table, 'name': chain_name}
@@ -397,7 +409,7 @@ class NFTables:
 
         rule = _object["rule"]
         if rule["family"] == _family and rule["table"] == _table and rule["chain"] == chain_name:
-          if rule.get("comment") and rule["comment"] == "mailcow":
+          if rule.get("comment") and rule["comment"] == _comment_filter:
             rule_handle.append(rule["handle"])
     return rule_handle
 
@@ -493,3 +505,152 @@ class NFTables:
         position+=1
 
     return position if rule_found else False
+
+  def create_mailcow_isolation_rule(self, _interface:str, _dports:list, _allow:str = ""):
+    family = "ip"
+    table = "filter"
+    comment_filter_drop = "mailcow isolation"
+    comment_filter_allow = "mailcow isolation allow"
+    json_command = self.get_base_dict()
+
+    # Delete old mailcow isolation rules
+    handles = self.get_rules_handle(family, table, self.chain_name, comment_filter_drop)
+    for handle in handles:
+      self.delete_filter_rule(family, self.chain_name, handle)
+    handles = self.get_rules_handle(family, table, self.chain_name, comment_filter_allow)
+    for handle in handles:
+      self.delete_filter_rule(family, self.chain_name, handle)
+
+    # insert mailcow isolation rule
+    _match_dict_drop = [
+      {
+        "match": {
+          "op": "!=",
+          "left": {
+            "meta": {
+              "key": "iifname"
+            }
+          },
+          "right": _interface
+        }
+      },
+      {
+        "match": {
+          "op": "==",
+          "left": {
+            "meta": {
+              "key": "oifname"
+            }
+          },
+          "right": _interface
+        }
+      },
+      {
+        "match": {
+          "op": "==",
+          "left": {
+            "payload": {
+              "protocol": "tcp",
+              "field": "dport"
+            }
+          },
+          "right": {
+            "set": _dports
+          }
+        }
+      },
+      {
+        "counter": {
+          "packets": 0,
+          "bytes": 0
+        }
+      },
+      {
+        "drop": None
+      }
+    ]
+    rule_drop = { "insert": { "rule": {
+      "family": family,
+      "table": table,
+      "chain": self.chain_name,
+      "comment": comment_filter_drop,
+      "expr": _match_dict_drop
+    }}}
+    json_command["nftables"].append(rule_drop)
+
+    # insert mailcow isolation allow rule
+    if _allow != "":
+      _match_dict_allow = [
+        {
+          "match": {
+            "op": "==",
+            "left": {
+              "payload": {
+                "protocol": "ip",
+                "field": "saddr"
+              }
+            },
+            "right": _allow
+          }
+        },
+        {
+          "match": {
+            "op": "!=",
+            "left": {
+              "meta": {
+                "key": "iifname"
+              }
+            },
+            "right": _interface
+          }
+        },
+        {
+          "match": {
+            "op": "==",
+            "left": {
+              "meta": {
+                "key": "oifname"
+              }
+            },
+            "right": _interface
+          }
+        },
+        {
+          "match": {
+            "op": "==",
+            "left": {
+              "payload": {
+                "protocol": "tcp",
+                "field": "dport"
+              }
+            },
+            "right": {
+              "set": _dports
+            }
+          }
+        },
+        {
+          "counter": {
+            "packets": 0,
+            "bytes": 0
+          }
+        },
+        {
+          "accept": None
+        }
+      ]
+      rule_allow = { "insert": { "rule": {
+        "family": family,
+        "table": table,
+        "chain": self.chain_name,
+        "comment": comment_filter_allow,
+        "expr": _match_dict_allow
+      }}}
+      json_command["nftables"].append(rule_allow)
+
+    success = self.nft_exec_dict(json_command)
+    if success == False:
+      self.logger.logCrit(f"Error adding {self.chain_name} isolation")
+      return False
+
+    return True

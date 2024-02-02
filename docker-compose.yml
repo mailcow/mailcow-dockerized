@@ -21,6 +21,7 @@ services:
       image: mariadb:10.5
       depends_on:
         - unbound-mailcow
+        - netfilter-mailcow
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -46,6 +47,8 @@ services:
       volumes:
         - redis-vol-1:/data/
       restart: always
+      depends_on:
+        - netfilter-mailcow
       ports:
         - "${REDIS_PORT:-127.0.0.1:7654}:6379"
       environment:
@@ -172,7 +175,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.121
+      image: mailcow/sogo:1.122
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -219,9 +222,10 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.27
+      image: mailcow/dovecot:1.28
       depends_on:
         - mysql-mailcow
+        - netfilter-mailcow
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -242,6 +246,8 @@ services:
       environment:
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
+        - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
+        - DOVEADM_REPLICA_PORT=${DOVEADM_REPLICA_PORT:-}
         - LOG_LINES=${LOG_LINES:-9999}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -435,14 +441,8 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.55
+      image: mailcow/netfilter:1.56
       stop_grace_period: 30s
-      depends_on:
-        - dovecot-mailcow
-        - postfix-mailcow
-        - sogo-mailcow
-        - php-fpm-mailcow
-        - redis-mailcow
       restart: always
       privileged: true
       environment:
@@ -453,6 +453,8 @@ services:
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
+        - DISABLE_NETFILTER_ISOLATION_RULE=${DISABLE_NETFILTER_ISOLATION_RULE:-n}
       network_mode: "host"
       volumes:
         - /lib/modules:/lib/modules:ro
@@ -553,6 +555,8 @@ services:
     solr-mailcow:
       image: mailcow/solr:1.8.2
       restart: always
+      depends_on:
+        - netfilter-mailcow
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
       ports:
