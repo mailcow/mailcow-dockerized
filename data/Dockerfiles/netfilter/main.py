@@ -376,6 +376,11 @@ def quit(signum, frame):
   global quit_now
   quit_now = True
 
+def quit_clear(signum, frame):
+  global exit_code
+  clear()
+  sys.exit(exit_code)
+
 
 if __name__ == '__main__':
   # init Logger
@@ -474,8 +479,7 @@ if __name__ == '__main__':
   whitelistupdate_thread.daemon = True
   whitelistupdate_thread.start()
 
-  signal.signal(signal.SIGTERM, quit)
-  atexit.register(clear)
+  signal.signal(signal.SIGTERM, quit_clear)
 
   while not quit_now:
     time.sleep(0.5)
