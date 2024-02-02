@@ -222,7 +222,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.27
+      image: mailcow/dovecot:1.28
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -441,7 +441,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.55
+      image: mailcow/netfilter:1.56
       stop_grace_period: 30s
       restart: always
       privileged: true
