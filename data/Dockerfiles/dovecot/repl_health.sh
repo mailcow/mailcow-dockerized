@@ -11,7 +11,7 @@ fi
 
 # Is replication active?
 # grep on file is less expensive than doveconf
-if ! grep -qi mail_replica /etc/dovecot/dovecot.conf; then
+if [ -n ${MAILCOW_REPLICA_IP} ]; then
   ${REDIS_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
   exit
 fi
