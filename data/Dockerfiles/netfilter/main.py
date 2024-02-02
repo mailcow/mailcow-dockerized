@@ -30,6 +30,8 @@ exit_code = 0
 lock = Lock()
 chain_name = "MAILCOW"
 r = None
+pubsub = None
+clear_before_quit = False
 
 
 def refreshF2boptions():
@@ -218,10 +220,12 @@ def clear():
   with lock:
     tables.clearIPv4Table()
     tables.clearIPv6Table()
-    if r:
-      r.delete('F2B_ACTIVE_BANS')
-      r.delete('F2B_PERM_BANS')
-      pubsub.unsubscribe()
+    try:
+      if r is not None:
+        r.delete('F2B_ACTIVE_BANS')
+        r.delete('F2B_PERM_BANS')
+    except Exception as ex:
+      logger.logWarn('Error clearing redis keys F2B_ACTIVE_BANS and F2B_PERM_BANS: %s' % ex)
 
 def watch():
   logger.logInfo('Watching Redis channel F2B_CHANNEL')
@@ -229,6 +233,7 @@ def watch():
 
   global quit_now
   global exit_code
+  global pubsub
 
   while not quit_now:
     try:
@@ -249,6 +254,7 @@ def watch():
               ban(addr)
     except Exception as ex:
       logger.logWarn('Error reading log line from pubsub: %s' % ex)
+      pubsub = None
       quit_now = True
       exit_code = 2
 
@@ -372,17 +378,22 @@ def blacklistUpdate():
           permBan(net=net, unban=True)
     time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
-def quit(signum, frame):
-  global quit_now
-  quit_now = True
-
-def quit_clear(signum, frame):
-  global exit_code
-  clear()
+def sigterm_quit(signum, frame):
+  global clear_before_quit
+  clear_before_quit = True
   sys.exit(exit_code)
+
+def berfore_quit():
+  if clear_before_quit:
+    clear()
+  if pubsub is not None:
+    pubsub.unsubscribe()
 
 
 if __name__ == '__main__':
+  atexit.register(berfore_quit)
+  signal.signal(signal.SIGTERM, sigterm_quit)
+
   # init Logger
   logger = Logger(None)
 
@@ -420,12 +431,12 @@ if __name__ == '__main__':
       else:
         r = redis.StrictRedis(host=redis_slaveof_ip, decode_responses=True, port=redis_slaveof_port, db=0)
       r.ping()
+      pubsub = r.pubsub()
     except Exception as ex:
       print('%s - trying again in 3 seconds'  % (ex))
       time.sleep(3)
     else:
       break
-  pubsub = r.pubsub()
   Logger.r = r
 
   # rename fail2ban to netfilter
@@ -478,8 +489,6 @@ if __name__ == '__main__':
   whitelistupdate_thread = Thread(target=whitelistUpdate)
   whitelistupdate_thread.daemon = True
   whitelistupdate_thread.start()
-
-  signal.signal(signal.SIGTERM, quit_clear)
 
   while not quit_now:
     time.sleep(0.5)
