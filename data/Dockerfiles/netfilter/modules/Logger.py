@@ -10,7 +10,8 @@ class Logger:
     tolog['time'] = int(round(time.time()))
     tolog['priority'] = priority
     tolog['message'] = message
-    self.r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
+    if self.r:
+      self.r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
     print(message)
 
   def logWarn(self, message):
