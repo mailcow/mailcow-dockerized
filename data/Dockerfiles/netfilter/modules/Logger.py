@@ -2,7 +2,10 @@ import time
 import json
 
 class Logger:
-  def __init__(self, redis):
+  def __init__(self):
+    self.r = None
+
+  def set_redis(self, redis):
     self.r = redis
 
   def log(self, priority, message):
@@ -10,7 +13,7 @@ class Logger:
     tolog['time'] = int(round(time.time()))
     tolog['priority'] = priority
     tolog['message'] = message
-    if self.r:
+    if self.r is not None:
       self.r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
     print(message)
 
