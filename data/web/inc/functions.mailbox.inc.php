@@ -1027,10 +1027,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $template_attr = null;
           if ($_data['template']){
-            $template_attr = mailbox('get', 'mailbox_templates', $_data['template'])['attributes'];
+            $template_attr = mailbox('get', 'mailbox_templates', $_data['template'], $_extra)['attributes'];
           }
           if (empty($template_attr)) {
-            $template_attr = mailbox('get', 'mailbox_templates')[0]['attributes'];
+            $template_attr = mailbox('get', 'mailbox_templates', null, $_extra)[0]['attributes'];
           }
           $MAILBOX_DEFAULT_ATTRIBUTES = array_merge($MAILBOX_DEFAULT_ATTRIBUTES, $template_attr);
 
@@ -4737,7 +4737,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           return $mailboxdata;
         break;
         case 'mailbox_templates':
-          if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
+          if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin" && !$_extra['iam_create_login']) {
             return false;
           }
           $_data = (isset($_data)) ? intval($_data) : null;
