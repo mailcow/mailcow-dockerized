@@ -4,8 +4,6 @@ LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.16
-ARG DOVECOT_VERSION=2.3.20
-ARG PIGEONHOLE_VERSION=0.5.20
 ENV LC_ALL C
 
 
@@ -29,7 +27,6 @@ RUN addgroup -g 5000 vmail \
   coreutils \
   jq \
   lua \
-  lua-json \
   lua-cjson \
   lua-socket \
   lua-sql-mysql \
