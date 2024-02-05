@@ -395,7 +395,7 @@ if __name__ == '__main__':
   signal.signal(signal.SIGTERM, sigterm_quit)
 
   # init Logger
-  logger = Logger(None)
+  logger = Logger()
 
   # init backend
   backend = sys.argv[1]
@@ -437,7 +437,7 @@ if __name__ == '__main__':
       time.sleep(3)
     else:
       break
-  Logger.r = r
+  logger.set_redis(r)
 
   # rename fail2ban to netfilter
   if r.exists('F2B_LOG'):
