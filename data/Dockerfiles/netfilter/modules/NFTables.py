@@ -41,6 +41,7 @@ class NFTables:
         exit_code = 2
 
       if chain_position > 0:
+        chain_position += 1
         self.logger.logCrit(f'MAILCOW target is in position {chain_position} in the {filter_table} {chain} table, restarting container to fix it...')
         err = True
         exit_code = 2
