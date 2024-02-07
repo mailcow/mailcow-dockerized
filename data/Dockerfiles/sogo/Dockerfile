@@ -1,8 +1,8 @@
-FROM debian:bookworm-slim
+FROM debian:bullseye-slim
 LABEL maintainer "The Infrastructure Company GmbH GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DEBIAN_VERSION=bookworm
+ARG DEBIAN_VERSION=bullseye
 ARG SOGO_DEBIAN_REPOSITORY=http://www.axis.cz/linux/debian
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.17
