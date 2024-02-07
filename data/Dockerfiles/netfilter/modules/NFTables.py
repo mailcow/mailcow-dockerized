@@ -309,8 +309,8 @@ class NFTables:
       rule_handle = rule["handle"]
       break
 
-    dest_net = ipaddress.ip_network(source_address)
-    target_net = ipaddress.ip_network(snat_target)
+    dest_net = ipaddress.ip_network(source_address, strict=False)
+    target_net = ipaddress.ip_network(snat_target, strict=False)
 
     if rule_found:
       saddr_ip = rule["expr"][0]["match"]["right"]["prefix"]["addr"]
@@ -321,9 +321,9 @@ class NFTables:
 
       target_ip = rule["expr"][3]["snat"]["addr"]
 
-      saddr_net = ipaddress.ip_network(saddr_ip + '/' + str(saddr_len))
-      daddr_net = ipaddress.ip_network(daddr_ip + '/' + str(daddr_len))
-      current_target_net = ipaddress.ip_network(target_ip)
+      saddr_net = ipaddress.ip_network(saddr_ip + '/' + str(saddr_len), strict=False)
+      daddr_net = ipaddress.ip_network(daddr_ip + '/' + str(daddr_len), strict=False)
+      current_target_net = ipaddress.ip_network(target_ip, strict=False)
 
       match = all((
                 dest_net == saddr_net,
@@ -417,7 +417,7 @@ class NFTables:
     json_command = self.get_base_dict()
 
     expr_opt = []
-    ipaddr_net = ipaddress.ip_network(ipaddr)
+    ipaddr_net = ipaddress.ip_network(ipaddr, strict=False)
     right_dict = {'prefix': {'addr': str(ipaddr_net.network_address), 'len': int(ipaddr_net.prefixlen) } }
 
     left_dict = {'payload': {'protocol': _family, 'field': 'saddr'} }
@@ -466,7 +466,7 @@ class NFTables:
         current_rule_net = ipaddress.ip_network(current_rule_ip)
 
         # ip to ban
-        candidate_net = ipaddress.ip_network(ipaddr)
+        candidate_net = ipaddress.ip_network(ipaddr, strict=False)
 
         if current_rule_net == candidate_net:
           rule_handle = _object["rule"]["handle"]
