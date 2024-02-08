@@ -20,10 +20,10 @@ EXPOSE 53/udp 53/tcp
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-# healthcheck (nslookup)
+# healthcheck (dig, ping, nc)
 COPY healthcheck.sh /healthcheck.sh
 RUN chmod +x /healthcheck.sh
-HEALTHCHECK --interval=5s --timeout=30s CMD [ "/healthcheck.sh" ]
+HEALTHCHECK --interval=30s --timeout=30s CMD [ "/healthcheck.sh" ]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
