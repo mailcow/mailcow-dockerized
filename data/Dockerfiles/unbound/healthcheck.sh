@@ -50,27 +50,6 @@ function check_dns() {
     
 }
 
-# Simple Netcat Check to connect to common webports
-function check_netcat() {
-    declare -a domains=("mailcow.email" "github.com" "hub.docker.com")
-    declare -a ports=("80" "443")
-
-    for domain in "${domains[@]}" ; do
-        for port in "${ports[@]}" ; do
-            nc -z -w 2 $domain $port
-            if [ $? -ne 0 ]; then
-                log_to_file "Healthcheck: Could not reach $domain on Port $port... Gave up!"
-                log_to_file "Please check your internet connection or firewall rules to fix this error."
-                return 1
-            fi
-        done
-    done
-
-    log_to_file "Healthcheck: Netcat Checks WORKING properly!"
-    return 0
-
-}
-
 if [[ ${SKIP_UNBOUND_HEALTHCHECK} == "y" ]]; then
     log_to_file "Healthcheck: ALL CHECKS WERE SKIPPED! Unbound is healthy!"
     exit 0
@@ -84,12 +63,6 @@ if [ $? -ne 0 ]; then
 fi
 
 check_dns
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-
-check_netcat
 
 if [ $? -ne 0 ]; then
     exit 1
