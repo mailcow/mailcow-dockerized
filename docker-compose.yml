@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.20
+      image: mailcow/unbound:1.21
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -175,7 +175,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.122
+      image: mailcow/sogo:1.122.1
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -222,7 +222,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.28.1
+      image: mailcow/dovecot:1.28.2
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -441,7 +441,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.56
+      image: mailcow/netfilter:1.57
       stop_grace_period: 30s
       restart: always
       privileged: true
