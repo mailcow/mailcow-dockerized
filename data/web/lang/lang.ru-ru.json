@@ -504,7 +504,7 @@
         "dns_records": "Записи DNS",
         "dns_records_24hours": "Обратите внимание, что для внесения изменений в DNS может потребоваться до 24 часов, чтобы правильно отобразить их текущее состояние на этой странице. Эта страница предназначен для того, чтобы вы могли легко увидеть, как настроить записи DNS и проверить, все ли записи правильно занесены в DNS.",
         "dns_records_data": "Значение",
-        "dns_records_docs": "Пожалуйста, ознакомьтесь с <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">документацией</a>.",
+        "dns_records_docs": "Пожалуйста, ознакомьтесь с <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">документацией</a>.",
         "dns_records_name": "Название",
         "dns_records_status": "Статус",
         "dns_records_type": "Тип",

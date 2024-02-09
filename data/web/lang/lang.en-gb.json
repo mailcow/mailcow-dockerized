@@ -556,7 +556,7 @@
         "dns_records": "DNS Records",
         "dns_records_24hours": "Please note that changes made to DNS may take up to 24 hours to correctly have their current state reflected on this page. It is intended as a way for you to easily see how to configure your DNS records and to check whether all your records are correctly stored in DNS.",
         "dns_records_data": "Correct Data",
-        "dns_records_docs": "Please also consult <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">the documentation</a>.",
+        "dns_records_docs": "Please also consult <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">the documentation</a>.",
         "dns_records_name": "Name",
         "dns_records_status": "Current State",
         "dns_records_type": "Type",

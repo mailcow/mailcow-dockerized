@@ -483,7 +483,7 @@
         "cname_from_a": "Valeur dérivée de l’enregistrement A/AAAA. Ceci est supporté tant que l’enregistrement indique la bonne ressource.",
         "dns_records": "Enregistrements DNS",
         "dns_records_24hours": "Veuillez noter que les modifications apportées au DNS peuvent prendre jusqu’à 24 heures pour que leurs états actuels soient correctement reflétés sur cette page. Il est conçu comme un moyen pour vous de voir facilement comment configurer vos enregistrements DNS et de vérifier si tous vos enregistrements sont correctement stockés dans les DNS.",
-        "dns_records_docs": "Veuillez également consulter <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">la documentation</a>.",
+        "dns_records_docs": "Veuillez également consulter <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">la documentation</a>.",
         "dns_records_data": "Données correcte",
         "dns_records_name": "Nom",
         "dns_records_status": "Etat courant",
