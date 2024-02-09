@@ -523,7 +523,7 @@
         "dns_records": "DNS záznamy",
         "dns_records_24hours": "Berte prosím do úvahy, že zmeny v DNS môžu trvať až 24 hodín, aby sa zmeny prejavili na tejto stránke. Pre jednoduchosť DNS konfigurácie môžete použiť údaje uvedené nižšie, prípadne skontrolovať tak správnosť záznamov v DNS.",
         "dns_records_data": "Správne dáta",
-        "dns_records_docs": "Pozrite si prosím <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentáciu</a>.",
+        "dns_records_docs": "Pozrite si prosím <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">dokumentáciu</a>.",
         "dns_records_name": "Meno",
         "dns_records_status": "Súčasný stav",
         "dns_records_type": "Typ",
