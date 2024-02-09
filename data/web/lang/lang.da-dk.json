@@ -459,7 +459,7 @@
         "cname_from_a": "Værdi afledt af A / AAAA-post. Dette understøttes, så længe posten peger på den korrekte ressource.",
         "dns_records": "DNS-poster",
         "dns_records_24hours": "Bemærk, at ændringer, der foretages i DNS, kan tage op til 24 timer for at få deres aktuelle status korrekt reflekteret på denne side. Det er beregnet som en måde for dig let at se, hvordan du konfigurerer dine DNS-poster og kontrollere, om alle dine poster er korrekt gemt i DNS.",
-        "dns_records_docs": "Se også <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentationen</a>.",
+        "dns_records_docs": "Se også <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">dokumentationen</a>.",
         "dns_records_data": "Korrekte data",
         "dns_records_name": "Navn",
         "dns_records_status": "Nuværende tilstand",

@@ -510,7 +510,7 @@
         "cname_from_a": "Waarde afgeleid van een A- of AAAA-vermelding.",
         "dns_records": "DNS-configuratie",
         "dns_records_24hours": "Houd er rekening mee dat wijzigingen aan DNS tot wel 24 uur in beslag kunnen nemen voordat ze op deze pagina worden weergegeven. Deze informatie is bedoeld om gemakkelijk te bekijken of de DNS-configuratie aan de eisen voldoet.",
-        "dns_records_docs": "Raadpleeg ook <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">de documentatie</a>.",
+        "dns_records_docs": "Raadpleeg ook <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">de documentatie</a>.",
         "dns_records_data": "Correcte gegevens",
         "dns_records_name": "Naam",
         "dns_records_status": "Huidige staat",

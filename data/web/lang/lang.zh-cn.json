@@ -494,7 +494,7 @@
         "dns_records": "DNS 记录",
         "dns_records_24hours": "请注意 DNS 记录的更改可能需要24小时才可以使此页面的当前状态显示正确。此页面为你提供了一个可以便捷查询如何配置 DNS 记录以及检查你的 DNS 记录是否正确的方式。",
         "dns_records_data": "正确数据",
-        "dns_records_docs": "请同时也参考这个<a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">文档</a>.",
+        "dns_records_docs": "请同时也参考这个<a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">文档</a>.",
         "dns_records_name": "名称",
         "dns_records_status": "当前状态",
         "dns_records_type": "类型",
