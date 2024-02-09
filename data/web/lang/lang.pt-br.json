@@ -554,7 +554,7 @@
         "dns_records": "Registros DNS",
         "dns_records_24hours": "Observe que as alterações feitas no DNS podem levar até 24 horas para que seu estado atual seja refletido corretamente nesta página. O objetivo é uma forma de você ver facilmente como configurar seus registros DNS e verificar se todos os seus registros estão armazenados corretamente no DNS.",
         "dns_records_data": "Dados corretos",
-        "dns_records_docs": "Consulte também <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">a documentação</a>.",
+        "dns_records_docs": "Consulte também <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">a documentação</a>.",
         "dns_records_name": "Nome",
         "dns_records_status": "Estado atual",
         "dns_records_type": "Tipo",
