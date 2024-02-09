@@ -4316,6 +4316,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
           $domaindata['mboxes_left'] = $row['mailboxes']  - $MailboxDataDomain['count'];
           $domaindata['domain_name'] = $row['domain'];
+          $domaindata['domain_h_name'] = idn_to_utf8($row['domain']);
           $domaindata['description'] = $row['description'];
           $domaindata['max_num_aliases_for_domain'] = $row['aliases'];
           $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
