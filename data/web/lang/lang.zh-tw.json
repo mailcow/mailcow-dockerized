@@ -526,7 +526,7 @@
         "dns_records": "DNS 紀錄",
         "dns_records_24hours": "請注意 DNS 紀錄的更改可能需要 24 小時才能正確顯示於此頁面。此頁面的目的是為了讓你可以輕鬆的了解如何設定 DNS 紀錄並檢查 DNS 是否設定正確。",
         "dns_records_data": "正確值",
-        "dns_records_docs": "請同時另外查看 <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">文件</a>.",
+        "dns_records_docs": "請同時另外查看 <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">文件</a>.",
         "dns_records_name": "名稱",
         "dns_records_status": "目前狀態",
         "dns_records_type": "類型",

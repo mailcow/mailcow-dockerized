@@ -506,7 +506,7 @@
         "dns_records": "Record DNS",
         "dns_records_24hours": "Tieni presente che le modifiche apportate ai record DNS potrebbero richiedere fino a 24 ore per poter essere visualizzate correttamente in questa pagina. Tutto ciò è da intendersi come un modo per voi di vedere come configurare i record DNS e per controllare se tutti i record DNS sono stati inseriti correttamente.",
         "dns_records_data": "Dati corretti",
-        "dns_records_docs": "Si prega di consultare anche <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">la documentazione</a>.",
+        "dns_records_docs": "Si prega di consultare anche <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns/\">la documentazione</a>.",
         "dns_records_name": "Nome",
         "dns_records_status": "Stato attuale",
         "dns_records_type": "Tipo",
