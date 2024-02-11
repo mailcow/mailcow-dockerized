@@ -415,7 +415,7 @@ if __name__ == '__main__':
   tables.initChainIPv4()
   tables.initChainIPv6()
 
-  if os.getenv("DISABLE_NETFILTER_ISOLATION_RULE").lower() in ("y", "yes"):
+  if str(os.getenv("DISABLE_NETFILTER_ISOLATION_RULE")).lower() in ("y", "yes"):
     logger.logInfo(f"Skipping {chain_name} isolation")
   else:
     logger.logInfo(f"Setting {chain_name} isolation")
