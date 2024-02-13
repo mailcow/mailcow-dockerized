@@ -49,6 +49,9 @@
                 {% if has_iam_sso %}
                 <li><a class="dropdown-item" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a></li>
                 {% endif %}
+                {% if has_ssl_client_auth %}
+                <li><a class="dropdown-item" href="/?mutual_tls_login=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.ssl_client_auth }}</a></li>
+                {% endif %}
               </ul>
             </div>
             {% if not oauth2_request %}

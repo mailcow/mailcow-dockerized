@@ -26,6 +26,26 @@ if ($iam_provider){
   }
 }
 
+if (isset($_GET['mutual_tls_login'])) {
+	$mutual_login_user = user_mutualtls_login();
+  if ($mutual_login_user != false) {
+		$_SESSION['mailcow_cc_username'] = $mutual_login_user;
+		$_SESSION['mailcow_cc_role'] = "user";
+
+    $http_parameters = explode('&', $_SESSION['index_query_string']);
+    unset($_SESSION['index_query_string']);
+    if (in_array('mobileconfig', $http_parameters)) {
+        if (in_array('only_email', $http_parameters)) {
+            header("Location: /mobileconfig.php?only_email");
+            die();
+        }
+        header("Location: /mobileconfig.php");
+        die();
+    }
+		header("Location: /user");
+	}
+}
+
 // SSO Domain Admin
 if (!empty($_GET['sso_token'])) {
   $username = domain_admin_sso('check', $_GET['sso_token']);

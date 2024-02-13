@@ -91,10 +91,16 @@
                       <input type="number" class="form-control" name="maxquota" value="{{ (result.max_quota_for_mbox / 1048576) }}">
                     </div>
                   </div>
-                  <div class="row mb-4">
+                  <div class="row mb-2">
                     <label class="control-label col-sm-2" for="quota">{{ lang.edit.domain_quota }}</label>
                     <div class="col-sm-10">
                       <input type="number" class="form-control" name="quota" value="{{ (result.max_quota_for_domain / 1048576) }}">
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="quota">{{ lang.admin.ssl_client_ca }}</label>
+                    <div class="col-sm-10">
+                      <textarea class="form-control" id="ssl_client_ca" name="ssl_client_ca" style="height: 200px;">{{ result.ssl_client_ca }}</textarea>
                     </div>
                   </div>
                   <div class="row mb-2">

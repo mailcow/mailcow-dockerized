@@ -233,6 +233,75 @@ function user_login($user, $pass, $extra = null){
 
   return false;
 }
+function user_mutualtls_login() {
+  global $pdo;
+
+  if (empty($_SERVER["TLS_SUCCESS"]) || empty($_SERVER["TLS_DN"]) || empty($_SERVER["TLS_ISSUER"])) {
+    // missing info
+    return false;
+  }
+  if (!$_SERVER["TLS_SUCCESS"]) {
+    // mutual tls login failed
+    return false;
+  }
+
+  // parse dn
+  $pairs = explode(',', $_SERVER["TLS_DN"]);
+  $dn_details = [];
+  foreach ($pairs as $pair) {
+    $keyValue = explode('=', $pair);
+    $dn_details[$keyValue[0]] = $keyValue[1];
+  }
+  // parse dn
+  $pairs = explode(',', $_SERVER["TLS_ISSUER"]);
+  $issuer_details = [];
+  foreach ($pairs as $pair) {
+    $keyValue = explode('=', $pair);
+    $issuer_details[$keyValue[0]] = $keyValue[1];
+  }
+
+  $user = $dn_details['emailAddress'];
+  if (empty($user)){
+    // no user specified
+    return false;
+  }
+
+  $search = "";
+  ksort($issuer_details);
+  foreach ($issuer_details as $key => $value) {
+    $search .= "{$key}={$value},";
+  }
+  $search = rtrim($search, ',');
+  if (empty($search)){
+    // incomplete issuer details
+    return false;
+  }
+
+  $user_split = explode('@', $user);
+  $local_part = $user_split[0];
+  $domain     = $user_split[1];
+  // search for match
+  $stmt = $pdo->prepare("SELECT * FROM `domain` AS d1
+    INNER JOIN `mailbox` ON mailbox.domain = d1.domain
+    INNER JOIN `domain` AS d2 ON mailbox.domain = d2.domain
+    WHERE `kind` NOT REGEXP 'location|thing|group'
+      AND d2.`ssl_client_issuer` = :search
+      AND d2.`active`='1'
+      AND mailbox.`active`='1'
+      AND mailbox.`username` = :user");
+  $stmt->execute(array(
+    ':search' => $search,
+    ':user' => $user
+  ));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  // user not found
+  if (!$row){
+    return false;
+  }
+
+  return $user;
+}
 function apppass_login($user, $pass, $app_passwd_data, $extra = null){
   global $pdo;
 

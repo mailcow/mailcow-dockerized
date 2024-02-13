@@ -204,6 +204,17 @@ chown -R 82:82 /web/templates/cache
 # Clear cache
 find /web/templates/cache/* -not -name '.gitkeep' -delete
 
+# list client ca of all domains for
+CA_LIST="/etc/nginx/conf.d/client_cas.crt"
+# Clear the output file
+> "$CA_LIST"
+# Execute the query and append each value to the output file
+mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT ssl_client_ca FROM domain;" | while read -r ca; do
+    echo "$ca" >> "$CA_LIST"
+done
+echo "SSL client CAs have been appended to $CA_LIST"
+
+
 # Run hooks
 for file in /hooks/*; do
   if [ -x "${file}" ]; then

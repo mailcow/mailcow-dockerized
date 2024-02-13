@@ -528,11 +528,24 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $active = (isset($_data['active'])) ? intval($_data['active']) : $DOMAIN_DEFAULT_ATTRIBUTES['active'];
+          $active               = (isset($_data['active'])) ? intval($_data['active']) : $DOMAIN_DEFAULT_ATTRIBUTES['active'];
           $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_all_recipients'];
-          $relay_unknown_only = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_unknown_only'];
-          $backupmx = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $DOMAIN_DEFAULT_ATTRIBUTES['backupmx'];
-          $gal = (isset($_data['gal'])) ? intval($_data['gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['gal'];
+          $relay_unknown_only   = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_unknown_only'];
+          $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $DOMAIN_DEFAULT_ATTRIBUTES['backupmx'];
+          $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['gal'];
+          $ssl_client_ca        = (is_valid_ssl_cert(trim($_data['ssl_client_ca']))) ? trim($_data['ssl_client_ca']) : null;
+          $ssl_client_issuer    = "";
+          if (isset($ssl_client_ca)) {
+            $ca_issuer = openssl_x509_parse($ssl_client_ca);
+            if (!empty($ca_issuer) && is_array($ca_issuer['issuer'])){
+              $ca_issuer = $ca_issuer['issuer'];
+              ksort($ca_issuer);
+              foreach ($ca_issuer as $key => $value) {
+                $ssl_client_issuer .= "{$key}={$value},";
+              }
+              $ssl_client_issuer = rtrim($ssl_client_issuer, ',');
+            }
+          }
           if ($relay_all_recipients == 1) {
             $backupmx = '1';
           }
@@ -588,22 +601,33 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':domain' => '%@' . $domain
           ));
           // save domain
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
-          $stmt->execute(array(
-            ':domain' => $domain,
-            ':description' => $description,
-            ':aliases' => $aliases,
-            ':mailboxes' => $mailboxes,
-            ':defquota' => $defquota,
-            ':maxquota' => $maxquota,
-            ':quota' => $quota,
-            ':backupmx' => $backupmx,
-            ':gal' => $gal,
-            ':active' => $active,
-            ':relay_unknown_only' => $relay_unknown_only,
-            ':relay_all_recipients' => $relay_all_recipients
-          ));
+          try {
+            $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`, `ssl_client_issuer`, `ssl_client_ca`)
+              VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients, :ssl_client_issuer, :ssl_client_ca)");
+            $stmt->execute(array(
+              ':domain' => $domain,
+              ':description' => $description,
+              ':aliases' => $aliases,
+              ':mailboxes' => $mailboxes,
+              ':defquota' => $defquota,
+              ':maxquota' => $maxquota,
+              ':quota' => $quota,
+              ':backupmx' => $backupmx,
+              ':gal' => $gal,
+              ':active' => $active,
+              ':relay_unknown_only' => $relay_unknown_only,
+              ':relay_all_recipients' => $relay_all_recipients,
+              ':ssl_client_issuer' => $ssl_client_issuer,
+              'ssl_client_ca' => $ssl_client_ca
+            ));
+          } catch (PDOException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => $e->getMessage()
+            );
+            return false;
+          }
           // save tags
           foreach($tags as $index => $tag){
             if (empty($tag)) continue;
@@ -654,19 +678,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           if (!empty($restart_sogo)) {
             $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
-            if ($restart_response['type'] == "success") {
-              $_SESSION['return'][] = array(
-                'type' => 'success',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('domain_added', htmlspecialchars($domain))
-              );
-              return true;
-            }
-            else {
+            if ($restart_response['type'] != "success") {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => 'domain_added_sogo_failed'
+              );
+              return false;
+            }
+          }
+          if (!empty($ssl_client_ca) && !empty($ssl_client_issuer)) {
+            // restart nginx
+            $restart_response = json_decode(docker('post', 'nginx-mailcow', 'restart'), true);
+            if ($restart_response['type'] != "success") {
+              $_SESSION['return'][] = array(
+                'type' => 'warning',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'nginx_restart_failed'
               );
               return false;
             }
@@ -2673,7 +2701,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());          
+                $ssl_client_ca        = (is_valid_ssl_cert(trim($_data['ssl_client_ca']))) ? trim($_data['ssl_client_ca']) : $is_now['ssl_client_ca'];
+                $ssl_client_issuer = $is_now['ssl_client_issuer'];
+                if (is_valid_ssl_cert(trim($_data['ssl_client_ca']))){
+                  if (isset($ssl_client_ca)) {
+                    $ca_issuer = openssl_x509_parse($ssl_client_ca);
+                    if (!empty($ca_issuer) && is_array($ca_issuer['issuer'])){
+                      $ca_issuer = $ca_issuer['issuer'];
+                      ksort($ca_issuer);
+                      foreach ($ca_issuer as $key => $value) {
+                        $ssl_client_issuer .= "{$key}={$value},";
+                      }
+                      $ssl_client_issuer = rtrim($ssl_client_issuer, ',');
+                    }
+                  }
+                }
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -2773,35 +2816,47 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 continue;
               }
 
-              $stmt = $pdo->prepare("UPDATE `domain` SET
-              `relay_all_recipients` = :relay_all_recipients,
-              `relay_unknown_only` = :relay_unknown_only,
-              `backupmx` = :backupmx,
-              `gal` = :gal,
-              `active` = :active,
-              `quota` = :quota,
-              `defquota` = :defquota,
-              `maxquota` = :maxquota,
-              `relayhost` = :relayhost,
-              `mailboxes` = :mailboxes,
-              `aliases` = :aliases,
-              `description` = :description
-                WHERE `domain` = :domain");
-              $stmt->execute(array(
-                ':relay_all_recipients' => $relay_all_recipients,
-                ':relay_unknown_only' => $relay_unknown_only,
-                ':backupmx' => $backupmx,
-                ':gal' => $gal,
-                ':active' => $active,
-                ':quota' => $quota,
-                ':defquota' => $defquota,
-                ':maxquota' => $maxquota,
-                ':relayhost' => $relayhost,
-                ':mailboxes' => $mailboxes,
-                ':aliases' => $aliases,
-                ':description' => $description,
-                ':domain' => $domain
-              ));
+              try {
+                $stmt = $pdo->prepare("UPDATE `domain` SET
+                  `relay_all_recipients` = :relay_all_recipients,
+                  `relay_unknown_only` = :relay_unknown_only,
+                  `backupmx` = :backupmx,
+                  `gal` = :gal,
+                  `active` = :active,
+                  `quota` = :quota,
+                  `defquota` = :defquota,
+                  `maxquota` = :maxquota,
+                  `relayhost` = :relayhost,
+                  `mailboxes` = :mailboxes,
+                  `aliases` = :aliases,
+                  `description` = :description,
+                  `ssl_client_ca` = :ssl_client_ca,
+                  `ssl_client_issuer` = :ssl_client_issuer
+                    WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':relay_all_recipients' => $relay_all_recipients,
+                  ':relay_unknown_only' => $relay_unknown_only,
+                  ':backupmx' => $backupmx,
+                  ':gal' => $gal,
+                  ':active' => $active,
+                  ':quota' => $quota,
+                  ':defquota' => $defquota,
+                  ':maxquota' => $maxquota,
+                  ':relayhost' => $relayhost,
+                  ':mailboxes' => $mailboxes,
+                  ':aliases' => $aliases,
+                  ':description' => $description,
+                  ':ssl_client_ca' => $ssl_client_ca,
+                  ':ssl_client_issuer' => $ssl_client_issuer,
+                  ':domain' => $domain
+                ));
+              }catch (PDOException $e) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => $e->getMessage()
+                );
+              }
               // save tags
               foreach($tags as $index => $tag){
                 if (empty($tag)) continue;
@@ -4416,7 +4471,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only`,
               `backupmx`,
               `gal`,
-              `active`
+              `active`,
+              `ssl_client_ca`
                 FROM `domain` WHERE `domain`= :domain");
           $stmt->execute(array(
             ':domain' => $_data
@@ -4484,6 +4540,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['relay_unknown_only_int'] = $row['relay_unknown_only'];
           $domaindata['created'] = $row['created'];
           $domaindata['modified'] = $row['modified'];
+          $domaindata['ssl_client_ca'] = $row['ssl_client_ca'];
           $stmt = $pdo->prepare("SELECT COUNT(`address`) AS `alias_count` FROM `alias`
             WHERE (`domain`= :domain OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = :domain2))
               AND `address` NOT IN (

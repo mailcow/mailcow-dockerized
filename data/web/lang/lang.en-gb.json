@@ -345,6 +345,8 @@
         "service_id": "Service ID",
         "source": "Source",
         "spamfilter": "Spam filter",
+        "ssl_client_auth": "mTLS",
+        "ssl_client_ca": "CA for mTLS Login",
         "subject": "Subject",
         "success": "Success",
         "sys_mails": "System mails",

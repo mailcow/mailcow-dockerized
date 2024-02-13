@@ -2522,6 +2522,31 @@ function clear_session(){
   session_destroy();
   session_write_close();
 }
+function is_valid_ssl_cert($cert) {
+  if (empty($cert)) {
+    return false;
+  }
+  $cert_res = openssl_x509_read($cert);
+  if ($cert_res === false) {
+    return false;
+  }
+  openssl_x509_free($cert_res);
+  
+  return true;
+}
+function has_ssl_client_auth() {
+  global $pdo;
+
+  $stmt = $pdo->query("SELECT domain FROM `domain`
+    WHERE `ssl_client_ca` IS NOT NULL
+    AND `ssl_client_issuer` IS NOT NULL");
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$row){ 
+    return false;
+  }
+
+  return true;
+}
 
 function get_logs($application, $lines = false) {
   if ($lines === false) {
