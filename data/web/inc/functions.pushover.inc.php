@@ -74,7 +74,7 @@ function pushover($_action, $_data = null) {
           if (empty($sender)) {
             continue;
           }
-          if (!filter_var($sender, FILTER_VALIDATE_EMAIL) === true) {
+          if (!is_valid_mailbox_name($sender) === true) {
             unset($senders[$i]);
             continue;
           }

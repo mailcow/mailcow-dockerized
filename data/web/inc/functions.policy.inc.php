@@ -292,7 +292,7 @@ function policy($_action, $_scope, $_data = null) {
           return $rows;
         break;
         case 'mailbox':
-          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+          if (isset($_data) && is_valid_mailbox_name($_data)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
               return false;
             }

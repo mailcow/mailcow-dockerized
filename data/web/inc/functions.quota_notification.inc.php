@@ -21,7 +21,7 @@ function quota_notification($_action, $_data = null) {
       }
       $subject = $_data['subject'];
       $sender = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $_data['sender']);
-      if (filter_var($sender, FILTER_VALIDATE_EMAIL) === false) {
+      if (is_valid_mailbox_name($sender) === false) {
         $sender = '';
       }
       $html = $_data['html_tmpl'];
@@ -91,7 +91,7 @@ function quota_notification_bcc($_action, $_data = null) {
       $bcc_rcpts = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['bcc_rcpt']));
       foreach ($bcc_rcpts as $i => &$rcpt) {
         $rcpt = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $rcpt);
-          if (!empty($rcpt) && filter_var($rcpt, FILTER_VALIDATE_EMAIL) === false) {
+          if (is_valid_mailbox_name($rcpt) === false) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),

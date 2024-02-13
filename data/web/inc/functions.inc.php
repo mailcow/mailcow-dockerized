@@ -257,7 +257,7 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   $sasl_limit_days = intval($sasl_limit_days);
   switch ($action) {
     case 'get':
-      if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+      if (is_valid_mailbox_name($username) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
         $stmt = $pdo->prepare('SELECT `real_rip`, MAX(`datetime`) as `datetime`, `service`, `app_password`, MAX(`app_passwd`.`name`) as `app_password_name` FROM `sasl_log`
           LEFT OUTER JOIN `app_passwd` on `sasl_log`.`app_password` = `app_passwd`.`id`
           WHERE `username` = :username
@@ -333,7 +333,7 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
       return array('ui' => $ui, 'sasl' => $sasl);
     break;
     case 'reset':
-      if (filter_var($username, FILTER_VALIDATE_EMAIL) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+      if (is_valid_mailbox_name($username) && hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
         $stmt = $pdo->prepare('DELETE FROM `sasl_log`
           WHERE `username` = :username');
         $stmt->execute(array(':username' => $username));
@@ -376,7 +376,7 @@ function sys_mail($_data) {
   $mass_text = $_data['mass_text'];
   $mass_html = $_data['mass_html'];
   $mass_subject = $_data['mass_subject'];
-  if (!filter_var($mass_from, FILTER_VALIDATE_EMAIL)) {
+  if (!is_valid_mailbox_name($mass_from)) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__),
@@ -538,7 +538,7 @@ function logger($_data = false) {
 }
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
-  if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+  if (!is_valid_mailbox_name($username) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
     return false;
   }
   if (empty($domain) || !is_valid_domain_name($domain)) {
@@ -580,7 +580,7 @@ function hasMailboxObjectAccess($username, $role, $object) {
   if (empty($username) || empty($role) || empty($object)) {
     return false;
   }
-  if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+  if (!is_valid_mailbox_name(html_entity_decode(rawurldecode($username))) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
     return false;
   }
   if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
@@ -603,7 +603,7 @@ function hasAliasObjectAccess($username, $role, $object) {
   if (empty($username) || empty($role) || empty($object)) {
     return false;
   }
-  if (!filter_var(html_entity_decode(rawurldecode($username)), FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+  if (!is_valid_mailbox_name(html_entity_decode(rawurldecode($username))) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
     return false;
   }
   if ($role != 'admin' && $role != 'domainadmin' && $role != 'user') {
@@ -816,7 +816,7 @@ function check_login($user, $pass, $app_passwd_data = false) {
   global $redis;
   global $imap_server;
 
-  if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
+  if (!is_valid_mailbox_name($user) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__, $user, '*'),
@@ -1080,7 +1080,7 @@ function edit_user_account($_data) {
   $username = $_SESSION['mailcow_cc_username'];
   $role = $_SESSION['mailcow_cc_role'];
   $password_old = $_data['user_old_pass'];
-  if (filter_var($username, FILTER_VALIDATE_EMAIL === false) || $role != 'user') {
+  if (!is_valid_mailbox_name($username) || $role != 'user') {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__, $_data_log),
@@ -1132,7 +1132,7 @@ function user_get_alias_details($username) {
   if ($_SESSION['mailcow_cc_role'] == "user") {
     $username = $_SESSION['mailcow_cc_username'];
   }
-  if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+  if (!is_valid_mailbox_name($username)) {
     return false;
   }
   if (!hasMailboxObjectAccess($username, $_SESSION['mailcow_cc_role'], $username)) {
@@ -1208,6 +1208,26 @@ function is_valid_domain_name($domain_name) {
   return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain_name)
        && preg_match("/^.{1,253}$/", $domain_name)
        && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));
+}
+function is_valid_mailbox_name($mailbox_name) {
+  if (empty($mailbox_name)) {
+    return false;
+  }
+  if (!filter_var($mailbox_name, FILTER_VALIDATE_EMAIL)) {
+    return false;
+  }
+  if (preg_match('/\//', $mailbox_name)) {
+    return false;
+  }
+  $mailbox_parts = explode('@', $mailbox_name);
+  if (count($mailbox_parts) != 2){
+    return false;
+  }
+  if ($mailbox_parts[0] == '' || $mailbox_parts[1] == '') {
+    return false;
+  }
+
+  return true;
 }
 function set_tfa($_data) {
   global $pdo;

@@ -47,7 +47,7 @@ function bcc($_action, $_data = null, $_attr = null) {
         $domain = idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
         $local_dest_sane = '@' . idn_to_ascii($local_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
-      elseif (filter_var($local_dest, FILTER_VALIDATE_EMAIL)) {
+      elseif (is_valid_mailbox_name($local_dest)) {
         $mailbox = mailbox('get', 'mailbox_details', $local_dest);
         $shared_aliases = mailbox('get', 'shared_aliases');
         $direct_aliases = mailbox('get', 'direct_aliases');
@@ -74,7 +74,7 @@ function bcc($_action, $_data = null, $_attr = null) {
       else {
         return false;
       }
-      if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
+      if (!is_valid_mailbox_name($bcc_dest)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -137,7 +137,7 @@ function bcc($_action, $_data = null, $_attr = null) {
           );
           continue;
         }
-        if (!filter_var($bcc_dest, FILTER_VALIDATE_EMAIL)) {
+        if (!is_valid_mailbox_name($bcc_dest)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -274,7 +274,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
       if (is_valid_domain_name($old_dest)) {
         $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
       }
-      elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
+      elseif (is_valid_mailbox_name($old_dest)) {
         $old_dest_sane = $old_dest;
       }
       else {
@@ -285,7 +285,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         );
         return false;
       }
-      if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+      if (!is_valid_mailbox_name($new_dest)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -340,7 +340,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         if (is_valid_domain_name($old_dest)) {
           $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
         }
-        elseif (filter_var($old_dest, FILTER_VALIDATE_EMAIL)) {
+        elseif (is_valid_mailbox_name($old_dest)) {
           $old_dest_sane = $old_dest;
         }
         else {
@@ -351,7 +351,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
           );
           continue;
         }
-        if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+        if (!is_valid_mailbox_name($new_dest)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),

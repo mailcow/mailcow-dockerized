@@ -238,7 +238,7 @@ function transport($_action, $_data = null) {
               continue;
             }
             // ".domain" is a valid destination, "..domain" is not
-            if ($is_mx_based == 0 && (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && filter_var($dest, FILTER_VALIDATE_EMAIL) === false))) {
+            if ($is_mx_based == 0 && (empty($dest) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $dest)) === false && $dest != '*' && is_valid_mailbox_name($dest) === false))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -362,7 +362,7 @@ function transport($_action, $_data = null) {
             }
           }
         }
-        if ($is_mx_based == 0 && (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && filter_var($destination, FILTER_VALIDATE_EMAIL) === false))) {
+        if ($is_mx_based == 0 && (empty($destination) || (is_valid_domain_name(preg_replace('/^' . preg_quote('.', '/') . '/', '', $destination)) === false && $destination != '*' && is_valid_mailbox_name($destination) === false))) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),

@@ -308,19 +308,19 @@ function quarantine($_action, $_data = null) {
         }
         $max_age = intval($_data['max_age']);
         $subject = $_data['subject'];
-        if (!filter_var($_data['bcc'], FILTER_VALIDATE_EMAIL)) {
+        if (!is_valid_mailbox_name($_data['bcc'])) {
           $bcc = '';
         }
         else {
           $bcc = $_data['bcc'];
         }
-        if (!filter_var($_data['redirect'], FILTER_VALIDATE_EMAIL)) {
+        if (!is_valid_mailbox_name($_data['redirect'])) {
           $redirect = '';
         }
         else {
           $redirect = $_data['redirect'];
         }
-        if (!filter_var($_data['sender'], FILTER_VALIDATE_EMAIL)) {
+        if (!is_valid_mailbox_name($_data['sender'])) {
           $sender = '';
         }
         else {
