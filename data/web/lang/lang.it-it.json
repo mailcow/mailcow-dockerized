@@ -632,8 +632,7 @@
         "last_modified": "Ultima modifica",
         "pushover_sound": "Suono",
         "custom_attributes": "Attributi personalizzati",
-        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta",
-        "mbox_exclude": "Escludi caselle di posta"
+        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta"
     },
     "fido2": {
         "confirm": "Conferma",

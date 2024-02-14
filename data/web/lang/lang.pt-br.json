@@ -691,7 +691,6 @@
         "username": "Nome de usuário",
         "validate_save": "Valide e salve",
         "custom_attributes": "Atributos personalizados",
-        "mbox_exclude": "Excluir mailboxes",
         "domain_footer_skip_replies": "Ignore o rodapé nos e-mails de resposta"
     },
     "fido2": {
