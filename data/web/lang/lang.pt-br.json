@@ -611,6 +611,7 @@
         "extended_sender_acl_info": "Uma chave de domínio DKIM deve ser importada, se disponível. <br>\r\n Lembre-se de adicionar esse servidor ao registro TXT SPF correspondente. <br>\r\n Sempre que um domínio ou domínio de alias é adicionado a esse servidor, que se sobrepõe a um endereço externo, o endereço externo é removido. <br>\r\n Use @domain .tld para permitir o envio como * @domain .tld.",
         "force_pw_update": "Forçar a atualização da senha no próximo login",
         "force_pw_update_info": "Esse usuário só poderá fazer login em %s. As senhas do aplicativo permanecem utilizáveis.",
+        "footer_exclude": "Excluir do rodapé",
         "full_name": "Nome completo",
         "gal": "Lista de endereços global",
         "gal_info": "A GAL contém todos os objetos de um domínio e não pode ser editada por nenhum usuário. Faltam informações de disponibilidade no SoGo, se desativadas! <b>Reinicie o SoGo para aplicar as alterações.</b>",

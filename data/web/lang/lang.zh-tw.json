@@ -570,6 +570,7 @@
         "extended_sender_acl_info": "如果可以的話，請匯入 DKIM 域名金鑰。<br>\r\n別忘記將此伺服器新增到相應的 SPF TXT 中。<br>\r\n當域名或域名別名被新增時，若其與此外部寄件人地址交疊，則外部寄件人地址會被移除。<br>\r\n填入 @domain.tld 以允許作為 *@domain.tld 發送郵件。",
         "force_pw_update": "在下一次登入時強制要求更新密碼",
         "force_pw_update_info": "此使用者只能登入至 %s。應用程式密碼仍可正常使用",
+        "footer_exclude": "从页脚排除",
         "full_name": "全名",
         "gal": "全域聯絡人清單",
         "gal_info": "<b>全域聯絡人清單</b>包含了域名下的所有物件，且使用者不可編輯。如果關閉，使用者的 空閒/繁忙 訊息將不能在 SOGo 中顯示。<b>重新啟動 SOGo 以應用更改。</b>",
@@ -649,7 +650,6 @@
         "validate_save": "驗證並儲存",
         "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
         "custom_attributes": "自訂屬性",
-        "mbox_exclude": "排除信箱",
         "pushover_sound": "聲音"
     },
     "fido2": {

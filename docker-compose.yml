@@ -62,7 +62,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.64
+      image: mailcow/clamd:1.65
       restart: always
       depends_on:
         unbound-mailcow:
@@ -441,7 +441,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.57
+      image: mailcow/netfilter:1.58
       stop_grace_period: 30s
       restart: always
       privileged: true

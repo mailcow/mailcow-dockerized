@@ -13,9 +13,12 @@ class Logger:
     tolog['time'] = int(round(time.time()))
     tolog['priority'] = priority
     tolog['message'] = message
-    if self.r is not None:
-      self.r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
     print(message)
+    if self.r is not None:
+      try:
+        self.r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
+      except Exception as ex:
+        print('Failed logging to redis: %s'  % (ex))
 
   def logWarn(self, message):
     self.log('warn', message)
