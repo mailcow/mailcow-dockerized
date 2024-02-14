@@ -26,6 +26,15 @@
                   <input type="hidden" value="0" name="gal">
                   <input type="hidden" value="0" name="relay_all_recipients">
                   <input type="hidden" value="0" name="relay_unknown_only">
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="domain">{{ lang.mailbox.domain }}</label>
+                    <div class="col-sm-10">
+                      <span class="d-block"><strong>{{ result.domain_h_name }}</strong></span>
+                      {% if result.domain_h_name != result.domain_name %}
+                      <small>{{ result.domain_name }}</small>
+                      {% endif %}
+                    </div>
+                  </div>
                   <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
                     <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
                     <div class="col-sm-10">
