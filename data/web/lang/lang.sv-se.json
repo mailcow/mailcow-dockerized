@@ -473,7 +473,7 @@
         "cname_from_a": "Värde härstammar från A/AAAA-uppslaget. Detta stöds så länge som uppslaget pekar mot rätt resurs.",
         "dns_records": "DNS-uppslag",
         "dns_records_24hours": "Observera att ändringar gjorda i DNS kan ta upp till 24 timmar innan det visas korrekt på denna sida. Syftet med sidan är att enkelt se hur DNS-uppslagen är konfigurerade. Det är lätt att kontrollera att DNS-uppslagen är korrekt uppsatta.",
-        "dns_records_docs": "Se även <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentationen</a>.",
+        "dns_records_docs": "Se även <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">dokumentationen</a>.",
         "dns_records_data": "Korrektdata",
         "dns_records_name": "Namn",
         "dns_records_status": "Nuvarande status",

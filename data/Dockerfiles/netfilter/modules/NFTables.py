@@ -452,6 +452,8 @@ class NFTables:
           continue
 
         rule = _object["rule"]["expr"][0]["match"]
+        if not "payload" in rule["left"]:
+          continue
         left_opt = rule["left"]["payload"]
         if not left_opt["protocol"] == _family:
           continue

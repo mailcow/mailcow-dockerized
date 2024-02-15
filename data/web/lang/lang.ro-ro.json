@@ -504,7 +504,7 @@
         "cname_from_a": "Valoare derivată din înregistrarea A/AAAA. Acest lucru este acceptat atâta timp cât înregistrarea indică resursele corecte.",
         "dns_records": "Înregistrări DNS",
         "dns_records_24hours": "Rețineți că modificările aduse DNS-ului pot dura până la 24 de ore pentru a reflecta corect starea lor curentă pe această pagină. Acest mecanism este conceput ca o modalitate să vezi ușor cum să îți configurezi înregistrările DNS și să verifici dacă toate înregistrările sunt stocate corect în DNS.",
-        "dns_records_docs": "Vă rugăm să consultați și <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">documentația</a>.",
+        "dns_records_docs": "Vă rugăm să consultați și <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">documentația</a>.",
         "dns_records_data": "Date corecte",
         "dns_records_name": "Nume",
         "dns_records_status": "Stare curentă",

@@ -114,8 +114,6 @@ def ban(address):
   global lock
 
   refreshF2boptions()
-  BAN_TIME = int(f2boptions['ban_time'])
-  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
   MAX_ATTEMPTS = int(f2boptions['max_attempts'])
   RETRY_WINDOW = int(f2boptions['retry_window'])
   NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
@@ -150,7 +148,7 @@ def ban(address):
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
     cur_time = int(round(time.time()))
-    NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
     if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
       with lock:
@@ -277,12 +275,11 @@ def snat6(snat_target):
       tables.snat6(snat_target, os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64'))
 
 def autopurge():
+  global f2boptions
+
   while not quit_now:
     time.sleep(10)
     refreshF2boptions()
-    BAN_TIME = int(f2boptions['ban_time'])
-    MAX_BAN_TIME = int(f2boptions['max_ban_time'])
-    BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
     MAX_ATTEMPTS = int(f2boptions['max_attempts'])
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
@@ -290,9 +287,9 @@ def autopurge():
         unban(str(net))
     for net in bans.copy():
       if bans[net]['attempts'] >= MAX_ATTEMPTS:
-        NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+        NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
         TIME_SINCE_LAST_ATTEMPT = time.time() - bans[net]['last_attempt']
-        if TIME_SINCE_LAST_ATTEMPT > NET_BAN_TIME or TIME_SINCE_LAST_ATTEMPT > MAX_BAN_TIME:
+        if TIME_SINCE_LAST_ATTEMPT > NET_BAN_TIME:
           unban(net)
 
 def mailcowChainOrder():
@@ -305,6 +302,16 @@ def mailcowChainOrder():
       quit_now, exit_code = tables.checkIPv4ChainOrder()
       if quit_now: return
       quit_now, exit_code = tables.checkIPv6ChainOrder()
+
+def calcNetBanTime(ban_counter):
+  global f2boptions
+
+  BAN_TIME = int(f2boptions['ban_time'])
+  MAX_BAN_TIME = int(f2boptions['max_ban_time'])
+  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
+  NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** ban_counter
+  NET_BAN_TIME = max([BAN_TIME, min([NET_BAN_TIME, MAX_BAN_TIME])])
+  return NET_BAN_TIME
 
 def isIpNetwork(address):
   try:

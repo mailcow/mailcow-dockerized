@@ -107,7 +107,8 @@
         "validation_success": "Validation réussie",
         "bcc_dest_format": "La destination Cci doit être une seule adresse e-mail valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
         "tags": "Etiquettes",
-        "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application"
+        "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application",
+        "dry": "Simuler la synchronisation"
     },
     "admin": {
         "access": "Accès",
@@ -209,7 +210,7 @@
         "link": "Lien",
         "loading": "Veuillez patienter…",
         "logo_info": "Votre image sera redimensionnée à une hauteur de 40 pixels pour la barre de navigation du haut et à un maximum de 250 pixels en largeur pour la page d'accueil. Un graphique extensible est fortement recommandé.",
-        "lookup_mx": "Faire correspondre la destination à MX (.outlook.com pour acheminer tous les messages ciblés vers un MX * .outlook.com sur ce tronçon)",
+        "lookup_mx": "Faire correspondre la destination à MX (<code>.*\\.google\\.com</code> pour acheminer tous les messages ciblés vers un MX se terminant par google.com sur ce tronçon)",
         "main_name": "\"mailcow UI\" nom",
         "merged_vars_hint": "Les lignes grisées ont été importées depuis <code>vars.(local.)inc.php</code> et ne peuvent pas être modifiées.",
         "message": "Message",
@@ -330,7 +331,14 @@
         "logo_normal_label": "Normal",
         "logo_dark_label": "Inversé pour le mode sombre",
         "allowed_methods": "Access-Control-Allow-Methods",
-        "allowed_origins": "Access-Control-Allow-Origin"
+        "allowed_origins": "Access-Control-Allow-Origin",
+        "copy_to_clipboard": "Texte copié dans le presse-papier !",
+        "password_policy_special_chars": "Doit contenir des caractères spéciaux",
+        "rsettings_preset_4": "Désactiver Rspamd pour un domaine",
+        "oauth2_apps": "Applications OAuth2",
+        "password_length": "Longueur des mots de passe",
+        "password_policy_chars": "Doit contenir au moins une lettre",
+        "password_policy_length": "La longueur minimale du mot de passe est de %d"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -454,7 +462,9 @@
         "demo_mode_enabled": "Le mode de démonstration est activé",
         "template_exists": "La template %s existe déja",
         "template_id_invalid": "Le numéro de template %s est invalide",
-        "template_name_invalid": "Le nom de la template est invalide"
+        "template_name_invalid": "Le nom de la template est invalide",
+        "img_dimensions_exceeded": "L'image dépasse les dimensions maximales",
+        "img_size_exceeded": "L'image dépasse la taille maximale de fichier"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -483,7 +493,7 @@
         "cname_from_a": "Valeur dérivée de l’enregistrement A/AAAA. Ceci est supporté tant que l’enregistrement indique la bonne ressource.",
         "dns_records": "Enregistrements DNS",
         "dns_records_24hours": "Veuillez noter que les modifications apportées au DNS peuvent prendre jusqu’à 24 heures pour que leurs états actuels soient correctement reflétés sur cette page. Il est conçu comme un moyen pour vous de voir facilement comment configurer vos enregistrements DNS et de vérifier si tous vos enregistrements sont correctement stockés dans les DNS.",
-        "dns_records_docs": "Veuillez également consulter <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">la documentation</a>.",
+        "dns_records_docs": "Veuillez également consulter <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">la documentation</a>.",
         "dns_records_data": "Données correcte",
         "dns_records_name": "Nom",
         "dns_records_status": "Etat courant",
