@@ -107,7 +107,8 @@
         "validation_success": "Convalidato con successo",
         "bcc_dest_format": "Il destinatario in copia nascosta deve essere un singolo indirizzo email.<br>Se si vuole spedire una copia del messaggio a più destinatari, bisogna creare un alias ed utilizzarlo per questa opzione.",
         "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
-        "tags": "Tag"
+        "tags": "Tag",
+        "dry": "Simula sincronizzazione"
     },
     "admin": {
         "access": "Accedi",
@@ -339,7 +340,8 @@
         "oauth2_add_client": "Aggiungere il client OAuth2",
         "rsettings_preset_4": "Disattivare Rspamd per un dominio",
         "options": "Opzioni",
-        "cors_settings": "Impostazioni CORS"
+        "cors_settings": "Impostazioni CORS",
+        "copy_to_clipboard": "Testo copiato negli appunti!"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -462,7 +464,9 @@
         "demo_mode_enabled": "La modalità demo è abilitata",
         "template_name_invalid": "Nome template non valido",
         "template_exists": "Il template %s esiste già",
-        "template_id_invalid": "Il template con ID %s non è valido"
+        "template_id_invalid": "Il template con ID %s non è valido",
+        "img_dimensions_exceeded": "L'immagine supera la dimensione massima consentita",
+        "img_size_exceeded": "L'immagine supera la dimensione massima del file"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -506,7 +510,7 @@
         "dns_records": "Record DNS",
         "dns_records_24hours": "Tieni presente che le modifiche apportate ai record DNS potrebbero richiedere fino a 24 ore per poter essere visualizzate correttamente in questa pagina. Tutto ciò è da intendersi come un modo per voi di vedere come configurare i record DNS e per controllare se tutti i record DNS sono stati inseriti correttamente.",
         "dns_records_data": "Dati corretti",
-        "dns_records_docs": "Si prega di consultare anche <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">la documentazione</a>.",
+        "dns_records_docs": "Si prega di consultare anche <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">la documentazione</a>.",
         "dns_records_name": "Nome",
         "dns_records_status": "Stato attuale",
         "dns_records_type": "Tipo",
@@ -626,7 +630,9 @@
         "acl": "ACL (autorizzazione)",
         "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
         "last_modified": "Ultima modifica",
-        "pushover_sound": "Suono"
+        "pushover_sound": "Suono",
+        "custom_attributes": "Attributi personalizzati",
+        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta"
     },
     "fido2": {
         "confirm": "Conferma",
@@ -1021,7 +1027,8 @@
         "domain_add_dkim_available": "Esisteva già una chiave DKIM",
         "template_added": "Aggiunto template %s",
         "template_modified": "Le modifiche al template %s sono state salvate",
-        "template_removed": "Il template con ID %s è stato cancellato"
+        "template_removed": "Il template con ID %s è stato cancellato",
+        "f2b_banlist_refreshed": "L'ID della lista blocchi è stato aggiornato con successo."
     },
     "tfa": {
         "api_register": "%s usa le API Yubico Cloud. Richiedi una chiave API <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">qui</a>",
@@ -1048,7 +1055,8 @@
         "yubi_otp": "Autenticazione Yubico OTP",
         "tfa_token_invalid": "Token TFA non valido",
         "u2f_deprecated": "Sembra che la tua chiave sia stata registrata utilizzando il metodo U2F deprecato. Disattiveremo Two-Factor-Authenticaiton per te e cancelleremo la tua chiave.",
-        "u2f_deprecated_important": "Registra la tua chiave nel pannello di amministrazione con il nuovo metodo WebAuthn."
+        "u2f_deprecated_important": "Registra la tua chiave nel pannello di amministrazione con il nuovo metodo WebAuthn.",
+        "authenticators": "Autenticatori"
     },
     "user": {
         "action": "Azione",
@@ -1210,7 +1218,9 @@
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nome utente o password errati",
         "with_app_password": "con password dell'app",
         "direct_protocol_access": "Questo utente della mailbox ha <b>accesso diretto ed esterno</b> ai seguenti protocolli e applicazioni. Questa impostazione è controllata dal tuo amministratore. Le password delle applicazioni possono essere create per garantire l'accesso ai singoli protocolli e applicazioni.<br>Il pulsante \"Accedi alla webmail\" fornisce un singolo accesso a SOGo ed è sempre disponibile.",
-        "pushover_sound": "Suono"
+        "pushover_sound": "Suono",
+        "attribute": "Attributo",
+        "value": "Valore"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",

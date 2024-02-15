@@ -56,13 +56,32 @@ $empty_footer = json_encode(array(
 error_log("FOOTER: checking for domain " . $domain . ", user " . $username . " and address " . $from . PHP_EOL);
 
 try {
-  $stmt = $pdo->prepare("SELECT `plain`, `html`, `mbox_exclude`, `skip_replies` FROM `domain_wide_footer` 
+  // try get $target_domain if $domain is an alias_domain
+  $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` 
+    WHERE `alias_domain` = :alias_domain");
+  $stmt->execute(array(
+    ':alias_domain' => $domain
+  ));
+  $alias_domain = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$alias_domain) {
+    $target_domain = $domain;
+  } else {
+    $target_domain = $alias_domain['target_domain'];
+  }
+
+  // get footer associated with the domain
+  $stmt = $pdo->prepare("SELECT `plain`, `html`, `mbox_exclude`, `alias_domain_exclude`, `skip_replies` FROM `domain_wide_footer` 
     WHERE `domain` = :domain");
   $stmt->execute(array(
-    ':domain' => $domain
+    ':domain' => $target_domain
   ));
   $footer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  // check if the sender is excluded
   if (in_array($from, json_decode($footer['mbox_exclude']))){
+    $footer = false;
+  }
+  if (in_array($domain, json_decode($footer['alias_domain_exclude']))){
     $footer = false;
   }
   if (empty($footer)){
@@ -71,6 +90,8 @@ try {
   }
   error_log("FOOTER: " . json_encode($footer) . PHP_EOL);
 
+  // footer will be applied
+  // get custom mailbox attributes to insert into the footer
   $stmt = $pdo->prepare("SELECT `custom_attributes` FROM `mailbox` WHERE `username` = :username");
   $stmt->execute(array(
     ':username' => $username
