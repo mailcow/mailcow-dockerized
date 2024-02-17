@@ -26,6 +26,15 @@
                   <input type="hidden" value="0" name="gal">
                   <input type="hidden" value="0" name="relay_all_recipients">
                   <input type="hidden" value="0" name="relay_unknown_only">
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="domain">{{ lang.mailbox.domain }}</label>
+                    <div class="col-sm-10">
+                      <span class="d-block"><strong>{{ result.domain_h_name }}</strong></span>
+                      {% if result.domain_h_name != result.domain_name %}
+                      <small>{{ result.domain_name }}</small>
+                      {% endif %}
+                    </div>
+                  </div>
                   <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
                     <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
                     <div class="col-sm-10">
@@ -289,9 +298,9 @@
 {{ lang.edit.domain_footer_info_vars.custom }}</pre>
                     <form class="form-horizontal mt-4" data-id="domain_footer">
                       <div class="row mb-4">
-                        <label class="control-label col-sm-2" for="mbox_exclude">{{ lang.edit.mbox_exclude }}</label>
+                        <label class="control-label col-sm-2" for="exclude">{{ lang.edit.footer_exclude }}</label>
                         <div class="col-sm-10">
-                          <select data-live-search="true" data-width="100%" style="width:100%" id="editMboxExclude" name="mbox_exclude" size="10" multiple>
+                          <select data-live-search="true" data-width="100%" style="width:100%" id="editFooterExclude" name="exclude" size="10" multiple>
                             {% for mailbox in mailboxes %}
                               <option value="{{ mailbox }}" {% if mailbox in domain_footer.mbox_exclude %}selected{% endif %}>
                                 {{ mailbox }}
@@ -300,6 +309,11 @@
                             {% for alias in aliases %}
                               <option data-subtext="Alias" value="{{ alias }}" {% if alias in domain_footer.mbox_exclude %}selected{% endif %}>
                                 {{ alias }}
+                              </option>
+                            {% endfor %}
+                            {% for alias_domain in alias_domains %}
+                              <option data-subtext="Alias-Domain" value="{{ alias_domain }}" {% if alias_domain in domain_footer.alias_domain_exclude %}selected{% endif %}>
+                                {{ alias_domain }}
                               </option>
                             {% endfor %}
                           </select>

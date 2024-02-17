@@ -543,7 +543,7 @@
         "dns_records": "DNS zapisi",
         "dns_records_24hours": "Prosim upoštevajte, da lahko traja do 24 ur da se spremembe v DNS pravilno prikažejo na tej strani. Namen je da lahko enostavno vidite, kako konfigurirati svoje DNS zapise in preverite ali so vaši zapisi pravilno shranjeni v DNS.",
         "dns_records_data": "Pravilni podatki",
-        "dns_records_docs": "Prosim preverite tudi <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentacijo</a>.",
+        "dns_records_docs": "Prosim preverite tudi <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">dokumentacijo</a>.",
         "dns_records_name": "Ime",
         "dns_records_status": "Trenutno stanje",
         "dns_records_type": "Vrsta",

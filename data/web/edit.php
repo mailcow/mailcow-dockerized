@@ -59,7 +59,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'domain_details' => $result,
             'domain_footer' => $domain_footer,
             'mailboxes' => mailbox('get', 'mailboxes', $_GET["domain"]),
-            'aliases' => mailbox('get', 'aliases', $_GET["domain"], 'address')
+            'aliases' => mailbox('get', 'aliases', $_GET["domain"], 'address'),
+            'alias_domains' => mailbox('get', 'alias_domains', $_GET["domain"])
           ];
       }
     }

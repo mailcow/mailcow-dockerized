@@ -39,9 +39,13 @@ foreach ($containers as $container => $container_info) {
       $StartedAt['month'],
       $StartedAt['day'],
       $StartedAt['year']));
-    $user_tz = new DateTimeZone(getenv('TZ'));
-    $date->setTimezone($user_tz);
-    $started = $date->format('r');
+    try {
+      $user_tz = new DateTimeZone(getenv('TZ'));
+      $date->setTimezone($user_tz);
+      $started = $date->format('r');
+    } catch(Exception $e) {
+      $started = '?';
+    }
   }
   else {
     $started = '?';

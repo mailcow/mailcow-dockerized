@@ -525,7 +525,7 @@
         "cname_from_a": "Значення, отримане із запису A/AAAA. Це підтримується, поки запис вказує на правильний ресурс.",
         "dns_records": "Записи DNS",
         "dns_records_data": "Значення",
-        "dns_records_docs": "Також перегляньте <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">документацію</a>.",
+        "dns_records_docs": "Також перегляньте <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">документацію</a>.",
         "dns_records_name": "Назва",
         "dns_records_status": "Статус",
         "optional": "Цей запис необов'язковий.",
@@ -561,6 +561,7 @@
         "extended_sender_acl": "Зовнішні адреси пошти",
         "force_pw_update": "Вимагати зміну пароля при наступному вході до системи",
         "force_pw_update_info": "Цей користувач зможе увійти лише в %s. Паролі додатків залишаються придатними для використання.",
+        "footer_exclude": "Виключити з нижнього колонтитула",
         "full_name": "Повне ім'я",
         "gal": "GAL - Глобальна адресна книга",
         "generate": "згенерувати",
@@ -659,8 +660,7 @@
         },
         "domain_footer_html": "Нижній колонтитул HTML",
         "domain_footer_plain": "ЗВИЧАЙНИЙ нижній колонтитул",
-        "custom_attributes": "Користувацькі атрибути",
-        "mbox_exclude": "Виключити поштові скриньки"
+        "custom_attributes": "Користувацькі атрибути"
     },
     "fido2": {
         "confirm": "Підтвердити",

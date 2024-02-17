@@ -547,7 +547,7 @@
         "dns_records": "DNS záznamy",
         "dns_records_24hours": "Upozornění: Změnám v systému DNS může trvat až 24 hodin, než se zde správně zobrazí jejich aktuální stav. Můžete zde snadno zjistit, jak nastavit DNS záznamy a zda jsou všechny záznamy správně uloženy.",
         "dns_records_data": "Správný záznam",
-        "dns_records_docs": "Přečtěte si prosím <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">dokumentaci</a>.",
+        "dns_records_docs": "Přečtěte si prosím <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">dokumentaci</a>.",
         "dns_records_name": "Název",
         "dns_records_status": "Současný stav",
         "dns_records_type": "Typ",

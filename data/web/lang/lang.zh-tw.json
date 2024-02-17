@@ -88,7 +88,7 @@
         "relay_all": "中繼所有收件人",
         "relay_all_info": "↪ 如果選擇<b>不</b>中繼所有收件人，你會需要幫每個應該中繼的收件人新增一個 (\"盲\") 信箱。",
         "relay_domain": "中繼此域名",
-        "relay_transport_info": "<div class=\"label label-info\">資訊</div> 你可以為此域名定義傳輸規則以自訂目的地，如果留空則會遵照 MX 紀錄。",
+        "relay_transport_info": "<div class=\"badge fs-6 bg-info\">資訊</div> 你可以為此域名定義傳輸規則以自訂目的地，如果留空則會遵照 MX 紀錄。",
         "relay_unknown_only": "只為不存在的信箱地址中繼。已存在的信箱地址則在本區域遞送。",
         "relayhost_wrapped_tls_info": "請 <b>不要</b> 使用\"已包裝 TLS\"的通訊埠 (大多為通訊埠 465).<br>\r\n使用其他\"未包裝\"的通訊埠發起 STARTTLS. 你可以在\"TLS 規則表\"中新增強制使用 TLS 的規則。",
         "select": "請選擇...",
@@ -519,14 +519,15 @@
         "show_ip": "顯示公網IP",
         "update_available": "有可用更新",
         "no_update_available": "系統已經是最新版本",
-        "update_failed": "無法檢查更新"
+        "update_failed": "無法檢查更新",
+        "wip": "工作正在進行中"
     },
     "diagnostics": {
         "cname_from_a": "由 A/AAAA 紀錄獲取。只要紀錄指向正確的資源，此功能就會持續運作。",
         "dns_records": "DNS 紀錄",
         "dns_records_24hours": "請注意 DNS 紀錄的更改可能需要 24 小時才能正確顯示於此頁面。此頁面的目的是為了讓你可以輕鬆的了解如何設定 DNS 紀錄並檢查 DNS 是否設定正確。",
         "dns_records_data": "正確值",
-        "dns_records_docs": "請同時另外查看 <a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">文件</a>.",
+        "dns_records_docs": "請同時另外查看 <a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">文件</a>.",
         "dns_records_name": "名稱",
         "dns_records_status": "目前狀態",
         "dns_records_type": "類型",
@@ -569,6 +570,7 @@
         "extended_sender_acl_info": "如果可以的話，請匯入 DKIM 域名金鑰。<br>\r\n別忘記將此伺服器新增到相應的 SPF TXT 中。<br>\r\n當域名或域名別名被新增時，若其與此外部寄件人地址交疊，則外部寄件人地址會被移除。<br>\r\n填入 @domain.tld 以允許作為 *@domain.tld 發送郵件。",
         "force_pw_update": "在下一次登入時強制要求更新密碼",
         "force_pw_update_info": "此使用者只能登入至 %s。應用程式密碼仍可正常使用",
+        "footer_exclude": "从页脚排除",
         "full_name": "全名",
         "gal": "全域聯絡人清單",
         "gal_info": "<b>全域聯絡人清單</b>包含了域名下的所有物件，且使用者不可編輯。如果關閉，使用者的 空閒/繁忙 訊息將不能在 SOGo 中顯示。<b>重新啟動 SOGo 以應用更改。</b>",
@@ -615,7 +617,7 @@
         "relay_all": "中繼所有收件人",
         "relay_all_info": "↪ 如果選擇<b>不</b>中繼所有收件人，你會需要幫每個應該中繼的收件人新增一個 (\"盲\") 信箱。",
         "relay_domain": "中繼這個域名",
-        "relay_transport_info": "<div class=\"label label-info\">資訊</div> 你可以為此域名定義傳輸規則以自訂目的地，如果留空則會遵照 MX 紀錄。",
+        "relay_transport_info": "<div class=\"badge fs-6 bg-info\">資訊</div> 你可以為此域名定義傳輸規則以自訂目的地，如果留空則會遵照 MX 紀錄。",
         "relay_unknown_only": "只為不存在的信箱地址中繼。已存在的信箱地址則在本區域遞送。",
         "relayhost": "中繼傳輸",
         "remove": "移除",
@@ -623,7 +625,7 @@
         "save": "儲存更改",
         "scope": "範圍",
         "sender_acl": "允許發送為",
-        "sender_acl_disabled": "<span class=\"label label-danger\">寄件人檢查已關閉</span>",
+        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">寄件人檢查已關閉</span>",
         "sender_acl_info": "如果信箱使用者 A 被允許以信箱使用者 B 發送郵件，該寄件人地址不會出現在 SOGo 中\"發送自\"的下拉選項中。<br>\r\n信箱使用者 B 需要新增授權以允許信箱使用者 A 選擇 B 的地址作為寄件人；授權方法為，在 SOGo 中點擊右上方信箱名稱左邊的選項按鈕(三個點)並授權。此行為不會套用於信箱別名。",
         "sieve_desc": "簡短描述",
         "sieve_type": "過濾器類型",
@@ -648,7 +650,6 @@
         "validate_save": "驗證並儲存",
         "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
         "custom_attributes": "自訂屬性",
-        "mbox_exclude": "排除信箱",
         "pushover_sound": "聲音"
     },
     "fido2": {
@@ -684,7 +685,7 @@
     "header": {
         "administration": "設定和管理",
         "apps": "應用程式",
-        "debug": "系統訊息",
+        "debug": "系統資訊",
         "quarantine": "隔離",
         "restart_netfilter": "重新啟動 netfilter",
         "restart_sogo": "重新啟動 SOGo",
@@ -829,7 +830,7 @@
         "sender": "寄件人",
         "set_postfilter": "標記為 postfilter",
         "set_prefilter": "標記為 prefilter",
-        "sieve_info": "你可以為每個使用者儲存多個過濾器，但只能同時啟用一個 prefilter 和一個 postfilter。<br>\r\n過濾器將按清單中的順序依次執行，下一個腳本不會因為上一個腳本失敗或\"keep;\"而停止。更改全域 sieve 腳本會重新啟動 Dovecot。<br><br>全域 sieve prefilter → Prefilter → 使用者腳本 → Postfilter → 全域 sieve postfilter",
+        "sieve_info": "你可以為每個使用者儲存多個過濾器，但只能同時啟用一個 prefilter 和一個 postfilter。<br>\n過濾器將按清單中的順序依次執行，下一個腳本不會因為上一個腳本失敗或保留而停止。更改全域 sieve 腳本會重新啟動 Dovecot。<br><br>全域 sieve prefilter &#8226; Prefilter &#8226; 使用者腳本 &#8226; Postfilter &#8226; 全域 sieve postfilter",
         "sieve_preset_1": "丟棄含有潛在危險檔案格式的信件",
         "sieve_preset_2": "永遠標記來自指定寄件人的郵件為已讀",
         "sieve_preset_3": "無聲刪除，並停止運行後續的 sieve 腳本",
@@ -837,7 +838,7 @@
         "sieve_preset_5": "自動回覆 (休假)",
         "sieve_preset_6": "拒絕郵件並回應",
         "sieve_preset_7": "重新導向並保留/刪除",
-        "sieve_preset_8": "刪除寄件人發送給包含自己別名地址的郵件",
+        "sieve_preset_8": "重新導向來自特定寄件者的電子郵件，標記為已讀取並分類到子資料夾中",
         "sieve_preset_header": "請看下方的範例預設。 查看 <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Wikipedia</a> 以瞭解更多細節。",
         "sogo_visible": "別名會顯示於 SOGo",
         "sogo_visible_n": "在 SOGo 中隱藏別名",
@@ -1171,7 +1172,7 @@
         "running": "運行中",
         "save": "儲存變更",
         "save_changes": "儲存變更",
-        "sender_acl_disabled": "<span class=\"label label-danger\">寄件人檢查已關閉</span>",
+        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">寄件人檢查已關閉</span>",
         "shared_aliases": "共享別名地址",
         "shared_aliases_desc": "共用別名不會受使用者的個別設定如垃圾過濾器和加密規則等影響。共享別名地址的垃圾信件過濾只能由管理員透過域名級別規則修改。",
         "show_sieve_filters": "顯示使用者啟用的 sieve 過濾器",
@@ -1231,7 +1232,8 @@
         "year": "年",
         "years": "年",
         "attribute": "屬性",
-        "pushover_sound": "聲音"
+        "pushover_sound": "聲音",
+        "value": "數值"
     },
     "warning": {
         "cannot_delete_self": "不能刪除已登入的使用者",
@@ -1282,6 +1284,9 @@
         "ays": "請確認您要刪除目前隊列中的所有項目。",
         "deliver_mail": "遞送",
         "queue_manager": "隊列管理器",
-        "unhold_mail_legend": "釋放選定的郵件以供投遞。 （需事先持有）"
+        "unhold_mail_legend": "釋放選定的郵件以供投遞。 （需事先持有）",
+        "hold_mail_legend": "保存選定的郵件。（防止進一步的交付嘗試）",
+        "hold_mail": "保留",
+        "unhold_mail": "取消保留"
     }
 }
