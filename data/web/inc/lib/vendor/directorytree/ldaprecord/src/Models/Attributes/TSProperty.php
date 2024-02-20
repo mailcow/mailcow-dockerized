@@ -7,7 +7,7 @@ class TSProperty
     /**
      * Nibble control values. The first value for each is if the nibble is <= 9, otherwise the second value is used.
      */
-    const NIBBLE_CONTROL = [
+    public const NIBBLE_CONTROL = [
         'X' => ['001011', '011010'],
         'Y' => ['001110', '011010'],
     ];
@@ -15,12 +15,12 @@ class TSProperty
     /**
      * The nibble header.
      */
-    const NIBBLE_HEADER = '1110';
+    public const NIBBLE_HEADER = '1110';
 
     /**
      * Conversion factor needed for time values in the TSPropertyArray (stored in microseconds).
      */
-    const TIME_CONVERSION = 60 * 1000;
+    public const TIME_CONVERSION = 60 * 1000;
 
     /**
      * A simple map to help determine how the property needs to be decoded/encoded from/to its binary value.
@@ -85,7 +85,7 @@ class TSProperty
     /**
      * Pass binary TSProperty data to construct its object representation.
      *
-     * @param string|null $value
+     * @param  string|null  $value
      */
     public function __construct($value = null)
     {
@@ -97,8 +97,7 @@ class TSProperty
     /**
      * Set the name for the TSProperty.
      *
-     * @param string $name
-     *
+     * @param  string  $name
      * @return TSProperty
      */
     public function setName($name)
@@ -121,8 +120,7 @@ class TSProperty
     /**
      * Set the value for the TSProperty.
      *
-     * @param string|int $value
-     *
+     * @param  string|int  $value
      * @return TSProperty
      */
     public function setValue($value)
@@ -169,7 +167,7 @@ class TSProperty
     /**
      * Given a TSProperty blob, decode the name/value/type/etc.
      *
-     * @param string $tsProperty
+     * @param  string  $tsProperty
      */
     protected function decode($tsProperty)
     {
@@ -186,9 +184,8 @@ class TSProperty
     /**
      * Based on the property name/value in question, get its encoded form.
      *
-     * @param string     $propName
-     * @param string|int $propValue
-     *
+     * @param  string  $propName
+     * @param  string|int  $propValue
      * @return string
      */
     protected function getEncodedValueForProp($propName, $propValue)
@@ -210,9 +207,8 @@ class TSProperty
     /**
      * Based on the property name in question, get its actual value from the binary blob value.
      *
-     * @param string $propName
-     * @param string $propValue
-     *
+     * @param  string  $propName
+     * @param  string  $propValue
      * @return string|int
      */
     protected function getDecodedValueForProp($propName, $propValue)
@@ -238,9 +234,8 @@ class TSProperty
      * Decode the property by inspecting the nibbles of each blob, checking
      * the control, and adding up the results into a final value.
      *
-     * @param string $hex
-     * @param bool   $string Whether or not this is simple string data.
-     *
+     * @param  string  $hex
+     * @param  bool  $string  Whether or not this is simple string data.
      * @return string
      */
     protected function decodePropValue($hex, $string = false)
@@ -272,9 +267,8 @@ class TSProperty
     /**
      * Get the encoded property value as a binary blob.
      *
-     * @param string $value
-     * @param bool   $string
-     *
+     * @param  string  $value
+     * @param  bool  $string
      * @return string
      */
     protected function encodePropValue($value, $string = false)
@@ -314,9 +308,8 @@ class TSProperty
      * a workaround that turns a literal bit-string into a
      * packed byte-string with 8 bits per byte.
      *
-     * @param string $bits
-     * @param bool   $len
-     *
+     * @param  string  $bits
+     * @param  bool  $len
      * @return string
      */
     protected function packBitString($bits, $len)
@@ -337,9 +330,8 @@ class TSProperty
     /**
      * Based on the control, adjust the nibble accordingly.
      *
-     * @param string $nibble
-     * @param string $control
-     *
+     * @param  string  $nibble
+     * @param  string  $control
      * @return string
      */
     protected function nibbleControl($nibble, $control)
@@ -362,9 +354,8 @@ class TSProperty
      * the control for X or Y equals 011010. Additionally, if the dec value of the nibble is > 9, then the nibble value
      * must be subtracted by 9 before the final value is constructed.
      *
-     * @param string $nibbleType Either X or Y
-     * @param string $nibble
-     *
+     * @param  string  $nibbleType  Either X or Y
+     * @param  string  $nibble
      * @return string
      */
     protected function getNibbleWithControl($nibbleType, $nibble)
@@ -384,9 +375,8 @@ class TSProperty
     /**
      * Need to make sure hex values are always an even length, so pad as needed.
      *
-     * @param int $int
-     * @param int $padLength The hex string must be padded to this length (with zeros).
-     *
+     * @param  int  $int
+     * @param  int  $padLength  The hex string must be padded to this length (with zeros).
      * @return string
      */
     protected function dec2hex($int, $padLength = 2)

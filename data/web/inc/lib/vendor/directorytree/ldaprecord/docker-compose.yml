@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+    ldap:
+        image: osixia/openldap:1.4.0
+        container_name: ldap
+        restart: always
+        hostname: local.com
+        environment:
+            LDAP_TLS_VERIFY_CLIENT: try
+            LDAP_OPENLDAP_UID: 1000
+            LDAP_OPENLDAP_GID: 1000
+            LDAP_ORGANISATION: Local
+            LDAP_DOMAIN : local.com
+            LDAP_ADMIN_PASSWORD: secret
+        ports:
+            - "389:389"
+            - "636:636"
+        networks:
+            - local
+  
+    ldapadmin:
+        image: osixia/phpldapadmin:0.9.0
+        container_name: ldapadmin
+        environment:
+            PHPLDAPADMIN_LDAP_HOSTS: ldap
+        restart: always
+        ports:
+            - "6443:443"
+        networks:
+            - local
+
+networks:
+    local:
+        driver: bridge

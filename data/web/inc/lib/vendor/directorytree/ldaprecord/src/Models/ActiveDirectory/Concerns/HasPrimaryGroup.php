@@ -9,10 +9,9 @@ trait HasPrimaryGroup
     /**
      * Returns a new has one primary group relationship.
      *
-     * @param mixed  $related
-     * @param string $relationKey
-     * @param string $foreignKey
-     *
+     * @param  mixed  $related
+     * @param  string  $relationKey
+     * @param  string  $foreignKey
      * @return HasOnePrimaryGroup
      */
     public function hasOnePrimaryGroup($related, $relationKey, $foreignKey = 'primarygroupid')

@@ -18,7 +18,7 @@ try {
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 }
 catch (PDOException $e) {
-  logMsg("danger", $e->getMessage());
+  logMsg("err", $e->getMessage());
   session_destroy();
   exit;
 }
@@ -68,11 +68,12 @@ $_SESSION['acl']['ratelimit'] = "1";
 $_SESSION['acl']['sogo_access'] = "1";
 $_SESSION['acl']['protocol_access'] = "1";
 $_SESSION['acl']['mailbox_relayhost'] = "1";
+$_SESSION['acl']['unlimited_quota'] = "1";
 
 // Init Keycloak Provider
 $iam_provider = identity_provider('init');
 $iam_settings = identity_provider('get');
-if (intval($iam_settings['periodic_sync']) != 1 && $iam_settings['import_users'] != 1) {
+if ($iam_settings['authsource'] != "keycloak" || (intval($iam_settings['periodic_sync']) != 1 && intval($iam_settings['import_users']) != 1)) {
   session_destroy();
   exit;
 }
@@ -127,18 +128,18 @@ while (true) {
   curl_close($ch);
   
   if ($code != 200){
-    logMsg("danger", "Recieved HTTP {$code}");
+    logMsg("err", "Recieved HTTP {$code}");
     session_destroy();
     exit;
   }
   try {
     $response = json_decode($response, true);
   } catch (Exception $e) {
-    logMsg("danger", $e->getMessage());
+    logMsg("err", $e->getMessage());
     break;
   }
   if (!is_array($response)){
-    logMsg("danger", "Recieved malformed response from keycloak api");
+    logMsg("err", "Recieved malformed response from keycloak api");
     break;
   }
   if (count($response) == 0) {
@@ -181,7 +182,7 @@ while (true) {
       }
     }
     if (!$mbox_template){
-      logMsg("warning", "No matching mapper found for mailbox_template");
+      logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
       continue;
     }
 
@@ -191,14 +192,16 @@ while (true) {
       mailbox('add', 'mailbox_from_template', array(
         'domain' => explode('@', $user['email'])[1],
         'local_part' => explode('@', $user['email'])[0],
+        'name' => $user['firstName'] . " " . $user['lastName'],
         'authsource' => 'keycloak',
         'template' => $mbox_template
       ));
-    } else if ($row) {
+    } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
       // mailbox user does exist, sync attribtues...
       logMsg("info", "Syncing attributes for user " . $user['email']);
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user['email'],
+        'name' => $user['firstName'] . " " . $user['lastName'],
         'template' => $mbox_template
       ));
     } else {

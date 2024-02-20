@@ -14,7 +14,7 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Constructor.
      *
-     * @param DispatcherInterface $dispatcher
+     * @param  DispatcherInterface  $dispatcher
      */
     public function __construct(DispatcherInterface $dispatcher)
     {
@@ -24,9 +24,8 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param string|array $events
-     * @param mixed        $listener
-     *
+     * @param  string|array  $events
+     * @param  mixed  $listener
      * @return void
      */
     public function listen($events, $listener)
@@ -37,8 +36,7 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Determine if a given event has listeners.
      *
-     * @param string $eventName
-     *
+     * @param  string  $eventName
      * @return bool
      */
     public function hasListeners($eventName)
@@ -49,9 +47,8 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Fire an event until the first non-null response is returned.
      *
-     * @param string|object $event
-     * @param mixed         $payload
-     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
      * @return null
      */
     public function until($event, $payload = [])
@@ -62,10 +59,9 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Fire an event and call the listeners.
      *
-     * @param string|object $event
-     * @param mixed         $payload
-     * @param bool          $halt
-     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
+     * @param  bool  $halt
      * @return null
      */
     public function fire($event, $payload = [], $halt = false)
@@ -76,10 +72,9 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Fire an event and call the listeners.
      *
-     * @param string|object $event
-     * @param mixed         $payload
-     * @param bool          $halt
-     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
+     * @param  bool  $halt
      * @return null
      */
     public function dispatch($event, $payload = [], $halt = false)
@@ -90,8 +85,7 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Get all of the listeners for a given event name.
      *
-     * @param string $eventName
-     *
+     * @param  string  $eventName
      * @return array
      */
     public function getListeners($eventName)
@@ -102,8 +96,7 @@ class NullDispatcher implements DispatcherInterface
     /**
      * Remove a set of listeners from the dispatcher.
      *
-     * @param string $event
-     *
+     * @param  string  $event
      * @return void
      */
     public function forget($event)

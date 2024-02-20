@@ -1,14 +1,13 @@
 {
     "name": "nesbot/carbon",
-    "type": "library",
     "description": "An API extension for DateTime that supports 281 different languages.",
+    "license": "MIT",
+    "type": "library",
     "keywords": [
         "date",
         "time",
         "DateTime"
     ],
-    "homepage": "https://carbon.nesbot.com",
-    "license": "MIT",
     "authors": [
         {
             "name": "Brian Nesbitt",
@@ -20,30 +19,76 @@
             "homepage": "https://github.com/kylekatarnls"
         }
     ],
+    "homepage": "https://carbon.nesbot.com",
+    "support": {
+        "issues": "https://github.com/briannesbitt/Carbon/issues",
+        "source": "https://github.com/briannesbitt/Carbon",
+        "docs": "https://carbon.nesbot.com/docs"
+    },
+    "funding": [
+        {
+            "url": "https://github.com/sponsors/kylekatarnls",
+            "type": "github"
+        },
+        {
+            "url": "https://tidelift.com/subscription/pkg/packagist-nesbot-carbon?utm_source=packagist-nesbot-carbon&utm_medium=referral&utm_campaign=readme",
+            "type": "tidelift"
+        },
+        {
+            "url": "https://opencollective.com/Carbon#sponsor",
+            "type": "opencollective"
+        }
+    ],
     "require": {
         "php": "^7.1.8 || ^8.0",
         "ext-json": "*",
+        "carbonphp/carbon-doctrine-types": "*",
+        "psr/clock": "^1.0",
         "symfony/polyfill-mbstring": "^1.0",
         "symfony/polyfill-php80": "^1.16",
         "symfony/translation": "^3.4 || ^4.0 || ^5.0 || ^6.0"
     },
     "require-dev": {
-        "doctrine/dbal": "^2.0 || ^3.0",
-        "doctrine/orm": "^2.7",
+        "doctrine/dbal": "^2.0 || ^3.1.4 || ^4.0",
+        "doctrine/orm": "^2.7 || ^3.0",
         "friendsofphp/php-cs-fixer": "^3.0",
         "kylekatarnls/multi-tester": "^2.0",
+        "ondrejmirtes/better-reflection": "*",
         "phpmd/phpmd": "^2.9",
         "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan": "^0.12.54 || ^1.0",
-        "phpunit/phpunit": "^7.5.20 || ^8.5.14",
+        "phpstan/phpstan": "^0.12.99 || ^1.7.14",
+        "phpunit/php-file-iterator": "^2.0.5 || ^3.0.6",
+        "phpunit/phpunit": "^7.5.20 || ^8.5.26 || ^9.5.20",
         "squizlabs/php_codesniffer": "^3.4"
     },
-    "config": {
-        "process-timeout": 0,
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
+    "provide": {
+        "psr/clock-implementation": "1.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Carbon\\": "src/Carbon/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "files": [
+            "tests/Laravel/ServiceProvider.php"
+        ]
+    },
+    "bin": [
+        "bin/carbon"
+    ],
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        },
+        "process-timeout": 0,
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
@@ -61,28 +106,11 @@
             ]
         }
     },
-    "autoload": {
-        "psr-4": {
-            "Carbon\\": "src/Carbon/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        },
-        "files": [
-            "tests/Laravel/ServiceProvider.php"
-        ]
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "bin": [
-        "bin/carbon"
-    ],
     "scripts": {
         "phpcs": "php-cs-fixer fix -v --diff --dry-run",
         "phpdoc": "php phpdoc.php",
         "phpmd": "phpmd src text /phpmd.xml",
+        "phpmd-test": "phpmd tests text /tests/phpmd-test.xml",
         "phpstan": "phpstan analyse --configuration phpstan.neon",
         "phpunit": "phpunit --verbose",
         "style-check": [
@@ -93,11 +121,7 @@
         "test": [
             "@phpunit",
             "@style-check"
-        ]
-    },
-    "support": {
-        "issues": "https://github.com/briannesbitt/Carbon/issues",
-        "source": "https://github.com/briannesbitt/Carbon",
-        "docs": "https://carbon.nesbot.com/docs"
+        ],
+        "sponsors": "php sponsors.php"
     }
 }

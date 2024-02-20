@@ -181,13 +181,16 @@ services:
         ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:nightly-20240208
+      image: mailcow/sogo:nightly-20240220
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}

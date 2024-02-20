@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use LdapRecord\Models\ActiveDirectory\Concerns\HasPrimaryGroup;
 use LdapRecord\Models\ActiveDirectory\Scopes\RejectComputerObjectClass;
+use LdapRecord\Models\Attributes\AccountControl;
 use LdapRecord\Models\Concerns\CanAuthenticate;
 use LdapRecord\Models\Concerns\HasPassword;
 use LdapRecord\Query\Model\Builder;
@@ -72,6 +73,38 @@ class User extends Entry implements Authenticatable
     }
 
     /**
+     * Determine if the user's account is enabled.
+     *
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return ! $this->isDisabled();
+    }
+
+    /**
+     * Determine if the user's account is disabled.
+     *
+     * @return bool
+     */
+    public function isDisabled()
+    {
+        return $this->accountControl()->has(AccountControl::ACCOUNTDISABLE);
+    }
+
+    /**
+     * Get the user's account control.
+     *
+     * @return AccountControl
+     */
+    public function accountControl()
+    {
+        return new AccountControl(
+            $this->getFirstAttribute('userAccountControl')
+        );
+    }
+
+    /**
      * The groups relationship.
      *
      * Retrieves groups that the user is apart of.
@@ -110,8 +143,7 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to exchange mailbox users.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasMailbox(Builder $query)
@@ -122,8 +154,7 @@ class User extends Entry implements Authenticatable
     /**
      * Scopes the query to users having a lockout value set.
      *
-     * @param Builder $query
-     *
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhereHasLockout(Builder $query)
@@ -137,9 +168,8 @@ class User extends Entry implements Authenticatable
      * @see https://ldapwiki.com/wiki/Active%20Directory%20Account%20Lockout
      * @see https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/account-lockout-duration
      *
-     * @param string|int $localTimezone
-     * @param int|null   $durationInMinutes
-     *
+     * @param  string|int  $localTimezone
+     * @param  int|null  $durationInMinutes
      * @return bool
      */
     public function isLockedOut($localTimezone, $durationInMinutes = null)
