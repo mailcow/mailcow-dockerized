@@ -5,11 +5,14 @@ namespace LdapRecord\Models\Attributes;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTime;
+use DateTimeZone;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Utilities;
 
 class Timestamp
 {
+    public const WINDOWS_INT_MAX = 9223372036854775807;
+
     /**
      * The current timestamp type.
      *
@@ -31,7 +34,7 @@ class Timestamp
     /**
      * Constructor.
      *
-     * @param string $type
+     * @param  string  $type
      *
      * @throws LdapRecordException
      */
@@ -43,7 +46,7 @@ class Timestamp
     /**
      * Set the type of timestamp to convert from / to.
      *
-     * @param string $type
+     * @param  string  $type
      *
      * @throws LdapRecordException
      */
@@ -59,8 +62,7 @@ class Timestamp
     /**
      * Converts the value to an LDAP date string.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return float|string
      *
      * @throws LdapRecordException
@@ -107,21 +109,19 @@ class Timestamp
     /**
      * Determine if the value given is in Windows Integer (NTFS Filetime) format.
      *
-     * @param int|string $value
-     *
+     * @param  int|string  $value
      * @return bool
      */
     protected function valueIsWindowsIntegerType($value)
     {
-        return is_numeric($value) && strlen((string) $value) === 18;
+        return is_numeric($value) && in_array(strlen((string) $value), [18, 19]);
     }
 
     /**
      * Converts the LDAP timestamp value to a Carbon instance.
      *
-     * @param mixed $value
-     *
-     * @return Carbon|false
+     * @param  mixed  $value
+     * @return Carbon|int|false
      *
      * @throws LdapRecordException
      */
@@ -153,14 +153,13 @@ class Timestamp
     /**
      * Converts standard LDAP timestamps to a date time object.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return DateTime|false
      */
     protected function convertLdapTimeToDateTime($value)
     {
         return DateTime::createFromFormat(
-            strpos($value, 'Z') !== false ? 'YmdHis\Z' : 'YmdHisT',
+            str_contains((string) $value, 'Z') ? 'YmdHis\Z' : 'YmdHisT',
             $value
         );
     }
@@ -168,8 +167,7 @@ class Timestamp
     /**
      * Converts date objects to a standard LDAP timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToLdapTime(DateTime $date)
@@ -182,23 +180,22 @@ class Timestamp
     /**
      * Converts standard windows timestamps to a date time object.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return DateTime|false
      */
     protected function convertWindowsTimeToDateTime($value)
     {
         return DateTime::createFromFormat(
-            strpos($value, '0Z') !== false ? 'YmdHis.0\Z' : 'YmdHis.0T',
-            $value
+            str_contains((string) $value, '0Z') ? 'YmdHis.0\Z' : 'YmdHis.0T',
+            $value,
+            new DateTimeZone('UTC')
         );
     }
 
     /**
      * Converts date objects to a windows timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return string
      */
     protected function convertDateTimeToWindows(DateTime $date)
@@ -211,18 +208,23 @@ class Timestamp
     /**
      * Converts standard windows integer dates to a date time object.
      *
-     * @param int $value
-     *
-     * @return DateTime|false
+     * @param  int  $value
+     * @return DateTime|int|false
      *
      * @throws \Exception
      */
     protected function convertWindowsIntegerTimeToDateTime($value)
     {
-        // ActiveDirectory dates that contain integers may return
-        // "0" when they are not set. We will validate that here.
-        if (! $value) {
+        if (is_null($value) || $value === '') {
             return false;
+        }
+
+        if ($value == 0) {
+            return (int) $value;
+        }
+
+        if ($value == static::WINDOWS_INT_MAX) {
+            return (int) $value;
         }
 
         return (new DateTime())->setTimestamp(
@@ -233,8 +235,7 @@ class Timestamp
     /**
      * Converts date objects to a windows integer timestamp.
      *
-     * @param DateTime $date
-     *
+     * @param  DateTime  $date
      * @return float
      */
     protected function convertDateTimeToWindowsInteger(DateTime $date)

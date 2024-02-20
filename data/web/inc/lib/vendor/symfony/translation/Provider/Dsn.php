@@ -29,29 +29,29 @@ final class Dsn
     private array $options = [];
     private string $originalDsn;
 
-    public function __construct(string $dsn)
+    public function __construct(#[\SensitiveParameter] string $dsn)
     {
         $this->originalDsn = $dsn;
 
-        if (false === $parsedDsn = parse_url($dsn)) {
-            throw new InvalidArgumentException(sprintf('The "%s" translation provider DSN is invalid.', $dsn));
+        if (false === $params = parse_url($dsn)) {
+            throw new InvalidArgumentException('The translation provider DSN is invalid.');
         }
 
-        if (!isset($parsedDsn['scheme'])) {
-            throw new InvalidArgumentException(sprintf('The "%s" translation provider DSN must contain a scheme.', $dsn));
+        if (!isset($params['scheme'])) {
+            throw new InvalidArgumentException('The translation provider DSN must contain a scheme.');
         }
-        $this->scheme = $parsedDsn['scheme'];
+        $this->scheme = $params['scheme'];
 
-        if (!isset($parsedDsn['host'])) {
-            throw new InvalidArgumentException(sprintf('The "%s" translation provider DSN must contain a host (use "default" by default).', $dsn));
+        if (!isset($params['host'])) {
+            throw new InvalidArgumentException('The translation provider DSN must contain a host (use "default" by default).');
         }
-        $this->host = $parsedDsn['host'];
+        $this->host = $params['host'];
 
-        $this->user = '' !== ($parsedDsn['user'] ?? '') ? urldecode($parsedDsn['user']) : null;
-        $this->password = '' !== ($parsedDsn['pass'] ?? '') ? urldecode($parsedDsn['pass']) : null;
-        $this->port = $parsedDsn['port'] ?? null;
-        $this->path = $parsedDsn['path'] ?? null;
-        parse_str($parsedDsn['query'] ?? '', $this->options);
+        $this->user = '' !== ($params['user'] ?? '') ? rawurldecode($params['user']) : null;
+        $this->password = '' !== ($params['pass'] ?? '') ? rawurldecode($params['pass']) : null;
+        $this->port = $params['port'] ?? null;
+        $this->path = $params['path'] ?? null;
+        parse_str($params['query'] ?? '', $this->options);
     }
 
     public function getScheme(): string
@@ -74,17 +74,17 @@ final class Dsn
         return $this->password;
     }
 
-    public function getPort(int $default = null): ?int
+    public function getPort(?int $default = null): ?int
     {
         return $this->port ?? $default;
     }
 
-    public function getOption(string $key, mixed $default = null)
+    public function getOption(string $key, mixed $default = null): mixed
     {
         return $this->options[$key] ?? $default;
     }
 
-    public function getRequiredOption(string $key)
+    public function getRequiredOption(string $key): mixed
     {
         if (!\array_key_exists($key, $this->options) || '' === trim($this->options[$key])) {
             throw new MissingRequiredOptionException($key);

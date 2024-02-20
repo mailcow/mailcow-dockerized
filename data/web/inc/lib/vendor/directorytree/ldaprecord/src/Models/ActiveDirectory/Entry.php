@@ -9,6 +9,7 @@ use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Events\Updated;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Model\ActiveDirectoryBuilder;
+use LdapRecord\Support\Arr;
 
 /** @mixin ActiveDirectoryBuilder */
 class Entry extends BaseEntry implements ActiveDirectory
@@ -50,20 +51,46 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * @inheritdoc
      */
-    public function getConvertedSid()
+    public function getConvertedSid($sid = null)
     {
         try {
-            return (string) new Sid($this->getObjectSid());
+            return (string) $this->newObjectSid(
+                $sid ?? $this->getObjectSid()
+            );
         } catch (InvalidArgumentException $e) {
             return;
         }
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getBinarySid($sid = null)
+    {
+        try {
+            return $this->newObjectSid(
+                $sid ?? $this->getObjectSid()
+            )->getBinary();
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
+
+    /**
+     * Make a new object Sid instance.
+     *
+     * @param  string  $value
+     * @return Sid
+     */
+    protected function newObjectSid($value)
+    {
+        return new Sid($value);
+    }
+
+    /**
      * Create a new query builder.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return ActiveDirectoryBuilder
      */
     public function newQueryBuilder(Connection $connection)
@@ -84,8 +111,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Restore a deleted object.
      *
-     * @param string|null $newParentDn
-     *
+     * @param  string|null  $newParentDn
      * @return bool
      *
      * @throws \LdapRecord\LdapRecordException
@@ -115,24 +141,6 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * Get the RootDSE (AD schema) record from the directory.
-     *
-     * @param string|null $connection
-     *
-     * @return static
-     *
-     * @throws \LdapRecord\Models\ModelNotFoundException
-     */
-    public static function getRootDse($connection = null)
-    {
-        return static::on($connection ?? (new static())->getConnectionName())
-            ->in(null)
-            ->read()
-            ->whereHas('objectclass')
-            ->firstOrFail();
-    }
-
-    /**
      * Get the objects restore location.
      *
      * @return string
@@ -143,22 +151,50 @@ class Entry extends BaseEntry implements ActiveDirectory
     }
 
     /**
-     * Converts attributes for JSON serialization.
+     * Convert the attributes for JSON serialization.
      *
-     * @param array $attributes
-     *
+     * @param  array  $attributes
      * @return array
      */
     protected function convertAttributesForJson(array $attributes = [])
     {
         $attributes = parent::convertAttributesForJson($attributes);
 
-        if ($this->hasAttribute($this->sidKey)) {
-            // If the model has a SID set, we need to convert it due to it being in
-            // binary. Otherwise we will receive a JSON serialization exception.
-            return array_replace($attributes, [
-                $this->sidKey => [$this->getConvertedSid()],
-            ]);
+        // If the model has a SID set, we need to convert it to its
+        // string format, due to it being in binary. Otherwise
+        // we will receive a JSON serialization exception.
+        if (isset($attributes[$this->sidKey])) {
+            $attributes[$this->sidKey] = [$this->getConvertedSid(
+                Arr::first($attributes[$this->sidKey])
+            )];
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Convert the attributes from JSON serialization.
+     *
+     * @param  array  $attributes
+     * @return array
+     */
+    protected function convertAttributesFromJson(array $attributes = [])
+    {
+        $attributes = parent::convertAttributesFromJson($attributes);
+
+        // Here we are converting the model's GUID and SID attributes
+        // back to their original values from serialization, so that
+        // their original value may be used and compared against.
+        if (isset($attributes[$this->guidKey])) {
+            $attributes[$this->guidKey] = [$this->getBinaryGuid(
+                Arr::first($attributes[$this->guidKey])
+            )];
+        }
+
+        if (isset($attributes[$this->sidKey])) {
+            $attributes[$this->sidKey] = [$this->getBinarySid(
+                Arr::first($attributes[$this->sidKey])
+            )];
         }
 
         return $attributes;

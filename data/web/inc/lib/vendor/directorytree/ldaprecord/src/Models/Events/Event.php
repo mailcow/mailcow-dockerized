@@ -16,7 +16,7 @@ abstract class Event
     /**
      * Constructor.
      *
-     * @param Model $model
+     * @param  Model  $model
      */
     public function __construct(Model $model)
     {

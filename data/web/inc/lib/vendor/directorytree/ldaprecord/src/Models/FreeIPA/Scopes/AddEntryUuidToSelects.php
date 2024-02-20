@@ -11,9 +11,8 @@ class AddEntryUuidToSelects implements Scope
     /**
      * Add the entry UUID to the selected attributes.
      *
-     * @param Builder $query
-     * @param Model   $model
-     *
+     * @param  Builder  $query
+     * @param  Model  $model
      * @return void
      */
     public function apply(Builder $query, Model $model)

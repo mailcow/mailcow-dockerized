@@ -2,6 +2,7 @@
 
 namespace LdapRecord\Models\Concerns;
 
+/** @mixin \LdapRecord\Models\Model */
 trait HasScopes
 {
     /**

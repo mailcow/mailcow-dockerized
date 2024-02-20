@@ -58,7 +58,7 @@ class DomainConfiguration
     /**
      * Constructor.
      *
-     * @param array $options
+     * @param  array  $options
      *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
@@ -74,9 +74,8 @@ class DomainConfiguration
     /**
      * Extend the configuration with a custom option, or override an existing.
      *
-     * @param string $option
-     * @param mixed  $default
-     *
+     * @param  string  $option
+     * @param  mixed  $default
      * @return void
      */
     public static function extend($option, $default = null)
@@ -107,8 +106,8 @@ class DomainConfiguration
     /**
      * Set a configuration option.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param  string  $key
+     * @param  mixed  $value
      *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
@@ -122,8 +121,7 @@ class DomainConfiguration
     /**
      * Returns the value for the specified configuration options.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return mixed
      *
      * @throws ConfigurationException When the option specified does not exist.
@@ -140,8 +138,7 @@ class DomainConfiguration
     /**
      * Checks if a configuration option exists.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function has($key)
@@ -152,9 +149,8 @@ class DomainConfiguration
     /**
      * Validate the configuration option.
      *
-     * @param string $key
-     * @param mixed  $value
-     *
+     * @param  string  $key
+     * @param  mixed  $value
      * @return bool
      *
      * @throws ConfigurationException When an option value given is an invalid type.
