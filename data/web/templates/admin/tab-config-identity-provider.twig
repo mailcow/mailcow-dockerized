@@ -315,6 +315,12 @@
             </div>
           </div>
           <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_filter">{{ lang.admin.filter }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="" id="iam_ldap_filter" name="filter" value="{{ iam_settings.filter }}">
+            </div>
+          </div>
+          <div class="row mb-2">
             <label class="control-label col-md-3 text-sm-end" for="iam_ldap_attribute_field">{{ lang.admin.iam_attribute_field }}:</label>
             <div class="col-12 col-md-9 col-lg-4">
               <input type="text" class="form-control" id="iam_ldap_attribute_field" name="attribute_field" value="{{ iam_settings.attribute_field }}" required>

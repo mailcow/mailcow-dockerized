@@ -495,6 +495,7 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
   try {
     $user_res = $iam_provider->query()
       ->where($iam_settings['username_field'], '=', $user)
+      ->whereRaw($iam_settings['filter'])
       ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname'])
       ->firstOrFail();
   } catch (Exception $e) {
