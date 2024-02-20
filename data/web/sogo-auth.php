@@ -52,6 +52,13 @@ elseif (isset($_GET['login'])) {
         // register username and password in session
         $_SESSION[$session_var_user_allowed][] = $login;
         $_SESSION[$session_var_pass] = $sogo_sso_pass;
+        // set dual login
+        if ($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0 && $is_dual === false && $_SESSION['mailcow_cc_role'] != "user"){      
+          $_SESSION["dual-login"]["username"] = $_SESSION['mailcow_cc_username'];
+          $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
+          $_SESSION['mailcow_cc_username']    = $login;
+          $_SESSION['mailcow_cc_role']        = "user";
+        }
         // update sasl logs
         $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
         $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES ('SSO', 0, :username, :remote_addr)");
