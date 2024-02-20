@@ -29,6 +29,8 @@ class ChainExtractor implements ExtractorInterface
 
     /**
      * Adds a loader to the translation extractor.
+     *
+     * @return void
      */
     public function addExtractor(string $format, ExtractorInterface $extractor)
     {
@@ -36,7 +38,7 @@ class ChainExtractor implements ExtractorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function setPrefix(string $prefix)
     {
@@ -46,7 +48,7 @@ class ChainExtractor implements ExtractorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function extract(string|iterable $directory, MessageCatalogue $catalogue)
     {

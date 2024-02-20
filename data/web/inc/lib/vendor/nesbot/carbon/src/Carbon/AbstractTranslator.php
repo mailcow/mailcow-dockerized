@@ -11,6 +11,7 @@
 
 namespace Carbon;
 
+use Carbon\MessageFormatter\MessageFormatterMapper;
 use Closure;
 use ReflectionException;
 use ReflectionFunction;
@@ -51,7 +52,7 @@ abstract class AbstractTranslator extends Translation\Translator
     /**
      * List of locales aliases.
      *
-     * @var string[]
+     * @var array<string, string>
      */
     protected $aliases = [
         'me' => 'sr_Latn_ME',
@@ -83,7 +84,7 @@ abstract class AbstractTranslator extends Translation\Translator
         $this->initializing = true;
         $this->directories = [__DIR__.'/Lang'];
         $this->addLoader('array', new ArrayLoader());
-        parent::__construct($locale, $formatter, $cacheDir, $debug);
+        parent::__construct($locale, new MessageFormatterMapper($formatter), $cacheDir, $debug);
         $this->initializing = false;
     }
 
@@ -220,8 +221,8 @@ abstract class AbstractTranslator extends Translation\Translator
 
         $catalogue = $this->getCatalogue($locale);
         $format = $this instanceof TranslatorStrongTypeInterface
-            ? $this->getFromCatalogue($catalogue, (string) $id, $domain) // @codeCoverageIgnore
-            : $this->getCatalogue($locale)->get((string) $id, $domain);
+            ? $this->getFromCatalogue($catalogue, (string) $id, $domain)
+            : $this->getCatalogue($locale)->get((string) $id, $domain); // @codeCoverageIgnore
 
         if ($format instanceof Closure) {
             // @codeCoverageIgnoreStart
@@ -250,11 +251,7 @@ abstract class AbstractTranslator extends Translation\Translator
      */
     protected function loadMessagesFromFile($locale)
     {
-        if (isset($this->messages[$locale])) {
-            return true;
-        }
-
-        return $this->resetMessages($locale);
+        return isset($this->messages[$locale]) || $this->resetMessages($locale);
     }
 
     /**
@@ -311,7 +308,7 @@ abstract class AbstractTranslator extends Translation\Translator
      */
     public function setLocale($locale)
     {
-        $locale = preg_replace_callback('/[-_]([a-z]{2,}|[0-9]{2,})/', function ($matches) {
+        $locale = preg_replace_callback('/[-_]([a-z]{2,}|\d{2,})/', function ($matches) {
             // _2-letters or YUE is a region, _3+-letters is a variant
             $upper = strtoupper($matches[1]);
 
@@ -359,13 +356,13 @@ abstract class AbstractTranslator extends Translation\Translator
             parent::setLocale($macroLocale);
         }
 
-        if ($this->loadMessagesFromFile($locale) || $this->initializing) {
-            parent::setLocale($locale);
-
-            return true;
+        if (!$this->loadMessagesFromFile($locale) && !$this->initializing) {
+            return false;
         }
 
-        return false;
+        parent::setLocale($locale);
+
+        return true;
     }
 
     /**

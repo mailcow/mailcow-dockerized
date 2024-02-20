@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [Ubuntu, macOS]
-        php: [7.3, 7.4, 8.0, 8.1]
+        php: [8.0, 8.1, 8.2]
 
         include:
           - os: Ubuntu
@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

@@ -29,16 +29,25 @@ class SplCaster
         \SplFileObject::READ_CSV => 'READ_CSV',
     ];
 
+    /**
+     * @return array
+     */
     public static function castArrayObject(\ArrayObject $c, array $a, Stub $stub, bool $isNested)
     {
         return self::castSplArray($c, $a, $stub, $isNested);
     }
 
+    /**
+     * @return array
+     */
     public static function castArrayIterator(\ArrayIterator $c, array $a, Stub $stub, bool $isNested)
     {
         return self::castSplArray($c, $a, $stub, $isNested);
     }
 
+    /**
+     * @return array
+     */
     public static function castHeap(\Iterator $c, array $a, Stub $stub, bool $isNested)
     {
         $a += [
@@ -48,6 +57,9 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castDoublyLinkedList(\SplDoublyLinkedList $c, array $a, Stub $stub, bool $isNested)
     {
         $prefix = Caster::PREFIX_VIRTUAL;
@@ -63,6 +75,9 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castFileInfo(\SplFileInfo $c, array $a, Stub $stub, bool $isNested)
     {
         static $map = [
@@ -117,7 +132,7 @@ class SplCaster
         foreach ($map as $key => $accessor) {
             try {
                 $a[$prefix.$key] = $c->$accessor();
-            } catch (\Exception $e) {
+            } catch (\Exception) {
             }
         }
 
@@ -139,6 +154,9 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castFileObject(\SplFileObject $c, array $a, Stub $stub, bool $isNested)
     {
         static $map = [
@@ -155,7 +173,7 @@ class SplCaster
         foreach ($map as $key => $accessor) {
             try {
                 $a[$prefix.$key] = $c->$accessor();
-            } catch (\Exception $e) {
+            } catch (\Exception) {
             }
         }
 
@@ -176,6 +194,9 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castObjectStorage(\SplObjectStorage $c, array $a, Stub $stub, bool $isNested)
     {
         $storage = [];
@@ -184,10 +205,10 @@ class SplCaster
 
         $clone = clone $c;
         foreach ($clone as $obj) {
-            $storage[] = [
+            $storage[] = new EnumStub([
                 'object' => $obj,
                 'info' => $clone->getInfo(),
-             ];
+             ]);
         }
 
         $a += [
@@ -197,6 +218,9 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castOuterIterator(\OuterIterator $c, array $a, Stub $stub, bool $isNested)
     {
         $a[Caster::PREFIX_VIRTUAL.'innerIterator'] = $c->getInnerIterator();
@@ -204,9 +228,33 @@ class SplCaster
         return $a;
     }
 
+    /**
+     * @return array
+     */
     public static function castWeakReference(\WeakReference $c, array $a, Stub $stub, bool $isNested)
     {
         $a[Caster::PREFIX_VIRTUAL.'object'] = $c->get();
+
+        return $a;
+    }
+
+    /**
+     * @return array
+     */
+    public static function castWeakMap(\WeakMap $c, array $a, Stub $stub, bool $isNested)
+    {
+        $map = [];
+
+        foreach (clone $c as $obj => $data) {
+            $map[] = new EnumStub([
+                'object' => $obj,
+                'data' => $data,
+             ]);
+        }
+
+        $a += [
+            Caster::PREFIX_VIRTUAL.'map' => $map,
+        ];
 
         return $a;
     }
@@ -218,10 +266,14 @@ class SplCaster
 
         if (!($flags & \ArrayObject::STD_PROP_LIST)) {
             $c->setFlags(\ArrayObject::STD_PROP_LIST);
-            $a = Caster::castObject($c, \get_class($c), method_exists($c, '__debugInfo'), $stub->class);
+            $a = Caster::castObject($c, $c::class, method_exists($c, '__debugInfo'), $stub->class);
             $c->setFlags($flags);
         }
+
+        unset($a["\0ArrayObject\0storage"], $a["\0ArrayIterator\0storage"]);
+
         $a += [
+            $prefix.'storage' => $c->getArrayCopy(),
             $prefix.'flag::STD_PROP_LIST' => (bool) ($flags & \ArrayObject::STD_PROP_LIST),
             $prefix.'flag::ARRAY_AS_PROPS' => (bool) ($flags & \ArrayObject::ARRAY_AS_PROPS),
         ];

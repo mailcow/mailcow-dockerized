@@ -40,7 +40,7 @@ class User extends Entry implements Authenticatable
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the user is apart of.
+     * Retrieve groups that the user is a part of.
      *
      * @return \LdapRecord\Models\Relations\HasMany
      */
