@@ -44,6 +44,7 @@ data/conf/rspamd/local.d/*
 data/conf/rspamd/override.d/*
 data/conf/sogo/custom-theme.js
 data/conf/sogo/plist_ldap
+data/conf/sogo/plist_ldap.sh
 data/conf/sogo/sieve.creds
 data/conf/sogo/sogo-full.svg
 data/gitea/
