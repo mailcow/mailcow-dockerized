@@ -30,8 +30,8 @@ abstract class Validator
     /**
      * Constructor.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param  string  $key
+     * @param  mixed  $value
      */
     public function __construct($key, $value)
     {

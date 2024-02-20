@@ -34,8 +34,7 @@ class Entry extends BaseEntry implements OpenLDAP
     /**
      * Create a new query builder.
      *
-     * @param Connection $connection
-     *
+     * @param  Connection  $connection
      * @return OpenLdapBuilder
      */
     public function newQueryBuilder(Connection $connection)
