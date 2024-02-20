@@ -1072,7 +1072,7 @@ function set_tfa($_data) {
     if ($row) {
       if ($row['authsource'] == 'ldap'){
         $iam_settings = identity_provider('get');
-        if (!ldap_mbox_login($username, $row['password'], $iam_settings)) $access_denied = true;
+        if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
         else $access_denied = false;
       } else {
         if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
