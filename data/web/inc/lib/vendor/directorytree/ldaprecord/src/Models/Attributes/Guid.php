@@ -50,8 +50,7 @@ class Guid
     /**
      * Determines if the specified GUID is valid.
      *
-     * @param string $guid
-     *
+     * @param  string  $guid
      * @return bool
      */
     public static function isValid($guid)
@@ -62,7 +61,7 @@ class Guid
     /**
      * Constructor.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      *
      * @throws InvalidArgumentException
      */
@@ -128,8 +127,7 @@ class Guid
     /**
      * Returns the string variant of a binary GUID.
      *
-     * @param string $binary
-     *
+     * @param  string  $binary
      * @return string|null
      */
     protected function binaryGuidToString($binary)
@@ -144,10 +142,9 @@ class Guid
      *
      * @see https://github.com/ldaptools/ldaptools
      *
-     * @param string $hex      The full hex string.
-     * @param array  $sections An array of start and length (unless octet is true, then length is always 2).
-     * @param bool   $octet    Whether this is for octet string form.
-     *
+     * @param  string  $hex  The full hex string.
+     * @param  array  $sections  An array of start and length (unless octet is true, then length is always 2).
+     * @param  bool  $octet  Whether this is for octet string form.
      * @return string The concatenated sections in upper-case.
      */
     protected function parseSection($hex, array $sections, $octet = false)

@@ -53,8 +53,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * Get the expiration time of the key.
      *
-     * @param int $seconds
-     *
+     * @param  int  $seconds
      * @return int
      */
     protected function calculateExpiration($seconds)
@@ -65,8 +64,7 @@ class ArrayCacheStore implements CacheInterface
     /**
      * Get the UNIX timestamp for the given number of seconds.
      *
-     * @param int $seconds
-     *
+     * @param  int  $seconds
      * @return int
      */
     protected function toTimestamp($seconds)

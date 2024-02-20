@@ -12,6 +12,7 @@
 
 namespace Composer;
 
+$GLOBALS['_composer_bin_dir'] = __DIR__;
 $GLOBALS['_composer_autoload_path'] = __DIR__ . '/..'.'/autoload.php';
 
 if (PHP_VERSION_ID < 80000) {
@@ -23,17 +24,16 @@ if (PHP_VERSION_ID < 80000) {
         {
             private $handle;
             private $position;
+            private $realpath;
 
             public function stream_open($path, $mode, $options, &$opened_path)
             {
-                // get rid of composer-bin-proxy:// prefix for __FILE__ & __DIR__ resolution
-                $opened_path = substr($path, 21);
-                $opened_path = realpath($opened_path) ?: $opened_path;
-                $this->handle = fopen($opened_path, $mode);
+                // get rid of phpvfscomposer:// prefix for __FILE__ & __DIR__ resolution
+                $opened_path = substr($path, 17);
+                $this->realpath = realpath($opened_path) ?: $opened_path;
+                $opened_path = $this->realpath;
+                $this->handle = fopen($this->realpath, $mode);
                 $this->position = 0;
-
-                // remove all traces of this stream wrapper once it has been used
-                stream_wrapper_unregister('composer-bin-proxy');
 
                 return (bool) $this->handle;
             }
@@ -66,6 +66,16 @@ if (PHP_VERSION_ID < 80000) {
                 return $operation ? flock($this->handle, $operation) : true;
             }
 
+            public function stream_seek($offset, $whence)
+            {
+                if (0 === fseek($this->handle, $offset, $whence)) {
+                    $this->position = ftell($this->handle);
+                    return true;
+                }
+
+                return false;
+            }
+
             public function stream_tell()
             {
                 return $this->position;
@@ -78,20 +88,32 @@ if (PHP_VERSION_ID < 80000) {
 
             public function stream_stat()
             {
-                return fstat($this->handle);
+                return array();
             }
 
             public function stream_set_option($option, $arg1, $arg2)
             {
                 return true;
             }
+
+            public function url_stat($path, $flags)
+            {
+                $path = substr($path, 17);
+                if (file_exists($path)) {
+                    return stat($path);
+                }
+
+                return false;
+            }
         }
     }
 
-    if (function_exists('stream_wrapper_register') && stream_wrapper_register('composer-bin-proxy', 'Composer\BinProxyWrapper')) {
-        include("composer-bin-proxy://" . __DIR__ . '/..'.'/symfony/var-dumper/Resources/bin/var-dump-server');
-        exit(0);
+    if (
+        (function_exists('stream_get_wrappers') && in_array('phpvfscomposer', stream_get_wrappers(), true))
+        || (function_exists('stream_wrapper_register') && stream_wrapper_register('phpvfscomposer', 'Composer\BinProxyWrapper'))
+    ) {
+        return include("phpvfscomposer://" . __DIR__ . '/..'.'/symfony/var-dumper/Resources/bin/var-dump-server');
     }
 }
 
-include __DIR__ . '/..'.'/symfony/var-dumper/Resources/bin/var-dump-server';
+return include __DIR__ . '/..'.'/symfony/var-dumper/Resources/bin/var-dump-server';

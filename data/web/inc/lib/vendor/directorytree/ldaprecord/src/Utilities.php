@@ -10,14 +10,13 @@ class Utilities
      * This will also decode hex characters into their true
      * UTF-8 representation embedded inside the DN as well.
      *
-     * @param string $dn
-     * @param bool   $removeAttributePrefixes
-     *
+     * @param  string  $dn
+     * @param  bool  $removeAttributePrefixes
      * @return array|false
      */
     public static function explodeDn($dn, $removeAttributePrefixes = true)
     {
-        $dn = ldap_explode_dn($dn, ($removeAttributePrefixes ? 1 : 0));
+        $dn = ldap_explode_dn($dn, $removeAttributePrefixes ? 1 : 0);
 
         if (! is_array($dn)) {
             return false;
@@ -39,8 +38,7 @@ class Utilities
     /**
      * Un-escapes a hexadecimal string into its original string representation.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return string
      */
     public static function unescape($value)
@@ -58,8 +56,7 @@ class Utilities
      * @see https://github.com/ChadSikorra
      * @see https://stackoverflow.com/questions/39533560/php-ldap-get-user-sid
      *
-     * @param string $value The Binary SID
-     *
+     * @param  string  $value  The Binary SID
      * @return string|null
      */
     public static function binarySidToString($value)
@@ -106,8 +103,7 @@ class Utilities
     /**
      * Convert a binary GUID to a string GUID.
      *
-     * @param string $binGuid
-     *
+     * @param  string  $binGuid
      * @return string|null
      */
     public static function binaryGuidToString($binGuid)
@@ -130,8 +126,7 @@ class Utilities
     /**
      * Converts a string GUID to it's hex variant.
      *
-     * @param string $string
-     *
+     * @param  string  $string
      * @return string
      */
     public static function stringGuidToHex($string)
@@ -149,21 +144,19 @@ class Utilities
      * Round a Windows timestamp down to seconds and remove
      * the seconds between 1601-01-01 and 1970-01-01.
      *
-     * @param float $windowsTime
-     *
-     * @return float
+     * @param  int  $windowsTime
+     * @return int
      */
     public static function convertWindowsTimeToUnixTime($windowsTime)
     {
-        return round($windowsTime / 10000000) - 11644473600;
+        return (int) (round($windowsTime / 10000000) - 11644473600);
     }
 
     /**
      * Convert a Unix timestamp to Windows timestamp.
      *
-     * @param float $unixTime
-     *
-     * @return float
+     * @param  int  $unixTime
+     * @return int
      */
     public static function convertUnixTimeToWindowsTime($unixTime)
     {
@@ -173,8 +166,7 @@ class Utilities
     /**
      * Validates that the inserted string is an object SID.
      *
-     * @param string $sid
-     *
+     * @param  string  $sid
      * @return bool
      */
     public static function isValidSid($sid)
@@ -185,8 +177,7 @@ class Utilities
     /**
      * Validates that the inserted string is an object GUID.
      *
-     * @param string $guid
-     *
+     * @param  string  $guid
      * @return bool
      */
     public static function isValidGuid($guid)

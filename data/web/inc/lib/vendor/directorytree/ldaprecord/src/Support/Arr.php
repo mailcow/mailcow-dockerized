@@ -9,8 +9,7 @@ class Arr
     /**
      * Determine whether the given value is array accessible.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return bool
      */
     public static function accessible($value)
@@ -21,9 +20,8 @@ class Arr
     /**
      * Determine if the given key exists in the provided array.
      *
-     * @param \ArrayAccess|array $array
-     * @param string|int         $key
-     *
+     * @param  \ArrayAccess|array  $array
+     * @param  string|int  $key
      * @return bool
      */
     public static function exists($array, $key)
@@ -38,8 +36,7 @@ class Arr
     /**
      * If the given value is not an array and not null, wrap it in one.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return array
      */
     public static function wrap($value)
@@ -54,10 +51,9 @@ class Arr
     /**
      * Return the first element in an array passing a given truth test.
      *
-     * @param iterable      $array
-     * @param callable|null $callback
-     * @param mixed         $default
-     *
+     * @param  iterable  $array
+     * @param  callable|null  $callback
+     * @param  mixed  $default
      * @return mixed
      */
     public static function first($array, callable $callback = null, $default = null)
@@ -84,10 +80,9 @@ class Arr
     /**
      * Return the last element in an array passing a given truth test.
      *
-     * @param array         $array
-     * @param callable|null $callback
-     * @param mixed         $default
-     *
+     * @param  array  $array
+     * @param  callable|null  $callback
+     * @param  mixed  $default
      * @return mixed
      */
     public static function last($array, callable $callback = null, $default = null)
@@ -102,10 +97,9 @@ class Arr
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param ArrayAccess|array $array
-     * @param string|int|null   $key
-     * @param mixed             $default
-     *
+     * @param  ArrayAccess|array  $array
+     * @param  string|int|null  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public static function get($array, $key, $default = null)
@@ -122,7 +116,7 @@ class Arr
             return $array[$key];
         }
 
-        if (strpos($key, '.') === false) {
+        if (str_contains($key, '.')) {
             return $array[$key] ?? Helpers::value($default);
         }
 

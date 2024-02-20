@@ -6,49 +6,49 @@ use ReflectionClass;
 
 class AccountControl
 {
-    const SCRIPT = 1;
+    public const SCRIPT = 1;
 
-    const ACCOUNTDISABLE = 2;
+    public const ACCOUNTDISABLE = 2;
 
-    const HOMEDIR_REQUIRED = 8;
+    public const HOMEDIR_REQUIRED = 8;
 
-    const LOCKOUT = 16;
+    public const LOCKOUT = 16;
 
-    const PASSWD_NOTREQD = 32;
+    public const PASSWD_NOTREQD = 32;
 
-    const PASSWD_CANT_CHANGE = 64;
+    public const PASSWD_CANT_CHANGE = 64;
 
-    const ENCRYPTED_TEXT_PWD_ALLOWED = 128;
+    public const ENCRYPTED_TEXT_PWD_ALLOWED = 128;
 
-    const TEMP_DUPLICATE_ACCOUNT = 256;
+    public const TEMP_DUPLICATE_ACCOUNT = 256;
 
-    const NORMAL_ACCOUNT = 512;
+    public const NORMAL_ACCOUNT = 512;
 
-    const INTERDOMAIN_TRUST_ACCOUNT = 2048;
+    public const INTERDOMAIN_TRUST_ACCOUNT = 2048;
 
-    const WORKSTATION_TRUST_ACCOUNT = 4096;
+    public const WORKSTATION_TRUST_ACCOUNT = 4096;
 
-    const SERVER_TRUST_ACCOUNT = 8192;
+    public const SERVER_TRUST_ACCOUNT = 8192;
 
-    const DONT_EXPIRE_PASSWORD = 65536;
+    public const DONT_EXPIRE_PASSWORD = 65536;
 
-    const MNS_LOGON_ACCOUNT = 131072;
+    public const MNS_LOGON_ACCOUNT = 131072;
 
-    const SMARTCARD_REQUIRED = 262144;
+    public const SMARTCARD_REQUIRED = 262144;
 
-    const TRUSTED_FOR_DELEGATION = 524288;
+    public const TRUSTED_FOR_DELEGATION = 524288;
 
-    const NOT_DELEGATED = 1048576;
+    public const NOT_DELEGATED = 1048576;
 
-    const USE_DES_KEY_ONLY = 2097152;
+    public const USE_DES_KEY_ONLY = 2097152;
 
-    const DONT_REQ_PREAUTH = 4194304;
+    public const DONT_REQ_PREAUTH = 4194304;
 
-    const PASSWORD_EXPIRED = 8388608;
+    public const PASSWORD_EXPIRED = 8388608;
 
-    const TRUSTED_TO_AUTH_FOR_DELEGATION = 16777216;
+    public const TRUSTED_TO_AUTH_FOR_DELEGATION = 16777216;
 
-    const PARTIAL_SECRETS_ACCOUNT = 67108864;
+    public const PARTIAL_SECRETS_ACCOUNT = 67108864;
 
     /**
      * The account control flag values.
@@ -60,7 +60,7 @@ class AccountControl
     /**
      * Constructor.
      *
-     * @param ?int $flag
+     * @param  ?int  $flag
      */
     public function __construct($flag = null)
     {
@@ -92,8 +92,7 @@ class AccountControl
     /**
      * Add the flag to the account control values.
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return $this
      */
     public function add($flag)
@@ -108,8 +107,7 @@ class AccountControl
     /**
      * Remove the flag from the account control.
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return $this
      */
     public function remove($flag)
@@ -122,8 +120,7 @@ class AccountControl
     /**
      * Extract and apply the flag.
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return void
      */
     public function apply($flag)
@@ -134,8 +131,7 @@ class AccountControl
     /**
      * Determine if the account control contains the given UAC flag(s).
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return bool
      */
     public function has($flag)
@@ -154,8 +150,7 @@ class AccountControl
     /**
      * Determine if the account control does not contain the given UAC flag(s).
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return bool
      */
     public function doesntHave($flag)
@@ -441,8 +436,7 @@ class AccountControl
     /**
      * Set the account control values.
      *
-     * @param array<int, int> $flags
-     *
+     * @param  array<int, int>  $flags
      * @return void
      */
     public function setValues(array $flags)
@@ -483,8 +477,7 @@ class AccountControl
     /**
      * Extracts the given flag into an array of flags used.
      *
-     * @param int $flag
-     *
+     * @param  int  $flag
      * @return array
      */
     public function extractFlags($flag)

@@ -25,8 +25,7 @@ class HasOne extends Relation
     /**
      * Attach a model instance to the parent model.
      *
-     * @param Model|string $model
-     *
+     * @param  Model|string  $model
      * @return Model|string
      *
      * @throws \LdapRecord\LdapRecordException
