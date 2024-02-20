@@ -1065,13 +1065,19 @@ function set_tfa($_data) {
 
   // check mailbox confirm password
   if ($access_denied === null) {
-    $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+    $stmt = $pdo->prepare("SELECT `password`, `authsource` FROM `mailbox`
         WHERE `username` = :username");
     $stmt->execute(array(':username' => $username));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row) {
-      if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
-      else $access_denied = false;
+      if ($row['authsource'] == 'ldap'){
+        $iam_settings = identity_provider('get');
+        if (!ldap_mbox_login($username, $row['password'], $iam_settings)) $access_denied = true;
+        else $access_denied = false;
+      } else {
+        if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
+        else $access_denied = false;
+      }
     }
   }
 
