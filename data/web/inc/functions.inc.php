@@ -2395,7 +2395,7 @@ function identity_provider($_action, $_data = null, $_extra = null) {
             ]);
             try {
               $provider->connect();
-            } catch (TypeError $e) {
+            } catch (Throwable $e) {
               $provider = null;
             }
           }
