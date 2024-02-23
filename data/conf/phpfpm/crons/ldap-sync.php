@@ -110,8 +110,11 @@ fwrite($lock_file_handle, getmypid());
 fclose($lock_file_handle);
 
 // Get ldap users
-$response = $iam_provider->query()
-  ->where($iam_settings['username_field'], "*")
+$ldap_query = $iam_provider->query();
+if (!empty($iam_settings['filter'])) {
+  $ldap_query = $ldap_query->rawFilter($iam_settings['filter']);
+}
+$response = $ldap_query->where($iam_settings['username_field'], "*")
   ->where($iam_settings['attribute_field'], "*")
   ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname'])
   ->paginate($max);
