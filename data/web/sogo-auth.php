@@ -72,7 +72,7 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
-  header("Location: /SOGo/");
+  header("Location: /");
   exit;
 }
 // only check for admin-login on sogo GUI requests
