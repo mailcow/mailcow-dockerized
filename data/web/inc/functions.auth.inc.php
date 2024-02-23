@@ -493,12 +493,12 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
   }
 
   try {
-    $ldap_query = $iam_provider->query()
-      ->where($iam_settings['username_field'], '=', $user)
-      ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname']);
+    $ldap_query = $iam_provider->query();
     if (!empty($iam_settings['filter'])) {
-      $ldap_query = $ldap_query->whereRaw($iam_settings['filter']);
+      $ldap_query = $ldap_query->rawFilter($iam_settings['filter']);
     }
+    $ldap_query = $ldap_query->where($iam_settings['username_field'], '=', $user)
+      ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname']);
 
     $user_res = $ldap_query->firstOrFail();
   } catch (Exception $e) {
