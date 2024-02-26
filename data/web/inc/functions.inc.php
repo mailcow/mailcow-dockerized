@@ -2097,7 +2097,7 @@ function uuid4() {
 
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
-function identity_provider($_action, $_data = null, $_extra = null) {
+function identity_provider($_action = null, $_data = null, $_extra = null) {
   global $pdo;
   global $iam_provider;
 
