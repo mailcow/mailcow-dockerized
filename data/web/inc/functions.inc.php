@@ -2099,12 +2099,20 @@ function uuid4() {
 }
 function identity_provider($_action, $_data = null, $_extra = null) {
   global $pdo;
+  global $iam_provider;
 
   $data_log = $_data;
   if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
   if (isset($data_log['access_token'])) $data_log['access_token'] = '*';
 
   switch ($_action) {
+    case NULL:
+      if ($iam_provider) {
+        return $iam_provider;
+      } else {
+        $iam_provider = identity_provider("init");
+      }
+    break;
     case 'get':
       $settings = array();
       $stmt = $pdo->prepare("SELECT * FROM `identity_provider`;");
