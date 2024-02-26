@@ -3,15 +3,15 @@
 domain="$1"
 gal_status="$2"
 
-echo '
+echo "
                 <!--
                 <example>
                     <key>canAuthenticate</key>
                     <string>YES</string>
                     <key>id</key>
-                    <string>'"${domain}_ldap"'</string>
+                    <string>"${domain}"_ldap</string>
                     <key>isAddressBook</key>
-                    <string>'"${gal_status}"'</string>
+                    <string>"${gal_status}"</string>
                     <key>IDFieldName</key>
                     <string>mail</string>
                     <key>UIDFieldName</key>
@@ -31,4 +31,4 @@ echo '
                     <key>hostname</key>
                     <string>ldap://1.2.3.4:389</string>
                 </example>
-                -->'
+                -->"
