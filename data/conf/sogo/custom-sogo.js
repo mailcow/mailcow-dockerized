@@ -32,18 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
     }
     function mcElementsExists() {
-        if (document.getElementById("mc_logout"))
+        if (document.getElementById("mc_backlink"))
             return true;
         else 
             return false;
     }
     function addMCElements() {
         const toolbarElement = document.body.querySelector('.md-toolbar-tools.sg-toolbar-group-last.layout-align-end-center.layout-row');
-        var htmlCode = '<a class="md-icon-button md-button md-ink-ripple" aria-label="mailcow" href="/user" aria-hidden="false" tabindex="-1">' +
+        var htmlCode = '<a id="mc_backlink" class="md-icon-button md-button md-ink-ripple" aria-label="mailcow" href="/user" aria-hidden="false" tabindex="-1">' +
             '<md-icon class="material-icons" role="img" aria-label="build">build</md-icon>' +
-            '</a><a class="md-icon-button md-button md-ink-ripple" aria-label="mailcow" href="#" onclick="mc_logout.submit()" aria-hidden="false" tabindex="-1">' +
-            '<md-icon class="material-icons" role="img" aria-label="settings_power">settings_power</md-icon>' +
-            '</a><form action="/" method="post" id="mc_logout"><input type="hidden" name="logout"></form>';
+            '</a>';
         toolbarElement.insertAdjacentHTML('beforeend', htmlCode);
     }
 
