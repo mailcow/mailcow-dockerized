@@ -476,8 +476,8 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
 }
 function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
   global $pdo;
-  global $iam_provider;
-
+  
+  $iam_provider = identity_provider();
   $is_internal = $extra['is_internal'];
   $create = $extra['create'];
 
