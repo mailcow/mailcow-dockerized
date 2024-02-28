@@ -391,6 +391,11 @@ mail_replica = tcp:${MAILCOW_REPLICA_IP}:${DOVEADM_REPLICA_PORT}
 EOF
 fi
 
+if [[ "${SKIP_FLATCURVE}" =~ ^([nN][oO]|[nN])+$ ]]; then
+  sed -i "s/vsz_limit\s*=\s*[0-9]*\s*MB*/vsz_limit=${FTS_HEAP} MB/" /etc/dovecot/conf.d/fts.conf
+  sed -i "s/process_limit\s*=\s*[0-9]*/process_limit=${FTS_PROCS}/" /etc/dovecot/conf.d/fts.conf
+fi
+
 # 401 is user dovecot
 if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
 	openssl ecparam -name prime256v1 -genkey | openssl pkey -out /mail_crypt/ecprivkey.pem
