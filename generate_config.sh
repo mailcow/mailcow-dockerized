@@ -175,28 +175,6 @@ if [ -z "${SKIP_CLAMD}" ]; then
   fi
 fi
 
-if [ -z "${SKIP_SOLR}" ]; then
-  if [ "${MEM_TOTAL}" -le "2097152" ]; then
-    echo "Disabling Solr on low-memory system."
-    SKIP_SOLR=y
-  elif [ "${MEM_TOTAL}" -le "3670016" ]; then
-    echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
-    echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
-    echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
-    read -r -p  "Do you want to disable Solr now? [Y/n] " response
-    case $response in
-      [nN][oO]|[nN])
-        SKIP_SOLR=n
-        ;;
-      *)
-        SKIP_SOLR=y
-      ;;
-    esac
-  else
-    SKIP_SOLR=n
-  fi
-fi
-
 if [[ ${SKIP_BRANCH} != y ]]; then
   echo "Which branch of mailcow do you want to use?"
   echo ""
@@ -402,14 +380,21 @@ SKIP_CLAMD=${SKIP_CLAMD}
 
 SKIP_SOGO=n
 
-# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+# Skip Flatcurve (FTS) on low-memory systems or if you simply want to disable it.
 
-SKIP_SOLR=${SKIP_SOLR}
+SKIP_FLATCURVE=n
 
-# Solr heap size in MB, there is no recommendation, please see Solr docs.
-# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+# Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.
+# Flatcurve (Xapian backend) is used as the FTS Indexer. It is supposed to be efficient in CPU and RAM consumption.
+# However: Please always monitor your Resource consumption!
 
-SOLR_HEAP=1024
+FTS_HEAP=512
+
+# Controls how many processes the Dovecot indexing process can spawn at max.
+# Too many indexing processes can use a lot of CPU and Disk I/O.
+# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
+
+FTS_PROCS=5
 
 # Allow admins to log into SOGo as email user (without any password)
 
