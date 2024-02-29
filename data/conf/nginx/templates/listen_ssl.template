@@ -1,3 +1,0 @@
-listen ${HTTPS_PORT} ssl;
-listen [::]:${HTTPS_PORT} ssl;
-http2 on;

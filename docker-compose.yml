@@ -359,21 +359,9 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
         - redis-mailcow
-      image: nginx:mainline-alpine
+      image: mailcow/nginx:1.00
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
-        envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
-        envsubst < /etc/nginx/conf.d/templates/sogo.template > /etc/nginx/conf.d/sogo.active &&
-        . /etc/nginx/conf.d/templates/server_name.template.sh > /etc/nginx/conf.d/server_name.active &&
-        . /etc/nginx/conf.d/templates/sites.template.sh > /etc/nginx/conf.d/sites.active &&
-        . /etc/nginx/conf.d/templates/sogo_eas.template.sh > /etc/nginx/conf.d/sogo_eas.active &&
-        nginx -qt &&
-        until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
-        until ping sogo -c1 > /dev/null; do sleep 1; done &&
-        until ping redis -c1 > /dev/null; do sleep 1; done &&
-        until ping rspamd -c1 > /dev/null; do sleep 1; done &&
-        exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
