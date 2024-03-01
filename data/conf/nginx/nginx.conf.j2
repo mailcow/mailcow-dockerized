@@ -85,10 +85,10 @@ http {
 
     server {
         listen 127.0.0.1:65510;
-        listen {{ HTTP_PORT }};
-        listen [::]:{{ HTTP_PORT }};
-        listen {{ HTTPS_PORT }} ssl;
-        listen [::]:{{ HTTPS_PORT }} ssl;
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         http2 on;
 
         ssl_certificate /etc/ssl/mail/cert.pem;
@@ -101,10 +101,10 @@ http {
 
     {% for cert in cert_dirs %}
     server {
-        listen {{ HTTP_PORT }};
-        listen [::]:{{ HTTP_PORT }};
-        listen {{ HTTPS_PORT }} ssl;
-        listen [::]:{{ HTTPS_PORT }} ssl;
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         http2 on;
 
         ssl_certificate {{ cert.cert_path }}cert.pem;

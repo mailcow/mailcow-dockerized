@@ -47,6 +47,39 @@ fastcgi_hide_header X-Powered-By;
 absolute_redirect off;
 root /web;
 
+# If behind reverse proxy, forwards the correct IP
+set_real_ip_from 10.0.0.0/8;
+set_real_ip_from 172.16.0.0/12;
+set_real_ip_from 192.168.0.0/16;
+set_real_ip_from fc00::/7;
+{% if TRUSTED_NETWORK %}
+set_real_ip_from {{ TRUSTED_NETWORK }};
+real_ip_header proxy_protocol;
+{% else %}
+real_ip_header X-Forwarded-For;
+{% endif %}
+real_ip_recursive on;
+
+
+location @strip-ext {
+    rewrite ^(.*)$ $1.php last;
+}
+
+location ^~ /inc/lib/ {
+    deny all;
+    return 403;
+}
+
+location ^~ /.well-known/acme-challenge/ {
+    allow all;
+    default_type "text/plain";
+}
+
+rewrite ^/.well-known/caldav$ /SOGo/dav/ permanent;
+rewrite ^/.well-known/carddav$ /SOGo/dav/ permanent;
+
+
+{% if not SKIP_MAILCOW_UI %}
 location / {
     try_files $uri $uri/ @strip-ext;
 }
@@ -59,37 +92,12 @@ location /edit {
     rewrite ^/edit/(.*)/(.*) /edit.php?$1=$2;
 }
 
-location @strip-ext {
-    rewrite ^(.*)$ $1.php last;
-}
-
 location ~ ^/api/v1/(.*)$ {
     try_files $uri $uri/ /json_api.php?query=$1&$args;
 }
 
-location ^~ /.well-known/acme-challenge/ {
-    allow all;
-    default_type "text/plain";
-}
-
-# If behind reverse proxy, forwards the correct IP
-set_real_ip_from 10.0.0.0/8;
-set_real_ip_from 172.16.0.0/12;
-set_real_ip_from 192.168.0.0/16;
-set_real_ip_from fc00::/7;
-real_ip_header X-Forwarded-For;
-real_ip_recursive on;
-
-rewrite ^/.well-known/caldav$ /SOGo/dav/ permanent;
-rewrite ^/.well-known/carddav$ /SOGo/dav/ permanent;
-
-location ^~ /principals {
-    return 301 /SOGo/dav;
-}
-
-location ^~ /inc/lib/ {
-    deny all;
-    return 403;
+location ~ ^/cache/(.*)$ {
+    try_files $uri $uri/ /resource.php?file=$1;
 }
 
 location ~ \.php$ {
@@ -102,24 +110,6 @@ location ~ \.php$ {
     fastcgi_param PATH_INFO $fastcgi_path_info;
     fastcgi_read_timeout 3600;
     fastcgi_send_timeout 3600;
-}
-
-location /rspamd/ {
-    location /rspamd/auth {
-    # proxy_pass is not inherited
-    proxy_pass       http://rspamd:11334/auth;
-    proxy_intercept_errors on;
-    proxy_set_header Host      $http_host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_redirect off;
-    error_page 401 /_rspamderror.php;
-    }
-    proxy_pass       http://rspamd:11334/;
-    proxy_set_header Host      $http_host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_redirect off;
 }
 
 location ~* ^/Autodiscover/Autodiscover.xml {
@@ -145,6 +135,34 @@ location ~ /(?:m|M)ail/(?:c|C)onfig-v1.1.xml {
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     try_files /autoconfig.php =404;
 }
+{% endif %}
+
+
+{% if not SKIP_RSPAMD %}
+location /rspamd/ {
+    location /rspamd/auth {
+    # proxy_pass is not inherited
+    proxy_pass       http://rspamd:11334/auth;
+    proxy_intercept_errors on;
+    proxy_set_header Host      $http_host;
+    proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+    proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
+    proxy_redirect off;
+    error_page 401 /_rspamderror.php;
+    }
+    proxy_pass       http://rspamd:11334/;
+    proxy_set_header Host      $http_host;
+    proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+    proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
+    proxy_redirect off;
+}
+{% endif %}
+
+
+{% if not SKIP_SOGO %}
+location ^~ /principals {
+    return 301 /SOGo/dav;
+}
 
 location /sogo-auth-verify {
     internal;
@@ -165,8 +183,8 @@ location ^~ /Microsoft-Server-ActiveSync {
     proxy_buffer_size 128k;
     proxy_buffers 64 512k;
     proxy_busy_buffers_size 512k;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+    proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header Host $http_host;
     client_body_buffer_size 512k;
     client_max_body_size 0;
@@ -176,8 +194,8 @@ location ^~ /SOGo {
     location ~* ^/SOGo/so/.*\.(xml|js|html|xhtml)$ {
         {{ sogo_proxy_auth }}
         {{ sogo_proxy_pass }}
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+    proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
         proxy_set_header Host $http_host;
         proxy_set_header x-webobjects-server-protocol HTTP/1.0;
         proxy_set_header x-webobjects-remote-host $remote_addr;
@@ -190,8 +208,8 @@ location ^~ /SOGo {
     }
     {{ sogo_proxy_auth }}
     {{ sogo_proxy_pass }}
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+    proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header Host $http_host;
     proxy_set_header x-webobjects-server-protocol HTTP/1.0;
     proxy_set_header x-webobjects-remote-host $remote_addr;
@@ -228,6 +246,25 @@ location (^/SOGo/so/ControlPanel/Products/[^/]*UI/Resources/.*\.(jpg|png|gif|css
     alias /usr/lib/GNUstep/SOGo/$1.SOGo/Resources/$2;
 }
 
+{% if SKIP_MAILCOW_UI %}
+location = / {
+  rewrite ^ /SOGo/so/;
+}
+location /sogo-auth {
+  try_files $uri $uri/ @strip-ext;
+}
+location = /sogo-auth.php {
+  fastcgi_pass phpfpm:9002;
+  fastcgi_index index.php;
+  include /etc/nginx/fastcgi_params;
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  fastcgi_param PATH_INFO $fastcgi_path_info;
+  fastcgi_read_timeout 3600;
+  fastcgi_send_timeout 3600;
+}
+{% endif %}
+{% endif %}
+
 include /etc/nginx/conf.d/site.*.custom;
 
 error_page 502 @awaitingupstream;
@@ -236,6 +273,9 @@ location @awaitingupstream {
     rewrite ^(.*)$ /_status.502.html break;
 }
 
-location ~ ^/cache/(.*)$ {
-    try_files $uri $uri/ /resource.php?file=$1;
+location ~* \.php$ {
+    return 404;
+}
+location ~* \.twig$ {
+    return 404;
 }
