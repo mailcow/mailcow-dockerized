@@ -375,6 +375,7 @@ services:
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
         - SKIP_MAILCOW_UI=${SKIP_MAILCOW_UI:-n}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
+        - TRUSTED_NETWORK=${TRUSTED_NETWORK:-}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z

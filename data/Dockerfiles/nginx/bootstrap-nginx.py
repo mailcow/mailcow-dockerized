@@ -11,6 +11,7 @@ def sites_default_conf(env, vars):
     template = env.get_template(f"{config_name}.j2")
 
     config = template.render(
+        TRUSTED_NETWORK=vars['TRUSTED_NETWORK'],
         SKIP_SOGO=vars['SKIP_SOGO'],
         SKIP_RSPAMD=vars['SKIP_RSPAMD'],
         SKIP_MAILCOW_UI=vars['SKIP_MAILCOW_UI'],
@@ -43,6 +44,7 @@ def prepare_template_vars():
     vars = {}
     vars['IPV4_NETWORK'] = os.getenv("IPV4_NETWORK", "172.22.1")
 
+    vars['TRUSTED_NETWORK'] = os.getenv("TRUSTED_NETWORK", False)
     vars['SKIP_RSPAMD'] = os.getenv("SKIP_RSPAMD", "n").lower() in ("y", "yes")
     vars['SKIP_MAILCOW_UI'] = os.getenv("SKIP_MAILCOW_UI", "n").lower() in ("y", "yes")
     vars['NGINX_USE_PROXY_PROTOCOL'] = os.getenv("NGINX_USE_PROXY_PROTOCOL", "n").lower() in ("y", "yes")
