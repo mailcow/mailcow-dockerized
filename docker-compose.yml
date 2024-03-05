@@ -592,7 +592,7 @@ services:
     ofelia-mailcow:
       image: mcuadros/ofelia:latest
       restart: always
-      command: daemon --docker
+      command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
       environment:
         - TZ=${TZ}
       depends_on:
