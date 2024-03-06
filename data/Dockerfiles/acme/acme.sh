@@ -33,6 +33,11 @@ if [[ "${ONLY_MAILCOW_HOSTNAME}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ONLY_MAILCOW_HOSTNAME=y
 fi
 
+# Request certificate for MAILCOW_HOSTNAME only
+if [[ "${ACME_IGNORE_AUTOCONFS}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  ACME_IGNORE_AUTOCONFS=y
+fi
+
 # Request individual certificate for every domain
 if [[ "${ENABLE_SSL_SNI}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ENABLE_SSL_SNI=y
@@ -211,7 +216,11 @@ while true; do
       ADDITIONAL_SAN_ARR+=($i)
     fi
   done
+
+  if [[ ${ACME_IGNORE_AUTOCONFS} != "y" ]]; then
+  # Fetch certs for autoconfig and autodiscover subdomains
   ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
+  fi
 
   if [[ ${SKIP_IP_CHECK} != "y" ]]; then
   # Start IP detection
