@@ -1,0 +1,11 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="foreverypart">
+
+    <command name="foreverypart">
+
+        <parameter type="block" />
+
+    </command>
+
+</extension>
