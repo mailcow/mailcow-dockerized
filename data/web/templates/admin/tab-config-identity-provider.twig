@@ -303,6 +303,30 @@
             </div>
           </div>
           <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_use_ssl }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="use_ssl" value="1" {% if iam_settings.use_ssl == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_use_tls }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="use_tls" value="1" {% if iam_settings.use_tls == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.ignore_ssl_error }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="ignore_ssl_error" value="1" {% if iam_settings.ignore_ssl_error == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
             <label class="control-label col-md-3 text-sm-end" for="iam_ldap_basedn">{{ lang.admin.iam_basedn }}:</label>
             <div class="col-12 col-md-9 col-lg-4">
               <input type="text" class="form-control" id="iam_ldap_basedn" name="basedn" value="{{ iam_settings.basedn }}" required>
