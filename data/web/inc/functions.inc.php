@@ -2206,9 +2206,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['filter']            = (!empty($_data['filter'])) ? $_data['filter'] : "";
           $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+          $_data['use_ssl']           = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval');
+          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl');
         break;
       }
       
@@ -2310,7 +2311,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             'port'                      => $_data['port'],
             'base_dn'                   => $_data['basedn'],
             'username'                  => $_data['binddn'],
-            'password'                  => $_data['bindpass']
+            'password'                  => $_data['bindpass'],
+            'use_ssl'                   => boolval($_data['use_ssl'])
           ]);
           try {
             $provider->connect();
@@ -2399,7 +2401,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               'port'                      => $iam_settings['port'],
               'base_dn'                   => $iam_settings['basedn'],
               'username'                  => $iam_settings['binddn'],
-              'password'                  => $iam_settings['bindpass']
+              'password'                  => $iam_settings['bindpass'],
+              'use_ssl'                   => boolval($iam_settings['use_ssl'])
             ]);
             try {
               $provider->connect();

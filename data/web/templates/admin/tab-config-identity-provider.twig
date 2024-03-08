@@ -398,6 +398,14 @@
             {% endif %}
           </div>
           <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_use_ssl }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="use_ssl" value="1" {% if iam_settings.use_ssl == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
             <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_periodic_full_sync }}</label>
             <div class="col-12 col-md-9">
               <div class="form-check form-switch">

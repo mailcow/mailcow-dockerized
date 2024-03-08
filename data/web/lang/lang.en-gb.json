@@ -240,6 +240,7 @@
         "iam_userinfo_url": "User info endpoint",
         "iam_username_field": "Username Field",
         "iam_binddn": "Bind DN",
+        "iam_use_ssl": "Use SSL",
         "iam_version": "Version",
         "import": "Import",
         "import_private_key": "Import private key",
