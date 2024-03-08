@@ -2111,6 +2111,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return $iam_provider;
       } else {
         $iam_provider = identity_provider("init");
+        return $iam_provider;
       }
     break;
     case 'get':
