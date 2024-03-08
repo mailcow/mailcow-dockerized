@@ -2120,10 +2120,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach($rows as $row){
-        if ($row["key"] == 'mappers' || $row["key"] == 'templates'){
-          $settings[$row["key"]] = json_decode($row["value"]);
-        } else {
-          $settings[$row["key"]] = $row["value"];
+        switch ($row["key"]) {
+          case "mappers":
+          case "templates":
+            $settings[$row["key"]] = json_decode($row["value"]);
+          break;
+          case "use_ssl":
+          case "use_tls":
+          case "ignore_ssl_errors":
+            $settings[$row["key"]] = boolval($row["value"]);
+          break;
+          default:
+            $settings[$row["key"]] = $row["value"];
+          break;
         }
       }
       // return default client_scopes for generic-oidc if none is set
@@ -2207,9 +2216,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['filter']            = (!empty($_data['filter'])) ? $_data['filter'] : "";
           $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+          $_data['use_ssl']           = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
+          $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
+          $_data['ignore_ssl_error']  = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval');
+          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error');
         break;
       }
       
@@ -2306,12 +2318,22 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             !$_data['binddn'] || !$_data['bindpass']){
               return false;
           }
+          $_data['use_ssl'] = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
+          $_data['use_tls'] = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
+          $_data['ignore_ssl_error'] = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
+          $options = array();
+          if ($_data['ignore_ssl_error']) {
+            $options['LDAP_OPT_X_TLS_REQUIRE_CERT'] = "LDAP_OPT_X_TLS_NEVER";
+          }
           $provider = new \LdapRecord\Connection([
             'hosts'                     => [$_data['host']],
             'port'                      => $_data['port'],
             'base_dn'                   => $_data['basedn'],
             'username'                  => $_data['binddn'],
-            'password'                  => $_data['bindpass']
+            'password'                  => $_data['bindpass'],
+            'use_ssl'                   => $_data['use_ssl'],
+            'use_tls'                   => $_data['use_tls'],
+            'options'                   => $options
           ]);
           try {
             $provider->connect();
@@ -2395,12 +2417,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         case "ldap":
           if ($iam_settings['host'] && $iam_settings['port'] && $iam_settings['basedn'] &&
             $iam_settings['binddn'] && $iam_settings['bindpass']){
+            $options = array();
+            if ($iam_settings['ignore_ssl_error']) {
+              $options['LDAP_OPT_X_TLS_REQUIRE_CERT'] = "LDAP_OPT_X_TLS_NEVER";
+            }
             $provider = new \LdapRecord\Connection([
               'hosts'                     => [$iam_settings['host']],
               'port'                      => $iam_settings['port'],
               'base_dn'                   => $iam_settings['basedn'],
               'username'                  => $iam_settings['binddn'],
-              'password'                  => $iam_settings['bindpass']
+              'password'                  => $iam_settings['bindpass'],
+              'use_ssl'                   => $iam_settings['use_ssl'],
+              'use_tls'                   => $iam_settings['use_tls'],
+              'options'                   => $options
             ]);
             try {
               $provider->connect();
