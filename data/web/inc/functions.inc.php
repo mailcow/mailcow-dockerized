@@ -2143,6 +2143,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $settings['client_secret'] = '';
         $settings['access_token'] = '';
       }
+      // return default ldap options
+      if ($settings["authsource"] == "ldap"){
+        $settings['use_ssl'] = !isset($settings['use_ssl']) ? false : $settings['use_ssl'];
+        $settings['use_tls'] = !isset($settings['use_tls']) ? false : $settings['use_tls'];
+        $settings['ignore_ssl_errors'] = !isset($settings['ignore_ssl_errors']) ? false : $settings['ignore_ssl_errors'];
+      }
       return $settings;
     break;
     case 'edit':
