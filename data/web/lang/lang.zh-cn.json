@@ -356,7 +356,7 @@
         "description_invalid": "%s 的资源描述无效",
         "dkim_domain_or_sel_exists": "\"%s\"的 DKIM 密钥已存在，因此不会被覆盖",
         "dkim_domain_or_sel_invalid": "DKIM 域名或选择器无效: %s",
-        "domain_cannot_match_hostname": "域名与主机名称不匹配",
+        "domain_cannot_match_hostname": "域名不应与主机名相同",
         "domain_exists": "域名 %s 已存在",
         "domain_invalid": "域名地址为空或无效",
         "domain_not_empty": "不能删除非空域名 %s",
