@@ -19,6 +19,16 @@ class IPTables:
       rule.target = target
       if rule not in chain.rules:
         chain.insert_rule(rule)
+    
+      # always allow TCP connections to 80 and 443 ports to show 403 page in case of ban  
+      chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), self.chain_name)
+      rule = iptc.Rule()
+      rule.create_target("ACCEPT")
+      match = rule.create_match('multiport')
+      rule.protocol = 'tcp'
+      match.dports = '80,443'
+      if rule not in chain.rules:
+        chain.insert_rule(rule)
 
   def initChainIPv6(self):
     if not iptc.Chain(iptc.Table6(iptc.Table6.FILTER), self.chain_name) in iptc.Table6(iptc.Table6.FILTER).chains:
@@ -32,6 +42,16 @@ class IPTables:
       rule.target = target
       if rule not in chain.rules:
         chain.insert_rule(rule)
+        
+    # always allow TCP connections to 80 and 443 ports to show 403 page in case of ban  
+    chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), self.chain_name)
+    rule = iptc.Rule6()
+    rule.create_target("ACCEPT")
+    match = rule.create_match('multiport')
+    rule.protocol = 'tcp'
+    match.dports = '80,443'
+    if rule not in chain.rules:
+      chain.insert_rule(rule)
 
   def checkIPv4ChainOrder(self):
     filter_table = iptc.Table(iptc.Table.FILTER)
@@ -98,7 +118,7 @@ class IPTables:
     rule.target = target
     if rule in chain.rules:
       return False
-    chain.insert_rule(rule)
+    chain.append_rule(rule)
     return True
 
   def banIPv6(self, source):
@@ -109,7 +129,7 @@ class IPTables:
     rule.target = target
     if rule in chain.rules:
       return False
-    chain.insert_rule(rule)
+    chain.append_rule(rule)
     return True
 
   def unbanIPv4(self, source):

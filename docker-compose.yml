@@ -359,7 +359,7 @@ services:
         - sogo-mailcow
         - php-fpm-mailcow
         - redis-mailcow
-      image: nginx:mainline-alpine
+      image: openresty/openresty:alpine-fat
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
@@ -368,6 +368,8 @@ services:
         . /etc/nginx/conf.d/templates/server_name.template.sh > /etc/nginx/conf.d/server_name.active &&
         . /etc/nginx/conf.d/templates/sites.template.sh > /etc/nginx/conf.d/sites.active &&
         . /etc/nginx/conf.d/templates/sogo_eas.template.sh > /etc/nginx/conf.d/sogo_eas.active &&
+        mkdir -p /var/log/nginx &&
+        /usr/local/openresty/luajit/bin/luarocks install lua-resty-iputils &&
         nginx -qt &&
         until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
         until ping sogo -c1 > /dev/null; do sleep 1; done &&
@@ -441,7 +443,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.58
+      image: mailcow/netfilter:1.60
       stop_grace_period: 30s
       restart: always
       privileged: true
