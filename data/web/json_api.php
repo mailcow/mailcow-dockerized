@@ -7,6 +7,53 @@ cors("set_headers");
 header('Content-Type: application/json');
 error_reporting(0);
 
+function assert_method($method) {
+  if ($_SERVER['REQUEST_METHOD'] != $method) {
+    http_response_code(405);
+    echo json_encode(array(
+        'type' => 'error',
+        'msg' => sprintf('only %s method is allowed', $method)
+    ));
+    exit();
+  }
+}
+
+function route_not_found() {
+  http_response_code(404);
+  echo json_encode(array(
+    'type' => 'error',
+    'msg' => 'route not found'
+  ));
+  exit();
+}
+
+function process_return($type, $return) {
+  // If it breaks, consider defining msg as a variable first
+  if ($type == 'get') {
+    $count = count($return);
+    $data = $return[0];
+    $object = ($count > 1 && $return[1] === false) ? false : true;
+    $ret_str = ($object === true) ? '{}' : '[]';
+    echo (!isset($data) || empty($data)) ? $ret_str : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+  } else {
+    $generic_failure = json_encode(array(
+      'type' => 'error',
+      'msg' => sprintf('Cannot %s item', $type)
+    ));
+    $generic_success = json_encode(array(
+      'type' => 'success',
+      'msg' => 'Task completed'
+    ));
+    if ($return === false) {
+      echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
+    }
+    else {
+      echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
+    }
+  }
+}
+
+
 function api_log($_data) {
   global $redis;
   $data_var = array();
@@ -104,22 +151,6 @@ if (isset($_GET['query'])) {
         ));
         exit();
       }
-      function process_add_return($return) {
-        $generic_failure = json_encode(array(
-          'type' => 'error',
-          'msg' => 'Cannot add item'
-        ));
-        $generic_success = json_encode(array(
-          'type' => 'success',
-          'msg' => 'Task completed'
-        ));
-        if ($return === false) {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
-        }
-        else {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
-        }
-      }
       if (!isset($_POST['attr']) && $category != "fido2-registration" && $category != "webauthn-tfa-registration") {
         echo $request_incomplete;
         exit;
@@ -131,14 +162,7 @@ if (isset($_GET['query'])) {
         unset($attr['csrf_token']);
       }
       // only allow POST requests to POST API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
+      assert_method("POST");
 
       switch ($category) {
         // fido2-registration via POST
@@ -204,7 +228,6 @@ if (isset($_GET['query'])) {
                 exit;
               }
 
-
               // send response
               $return = new stdClass();
               $return->success = true;
@@ -218,75 +241,75 @@ if (isset($_GET['query'])) {
             }
         break;
         case "time_limited_alias":
-          process_add_return(mailbox('add', 'time_limited_alias', $attr));
+          process_return('add', mailbox('add', 'time_limited_alias', $attr));
         break;
         case "relayhost":
-          process_add_return(relayhost('add', $attr));
+          process_return('add', relayhost('add', $attr));
         break;
         case "transport":
-          process_add_return(transport('add', $attr));
+          process_return('add', transport('add', $attr));
         break;
         case "rsetting":
-          process_add_return(rsettings('add', $attr));
+          process_return('add', rsettings('add', $attr));
         break;
         case "mailbox":
           switch ($object) {
             case "template":
-              process_add_return(mailbox('add', 'mailbox_templates', $attr));
+              process_return('add', mailbox('add', 'mailbox_templates', $attr));
             break;
             default:
-              process_add_return(mailbox('add', 'mailbox', $attr));
+              process_return('add', mailbox('add', 'mailbox', $attr));
             break;
           }
         break;
         case "oauth2-client":
-          process_add_return(oauth2('add', 'client', $attr));
+          process_return('add', oauth2('add', 'client', $attr));
         break;
         case "domain":
           switch ($object) {
             case "template":
-              process_add_return(mailbox('add', 'domain_templates', $attr));
+              process_return('add', mailbox('add', 'domain_templates', $attr));
             break;
             default:
-              process_add_return(mailbox('add', 'domain', $attr));
+              process_return('add', mailbox('add', 'domain', $attr));
             break;
           }
         break;
         case "resource":
-          process_add_return(mailbox('add', 'resource', $attr));
+          process_return('add', mailbox('add', 'resource', $attr));
         break;
         case "alias":
-          process_add_return(mailbox('add', 'alias', $attr));
+          process_return('add', mailbox('add', 'alias', $attr));
         break;
         case "filter":
-          process_add_return(mailbox('add', 'filter', $attr));
+          process_return('add', mailbox('add', 'filter', $attr));
         break;
         case "global-filter":
-          process_add_return(mailbox('add', 'global_filter', $attr));
+          process_return('add', mailbox('add', 'global_filter', $attr));
         break;
         case "domain-policy":
-          process_add_return(policy('add', 'domain', $attr));
+          process_return('add', policy('add', 'domain', $attr));
         break;
         case "mailbox-policy":
-          process_add_return(policy('add', 'mailbox', $attr));
+          process_return('add', policy('add', 'mailbox', $attr));
         break;
         case "alias-domain":
-          process_add_return(mailbox('add', 'alias_domain', $attr));
+          process_return('add', mailbox('add', 'alias_domain', $attr));
         break;
         case "fwdhost":
-          process_add_return(fwdhost('add', $attr));
+          process_return('add', fwdhost('add', $attr));
         break;
         case "dkim":
-          process_add_return(dkim('add', $attr));
+          process_return('add', dkim('add', $attr));
         break;
         case "dkim_duplicate":
-          process_add_return(dkim('duplicate', $attr));
+          process_return('add', dkim('duplicate', $attr));
         break;
         case "dkim_import":
-          process_add_return(dkim('import', $attr));
+          process_return('add', dkim('import', $attr));
         break;
         case "domain-admin":
-          process_add_return(domain_admin('add', $attr));
+          process_return('add', domain_admin('add', $attr));
         break;
         case "sso":
           switch ($object) {
@@ -296,48 +319,35 @@ if (isset($_GET['query'])) {
                 echo json_encode($data);
                 exit(0);
               }
-              process_add_return($data);
+              process_return('add', $data);
             break;
           }
         break;
         case "admin":
-          process_add_return(admin('add', $attr));
+          process_return('add', admin('add', $attr));
         break;
         case "syncjob":
-          process_add_return(mailbox('add', 'syncjob', $attr));
+          process_return('add', mailbox('add', 'syncjob', $attr));
         break;
         case "bcc":
-          process_add_return(bcc('add', $attr));
+          process_return('add', bcc('add', $attr));
         break;
         case "recipient_map":
-          process_add_return(recipient_map('add', $attr));
+          process_return('add', recipient_map('add', $attr));
         break;
         case "tls-policy-map":
-          process_add_return(tls_policy_maps('add', $attr));
+          process_return('add', tls_policy_maps('add', $attr));
         break;
         case "app-passwd":
-          process_add_return(app_passwd('add', $attr));
+          process_return('add', app_passwd('add', $attr));
         break;
-        // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          route_not_found();
       }
     break;
     case "process":
       // only allow POST requests to process API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
+      assert_method("POST");
       switch ($category) {
         case "fido2-args":
           header('Content-Type: application/json');
@@ -404,24 +414,8 @@ if (isset($_GET['query'])) {
       }
     break;
     case "get":
-      function process_get_return($data, $object = true) {
-        if ($object === true) {
-          $ret_str = '{}';
-        }
-        else {
-          $ret_str = '[]';
-        }
-        echo (!isset($data) || empty($data)) ? $ret_str : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-      }
       // only allow GET requests to GET API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'GET') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only GET method is allowed'
-        ));
-        exit();
-      }
+      assert_method("GET");
       switch ($category) {
         // fido2
         case "fido2-registration":
@@ -503,7 +497,7 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
-        break;          
+        break;
         case "fail2ban":
           if (!isset($_SESSION['mailcow_cc_role'])){
             switch ($object) {
@@ -590,7 +584,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -599,16 +593,16 @@ if (isset($_GET['query'])) {
               case "template":
                 switch ($extra){
                   case "all":
-                    process_get_return(mailbox('get', 'domain_templates'));
+                    process_return('get', [mailbox('get', 'domain_templates')]);
                   break;
                   default:
-                    process_get_return(mailbox('get', 'domain_templates', $extra));
+                    process_return('get', [mailbox('get', 'domain_templates', $extra)]);
                   break;
                 }
               break;
               default:
                 $data = mailbox('get', 'domain_details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -618,7 +612,7 @@ if (isset($_GET['query'])) {
               case "html":
                 $password_complexity_rules = password_complexity('html');
                 if ($password_complexity_rules !== false) {
-                  process_get_return($password_complexity_rules);
+                  process_return('get', [$password_complexity_rules]);
                 }
                 else {
                   echo '{}';
@@ -627,7 +621,7 @@ if (isset($_GET['query'])) {
               default:
                 $password_complexity_rules = password_complexity('get');
                 if ($password_complexity_rules !== false) {
-                  process_get_return($password_complexity_rules);
+                  process_return('get', [$password_complexity_rules]);
                 }
                 else {
                   echo '{}';
@@ -655,7 +649,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -664,7 +658,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = app_passwd('details', array('id' => $object['id']));
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -697,7 +691,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               case "all":
                 if (!empty($global_filters)) {
-                  process_get_return($global_filters);
+                  process_return('get', [$global_filters]);
                 }
                 else {
                   echo '{}';
@@ -705,7 +699,7 @@ if (isset($_GET['query'])) {
               break;
               case "prefilter":
                 if (!empty($global_filters['prefilter'])) {
-                  process_get_return($global_filters['prefilter']);
+                  process_return('get', [$global_filters['prefilter']]);
                 }
                 else {
                   echo '{}';
@@ -713,7 +707,7 @@ if (isset($_GET['query'])) {
               break;
               case "postfilter":
                 if (!empty($global_filters['postfilter'])) {
-                  process_get_return($global_filters['postfilter']);
+                  process_return('get', [$global_filters['postfilter']]);
                 }
                 else {
                   echo '{}';
@@ -736,7 +730,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -745,7 +739,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = ratelimit('get', 'domain', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -769,7 +763,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -778,7 +772,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = ratelimit('get', 'mailbox', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -796,7 +790,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -805,7 +799,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = relayhost('details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -819,7 +813,7 @@ if (isset($_GET['query'])) {
               else {
                 $data = last_login('get', $object);
               }
-              process_get_return($data);
+              process_return('get', [$data]);
             }
           break;
 
@@ -827,7 +821,7 @@ if (isset($_GET['query'])) {
           case "reset-last-login":
             if ($object) {
               $data = last_login('reset', $object);
-              process_get_return($data);
+              process_return('get', [$data]);
             }
           break;
 
@@ -844,7 +838,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -853,7 +847,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = transport('details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -871,7 +865,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -880,7 +874,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = rsettings('details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -898,7 +892,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -907,7 +901,7 @@ if (isset($_GET['query'])) {
 
               default:
                 $data = oauth2('details', 'client', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1050,14 +1044,8 @@ if (isset($_GET['query'])) {
                 $logs = get_logs('rspamd-stats');
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
-              // return no route found if no case is matched
               default:
-                http_response_code(404);
-                echo json_encode(array(
-                  'type' => 'error',
-                  'msg' => 'route not found'
-                ));
-                exit();
+                route_not_found();
             }
           break;
           case "mailbox":
@@ -1120,7 +1108,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1129,10 +1117,10 @@ if (isset($_GET['query'])) {
               case "template":
                 switch ($extra){
                   case "all":
-                    process_get_return(mailbox('get', 'mailbox_templates'));
+                    process_return('get', [mailbox('get', 'mailbox_templates')]);
                   break;
                   default:
-                    process_get_return(mailbox('get', 'mailbox_templates', $extra));
+                    process_return('get', [mailbox('get', 'mailbox_templates', $extra)]);
                   break;
                 }
               break;
@@ -1143,7 +1131,7 @@ if (isset($_GET['query'])) {
 
                 if ($tags === null) {
                   $data = mailbox('get', 'mailbox_details', $object);
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 } else {
                   $mailboxes = mailbox('get', 'mailboxes', $object, $tags);
                   if (is_array($mailboxes)) {
@@ -1152,7 +1140,7 @@ if (isset($_GET['query'])) {
                         $data[] = $details;
                     }
                   }
-                  process_get_return($data, false);
+                  process_return('get', [$data, false]);
                 }
               break;
             }
@@ -1182,7 +1170,7 @@ if (isset($_GET['query'])) {
                 $data['alias_domains'][] = $alias_domain;
               }
             }
-            process_get_return($data);
+            process_return('get', [$data]);
           break;
           case "syncjobs":
             switch ($object) {
@@ -1213,7 +1201,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1238,7 +1226,7 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1249,7 +1237,7 @@ if (isset($_GET['query'])) {
                 $data[] = $sieve_filter;
               }
             }
-            process_get_return($data);
+            process_return('get', [$data]);
           break;
           case "filters":
             switch ($object) {
@@ -1274,7 +1262,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1293,7 +1281,7 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1311,14 +1299,14 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
               default:
                 $data = bcc('details', $object);
                 if (!empty($data)) {
                   $data[] = $details;
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1336,14 +1324,14 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
               default:
                 $data = recipient_map('details', $object);
                 if (!empty($data)) {
                   $data[] = $details;
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1361,14 +1349,14 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
               default:
                 $data = tls_policy_maps('details', $object);
                 if (!empty($data)) {
                   $data[] = $details;
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1376,7 +1364,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = policy('get', 'mailbox', $object)['whitelist'];
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1384,7 +1372,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = policy('get', 'mailbox', $object)['blacklist'];
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1392,7 +1380,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = policy('get', 'domain', $object)['whitelist'];
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1400,7 +1388,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = policy('get', 'domain', $object)['blacklist'];
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1408,7 +1396,7 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = mailbox('get', 'time_limited_aliases', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1420,7 +1408,7 @@ if (isset($_GET['query'])) {
               break;
               default:
                 $data = fail2ban('get');
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
@@ -1442,7 +1430,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1450,17 +1438,17 @@ if (isset($_GET['query'])) {
               break;
               default:
                 $data = mailbox('get', 'resource_details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
             }
           break;
           case "fwdhost":
             switch ($object) {
               case "all":
-                process_get_return(fwdhost('get'));
+                process_return('get', [fwdhost('get')]);
               break;
               default:
-                process_get_return(fwdhost('details', $object));
+                process_return('get', [fwdhost('details', $object)]);
               break;
             }
           break;
@@ -1468,10 +1456,10 @@ if (isset($_GET['query'])) {
             // "all" will not print details
             switch ($object) {
               case "all":
-                process_get_return(quarantine('get'), false);
+                process_return('get', [quarantine('get'), false]);
               break;
               default:
-                process_get_return(quarantine('details', $object), false);
+                process_return('get', [quarantine('details', $object), false]);
               break;
             }
           break;
@@ -1489,10 +1477,10 @@ if (isset($_GET['query'])) {
                     }
                   }
                 }
-                process_get_return($data);
+                process_return('get', [$data]);
               break;
               default:
-                process_get_return(mailbox('get', 'alias_domain_details', $object));
+                process_return('get', [mailbox('get', 'alias_domain_details', $object)]);
               break;
             }
           break;
@@ -1519,7 +1507,7 @@ if (isset($_GET['query'])) {
                       }
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1527,7 +1515,7 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                process_get_return(mailbox('get', 'alias_details', $object));
+                process_return('get', [mailbox('get', 'alias_details', $object)]);
               break;
             }
           break;
@@ -1544,7 +1532,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1552,7 +1540,7 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                process_get_return(domain_admin('details', $object));
+                process_return('get', [domain_admin('details', $object)]);
               break;
             }
           break;
@@ -1569,7 +1557,7 @@ if (isset($_GET['query'])) {
                       continue;
                     }
                   }
-                  process_get_return($data);
+                  process_return('get', [$data]);
                 }
                 else {
                   echo '{}';
@@ -1577,7 +1565,7 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                process_get_return(admin('details', $object));
+                process_return('get', [admin('details', $object)]);
               break;
             }
           break;
@@ -1585,17 +1573,17 @@ if (isset($_GET['query'])) {
             switch ($object) {
               default:
                 $data = dkim('details', $object);
-                process_get_return($data);
+                process_return('get', [$data]);
                 break;
             }
           break;
           case "presets":
             switch ($object) {
               case "rspamd":
-                process_get_return(presets('get', 'rspamd'));
+                process_return('get', [presets('get', 'rspamd')]);
               break;
               case "sieve":
-                process_get_return(presets('get', 'sieve'));
+                process_return('get', [presets('get', 'sieve')]);
               break;
             }
           break;
@@ -1689,17 +1677,11 @@ if (isset($_GET['query'])) {
             $score = mailbox('get', 'spam_score', $object);
             if ($score)
               $score = array("score" => preg_replace("/\s+/", "", $score));
-            process_get_return($score);
+            process_return('get', [$score]);
           break;
         break;
-        // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          route_not_found();
         }
       }
     break;
@@ -1712,22 +1694,6 @@ if (isset($_GET['query'])) {
         ));
         exit();
       }
-      function process_delete_return($return) {
-        $generic_failure = json_encode(array(
-          'type' => 'error',
-          'msg' => 'Cannot delete item'
-        ));
-        $generic_success = json_encode(array(
-          'type' => 'success',
-          'msg' => 'Task completed'
-        ));
-        if ($return === false) {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
-        }
-        else {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
-        }
-      }
       if (!isset($_POST['items'])) {
         echo $request_incomplete;
         exit;
@@ -1736,122 +1702,109 @@ if (isset($_GET['query'])) {
         $items = (array)json_decode($_POST['items'], true);
       }
       // only allow POST requests to POST API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
+      assert_method("POST");
       switch ($category) {
         case "alias":
-          process_delete_return(mailbox('delete', 'alias', array('id' => $items)));
+          process_return('delete', mailbox('delete', 'alias', array('id' => $items)));
         break;
         case "oauth2-client":
-          process_delete_return(oauth2('delete', 'client', array('id' => $items)));
+          process_return('delete', oauth2('delete', 'client', array('id' => $items)));
         break;
         case "app-passwd":
-          process_delete_return(app_passwd('delete', array('id' => $items)));
+          process_return('delete', app_passwd('delete', array('id' => $items)));
         break;
         case "relayhost":
-          process_delete_return(relayhost('delete', array('id' => $items)));
+          process_return('delete', relayhost('delete', array('id' => $items)));
         break;
         case "transport":
-          process_delete_return(transport('delete', array('id' => $items)));
+          process_return('delete', transport('delete', array('id' => $items)));
         break;
         case "rsetting":
-          process_delete_return(rsettings('delete', array('id' => $items)));
+          process_return('delete', rsettings('delete', array('id' => $items)));
         break;
         case "syncjob":
-          process_delete_return(mailbox('delete', 'syncjob', array('id' => $items)));
+          process_return('delete', mailbox('delete', 'syncjob', array('id' => $items)));
         break;
         case "filter":
-          process_delete_return(mailbox('delete', 'filter', array('id' => $items)));
+          process_return('delete', mailbox('delete', 'filter', array('id' => $items)));
         break;
         case "mailq":
-          process_delete_return(mailq('delete', array('qid' => $items)));
+          process_return('delete', mailq('delete', array('qid' => $items)));
         break;
         case "qitem":
-          process_delete_return(quarantine('delete', array('id' => $items)));
+          process_return('delete', quarantine('delete', array('id' => $items)));
         break;
         case "bcc":
-          process_delete_return(bcc('delete', array('id' => $items)));
+          process_return('delete', bcc('delete', array('id' => $items)));
         break;
         case "recipient_map":
-          process_delete_return(recipient_map('delete', array('id' => $items)));
+          process_return('delete', recipient_map('delete', array('id' => $items)));
         break;
         case "tls-policy-map":
-          process_delete_return(tls_policy_maps('delete', array('id' => $items)));
+          process_return('delete', tls_policy_maps('delete', array('id' => $items)));
         break;
         case "fwdhost":
-          process_delete_return(fwdhost('delete', array('forwardinghost' => $items)));
+          process_return('delete', fwdhost('delete', array('forwardinghost' => $items)));
         break;
         case "dkim":
-          process_delete_return(dkim('delete', array('domains' => $items)));
+          process_return('delete', dkim('delete', array('domains' => $items)));
         break;
         case "domain":
           switch ($object){
             case "tag":
-              process_delete_return(mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
+              process_return('delete', mailbox('delete', 'tags_domain', array('tags' => $items, 'domain' => $extra)));
             break;
             case "template":
-              process_delete_return(mailbox('delete', 'domain_templates', array('ids' => $items)));
+              process_return('delete', mailbox('delete', 'domain_templates', array('ids' => $items)));
             break;
             default:
-              process_delete_return(mailbox('delete', 'domain', array('domain' => $items)));
+              process_return('delete', mailbox('delete', 'domain', array('domain' => $items)));
           }
         break;
         case "alias-domain":
-          process_delete_return(mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
+          process_return('delete', mailbox('delete', 'alias_domain', array('alias_domain' => $items)));
         break;
         case "mailbox":
           switch ($object){
             case "tag":
-              process_delete_return(mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
+              process_return('delete', mailbox('delete', 'tags_mailbox', array('tags' => $items, 'username' => $extra)));
             break;
             case "template":
-              process_delete_return(mailbox('delete', 'mailbox_templates', array('ids' => $items)));
+              process_return('delete', mailbox('delete', 'mailbox_templates', array('ids' => $items)));
             break;
             default:
-              process_delete_return(mailbox('delete', 'mailbox', array('username' => $items)));
+              process_return('delete', mailbox('delete', 'mailbox', array('username' => $items)));
           }
         break;
         case "resource":
-          process_delete_return(mailbox('delete', 'resource', array('name' => $items)));
+          process_return('delete', mailbox('delete', 'resource', array('name' => $items)));
         break;
         case "mailbox-policy":
-          process_delete_return(policy('delete', 'mailbox', array('prefid' => $items)));
+          process_return('delete', policy('delete', 'mailbox', array('prefid' => $items)));
         break;
         case "domain-policy":
-          process_delete_return(policy('delete', 'domain', array('prefid' => $items)));
+          process_return('delete', policy('delete', 'domain', array('prefid' => $items)));
         break;
         case "time_limited_alias":
-          process_delete_return(mailbox('delete', 'time_limited_alias', array('address' => $items)));
+          process_return('delete', mailbox('delete', 'time_limited_alias', array('address' => $items)));
         break;
         case "eas_cache":
-          process_delete_return(mailbox('delete', 'eas_cache', array('username' => $items)));
+          process_return('delete', mailbox('delete', 'eas_cache', array('username' => $items)));
         break;
         case "sogo_profile":
-          process_delete_return(mailbox('delete', 'sogo_profile', array('username' => $items)));
+          process_return('delete', mailbox('delete', 'sogo_profile', array('username' => $items)));
         break;
         case "domain-admin":
-          process_delete_return(domain_admin('delete', array('username' => $items)));
+          process_return('delete', domain_admin('delete', array('username' => $items)));
         break;
         case "admin":
-          process_delete_return(admin('delete', array('username' => $items)));
+          process_return('delete', admin('delete', array('username' => $items)));
         break;
         case "rlhash":
           echo ratelimit('delete', null, implode($items));
         break;
-        // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          route_not_found();
       }
     break;
     case "edit":
@@ -1863,22 +1816,6 @@ if (isset($_GET['query'])) {
         ));
         exit();
       }
-      function process_edit_return($return) {
-        $generic_failure = json_encode(array(
-          'type' => 'error',
-          'msg' => 'Cannot edit item'
-        ));
-        $generic_success = json_encode(array(
-          'type' => 'success',
-          'msg' => 'Task completed'
-        ));
-        if ($return === false) {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
-        }
-        else {
-          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
-        }
-      }
       if (!isset($_POST['attr'])) {
         echo $request_incomplete;
         exit;
@@ -1889,198 +1826,179 @@ if (isset($_GET['query'])) {
         $items = isset($_POST['items']) ? (array)json_decode($_POST['items'], true) : null;
       }
       // only allow POST requests to POST API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
+      assert_method("POST");
       switch ($category) {
         case "bcc":
-          process_edit_return(bcc('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', bcc('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "pushover":
-          process_edit_return(pushover('edit', array_merge(array('username' => $items), $attr)));
+          process_return('edit', pushover('edit', array_merge(array('username' => $items), $attr)));
         break;
         case "pushover-test":
-          process_edit_return(pushover('test', array_merge(array('username' => $items), $attr)));
+          process_return('edit', pushover('test', array_merge(array('username' => $items), $attr)));
         break;
         case "oauth2-client":
-          process_edit_return(oauth2('edit', 'client', array_merge(array('id' => $items), $attr)));
+          process_return('edit', oauth2('edit', 'client', array_merge(array('id' => $items), $attr)));
         break;
         case "recipient_map":
-          process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', recipient_map('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "app-passwd":
-          process_edit_return(app_passwd('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', app_passwd('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "tls-policy-map":
-          process_edit_return(tls_policy_maps('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', tls_policy_maps('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "alias":
-          process_edit_return(mailbox('edit', 'alias', array_merge(array('id' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'alias', array_merge(array('id' => $items), $attr)));
         break;
         case "rspamd-map":
-          process_edit_return(rspamd_maps('edit', array_merge(array('map' => $items), $attr)));
+          process_return('edit', rspamd_maps('edit', array_merge(array('map' => $items), $attr)));
         break;
         case "fido2-fn":
-          process_edit_return(fido2(array('action' => 'edit_fn', 'fido2_attrs' => $attr)));
+          process_return('edit', fido2(array('action' => 'edit_fn', 'fido2_attrs' => $attr)));
         break;
         case "app_links":
-          process_edit_return(customize('edit', 'app_links', $attr));
+          process_return('edit', customize('edit', 'app_links', $attr));
         break;
         case "passwordpolicy":
-          process_edit_return(password_complexity('edit', $attr));
+          process_return('edit', password_complexity('edit', $attr));
         break;
         case "relayhost":
-          process_edit_return(relayhost('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', relayhost('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "transport":
-          process_edit_return(transport('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', transport('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "rsetting":
-          process_edit_return(rsettings('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', rsettings('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "delimiter_action":
-          process_edit_return(mailbox('edit', 'delimiter_action', array_merge(array('username' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'delimiter_action', array_merge(array('username' => $items), $attr)));
         break;
         case "tls_policy":
-          process_edit_return(mailbox('edit', 'tls_policy', array_merge(array('username' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'tls_policy', array_merge(array('username' => $items), $attr)));
         break;
         case "quarantine_notification":
-          process_edit_return(mailbox('edit', 'quarantine_notification', array_merge(array('username' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'quarantine_notification', array_merge(array('username' => $items), $attr)));
         break;
         case "quarantine_category":
-          process_edit_return(mailbox('edit', 'quarantine_category', array_merge(array('username' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'quarantine_category', array_merge(array('username' => $items), $attr)));
         break;
         case "qitem":
-          process_edit_return(quarantine('edit', array_merge(array('id' => $items), $attr)));
+          process_return('edit', quarantine('edit', array_merge(array('id' => $items), $attr)));
         break;
         case "quarantine":
-          process_edit_return(quarantine('edit', $attr));
+          process_return('edit', quarantine('edit', $attr));
         break;
         case "quota_notification":
-          process_edit_return(quota_notification('edit', $attr));
+          process_return('edit', quota_notification('edit', $attr));
         break;
         case "quota_notification_bcc":
-          process_edit_return(quota_notification_bcc('edit', $attr));
+          process_return('edit', quota_notification_bcc('edit', $attr));
         break;
         break;
         case "mailq":
-          process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
+          process_return('edit', mailq('edit', array_merge(array('qid' => $items), $attr)));
         break;
         case "time_limited_alias":
-          process_edit_return(mailbox('edit', 'time_limited_alias', array_merge(array('address' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'time_limited_alias', array_merge(array('address' => $items), $attr)));
         break;
         case "mailbox":
           switch ($object) {
             case "template":
-              process_edit_return(mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'mailbox_templates', array_merge(array('ids' => $items), $attr)));
             break;
             case "custom-attribute":
-              process_edit_return(mailbox('edit', 'mailbox_custom_attribute', array_merge(array('mailboxes' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'mailbox_custom_attribute', array_merge(array('mailboxes' => $items), $attr)));
             break;
             default:
-              process_edit_return(mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'mailbox', array_merge(array('username' => $items), $attr)));
             break;
           }
         break;
         case "syncjob":
-          process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
         break;
         case "filter":
-          process_edit_return(mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));
         break;
         case "resource":
-          process_edit_return(mailbox('edit', 'resource', array_merge(array('name' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'resource', array_merge(array('name' => $items), $attr)));
         break;
         case "domain":
           switch ($object) {
             case "template":
-              process_edit_return(mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'domain_templates', array_merge(array('ids' => $items), $attr)));
             break;
             case "footer":
-              process_edit_return(mailbox('edit', 'domain_wide_footer', array_merge(array('domains' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'domain_wide_footer', array_merge(array('domains' => $items), $attr)));
             break;
             default:
-              process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
+              process_return('edit', mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
             break;
           }
         break;
         case "rl-domain":
-          process_edit_return(ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));
+          process_return('edit', ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));
         break;
         case "rl-mbox":
-          process_edit_return(ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
+          process_return('edit', ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
         break;
         case "user-acl":
-          process_edit_return(acl('edit', 'user', array_merge(array('username' => $items), $attr)));
+          process_return('edit', acl('edit', 'user', array_merge(array('username' => $items), $attr)));
         break;
         case "da-acl":
-          process_edit_return(acl('edit', 'domainadmin', array_merge(array('username' => $items), $attr)));
+          process_return('edit', acl('edit', 'domainadmin', array_merge(array('username' => $items), $attr)));
         break;
         case "alias-domain":
-          process_edit_return(mailbox('edit', 'alias_domain', array_merge(array('alias_domain' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'alias_domain', array_merge(array('alias_domain' => $items), $attr)));
         break;
         case "spam-score":
-          process_edit_return(mailbox('edit', 'spam_score', array_merge(array('username' => $items), $attr)));
+          process_return('edit', mailbox('edit', 'spam_score', array_merge(array('username' => $items), $attr)));
         break;
         case "domain-admin":
-          process_edit_return(domain_admin('edit', array_merge(array('username' => $items), $attr)));
+          process_return('edit', domain_admin('edit', array_merge(array('username' => $items), $attr)));
         break;
         case "admin":
-          process_edit_return(admin('edit', array_merge(array('username' => $items), $attr)));
+          process_return('edit', admin('edit', array_merge(array('username' => $items), $attr)));
         break;
         case "fwdhost":
-          process_edit_return(fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
+          process_return('edit', fwdhost('edit', array_merge(array('fwdhost' => $items), $attr)));
         break;
         case "fail2ban":
           switch ($object) {
             case 'banlist':
-              process_edit_return(fail2ban('banlist', 'refresh', $items));
+              process_return('edit', fail2ban('banlist', 'refresh', $items));
             break;
             default:
-              process_edit_return(fail2ban('edit', array_merge(array('network' => $items), $attr)));
+              process_return('edit', fail2ban('edit', array_merge(array('network' => $items), $attr)));
             break;
           }
         break;
         case "ui_texts":
-          process_edit_return(customize('edit', 'ui_texts', $attr));
+          process_return('edit', customize('edit', 'ui_texts', $attr));
         break;
         case "ip_check":
-          process_edit_return(customize('edit', 'ip_check', $attr));
+          process_return('edit', customize('edit', 'ip_check', $attr));
         break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
-            process_edit_return(domain_admin('edit', $attr));
+            process_return('edit', domain_admin('edit', $attr));
           }
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
-            process_edit_return(edit_user_account($attr));
+            process_return('edit', edit_user_account($attr));
           }
         break;
         case "cors":
-          process_edit_return(cors('edit', $attr));
+          process_return('edit', cors('edit', $attr));
         break;
-        // return no route found if no case is matched
         default:
-          http_response_code(404);
-          echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'route not found'
-          ));
-          exit();
+          route_not_found();
       }
     break;
-    // return no route found if no case is matched
     default:
-      http_response_code(404);
-      echo json_encode(array(
-        'type' => 'error',
-        'msg' => 'route not found'
-      ));
-      exit();
+      route_not_found();
   }
 }
 if (array_key_exists('mailcow_cc_api', $_SESSION) && $_SESSION['mailcow_cc_api'] === true) {
