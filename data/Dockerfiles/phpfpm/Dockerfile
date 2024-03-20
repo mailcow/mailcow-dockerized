@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.18
+FROM php:8.2-fpm-alpine3.19
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
@@ -18,6 +18,7 @@ RUN apk add -U --no-cache autoconf \
   aspell-dev \
   aspell-libs \
   bash \
+  bzip2-dev \
   c-client \
   cyrus-sasl-dev \
   freetype \
@@ -76,7 +77,7 @@ RUN apk add -U --no-cache autoconf \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets sysvsem zip bcmath gmp \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets sysvsem zip bcmath gmp bz2 \
   && docker-php-ext-configure imap --with-imap --with-imap-ssl \
   && docker-php-ext-install -j 4 imap \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
@@ -104,7 +105,8 @@ RUN apk add -U --no-cache autoconf \
     make \
     openldap-dev \
     pcre-dev \
-    zlib-dev
+    zlib-dev \
+    bzip2-dev
 
 COPY ./docker-entrypoint.sh /
 
