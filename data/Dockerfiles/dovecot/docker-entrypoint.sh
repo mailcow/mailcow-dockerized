@@ -109,14 +109,14 @@ EOF
 
 echo -n ${ACL_ANYONE} > /etc/dovecot/acl_anyone
 
-if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+if [[ "${SKIP_FLATCURVE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify listescape replication' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify listescape replication mail_log' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
 else
-echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_solr listescape replication' > /etc/dovecot/mail_plugins
-echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify mail_log fts fts_solr listescape replication' > /etc/dovecot/mail_plugins_imap
-echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_solr notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
+echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_flatcurve listescape replication' > /etc/dovecot/mail_plugins
+echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify mail_log fts fts_flatcurve listescape replication' > /etc/dovecot/mail_plugins_imap
+echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_flatcurve notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
 fi
 chmod 644 /etc/dovecot/mail_plugins /etc/dovecot/mail_plugins_imap /etc/dovecot/mail_plugins_lmtp /templates/quarantine.tpl
 
@@ -343,6 +343,10 @@ mail_replica = tcp:${MAILCOW_REPLICA_IP}:${DOVEADM_REPLICA_PORT}
 EOF
 fi
 
+if [[ "${SKIP_FLATCURVE}" =~ ^([nN][oO]|[nN])+$ ]]; then
+  sed -i "s/vsz_limit\s*=\s*[0-9]*\s*MB*/vsz_limit=${FTS_HEAP} MB/" /etc/dovecot/conf.d/fts-flatcurve.conf
+  sed -i "s/process_limit\s*=\s*[0-9]*/process_limit=${FTS_PROCS}/" /etc/dovecot/conf.d/fts-flatcurve.conf
+fi
 
 # 401 is user dovecot
 if [[ ! -s /mail_crypt/ecprivkey.pem || ! -s /mail_crypt/ecpubkey.pem ]]; then
@@ -387,7 +391,8 @@ chmod +x /usr/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/local/bin/maildir_gc.sh \
   /usr/local/sbin/stop-supervisor.sh \
   /usr/local/bin/quota_notify.py \
-  /usr/local/bin/repl_health.sh
+  /usr/local/bin/repl_health.sh \
+  /usr/local/bin/optimize-fts.sh
 
 # Prepare environment file for cronjobs
 printenv | sed 's/^\(.*\)$/export \1/g' > /source_env.sh
