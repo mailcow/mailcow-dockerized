@@ -1,6 +1,6 @@
 FROM alpine:3.19
 
-LABEL maintainer "The Infrastructure Company GmbH GmbH <info@servercow.de>"
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG PIP_BREAK_SYSTEM_PACKAGES=1
 WORKDIR /app
