@@ -1,0 +1,116 @@
+{% if unban_success %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unban Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .success-message {
+            background: #dff0d8;
+            color: #3c763d;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #d6e9c6;
+            border-radius: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-message">
+        <p>Your unban request was successful. Please wait a moment and then refresh the page.</p>
+    </div>
+</body>
+</html>
+{% else %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unban Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: #d9534f;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            var waitTime = {{ wait_time }};
+            var countdownElement = document.getElementById('countdown');
+            var endTime = new Date().getTime() + waitTime * 1000;
+
+            function updateCountdown() {
+                var secondsLeft = Math.round((endTime - new Date().getTime()) / 1000);
+                countdownElement.textContent = secondsLeft > 0 ? secondsLeft + ' seconds' : '0 seconds';
+
+                if (secondsLeft > 0) {
+                    setTimeout(updateCountdown, 500);
+                }
+            }
+
+            updateCountdown();
+        });
+
+        function recordClick() {
+            var endTime = new Date().getTime();
+            document.getElementById("endTime").value = endTime;
+        }
+    </script>
+</head>
+<body>
+    <form action="/unban" method="POST" onsubmit="return recordClick();">
+        <p>Please wait <span id="countdown"></span> before clicking the button below to submit your unban request.</p>
+        
+        <div style="display:none;">
+            <input type="text" name="hp" id="hp" />
+        </div>
+        
+        <input type="hidden" name="token" value="{{ token }}" />
+        <input type="hidden" id="endTime" name="endTime" value="0" />
+        <input type="hidden" id="startTime" name="startTime" value="{{ start_time }}" />
+        <input type="submit" name="unban" value="Submit Unban Request" />
+    </form>
+</body>
+</html>
+{% endif %}
