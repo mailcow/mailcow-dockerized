@@ -1,0 +1,21 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="mime">
+
+	<tagged-argument extends="(header)">
+
+		<parameter type="tag" name="mime" regex="mime" occurrence="optional">
+
+			<parameter type="tag" name="anychild" regex="anychild" occurrence="optional"/>
+			<parameter type="tag" name="type" regex="type" occurrence="optional"/>
+			<parameter type="tag" name="subtype" regex="subtype" occurrence="optional"/>
+			<parameter type="tag" name="contenttype" regex="contenttype" occurrence="optional"/>
+			<parameter type="tag" name="param" regex="param" occurrence="optional">
+				<parameter type="string" name="name"/>
+			</parameter>
+
+		</parameter>
+
+	</tagged-argument>
+
+</extension>
