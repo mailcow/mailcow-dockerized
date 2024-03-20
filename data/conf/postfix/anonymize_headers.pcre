@@ -1,6 +1,6 @@
 if /^\s*Received:.*Authenticated sender.*\(Postcow\)/
 #/^Received: from .*? \([\w-.]* \[.*?\]\)\s+\(Authenticated sender: (.+)\)\s+by.+\(Postcow\) with (E?SMTPS?A?) id ([A-F0-9]+).+;.*?/
-/^Received: from .*? \([\w-.]* \[.*?\]\)(.*|\n.*)\(Authenticated sender: (.+)\)\s+by.+\(Postcow\) with (.*)/
+/^Received: from .*? \([\w\-.]* \[.*?\]\)(.*|\n.*)\(Authenticated sender: (.+)\)\s+by.+\(Postcow\) with (.*)/
   REPLACE Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with $3
 endif
 if /^\s*Received: from.* \(.*dovecot-mailcow.*mailcow-network.*\).*\(Postcow\)/
