@@ -720,7 +720,7 @@
         "mailbox": "Mailbox",
         "mailbox_defquota": "Taille de boîte par défaut",
         "mailbox_quota": "Taille max. d’une boîte",
-        "mailboxes": "Boîtes e-mail",
+        "mailboxes": "Boîtes mail",
         "mailbox_defaults": "Paramètres par défaut",
         "mailbox_defaults_info": "Définir les paramètres par défaut pour les nouvelles boîtes aux lettres.",
         "max_aliases": "Nombre maximal d'alias",
