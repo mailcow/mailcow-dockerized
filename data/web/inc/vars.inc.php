@@ -95,6 +95,7 @@ $AVAILABLE_LANGUAGES = array(
   'it-it' => 'Italiano (Italian)',
   'ko-kr' => '한국어 (Korean)',
   'lv-lv' => 'latviešu (Latvian)',
+  'lt-lt' => 'Lietuvių (Lithuanian)',
   'nb-no' => 'Norsk (Norwegian)',
   'nl-nl' => 'Nederlands (Dutch)',
   'pl-pl' => 'Język Polski (Polish)',
