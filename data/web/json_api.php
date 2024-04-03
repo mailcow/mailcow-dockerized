@@ -47,6 +47,14 @@ function api_log($_data) {
   }
 }
 
+// deny requests from /SOGo locations
+if (isset($_SERVER['HTTP_REFERER'])) {
+  if (strpos(strtolower($_SERVER['HTTP_REFERER']), '/sogo') !== false) {
+    header('HTTP/1.1 403 Forbidden');
+    exit;
+  }
+}
+
 if (isset($_GET['query'])) {
 
   $query = explode('/', $_GET['query']);
