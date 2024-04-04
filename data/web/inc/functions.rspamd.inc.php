@@ -143,6 +143,7 @@ function rspamd_maps($_action, $_data = null) {
         return false;
       }
       $maps = (array)$_data['map'];
+      $valid_maps = array();
       foreach ($maps as $map) {
         foreach ($RSPAMD_MAPS as $rspamd_map_type) {
           if (!in_array($map, $rspamd_map_type)) {
@@ -151,9 +152,12 @@ function rspamd_maps($_action, $_data = null) {
               'log' => array(__FUNCTION__, $_action, '-'),
               'msg' => array('global_map_invalid', $map)
             );
-            continue;
+          } else {
+            array_push($valid_maps, $map);
           }
         }
+      }
+      foreach ($valid_maps as $map) {
         try {
           if (file_exists('/rspamd_custom_maps/' . $map)) {
             $map_content = trim($_data['rspamd_map_data']);
