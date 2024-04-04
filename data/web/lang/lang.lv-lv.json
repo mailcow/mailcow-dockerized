@@ -4,7 +4,17 @@
         "filters": "Filtri",
         "recipient_maps": "Saņēmēja kartes",
         "syncjobs": "Sinhronizācijas uzdevumi",
-        "spam_score": "Mēstules novērtējums"
+        "spam_score": "Mēstules novērtējums",
+        "alias_domains": "Pievienot aizstājdomēnus",
+        "spam_alias": "Pagaidu aizstājvārdi",
+        "app_passwds": "Lietotņu paroļu pārvaldība",
+        "delimiter_action": "Atdalītāja darbība",
+        "domain_desc": "Mainīt domēna aprakstu",
+        "domain_relayhost": "Mainīt domēna relayhost",
+        "eas_reset": "EAS ierīču atiestatīšana",
+        "extend_sender_acl": "Ļauj paplašināt sūtītāja ACL ar ārējām adresēm",
+        "login_as": "Pieteikšanās kā pastkastes lietotājam",
+        "mailbox_relayhost": "Pasta kastītes relayhost maiņa"
     },
     "add": {
         "activate_filter_warn": "Visi pārējie filtri tiks deaktivizēti, kad aktīvs ir atzīmēts.",
@@ -12,9 +22,9 @@
         "add": "Pievienot",
         "add_domain_only": "Tikai pievienot domēnu",
         "add_domain_restart": "Pievienot domēnu un restartēt SOGo",
-        "alias_address": "Alias addrese/s",
+        "alias_address": "Aizstājaddrese/s",
         "alias_address_info": "<small>Pilna epasta addrese/s vai @piemērs.com, lai notvertu visas domēna ziņas (komatu atdalītas). <b>tikai mailcow domēni</b>.</small>",
-        "alias_domain": "Alias domēni",
+        "alias_domain": "Aizstājdomēni",
         "alias_domain_info": "<small>Tikai derīgi domēna vārdi (komatu atdalīti).</small>",
         "automap": "Mēģiniet automatizēt mapes (\"Nosūtītie vienumi\", \"Nosūtītie\" => \"Nosūtītie\" etc.)",
         "backup_mx_options": "Dublējuma MX iespējas",
@@ -32,14 +42,14 @@
         "kind": "Veids",
         "mailbox_quota_m": "Maks. kvota pastkastei (MiB)",
         "mailbox_username": "Lietotājvārds (kriesā daļa no epasta adreses)",
-        "max_aliases": "Maks. iespejamās aliases",
+        "max_aliases": "Lielākais pieļaujamo aizstājvārdu skaits",
         "max_mailboxes": "Maks. iespējamās pastkastes",
         "mins_interval": "Aptauajs intervāls (minūtes)",
         "multiple_bookings": "Vairākas rezervācijas",
         "password": "Parole",
         "password_repeat": "Apstiprinājuma parole (atkārtot)",
         "port": "Ports",
-        "post_domain_add": "Jums būs nepieciešams atsāknēt SOGo servisa konteineru pēc jauna domēna pievienošanas!",
+        "post_domain_add": "SOGO konteineru \"sogo-mailcow\" ir nepieciešams pārsāknēt pēc jauna domēna pievienošanas.<br><br>Papildus vajadzētu pārskatīt domēnu DNS konfigurāciju. Tiklīdz DNS konfigurācija ir apstiprināta, jāpārsāknē \"acme-mailcow\", lai automātiski izveidotu sertifikātus jaunajam domēnam (autoconfig.&lt;domain&gt;, autodiscover.&lt;domain&gt;).<br>Šis solis ir izvēles un tiks atkārtots ik pēc 24 stundām.",
         "quota_mb": "Kvota (MiB)",
         "relay_all": "Pārsūtīt visus saņēmējus",
         "relay_all_info": "<small>Ja izvēlies <b>nepārsūtīt</b> visus saņēmējus, tad Tev būs nepieciešams pievienot (\"tukšu\") pastkasti katram saņēmējam, kas būtu jāpārsūta.</small>",
@@ -56,7 +66,8 @@
         "target_domain": "Mērķa domēns",
         "username": "Lietotājvārds",
         "validate": "Apstiprināt",
-        "validation_success": "Apstiprināts veiksmīgi"
+        "validation_success": "Apstiprināts veiksmīgi",
+        "bcc_dest_format": "BCC galamērķim ir jābūt vienai derīgai e-pasta adresei.<br>Ja ir nepieciešams nosūtīt kopiju vairākām adresēm, jāizveido aizstājvārds un jāizmanto tas šeit."
     },
     "admin": {
         "access": "Pieeja",
@@ -118,7 +129,7 @@
         "password_repeat": "Apstiprināt paroli (atkārtot)",
         "private_key": "Privāta atslēga",
         "quarantine": "Karantīna",
-        "quarantine_exclude_domains": "Izslēgt domēnus un alias-domēnus:",
+        "quarantine_exclude_domains": "Neņemt vērā domēnus un aizstājdomēnus",
         "quarantine_max_size": "Maks. izmērs MiB (lielāki vienumi ir atbrīvoti):",
         "quarantine_retention_size": "Atlikumi pastkastēs:",
         "r_active": "Aktīvie ierobežojumi",
@@ -129,7 +140,7 @@
         "regen_api_key": "Reģenerēt API atslēgu",
         "relay_from": "\"No:\" addrese",
         "relay_run": "Palaist testu",
-        "relayhosts_hint": "Definējiet  relejhostus šeit, lai tos varētu izvēlēties domēna konfigurācijas logā.",
+        "relayhosts_hint": "Norādīt no sūtītāja atkarīgas piegādes, lai varētu tos atlasīt domēnu konfigurācijas uzvednē.<br>\n  Piegādes pakalpojums vienmēr ir \"smtp\", tādējādi tiks mēģināts TLS, kad piedāvāts. Iekļautais TLS (SMTPS) netiek atbalstīts. Tiek ņemts vērā lietotāja atsevišķais izejošā TLS nosacījuma iestatījums.<br>\n  Ietekmē atlasītos domēnus, tajā skaitā aizstājdomēnus.",
         "remove": "Noņemt",
         "remove_row": "Noņemt rindu",
         "reset_default": "Atiestatīt uz noklusējumu",
@@ -148,16 +159,19 @@
         "username": "Lietotājvārds",
         "generate": "izveidot",
         "message": "Ziņojums",
-        "last_applied": "Pēdējoreiz pielietots"
+        "last_applied": "Pēdējoreiz pielietots",
+        "f2b_regex_info": "Vērā ņemtie žurnāli: SOGO, Postfix, Dovecot, PHP-FPM",
+        "sys_mails": "Sistēmas pasts",
+        "ip_check_disabled": "IP pārbaude ir atspējota. To var iespējot<br><strong>Sistēma > Konfigurācija > iespējas > Pielāgot</strong>"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",
-        "alias_domain_invalid": "Alias domēns ir nepareizs",
-        "alias_empty": "Alias adrese nevar būt tukša",
-        "alias_goto_identical": "Alias un domēnvārds nevar būt identisks",
-        "alias_invalid": "Alias adrese nepareiza",
-        "aliasd_targetd_identical": "Alias domēns nevar būt vienāds ar mērķa domēnu",
-        "aliases_in_use": "Maks. aliases jabūt lielākām vai vienādām ar %d",
+        "alias_domain_invalid": "Aizstājdomēns %s ir nederīgs",
+        "alias_empty": "Aizstājadrese nedrīkst būt tukša",
+        "alias_goto_identical": "Aizstājvārds un mērķa adrese nedrīkst būt vienādi",
+        "alias_invalid": "Aizstājadrese %s ir nederīga",
+        "aliasd_targetd_identical": "Aizstājdomēns nedrīkst būt vienāds ar mērķa domēnu: %s",
+        "aliases_in_use": "Pieļaujamajam aizstājvārdu skaitam jābūt lielākam vai vienādam ar %d",
         "description_invalid": "Resursa apraksts ir nederīgs",
         "dkim_domain_or_sel_invalid": "DKIM domēns vai selektors nepareizs",
         "domain_exists": "Domēns %s jau pastāv",
@@ -165,15 +179,15 @@
         "domain_not_empty": "Nevar noņemt neaizpildītu domēnu",
         "domain_not_found": "Domēns %s nav atrasts",
         "domain_quota_m_in_use": "Domēna kvotai jābūt lielākai vai vienādai ar %s MiB",
-        "goto_empty": "Goto adrese nevar būt tukša",
+        "goto_empty": "Aizstājādresei jāsatur vismaz viena derīga mērķa adrese",
         "goto_invalid": "Goto adrese nepareiza",
         "imagick_exception": "Kļūda: Imagick izņēmums, lasot attēlu",
         "img_invalid": "Nevar apstiprināt attēla failu",
         "img_tmp_missing": "Nevar apstiprināt attēla failu: pagaidu failu nav atrasts",
         "invalid_mime_type": "Nederīgs mime tips",
-        "is_alias": "%s jau ir zināms alias",
-        "is_alias_or_mailbox": "%s jau ir zināms alias, pastkastes vai alias addrese izvērsta no alias domēna.",
-        "is_spam_alias": "%s ir jau zināms spam alias",
+        "is_alias": "%s jau ir zināma kā aizstājadrese",
+        "is_alias_or_mailbox": "%s jau ir zināms kā aizstājvārds, pastkaste vai aizstājadrese, kas ir izvērsta no aizstājdomēna.",
+        "is_spam_alias": "%s jau ir zināma kā pagaidu aizstājadrese (aizstājadrese mēstulēm)",
         "last_key": "Pēdējo atslēgu nevar izdzēst, tā vietā jāatspējo divpakāpju pārbaude.",
         "login_failed": "Ielogošanās neveiksmīga",
         "mailbox_invalid": "Pastkastes vārds ir nederīgs",
@@ -181,7 +195,7 @@
         "mailbox_quota_exceeds_domain_quota": "Pastkastes izmērs pārsniedz maksimāli pieļaujamo",
         "mailbox_quota_left_exceeded": "Nav pietiekami daudz vietas (atlikusī vieta: %d MiB)",
         "mailboxes_in_use": "Maks. pastkastēm jābūt lielākām vai vienādām ar %d",
-        "max_alias_exceeded": "Visas aliases izmantotas",
+        "max_alias_exceeded": "Pārsniegts pieļaujamo aizstājvārdu skaits",
         "max_mailbox_exceeded": "Maksimālais pastkastšu skaits sasniegts (%d of %d)",
         "max_quota_in_use": "Pastkastes kvotai jābūt lielākai vai vienādai %d MiB",
         "maxquota_empty": "Maksimālais pieļaujamais izmērs nevar būt 0.",
@@ -213,7 +227,7 @@
     },
     "edit": {
         "active": "Aktīvs",
-        "alias": "Rediģēt alias",
+        "alias": "Labot aizstājvārdu",
         "automap": "Mēģiniet automatizēt mapes (\"Nosūtītie vienumi\", \"Nosūtītie\" => \"Nosūtītie\" utt.)",
         "backup_mx_options": "Dublēt MX iespējas",
         "delete1": "Dzēst no avota, kad pabeigts",
@@ -224,8 +238,8 @@
         "domain_admin": "Labot domēna administratoru",
         "domain_quota": "Domēna kvota",
         "domains": "Domēni",
-        "dont_check_sender_acl": "Atspējot domēna sūtītāju pārbaudi %s + alias domēni",
-        "edit_alias_domain": "Rediģēt alias domēnu",
+        "dont_check_sender_acl": "Atspējot sūtītāju pārbaudi domēnam %s (+ aizstājdomēni)",
+        "edit_alias_domain": "Labot aizstājdomēnu",
         "encryption": "Šifrēšana",
         "exclude": "Neiekļaut objektus (regex)",
         "force_pw_update": "Piespiedu paroles atjaunošana pie nākošās pieslēgšanās",
@@ -235,7 +249,7 @@
         "inactive": "Neaktīvs",
         "kind": "Veids",
         "mailbox": "Rediģēt pastkasti",
-        "max_aliases": "Maks. aliases",
+        "max_aliases": "Lielākais aizstājvārdu skaits",
         "max_mailboxes": "Maks. iespējamās pastkastes",
         "max_quota": "Maks. kvota uz pastkasti (MiB)",
         "maxage": "Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>",
@@ -267,7 +281,15 @@
         "unchanged_if_empty": "Ja neizmainīts atstājiet tukšu",
         "username": "Lietotājvārds",
         "validate_save": "Apstiprināt un saglabāt",
-        "last_modified": "Pēdējoreiz mainīts"
+        "last_modified": "Pēdējoreiz mainīts",
+        "domain_footer_skip_replies": "Neņemt vērā kājeni atbildes e-pastos",
+        "bcc_dest_format": "BCC galamērķim jābūt vienai derīgai e-pasta adresei.<br>Ja ir nepieciešams nosūtīt kopiju uz vairākām adresēm, jāizveido aizstājvārds, un tas ir jāizmanto šeit.",
+        "extended_sender_acl_info": "Vajadzētu ievietot DKIM domēna atslēgu, ja tā ir pieejama.<br>\n  Jāatceras pievienot šo serveri attiecīgajam SPF TXT ierakstam.<br>\n  Kad vien šim serverim tiek pievienots domēns vai aizstājdomēns, kas pārklājas ar ārēju adresi, ārējā adrese tiek noņemta.<br>\n  Jāizmanto @domain.tld, lai ļautu nosūtīt kā *@domain.tld.",
+        "pushover_info": "Pašpiegādes paziņojumu iestatījumi tiks piemēroti visiem tīrajiem (ne surogātpasta) sūtījumiem, kas piegādāti <b>%s</b>, tostarp aizstājvārdiem (kopīgotiem, nekopīgotiem, ar birkām).",
+        "mailbox_relayhost_info": "Tiek piemērots tikai pastkastei un tiešajiem aizstājvārdiem, aizstāj domēna retranslācijas saimniekdatoru.",
+        "sender_acl_info": "Ja pastkastes lietotājam A ir ļauts sūtīt kā pastkastes lietotājam B, sūtītāja adrese SOGo netiek automātiski parādīta kā atlasāms lauks \"no\".<br>.\n  Pastkastes lietotājam B SOGo ir jāizveido pilnvarojums, lai pastkastes lietotājs A varētu izvēlēties tā adresi kā sūtītāja. Lai SOGo pilnvarotu pastkasti, pasta skatā jāizmanto izvēlne (trīs punkti) pa labi no pastkastes nosaukuma augšējā kreisajā pusē. Šī darbība neattiecas uz aizstājadresēm.",
+        "sogo_visible": "Aizstājvārds ir redzams SOGo",
+        "sogo_visible_info": "Šī iespēja ietekmē tikai tos objektus, kurus var parādīt SOGo (koplietojamās vai nekoplietojamās aizstājadreses, kas norāda uz vismaz vienu vietējo pastkasti). Ja paslēpts, netiks parādīts SOGo kā atlasāms sūtītājs."
     },
     "footer": {
         "cancel": "Atcelt",
@@ -282,11 +304,12 @@
     "header": {
         "administration": "Administrēšana",
         "debug": "Atkļūdošana",
-        "email": "E-Mail",
-        "mailcow_config": "Configurācija",
+        "email": "E-pasts",
+        "mailcow_config": "Konfigurācija",
         "quarantine": "Karantīna",
         "restart_sogo": "Restartēt SOGo",
-        "user_settings": "Lietotāja uzstādījumi"
+        "user_settings": "Lietotāja uzstādījumi",
+        "mailcow_system": "Sistēma"
     },
     "info": {
         "no_action": "No action applicable"
@@ -385,7 +408,10 @@
         "daily": "Ik dienu",
         "hourly": "Ik stundu",
         "last_mail_login": "Pēdējā pieteikšanās pastkastē",
-        "mailbox": "Pastkaste"
+        "mailbox": "Pastkaste",
+        "sieve_preset_2": "Vienmēr atzīmēt noteikta sūtītāja e-pastu kā izlasītu",
+        "open_logs": "Atvērt žurnālus",
+        "sieve_preset_8": "Pārvirzīt noteikta sūtītāja e-pastu, atzīmēt kā izlasītu un ievietot to apakšmapē"
     },
     "quarantine": {
         "action": "Darbības",
@@ -408,10 +434,14 @@
         "subj": "Priekšmets",
         "text_from_html_content": "Saturs (konvertēts html)",
         "text_plain_content": "Saturs (teksts/vienkāršs)",
-        "toggle_all": "Pārslēgt visu"
+        "toggle_all": "Pārslēgt visu",
+        "disabled_by_config": "Pašreizējā sistēmas konfigurācija atspējo karantīnu. Lūgums iestatīt \"saglabāšanu katrai pastkastītei\" un \"lielākais pieļaujamais lielums\" karantīnas vienumiem.",
+        "qhandler_success": "Pieprasījums veiksmīgi nosūtīts sistēmai. Tagad var aizvērt logu.",
+        "qinfo": "Karantīnas sistēma datubāzē saglabās noraidīto pastu (sūtītājam <em>netiks</em> radīts iespaids par piegādātu pastu), kā arī pastu, kas tiek piegādāts kā kopija pastkastes mēstuļu mapē.\n  <br>\"Apgūt kā surogātpastu un izdzēst\" apgūs ziņojumu kā surogātpastu ar Bajesa teorēmu un aprēķinās arī nestriktas jaucējvērtības, lai nākotnē noraidītu līdzīgus ziņojumus.\n  <br>Lūgums apzināties, ka vairāku ziņojumu apgūšana var būt laikietilpīga atkarībā no sistēmas.<br>Melnā saraksta vienumi karantīnā netiek iekļauti."
     },
     "queue": {
-        "queue_manager": "Queue Manager"
+        "queue_manager": "Queue Manager",
+        "info": "Pasta rinda satur visus e-pastus, kas gaida piegādi. Ja e-pasts ir iestrēdzis pasta rindā ilgu laiku, sistēma to automātiski izdzēš.<br>Attiecīgā pasta kļūdas ziņojums sniedz informāciju par to, kāpēc pastu neizdevās piegādāt."
     },
     "start": {
         "help": "Rādīt/Paslēp palīdzības paneli",
@@ -552,12 +582,13 @@
         "tls_enforce_in": "Piespiest TLS ienākošajiem",
         "tls_enforce_out": "Piespiest TLS izejošajiem",
         "tls_policy": "Šifrēšanas politika",
-        "tls_policy_warning": "<strong>Uzmanību:</strong> Ja jūs izlemjat aktivizēt e-pastu šifrēšanu, Jūs varat pazaudēt vēstules.<br>Vēstules kas neatbilst politikai atleks atpakaļ no sistēmas ar kļūdu.<br>Šī opcija attiecas uz Jūsu primāro e-pasta adresi, visām adresēm, kas atvasinātas no alias domēniem, kā arī aliasi <b>,kas saistīti tikai ar šo pastkasti</b> kā mērķis.",
+        "tls_policy_warning": "<strong>Brīdinājums:</strong> Ja tiek izlemts ieviest šifrēta pasta nosūtīšanu, var tikt pazaudēti e-pasti.<br>Ziņojumi, kas neatbilst nosacījumiem, pasta sistēma atmetīs ar kļūdu.<br>Šī iespēja attiecas uz galveno e-pasta adresi (pieteikšanās vārdu), visām adresēm, kas atvasinātas no aizsājdomēniem, kā arī aizstājadreses, <b>kas norāda tikai uz šo pastkasti</b>.",
         "user_settings": "Lietotāja iestatījumi",
         "username": "Lietotājvārds",
         "waiting": "Waiting",
         "week": "Nedēļa",
-        "weeks": "Nedēļas"
+        "weeks": "Nedēļas",
+        "open_logs": "Atvērt žurnālus"
     },
     "datatables": {
         "paginate": {
@@ -566,6 +597,17 @@
         }
     },
     "debug": {
-        "last_modified": "Pēdējoreiz mainīts"
+        "last_modified": "Pēdējoreiz mainīts",
+        "static_logs": "Nemainīgie žurnāli",
+        "no_update_available": "Sistēma izmanto jaunāko versiju",
+        "in_memory_logs": "Atmiņā esošie žurnāli",
+        "system_containers": "Sistēma un konteineri",
+        "current_time": "Sistēmas laiks",
+        "external_logs": "Ārējie žurnāli",
+        "logs": "Žurnāli"
+    },
+    "warning": {
+        "domain_added_sogo_failed": "Domēns pievienots, bet neizdevās pārsāknēt SOGO. Lūgums pārbaudīt servera žurnālus.",
+        "dovecot_restart_failed": "Dovecot neizdevās pārsāknēties. Lūgums pārbaudīt žurnālus."
     }
 }

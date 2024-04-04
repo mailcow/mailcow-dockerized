@@ -16,8 +16,6 @@ services:
     build:
       context: ./data/Dockerfiles/sogo
       dockerfile: Dockerfile
-      args:
-        - SOGO_DEBIAN_REPOSITORY=http://packages.inverse.ca/SOGo/nightly/5/debian/
 
   dovecot-mailcow:
     build: ./data/Dockerfiles/dovecot

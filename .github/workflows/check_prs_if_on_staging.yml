@@ -10,7 +10,7 @@ jobs:
     if: github.event.pull_request.base.ref != 'staging' #check if the target branch is not staging
     steps:
       - name: Send message
-        uses: thollander/actions-comment-pull-request@v2.4.3
+        uses: thollander/actions-comment-pull-request@v2.5.0
         with:
           GITHUB_TOKEN: ${{ secrets.CHECKIFPRISSTAGING_ACTION_PAT }}
           message: |
