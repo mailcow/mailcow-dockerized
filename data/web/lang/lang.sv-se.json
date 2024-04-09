@@ -60,7 +60,7 @@
         "exclude": "Exkludera objekt (regex-filter)",
         "full_name": "Fullständiga namn",
         "gal": "Global adressbok",
-        "gal_info": "Den global adressboken innehåller alla objekt i en domän och kan inte redigeras av någon användare. Informationen om tillgänglighet i SOGo är endast synlig när den globala adressboken är påslagen.  <b>Starta om SOGo för att tillämpa ändringar.</b>",
+        "gal_info": "Den global adressboken innehåller alla objekt i en domän och kan inte redigeras av någon användare. Informationen om tillgänglighet i SOGo är endast synlig när den globala adressboken är påslagen. <b>Starta om SOGo för att tillämpa ändringar.</b>",
         "generate": "generera",
         "goto_ham": "Markera detta som en <span class=\"text-success\"><b>felaktig spam-registrering</b>, detta kommer förhindra liknande fel i framtiden</span>",
         "goto_null": "Kasta e-postmeddelanande omedelbart",
