@@ -341,7 +341,7 @@ ADDITIONAL_SAN=
 # There are mixed scenarios where ports 80,443 are occupied and you do not want to share certs
 # between services. So acme-mailcow obtains for maildomains and all web-things get handled
 # in the reverse proxy.
-ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS=n
+AUTODISCOVER_SAN=y
 
 # Additional server names for mailcow UI
 #
