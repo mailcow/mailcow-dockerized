@@ -33,8 +33,8 @@ if [[ "${ONLY_MAILCOW_HOSTNAME}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ONLY_MAILCOW_HOSTNAME=y
 fi
 
-if [[ "${ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS=y
+if [[ "${AUTODISCOVER_SAN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  AUTODISCOVER_SAN=y
 fi
 
 # Request individual certificate for every domain
@@ -216,7 +216,7 @@ while true; do
     fi
   done
 
-  if [[ ${ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS} != "y" ]]; then
+  if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
   # Fetch certs for autoconfig and autodiscover subdomains
   ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
   fi
