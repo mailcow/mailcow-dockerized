@@ -336,8 +336,8 @@ MAILDIR_GC_TIME=7200
 
 ADDITIONAL_SAN=
 
-# Do not obtain certificates for autodiscover.* and autoconfig.* domains.
-# This can be useful in case you are in a scenario where a reverse proxy already handles those.
+# Obtain certificates for autodiscover.* and autoconfig.* domains.
+# This can be useful to switch off in case you are in a scenario where a reverse proxy already handles those.
 # There are mixed scenarios where ports 80,443 are occupied and you do not want to share certs
 # between services. So acme-mailcow obtains for maildomains and all web-things get handled
 # in the reverse proxy.
