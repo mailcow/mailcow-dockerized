@@ -162,7 +162,8 @@
         "last_applied": "Pēdējoreiz pielietots",
         "f2b_regex_info": "Vērā ņemtie žurnāli: SOGO, Postfix, Dovecot, PHP-FPM",
         "sys_mails": "Sistēmas pasts",
-        "ip_check_disabled": "IP pārbaude ir atspējota. To var iespējot<br><strong>Sistēma > Konfigurācija > iespējas > Pielāgot</strong>"
+        "ip_check_disabled": "IP pārbaude ir atspējota. To var iespējot<br><strong>Sistēma > Konfigurācija > iespējas > Pielāgot</strong>",
+        "rspamd_com_settings": "Iestatījuma nosaukums tiks izveidots automātiski. Lūgums zemāk skatīt priekšiestatījumu piemērus. Vairāk informācijas ir <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentācijā</a>"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",
@@ -270,7 +271,7 @@
         "sieve_desc": "Īss apraksts",
         "sieve_type": "Filtra tips",
         "skipcrossduplicates": "Izlaist dublētus ziņojumus pa mapēm (pirmais nāk, pirmais kalpo)",
-        "spam_alias": "Izveidot vai mainīt laika ierobežotas alias adreses",
+        "spam_alias": "Izveidot vai mainīt laika ierobežotas aizstājadreses",
         "spam_policy": "Pievienot vai noņemt  vienības   baltajā-/melnajā sarakstā",
         "spam_score": "Iestatīt pielāgotu surogātpastu",
         "subfolder2": "Sinhronizēt galamērķa apakšmapē<br><small>(tukšs = neizmantot apakšmapi)</small>",
@@ -302,7 +303,7 @@
         "restart_now": "Restartēt "
     },
     "header": {
-        "administration": "Administrēšana",
+        "administration": "Konfigurācija un informācija",
         "debug": "Atkļūdošana",
         "email": "E-pasts",
         "mailcow_config": "Konfigurācija",
@@ -325,17 +326,17 @@
         "activate": "Activate",
         "active": "Aktīvs",
         "add": "Pievienot",
-        "add_alias": "Pievienot alias",
+        "add_alias": "Pievienot aizstājvārdu",
         "add_bcc_entry": "Pievienot BCC karti",
         "add_domain": "Pievienot domēnu",
-        "add_domain_alias": "Pievienot domēna alias",
+        "add_domain_alias": "Pievienot domēna aizstājvārdu",
         "add_filter": "Pievienot filtru",
         "add_mailbox": "Pievienot pastkasti",
         "add_recipient_map_entry": "Pievienot saņēmēja karti",
         "add_resource": "Pievienot resursu",
         "address_rewriting": "Adreses pārrakstīšana",
-        "alias": "Alias",
-        "aliases": "Aliases",
+        "alias": "Aizstājvārds",
+        "aliases": "Aizstājvārdi",
         "backup_mx": "Rezerves kopija MX",
         "bcc": "BCC",
         "bcc_destination": "BCC galamērķi/s",
@@ -354,7 +355,7 @@
         "dkim_key_length": "DKIM atslēgas garums (bits)",
         "domain": "Domēns",
         "domain_admins": "Domēna administratori",
-        "domain_aliases": "Domēna aliases",
+        "domain_aliases": "Domēna aizstājvārdi",
         "domain_quota": "Kvota",
         "domain_quota_total": "Kopējais domēna ierobežojums",
         "domains": "Domēns",
@@ -372,7 +373,7 @@
         "last_run_reset": "Ievietot sarakstā kā nākamo",
         "mailbox_quota": "Maks. pastkastes izmērs",
         "mailboxes": "Pastkaste",
-        "max_aliases": "Maks. iespejamās aliases",
+        "max_aliases": "Lielākais aizstājvārdu skaits",
         "max_mailboxes": "Maks. iespējamās pastkastes",
         "max_quota": "Maks. kvota uz pastkasti",
         "mins_interval": "Intervāls (min)",
@@ -393,7 +394,7 @@
         "set_postfilter": "Atzīmēt kā pēcfiltru",
         "set_prefilter": "Atzīmēt kā pimrsfiltru",
         "sieve_info": "Jūs varat saglabāt vairākus filtrus katram lietotājam, bet tikai viens pirmsfiltrs un viens pēcfiltrs var būt aktīvs vienlaicīgi.<br>\r\nKatrs filtrs tiks apstrādāts aprakstītajā kārtībā. Kļūdains vai izdots skripts \"Paturēt;\" pārtrauks turpmāko skriptu apstrādi.<br>\r\n<a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_before\" target=\"_blank\">Global sieve prefilter</a> → Pirmsfiltrs → Lietotāja skripts → Pēcfiltrs → <a href=\"https://github.com/mailcow/mailcow-dockerized/blob/master/data/conf/dovecot/global_sieve_after\" target=\"_blank\">Global sieve postfilter</a>",
-        "spam_aliases": "Temp. alias",
+        "spam_aliases": "Pagaidu aizstājvārds",
         "status": "Status",
         "sync_jobs": "Sinhronizācijas darbi",
         "target_address": "Doties uz  adresi",
@@ -411,7 +412,13 @@
         "mailbox": "Pastkaste",
         "sieve_preset_2": "Vienmēr atzīmēt noteikta sūtītāja e-pastu kā izlasītu",
         "open_logs": "Atvērt žurnālus",
-        "sieve_preset_8": "Pārvirzīt noteikta sūtītāja e-pastu, atzīmēt kā izlasītu un ievietot to apakšmapē"
+        "sieve_preset_8": "Pārvirzīt noteikta sūtītāja e-pastu, atzīmēt kā izlasītu un ievietot to apakšmapē",
+        "sogo_visible": "Aizstājvārds ir redzams SOGo",
+        "sogo_visible_n": "Paslēpt aizstājvārdu SOGo",
+        "sogo_visible_y": "Rādīt aizstājvārdu SOGo",
+        "add_alias_expand": "Izvērst aizstājvārdu pār aizstājdomēniem",
+        "alias_domain_alias_hint": "Aizstājvārdi <b>netiek</b> automātiski piemēroti domēnu aizstājvārdiem. Aizstājadrese <code>my-alias@domain</code> <b>nenosedz</b> adresi <code>my-alias@alias-domain</code> (kur \"alias-domain\" ir iedomāts \"domain\" aizstājdomēns).<br>Lūgums izmantot sieta atlasi, lai pārvirzītu pastu uz ārēju pastkasti (skatīt cilti \"Atlasīšana\" vai izmantot SOGo -> Pārsūtītājs). \"Izvērst aizstājvārdu pār aizstājdomēniem\" ir izmantojams, lai automātiski pievienotu trūkstošos aiztājvārdus.",
+        "alias_domain_backupmx": "Aizstājdomēns ir neaktīvs retranslācijas domēnam"
     },
     "quarantine": {
         "action": "Darbības",
@@ -521,7 +528,7 @@
         "aliases_also_send_as": "Atļauts arī sūtīt kā lietotājam",
         "aliases_send_as_all": "Nepārbaudīt sūtītāja peikļuvi domēnam/iem un alias domēniem",
         "change_password": "Nomainīt paroli",
-        "client_configuration": "Parādīt konfigurācijas piemērus dažādām iekārtām",
+        "client_configuration": "Parādīt konfigurācijas norādes e-pasta klientiem un tālruņiem",
         "create_syncjob": "Izveidot jaunu sinhronizācijas darbu",
         "day": "Dienas",
         "direct_aliases": "Tiešas alias adreses",
@@ -588,7 +595,8 @@
         "waiting": "Waiting",
         "week": "Nedēļa",
         "weeks": "Nedēļas",
-        "open_logs": "Atvērt žurnālus"
+        "open_logs": "Atvērt žurnālus",
+        "apple_connection_profile_mailonly": "Šis savienojuma profils iekļauj IMAP un SMTP konfigurācijas parametrus Apple ierīcei."
     },
     "datatables": {
         "paginate": {
