@@ -450,7 +450,7 @@ CONFIG_ARRAY=(
   "SKIP_CLAMD"
   "SKIP_IP_CHECK"
   "ADDITIONAL_SAN"
-  "ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS"
+  "AUTODISCOVER_SAN"
   "DOVEADM_PORT"
   "IPV4_NETWORK"
   "IPV6_NETWORK"
@@ -717,7 +717,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
     fi
 
-  elif [[ ${option} == "ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS=" ]]; then
+  elif [[ ${option} == "AUTODISCOVER_SAN=" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "# Do not obtain certificates for autodiscover.* and autoconfig.* domains." >> mailcow.conf
@@ -725,7 +725,7 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo "# There are mixed scenarios where ports 80,443 are occupied and you do not want to share certs" >> mailcow.conf
       echo "# between services. So acme-mailcow obtains for maildomains and all web-things get handled" >> mailcow.conf
       echo "# in the reverse proxy." >> mailcow.conf
-      echo "ACME_DONT_FETCH_CERTS_FOR_HTTP_SUBDOMAINS=n" >> mailcow.conf
+      echo "AUTODISCOVER_SAN=y" >> mailcow.conf
     fi
     
   elif [[ ${option} == "ACME_CONTACT" ]]; then
