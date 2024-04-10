@@ -720,14 +720,14 @@ for option in ${CONFIG_ARRAY[@]}; do
   elif [[ ${option} == "AUTODISCOVER_SAN=" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo "# Do not obtain certificates for autodiscover.* and autoconfig.* domains." >> mailcow.conf
-      echo "# This can be useful in case you are in a scenario where a reverse proxy already handles those." >> mailcow.conf
+      echo "# Obtain certificates for autodiscover.* and autoconfig.* domains." >> mailcow.conf
+      echo "# This can be useful to switch off in case you are in a scenario where a reverse proxy already handles those." >> mailcow.conf
       echo "# There are mixed scenarios where ports 80,443 are occupied and you do not want to share certs" >> mailcow.conf
       echo "# between services. So acme-mailcow obtains for maildomains and all web-things get handled" >> mailcow.conf
       echo "# in the reverse proxy." >> mailcow.conf
       echo "AUTODISCOVER_SAN=y" >> mailcow.conf
     fi
-    
+
   elif [[ ${option} == "ACME_CONTACT" ]]; then
     if ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
