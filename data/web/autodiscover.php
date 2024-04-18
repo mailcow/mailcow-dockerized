@@ -1,26 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
-$default_autodiscover_config = $autodiscover_config;
-if(file_exists('inc/vars.local.inc.php')) {
-  include_once 'inc/vars.local.inc.php';
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
-
-// Redis
-$redis = new Redis();
-try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
-  }
-  else {
-    $redis->connect('redis-mailcow', 6379);
-  }
-}
-catch (Exception $e) {
-  exit;
-}
 
 error_reporting(0);
 
