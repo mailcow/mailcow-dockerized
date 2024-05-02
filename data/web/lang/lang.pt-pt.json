@@ -12,7 +12,7 @@
         "domain_quota_m": "Total de espaço por domínio (MiB):",
         "full_name": "Nome:",
         "mailbox_quota_m": "Máximo espaço por conta (MiB):",
-        "mailbox_username": "Usuário (primeira parte do endereço de email):",
+        "mailbox_username": "Utilizador (primeira parte do endereço de email):",
         "max_aliases": "Máximo de apelidos:",
         "max_mailboxes": "Máximo de contas:",
         "password": "Senha:",
@@ -96,7 +96,7 @@
         "sender_acl_invalid": "Campo Sender ACL é inválido",
         "target_domain_invalid": "O endereço de Domínio Destino é inválido",
         "targetd_not_found": "Domínio de Destino não encontrado",
-        "username_invalid": "Nome de usuário inválido",
+        "username_invalid": "Nome de utilizador inválido",
         "validity_missing": "Você deve definir um período de validade"
     },
     "edit": {
@@ -138,7 +138,7 @@
         "administration": "Administração",
         "email": "E-Mail",
         "mailcow_config": "Configuração",
-        "user_settings": "Configurações do usuário"
+        "user_settings": "Configurações do utilizador"
     },
     "info": {
         "no_action": "Nenhuma ação foi definida"
@@ -147,7 +147,7 @@
         "delayed": "Sua entrada será atrasada por %s segundos.",
         "login": "Entrar",
         "password": "Senha",
-        "username": "Usuário"
+        "username": "Utilizador"
     },
     "mailbox": {
         "action": "Ação",
@@ -186,7 +186,7 @@
         "target_domain": "Domínio Destino",
         "tls_enforce_in": "Forçar TLS na entrada",
         "tls_enforce_out": "Forçar TLS na saída",
-        "username": "Usuário"
+        "username": "Utilizador"
     },
     "quarantine": {
         "action": "Ação",
@@ -199,7 +199,7 @@
         "help": "Mostrar/Ocultar painel de ajuda",
         "imap_smtp_server_auth_info": "Utilize o endereço de email completo com o método de autentucação PLAIN.<br>\r\nOs dados de login serão encryptados pelo servidor.",
         "mailcow_apps_detail": "Use um mailcow app para acessar seus emails, calendário, contatos e outras informações.",
-        "mailcow_panel_detail": "<b>Administradores:</b> podem criar, alterar ou apagar contas e apelidos , alterar domínios e outras informações de seus domínios atribuídos.<br>\r\n\t<b>Usuários:</b> podem criar apelidos por tempo determinado , alterar senha e configuração do nível do filtro de spam."
+        "mailcow_panel_detail": "<b>Administradores:</b> podem criar, alterar ou apagar contas e apelidos , alterar domínios e outras informações de seus domínios atribuídos.<br>\r\n\t<b>utilizadors:</b> podem criar apelidos por tempo determinado , alterar senha e configuração do nível do filtro de spam."
     },
     "success": {
         "admin_modified": "Administrador alterado com sucesso",
@@ -267,7 +267,7 @@
         "tls_enforce_out": "Forçar TLS na saída",
         "tls_policy": "Regras de Encryptação",
         "tls_policy_warning": "<strong>Aviso:</strong> Se você selecionar para forçar o envio encryptado , alguns emails poderão ser rejeitados.<br>Mensages que não satisfizerem as politicas dos outros servidores serão rejeitadas definitivamente.",
-        "user_settings": "Configurações do usuário",
+        "user_settings": "Configurações do utilizador",
         "username": "Administrador",
         "week": "Semana",
         "weeks": "Semanas"

@@ -621,10 +621,24 @@ rspamd_config:register_symbol({
                   local nct = string.format('%s: %s/%s; charset=utf-8',
                       'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype)
                   out[#out + 1] = nct
+                  -- update Content-Type header
+                  task:set_milter_reply({
+                    remove_headers = {['Content-Type'] = 0},
+                  })
+                  task:set_milter_reply({
+                    add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8', rewrite.new_ct.type, rewrite.new_ct.subtype)}
+                  })
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
                       'Content-Transfer-Encoding', 'quoted-printable')
+                  -- update Content-Transfer-Encoding header
+                  task:set_milter_reply({
+                    remove_headers = {['Content-Transfer-Encoding'] = 0},
+                  })
+                  task:set_milter_reply({
+                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                  })
                   seen_cte = true
                   return
                 end
