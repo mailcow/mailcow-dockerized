@@ -11,7 +11,13 @@ else
 fi
 
 # Deploy
-curl --connect-timeout 15 --retry 10 --max-time 30 https://spamassassin.heinlein-support.de/$(dig txt 1.4.3.spamassassin.heinlein-support.de +short | tr -d '"' | tr -dc '0-9').tar.gz --output /tmp/sa-rules-heinlein.tar.gz
+if ! curl --connect-timeout 15 --retry 10 --max-time 30 https://spamassassin.heinlein-support.de/$(dig txt 1.4.3.spamassassin.heinlein-support.de +short | tr -d '"' | tr -dc '0-9').tar.gz --output /tmp/sa-rules-heinlein.tar.gz; then
+  if [[ "${HASH_SA_RULES}" -eq 0 ]]; then
+    echo "Error Heinlein's Spamassassin Rules couldn't be fetched."
+    exit 1
+  fi
+fi
+
 if gzip -t /tmp/sa-rules-heinlein.tar.gz; then
   tar xfvz /tmp/sa-rules-heinlein.tar.gz -C /tmp/sa-rules-heinlein
   cat /tmp/sa-rules-heinlein/*cf > /etc/rspamd/custom/sa-rules
