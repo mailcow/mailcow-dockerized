@@ -1224,6 +1224,8 @@
         "session_ua": "Неверный токен формы: ошибка проверки User-Agent"
     },
     "datatables": {
+        "collapse_all": "Свернуть все",
+        "expand_all": "Развернуть все",
         "infoPostFix": ""
     }
 }
