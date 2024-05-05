@@ -107,7 +107,7 @@ RUN addgroup -g 5000 vmail \
   dovecot-pigeonhole-plugin \
   dovecot-pop3d \
   dovecot-fts-solr \
-  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && arch=$(arch | sed -e s/armv7l/armhf/ -e s/aarch64/arm64/ -e s/x86_64/amd64/) \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true
