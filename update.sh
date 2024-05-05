@@ -443,6 +443,7 @@ CONFIG_ARRAY=(
   "WATCHDOG_NOTIFY_EMAIL"
   "WATCHDOG_NOTIFY_WEBHOOK"
   "WATCHDOG_NOTIFY_WEBHOOK_BODY"
+  "WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER"
   "WATCHDOG_NOTIFY_BAN"
   "WATCHDOG_NOTIFY_START"
   "WATCHDOG_EXTERNAL_CHECKS"
@@ -642,6 +643,13 @@ for option in ${CONFIG_ARRAY[@]}; do
       echo '# Following variables are available: SUBJECT, BODY' >> mailcow.conf
       WEBHOOK_BODY='{"username": "mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}'
       echo "#WATCHDOG_NOTIFY_WEBHOOK_BODY='${WEBHOOK_BODY}'" >> mailcow.conf
+    fi
+  elif [[ ${option} == "WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER" ]]; then
+    if ! grep -q ${option} mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# If the watchdog webhook you are calling needs headers for authentication configure it as follow, putting 'name: value'in quotes:' >> mailcow.conf
+      WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER='authorization: Bearer allYourTokensAreBelongToUs'
+      echo "#WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER='${WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER}'" >> mailcow.conf
     fi
   elif [[ ${option} == "WATCHDOG_NOTIFY_BAN" ]]; then
     if ! grep -q ${option} mailcow.conf; then

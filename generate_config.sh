@@ -408,6 +408,8 @@ USE_WATCHDOG=y
 # JSON body included in the webhook POST request. Needs to be in single quotes.
 # Following variables are available: SUBJECT, BODY
 #WATCHDOG_NOTIFY_WEBHOOK_BODY='{"username": "mailcow Watchdog", "content": "**${SUBJECT}**\n${BODY}"}'
+# If the watchdog webhook you are calling needs headers for authentication configure it as follow, putting 'name: value'in quotes:
+#WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER='authorization: Bearer allYourTokensAreBelongToUs'
 
 # Notify about banned IP (includes whois lookup)
 WATCHDOG_NOTIFY_BAN=n
