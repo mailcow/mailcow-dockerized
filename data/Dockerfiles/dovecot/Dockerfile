@@ -7,6 +7,9 @@ ARG GOSU_VERSION=1.16
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
+# Add edge repository for perl-lockfile-simple as ARM package is only available there
+RUN echo "@edge-community http://dl-cdn.alpinelinux.org/alpine/edge/community/" >>/etc/apk/repositories
+
 # Add groups and users before installing Dovecot to not break compatibility
 RUN addgroup -g 5000 vmail \
   && addgroup -g 401 dovecot \
@@ -62,7 +65,7 @@ RUN addgroup -g 5000 vmail \
   perl-package-stash-xs \
   perl-par-packer \
   perl-parse-recdescent \
-  perl-lockfile-simple --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+  perl-lockfile-simple@edge-community \
   libproc \
   perl-readonly \
   perl-regexp-common \
