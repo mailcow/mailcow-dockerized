@@ -337,7 +337,8 @@
         "verify": "验证",
         "yes": "&#10003;",
         "options": "选项",
-        "f2b_max_ban_time": "最长封禁时间（秒）"
+        "f2b_max_ban_time": "最长封禁时间（秒）",
+        "copy_to_clipboard": "复制到粘贴板"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -457,7 +458,8 @@
         "validity_missing": "请设置有效期",
         "value_missing": "请填入所有值",
         "yotp_verification_failed": "Yubico OTP 认证失败: %s",
-        "template_exists": "模板 %s 已存在"
+        "template_exists": "模板 %s 已存在",
+        "template_name_invalid": "模板名称无效"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
