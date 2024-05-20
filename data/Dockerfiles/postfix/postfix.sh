@@ -244,7 +244,12 @@ password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM alias
-  WHERE address='%s'
+  WHERE
+    (
+      address = SUBSTR( '%s', INSTR('%s', ".") )
+      OR
+      address = '%s'
+    )
     AND (active='1' OR active='2');
 EOF
 
