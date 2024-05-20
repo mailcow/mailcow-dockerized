@@ -777,14 +777,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               return false;
             }
+            # Get possible conflicting wildcard address
+            preg_match("\..*", $address, $possible_confl_wildcard);
+            # We need to escape characters in the adress that could be interpretated as regex character
+            $address_for_regexp = preg_quote($address, '/');
+            # Perform check with submitted address as it is and possible conflicting wildcard and non-wildcard address
             $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-              WHERE `address`= :address OR `address` IN (
-                SELECT `username` FROM `mailbox`, `alias_domain`
-                  WHERE (
-                    `alias_domain`.`alias_domain` = :address_d
+            WHERE
+              `address` = SUBSTR( :address_1, INSTR( :address_2, '.') ) OR
+              `address`= :address_3 OR
+              `address`= :address_wild OR
+              `address` REGEXP CONCAT ( '^[^\.]+', :address_regexp ) OR
+              `address` IN (
+            SELECT `username` FROM `mailbox`, `alias_domain`
+            WHERE (
+              `alias_domain`.`alias_domain` = :address_d
                       AND `mailbox`.`username` = CONCAT(:address_l, '@', alias_domain.target_domain)))");
             $stmt->execute(array(
-              ':address' => $address,
+              ':address_1' => $address,
+              ':address_2' => $address,
+              ':address_3' => $address,
+              ':address_wild' => $possible_confl_wildcard,
+              ':address_regexp' => $address_for_regexp,
               ':address_l' => $local_part,
               ':address_d' => $domain
             ));
@@ -1120,8 +1134,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE address= :username");
-          $stmt->execute(array(':username' => $username));
+          $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE ( address = SUBSTR( :username, INSTR( :username2, '.') ) OR address = :username3 )");
+          $stmt->execute(array(':username' => $username,':username2' => $username,':username3' => $username));
           $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
           if ($num_results != 0) {
             $_SESSION['return'][] = array(
@@ -2407,14 +2421,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 continue;
               }
               if (strtolower($is_now['address']) != strtolower($address)) {
+                # Get possible conflicting wildcard address
+                preg_match("\..*", $address, $possible_confl_wildcard);
+                # We need to escape characters in the adress that could be interpretated as regex character
+                $address_for_regexp = preg_quote($address, '/');
+                # Perform check with submitted address as it is and possible conflicting wildcard and non-wildcard address
                 $stmt = $pdo->prepare("SELECT `address` FROM `alias`
-                  WHERE `address`= :address OR `address` IN (
-                    SELECT `username` FROM `mailbox`, `alias_domain`
-                      WHERE (
-                        `alias_domain`.`alias_domain` = :address_d
+                WHERE
+                  `address` = SUBSTR( :address_1, INSTR( :address_2, '.') ) OR
+                  `address`= :address_3 OR
+                  `address`= :address_wild OR
+                  `address` REGEXP CONCAT ( '^[^\.]+', :address_regexp ) OR
+                  `address` IN (
+                SELECT `username` FROM `mailbox`, `alias_domain`
+                WHERE (
+                  `alias_domain`.`alias_domain` = :address_d
                           AND `mailbox`.`username` = CONCAT(:address_l, '@', alias_domain.target_domain)))");
                 $stmt->execute(array(
-                  ':address' => $address,
+                  ':address_1' => $address,
+                  ':address_2' => $address,
+                  ':address_3' => $address,
+                  ':address_wild' => $possible_confl_wildcard,
+                  ':address_regexp' => $address_for_regexp,
                   ':address_l' => $local_part,
                   ':address_d' => $domain
                 ));
