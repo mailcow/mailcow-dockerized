@@ -358,8 +358,8 @@ class DockerApi:
         for line in cmd_response.split("\n"):
           if '$2$' in line:
             hash = line.strip()
-            hash_out = re.search('\$2\$.+$', hash).group(0)
-            rspamd_passphrase_hash = re.sub('[^0-9a-zA-Z\$]+', '', hash_out.rstrip())
+            hash_out = re.search(r'\$2\$.+$', hash).group(0)
+            rspamd_passphrase_hash = re.sub(r'[^0-9a-zA-Z\$]+', '', hash_out.rstrip())
             rspamd_password_filename = "/etc/rspamd/override.d/worker-controller-password.inc"
             cmd = '''/bin/echo 'enable_password = "%s";' > %s && cat %s''' % (rspamd_passphrase_hash, rspamd_password_filename, rspamd_password_filename)
             cmd_response = self.exec_cmd_container(container, cmd, user="_rspamd")
