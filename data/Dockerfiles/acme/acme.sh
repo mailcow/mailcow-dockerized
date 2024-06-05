@@ -216,8 +216,15 @@ while true; do
   if [[ ${SKIP_IP_CHECK} != "y" ]]; then
   # Start IP detection
   log_f "Detecting IP addresses..."
-  IPV4=$(get_ipv4)
-  IPV6=$(get_ipv6)
+
+  if [ -z "${IPV4}" ]; then
+    IPV4=$(get_ipv4)
+  fi
+
+  if [ -z "${IPV6}" ]; then
+    IPV6=$(get_ipv6)
+  fi
+
   log_f "OK: ${IPV4}, ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}"
   fi
 
