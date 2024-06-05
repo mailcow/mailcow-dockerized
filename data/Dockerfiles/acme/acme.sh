@@ -220,14 +220,12 @@ while true; do
   if [ -z "${IPV4}" ]; then
     IPV4=$(get_ipv4)
   else
-    IPV4=${IPV4}
     log_f "Using pre-defined IPV4 address: ${IPV4}"
   fi
 
   if [ -z "${IPV6}" ]; then
     IPV6=$(get_ipv6)
   else
-    IPV6=${IPV6}
     log_f "Using pre-defined IPV6 address: ${IPV6}"
   fi
 
