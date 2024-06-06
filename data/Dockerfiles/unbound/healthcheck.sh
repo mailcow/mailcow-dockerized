@@ -5,9 +5,13 @@ if [[ "${SKIP_UNBOUND_HEALTHCHECK}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     SKIP_UNBOUND_HEALTHCHECK=y
 fi
 
+# Reset logfile
+echo "$(date +"%Y-%m-%d %H:%M:%S"): Starting health check - logs can be found in /var/log/healthcheck.log"
+echo "$(date +"%Y-%m-%d %H:%M:%S"): Starting health check" > /var/log/healthcheck.log
+
 # Declare log function for logfile inside container
 function log_to_file() {
-    echo "$(date +"%Y-%m-%d %H:%M:%S"): $1" > /var/log/healthcheck.log
+    echo "$(date +"%Y-%m-%d %H:%M:%S"): $1" >> /var/log/healthcheck.log
 }
 
 # General Ping function to check general pingability
