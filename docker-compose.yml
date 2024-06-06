@@ -304,7 +304,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.74
+      image: mailcow/postfix:1.75
       depends_on:
         mysql-mailcow:
           condition: service_started
