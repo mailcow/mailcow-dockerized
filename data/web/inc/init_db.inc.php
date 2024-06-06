@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "08012024_1442";
+    $db_version = "06062024_1210";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -989,6 +989,18 @@ function init_db_schema() {
         "keys" => array(
           "primary" => array(
             "" => array("c_folder_id", "c_name")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "sogo_admin" => array(
+        "cols" => array(
+          "c_key" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "c_content"  => "mediumtext NOT NULL",
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("c_key")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
