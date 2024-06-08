@@ -415,12 +415,6 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   b.barracudacentral.org=127.0.0.2*7
   bl.mailspike.net=127.0.0.2*5
   bl.mailspike.net=127.0.0.[10;11;12]*4
-  dnsbl.sorbs.net=127.0.0.10*8
-  dnsbl.sorbs.net=127.0.0.5*6
-  dnsbl.sorbs.net=127.0.0.7*3
-  dnsbl.sorbs.net=127.0.0.8*2
-  dnsbl.sorbs.net=127.0.0.6*2
-  dnsbl.sorbs.net=127.0.0.9*2
 EOF
 fi
 DNSBL_CONFIG=$(grep -v '^#' /opt/postfix/conf/dns_blocklists.cf | grep '\S')
