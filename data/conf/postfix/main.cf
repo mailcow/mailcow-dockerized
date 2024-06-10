@@ -163,7 +163,7 @@ transport_maps = pcre:/opt/postfix/conf/custom_transport.pcre,
   proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = silent-discard, dsn, chunking
-smtpd_discard_ehlo_keywords = chunking
+smtpd_discard_ehlo_keywords = chunking, silent-discard
 compatibility_level = 2
 smtputf8_enable = no
 # Define protocols for SMTPS and submission service
