@@ -676,5 +676,5 @@ jQuery(function($){
   onVisible("[id^=wl_policy_mailbox_table]", () => draw_wl_policy_mailbox_table());
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
   onVisible("[id^=app_passwd_table]", () => draw_app_passwd_table());
-  last_logins('get');
+  onVisible("[id^=recent-logins]", () => last_logins('get'));
 });
