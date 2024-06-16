@@ -342,7 +342,7 @@
         "f2b_manage_external_info": "Fail2ban maintiendra la liste de bannissement, mais ne définira pas activement de règles pour bloquer le trafic. Utilisez la liste de bannissement générée ci-dessous pour bloquer le trafic de manière externe.",
         "f2b_manage_external": "Gérer Fail2Ban en externe",
         "transport_test_rcpt_info": "&#8226 ; Utilisez null@hosted.mailcow.de pour tester le relais vers une destination étrangère.",
-        "relay_rcpt": "Adresse \"À :\".",
+        "relay_rcpt": "Adresse \"À :\"",
         "is_mx_based": "Basé sur MX"
     },
     "danger": {
@@ -628,7 +628,7 @@
             "from_domain": "{= from_domain =} - Partie de l'enveloppe provenant du domaine",
             "custom": "{= foo =} - Si la boîte de réception possède l'attribut personnalisé \"foo\" avec la valeur \"bar\", elle renvoie \"bar\"",
             "auth_user": "{= auth_user =}    - Nom d'utilisateur authentifié spécifié par un MTA",
-            "from_user": "{= from_user =}   -La partie utilisateur de l'enveloppe, par exemple, pour \"moo@mailcow.tld\", renvoie \"moo\".",
+            "from_user": "{= from_user =}   -La partie utilisateur de l'enveloppe, par exemple, pour \"moo@mailcow.tld\", renvoie \"moo\"",
             "from_name": "{= from_name =} - À partir du nom de l'enveloppe, par exemple, pour \"Mailcow &lt;moo@mailcow.tld&gt ;\" on obtient \"Mailcow\""
         },
         "domain_footer_skip_replies": "Ignorer le pied de page des courriels de réponse",
