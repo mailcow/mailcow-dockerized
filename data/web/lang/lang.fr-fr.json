@@ -343,7 +343,15 @@
         "f2b_manage_external": "Gérer Fail2Ban en externe",
         "transport_test_rcpt_info": "&#8226 ; Utilisez null@hosted.mailcow.de pour tester le relais vers une destination étrangère.",
         "relay_rcpt": "Adresse \"À :\"",
-        "is_mx_based": "Basé sur MX"
+        "is_mx_based": "Basé sur MX",
+        "service": "",
+        "success": "",
+        "cors_settings": "",
+        "ip_check_opt_in": "",
+        "admins_ldap": "",
+        "login_time": "",
+        "options": "",
+        "queue_unban": ""
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -503,7 +511,19 @@
         "wip": "En cours de réalisation",
         "architecture": "Architecture",
         "cores": "Cœurs",
-        "current_time": "Heure du système"
+        "current_time": "Heure du système",
+        "service": "",
+        "show_ip": "",
+        "memory": "",
+        "success": "",
+        "update_available": "",
+        "no_update_available": "",
+        "update_failed": "",
+        "error_show_ip": "",
+        "container_running": "",
+        "container_disabled": "",
+        "container_stopped": "",
+        "login_time": ""
     },
     "diagnostics": {
         "cname_from_a": "Valeur dérivée de l’enregistrement A/AAAA. Ceci est supporté tant que l’enregistrement indique la bonne ressource.",
@@ -642,7 +662,10 @@
         "quota_warning_bcc": "Avertissement sur les quotas BCC",
         "quota_warning_bcc_info": "Les avertissements seront envoyés en copies séparées aux destinataires suivants. Le sujet sera précédé du nom d'utilisateur correspondant entre parenthèses, par exemple : <code>Avertissement sur les quotas (user@example.com)</code>.",
         "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni ne modifie le profil SOGo existant d'un utilisateur.",
-        "admin": "Modifier l'administrateur"
+        "admin": "Modifier l'administrateur",
+        "pushover": "",
+        "pushover_sound": "",
+        "sogo_access": ""
     },
     "footer": {
         "cancel": "Annuler",
@@ -656,7 +679,8 @@
         "restart_container_info": "<b>Important :</b> Un redémarrage en douceur peut prendre un certain temps, veuillez attendre qu’il soit terminé.",
         "restart_now": "Redémarrer maintenant",
         "restarting_container": "Redémarrage du conteneur, cela peut prendre un certain temps",
-        "nothing_selected": "Rien n'est sélectionné"
+        "nothing_selected": "Rien n'est sélectionné",
+        "hibp_check": ""
     },
     "header": {
         "administration": "Configuration & détails",
@@ -667,7 +691,8 @@
         "quarantine": "Quarantaine",
         "restart_netfilter": "Redémarrer Netfilter",
         "restart_sogo": "Redémarrer SOGo",
-        "user_settings": "Paramètres utilisateur"
+        "user_settings": "Paramètres utilisateur",
+        "mailcow_system": ""
     },
     "info": {
         "awaiting_tfa_confirmation": "En attente de la confirmation de TFA",
@@ -841,7 +866,22 @@
         "mailbox_templates": "Modèle de boîte de réception",
         "relay_unknown": "Relayer les boîtes de réception inconnues",
         "all_domains": "Tous les domaines",
-        "syncjob_EXIT_OVERQUOTA": "Quota dépassé de la boîte de réception cible"
+        "syncjob_EXIT_OVERQUOTA": "Quota dépassé de la boîte de réception cible",
+        "syncjob_check_log": "",
+        "add_template": "",
+        "syncjob_last_run_result": "",
+        "syncjob_EX_OK": "",
+        "syncjob_EXIT_CONNECTION_FAILURE": "",
+        "templates": "",
+        "recipient": "",
+        "syncjob_EXIT_TLS_FAILURE": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "",
+        "template": "",
+        "domain_templates": "",
+        "open_logs": "",
+        "sender": ""
     },
     "oauth2": {
         "access_denied": "Veuillez vous connecter en tant que propriétaire de la boîte de réception pour accorder l’accès via Oauth2.",
@@ -914,7 +954,12 @@
         "hold_mail_legend": "Met en attente les courriers sélectionnés. (Empêche les tentatives de distribution ultérieures)",
         "unban": "file d'attente d'unban",
         "unhold_mail": "Libérer",
-        "unhold_mail_legend": "Libère les courriers sélectionnés pour la distribution. (Nécessite une mise en attente préalable)"
+        "unhold_mail_legend": "Libère les courriers sélectionnés pour la distribution. (Nécessite une mise en attente préalable)",
+        "deliver_mail": "",
+        "delete": "",
+        "flush": "",
+        "show_message": "",
+        "ays": ""
     },
     "start": {
         "help": "Afficher/masquer le panneau d’aide",
@@ -1004,7 +1049,9 @@
         "template_added": "Modèles ajoutés %s",
         "template_removed": "Le modèle ayant l'ID %s a été supprimé",
         "domain_add_dkim_available": "A DKIM key did already exist",
-        "ip_check_opt_in_modified": "Le contrôle de l'IP a été enregistré avec succès"
+        "ip_check_opt_in_modified": "Le contrôle de l'IP a été enregistré avec succès",
+        "password_policy_saved": "",
+        "template_modified": ""
     },
     "tfa": {
         "api_register": "%s utilise l'API Yubico Cloud. Veuillez obtenir une clé API pour votre clé <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ici</a>",
@@ -1202,7 +1249,16 @@
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nom d'utilisateur ou mot de passe incorrect",
         "value": "Valeur",
         "allowed_protocols": "Protocoles autorisés",
-        "mailbox": "Boîte de réception"
+        "mailbox": "Boîte de réception",
+        "open_logs": "",
+        "empty": "",
+        "last_pw_change": "",
+        "mailbox_general": "",
+        "mailbox_settings": "",
+        "month": "",
+        "pushover_sound": "",
+        "from": "",
+        "fido2_webauthn": ""
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
@@ -1223,7 +1279,9 @@
         "thousands": ",",
         "paginate": {
             "first": "Premier",
-            "last": "Dernier"
+            "last": "Dernier",
+            "next": "",
+            "previous": ""
         },
         "aria": {
             "sortAscending": ": activer pour trier les colonnes en ordre croissant",
@@ -1234,9 +1292,18 @@
         "lengthMenu": "Afficher les entrées _MENU_",
         "loadingRecords": "Chargement…",
         "processing": "Veuillez patienter…",
-        "collapse_all": "Tout réduire"
+        "collapse_all": "Tout réduire",
+        "infoPostFix": "",
+        "emptyTable": "",
+        "info": "",
+        "search": "",
+        "zeroRecords": ""
     },
     "ratelimit": {
-        "disabled": "Désactivé"
+        "disabled": "Désactivé",
+        "day": "",
+        "second": "",
+        "minute": "",
+        "hour": ""
     }
 }
