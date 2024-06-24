@@ -2,6 +2,7 @@ FROM debian:bullseye-slim
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG RSPAMD_VER=rspamd_3.7.5-2~8c86c1676   
 ARG CODENAME=bullseye
 ENV LC_ALL C
 
@@ -12,11 +13,14 @@ RUN apt-get update && apt-get install -y \
   apt-transport-https \
   dnsutils \
   netcat \
-  && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
-  && echo "deb https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
-  && apt-get update \
-  && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
-  && rm -rf /var/lib/apt/lists/* \
+  wget \
+  redis-tools \ 
+  procps \ 
+  nano \
+  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && wget -P /tmp https://rspamd.com/apt-stable/pool/main/r/rspamd/${RSPAMD_VER}~${CODENAME}_${arch}.deb\
+  && apt install -y /tmp/${RSPAMD_VER}~${CODENAME}_${arch}.deb \
+  && rm -rf /var/lib/apt/lists/* /tmp/*\
   && apt-get autoremove --purge \
   && apt-get clean \
   && mkdir -p /run/rspamd \
@@ -25,7 +29,6 @@ RUN apt-get update && apt-get install -y \
   && sed -i 's/#analysis_keyword_table > 0/analysis_cat_table.macro_exist == "M"/g' /usr/share/rspamd/lualib/lua_scanners/oletools.lua
 
 COPY settings.conf /etc/rspamd/settings.conf
-COPY metadata_exporter.lua /usr/share/rspamd/plugins/metadata_exporter.lua
 COPY set_worker_password.sh /set_worker_password.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
