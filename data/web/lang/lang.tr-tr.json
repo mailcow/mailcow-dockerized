@@ -350,7 +350,8 @@
         "reset_limit": "Hashi kaldır",
         "routing": "Yönlendirme",
         "rsetting_add_rule": "Kural ekle",
-        "rsetting_content": "Kural içeriği"
+        "rsetting_content": "Kural içeriği",
+        "add": ""
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -388,7 +389,8 @@
         "loadingRecords": "Yükleniyor...",
         "processing": "Lütfen bekleyin...",
         "search": "Ara:",
-        "zeroRecords": "Eşleşen kayıt bulunamadı"
+        "zeroRecords": "Eşleşen kayıt bulunamadı",
+        "infoPostFix": ""
     },
     "edit": {
         "inactive": "Pasif",
