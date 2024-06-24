@@ -107,7 +107,8 @@
         "username": "Nume de utilizator",
         "validate": "Validează",
         "validation_success": "Validat cu succes",
-        "tags": "Etichete"
+        "tags": "Etichete",
+        "dry": ""
     },
     "admin": {
         "access": "Acces",
@@ -343,7 +344,14 @@
         "ip_check_disabled": "Verificarea IP este dezactivată. Puteţi activa la<br> <strong>Sistem > Configuraţie > Opţiuni > Personalizează</strong>",
         "ip_check_opt_in": "Alegeţi să folosiţi servicile <strong>ipv4.mailcow.email</strong> şi <strong>ipv6.mailcow.email</strong> să rezolvaţi addrese IP externale.",
         "options": "Opţiuni",
-        "queue_unban": "retractează interzicere"
+        "queue_unban": "retractează interzicere",
+        "logo_normal_label": "",
+        "logo_dark_label": "",
+        "allowed_methods": "",
+        "copy_to_clipboard": "",
+        "f2b_manage_external": "",
+        "f2b_manage_external_info": "",
+        "allowed_origins": ""
     },
     "danger": {
         "access_denied": "Accesul a fost respins sau datele formularului sunt invalide",
@@ -471,7 +479,10 @@
         "extended_sender_acl_denied": "lipseşte ACL pentru setarea adrese externe",
         "template_exists": "Şablon %s deja există",
         "template_id_invalid": "Şablon ID %s este invalid",
-        "template_name_invalid": "Nume de şablon este invalid"
+        "template_name_invalid": "Nume de şablon este invalid",
+        "cors_invalid_origin": "",
+        "img_dimensions_exceeded": "",
+        "img_size_exceeded": ""
     },
     "debug": {
         "chart_this_server": "Grafic (acest server)",
@@ -498,7 +509,21 @@
         "success": "Succes",
         "system_containers": "Sistem și Containere",
         "uptime": "Timp de funcționare",
-        "username": "Utilizator"
+        "username": "Utilizator",
+        "architecture": "",
+        "container_running": "",
+        "show_ip": "",
+        "wip": "",
+        "error_show_ip": "",
+        "memory": "",
+        "timezone": "",
+        "update_available": "",
+        "no_update_available": "",
+        "update_failed": "",
+        "container_disabled": "",
+        "container_stopped": "",
+        "cores": "",
+        "current_time": ""
     },
     "diagnostics": {
         "cname_from_a": "Valoare derivată din înregistrarea A/AAAA. Acest lucru este acceptat atâta timp cât înregistrarea indică resursele corecte.",
@@ -624,7 +649,23 @@
         "title": "Editează obiectul",
         "unchanged_if_empty": "Dacă rămâne neschimbat se lasă necompletat",
         "username": "Nume de utilizator",
-        "validate_save": "Validează și salvează"
+        "validate_save": "Validează și salvează",
+        "footer_exclude": "",
+        "domain_footer_skip_replies": "",
+        "custom_attributes": "",
+        "domain_footer_info_vars": {
+            "custom": "",
+            "auth_user": "",
+            "from_user": "",
+            "from_name": "",
+            "from_addr": "",
+            "from_domain": ""
+        },
+        "domain_footer": "",
+        "domain_footer_html": "",
+        "domain_footer_info": "",
+        "domain_footer_plain": "",
+        "pushover_sound": ""
     },
     "fido2": {
         "set_fn": "Setați un nume prietenos",
@@ -665,7 +706,8 @@
         "quarantine": "Carantină",
         "restart_netfilter": "Repornire netfilter",
         "restart_sogo": "Repornire SOGo",
-        "user_settings": "Setări utilizator"
+        "user_settings": "Setări utilizator",
+        "mailcow_system": ""
     },
     "info": {
         "awaiting_tfa_confirmation": "În așteptarea confirmării TFA",
@@ -848,7 +890,13 @@
         "username": "Nume de utilizator",
         "waiting": "Aşteptare",
         "weekly": "Săptămânal",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "mailbox_templates": "",
+        "template": "",
+        "templates": "",
+        "add_template": "",
+        "domain_templates": "",
+        "relay_unknown": ""
     },
     "oauth2": {
         "access_denied": "Conectează-te ca proprietar al cutiei poștale pentru a acorda acces prin OAuth2.",
@@ -913,7 +961,20 @@
         "toggle_all": "Comută toate"
     },
     "queue": {
-        "queue_manager": "Manager de coadă"
+        "queue_manager": "Manager de coadă",
+        "deliver_mail_legend": "",
+        "hold_mail": "",
+        "hold_mail_legend": "",
+        "show_message": "",
+        "unban": "",
+        "unhold_mail": "",
+        "unhold_mail_legend": "",
+        "delete": "",
+        "flush": "",
+        "ays": "",
+        "deliver_mail": "",
+        "info": "",
+        "legend": ""
     },
     "ratelimit": {
         "disabled": "Dezactivat",
@@ -1005,7 +1066,14 @@
         "verified_webauthn_login": "Autentificarea WebAuthn verificată",
         "verified_fido2_login": "Conectare FIDO2 verificată",
         "verified_yotp_login": "Autentificarea Yubico OTP verificată",
-        "domain_add_dkim_available": "O cheie DKIM deja a existat"
+        "domain_add_dkim_available": "O cheie DKIM deja a existat",
+        "domain_footer_modified": "",
+        "f2b_banlist_refreshed": "",
+        "ip_check_opt_in_modified": "",
+        "cors_headers_edited": "",
+        "template_added": "",
+        "template_modified": "",
+        "template_removed": ""
     },
     "tfa": {
         "api_register": "%s utilizează API-ul Yubico Cloud. Obțineți o cheie API pentru cheia dvs. de <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">aici</a>",
@@ -1030,7 +1098,10 @@
         "webauthn": "Autentificare WebAuthn",
         "waiting_usb_auth": "<i>În așteptarea dispozitivului USB...</i><br><br>Apasă acum butonul de pe dispozitivul tău USB WebAuthn.",
         "waiting_usb_register": "<i>În așteptarea dispozitivului USB...</i><br><br>Introdu parola ta mai sus și confirmă înregistrarea ta WebAuthn atingând butonul de pe dispozitivul tău USB WebAuthn.",
-        "yubi_otp": "Autentificare Yubico OTP"
+        "yubi_otp": "Autentificare Yubico OTP",
+        "authenticators": "",
+        "u2f_deprecated_important": "",
+        "u2f_deprecated": ""
     },
     "user": {
         "action": "Acțiune",
@@ -1191,7 +1262,10 @@
         "weeks": "săptămâni",
         "with_app_password": "cu parola aplicație",
         "year": "an",
-        "years": "ani"
+        "years": "ani",
+        "attribute": "",
+        "pushover_sound": "",
+        "value": ""
     },
     "warning": {
         "cannot_delete_self": "Nu se poate șterge utilizatorul conectat",
@@ -1208,6 +1282,28 @@
     },
     "datatables": {
         "expand_all": "Expandează tot",
-        "decimal": ","
+        "decimal": ",",
+        "infoPostFix": "",
+        "emptyTable": "",
+        "thousands": "",
+        "info": "",
+        "infoEmpty": "",
+        "infoFiltered": "",
+        "lengthMenu": "",
+        "loadingRecords": "",
+        "processing": "",
+        "search": "",
+        "zeroRecords": "",
+        "paginate": {
+            "first": "",
+            "last": "",
+            "next": "",
+            "previous": ""
+        },
+        "aria": {
+            "sortAscending": "",
+            "sortDescending": ""
+        },
+        "collapse_all": ""
     }
 }
