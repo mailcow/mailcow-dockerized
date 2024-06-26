@@ -1,7 +1,15 @@
 #!/bin/bash
 
-if [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+if [[ "${FLATCURVE_EXPERIMENTAL}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  echo "FLATCURVE_EXPERIMENTAL=y, skipping Solr but enabling Flatcurve as FTS for Dovecot!"
+  echo "Solr will be removed in the future!"
+  sleep 365d
+  exit 0
+elif [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   echo "SKIP_SOLR=y, skipping Solr..."
+  echo "HINT: You could try the newer FTS Backend Flatcurve, which is currently in experimental state..."
+  echo "Simply set FLATCURVE_EXPERIMENTAL=y inside your mailcow.conf and restart the stack afterwards!"
+  echo "Solr will be removed in the future!"
   sleep 365d
   exit 0
 fi
@@ -56,6 +64,12 @@ if [[ "${1}" == "--bootstrap" ]]; then
 
   exit 0
 fi
+
+echo "Starting up Solr..."
+echo -e "\e[31mSolr is deprecated! You can try the new FTS System now by enabling FLATCURVE_EXPERIMENTAL=y inside mailcow.conf and restarting the stack\e[0m"
+echo -e "\e[31mSolr will be removed completely soon!\e[0m"
+
+sleep 15
 
 exec gosu solr solr-foreground
 
