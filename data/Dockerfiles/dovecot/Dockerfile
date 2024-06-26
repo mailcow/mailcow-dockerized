@@ -24,6 +24,7 @@ RUN addgroup -g 5000 vmail \
   envsubst \
   ca-certificates \
   curl \
+  coreutils \
   jq \
   lua \
   lua-cjson \
@@ -104,6 +105,7 @@ RUN addgroup -g 5000 vmail \
   dovecot-pigeonhole-plugin \
   dovecot-pop3d \
   dovecot-fts-solr \
+  dovecot-fts-flatcurve \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
   && chmod +x /usr/local/bin/gosu \
@@ -127,6 +129,7 @@ COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
 COPY quota_notify.py /usr/local/bin/quota_notify.py
 COPY repl_health.sh /usr/local/bin/repl_health.sh
+COPY optimize-fts.sh /usr/local/bin/optimize-fts.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

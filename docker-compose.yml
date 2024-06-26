@@ -221,7 +221,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.29
+      image: mailcow/dovecot:1.30
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -264,6 +264,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-n}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -289,7 +290,7 @@ services:
         ofelia.job-exec.dovecot_sarules.schedule: "@every 24h"
         ofelia.job-exec.dovecot_sarules.command: "/bin/bash -c \"/usr/local/bin/sa-rules.sh\""
         ofelia.job-exec.dovecot_fts.schedule: "@every 24h"
-        ofelia.job-exec.dovecot_fts.command: "/usr/bin/curl http://solr:8983/solr/dovecot-fts/update?optimize=true"
+        ofelia.job-exec.dovecot_fts.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/optimize-fts.sh\""
         ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
       ulimits:
@@ -553,7 +554,7 @@ services:
     
     ##### Will be removed soon #####
     solr-mailcow:
-      image: mailcow/solr:1.8.2
+      image: mailcow/solr:1.8.3
       restart: always
       depends_on:
         - netfilter-mailcow
@@ -565,6 +566,7 @@ services:
         - TZ=${TZ}
         - SOLR_HEAP=${SOLR_HEAP:-1024}
         - SKIP_SOLR=${SKIP_SOLR:-y}
+        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-n}
       networks:
         mailcow-network:
           aliases:
