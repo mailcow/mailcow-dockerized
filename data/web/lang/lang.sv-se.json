@@ -60,7 +60,7 @@
         "exclude": "Exkludera objekt (regex-filter)",
         "full_name": "Fullständiga namn",
         "gal": "Global adressbok",
-        "gal_info": "Den global adressboken innehåller alla objekt i en domän och kan inte redigeras av någon användare. Informationen om tillgänglighet i SOGo är endast synlig när den globala adressboken är påslagen.  <b>Starta om SOGo för att tillämpa ändringar.</b>",
+        "gal_info": "Den global adressboken innehåller alla objekt i en domän och kan inte redigeras av någon användare. Informationen om tillgänglighet i SOGo är endast synlig när den globala adressboken är påslagen. <b>Starta om SOGo för att tillämpa ändringar.</b>",
         "generate": "generera",
         "goto_ham": "Markera detta som en <span class=\"text-success\"><b>felaktig spam-registrering</b>, detta kommer förhindra liknande fel i framtiden</span>",
         "goto_null": "Kasta e-postmeddelanande omedelbart",
@@ -106,7 +106,9 @@
         "validate": "Validera",
         "validation_success": "Korrekt validerad",
         "app_passwd_protocols": "Tillåtna protokoll för applösenord",
-        "bcc_dest_format": "BCC-destinationen måste vara en enda giltig e-postadress.<br>Om du behöver skicka en kopia till flera adresser skapar du ett alias och använder det här."
+        "bcc_dest_format": "BCC-destinationen måste vara en enda giltig e-postadress.<br>Om du behöver skicka en kopia till flera adresser skapar du ett alias och använder det här.",
+        "dry": "",
+        "tags": ""
     },
     "admin": {
         "access": "Åtkomst",
@@ -325,7 +327,31 @@
         "username": "Användarnamn",
         "validate_license_now": "Validera installations-ID mot licensservern",
         "verify": "Verifiera",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "allowed_origins": "",
+        "allowed_methods": "",
+        "logo_dark_label": "",
+        "cors_settings": "",
+        "logo_normal_label": "",
+        "ip_check": "",
+        "f2b_ban_time_increment": "",
+        "copy_to_clipboard": "",
+        "f2b_manage_external": "",
+        "f2b_manage_external_info": "",
+        "f2b_max_ban_time": "",
+        "ip_check_disabled": "",
+        "login_time": "",
+        "oauth2_apps": "",
+        "oauth2_add_client": "",
+        "options": "",
+        "api_read_only": "",
+        "ip_check_opt_in": "",
+        "is_mx_based": "",
+        "queue_unban": "",
+        "rsettings_preset_4": "",
+        "service": "",
+        "success": "",
+        "api_read_write": ""
     },
     "danger": {
         "access_denied": "Nekad åtkomst, eller ofullständig/ogiltig data",
@@ -444,7 +470,19 @@
         "username_invalid": "Användarnamnet %s kan inte användas",
         "validity_missing": "Ange en giltighetsperiod",
         "value_missing": "Ange alla värden",
-        "yotp_verification_failed": "Yubico OTP-verifiering misslyckades: %s"
+        "yotp_verification_failed": "Yubico OTP-verifiering misslyckades: %s",
+        "webauthn_authenticator_failed": "",
+        "cors_invalid_method": "",
+        "cors_invalid_origin": "",
+        "img_dimensions_exceeded": "",
+        "img_size_exceeded": "",
+        "webauthn_publickey_failed": "",
+        "webauthn_username_failed": "",
+        "demo_mode_enabled": "",
+        "extended_sender_acl_denied": "",
+        "template_exists": "",
+        "template_id_invalid": "",
+        "template_name_invalid": ""
     },
     "debug": {
         "chart_this_server": "Tabell (denna server)",
@@ -467,7 +505,25 @@
         "uptime": "Upptid",
         "started_on": "Startades",
         "static_logs": "Statiska loggar",
-        "system_containers": "System & behållare"
+        "system_containers": "System & behållare",
+        "success": "",
+        "architecture": "",
+        "login_time": "",
+        "update_available": "",
+        "container_running": "",
+        "container_disabled": "",
+        "container_stopped": "",
+        "cores": "",
+        "current_time": "",
+        "error_show_ip": "",
+        "memory": "",
+        "service": "",
+        "show_ip": "",
+        "timezone": "",
+        "update_failed": "",
+        "username": "",
+        "wip": "",
+        "no_update_available": ""
     },
     "diagnostics": {
         "cname_from_a": "Värde härstammar från A/AAAA-uppslaget. Detta stöds så länge som uppslaget pekar mot rätt resurs.",
@@ -585,7 +641,31 @@
         "title": "Ändra objekt",
         "unchanged_if_empty": "Lämna blakt, om oförändrat",
         "username": "Användarnamn",
-        "validate_save": "Validera och spara"
+        "validate_save": "Validera och spara",
+        "footer_exclude": "",
+        "mailbox_relayhost_info": "",
+        "domain_footer_skip_replies": "",
+        "pushover_sound": "",
+        "custom_attributes": "",
+        "sogo_access": "",
+        "domain_footer": "",
+        "domain_footer_html": "",
+        "domain_footer_info_vars": {
+            "auth_user": "",
+            "from_user": "",
+            "from_name": "",
+            "from_addr": "",
+            "from_domain": "",
+            "custom": ""
+        },
+        "app_passwd_protocols": "",
+        "domain_footer_info": "",
+        "domain_footer_plain": "",
+        "none_inherit": "",
+        "sogo_access_info": "",
+        "pushover": "",
+        "acl": "",
+        "lookup_mx": ""
     },
     "footer": {
         "cancel": "Avbryt",
@@ -598,7 +678,9 @@
         "restart_container": "Starta om kontainer",
         "restart_container_info": "<b>Viktigt:</b> En fullständig omstart kan ta ett tag att slutföra, vänta tills att det är klart.",
         "restart_now": "Starta om nu",
-        "restarting_container": "Startar om kontainern, det kan ta en stund"
+        "restarting_container": "Startar om kontainern, det kan ta en stund",
+        "hibp_check": "",
+        "nothing_selected": ""
     },
     "header": {
         "administration": "Konfiguration & detaljer",
@@ -609,7 +691,8 @@
         "quarantine": "Karantän",
         "restart_netfilter": "Starta om netfilter",
         "restart_sogo": "Starta om SOGo",
-        "user_settings": "Användarinställningar"
+        "user_settings": "Användarinställningar",
+        "mailcow_system": ""
     },
     "info": {
         "awaiting_tfa_confirmation": "Inväntar en TFA-bekräftelse",
@@ -775,7 +858,30 @@
         "username": "Användarnamn",
         "waiting": "Väntar",
         "weekly": "Varje vecka",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "goto_ham": "",
+        "goto_spam": "",
+        "templates": "",
+        "template": "",
+        "add_template": "",
+        "catch_all": "",
+        "all_domains": "",
+        "domain_templates": "",
+        "last_pw_change": "",
+        "mailbox_templates": "",
+        "open_logs": "",
+        "recipient": "",
+        "relay_unknown": "",
+        "sender": "",
+        "syncjob_check_log": "",
+        "syncjob_last_run_result": "",
+        "syncjob_EX_OK": "",
+        "syncjob_EXIT_CONNECTION_FAILURE": "",
+        "syncjob_EXIT_TLS_FAILURE": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "",
+        "syncjob_EXIT_OVERQUOTA": "",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": ""
     },
     "oauth2": {
         "access_denied": "Logga in som ägare av en postlåda för att tilldela åtkomst via OAuth2.",
@@ -840,7 +946,20 @@
         "toggle_all": "Markera alla"
     },
     "queue": {
-        "queue_manager": "Kö-hanteraring"
+        "queue_manager": "Kö-hanteraring",
+        "unban": "",
+        "ays": "",
+        "deliver_mail": "",
+        "deliver_mail_legend": "",
+        "hold_mail": "",
+        "hold_mail_legend": "",
+        "delete": "",
+        "flush": "",
+        "info": "",
+        "legend": "",
+        "show_message": "",
+        "unhold_mail": "",
+        "unhold_mail_legend": ""
     },
     "start": {
         "help": "Visa/dölj hjälppanel",
@@ -924,7 +1043,15 @@
         "verified_totp_login": "Verifierad TOTP inloggning",
         "verified_webauthn_login": "Verifierad WebAuthn inloggning",
         "verified_fido2_login": "Verifierad FIDO2 inloggning",
-        "verified_yotp_login": "Verifierad Yubico OTP inloggning"
+        "verified_yotp_login": "Verifierad Yubico OTP inloggning",
+        "domain_footer_modified": "",
+        "template_added": "",
+        "template_modified": "",
+        "cors_headers_edited": "",
+        "domain_add_dkim_available": "",
+        "f2b_banlist_refreshed": "",
+        "ip_check_opt_in_modified": "",
+        "template_removed": ""
     },
     "tfa": {
         "api_register": "%s använder Yubico Moln-API. Vänligen skaffa en API-nyckel för din nyckel <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">här</a>",
@@ -949,7 +1076,10 @@
         "webauthn": "WebAuthn-autentisering",
         "waiting_usb_auth": "<i>Väntar på USB-enhet...</i><br><br>Tryck på knappen på USB-enheten nu.",
         "waiting_usb_register": "<i>Väntar på USB-enhet...</i><br><br>Vänligen fyll i det övre lösenordsfältet först och tryck sedan på knappen på USB-enheten.",
-        "yubi_otp": "Yubico OTP-autentisering"
+        "yubi_otp": "Yubico OTP-autentisering",
+        "authenticators": "",
+        "u2f_deprecated": "",
+        "u2f_deprecated_important": ""
     },
     "fido2": {
         "set_fn": "Ange ett eget namn",
@@ -963,7 +1093,8 @@
         "start_fido2_validation": "Starta FIDO2 verifiering",
         "fido2_auth": "Loggain med FIDO2",
         "fido2_success": "Enheten har registrerats",
-        "fido2_validation_failed": "Verifiering misslyckades"
+        "fido2_validation_failed": "Verifiering misslyckades",
+        "set_fido2_touchid": ""
     },
     "user": {
         "action": "Åtgärd",
@@ -1097,7 +1228,37 @@
         "weekly": "Varje vecka",
         "weeks": "veckor",
         "year": "år",
-        "years": "år"
+        "years": "år",
+        "empty": "",
+        "pushover_sound": "",
+        "fido2_webauthn": "",
+        "recent_successful_connections": "",
+        "value": "",
+        "with_app_password": "",
+        "attribute": "",
+        "from": "",
+        "allowed_protocols": "",
+        "apple_connection_profile_with_app_password": "",
+        "change_password_hint_app_passwords": "",
+        "clear_recent_successful_connections": "",
+        "direct_protocol_access": "",
+        "last_pw_change": "",
+        "last_ui_login": "",
+        "login_history": "",
+        "mailbox": "",
+        "mailbox_general": "",
+        "mailbox_settings": "",
+        "open_logs": "",
+        "open_webmail_sso": "",
+        "syncjob_check_log": "",
+        "syncjob_last_run_result": "",
+        "syncjob_EX_OK": "",
+        "syncjob_EXIT_CONNECTION_FAILURE": "",
+        "syncjob_EXIT_TLS_FAILURE": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "",
+        "syncjob_EXIT_OVERQUOTA": "",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": ""
     },
     "warning": {
         "cannot_delete_self": "Inloggade användare kan inte tas bort",
@@ -1111,5 +1272,38 @@
         "quota_exceeded_scope": "Domänkvoten fylld: Endast postlådor med obegränsade kvoter kan skapas på den här domänen.",
         "session_token": "Formulär-nyckeln är ogiltig: Nyckeln matchar inte",
         "session_ua": "Formulär-nyckeln är ogiltig: User-Agenten kunde inte valideras"
+    },
+    "datatables": {
+        "info": "",
+        "expand_all": "",
+        "emptyTable": "",
+        "infoFiltered": "",
+        "infoEmpty": "",
+        "lengthMenu": "",
+        "loadingRecords": "",
+        "processing": "",
+        "search": "",
+        "zeroRecords": "",
+        "paginate": {
+            "first": "",
+            "last": "",
+            "next": "",
+            "previous": ""
+        },
+        "aria": {
+            "sortAscending": "",
+            "sortDescending": ""
+        },
+        "collapse_all": "",
+        "thousands": "",
+        "decimal": "",
+        "infoPostFix": ""
+    },
+    "ratelimit": {
+        "day": "",
+        "disabled": "",
+        "second": "",
+        "minute": "",
+        "hour": ""
     }
 }

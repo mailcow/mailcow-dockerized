@@ -33,6 +33,10 @@ if [[ "${ONLY_MAILCOW_HOSTNAME}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ONLY_MAILCOW_HOSTNAME=y
 fi
 
+if [[ "${AUTODISCOVER_SAN}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  AUTODISCOVER_SAN=y
+fi
+
 # Request individual certificate for every domain
 if [[ "${ENABLE_SSL_SNI}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ENABLE_SSL_SNI=y
@@ -211,7 +215,11 @@ while true; do
       ADDITIONAL_SAN_ARR+=($i)
     fi
   done
+
+  if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
+  # Fetch certs for autoconfig and autodiscover subdomains
   ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
+  fi
 
   if [[ ${SKIP_IP_CHECK} != "y" ]]; then
   # Start IP detection

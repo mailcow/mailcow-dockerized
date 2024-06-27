@@ -2,7 +2,6 @@
 ## Set haproxy_trusted_networks in Dovecots extra.conf!
 ##
 
-version: '2.1'
 services:
 
     dovecot-mailcow:

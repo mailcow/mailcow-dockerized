@@ -1,4 +1,3 @@
-version: '2.1'
 services:
   unbound-mailcow:
     build: ./data/Dockerfiles/unbound
