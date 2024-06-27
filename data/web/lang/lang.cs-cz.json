@@ -346,12 +346,7 @@
         "f2b_ban_time_increment": "Délka banu je prodlužována s každým dalším banem",
         "f2b_max_ban_time": "Maximální délka banu (s)",
         "cors_settings": "Nastavení CORS",
-        "queue_unban": "zrušit ban",
-        "copy_to_clipboard": "",
-        "f2b_manage_external": "",
-        "f2b_manage_external_info": "",
-        "allowed_methods": "",
-        "allowed_origins": ""
+        "queue_unban": "zrušit ban"
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
@@ -480,9 +475,7 @@
         "webauthn_publickey_failed": "Pro vybraný ověřovací prostředek nebyl uložen žádný veřejný klíč",
         "webauthn_username_failed": "Zvolený ověřovací prostředek patří k jinému účtu",
         "extended_sender_acl_denied": "chybějící ACL pro nastavení externích adres odesílatele",
-        "demo_mode_enabled": "Demo režim je zapnutý",
-        "img_dimensions_exceeded": "",
-        "img_size_exceeded": ""
+        "demo_mode_enabled": "Demo režim je zapnutý"
     },
     "datatables": {
         "emptyTable": "Tabulka neobsahuje žádná data",
@@ -507,8 +500,7 @@
         "decimal": ",",
         "thousands": " ",
         "collapse_all": "Sbalit vše",
-        "expand_all": "Rozbalit vše",
-        "infoPostFix": ""
+        "expand_all": "Rozbalit vše"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -548,8 +540,7 @@
         "update_failed": "Nepodařilo se zkontrolovat aktualizace",
         "wip": "Nedokončená vývojová verze",
         "memory": "Paměť",
-        "container_disabled": "Kontejner je zastaven nebo zakázán",
-        "cores": ""
+        "container_disabled": "Kontejner je zastaven nebo zakázán"
     },
     "diagnostics": {
         "cname_from_a": "Hodnota odvozena z A/AAAA záznamu. Lze použít, pokud záznam ukazuje na správný zdroj.",
@@ -681,17 +672,12 @@
             "auth_user": "{= auth_user =} - Ověřené uživatelské jméno zadané MTA",
             "from_user": "{= from_user =}    - uživatelská část odesílatele, např. pro \"moo@mailcow.tld\" vrátí \"moo\"",
             "from_domain": "{= from_domain =} - Doména odesílatele",
-            "from_addr": "{= from_addr =} - E-mailová adresa odesílatele",
-            "custom": ""
+            "from_addr": "{= from_addr =} - E-mailová adresa odesílatele"
         },
         "domain_footer": "Patička pro celou doménu",
         "domain_footer_html": "HTML text",
         "domain_footer_plain": "Prostý text",
-        "pushover_sound": "Zvukové upozornění",
-        "footer_exclude": "",
-        "custom_attributes": "",
-        "domain_footer_skip_replies": "",
-        "pushover": ""
+        "pushover_sound": "Zvukové upozornění"
     },
     "fido2": {
         "confirm": "Potvrdit",
@@ -999,8 +985,7 @@
         "hold_mail_legend": "Podrží vybrané e-maily. (Zabrání dalším pokusům o doručení)",
         "show_message": "Zobrazit zprávu",
         "unhold_mail": "Uvolnit",
-        "unhold_mail_legend": "Uvolnit vybrané e-maily k doručení. (Pouze v případě předchozího podržení)",
-        "unban": ""
+        "unhold_mail_legend": "Uvolnit vybrané e-maily k doručení. (Pouze v případě předchozího podržení)"
     },
     "ratelimit": {
         "disabled": "Vypnuto",
@@ -1096,10 +1081,7 @@
         "verified_webauthn_login": "WebAuthn přihlášení ověřeno",
         "verified_yotp_login": "Yubico OTP přihlášení ověřeno",
         "cors_headers_edited": "Nastavení CORS byla uložena",
-        "domain_footer_modified": "Změny patičky domény %s byly uloženy",
-        "f2b_banlist_refreshed": "",
-        "domain_add_dkim_available": "",
-        "ip_check_opt_in_modified": ""
+        "domain_footer_modified": "Změny patičky domény %s byly uloženy"
     },
     "tfa": {
         "api_register": "%s používá Yubico Cloud API. Prosím získejte API klíč pro své Yubico <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ZDE</a>",
@@ -1124,10 +1106,7 @@
         "webauthn": "WebAuthn ověření",
         "waiting_usb_auth": "<i>Čeká se na USB zařízení...</i><br><br>Prosím stiskněte tlačítko na svém WebAuthn USB zařízení.",
         "waiting_usb_register": "<i>Čeká se na USB zařízení...</i><br><br>Prosím zadejte své heslo výše a potvrďte WebAuthn registraci stiskem tlačítka na svém WebAuthn USB zařízení.",
-        "yubi_otp": "Yubico OTP ověření",
-        "authenticators": "",
-        "u2f_deprecated": "",
-        "u2f_deprecated_important": ""
+        "yubi_otp": "Yubico OTP ověření"
     },
     "user": {
         "action": "Akce",
@@ -1289,9 +1268,7 @@
         "with_app_password": "s heslem aplikace",
         "year": "rok",
         "years": "let",
-        "pushover_sound": "Zvukové upozornění",
-        "attribute": "",
-        "value": ""
+        "pushover_sound": "Zvukové upozornění"
     },
     "warning": {
         "cannot_delete_self": "Nelze smazat právě přihlášeného uživatele",

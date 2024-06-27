@@ -480,9 +480,7 @@
         "extended_sender_acl_denied": "缺少設定外部寄件者地址的 ACL",
         "template_exists": "模板 %s 已存在",
         "template_id_invalid": "範本 ID %s 無效",
-        "template_name_invalid": "模板名稱無效",
-        "img_dimensions_exceeded": "",
-        "img_size_exceeded": ""
+        "template_name_invalid": "模板名稱無效"
     },
     "debug": {
         "chart_this_server": "圖表 (此伺服器)",
@@ -522,8 +520,7 @@
         "update_available": "有可用更新",
         "no_update_available": "系統已經是最新版本",
         "update_failed": "無法檢查更新",
-        "wip": "工作正在進行中",
-        "timezone": ""
+        "wip": "工作正在進行中"
     },
     "diagnostics": {
         "cname_from_a": "由 A/AAAA 紀錄獲取。只要紀錄指向正確的資源，此功能就會持續運作。",
@@ -653,19 +650,7 @@
         "validate_save": "驗證並儲存",
         "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
         "custom_attributes": "自訂屬性",
-        "pushover_sound": "聲音",
-        "domain_footer_skip_replies": "",
-        "domain_footer": "",
-        "domain_footer_html": "",
-        "domain_footer_info_vars": {
-            "auth_user": "",
-            "from_user": "",
-            "from_name": "",
-            "from_addr": "",
-            "from_domain": "",
-            "custom": ""
-        },
-        "domain_footer_plain": ""
+        "pushover_sound": "聲音"
     },
     "fido2": {
         "confirm": "確認",
@@ -1084,8 +1069,7 @@
         "webauthn": "WebAuthn 認證",
         "waiting_usb_auth": "<i>等待 USB 裝置...</i><br><br>請觸碰 USB 裝置上的按鈕。",
         "waiting_usb_register": "<i>等待 USB 裝置...</i><br><br>請輸入密碼並觸碰 USB 裝置上的按鈕來確認註冊。",
-        "yubi_otp": "Yubico OTP 認證",
-        "authenticators": ""
+        "yubi_otp": "Yubico OTP 認證"
     },
     "user": {
         "action": "操作",
@@ -1287,8 +1271,7 @@
         "collapse_all": "全部折疊",
         "emptyTable": "表中沒有可用數據",
         "thousands": ",",
-        "decimal": ".",
-        "infoPostFix": ""
+        "decimal": "."
     },
     "queue": {
         "deliver_mail_legend": "嘗試重新投遞選定的郵件。",

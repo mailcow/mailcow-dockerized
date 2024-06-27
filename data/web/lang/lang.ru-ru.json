@@ -348,10 +348,7 @@
         "ip_check_opt_in": "Согласие на использование сторонних служб <strong>ipv4.mailcow.email</strong> и <strong>ipv6.mailcow.email</strong> для разрешения внешних IP-адресов.",
         "f2b_manage_external": "Внешнее управление Fail2Ban",
         "f2b_manage_external_info": "Fail2ban по-прежнему будет вести банлист, но не будет активно устанавливать правила для блокировки трафика. Используйте сгенерированный ниже банлист для внешнего блокирования трафика.",
-        "copy_to_clipboard": "Текст скопирован в буфер обмена!",
-        "logo_normal_label": "",
-        "logo_dark_label": "",
-        "options": ""
+        "copy_to_clipboard": "Текст скопирован в буфер обмена!"
     },
     "danger": {
         "access_denied": "Доступ запрещён, или указаны неверные данные",
@@ -473,16 +470,7 @@
         "yotp_verification_failed": "Ошибка валидации Yubico OTP: %s",
         "cors_invalid_method": "Указан недопустимый метод разрешения",
         "demo_mode_enabled": "Демонстрационный режим включен",
-        "cors_invalid_origin": "Указан неверный Allow-Origin",
-        "webauthn_authenticator_failed": "",
-        "img_dimensions_exceeded": "",
-        "img_size_exceeded": "",
-        "webauthn_publickey_failed": "",
-        "webauthn_username_failed": "",
-        "extended_sender_acl_denied": "",
-        "template_exists": "",
-        "template_id_invalid": "",
-        "template_name_invalid": ""
+        "cors_invalid_origin": "Указан неверный Allow-Origin"
     },
     "debug": {
         "chart_this_server": "Диаграмма (текущий сервер)",
@@ -509,21 +497,7 @@
         "success": "Успех",
         "system_containers": "Система и контейнеры",
         "uptime": "Время работы",
-        "username": "Имя пользователя",
-        "wip": "",
-        "architecture": "",
-        "container_running": "",
-        "container_disabled": "",
-        "container_stopped": "",
-        "cores": "",
-        "current_time": "",
-        "error_show_ip": "",
-        "memory": "",
-        "show_ip": "",
-        "timezone": "",
-        "update_available": "",
-        "no_update_available": "",
-        "update_failed": ""
+        "username": "Имя пользователя"
     },
     "diagnostics": {
         "cname_from_a": "Значение, полученное из записи A/AAAA. Это поддерживается до тех пор, пока запись указывает на правильный ресурс.",
@@ -662,10 +636,7 @@
         "domain_footer": "Нижний колонтитул домена",
         "domain_footer_html": "HTML нижний колонтитул",
         "domain_footer_plain": "ПРОСТОЙ нижний колонтитул",
-        "custom_attributes": "Пользовательские атрибуты",
-        "domain_footer_skip_replies": "",
-        "pushover_sound": "",
-        "sogo_access": ""
+        "custom_attributes": "Пользовательские атрибуты"
     },
     "fido2": {
         "confirm": "Подтвердить",
@@ -706,8 +677,7 @@
         "quarantine": "Карантин",
         "restart_netfilter": "Перезапустить netfilter",
         "restart_sogo": "Перезапустить SOGo",
-        "user_settings": "Настройки пользователя",
-        "mailcow_system": ""
+        "user_settings": "Настройки пользователя"
     },
     "info": {
         "awaiting_tfa_confirmation": "В ожидании подтверждения TFA",
@@ -890,13 +860,7 @@
         "username": "Имя пользователя",
         "waiting": "В ожидании",
         "weekly": "Раз в неделю",
-        "yes": "&#10003;",
-        "domain_templates": "",
-        "add_template": "",
-        "mailbox_templates": "",
-        "relay_unknown": "",
-        "templates": "",
-        "template": ""
+        "yes": "&#10003;"
     },
     "oauth2": {
         "access_denied": "Пожалуйста, войдите в систему как владелец почтового аккаунта, чтобы получить доступ через OAuth2.",
@@ -961,20 +925,7 @@
         "type": "Тип"
     },
     "queue": {
-        "queue_manager": "Очередь на отправку",
-        "delete": "",
-        "info": "",
-        "unhold_mail_legend": "",
-        "flush": "",
-        "legend": "",
-        "ays": "",
-        "deliver_mail": "",
-        "deliver_mail_legend": "",
-        "hold_mail": "",
-        "hold_mail_legend": "",
-        "show_message": "",
-        "unban": "",
-        "unhold_mail": ""
+        "queue_manager": "Очередь на отправку"
     },
     "ratelimit": {
         "disabled": "Отключен",
@@ -1068,12 +1019,7 @@
         "verified_yotp_login": "Авторизация Yubico OTP пройдена",
         "cors_headers_edited": "Настройки CORS сохранены",
         "domain_footer_modified": "Изменения в нижнем колонтитуле домена %s сохранены",
-        "f2b_banlist_refreshed": "Идентификатор банлиста был успешно обновлен.",
-        "domain_add_dkim_available": "",
-        "ip_check_opt_in_modified": "",
-        "template_added": "",
-        "template_modified": "",
-        "template_removed": ""
+        "f2b_banlist_refreshed": "Идентификатор банлиста был успешно обновлен."
     },
     "tfa": {
         "api_register": "%s использует Yubico Cloud API. Пожалуйста, получите ключ API для вашего ключа <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">здесь</a>",
@@ -1099,9 +1045,7 @@
         "waiting_usb_auth": "<i>Ожидание устройства USB...</i><br><br>Пожалуйста, нажмите кнопку на USB устройстве сейчас.",
         "waiting_usb_register": "<i>Ожидание устройства USB...</i><br><br>Пожалуйста, введите пароль выше и подтвердите регистрацию, нажав кнопку на USB устройстве.",
         "yubi_otp": "Yubico OTP аутентификация",
-        "u2f_deprecated": "Похоже, что ваш ключ был зарегистрирован с использованием устаревшего метода U2F. Мы деактивируем для вас двухфакторную аутентификацию и удалим ваш ключ.",
-        "authenticators": "",
-        "u2f_deprecated_important": ""
+        "u2f_deprecated": "Похоже, что ваш ключ был зарегистрирован с использованием устаревшего метода U2F. Мы деактивируем для вас двухфакторную аутентификацию и удалим ваш ключ."
     },
     "user": {
         "action": "Действия",
@@ -1264,8 +1208,7 @@
         "with_app_password": "с паролем приложения",
         "change_password_hint_app_passwords": "В вашей учетной записи есть {{number_of_app_passwords}} паролей приложений, которые не будут изменены. Чтобы управлять ими, перейдите на вкладку \"Пароли приложений\".",
         "attribute": "Атрибут",
-        "value": "Значение",
-        "pushover_sound": ""
+        "value": "Значение"
     },
     "warning": {
         "cannot_delete_self": "Вы не можете удалить сами себя",
@@ -1283,27 +1226,6 @@
     "datatables": {
         "collapse_all": "Свернуть все",
         "expand_all": "Развернуть все",
-        "infoPostFix": "",
-        "decimal": "",
-        "thousands": "",
-        "lengthMenu": "",
-        "loadingRecords": "",
-        "processing": "",
-        "search": "",
-        "zeroRecords": "",
-        "paginate": {
-            "last": "",
-            "first": "",
-            "next": "",
-            "previous": ""
-        },
-        "aria": {
-            "sortAscending": "",
-            "sortDescending": ""
-        },
-        "emptyTable": "",
-        "info": "",
-        "infoEmpty": "",
-        "infoFiltered": ""
+        "infoPostFix": ""
     }
 }
