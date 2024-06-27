@@ -342,16 +342,7 @@
         "username": "Prihlasovacie meno",
         "validate_license_now": "Validovať GUID cez licenčný server",
         "verify": "Kontrola",
-        "yes": "&#10003;",
-        "queue_unban": "",
-        "allowed_origins": "",
-        "cors_settings": "",
-        "f2b_ban_time_increment": "",
-        "f2b_max_ban_time": "",
-        "copy_to_clipboard": "",
-        "f2b_manage_external": "",
-        "f2b_manage_external_info": "",
-        "allowed_methods": ""
+        "yes": "&#10003;"
     },
     "danger": {
         "access_denied": "Prístup zamietnutý alebo nesprávne dáta formulára",
@@ -473,16 +464,7 @@
         "username_invalid": "Používateľské meno %s nemôže byť použité",
         "validity_missing": "Zadajte periódu platnosti",
         "value_missing": "Prosím poskytnite všetky hodnoty",
-        "yotp_verification_failed": "Overenie cez OTP Yubico zlyhalo: %s",
-        "webauthn_publickey_failed": "",
-        "webauthn_username_failed": "",
-        "webauthn_authenticator_failed": "",
-        "cors_invalid_method": "",
-        "cors_invalid_origin": "",
-        "demo_mode_enabled": "",
-        "img_dimensions_exceeded": "",
-        "img_size_exceeded": "",
-        "extended_sender_acl_denied": ""
+        "yotp_verification_failed": "Overenie cez OTP Yubico zlyhalo: %s"
     },
     "datatables": {
         "info": "Záznamy _START_ až _END_ z celkom _TOTAL_",
@@ -507,8 +489,7 @@
         "decimal": ",",
         "thousands": " ",
         "collapse_all": "Zbaliť všetko",
-        "expand_all": "Rozbaliť všetko",
-        "infoPostFix": ""
+        "expand_all": "Rozbaliť všetko"
     },
     "debug": {
         "chart_this_server": "Graf (tento server)",
@@ -535,21 +516,7 @@
         "success": "Úspech",
         "system_containers": "Systém & Kontajnery",
         "uptime": "Doba behu",
-        "username": "Používateľské meno",
-        "architecture": "",
-        "error_show_ip": "",
-        "update_failed": "",
-        "show_ip": "",
-        "timezone": "",
-        "update_available": "",
-        "no_update_available": "",
-        "wip": "",
-        "current_time": "",
-        "memory": "",
-        "container_running": "",
-        "container_disabled": "",
-        "container_stopped": "",
-        "cores": ""
+        "username": "Používateľské meno"
     },
     "diagnostics": {
         "cname_from_a": "Hodnota odvodená od A/AAAA záznamu. Toto je podporené len v prípade ak záznam poukazuje na správny zdroj.",
@@ -681,17 +648,12 @@
             "from_domain": "{= from_domain =} - Doména odosielateľa",
             "auth_user": "{= auth_user =} - Prihlasovacie meno odosielateľa",
             "from_user": "{= from_user =}   - Používateľská časť e-mailovej adresy odosielateľa, napr. pre \"moo@mailcow.tld\" vráti \"moo\"",
-            "from_name": "{= from_name =}   - Meno odosielateľa, napr. pre \"Mailcow &lt;moo@mailcow.tld&gt;\" vráti \"Mailcow\"",
-            "custom": ""
+            "from_name": "{= from_name =}   - Meno odosielateľa, napr. pre \"Mailcow &lt;moo@mailcow.tld&gt;\" vráti \"Mailcow\""
         },
         "domain_footer": "Pätička pre celú doménu",
         "domain_footer_html": "HTML text",
         "domain_footer_info": "Pätička pre celú doménu sa pridáva do všetkých odchádzajúcich e-mailov spojených s adresou v rámci tejto domény. <br> Pre pätičku je možné použiť nasledujúce premenné:",
-        "domain_footer_plain": "Obyčajný text",
-        "footer_exclude": "",
-        "domain_footer_skip_replies": "",
-        "custom_attributes": "",
-        "pushover_sound": ""
+        "domain_footer_plain": "Obyčajný text"
     },
     "fido2": {
         "confirm": "Potvrdiť",
@@ -921,8 +883,7 @@
         "username": "Používateľské meno",
         "waiting": "Čakanie",
         "weekly": "Týždenný",
-        "yes": "&#10003;",
-        "relay_unknown": ""
+        "yes": "&#10003;"
     },
     "oauth2": {
         "access_denied": "Prosím prihláste sa ako používateľ mailovej schránky, aby ste mohli získať prístup cez OAuth2.",
@@ -999,8 +960,7 @@
         "unhold_mail": "Uvoľniť",
         "unhold_mail_legend": "Uvoľniť vybrané e-maily na doručenie. (Len v prípade predchádzajúceho podržania)",
         "hold_mail": "Podržať",
-        "hold_mail_legend": "Podržať vybrané e-maily. (Zabráni ďalším pokusom o doručenie)",
-        "unban": ""
+        "hold_mail_legend": "Podržať vybrané e-maily. (Zabráni ďalším pokusom o doručenie)"
     },
     "ratelimit": {
         "disabled": "Vypnuté",
@@ -1095,11 +1055,7 @@
         "verified_totp_login": "Overené TOTP prihlásenie",
         "verified_webauthn_login": "Overené WebAuthn prihlásenie",
         "verified_yotp_login": "Overené Yubico OTP prihlásenie",
-        "domain_footer_modified": "Zmeny v pätičke domény %s boli uložené",
-        "cors_headers_edited": "",
-        "f2b_banlist_refreshed": "",
-        "ip_check_opt_in_modified": "",
-        "domain_add_dkim_available": ""
+        "domain_footer_modified": "Zmeny v pätičke domény %s boli uložené"
     },
     "tfa": {
         "api_register": "%s využíva Yubico Cloud API. Prosím, zaobstarajte si API kľúč pre váš kľúč <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">tu</a>",
@@ -1126,8 +1082,7 @@
         "waiting_usb_register": "<i>Čakanie na USB zariadenie...</i><br><br>Prosím zadajte vaše heslo a potvrďte registráciu stlačením tlačidla na vašom USB zariadení.",
         "yubi_otp": "Yubico OTP autentifikácia",
         "u2f_deprecated_important": "Zaregistrujte si svoj Kľúč v paneli správcu pomocou novej metódy WebAuthn.",
-        "u2f_deprecated": "Zdá sa, že váš kľúč bol zaregistrovaný pomocou zastaranej metódy U2F. Deaktivujeme vám dvojfaktorovú autentifikáciu a odstránime váš Kľúč.",
-        "authenticators": ""
+        "u2f_deprecated": "Zdá sa, že váš kľúč bol zaregistrovaný pomocou zastaranej metódy U2F. Deaktivujeme vám dvojfaktorovú autentifikáciu a odstránime váš Kľúč."
     },
     "user": {
         "action": "Akcia",
@@ -1288,10 +1243,7 @@
         "weeks": "týždne",
         "with_app_password": "s heslom aplikácie",
         "year": "rok",
-        "years": "rokov",
-        "value": "",
-        "attribute": "",
-        "pushover_sound": ""
+        "years": "rokov"
     },
     "warning": {
         "cannot_delete_self": "Nemožno vymazať prihláseného používateľa",
