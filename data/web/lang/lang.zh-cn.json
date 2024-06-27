@@ -107,8 +107,7 @@
         "timeout2": "本地主机连接超时时间",
         "username": "用户名",
         "validate": "验证",
-        "validation_success": "验证成功",
-        "dry": ""
+        "validation_success": "验证成功"
     },
     "admin": {
         "access": "权限管理",
@@ -339,19 +338,7 @@
         "yes": "&#10003;",
         "options": "选项",
         "f2b_max_ban_time": "最长封禁时间（秒）",
-        "copy_to_clipboard": "复制到粘贴板",
-        "allowed_methods": "",
-        "allowed_origins": "",
-        "logo_dark_label": "",
-        "logo_normal_label": "",
-        "cors_settings": "",
-        "f2b_ban_time_increment": "",
-        "f2b_manage_external": "",
-        "f2b_manage_external_info": "",
-        "ip_check": "",
-        "ip_check_disabled": "",
-        "ip_check_opt_in": "",
-        "queue_unban": ""
+        "copy_to_clipboard": "复制到粘贴板"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -472,17 +459,7 @@
         "value_missing": "请填入所有值",
         "yotp_verification_failed": "Yubico OTP 认证失败: %s",
         "template_exists": "模板 %s 已存在",
-        "template_name_invalid": "模板名称无效",
-        "webauthn_authenticator_failed": "",
-        "webauthn_username_failed": "",
-        "cors_invalid_method": "",
-        "cors_invalid_origin": "",
-        "img_dimensions_exceeded": "",
-        "img_size_exceeded": "",
-        "webauthn_publickey_failed": "",
-        "demo_mode_enabled": "",
-        "extended_sender_acl_denied": "",
-        "template_id_invalid": ""
+        "template_name_invalid": "模板名称无效"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -517,13 +494,7 @@
         "error_show_ip": "无法解析公网IP地址",
         "show_ip": "显示公网IP",
         "update_available": "有可用更新",
-        "update_failed": "无法检查更新",
-        "container_stopped": "",
-        "architecture": "",
-        "no_update_available": "",
-        "wip": "",
-        "current_time": "",
-        "timezone": ""
+        "update_failed": "无法检查更新"
     },
     "diagnostics": {
         "cname_from_a": "来自 A/AAAA 记录的值。但只要记录指向正确的资源即可。",
@@ -647,25 +618,7 @@
         "title": "编辑对象",
         "unchanged_if_empty": "如果不更改则留空",
         "username": "用户名",
-        "validate_save": "验证并保存",
-        "footer_exclude": "",
-        "created_on": "",
-        "domain_footer_skip_replies": "",
-        "last_modified": "",
-        "custom_attributes": "",
-        "domain_footer": "",
-        "domain_footer_html": "",
-        "domain_footer_info": "",
-        "domain_footer_info_vars": {
-            "auth_user": "",
-            "from_user": "",
-            "from_name": "",
-            "from_addr": "",
-            "from_domain": "",
-            "custom": ""
-        },
-        "domain_footer_plain": "",
-        "pushover_sound": ""
+        "validate_save": "验证并保存"
     },
     "fido2": {
         "confirm": "确认",
@@ -706,8 +659,7 @@
         "quarantine": "隔离",
         "restart_netfilter": "重启 netfilter",
         "restart_sogo": "重启 SOGo",
-        "user_settings": "用户设置",
-        "mailcow_system": ""
+        "user_settings": "用户设置"
     },
     "info": {
         "awaiting_tfa_confirmation": "等待 TFA 确认",
@@ -886,17 +838,7 @@
         "mailbox_templates": "邮箱模板",
         "gal": "全局地址列表",
         "max_aliases": "最大别名数",
-        "max_mailboxes": "最大可能的邮箱数",
-        "goto_ham": "",
-        "goto_spam": "",
-        "templates": "",
-        "template": "",
-        "force_pw_update": "",
-        "last_modified": "",
-        "add_template": "",
-        "created_on": "",
-        "max_quota": "",
-        "relay_unknown": ""
+        "max_mailboxes": "最大可能的邮箱数"
     },
     "oauth2": {
         "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权",
@@ -962,19 +904,7 @@
     },
     "queue": {
         "queue_manager": "队列管理器",
-        "delete": "全部删除",
-        "show_message": "",
-        "unban": "",
-        "unhold_mail": "",
-        "unhold_mail_legend": "",
-        "flush": "",
-        "info": "",
-        "legend": "",
-        "ays": "",
-        "deliver_mail": "",
-        "deliver_mail_legend": "",
-        "hold_mail": "",
-        "hold_mail_legend": ""
+        "delete": "全部删除"
     },
     "ratelimit": {
         "disabled": "禁用",
@@ -1066,14 +996,7 @@
         "verified_fido2_login": "FIDO2 登录验证成功",
         "verified_totp_login": "TOTP 登录验证成功",
         "verified_webauthn_login": "WebAuthn 登录验证成功",
-        "verified_yotp_login": "Yubico OTP 登录验证成功",
-        "cors_headers_edited": "",
-        "domain_footer_modified": "",
-        "f2b_banlist_refreshed": "",
-        "ip_check_opt_in_modified": "",
-        "template_added": "",
-        "template_modified": "",
-        "template_removed": ""
+        "verified_yotp_login": "Yubico OTP 登录验证成功"
     },
     "tfa": {
         "api_register": "%s 使用了 Yubico Cloud API，请<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">在此</a>为你的密钥获取 API 密钥",
@@ -1100,8 +1023,7 @@
         "webauthn": "WebAuthn 认证",
         "waiting_usb_auth": "<i>等待 USB 设备中...</i><br><br>现在请触碰你的 WebAuthn USB 设备上的按钮。",
         "waiting_usb_register": "<i>等待 USB 设备中...</i><br><br>请在上方输入你的密码并请触碰你的 WebAuthn USB 设备上的按钮以确认注册该 WebAuthn 设备。",
-        "yubi_otp": "Yubico OTP 认证",
-        "authenticators": ""
+        "yubi_otp": "Yubico OTP 认证"
     },
     "user": {
         "action": "操作",
@@ -1262,10 +1184,7 @@
         "weeks": "周",
         "with_app_password": "包含应用密码",
         "year": "年",
-        "years": "年",
-        "pushover_sound": "",
-        "attribute": "",
-        "value": ""
+        "years": "年"
     },
     "warning": {
         "cannot_delete_self": "不能删除已登录的用户",
@@ -1292,18 +1211,6 @@
             "last": "最后一页",
             "previous": "上一页",
             "next": "下一页"
-        },
-        "decimal": "",
-        "infoPostFix": "",
-        "infoFiltered": "",
-        "thousands": "",
-        "lengthMenu": "",
-        "loadingRecords": "",
-        "zeroRecords": "",
-        "aria": {
-            "sortAscending": "",
-            "sortDescending": ""
-        },
-        "emptyTable": ""
+        }
     }
 }
