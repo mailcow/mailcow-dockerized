@@ -124,7 +124,10 @@ lmtp_tls_protocols = >=TLSv1.2
 smtpd_tls_protocols = >=TLSv1.2
 
 smtpd_tls_security_level = may
-tls_preempt_cipherlist = yes
+# Use of recommended Ciphers by Mozilla SSL Configuration Generator
+# https://ssl-config.mozilla.org/#server=postfix&version=3.7.10&config=intermediate&openssl=3.0.11&guideline=5.7
+tls_preempt_cipherlist = no
+tls_medium_cipherlist = ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
 tls_ssl_options = NO_COMPRESSION, NO_RENEGOTIATION
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
