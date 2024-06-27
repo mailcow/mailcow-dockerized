@@ -341,7 +341,17 @@
         "rsettings_preset_4": "Disattivare Rspamd per un dominio",
         "options": "Opzioni",
         "cors_settings": "Impostazioni CORS",
-        "copy_to_clipboard": "Testo copiato negli appunti!"
+        "copy_to_clipboard": "Testo copiato negli appunti!",
+        "logo_normal_label": "",
+        "logo_dark_label": "",
+        "f2b_manage_external": "",
+        "f2b_manage_external_info": "",
+        "allowed_methods": "",
+        "allowed_origins": "",
+        "ip_check": "",
+        "ip_check_disabled": "",
+        "ip_check_opt_in": "",
+        "queue_unban": ""
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -466,7 +476,13 @@
         "template_exists": "Il template %s esiste già",
         "template_id_invalid": "Il template con ID %s non è valido",
         "img_dimensions_exceeded": "L'immagine supera la dimensione massima consentita",
-        "img_size_exceeded": "L'immagine supera la dimensione massima del file"
+        "img_size_exceeded": "L'immagine supera la dimensione massima del file",
+        "webauthn_authenticator_failed": "",
+        "webauthn_username_failed": "",
+        "cors_invalid_method": "",
+        "cors_invalid_origin": "",
+        "webauthn_publickey_failed": "",
+        "extended_sender_acl_denied": ""
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -503,7 +519,11 @@
         "memory": "Memoria",
         "timezone": "Fuso orario",
         "no_update_available": "Il sistema è aggiornato all'ultima versione",
-        "update_failed": "Impossibile verificare la presenza di un aggiornamento"
+        "update_failed": "Impossibile verificare la presenza di un aggiornamento",
+        "architecture": "",
+        "show_ip": "",
+        "wip": "",
+        "error_show_ip": ""
     },
     "diagnostics": {
         "cname_from_a": "Valore letto dal record A/AAAA. Questo è supportato finché il record punta alla risorsa corretta.",
@@ -632,7 +652,20 @@
         "last_modified": "Ultima modifica",
         "pushover_sound": "Suono",
         "custom_attributes": "Attributi personalizzati",
-        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta"
+        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta",
+        "footer_exclude": "",
+        "domain_footer_info_vars": {
+            "custom": "",
+            "auth_user": "",
+            "from_user": "",
+            "from_name": "",
+            "from_addr": "",
+            "from_domain": ""
+        },
+        "domain_footer": "",
+        "domain_footer_html": "",
+        "domain_footer_plain": "",
+        "domain_footer_info": ""
     },
     "fido2": {
         "confirm": "Conferma",
@@ -939,7 +972,9 @@
         "show_message": "Mostra messaggio",
         "unhold_mail": "Sblocca",
         "hold_mail_legend": "Blocca le mail selezionate. (Previene ulteriori tentativi di consegna)",
-        "legend": "Funzioni delle azioni della coda di posta:"
+        "legend": "Funzioni delle azioni della coda di posta:",
+        "unban": "",
+        "unhold_mail_legend": ""
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",
@@ -1028,7 +1063,10 @@
         "template_added": "Aggiunto template %s",
         "template_modified": "Le modifiche al template %s sono state salvate",
         "template_removed": "Il template con ID %s è stato cancellato",
-        "f2b_banlist_refreshed": "L'ID della lista blocchi è stato aggiornato con successo."
+        "f2b_banlist_refreshed": "L'ID della lista blocchi è stato aggiornato con successo.",
+        "domain_footer_modified": "",
+        "ip_check_opt_in_modified": "",
+        "cors_headers_edited": ""
     },
     "tfa": {
         "api_register": "%s usa le API Yubico Cloud. Richiedi una chiave API <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">qui</a>",
@@ -1264,6 +1302,8 @@
         "aria": {
             "sortAscending": ": attivare l'ordinamento crescente delle colonne",
             "sortDescending": ": attivare l'ordinamento decrescente delle colonne"
-        }
+        },
+        "decimal": "",
+        "infoPostFix": ""
     }
 }

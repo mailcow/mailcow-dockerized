@@ -107,7 +107,8 @@
         "validation_success": "Valideret med succes",
         "bcc_dest_format": "BCC-destination skal være en enkelt gyldig e-mail-adresse.<br>Hvis du har brug for at sende en kopi til flere adresser, kan du oprette et alias og bruge det her.",
         "app_passwd_protocols": "Tilladte protokoller for app adgangskode",
-        "tags": "Tag's"
+        "tags": "Tag's",
+        "dry": ""
     },
     "admin": {
         "access": "Adgang",
@@ -317,7 +318,40 @@
         "yes": "&#10003;",
         "ip_check_opt_in": "Opt-In for brug af tredjepartstjeneste <strong>ipv4.mailcow.email</strong> og <strong>ipv6.mailcow.email</strong> til at finde eksterne IP-adresser.",
         "queue_unban": "unban",
-        "admins": "Administratorer"
+        "admins": "Administratorer",
+        "copy_to_clipboard": "",
+        "f2b_ban_time_increment": "",
+        "f2b_manage_external": "",
+        "f2b_manage_external_info": "",
+        "logo_normal_label": "",
+        "logo_dark_label": "",
+        "f2b_max_ban_time": "",
+        "cors_settings": "",
+        "allowed_origins": "",
+        "allowed_methods": "",
+        "options": "",
+        "password_length": "",
+        "password_policy": "",
+        "password_policy_chars": "",
+        "password_policy_length": "",
+        "ip_check": "",
+        "login_time": "",
+        "oauth2_apps": "",
+        "oauth2_add_client": "",
+        "password_policy_lowerupper": "",
+        "password_policy_numbers": "",
+        "password_policy_special_chars": "",
+        "relay_rcpt": "",
+        "service": "",
+        "transport_test_rcpt_info": "",
+        "ip_check_disabled": "",
+        "rsettings_preset_4": "",
+        "convert_html_to_text": "",
+        "success": "",
+        "is_mx_based": "",
+        "admins_ldap": "",
+        "api_read_only": "",
+        "api_read_write": ""
     },
     "danger": {
         "access_denied": "Adgang nægtet eller ugyldig formular data",
@@ -435,7 +469,20 @@
         "validity_missing": "Tildel venligst en gyldighedsperiode",
         "value_missing": "Angiv alle værdier",
         "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s",
-        "webauthn_publickey_failed": "Der er ikke gemt nogen offentlig nøgle for den valgte autentifikator"
+        "webauthn_publickey_failed": "Der er ikke gemt nogen offentlig nøgle for den valgte autentifikator",
+        "cors_invalid_method": "",
+        "cors_invalid_origin": "",
+        "img_dimensions_exceeded": "",
+        "img_size_exceeded": "",
+        "webauthn_authenticator_failed": "",
+        "webauthn_username_failed": "",
+        "nginx_reload_failed": "",
+        "template_exists": "",
+        "extended_sender_acl_denied": "",
+        "extra_acl_invalid_domain": "",
+        "template_id_invalid": "",
+        "template_name_invalid": "",
+        "demo_mode_enabled": ""
     },
     "debug": {
         "chart_this_server": "Diagram (denne server)",
@@ -453,7 +500,30 @@
         "started_on": "Startede den",
         "static_logs": "Statiske logfiler",
         "system_containers": "System og Beholdere",
-        "error_show_ip": "Kunne ikke finde de offentlige IP-adresser"
+        "error_show_ip": "Kunne ikke finde de offentlige IP-adresser",
+        "update_available": "",
+        "username": "",
+        "timezone": "",
+        "started_at": "",
+        "success": "",
+        "uptime": "",
+        "architecture": "",
+        "container_running": "",
+        "cores": "",
+        "current_time": "",
+        "docs": "",
+        "last_modified": "",
+        "login_time": "",
+        "memory": "",
+        "show_ip": "",
+        "size": "",
+        "no_update_available": "",
+        "update_failed": "",
+        "wip": "",
+        "online_users": "",
+        "service": "",
+        "container_disabled": "",
+        "container_stopped": ""
     },
     "diagnostics": {
         "cname_from_a": "Værdi afledt af A / AAAA-post. Dette understøttes, så længe posten peger på den korrekte ressource.",
@@ -568,7 +638,34 @@
         "admin": "Rediger administrator",
         "lookup_mx": "Destination er et regulært udtryk, der matcher MX-navnet (<code>.*google\\.dk</code> for at dirigere al e-mail, der er målrettet til en MX, der ender på google.dk, over dette hop)",
         "mailbox_relayhost_info": "Anvendt på postkassen og kun direkte aliasser, og overskriver et domæne relæ-host.",
-        "quota_warning_bcc": "Kvoteadvarsel BCC"
+        "quota_warning_bcc": "Kvoteadvarsel BCC",
+        "footer_exclude": "",
+        "custom_attributes": "",
+        "last_modified": "",
+        "app_passwd_protocols": "",
+        "created_on": "",
+        "domain_footer_info_vars": {
+            "custom": "",
+            "auth_user": "",
+            "from_user": "",
+            "from_name": "",
+            "from_addr": "",
+            "from_domain": ""
+        },
+        "domain_footer_skip_replies": "",
+        "spam_filter": "",
+        "domain_footer": "",
+        "domain_footer_html": "",
+        "domain_footer_info": "",
+        "domain_footer_plain": "",
+        "sogo_access_info": "",
+        "acl": "",
+        "none_inherit": "",
+        "pushover": "",
+        "pushover_sound": "",
+        "quota_warning_bcc_info": "",
+        "ratelimit": "",
+        "sogo_access": ""
     },
     "footer": {
         "cancel": "Afbestille",
@@ -581,7 +678,9 @@
         "restart_container": "Genstart beholderen",
         "restart_container_info": "<b>Vigtig:</b> Det kan tage et stykke tid at gennemføre en yndefuld genstart. Vent til den er færdig.",
         "restart_now": "Genstart nu",
-        "restarting_container": "Genstart af beholder, det kan tage et stykke tid"
+        "restarting_container": "Genstart af beholder, det kan tage et stykke tid",
+        "hibp_check": "",
+        "nothing_selected": ""
     },
     "header": {
         "administration": "Konfiguration og detailer",
@@ -592,7 +691,8 @@
         "quarantine": "Karantæne",
         "restart_netfilter": "Genstart netfilter",
         "restart_sogo": "Genstart SOGo",
-        "user_settings": "Brugerindstillinger"
+        "user_settings": "Brugerindstillinger",
+        "mailcow_system": ""
     },
     "info": {
         "awaiting_tfa_confirmation": "Venter på TFA-bekræftelse",
@@ -757,7 +857,31 @@
         "yes": "&#10003;",
         "goto_ham": "Lær som <b>ønsket</b>",
         "catch_all": "Fang-alt",
-        "open_logs": "Åben logfiler"
+        "open_logs": "Åben logfiler",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "",
+        "syncjob_EXIT_OVERQUOTA": "",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "",
+        "all_domains": "",
+        "domain_templates": "",
+        "last_modified": "",
+        "last_pw_change": "",
+        "mailbox_templates": "",
+        "template": "",
+        "relay_unknown": "",
+        "add_alias_expand": "",
+        "add_template": "",
+        "created_on": "",
+        "goto_spam": "",
+        "recipient": "",
+        "relay_all": "",
+        "sender": "",
+        "syncjob_check_log": "",
+        "syncjob_last_run_result": "",
+        "syncjob_EX_OK": "",
+        "syncjob_EXIT_CONNECTION_FAILURE": "",
+        "syncjob_EXIT_TLS_FAILURE": "",
+        "templates": ""
     },
     "oauth2": {
         "access_denied": "Log ind som mailboks ejer for at give adgang via OAuth2.",
@@ -818,10 +942,24 @@
         "table_size_show_n": "Vis %s genstande",
         "text_from_html_content": "Indhold (konverterede html)",
         "text_plain_content": "Indhold (text/plain)",
-        "toggle_all": "Skift alt"
+        "toggle_all": "Skift alt",
+        "settings_info": ""
     },
     "queue": {
-        "queue_manager": "Køadministrator"
+        "queue_manager": "Køadministrator",
+        "deliver_mail": "",
+        "delete": "",
+        "flush": "",
+        "info": "",
+        "legend": "",
+        "ays": "",
+        "deliver_mail_legend": "",
+        "hold_mail": "",
+        "hold_mail_legend": "",
+        "show_message": "",
+        "unban": "",
+        "unhold_mail": "",
+        "unhold_mail_legend": ""
     },
     "start": {
         "help": "Vis / skjul hjælpepanel",
@@ -903,7 +1041,17 @@
         "verified_totp_login": "Bekræftet TOTP-login",
         "verified_webauthn_login": "Bekræftet WebAuthn-login",
         "verified_fido2_login": "Bekræftet FIDO2-login",
-        "verified_yotp_login": "Bekræftet Yubico OTP-login"
+        "verified_yotp_login": "Bekræftet Yubico OTP-login",
+        "template_removed": "",
+        "domain_footer_modified": "",
+        "cors_headers_edited": "",
+        "domain_add_dkim_available": "",
+        "f2b_banlist_refreshed": "",
+        "ip_check_opt_in_modified": "",
+        "nginx_reloaded": "",
+        "password_policy_saved": "",
+        "template_added": "",
+        "template_modified": ""
     },
     "tfa": {
         "api_register": "%s bruger Yubico Cloud API. Få en API-nøgle til din nøgle <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
@@ -928,7 +1076,10 @@
         "webauthn": "WebAuthn godkendelse",
         "waiting_usb_auth": "<i>Venter på USB-enhed...</i><br><br>Tryk let på knappen på din USB-enhed nu.",
         "waiting_usb_register": "<i>Venter på USB-enhed...</i><br><br>Indtast din adgangskode ovenfor, og bekræft din registrering ved at trykke på knappen på din USB-enhed.",
-        "yubi_otp": "Yubico OTP godkendelse"
+        "yubi_otp": "Yubico OTP godkendelse",
+        "authenticators": "",
+        "u2f_deprecated": "",
+        "u2f_deprecated_important": ""
     },
     "fido2": {
         "set_fn": "Set venneligt navn",
@@ -942,7 +1093,8 @@
         "start_fido2_validation": "Start FIDO2 validering",
         "fido2_auth": "Login med FIDO2",
         "fido2_success": "Enheden blev registreret",
-        "fido2_validation_failed": "Validering mislykkedes"
+        "fido2_validation_failed": "Validering mislykkedes",
+        "set_fido2_touchid": ""
     },
     "user": {
         "action": "Handling",
@@ -1071,7 +1223,42 @@
         "waiting": "Venter",
         "week": "uge",
         "weekly": "Ugeligt",
-        "weeks": "uger"
+        "weeks": "uger",
+        "empty": "",
+        "allowed_protocols": "",
+        "login_history": "",
+        "mailbox": "",
+        "mailbox_general": "",
+        "syncjob_EXIT_TLS_FAILURE": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE": "",
+        "syncjob_EXIT_OVERQUOTA": "",
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "",
+        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "",
+        "syncjob_check_log": "",
+        "syncjob_last_run_result": "",
+        "syncjob_EX_OK": "",
+        "apple_connection_profile_with_app_password": "",
+        "attribute": "",
+        "change_password_hint_app_passwords": "",
+        "clear_recent_successful_connections": "",
+        "created_on": "",
+        "direct_protocol_access": "",
+        "fido2_webauthn": "",
+        "from": "",
+        "last_pw_change": "",
+        "last_ui_login": "",
+        "month": "",
+        "months": "",
+        "open_logs": "",
+        "open_webmail_sso": "",
+        "pushover_sound": "",
+        "recent_successful_connections": "",
+        "syncjob_EXIT_CONNECTION_FAILURE": "",
+        "value": "",
+        "with_app_password": "",
+        "year": "",
+        "years": "",
+        "mailbox_settings": ""
     },
     "warning": {
         "cannot_delete_self": "Kan ikke slette en bruger som er logget ind.",
@@ -1083,12 +1270,40 @@
         "no_active_admin": "Kan ikke deaktivere den sidste administrator",
         "quota_exceeded_scope": "Domænekvote overskredet: Kun ubegrænsede postkasser kan oprettes i dette domæneomfang.",
         "session_token": "Form nøgle ugyldig: Nøgle passer ikke",
-        "session_ua": "Form nøgle ugyldig: Bruger-Agent gyldighedskontrols fejl"
+        "session_ua": "Form nøgle ugyldig: Bruger-Agent gyldighedskontrols fejl",
+        "is_not_primary_alias": ""
     },
     "datatables": {
         "lengthMenu": "Vis _MENU_ poster",
         "paginate": {
-            "first": "Først"
-        }
+            "first": "Først",
+            "last": "",
+            "next": "",
+            "previous": ""
+        },
+        "decimal": "",
+        "infoPostFix": "",
+        "loadingRecords": "",
+        "processing": "",
+        "search": "",
+        "zeroRecords": "",
+        "thousands": "",
+        "emptyTable": "",
+        "expand_all": "",
+        "info": "",
+        "infoEmpty": "",
+        "infoFiltered": "",
+        "aria": {
+            "sortAscending": "",
+            "sortDescending": ""
+        },
+        "collapse_all": ""
+    },
+    "ratelimit": {
+        "day": "",
+        "hour": "",
+        "disabled": "",
+        "second": "",
+        "minute": ""
     }
 }
