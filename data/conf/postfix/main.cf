@@ -117,7 +117,7 @@ smtpd_tls_loglevel = 1
 smtp_tls_mandatory_protocols = >=TLSv1.2
 lmtp_tls_mandatory_protocols = >=TLSv1.2
 smtpd_tls_mandatory_protocols = >=TLSv1.2
-smtpd_tls_mandatory_ciphers = high
+smtpd_tls_mandatory_ciphers = medium
 
 smtp_tls_protocols = >=TLSv1.2
 lmtp_tls_protocols = >=TLSv1.2
