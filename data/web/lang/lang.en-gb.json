@@ -37,7 +37,7 @@
         "add_domain_only": "Add domain only",
         "add_domain_restart": "Add domain and restart SOGo",
         "alias_address": "Alias address/es",
-        "alias_address_info": "<small>Full email address/es or @example.com, to catch all messages for a domain (comma-separated). <b>mailcow domains only</b>.</small>",
+        "alias_address_info": "<small>Full email address/es or @example.com, to catch all messages for a domain (comma-separated). If the e-mail address starts with a dot (e.g. <i>.user@example.org</i>), all e-mails are forwarded to <i>*.user@example.org</i>. <b>mailcow domains only</b>.</small>",
         "alias_domain": "Alias domain",
         "alias_domain_info": "<small>Valid domain names only (comma-separated).</small>",
         "app_name": "App name",

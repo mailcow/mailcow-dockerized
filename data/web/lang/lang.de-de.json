@@ -37,7 +37,7 @@
         "add_domain_only": "Nur Domain hinzufügen",
         "add_domain_restart": "Domain hinzufügen und SOGo neustarten",
         "alias_address": "Alias-Adresse(n)",
-        "alias_address_info": "<small>Vollständige E-Mail-Adresse(n) eintragen oder @example.com, um alle Nachrichten einer Domain weiterzuleiten. Getrennt durch Komma. <b>Nur eigene Domains</b>.</small>",
+        "alias_address_info": "<small>Vollständige E-Mail-Adresse(n) eintragen oder @example.com, um alle Nachrichten einer Domain weiterzuleiten. Getrennt durch Komma. Wenn die E-Mail-Adresse mit einem Punkt startet (z.B. <i>.user@example.org</i>), werden alle E-Mails an <i>*.user@example.org</i> weitergeleitet. <b>Nur eigene Domains</b>.</small>",
         "alias_domain": "Alias-Domain",
         "alias_domain_info": "<small>Nur gültige Domains. Getrennt durch Komma.</small>",
         "app_name": "App-Name",
