@@ -199,7 +199,7 @@ function restore() {
     case "$1" in
     vmail)
       docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -it --name mailcow-backup --rm \
+      docker run -i --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_vmail.tar.gz
@@ -218,7 +218,7 @@ function restore() {
       ;;
     redis)
       docker stop $(docker ps -qf name=redis-mailcow)
-      docker run -it --name mailcow-backup --rm \
+      docker run -i --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_redis.tar.gz
@@ -226,7 +226,7 @@ function restore() {
       ;;
     crypt)
       docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -it --name mailcow-backup --rm \
+      docker run -i --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_crypt.tar.gz
@@ -239,7 +239,7 @@ function restore() {
         echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
         sleep 2
         docker stop $(docker ps -qf name=rspamd-mailcow)
-        docker run -it --name mailcow-backup --rm \
+        docker run -i --name mailcow-backup --rm \
           -v ${RESTORE_LOCATION}:/backup:z \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
           ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
@@ -250,7 +250,7 @@ function restore() {
         echo -e "Skipping rspamd due to compatibility issues!\e[0m"
       else
         docker stop $(docker ps -qf name=rspamd-mailcow)
-        docker run -it --name mailcow-backup --rm \
+        docker run -i --name mailcow-backup --rm \
           -v ${RESTORE_LOCATION}:/backup:z \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
           ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
@@ -259,7 +259,7 @@ function restore() {
       ;;
     postfix)
       docker stop $(docker ps -qf name=postfix-mailcow)
-      docker run -it --name mailcow-backup --rm \
+      docker run -i --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_postfix.tar.gz
@@ -295,7 +295,7 @@ function restore() {
           ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; /bin/rm -rf /var/lib/mysql/* ; rsync -avh --usermap=root:mysql --groupmap=root:mysql /backup/ /var/lib/mysql/"
         elif [[ -f "${RESTORE_LOCATION}/backup_mysql.gz" ]]; then
         docker run \
-          -it --name mailcow-backup --rm \
+          -i --name mailcow-backup --rm \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:z \
           --entrypoint= \
           -u mysql \
