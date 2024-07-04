@@ -494,7 +494,7 @@
         "infoFiltered": "(filtrado do total de entradas _MAX_)",
         "infoPostFix": "",
         "thousands": ",",
-        "lengthMenu": "Mostrar _ MENU_ entradas",
+        "lengthMenu": "Mostrar _MENU_ entradas",
         "loadingRecords": "Carregando...",
         "processing": "Por favor, aguarde...",
         "search": "Pesquisa:",
