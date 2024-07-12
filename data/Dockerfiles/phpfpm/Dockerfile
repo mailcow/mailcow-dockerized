@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.20
+FROM php:8.2-fpm-bookworm
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
@@ -14,54 +14,51 @@ ARG REDIS_PECL_VERSION=6.0.2
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.6.6
 
-RUN apk add -U --no-cache autoconf \
-  aspell-dev \
-  aspell-libs \
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  aspell \
+  aspell-en \
+  autoconf \
   bash \
-  c-client \
-  cyrus-sasl-dev \
-  freetype \
-  freetype-dev \
+  default-mysql-client \
+  dnsutils \
   g++ \
-  git \
   gettext \
-  gettext-dev \
-  gmp-dev \
+  git \
   gnupg \
-  icu-dev \
-  icu-libs \
   imagemagick \
-  imagemagick-dev \
-  imap-dev \
   jq \
-  libavif \
-  libavif-dev \
-  libjpeg-turbo \
-  libjpeg-turbo-dev \
-  libmemcached \
+  libc-client-dev \
+  libc-client2007e \
+  libfreetype6-dev \
+  libgettextpo-dev \
+  libgmp-dev \
+  libicu-dev \
+  libjpeg62-turbo-dev \
+  libkrb5-3 \
+  libkrb5-dev \
+  libldap2-dev \
+  libmagickcore-dev \
+  libmagickwand-dev \
   libmemcached-dev \
-  libpng \
+  libmemcached11 \
+  libpcre3-dev \
   libpng-dev \
-  libressl \
-  libressl-dev \
-  librsvg \
-  libtool \
+  libpspell-dev \
+  librsvg2-dev \
+  libsasl2-dev \
+  libssl-dev \
   libwebp-dev \
   libxml2-dev \
-  libxpm \
   libxpm-dev \
-  libzip \
+  libxpm4 \
   libzip-dev \
-  linux-headers \
+  libzip4 \
   make \
-  mysql-client \
-  openldap-dev \
-  pcre-dev \
   re2c \
-  redis \
-  samba-client \
-  zlib-dev \
+  redis-tools \
+  smbclient \
   tzdata \
+  zlib1g-dev \
   && pecl install APCu-${APCU_PECL_VERSION} \
   && pecl install imagick-${IMAGICK_PECL_VERSION} \
   && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
@@ -71,40 +68,37 @@ RUN apk add -U --no-cache autoconf \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
-    --with-jpeg=/usr/include/ \
-    --with-webp \
-    --with-xpm \
-    --with-avif \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-xpm \
   && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets sysvsem zip bcmath gmp \
-  && docker-php-ext-configure imap --with-imap --with-imap-ssl \
-  && docker-php-ext-install -j 4 imap \
+  && docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos \
+  && docker-php-ext-install -j 4 imap  \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
-  && apk del --purge autoconf \
-    aspell-dev \
-    cyrus-sasl-dev \
-    freetype-dev \
+  && apt-get purge -y --auto-remove \
+    autoconf \
     g++ \
-    gettext-dev \
-    icu-dev \
-    imagemagick-dev \
-    imap-dev \
-    libavif-dev \
-    libjpeg-turbo-dev \
+    libc-client-dev \
+    libfreetype6-dev \
+    libgettextpo-dev \
+    libicu-dev \
+    libjpeg62-turbo-dev \
+    libkrb5-dev \
+    libldap2-dev \
+    libmagickcore-dev \
+    libmagickwand-dev \
     libmemcached-dev \
+    libpcre3-dev \
     libpng-dev \
-    libressl-dev \
+    libpspell-dev \
+    libsasl2-dev \
+    libssl-dev \
     libwebp-dev \
     libxml2-dev \
     libxpm-dev \
     libzip-dev \
-    linux-headers \
     make \
-    openldap-dev \
-    pcre-dev \
-    zlib-dev
+    zlib1g-dev
 
 COPY ./docker-entrypoint.sh /
 
