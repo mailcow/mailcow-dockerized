@@ -14,8 +14,7 @@ ARG REDIS_PECL_VERSION=6.0.2
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.6.6
 
-RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
-  apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
   aspell \
   aspell-en \
   autoconf \
@@ -80,6 +79,7 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     autoconf \
     g++ \
     libc-client-dev \
+    libfreetype6-dev \
     libgettextpo-dev \
     libicu-dev \
     libjpeg62-turbo-dev \
