@@ -59,9 +59,8 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
   redis-tools \
   smbclient \
   tzdata \
-  zlib1g-dev
-
-  RUN pecl install APCu-${APCU_PECL_VERSION} \
+  zlib1g-dev \
+  && pecl install APCu-${APCU_PECL_VERSION} \
   && pecl install imagick-${IMAGICK_PECL_VERSION} \
   && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
   && pecl install memcached-${MEMCACHED_PECL_VERSION} \
@@ -76,9 +75,8 @@ RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
   && docker-php-ext-install -j 4 imap  \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
-  && chmod +x /usr/local/bin/composer
-
-  RUN apt-get purge -y --auto-remove \
+  && chmod +x /usr/local/bin/composer \
+  && apt-get purge -y --auto-remove \
     autoconf \
     g++ \
     libc-client-dev \
