@@ -48,6 +48,17 @@ if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
+if [[ "${SKIP_ECDSA_CERT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  SKIP_ECDSA_CERT=y
+fi
+
+ACME_BASE=/var/lib/acme
+SSL_EXAMPLE=/var/lib/ssl-example
+
+# Symlink ECDSA to RSA certificate if not present
+[[ ! -f ${ACME_BASE}/ecdsa-cert.pem ]] && [[ ! -L ${ACME_BASE}/ecdsa-cert.pem ]] && ln -s cert.pem ${ACME_BASE}/ecdsa-cert.pem
+[[ ! -f ${ACME_BASE}/ecdsa-key.pem ]] && [[ ! -L ${ACME_BASE}/ecdsa-key.pem ]] && ln -s key.pem ${ACME_BASE}/ecdsa-key.pem
+
 log_f "Waiting for Docker API..."
 until ping dockerapi -c1 > /dev/null; do
   sleep 1
@@ -65,9 +76,6 @@ until ping dovecot -c1 > /dev/null; do
   sleep 1
 done
 log_f "Dovecot OK"
-
-ACME_BASE=/var/lib/acme
-SSL_EXAMPLE=/var/lib/ssl-example
 
 mkdir -p ${ACME_BASE}/acme
 
@@ -96,6 +104,18 @@ if [[ -f ${ACME_BASE}/cert.pem ]] && [[ -f ${ACME_BASE}/key.pem ]] && [[ $(stat 
   ISSUER=$(openssl x509 -in ${ACME_BASE}/cert.pem -noout -issuer)
   if [[ ${ISSUER} != *"Let's Encrypt"* && ${ISSUER} != *"mailcow"* && ${ISSUER} != *"Fake LE Intermediate"* ]]; then
     log_f "Found certificate with issuer other than mailcow snake-oil CA and Let's Encrypt, skipping ACME client..."
+
+    # Make sure we do not combine Letsencrypt ECDSA with another RSA certificate
+    # Remove ECDSA if that is the case
+    if [[ -f ${ACME_BASE}/ecdsa-cert.pem ]] && [[ -f ${ACME_BASE}/ecdsa-key.pem ]] && [[ ! -L ${ACME_BASE}/ecdsa-cert.pem ]] && [[ ! -L ${ACME_BASE}/ecdsa-key.pem ]]; then
+      ISSUER=$(openssl x509 -in ${ACME_BASE}/ecdsa-cert.pem -noout -issuer)
+      if [[ ${ISSUER} == *"Let's Encrypt"* || ${ISSUER} == *"mailcow"* || ${ISSUER} == *"Fake LE Intermediate"* ]]; then
+        log_f "Remove Let's Encrypt ECDSA certificate in favour of a custom RSA one"
+        ln -sf cert.pem ${ACME_BASE}/ecdsa-cert.pem
+        ln -sf key.pem ${ACME_BASE}/ecdsa-key.pem
+      fi
+    fi
+
     sleep 3650d
     exec $(readlink -f "$0")
   fi
@@ -104,17 +124,27 @@ else
     log_f "Restoring previous acme certificate and restarting script..."
     cp ${ACME_BASE}/${MAILCOW_HOSTNAME}/cert.pem ${ACME_BASE}/cert.pem
     cp ${ACME_BASE}/${MAILCOW_HOSTNAME}/key.pem ${ACME_BASE}/key.pem
+
+    if [[ -f ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-cert.pem ]] && [[ -f ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-key.pem ]] && verify_hash_match ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-cert.pem ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-key.pem; then
+      # Remove symlink before copying
+      cp --remove-destination ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-cert.pem ${ACME_BASE}/ecdsa-cert.pem
+      cp --remove-destination ${ACME_BASE}/${MAILCOW_HOSTNAME}/ecdsa-key.pem ${ACME_BASE}/ecdsa-key.pem
+    fi
     # Restarting with env var set to trigger a restart,
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   else
+    ISSUER="mailcow"
     log_f "Restoring mailcow snake-oil certificates and restarting script..."
     cp ${SSL_EXAMPLE}/cert.pem ${ACME_BASE}/cert.pem
     cp ${SSL_EXAMPLE}/key.pem ${ACME_BASE}/key.pem
+    ln -sf cert.pem ${ACME_BASE}/ecdsa-cert.pem
+    ln -sf key.pem ${ACME_BASE}/ecdsa-key.pem
     exec env TRIGGER_RESTART=1 $(readlink -f "$0")
   fi
 fi
 
 chmod 600 ${ACME_BASE}/key.pem
+chmod 600 ${ACME_BASE}/ecdsa-key.pem
 
 log_f "Waiting for database..."
 while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent > /dev/null; do
@@ -146,16 +176,26 @@ log_f "OK" no_date
 log_f "Initializing, please wait..."
 
 while true; do
-  POSTFIX_CERT_SERIAL="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-  DOVECOT_CERT_SERIAL="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-  POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-  DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  POSTFIX_CERT_SERIAL="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  POSTFIX_CERT_SERIAL_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -tls1_2 -cipher 'aRSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  POSTFIX_CERT_SERIAL_NEW_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
+  DOVECOT_CERT_SERIAL_NEW_ECDSA="$(echo | openssl s_client -tls1_2 -cipher 'aECDSA' -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
   # Re-using previous acme-mailcow account and domain keys
   if [[ ! -f ${ACME_BASE}/acme/key.pem ]]; then
     log_f "Generating missing domain private rsa key..."
     openssl genrsa 4096 > ${ACME_BASE}/acme/key.pem
   else
     log_f "Using existing domain rsa key ${ACME_BASE}/acme/key.pem"
+  fi
+  if [[ ! -f ${ACME_BASE}/acme/ecdsa-key.pem ]]; then
+    log_f "Generating missing domain private ecdsa key..."
+    openssl ecparam -genkey -name secp384r1 -noout > ${ACME_BASE}/acme/ecdsa-key.pem
+  else
+    log_f "Using existing domain ecdsa key ${ACME_BASE}/acme/ecdsa-key.pem"
   fi
   if [[ ! -f ${ACME_BASE}/acme/account.pem ]]; then
     log_f "Generating missing Lets Encrypt account key..."
@@ -177,6 +217,7 @@ while true; do
   fi
 
   chmod 600 ${ACME_BASE}/acme/key.pem
+  chmod 600 ${ACME_BASE}/acme/ecdsa-key.pem
   chmod 600 ${ACME_BASE}/acme/account.pem
 
   unset EXISTING_CERTS
@@ -317,6 +358,24 @@ while true; do
       cp ${ACME_BASE}/${CERT_NAME}/cert.pem ${ACME_BASE}/cert.pem
       cp ${ACME_BASE}/${CERT_NAME}/key.pem ${ACME_BASE}/key.pem
     fi
+
+    if [[ "${SKIP_ECDSA_CERT}" != "y" ]]; then
+      DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh ecdsa
+      RETURN="$?"
+      if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
+        CERT_AMOUNT_CHANGED=1
+        CERT_CHANGED=1
+      elif [[ "$RETURN" == "1" ]]; then # 1 = cert renewed successfully
+        CERT_CHANGED=1
+      elif [[ "$RETURN" == "2" ]]; then # 2 = cert not due for renewal
+        :
+      else
+        CERT_ERRORS=1
+      fi
+      # create relative symbolic link as server certificate
+      ln -sf ${CERT_NAME}/ecdsa-cert.pem ${ACME_BASE}/ecdsa-cert.pem
+      ln -sf ${CERT_NAME}/ecdsa-key.pem ${ACME_BASE}/ecdsa-key.pem
+    fi
   fi
 
   # individual certificates for SNI [@]
@@ -353,6 +412,21 @@ while true; do
       else
         CERT_ERRORS=1
       fi
+
+      if [[ "${SKIP_ECDSA_CERT}" != "y" ]]; then
+        DOMAINS=${VALIDATED_DOMAINS_SORTED[@]} /srv/obtain-certificate.sh ecdsa
+        RETURN="$?"
+        if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
+          CERT_AMOUNT_CHANGED=1
+          CERT_CHANGED=1
+        elif [[ "$RETURN" == "1" ]]; then # 1 = cert renewed successfully
+          CERT_CHANGED=1
+        elif [[ "$RETURN" == "2" ]]; then # 2 = cert not due for renewal
+          :
+        else
+          CERT_ERRORS=1
+        fi
+      fi
     fi
   done
   fi
@@ -372,9 +446,19 @@ while true; do
         DATE=$(date +%Y-%m-%d_%H_%M_%S)
         log_f "Found orphaned certificate: ${EXISTING_CERT} - archiving it at ${ACME_BASE}/backups/${EXISTING_CERT}/"
         BACKUP_DIR=${ACME_BASE}/backups/${EXISTING_CERT}/${DATE}
+        BACKUP_DIR_ECDSA=${ACME_BASE}/backups/${EXISTING_CERT}/ecdsa-${DATE}
+
+        # archive ecdsa cert (if exists)
+        mkdir -p ${BACKUP_DIR_ECDSA}/
+        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem && -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-domains ]] && cp ${ACME_BASE}/${EXISTING_CERT}/ecdsa-domains ${BACKUP_DIR_ECDSA}/
+        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-cert.pem ${BACKUP_DIR_ECDSA}/
+        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-key.pem ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-key.pem ${BACKUP_DIR_ECDSA}/
+        [[ -f ${ACME_BASE}/${EXISTING_CERT}/ecdsa-acme.csr ]] && mv ${ACME_BASE}/${EXISTING_CERT}/ecdsa-acme.csr ${BACKUP_DIR_ECDSA}/
+
         # archive rsa cert and any other files
         mkdir -p ${ACME_BASE}/backups/${EXISTING_CERT}
         mv ${ACME_BASE}/${EXISTING_CERT} ${BACKUP_DIR}
+
         CERT_CHANGED=1
         CERT_AMOUNT_CHANGED=1
       fi
@@ -384,26 +468,15 @@ while true; do
   # reload on new or changed certificates
   if [[ "${CERT_CHANGED}" == "1" ]]; then
     rm -f "${ACME_BASE}/force_renew" 2> /dev/null
-    RELOAD_LOOP_C=1
-    while [[ "${POSTFIX_CERT_SERIAL}" == "${POSTFIX_CERT_SERIAL_NEW}" ]] || [[ "${DOVECOT_CERT_SERIAL}" == "${DOVECOT_CERT_SERIAL_NEW}" ]] || [[ ${#POSTFIX_CERT_SERIAL_NEW} -ne 36 ]] || [[ ${#DOVECOT_CERT_SERIAL_NEW} -ne 36 ]]; do
-      log_f "Reloading or restarting services... (${RELOAD_LOOP_C})"
-      RELOAD_LOOP_C=$((RELOAD_LOOP_C + 1))
-      CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
-      log_f "Waiting for containers to settle..."
-      sleep 10
-      until nc -z dovecot 143; do
-        sleep 1
-      done
-      until nc -z postfix 25; do
-        sleep 1
-      done
-      POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
-      if [[ ${RELOAD_LOOP_C} -gt 3 ]]; then
-        log_f "Some services do return old end dates, something went wrong!"
-        ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
-        break;
-      fi
+    log_f "Reloading or restarting services... (${RELOAD_LOOP_C})"
+    CERT_AMOUNT_CHANGED=${CERT_AMOUNT_CHANGED} /srv/reload-configurations.sh
+    log_f "Waiting for containers to settle..."
+    sleep 10
+    until nc -z dovecot 143; do
+      sleep 1
+    done
+    until nc -z postfix 25; do
+      sleep 1
     done
   fi
 
