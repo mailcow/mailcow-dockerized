@@ -309,6 +309,33 @@
     </div>
   </div>
 </div><!-- pw change modal -->
+<!-- pw recovery email modal -->
+<div class="modal fade" id="pwRecoveryEmailModal" tabindex="-1" role="dialog" aria-labelledby="pwRecoveryEmailModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.user.pw_recovery_email }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-cached-form="false" data-id="pw_recovery_change" role="form" method="post" autocomplete="off">
+          <div class="row mb-4">
+            <label class="control-label col-sm-3" for="pw_recovery_email">{{ lang.user.email }}</label>
+            <div class="col-sm-9">
+              <input type="email" class="form-control" name="pw_recovery_email" value="{{ mailboxdata.attributes.recovery_email }}">
+              <small class="text-muted">{{ lang.user.password_reset_info }}</small>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-3 col-sm-9">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="pw_recovery_change" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.save }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- pw recovery email modal -->
 <!-- temp alias modal -->
 <div class="modal fade" id="tempAliasModal" tabindex="-1" role="dialog" aria-labelledby="tempAliasModalLabel">
   <div class="modal-dialog modal-lg" role="document">

@@ -2865,21 +2865,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
             }
             if (!empty($is_now)) {
-              $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+              $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
-              (int)$sogo_access = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              (int)$imap_access = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
-              (int)$pop3_access = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
-              (int)$smtp_access = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
-              (int)$sieve_access = (isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
-              (int)$relayhost = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
-              (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
-              $name       = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
-              $domain     = $is_now['domain'];
-              $quota_b    = $quota_m * 1048576;
-              $password   = (!empty($_data['password'])) ? $_data['password'] : null;
-              $password2  = (!empty($_data['password2'])) ? $_data['password2'] : null;
-              $tags       = (is_array($_data['tags']) ? $_data['tags'] : array());
+              (int)$sogo_access     = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
+              (int)$imap_access     = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
+              (int)$pop3_access     = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
+              (int)$smtp_access     = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
+              (int)$sieve_access    = (isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
+              (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
+              $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
+              $domain               = $is_now['domain'];
+              $quota_b              = $quota_m * 1048576;
+              $password             = (!empty($_data['password'])) ? $_data['password'] : null;
+              $password2            = (!empty($_data['password2'])) ? $_data['password2'] : null;
+              $pw_recovery_email     = (isset($_data['pw_recovery_email'])) ? $_data['pw_recovery_email'] : $is_now['attributes']['recovery_email'];
+              $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
             }
             else {
               $_SESSION['return'][] = array(
@@ -3132,31 +3133,43 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':address' => $username,
               ':active' => $active
             ));
-            $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                `active` = :active,
-                `name`= :name,
-                `quota` = :quota_b,
-                `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
-                `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
-                `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
-                `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
-                `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
-                `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
-                `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access)
-                  WHERE `username` = :username");
-            $stmt->execute(array(
-              ':active' => $active,
-              ':name' => $name,
-              ':quota_b' => $quota_b,
-              ':force_pw_update' => $force_pw_update,
-              ':sogo_access' => $sogo_access,
-              ':imap_access' => $imap_access,
-              ':pop3_access' => $pop3_access,
-              ':sieve_access' => $sieve_access,
-              ':smtp_access' => $smtp_access,
-              ':relayhost' => $relayhost,
-              ':username' => $username
-            ));
+            try {
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET
+                  `active` = :active,
+                  `name`= :name,
+                  `quota` = :quota_b,
+                  `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
+                  `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
+                  `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
+                  `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
+                  `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
+                  `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
+                  `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
+                  `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email)
+                    WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':active' => $active,
+                  ':name' => $name,
+                  ':quota_b' => $quota_b,
+                  ':force_pw_update' => $force_pw_update,
+                  ':sogo_access' => $sogo_access,
+                  ':imap_access' => $imap_access,
+                  ':pop3_access' => $pop3_access,
+                  ':sieve_access' => $sieve_access,
+                  ':smtp_access' => $smtp_access,
+                  ':recovery_email' => $pw_recovery_email,
+                  ':relayhost' => $relayhost,
+                  ':username' => $username
+                ));
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+              return false;
+            }
             // save tags
             foreach($tags as $index => $tag){
               if (empty($tag)) continue;
