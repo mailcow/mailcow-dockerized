@@ -203,6 +203,13 @@
                       <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
                     </div>
                   </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2" for="pw_recovery_email">{{ lang.edit.password_recovery_email }}</label>
+                    <div class="col-sm-10">
+                      <input type="email" class="form-control" name="pw_recovery_email" value="{{ result.attributes.recovery_email }}">
+                      <small class="text-muted">{{ lang.admin.password_reset_info }}</small>
+                    </div>
+                  </div>
                   <div data-acl="{{ acl.extend_sender_acl }}" class="row mb-4">
                     <label class="control-label col-sm-2" for="extended_sender_acl">{{ lang.edit.extended_sender_acl }}</label>
                     <div class="col-sm-10">

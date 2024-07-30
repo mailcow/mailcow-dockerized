@@ -63,6 +63,9 @@
             {% endif %}
           </div>
         </form>
+        <div class="mt-3 mb-4">
+          <a href="/reset-password">{{ lang.login.forgot_password }}</a>
+        </div>
         {% if login_delay %}
         <p><div class="my-4 alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
         {% endif %}
