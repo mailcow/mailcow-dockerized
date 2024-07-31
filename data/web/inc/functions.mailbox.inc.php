@@ -184,6 +184,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'msg' => 'global_filter_written'
           );
           return true;
+        break;
         case 'filter':
           $sieve = new Sieve\SieveParser();
           if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
@@ -1249,6 +1250,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
             $_data['quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $_data['app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+            $_data['pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['spam_alias'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_spam_alias']);
             $_data['tls_policy'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_tls_policy']);
@@ -1264,14 +1266,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_notification'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_notification']);
             $_data['quarantine_category'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_category']);
             $_data['app_passwds'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_app_passwds']);     
+            $_data['pw_reset'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_pw_reset']);     
           }
 
           try {
             $stmt = $pdo->prepare("INSERT INTO `user_acl` 
               (`username`, `spam_alias`, `tls_policy`, `spam_score`, `spam_policy`, `delimiter_action`, `syncjobs`, `eas_reset`, `sogo_profile_reset`,
-                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`) 
+                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`, `pw_reset`) 
               VALUES (:username, :spam_alias, :tls_policy, :spam_score, :spam_policy, :delimiter_action, :syncjobs, :eas_reset, :sogo_profile_reset,
-                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds) ");
+                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds, :pw_reset) ");
             $stmt->execute(array(
               ':username' => $username,
               ':spam_alias' => $_data['spam_alias'],
@@ -1287,7 +1290,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':quarantine_attachments' => $_data['quarantine_attachments'],
               ':quarantine_notification' => $_data['quarantine_notification'],
               ':quarantine_category' => $_data['quarantine_category'],
-              ':app_passwds' => $_data['app_passwds']
+              ':app_passwds' => $_data['app_passwds'],
+              ':pw_reset' => $_data['pw_reset']
             ));
           }
           catch (PDOException $e) {
@@ -1576,6 +1580,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
             $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+            $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['acl'] = (array)$_data['acl'];
             $attr['acl_spam_alias'] = 0;
@@ -3276,6 +3281,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attr['acl_quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
               $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
               $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+              $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
             } else {    
               foreach ($is_now as $key => $value){
                 $attr[$key] = $is_now[$key];
