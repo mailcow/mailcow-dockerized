@@ -284,17 +284,17 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
             }
             if (!$sasl[$k]['location']) {
               $curl = curl_init();
-              curl_setopt($curl, CURLOPT_URL,"https://dfdata.bella.network/lookup/" . $sasl[$k]['real_rip']);
+              curl_setopt($curl, CURLOPT_URL,"https://dfdata.bella.network/country/" . $sasl[$k]['real_rip']);
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
               curl_setopt($curl, CURLOPT_USERAGENT, 'Moocow');
               curl_setopt($curl, CURLOPT_TIMEOUT, 5);
               $ip_data = curl_exec($curl);
               if (!curl_errno($curl)) {
                 $ip_data_array = json_decode($ip_data, true);
-                if ($ip_data_array !== false and !empty($ip_data_array['location']['shortcountry'])) {
-                  $sasl[$k]['location'] = $ip_data_array['location']['shortcountry'];
+                if ($ip_data_array !== false and !empty($ip_data_array['shortcountry'])) {
+                  $sasl[$k]['location'] = $ip_data_array['shortcountry'];
                     try {
-                      $redis->hSet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip'], $ip_data_array['location']['shortcountry']);
+                      $redis->hSet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip'], $ip_data_array['shortcountry']);
                     }
                     catch (RedisException $e) {
                       $_SESSION['return'][] = array(

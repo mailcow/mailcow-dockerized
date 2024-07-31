@@ -3588,30 +3588,54 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $footers['plain'] = isset($_data['plain']) ? $_data['plain'] : '';
           $footers['skip_replies'] = isset($_data['skip_replies']) ? (int)$_data['skip_replies'] : 0;
           $footers['mbox_exclude'] = array();
-          if (isset($_data["mbox_exclude"])){
-            if (!is_array($_data["mbox_exclude"])) {
-              $_data["mbox_exclude"] = array($_data["mbox_exclude"]);
+          $footers['alias_domain_exclude'] = array();
+          if (isset($_data["exclude"])){
+            if (!is_array($_data["exclude"])) {
+              $_data["exclude"] = array($_data["exclude"]);
             }
-            foreach ($_data["mbox_exclude"] as $mailbox) {
-              if (!filter_var($mailbox, FILTER_VALIDATE_EMAIL)) {
+            foreach ($_data["exclude"] as $exclude) {
+              if (filter_var($exclude, FILTER_VALIDATE_EMAIL)) {
+                $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `address` = :address
+                  UNION
+                  SELECT `username` FROM `mailbox` WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':address' => $exclude,
+                  ':username' => $exclude,
+                ));
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if(!$row){
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('username_invalid', $exclude)
+                  );
+                  continue;
+                }
+                array_push($footers['mbox_exclude'], $exclude);
+              }
+              elseif (is_valid_domain_name($exclude)) {
+                $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `alias_domain` = :alias_domain");
+                $stmt->execute(array(
+                  ':alias_domain' => $exclude,
+                ));
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if(!$row){
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('username_invalid', $exclude)
+                  );
+                  continue;
+                }
+                array_push($footers['alias_domain_exclude'], $exclude);
+              }
+              else {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('username_invalid', $mailbox)
+                  'msg' => array('username_invalid', $exclude)
                 );
-                continue;
               }
-              $is_now = mailbox('get', 'mailbox_details', $mailbox);            
-              if(empty($is_now)){
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('username_invalid', $mailbox)
-                );
-                continue;
-              }
-              
-              array_push($footers['mbox_exclude'], $mailbox);
             }
           }
           foreach ($domains as $domain) {
@@ -3636,12 +3660,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             try {
               $stmt = $pdo->prepare("DELETE FROM `domain_wide_footer` WHERE `domain`= :domain");
               $stmt->execute(array(':domain' => $domain));
-              $stmt = $pdo->prepare("INSERT INTO `domain_wide_footer` (`domain`, `html`, `plain`, `mbox_exclude`, `skip_replies`) VALUES (:domain, :html, :plain, :mbox_exclude, :skip_replies)");
+              $stmt = $pdo->prepare("INSERT INTO `domain_wide_footer` (`domain`, `html`, `plain`, `mbox_exclude`, `alias_domain_exclude`, `skip_replies`) VALUES (:domain, :html, :plain, :mbox_exclude, :alias_domain_exclude, :skip_replies)");
               $stmt->execute(array(
                 ':domain' => $domain,
                 ':html' => $footers['html'],
                 ':plain' => $footers['plain'],
                 ':mbox_exclude' => json_encode($footers['mbox_exclude']),
+                ':alias_domain_exclude' => json_encode($footers['alias_domain_exclude']),
                 ':skip_replies' => $footers['skip_replies'],
               ));
             }
@@ -4466,6 +4491,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['mboxes_in_domain'] = $MailboxDataDomain['count'];
           $domaindata['mboxes_left'] = $row['mailboxes']  - $MailboxDataDomain['count'];
           $domaindata['domain_name'] = $row['domain'];
+          $domaindata['domain_h_name'] = idn_to_utf8($row['domain']);
           $domaindata['description'] = $row['description'];
           $domaindata['max_num_aliases_for_domain'] = $row['aliases'];
           $domaindata['max_num_mboxes_for_domain'] = $row['mailboxes'];
@@ -4801,7 +4827,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           try {
-            $stmt = $pdo->prepare("SELECT `html`, `plain`, `mbox_exclude`, `skip_replies` FROM `domain_wide_footer`
+            $stmt = $pdo->prepare("SELECT `html`, `plain`, `mbox_exclude`, `alias_domain_exclude`, `skip_replies` FROM `domain_wide_footer`
               WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain

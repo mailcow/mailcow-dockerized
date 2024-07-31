@@ -1,4 +1,3 @@
-version: '2.1'
 services:
 
     php-fpm-mailcow:
@@ -26,6 +25,6 @@ services:
         - /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock
 
     mysql-mailcow:
-      image: alpine:3.19
+      image: alpine:3.20
       command: /bin/true
       restart: "no"
