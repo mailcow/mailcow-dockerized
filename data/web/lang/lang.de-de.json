@@ -446,6 +446,7 @@
         "password_empty": "Passwort darf nicht leer sein",
         "password_mismatch": "Passwort-Wiederholung stimmt nicht überein",
         "password_reset_invalid_user": "Benutzer nicht gefunden oder keine E-Mail-Adresse zur Wiederherstellung eingerichtet",
+        "password_reset_na": "Die Passwortwiederherstellung ist momentan nicht verfügbar. Bitte wenden Sie sich an Ihren Administrator.",
         "policy_list_from_exists": "Ein Eintrag mit diesem Wert existiert bereits",
         "policy_list_from_invalid": "Eintrag hat ein ungültiges Format",
         "private_key_error": "Schlüsselfehler: %s",
