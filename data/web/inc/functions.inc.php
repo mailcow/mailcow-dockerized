@@ -1137,7 +1137,7 @@ function edit_user_account($_data) {
       );
       return false;
     }
-    
+
     $pw_recovery_email = (!filter_var($pw_recovery_email, FILTER_VALIDATE_EMAIL)) ? '' : $pw_recovery_email;
     $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email)
       WHERE `username` = :username");
@@ -2329,6 +2329,17 @@ function reset_password($action, $data = null) {
         return false;
       }
 
+      $pw_reset_notification = reset_password('get_notification', 'raw');
+      if (!$pw_reset_notification) return false;
+      if (empty($pw_reset_notification['from']) || empty($pw_reset_notification['subject'])) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'password_reset_na'
+        );
+        return false;
+      }
+
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
@@ -2380,9 +2391,6 @@ function reset_password($action, $data = null) {
         ':username' => $username,
         ':token' => $token
       ));
-
-      $pw_reset_notification = reset_password('get_notification', 'raw');
-      if (!$pw_reset_notification) return false;
 
       $reset_link = getBaseURL() . "/reset-password?token=" . $token;
 
@@ -2633,30 +2641,10 @@ function reset_password($action, $data = null) {
       $subject = $data['subject'];
       $from = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data['from']);
 
-      if (filter_var($from, FILTER_VALIDATE_EMAIL) === false) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => '???'
-        );
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => 'access_denied'
-        );
-        return false;
-      }
-
+      $from = (!filter_var($from, FILTER_VALIDATE_EMAIL)) ? "" : $from;
+      $subject = (empty($subject)) ? "" : $subject;
       $text = (empty($data['text_tmpl'])) ? "" : $data['text_tmpl'];
       $html = (empty($data['html_tmpl'])) ? "" : $data['html_tmpl'];
-      if (empty($text) && empty($html)) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => 'access_denied'
-        );
-        return false;
-      }
 
       try {
         $redis->Set('PW_RESET_FROM', $from);

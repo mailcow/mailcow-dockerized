@@ -446,6 +446,7 @@
         "password_empty": "Password must not be empty",
         "password_mismatch": "Confirmation password does not match",
         "password_reset_invalid_user": "Mailbox not found or no recovery email is set",
+        "password_reset_na": "The password recovery is currently unavailable. Please contact your administrator.",
         "policy_list_from_exists": "A record with given name exists",
         "policy_list_from_invalid": "Record has invalid format",
         "private_key_error": "Private key error: %s",
