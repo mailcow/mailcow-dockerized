@@ -4,7 +4,6 @@ smtp       inet  n       -       n       -       1       postscreen
   -o postscreen_upstream_proxy_protocol=haproxy
   -o syslog_name=haproxy
 smtpd      pass  -       -       n       -       -       smtpd
-  -o smtpd_helo_restrictions=permit_mynetworks,reject_non_fqdn_helo_hostname
   -o smtpd_sasl_auth_enable=no
   -o smtpd_sender_restrictions=permit_mynetworks,reject_unlisted_sender,reject_unknown_sender_domain
 

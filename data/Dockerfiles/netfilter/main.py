@@ -80,16 +80,16 @@ def refreshF2bregex():
   global exit_code
   if not r.get('F2B_REGEX'):
     f2bregex = {}
-    f2bregex[1] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
-    f2bregex[2] = 'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
-    f2bregex[3] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed: (?!.*Connection lost to authentication server).+'
-    f2bregex[4] = 'warning: non-SMTP command from .*\[([0-9a-f\.:]+)]:.+'
-    f2bregex[5] = 'NOQUEUE: reject: RCPT from \[([0-9a-f\.:]+)].+Protocol error.+'
-    f2bregex[6] = '-login: Disconnected.+ \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
-    f2bregex[7] = '-login: Aborted login.+ \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    f2bregex[8] = '-login: Aborted login.+ \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    f2bregex[9] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
-    f2bregex[10] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
+    f2bregex[1] = r'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
+    f2bregex[2] = r'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
+    f2bregex[3] = r'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed: (?!.*Connection lost to authentication server).+'
+    f2bregex[4] = r'warning: non-SMTP command from .*\[([0-9a-f\.:]+)]:.+'
+    f2bregex[5] = r'NOQUEUE: reject: RCPT from \[([0-9a-f\.:]+)].+Protocol error.+'
+    f2bregex[6] = r'-login: Disconnected.+ \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
+    f2bregex[7] = r'-login: Aborted login.+ \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[8] = r'-login: Aborted login.+ \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+    f2bregex[9] = r'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
+    f2bregex[10] = r'([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
     r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
   else:
     try:
@@ -114,8 +114,6 @@ def ban(address):
   global lock
 
   refreshF2boptions()
-  BAN_TIME = int(f2boptions['ban_time'])
-  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
   MAX_ATTEMPTS = int(f2boptions['max_attempts'])
   RETRY_WINDOW = int(f2boptions['retry_window'])
   NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
@@ -150,7 +148,7 @@ def ban(address):
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
     cur_time = int(round(time.time()))
-    NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
     if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
       with lock:
@@ -277,12 +275,11 @@ def snat6(snat_target):
       tables.snat6(snat_target, os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64'))
 
 def autopurge():
+  global f2boptions
+
   while not quit_now:
     time.sleep(10)
     refreshF2boptions()
-    BAN_TIME = int(f2boptions['ban_time'])
-    MAX_BAN_TIME = int(f2boptions['max_ban_time'])
-    BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
     MAX_ATTEMPTS = int(f2boptions['max_attempts'])
     QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
@@ -290,9 +287,9 @@ def autopurge():
         unban(str(net))
     for net in bans.copy():
       if bans[net]['attempts'] >= MAX_ATTEMPTS:
-        NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** bans[net]['ban_counter']
+        NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
         TIME_SINCE_LAST_ATTEMPT = time.time() - bans[net]['last_attempt']
-        if TIME_SINCE_LAST_ATTEMPT > NET_BAN_TIME or TIME_SINCE_LAST_ATTEMPT > MAX_BAN_TIME:
+        if TIME_SINCE_LAST_ATTEMPT > NET_BAN_TIME:
           unban(net)
 
 def mailcowChainOrder():
@@ -305,6 +302,16 @@ def mailcowChainOrder():
       quit_now, exit_code = tables.checkIPv4ChainOrder()
       if quit_now: return
       quit_now, exit_code = tables.checkIPv6ChainOrder()
+
+def calcNetBanTime(ban_counter):
+  global f2boptions
+
+  BAN_TIME = int(f2boptions['ban_time'])
+  MAX_BAN_TIME = int(f2boptions['max_ban_time'])
+  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
+  NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** ban_counter
+  NET_BAN_TIME = max([BAN_TIME, min([NET_BAN_TIME, MAX_BAN_TIME])])
+  return NET_BAN_TIME
 
 def isIpNetwork(address):
   try:

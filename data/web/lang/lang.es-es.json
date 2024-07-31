@@ -22,7 +22,9 @@
         "app_passwds": "Gestionar las contraseñas de aplicaciones",
         "domain_desc": "Cambiar descripción del dominio",
         "protocol_access": "Cambiar protocolo de acceso",
-        "quarantine_category": "Cambiar categoría de las notificaciones de cuarentena"
+        "quarantine_category": "Cambiar categoría de las notificaciones de cuarentena",
+        "domain_relayhost": "Cambiar relayhost por un dominio",
+        "extend_sender_acl": "Permitir extender la ACL del remitente por direcciones externas"
     },
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",

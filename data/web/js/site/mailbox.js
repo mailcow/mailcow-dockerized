@@ -450,6 +450,10 @@ jQuery(function($){
         dataSrc: function(json){
           $.each(json.data, function(i, item) {
             item.domain_name = escapeHtml(item.domain_name);
+            item.domain_h_name = escapeHtml(item.domain_h_name);
+            if (item.domain_name != item.domain_h_name){
+              item.domain_h_name = item.domain_h_name + '<small class="d-block">' + item.domain_name + '</small>';
+            }
 
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
@@ -488,11 +492,11 @@ jQuery(function($){
 
             if (item.backupmx == 1) {
               if (item.relay_unknown_only == 1) {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay Non-Local</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay Non-Local</div> ' + item.domain_h_name;
               } else if (item.relay_all_recipients == 1) {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay All</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay All</div> ' + item.domain_h_name;
               } else {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay</div> ' + item.domain_h_name;
               }
             }
           });
@@ -520,7 +524,7 @@ jQuery(function($){
         },
         {
           title: lang.domain,
-          data: 'domain_name',
+          data: 'domain_h_name',
           responsivePriority: 3,
           defaultContent: ''
         },

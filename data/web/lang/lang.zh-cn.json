@@ -336,7 +336,9 @@
         "validate_license_now": "通过证书服务器验证 GUID",
         "verify": "验证",
         "yes": "&#10003;",
-        "options": "选项"
+        "options": "选项",
+        "f2b_max_ban_time": "最长封禁时间（秒）",
+        "copy_to_clipboard": "复制到粘贴板"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -356,7 +358,7 @@
         "description_invalid": "%s 的资源描述无效",
         "dkim_domain_or_sel_exists": "\"%s\"的 DKIM 密钥已存在，因此不会被覆盖",
         "dkim_domain_or_sel_invalid": "DKIM 域名或选择器无效: %s",
-        "domain_cannot_match_hostname": "域名与主机名称不匹配",
+        "domain_cannot_match_hostname": "域名不应与主机名相同",
         "domain_exists": "域名 %s 已存在",
         "domain_invalid": "域名地址为空或无效",
         "domain_not_empty": "不能删除非空域名 %s",
@@ -456,7 +458,8 @@
         "validity_missing": "请设置有效期",
         "value_missing": "请填入所有值",
         "yotp_verification_failed": "Yubico OTP 认证失败: %s",
-        "template_exists": "模板 %s 已存在"
+        "template_exists": "模板 %s 已存在",
+        "template_name_invalid": "模板名称无效"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -487,14 +490,18 @@
         "container_disabled": "容器已被停止或禁用",
         "container_running": "运行中",
         "cores": "核心数",
-        "memory": "内存"
+        "memory": "内存",
+        "error_show_ip": "无法解析公网IP地址",
+        "show_ip": "显示公网IP",
+        "update_available": "有可用更新",
+        "update_failed": "无法检查更新"
     },
     "diagnostics": {
         "cname_from_a": "来自 A/AAAA 记录的值。但只要记录指向正确的资源即可。",
         "dns_records": "DNS 记录",
         "dns_records_24hours": "请注意 DNS 记录的更改可能需要24小时才可以使此页面的当前状态显示正确。此页面为你提供了一个可以便捷查询如何配置 DNS 记录以及检查你的 DNS 记录是否正确的方式。",
         "dns_records_data": "正确数据",
-        "dns_records_docs": "请同时也参考这个<a target=\"_blank\" href=\"https://docs.mailcow.email/prerequisite/prerequisite-dns/\">文档</a>.",
+        "dns_records_docs": "请同时也参考这个<a target=\"_blank\" href=\"https://docs.mailcow.email/getstarted/prerequisite-dns\">文档</a>.",
         "dns_records_name": "名称",
         "dns_records_status": "当前状态",
         "dns_records_type": "类型",
@@ -903,7 +910,7 @@
         "disabled": "禁用",
         "second": "msgs / 秒",
         "minute": "msgs / 分钟",
-        "hour": "msgs / 小说",
+        "hour": "msgs / 小时",
         "day": "msgs / 天"
     },
     "start": {
@@ -1202,7 +1209,8 @@
         "paginate": {
             "first": "第一页",
             "last": "最后一页",
-            "previous": "上一页"
+            "previous": "上一页",
+            "next": "下一页"
         }
     }
 }
