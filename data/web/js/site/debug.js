@@ -325,7 +325,10 @@ jQuery(function($){
           title: 'URI',
           data: 'uri',
           defaultContent: '',
-          className: 'dtr-col-md dtr-break-all'
+          className: 'dtr-col-md dtr-break-all',
+          render: function (data, type) {
+            return escapeHtml(data);
+          }
         },
         {
           title: 'Method',
