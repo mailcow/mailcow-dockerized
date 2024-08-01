@@ -460,7 +460,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:2.02
+      image: mailcow/watchdog:2.03
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -477,7 +477,6 @@ services:
         - mysql-mailcow
         - acme-mailcow
         - redis-mailcow
-
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
