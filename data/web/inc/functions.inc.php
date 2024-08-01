@@ -1560,7 +1560,7 @@ function unset_tfa_key($_data) {
 }
 function get_tfa($username = null, $id = null) {
   global $pdo;
-  if (isset($_SESSION['mailcow_cc_username'])) {
+  if (empty($username) && isset($_SESSION['mailcow_cc_username'])) {
     $username = $_SESSION['mailcow_cc_username'];
   }
   elseif (empty($username)) {
