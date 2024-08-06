@@ -334,7 +334,7 @@ docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | cut -d '.' -f 1)
 if [[ $docker_version -lt 24 ]]; then
   echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
   echo -e "\e[33mmailcow needs a newer Docker version to work properly... continuing on your own risk!\e[0m"
-  echo -e "\e[31mPlease update your Docker installation... exiting\e[0m"
+  echo -e "\e[31mPlease update your Docker installation... sleeping 10s\e[0m"
   sleep 10
 fi
 
