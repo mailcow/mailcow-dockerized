@@ -982,7 +982,7 @@ if [ ! $DEV ]; then
     echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
     exit 1
   elif [[ ${MERGE_RETURN} == 1 ]]; then
-    echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
+    echo -e "\e[93mPotential conflict, trying to fix...\e[0m"
     git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
     git add -A
     git commit -m "After update on ${DATE}" > /dev/null
