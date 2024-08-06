@@ -434,7 +434,7 @@ elif [ ${#DOTS} -eq 1 ]; then
   echo "Find more information about why this message exists here: https://github.com/mailcow/mailcow-dockerized/issues/1572"
   read -r -p "Do you want to proceed anyway? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    echo "OK. Procceding."
+    echo "OK. Proceeding."
   else
     echo "OK. Exiting."
     exit 1
