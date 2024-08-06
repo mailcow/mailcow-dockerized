@@ -409,12 +409,12 @@ while (($#)); do
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
-    exit 0
+    exit 1
   esac
   shift
 done
 
-[[ ! -f mailcow.conf ]] && { echo -e "\e[31mmailcow.conf is missing! Is mailcow installed?\e[0m"; exit 1;}
+[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 
 chmod 600 mailcow.conf
 source mailcow.conf
