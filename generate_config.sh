@@ -25,6 +25,16 @@ for bin in openssl curl docker git awk sha1sum grep cut; do
   if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
 done
 
+# Check Docker Version (need at least 24.X)
+docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | cut -d '.' -f 1)
+
+if [[ $docker_version -lt 24 ]]; then
+  echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
+  echo -e "\e[33mmailcow needs a newer Docker version to work properly...\e[0m"
+  echo -e "\e[31mPlease update your Docker installation... exiting\e[0m"
+  exit 1
+fi
+
 if docker compose > /dev/null 2>&1; then
     if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
       COMPOSE_VERSION=native
