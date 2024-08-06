@@ -1,5 +1,6 @@
 FROM alpine:3.20
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+
+LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 WORKDIR /app
 
