@@ -328,6 +328,16 @@ for bin in curl docker git awk sha1sum grep cut; do
   fi  
 done
 
+# Check Docker Version (need at least 24.X)
+docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | cut -d '.' -f 1)
+
+if [[ $docker_version -lt 24 ]]; then
+  echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
+  echo -e "\e[33mmailcow needs a newer Docker version to work properly... continuing on your own risk!\e[0m"
+  echo -e "\e[31mPlease update your Docker installation... exiting\e[0m"
+  sleep 10
+fi
+
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
