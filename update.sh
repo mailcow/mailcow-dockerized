@@ -817,7 +817,7 @@ if ! [ $NEW_BRANCH ]; then
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
   else
-    echo -e "\e[33mYou are receiving updates from a unsupported branch.\e[0m"
+    echo -e "\e[33mYou are receiving updates from an unsupported branch.\e[0m"
     sleep 1
     echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
