@@ -407,14 +407,6 @@ sievec /var/vmail/sieve/global_sieve_after.sieve
 sievec /usr/lib/dovecot/sieve/report-spam.sieve
 sievec /usr/lib/dovecot/sieve/report-ham.sieve
 
-for file in /var/vmail/*/*/sieve/*.sieve ; do
-  if [[ "$file" == "/var/vmail/*/*/sieve/*.sieve" ]]; then
-    continue
-  fi
-  sievec "$file" "$(dirname "$file")/../.dovecot.svbin"
-  chown vmail:vmail "$(dirname "$file")/../.dovecot.svbin"
-done
-
 # Fix permissions
 chown root:root /etc/dovecot/sql/*.conf
 chown root:dovecot /etc/dovecot/sql/dovecot-dict-sql-sieve* /etc/dovecot/sql/dovecot-dict-sql-quota* /etc/dovecot/lua/passwd-verify.lua
