@@ -404,12 +404,13 @@ while (($#)); do
   shift
 done
 
+[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
+
 chmod 600 mailcow.conf
 source mailcow.conf
 
 detect_docker_compose_command
 
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 1 ]; then
   echo -e "\e[31mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!\e[0m"
