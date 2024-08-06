@@ -404,7 +404,7 @@ while (($#)); do
   shift
 done
 
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
+[[ ! -f mailcow.conf ]] && { echo -e "\e[31mmailcow.conf is missing! Is mailcow installed?\e[0m"; exit 1;}
 
 chmod 600 mailcow.conf
 source mailcow.conf
