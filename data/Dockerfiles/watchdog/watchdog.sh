@@ -172,8 +172,13 @@ function notify_error() {
     # Replace subject and body placeholders
     WEBHOOK_BODY=$(echo ${WATCHDOG_NOTIFY_WEBHOOK_BODY} | sed "s/\$SUBJECT\|\${SUBJECT}/$SUBJECT/g" | sed "s/\$BODY\|\${BODY}/$BODY/g")
     
+    WEBHOOK_COMMAND="curl -X POST -H \"Content-Type: application/json\" ${CURL_VERBOSE} -d '${WEBHOOK_BODY}' ${WATCHDOG_NOTIFY_WEBHOOK}"
+    if [[ ! -z ${WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER} ]]; then
+        WEBHOOK_COMMAND="${WEBHOOK_COMMAND} -H '${WATCHDOG_NOTIFY_WEBHOOK_AUTH_HEADER}'"
+    fi
+
     # POST to webhook
-    curl -X POST -H "Content-Type: application/json" ${CURL_VERBOSE} -d "${WEBHOOK_BODY}" ${WATCHDOG_NOTIFY_WEBHOOK}
+    eval $WEBHOOK_COMMAND
 
     log_msg "Sent notification using webhook"
   fi
