@@ -1,5 +1,6 @@
 FROM php:8.2-fpm-alpine3.18
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+
+LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG APCU_PECL_VERSION=5.1.23

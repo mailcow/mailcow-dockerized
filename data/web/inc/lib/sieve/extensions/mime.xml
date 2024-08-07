@@ -1,0 +1,58 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="mime">
+    <command name="foreverypart">
+        <parameter type="string" name="name" occurrence="optional" />
+        <block />
+    </command>
+
+    <command name="break">
+        <parameter type="string" name="name" occurrence="optional" />
+    </command>
+
+    <tagged-argument extends="(header|address|exists)">
+        <parameter type="tag" name="mime" regex="mime" occurrence="optional" />
+    </tagged-argument>
+    <tagged-argument extends="(header|address|exists)">
+        <parameter type="tag" name="anychild" regex="anychild" occurrence="optional" />
+    </tagged-argument>
+    <tagged-argument extends="(header)">
+        <parameter type="tag" name="type" occurrence="optional" />
+    </tagged-argument>
+    <tagged-argument extends="(header)">
+        <parameter type="tag" name="subtype" occurrence="optional" />
+    </tagged-argument>
+    <tagged-argument extends="(header)">
+        <parameter type="tag" name="contenttype" occurrence="optional" />
+    </tagged-argument>
+    <tagged-argument extends="(header)">
+        <parameter type="tag" name="param" regex="param" occurrence="optional">
+            <parameter type="stringlist" name="param-list" />
+        </parameter>
+    </tagged-argument>
+    <tagged-argument extends="(header|address|exists)">
+        <parameter type="stringlist" name="header-names" />
+    </tagged-argument>
+    <tagged-argument extends="(header)">
+        <parameter type="stringlist" name="key-list" />
+    </tagged-argument>
+
+    <action name="replace">
+        <parameter type="tag" name="mime" regex="mime" occurrence="optional" />
+        <parameter type="string" name="subject" occurrence="optional" />
+        <parameter type="string" name="from" occurrence="optional" />
+        <parameter type="string" name="replacement" />
+    </action>
+
+    <action name="enclose">
+        <parameter type="string" name="subject" occurrence="optional" />
+        <parameter type="stringlist" name="headers" occurrence="optional" />
+        <parameter type="string" name="text" />
+    </action>
+
+    <action name="extracttext">
+        <parameter type="tag" name="first" regex="first" occurrence="optional" />
+        <parameter type="number" name="number" occurrence="optional" />
+        <parameter type="string" name="varname" />
+    </action>
+</extension>
