@@ -130,12 +130,16 @@ RUN addgroup -g 5000 vmail \
   zlib1g-dev \
   pkg-config \
   libsqlite3-dev \
+<<<<<<< HEAD
   liblua5.3-dev \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
 >>>>>>> 7ec7bd21c (Changed Dovecot Base to Bullseye again (Self compile))
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true
+=======
+  liblua5.3-dev
+>>>>>>> 466e36ecb (Optimized Build Process for Dovecot)
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
