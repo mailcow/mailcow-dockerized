@@ -17,7 +17,6 @@ data/conf/dovecot/mail_replica.conf
 data/conf/dovecot/global_sieve_*
 data/conf/dovecot/last_login
 data/conf/dovecot/lua
-data/conf/dovecot/auth/passwd-verify.lua
 data/conf/dovecot/mail_plugins*
 data/conf/dovecot/shared_namespace.conf
 data/conf/dovecot/sni.conf

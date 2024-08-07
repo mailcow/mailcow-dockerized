@@ -140,6 +140,7 @@ user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_VALUE(attributes, '$.mailbox_format
 iterate_query = SELECT username FROM mailbox WHERE active = '1' OR active = '2';
 EOF
 
+<<<<<<< HEAD
 cat <<EOF > /etc/dovecot/auth/passwd-verify.lua
 function auth_password_verify(request, password)
   if request.domain == nil then
@@ -236,6 +237,8 @@ sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/auth/passwd-verify.l
 =======
 >>>>>>> 7b4715947 (rework auth - move dovecot sasl log to php)
 
+=======
+>>>>>>> 788f03e99 ([Dovecot] remove passwd-verify.lua generation)
 # Migrate old sieve_after file
 [[ -f /etc/dovecot/sieve_after ]] && mv /etc/dovecot/sieve_after /etc/dovecot/global_sieve_after
 # Create global sieve scripts
