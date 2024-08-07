@@ -3,7 +3,11 @@ function init_db_schema() {
   try {
     global $pdo;
 
+<<<<<<< HEAD
     $db_version = "26022024_1433";
+=======
+    $db_version = "06062024_1210";
+>>>>>>> f7ae2a616 ([Nightly][SOGo] Update 5.10.0)
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1005,7 +1009,11 @@ function init_db_schema() {
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+<<<<<<< HEAD
       ),      
+=======
+      ),
+>>>>>>> f7ae2a616 ([Nightly][SOGo] Update 5.10.0)
       "pushover" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
