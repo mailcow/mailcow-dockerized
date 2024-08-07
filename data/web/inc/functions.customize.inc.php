@@ -122,10 +122,16 @@ function customize($_action, $_item, $_data = null) {
         case 'app_links':
           $apps = (array)$_data['app'];
           $links = (array)$_data['href'];
+          $user_links = (array)$_data['user_href'];
+          $hide = (array)$_data['hide'];
           $out = array();
-          if (count($apps) == count($links)) {
+          if (count($apps) == count($links) && count($apps) == count($user_links) && count($apps) == count($hide)) {
             for ($i = 0; $i < count($apps); $i++) {
-              $out[] = array($apps[$i] => $links[$i]);
+              $out[] = array($apps[$i] => array(
+                'link' => $links[$i],
+                'user_link' => $user_links[$i],
+                'hide' => ($hide[$i] === '0' || $hide[$i] === 0) ? false : true
+              ));
             }
             try {
               $redis->set('APP_LINKS', json_encode($out));
@@ -256,7 +262,22 @@ function customize($_action, $_item, $_data = null) {
             );
             return false;
           }
-          return ($app_links) ? $app_links : false;
+
+          if (empty($app_links)){
+            return false;
+          }
+
+          foreach($app_links as $key => $value){
+            foreach($value as $app => $details){
+              if (empty($details['user_link']) || empty($_SESSION['mailcow_cc_username'])){
+                $app_links[$key][$app]['user_link'] = $app_links[$key][$app]['link'];
+              } else {
+                $app_links[$key][$app]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $app_links[$key][$app]['user_link']);
+              }
+            }
+          }
+
+          return $app_links;
         break;
         case 'main_logo':
         case 'main_logo_dark':

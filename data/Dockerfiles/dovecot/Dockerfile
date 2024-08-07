@@ -4,9 +4,8 @@ LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.16
+ENV LC_ALL C
 
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN addgroup -g 5000 vmail \
@@ -34,9 +33,13 @@ RUN addgroup -g 5000 vmail \
   lua5.3-sql-mysql \
   icu-data-full \
   mariadb-connector-c \
+  lua-sec \
+  mariadb-dev \
+  glib-dev \
   gcompat \
   mariadb-client \
   perl \
+  perl-dev \
   perl-ntlm \
   perl-cgi \
   perl-crypt-openssl-rsa \

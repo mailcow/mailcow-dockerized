@@ -953,6 +953,17 @@ if (isset($_GET['query'])) {
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              case "cron":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('cron-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('cron-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
               case "postfix":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
@@ -1077,7 +1088,7 @@ if (isset($_GET['query'])) {
                   ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
                   ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
                   ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
-                  ['db' => 'messages', 'dt' => 17, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
+                  ['db' => 'messages', 'dt' => 18, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
                   ['db' => 'tags', 'dt' => 20, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
                   ['db' => 'active', 'dt' => 21]
                 ];
@@ -1696,6 +1707,8 @@ if (isset($_GET['query'])) {
             if ($score)
               $score = array("score" => preg_replace("/\s+/", "", $score));
             process_get_return($score);
+          case "identity_provider":
+            process_get_return(identity_provider('get'));
           break;
         break;
         // return no route found if no case is matched
@@ -1849,6 +1862,9 @@ if (isset($_GET['query'])) {
         break;
         case "rlhash":
           echo ratelimit('delete', null, implode($items));
+        break;
+        case "identity-provider":
+          process_delete_return(identity_provider('delete'));
         break;
         // return no route found if no case is matched
         default:
@@ -2065,6 +2081,15 @@ if (isset($_GET['query'])) {
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
             process_edit_return(edit_user_account($attr));
           }
+        break;
+        case "cors":
+          process_edit_return(cors('edit', $attr));
+        case "identity_provider":
+        case "identity-provider":
+          process_edit_return(identity_provider('edit', $attr));
+        break;
+        case "identity-provider-test":
+          process_edit_return(identity_provider('test', $attr));
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));

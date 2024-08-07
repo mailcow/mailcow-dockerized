@@ -1,10 +1,13 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
-$default_autodiscover_config = $autodiscover_config;
 if(file_exists('inc/vars.local.inc.php')) {
   include_once 'inc/vars.local.inc.php';
 }
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
+$default_autodiscover_config = $autodiscover_config;
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
 // Redis
@@ -49,6 +52,10 @@ $opt = [
   PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
+
+// Init Identity Provider
+$iam_provider = identity_provider('init');
+
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
 $login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));
 

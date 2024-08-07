@@ -33,6 +33,13 @@
        url('/fonts/noto-sans-v12-latin_greek_cyrillic-700italic.woff2') format('woff2'),
        url('/fonts/noto-sans-v12-latin_greek_cyrillic-700italic.woff') format('woff');
 }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fbfbfb;
+}
 #maxmsgsize { min-width: 80px; }
 #slider1 .slider-selection {
 	background: #FFD700;
@@ -77,6 +84,19 @@
 .navbar-fixed-bottom .navbar-collapse, 
 .navbar-fixed-top .navbar-collapse {
   max-height: 1000px
+}
+.nav-tabs .nav-link, .nav-tabs .nav-link.disabled, .nav-tabs .nav-link.disabled:hover, .nav-tabs .nav-link.disabled:focus {
+  border-color: #dfdfdf;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+  border-color: #dfdfdf;
+  border-bottom: 1px solid #ffffff;
+}
+.nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
+  border-color: #dfdfdf;
+}
+.nav-tabs {
+  border-bottom: 1px solid #dfdfdf;
 }
 .bi {
   display: inline-block;
@@ -366,6 +386,7 @@ button[aria-expanded='true'] > .caret {
     background-color: #f0f0f0;
 }
 .btn.btn-outline-secondary {
+  color: #000000 !important;
   border-color: #cfcfcf !important;  
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {

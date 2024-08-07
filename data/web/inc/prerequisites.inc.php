@@ -46,9 +46,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/CSSminifierExtended.php';
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/array_merge_real.php';
 
-// U2F API + T/HOTP API
-// u2f - deprecated, should be removed
-$u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
+// T/HOTP API
 $qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
@@ -177,7 +175,11 @@ function get_remote_ip() {
 
 // Load core functions first
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
+
+// Init Identity Provider
+$iam_provider = identity_provider('init');
 
 // IMAP lib
 // use Ddeboer\Imap\Server;

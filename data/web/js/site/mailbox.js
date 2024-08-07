@@ -387,7 +387,6 @@ $(document).ready(function() {
       $('#rl_frame').selectpicker('val', template.rl_frame);
     }
 
-    console.log(template.active)
     if (template.active){
       $('#mbox_active').selectpicker('val', template.active.toString());
     } else {
@@ -1039,7 +1038,16 @@ jQuery(function($){
           title: lang.domain,
           data: 'domain',
           defaultContent: '',
-          className: 'none'
+          className: 'none',
+        },
+        {
+          title: lang.iam,
+          data: 'authsource',
+          defaultContent: '',
+          className: 'none',
+          render: function (data, type) {
+            return '<span class="badge bg-primary">' + data + '<i class="ms-2 bi bi-person-circle"></i></i></span>';
+          }
         },
         {
           title: lang.tls_enforce_in,

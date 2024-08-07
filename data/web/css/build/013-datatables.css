@@ -8,9 +8,6 @@
 .dtr-details {
     width: 100%;
 }
-.table-striped>tbody>tr:nth-of-type(odd) {
-    background-color: #F2F2F2;
-}
 td.child>ul>li {
     display: flex;
 }

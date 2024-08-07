@@ -35,10 +35,7 @@ final class TranslatorBag implements TranslatorBagInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCatalogue(string $locale = null): MessageCatalogueInterface
+    public function getCatalogue(?string $locale = null): MessageCatalogueInterface
     {
         if (null === $locale || !isset($this->catalogues[$locale])) {
             $this->catalogues[$locale] = new MessageCatalogue($locale);
@@ -47,9 +44,6 @@ final class TranslatorBag implements TranslatorBagInterface
         return $this->catalogues[$locale];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCatalogues(): array
     {
         return array_values($this->catalogues);
@@ -70,7 +64,7 @@ final class TranslatorBag implements TranslatorBagInterface
             $operation->moveMessagesToIntlDomainsIfPossible(AbstractOperation::NEW_BATCH);
             $newCatalogue = new MessageCatalogue($locale);
 
-            foreach ($operation->getDomains() as $domain) {
+            foreach ($catalogue->getDomains() as $domain) {
                 $newCatalogue->add($operation->getNewMessages($domain), $domain);
             }
 
@@ -94,7 +88,10 @@ final class TranslatorBag implements TranslatorBagInterface
             $obsoleteCatalogue = new MessageCatalogue($locale);
 
             foreach ($operation->getDomains() as $domain) {
-                $obsoleteCatalogue->add($operation->getObsoleteMessages($domain), $domain);
+                $obsoleteCatalogue->add(
+                    array_diff($operation->getMessages($domain), $operation->getNewMessages($domain)),
+                    $domain
+                );
             }
 
             $diff->addCatalogue($obsoleteCatalogue);

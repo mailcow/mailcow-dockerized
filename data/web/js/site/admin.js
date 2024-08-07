@@ -709,19 +709,34 @@ jQuery(function($){
     }
   })
   // App links
+  // setup eventlistener
+  setAppHideEvent();
+  function setAppHideEvent(){ 
+    $('.app_hide').off('change');
+    $('.app_hide').on('change', function (e) {
+      var value = $(this).is(':checked') ? '1' : '0';
+      console.log(value)
+      $(this).parent().children(':first-child').val(value);
+    })
+  }
   function add_table_row(table_id, type) {
     var row = $('<tr />');
     if (type == "app_link") {
       cols = '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required></td>';
+      cols += '<td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required></td>';
+      cols += '<td><div class="d-flex align-items-center justify-content-center" style="height: 33.5px"><input data-id="app_links" type="hidden" name="hide" value="0"><input class="form-check-input app_hide" type="checkbox" value="1"></div></td>';
       cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang.remove_row + '</a></td>';
     } else if (type == "f2b_regex") {
       cols = '<td><input style="text-align:center" class="input-sm input-xs-lg form-control" data-id="f2b_regex" type="text" value="+" disabled></td>';
       cols += '<td><input class="input-sm input-xs-lg form-control regex-input" data-id="f2b_regex" type="text" name="regex" required></td>';
       cols += '<td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">' + lang.remove_row + '</a></td>';
     }
+
     row.append(cols);
     table_id.append(row);
+    if (type == "app_link")
+      setAppHideEvent();
   }
   $('#app_link_table').on('click', 'tr a', function (e) {
     e.preventDefault();
@@ -736,5 +751,116 @@ jQuery(function($){
   });
   $('#add_f2b_regex_row').click(function() {
     add_table_row($('#f2b_regex_table'), "f2b_regex");
+  });
+  // IAM test connection
+  $('.iam_test_connection').click(async function(e){
+    e.preventDefault();
+    var data = { attr: $('form[data-id="' + $(this).data('id') + '"]').serializeObject() };
+    var res = await fetch("/api/v1/edit/identity-provider-test", { 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method:'POST', 
+      cache:'no-cache', 
+      body: JSON.stringify(data) 
+    });
+    res = await res.json();
+    if (res.type === 'success'){
+      return mailcow_alert_box(lang_success.iam_test_connection, 'success');
+    }
+    return mailcow_alert_box(lang_danger.iam_test_connection, 'danger');
+  });
+
+  $('.iam_rolemap_add_keycloak').click(async function(e){
+    e.preventDefault();
+
+    var parent = $('#iam_keycloak_mapping_list')
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_keycloak_rolemap_del').off('click');
+    $('.iam_keycloak_rolemap_del').click(async function(e){
+      e.preventDefault();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
+    });
+  });
+  $('.iam_rolemap_add_generic').click(async function(e){
+    e.preventDefault();
+
+    var parent = $('#iam_generic_mapping_list')
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_generic_rolemap_del').off('click');
+    $('.iam_generic_rolemap_del').click(async function(e){
+      e.preventDefault();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
+    });
+  });
+  $('.iam_rolemap_add_ldap').click(async function(e){
+    e.preventDefault();
+
+    var parent = $('#iam_ldap_mapping_list')
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_ldap_rolemap_del').off('click');
+    $('.iam_ldap_rolemap_del').click(async function(e){
+      e.preventDefault();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
+    });
+  });
+  $('.iam_keycloak_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
+  });
+  $('.iam_generic_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
+  });
+  $('.iam_ldap_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
+  });
+  // selecting identity provider
+  $('#iam_provider').on('change', function(){
+    // toggle password fields
+    if (this.value === 'keycloak'){
+      $('#keycloak_settings').removeClass('d-none');
+      $('#generic_oidc_settings').addClass('d-none');
+      $('#ldap_settings').addClass('d-none');
+    } else if (this.value === 'generic-oidc') {
+      $('#generic_oidc_settings').removeClass('d-none');
+      $('#keycloak_settings').addClass('d-none');
+      $('#ldap_settings').addClass('d-none');
+    } else if (this.value === 'ldap') {
+      $('#ldap_settings').removeClass('d-none');
+      $('#generic_oidc_settings').addClass('d-none');
+      $('#keycloak_settings').addClass('d-none');
+    }
   });
 });
