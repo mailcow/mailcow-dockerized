@@ -188,10 +188,14 @@ services:
 
     sogo-mailcow:
 <<<<<<< HEAD
+<<<<<<< HEAD
       image: mailcow/sogo:1.123
 =======
       image: mailcow/sogo:nightly-20240205
 >>>>>>> 216398355 (fix functions.inc.php, update sogo and dovecot nightly image)
+=======
+      image: mailcow/sogo:nightly-20240208
+>>>>>>> 40146839e (docker-compose: bumped versions)
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -239,10 +243,14 @@ services:
 
     dovecot-mailcow:
 <<<<<<< HEAD
+<<<<<<< HEAD
       image: mailcow/dovecot:2.0
 =======
       image: mailcow/dovecot:nightly-20240205
 >>>>>>> 216398355 (fix functions.inc.php, update sogo and dovecot nightly image)
+=======
+      image: mailcow/dovecot:nightly-20240208
+>>>>>>> 40146839e (docker-compose: bumped versions)
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
