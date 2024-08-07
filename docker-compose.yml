@@ -251,6 +251,7 @@ services:
     dovecot-mailcow:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       image: mailcow/dovecot:2.0
 =======
       image: mailcow/dovecot:nightly-20240205
@@ -258,6 +259,9 @@ services:
 =======
       image: mailcow/dovecot:nightly-20240208
 >>>>>>> 40146839e (docker-compose: bumped versions)
+=======
+      image: mailcow/dovecot:nightly-20240226
+>>>>>>> 6928eb632 ([Dovecot] move sogo sso to mailcowauth.php)
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow

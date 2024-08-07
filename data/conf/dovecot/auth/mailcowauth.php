@@ -45,20 +45,30 @@ require_once 'functions.auth.inc.php';
 require_once 'sessions.inc.php';
 require_once 'functions.mailbox.inc.php';
 
-// Init provider
-$iam_provider = identity_provider('init');
 
-
+$isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
+$result = false;
 $protocol = $post['protocol'];
-if ($post['real_rip'] == getenv('IPV4_NETWORK') . '.248') {
+if ($isSOGoRequest) {
   $protocol = null;
+  // This is a SOGo Auth request. First check for SSO password.
+  $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
+  if ($sogo_sso_pass === $post['password']){
+    error_log('MAILCOWAUTH: SOGo SSO auth for user ' . $post['username']);
+    $result = true;
+  }
+  
 }
-$result = user_login($post['username'], $post['password'], $protocol, array('is_internal' => true));
 if ($result === false){
   $result = apppass_login($post['username'], $post['password'], $protocol, array(
     'is_internal' => true,
     'remote_addr' => $post['real_rip']
   ));
+  if ($result) error_log('MAILCOWAUTH: App auth for user ' . $post['username']);
+}
+if ($result === false){
+  $result = user_login($post['username'], $post['password'], $protocol, array('is_internal' => true));
+  if ($result) error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
 }
 
 if ($result) {
