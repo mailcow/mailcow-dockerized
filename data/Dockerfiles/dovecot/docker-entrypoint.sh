@@ -150,18 +150,17 @@ function auth_password_verify(request, password)
   ltn12 = require "ltn12"
   https = require "ssl.https"
   https.TIMEOUT = 5
-  mysql = require "luasql.mysql"
-  env  = mysql.mysql()
-  con = env:connect("__DBNAME__","__DBUSER__","__DBPASS__","localhost")
 
   local req = {
     username = request.user,
-    password = password
+    password = password,
+    real_rip = request.real_rip,
+    protocol = {}
   }
+  req.protocol[request.service] = true
   local req_json = json.encode(req)
   local res = {} 
   
-  -- check against mailbox passwds
   local b, c = https.request {
     method = "POST",
     url = "https://nginx:9082",
@@ -174,48 +173,10 @@ function auth_password_verify(request, password)
     insecure = true
   }
   local api_response = json.decode(table.concat(res))
-  if api_response.role == 'user' then
-    con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-      VALUES ("%s", 0, "%s", "%s")]], con:escape(request.service), con:escape(request.user), con:escape(request.real_rip)))
-    con:close()
-    return dovecot.auth.PASSDB_RESULT_OK, "password=" .. password
-  end
-
-  
-  -- check against app passwds for imap and smtp
-  -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
-  if request.service == "smtp" or request.service == "imap" or request.service == "sieve" or request.service == "pop3" then
-    skip_sasl_log = false
-    req.protocol = {}
-    if tostring(req.real_rip) ~= "__IPV4_SOGO__" then
-      skip_sasl_log = true
-      req.protocol[request.service] = true
-    end
-    req_json = json.encode(req)
-
-    local b, c = https.request {
-      method = "POST",
-      url = "https://nginx:9082",
-      source = ltn12.source.string(req_json),
-      headers = {
-        ["content-type"] = "application/json",
-        ["content-length"] = tostring(#req_json)
-      },
-      sink = ltn12.sink.table(res),
-      insecure = true
-    }
-    local api_response = json.decode(table.concat(res))
-    if api_response.role == 'user' then
-      if skip_sasl_log == false then
-        con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-          VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
-      end
-      con:close()
-      return dovecot.auth.PASSDB_RESULT_OK, "password=" .. password
-    end
+  if api_response.success == true then
+    return dovecot.auth.PASSDB_RESULT_OK, ""
   end
   
-  con:close()
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
 end
 
@@ -224,6 +185,7 @@ function auth_passdb_lookup(req)
 end
 EOF
 
+<<<<<<< HEAD
 # Temporarily set FTS depending on user choice inside mailcow.conf. Will be removed as soon as Solr is dropped
 if [[ "${FLATCURVE_EXPERIMENTAL}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 cat <<EOF > /etc/dovecot/conf.d/fts.conf
@@ -271,6 +233,8 @@ sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/auth/passwd-verify.lua
 sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/auth/passwd-verify.lua
 sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/auth/passwd-verify.lua
 
+=======
+>>>>>>> 7b4715947 (rework auth - move dovecot sasl log to php)
 
 # Migrate old sieve_after file
 [[ -f /etc/dovecot/sieve_after ]] && mv /etc/dovecot/sieve_after /etc/dovecot/global_sieve_after
