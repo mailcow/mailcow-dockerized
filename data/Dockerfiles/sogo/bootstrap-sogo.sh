@@ -109,7 +109,7 @@ while read -r line gal
                 </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
   # Generate alternative LDAP authentication dict, when SQL authentication fails
   # This will nevertheless read attributes from LDAP
-  line=${line} envsubst < /etc/sogo/plist_ldap >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
+  /etc/sogo/plist_ldap.sh ${line} ${gal} >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
   echo "            </array>
         </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
 done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain, CASE gal WHEN '1' THEN 'YES' ELSE 'NO' END AS gal FROM domain;" -B -N)

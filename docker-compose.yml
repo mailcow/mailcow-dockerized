@@ -192,6 +192,7 @@ services:
     sogo-mailcow:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       image: mailcow/sogo:1.123
 =======
       image: mailcow/sogo:nightly-20240205
@@ -199,6 +200,9 @@ services:
 =======
       image: mailcow/sogo:nightly-20240208
 >>>>>>> 40146839e (docker-compose: bumped versions)
+=======
+      image: mailcow/sogo:nightly-20240220
+>>>>>>> 132e37bfe ([SOGo] use bash script for ldap plist template)
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
