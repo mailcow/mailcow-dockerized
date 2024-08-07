@@ -102,6 +102,9 @@ RUN addgroup -g 5000 vmail \
   tzdata \
   wget \
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 89c506421 (Rebased Dovecot on Alpine + fixed logging)
   dovecot \
   dovecot-dev \
   dovecot-lmtpd \
@@ -113,6 +116,7 @@ RUN addgroup -g 5000 vmail \
   dovecot-pigeonhole-plugin \
   dovecot-pop3d \
   dovecot-fts-solr \
+<<<<<<< HEAD
   dovecot-fts-flatcurve \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
@@ -140,6 +144,14 @@ RUN addgroup -g 5000 vmail \
 =======
   liblua5.3-dev
 >>>>>>> 466e36ecb (Optimized Build Process for Dovecot)
+=======
+  && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true
+
+#RUN cpan LockFile::Simple
+>>>>>>> 89c506421 (Rebased Dovecot on Alpine + fixed logging)
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
