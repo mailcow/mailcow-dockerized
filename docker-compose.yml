@@ -570,7 +570,11 @@ services:
     
     ##### Will be removed soon #####
     solr-mailcow:
+<<<<<<< HEAD
       image: mailcow/solr:1.8.3
+=======
+      image: mailcow/solr:nightly-20231011
+>>>>>>> b3a94e79e (Use dedicated nightly images on nightly branch + updates of images itself)
       restart: always
       depends_on:
         - netfilter-mailcow
@@ -590,7 +594,11 @@ services:
     ################################
 
     olefy-mailcow:
+<<<<<<< HEAD
       image: mailcow/olefy:1.13
+=======
+      image: mailcow/olefy:nightly-20231011
+>>>>>>> b3a94e79e (Use dedicated nightly images on nightly branch + updates of images itself)
       restart: always
       environment:
         - TZ=${TZ}
