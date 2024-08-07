@@ -187,7 +187,11 @@ services:
             - phpfpm
 
     sogo-mailcow:
+<<<<<<< HEAD
       image: mailcow/sogo:1.123
+=======
+      image: mailcow/sogo:nightly-20240205
+>>>>>>> 216398355 (fix functions.inc.php, update sogo and dovecot nightly image)
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -234,7 +238,11 @@ services:
             - sogo
 
     dovecot-mailcow:
+<<<<<<< HEAD
       image: mailcow/dovecot:2.0
+=======
+      image: mailcow/dovecot:nightly-20240205
+>>>>>>> 216398355 (fix functions.inc.php, update sogo and dovecot nightly image)
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow

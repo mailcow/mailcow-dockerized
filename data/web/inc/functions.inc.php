@@ -2086,8 +2086,6 @@ function uuid4() {
 
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
-function identity_provider($_action, $_data = null) {
-function identity_provider($_action, $_data = null, $hide_secret = false) {
 function identity_provider($_action, $_data = null, $_extra = null) {
   global $pdo;
 
