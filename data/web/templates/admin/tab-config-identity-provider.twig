@@ -18,6 +18,7 @@
             name="iam_provider" id="iam_provider" class="full-width-select form-control" required>
               <option value="keycloak" {% if not iam_settings.authsource or iam_settings.authsource == 'keycloak' %}selected{% endif %}>Keycloak</option>
               <option value="generic-oidc" {% if iam_settings.authsource == 'generic-oidc' %}selected{% endif %}>Generic-OIDC</option>
+              <option value="ldap" {% if iam_settings.authsource == 'ldap' %}selected{% endif %}>LDAP</option>
           </select>
         </div>
       </div>
@@ -282,6 +283,143 @@
                 <button class="btn btn-sm d-block d-sm-inline btn-success" data-item="identity-provider" data-action="edit_selected" data-id="iam_generic" data-api-url='edit/identity-provider' data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
               </div>
               <button class="btn btn-sm d-block d-sm-inline btn-danger ms-auto mb-2" data-item="identity-provider" data-action="delete_selected" data-id="iam_generic" data-api-url='delete/identity-provider'><i class="bi bi-trash"></i> {{ lang.mailbox.remove }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div id="ldap_settings" class="{% if not iam_settings.authsource or iam_settings.authsource != 'ldap' %}d-none{% endif %}">
+        <form class="form-horizontal" autocapitalize="none" data-id="iam_ldap" autocorrect="off" role="form" method="post">
+          <input type="hidden" name="authsource" value="ldap">
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_host">{{ lang.admin.iam_host }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_ldap_host" name="host" value="{{ iam_settings.host }}" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_port">{{ lang.admin.iam_port }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="number" class="form-control" id="iam_ldap_port" name="port" value="{{ iam_settings.port }}" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_basedn">{{ lang.admin.iam_basedn }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_ldap_basedn" name="basedn" value="{{ iam_settings.basedn }}" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_username_field">{{ lang.admin.iam_username_field }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="mail" id="iam_ldap_username_field" name="username_field" value="{{ iam_settings.username_field }}">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_attribute_field">{{ lang.admin.iam_attribute_field }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_ldap_attribute_field" name="attribute_field" value="{{ iam_settings.attribute_field }}" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_binddn">{{ lang.admin.iam_binddn }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_ldap_binddn" name="binddn" value="{{ iam_settings.binddn }}" required>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-md-3 text-sm-end" for="iam_ldap_bindpass">{{ lang.admin.iam_bindpass }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <div class="reveal-password-input input-group">
+                <input type="password" class="password-field form-control" id="iam_ldap_bindpass" name="bindpass" value="{{ iam_settings.bindpass }}" required>
+                <button class="toggle-password btn btn-secondary" type="button"><i class="bi bi-eye"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_mapping }}:</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <div class="row px-2 align-items-center">
+                <span class="col-5 p-0 pe-2">Attribute</span>
+                <span class="col-5 p-0 pe-2">{{ lang.mailbox.template }}</span>
+                <div class="col-2 p-0 d-flex">
+                  <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-auto iam_rolemap_add_ldap"><i class="bi bi-plus-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_ldap_mapping_list">
+            {% for key, role in iam_settings.mappers %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-5 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
+                </div>
+                <div class="col-5 p-0 pe-2">
+                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  {% for mbox_template in mbox_templates %}
+                    <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
+                      {{ mbox_template.template }}
+                    </option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_ldap_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            {% if not iam_settings.mappers %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-5 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="mappers" value="" required>
+                </div>
+                <div class="col-5 p-0 pe-2">
+                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  {% for mbox_template in mbox_templates %}
+                    <option>
+                      {{ mbox_template.template }}
+                    </option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_ldap_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_periodic_full_sync }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="periodic_sync"  value="1" {% if iam_settings.periodic_sync == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_import_users }}</label>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="import_users"  value="1" {% if iam_settings.import_users == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-md-3 text-sm-end">{{ lang.admin.iam_sync_interval }}</label>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input class="form-control" type="number" min="1" name="sync_interval" style="width: 80px;"  {% if iam_settings.sync_interval %}value="{{ iam_settings.sync_interval }}"{% else %}value="15"{% endif %}>
+            </div>
+          </div>
+          <div class="row mt-4 mb-2">
+            <div class="offset-md-3 col-12 col-md-9 d-flex flex-wrap">
+              <div class="btn-group mb-2">   
+                <button class="btn btn-sm d-block d-sm-inline btn-secondary iam_test_connection iam_test_connection" data-id="iam_ldap"><i class="bi bi-play"></i> {{ lang.admin.iam_test_connection }}</button>
+                <button class="btn btn-sm d-block d-sm-inline btn-success" data-item="identity-provider" data-action="edit_selected" data-id="iam_ldap" data-api-url='edit/identity-provider' data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+              </div>
+              <button class="btn btn-sm d-block d-sm-inline btn-danger ms-auto mb-2" data-item="identity-provider" data-action="delete_selected" data-id="iam_ldap" data-api-url='delete/identity-provider'><i class="bi bi-trash"></i> {{ lang.mailbox.remove }}</button>
             </div>
           </div>
         </form>

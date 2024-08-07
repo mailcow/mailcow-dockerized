@@ -19,8 +19,12 @@
                 <button disabled class="btn btn-secondary btn-block btn-xs-lg w-100">
                   {{ lang.user.open_webmail_sso }} <i class="bi bi-arrow-right"></i>
                 </button>
+              {% elseif dual_login %}
+                <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username  }}" role="button" class="btn btn-primary btn-lg btn-block btn-xs-lg w-100">
+                  {{ lang.user.open_webmail_sso }} <i class="bi bi-arrow-right"></i>
+                </a>
               {% else %}
-                <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-primary btn-lg btn-block btn-xs-lg w-100">
+                <a target="_blank" href="/SOGo/so" role="button" class="btn btn-primary btn-lg btn-block btn-xs-lg w-100">
                   {{ lang.user.open_webmail_sso }} <i class="bi bi-arrow-right"></i>
                 </a>
               {% endif %}
@@ -51,7 +55,6 @@
               {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success m-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
               {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success m-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
               {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success m-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
-              {% if not skip_sogo %}{% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success m-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger m-2">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}{% endif %}       
               </div>
             </div>
           </div>
@@ -96,16 +99,19 @@
             </div>
           </div>
 
-          {# TFA #}
-          {% if mailboxdata.authsource == "mailcow" %}
           <legend class="mt-4">{{ lang.user.authentication }}</legend>
           <hr>
+          {# Password Change #}
+          {% if mailboxdata.authsource == "mailcow" %}
           <div class="row">
             <div class="col-12 col-md-3 d-flex"></div>
             <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center justify-content-sm-start">
               <a class="btn btn-secondary" href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a>
             </div>
           </div>
+          {% endif %}
+          {# TFA #}
+          {% if mailboxdata.authsource == "mailcow" or mailboxdata.authsource == "ldap" %}
           <div class="row mt-4">
             <div class="col-12 col-md-3 d-flex">
               <span class="mt-2 w-100 text-md-end">{{ lang.tfa.tfa }}:</span>
@@ -129,7 +135,9 @@
               </select>
             </div>
           </div>
+          {% endif %}
           {# FIDO2 #}
+          {% if mailboxdata.authsource == "mailcow" %}
           <div class="row mt-4">
             <div class="col-sm-3 col-12 text-sm-end text-start">
               <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>

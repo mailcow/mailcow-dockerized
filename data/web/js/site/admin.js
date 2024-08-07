@@ -811,6 +811,26 @@ jQuery(function($){
         $(this).parent().parent().parent().remove();
     });
   });
+  $('.iam_rolemap_add_ldap').click(async function(e){
+    e.preventDefault();
+
+    var parent = $('#iam_ldap_mapping_list')
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+
+    $('.iam_ldap_rolemap_del').off('click');
+    $('.iam_ldap_rolemap_del').click(async function(e){
+      e.preventDefault();
+      if ($(this).parent().parent().parent().parent().children().length > 1)
+        $(this).parent().parent().parent().remove();
+    });
+  });
   $('.iam_keycloak_rolemap_del').click(async function(e){
     e.preventDefault();
     if ($(this).parent().parent().parent().parent().children().length > 1)
@@ -821,15 +841,26 @@ jQuery(function($){
     if ($(this).parent().parent().parent().parent().children().length > 1)
       $(this).parent().parent().parent().remove();
   });
+  $('.iam_ldap_rolemap_del').click(async function(e){
+    e.preventDefault();
+    if ($(this).parent().parent().parent().parent().children().length > 1)
+      $(this).parent().parent().parent().remove();
+  });
   // selecting identity provider
   $('#iam_provider').on('change', function(){
     // toggle password fields
     if (this.value === 'keycloak'){
       $('#keycloak_settings').removeClass('d-none');
       $('#generic_oidc_settings').addClass('d-none');
+      $('#ldap_settings').addClass('d-none');
     } else if (this.value === 'generic-oidc') {
-      $('#keycloak_settings').addClass('d-none');
       $('#generic_oidc_settings').removeClass('d-none');
+      $('#keycloak_settings').addClass('d-none');
+      $('#ldap_settings').addClass('d-none');
+    } else if (this.value === 'ldap') {
+      $('#ldap_settings').removeClass('d-none');
+      $('#generic_oidc_settings').addClass('d-none');
+      $('#keycloak_settings').addClass('d-none');
     }
   });
 });

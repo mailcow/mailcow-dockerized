@@ -94,6 +94,8 @@ if (isset($_POST["logout"])) {
   if (isset($_SESSION["dual-login"])) {
     $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];
     $_SESSION["mailcow_cc_role"] = $_SESSION["dual-login"]["role"];
+    unset($_SESSION['sogo-sso-user-allowed']);
+    unset($_SESSION['sogo-sso-pass']);
     unset($_SESSION["dual-login"]);
     header("Location: /mailbox");
     exit();

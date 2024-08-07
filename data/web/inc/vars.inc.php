@@ -124,8 +124,8 @@ $SHOW_DKIM_PRIV_KEYS = false;
 $MAILCOW_APPS = array(
   array(
     'name' => 'Webmail',
-    'link' => '/SOGo/so/',
-    'user_link' => '/sogo-auth.php?login=%u',
+    'link' => '/SOGo/so',
+    'user_link' => '/SOGo/so',
     'hide' => true
   )
 );
@@ -181,7 +181,7 @@ $MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
-// Enable SOGo access (set to false to disable access by default)
+// Enable SOGo access - Users will be redirected to SOGo after login (set to false to disable redirect by default)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 
 // Send notification when quarantine is not empty (never, hourly, daily, weekly)

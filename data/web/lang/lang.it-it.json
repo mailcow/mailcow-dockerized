@@ -624,9 +624,9 @@
         "username": "Nome utente",
         "validate_save": "Convalida e salva",
         "pushover": "Pushover",
-        "sogo_access_info": "Il single-sign-on dall'interno dell'interfaccia di posta rimane funzionante. Questa impostazione non influisce sull'accesso a tutti gli altri servizi né cancella o modifica il profilo SOGo esistente dell'utente.",
         "none_inherit": "Nessuno / Eredita",
-        "sogo_access": "Concedere l'accesso diretto a SOGo",
+        "sogo_access": "Inoltro diretto a SOGo",
+        "sogo_access_info": "Dopo aver effettuato il login, l'utente viene automaticamente reindirizzato a SOGo.",
         "acl": "ACL (autorizzazione)",
         "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
         "last_modified": "Ultima modifica",
@@ -1129,7 +1129,7 @@
         "no_active_filter": "No active filter available",
         "no_last_login": "No last UI login information",
         "no_record": "Nessun elemento",
-        "open_webmail_sso": "Accedi alla webmail",
+        "open_webmail_sso": "Webmail",
         "password": "Password",
         "password_now": "Password attuale (conferma modifiche)",
         "password_repeat": "Conferma password (riscrivi)",
@@ -1217,10 +1217,15 @@
         "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Impossibile connettersi al server remoto",
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nome utente o password errati",
         "with_app_password": "con password dell'app",
+<<<<<<< HEAD
         "direct_protocol_access": "Questo utente della mailbox ha <b>accesso diretto ed esterno</b> ai seguenti protocolli e applicazioni. Questa impostazione è controllata dal tuo amministratore. Le password delle applicazioni possono essere create per garantire l'accesso ai singoli protocolli e applicazioni.<br>Il pulsante \"Accedi alla webmail\" fornisce un singolo accesso a SOGo ed è sempre disponibile.",
         "pushover_sound": "Suono",
         "attribute": "Attributo",
         "value": "Valore"
+=======
+        "direct_protocol_access": "Questo utente della mailbox ha <b>accesso diretto ed esterno</b> ai seguenti protocolli e applicazioni. Questa impostazione è controllata dal tuo amministratore. Le password delle applicazioni possono essere create per garantire l'accesso ai singoli protocolli e applicazioni.<br>Il pulsante \"Webmail\" fornisce un singolo accesso a SOGo ed è sempre disponibile.",
+        "pushover_sound": "Suono"
+>>>>>>> a06c78362 ([Web] add ldap idp)
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",

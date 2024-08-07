@@ -672,8 +672,8 @@
         "sieve_desc": "Breve descrição",
         "sieve_type": "Tipo de filtro",
         "skipcrossduplicates": "Ignore mensagens duplicadas entre pastas (primeiro a chegar, primeiro a ser servido)",
-        "sogo_access": "Conceder acesso de login direto ao SoGo",
-        "sogo_access_info": "O login único de dentro da interface do usuário de e-mail continua funcionando. Essa configuração não afeta o acesso a todos os outros serviços nem exclui ou altera o perfil SoGo existente de um usuário.",
+        "sogo_access": "Encaminhamento direto para o SOGoo",
+        "sogo_access_info": "Depois de fazer login, o usuário é automaticamente redirecionado para o SOGo.",
         "sogo_visible": "O alias é visível no SoGo",
         "sogo_visible_info": "Essa opção afeta somente objetos, que podem ser exibidos no SoGo (endereços de alias compartilhados ou não compartilhados apontando para pelo menos uma mailbox local). Se estiver oculto, um alias não aparecerá como remetente selecionável no SoGo.",
         "spam_alias": "Crie ou altere endereços de alias com limite de tempo",
@@ -1164,7 +1164,11 @@
         "delete_ays": "Confirme o processo de exclusão.",
         "direct_aliases": "Endereços de alias diretos",
         "direct_aliases_desc": "Os endereços de alias diretos são afetados pelo filtro de spam e pelas configurações da política TLS.",
+<<<<<<< HEAD
         "direct_protocol_access": "Esse usuário da mailbox tem <b>acesso externo direto</b> aos seguintes protocolos e aplicativos. Essa configuração é controlada pelo administrador. As senhas de aplicativos podem ser criadas para conceder acesso a protocolos e aplicativos individuais. <br>O botão “Login no webmail” fornece login único no SoGo e está sempre disponível.",
+=======
+        "direct_protocol_access": "Esse usuário da caixa de correio tem <b>acesso externo direto</b> aos seguintes protocolos e aplicativos. Essa configuração é controlada pelo administrador. As senhas de aplicativos podem ser criadas para conceder acesso a protocolos e aplicativos individuais. <br>O botão “Webmail” fornece login único no SoGo e está sempre disponível.",
+>>>>>>> a06c78362 ([Web] add ldap idp)
         "eas_reset": "Redefinir o cache do dispositivo ActiveSync",
         "eas_reset_help": "Em muitos casos, uma redefinição do cache do dispositivo ajudará a recuperar um perfil quebrado do ActiveSync. <br><b>Atenção:</b> Todos os elementos serão baixados novamente!",
         "eas_reset_now": "Reinicie agora",
@@ -1205,7 +1209,7 @@
         "no_last_login": "Nenhuma informação de login da última interface",
         "no_record": "Sem registro",
         "open_logs": "Registros abertos",
-        "open_webmail_sso": "Faça login no webmail",
+        "open_webmail_sso": "Webmail",
         "password": "Senha",
         "password_now": "Senha atual (confirme as alterações)",
         "password_repeat": "Senha (repetição)",
