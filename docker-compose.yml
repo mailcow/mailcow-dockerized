@@ -193,6 +193,7 @@ services:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       image: mailcow/sogo:1.123
 =======
       image: mailcow/sogo:nightly-20240205
@@ -203,6 +204,9 @@ services:
 =======
       image: mailcow/sogo:nightly-20240220
 >>>>>>> 132e37bfe ([SOGo] use bash script for ldap plist template)
+=======
+      image: mailcow/sogo:nightly-20240603
+>>>>>>> 3080a7028 ([Nightly][SOGo] Update to 5.10.0)
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
