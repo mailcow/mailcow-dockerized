@@ -4,9 +4,10 @@ LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.16
+ARG DOVECOT_VERSION=2.3.20
+ARG PIGEONHOLE_VERSION=0.5.20
+ENV LC_ALL C
 
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
 
 # Add groups and users before installing Dovecot to not break compatibility
 RUN addgroup -g 5000 vmail \
@@ -100,6 +101,7 @@ RUN addgroup -g 5000 vmail \
   supervisor \
   tzdata \
   wget \
+<<<<<<< HEAD
   dovecot \
   dovecot-dev \
   dovecot-lmtpd \
@@ -114,6 +116,24 @@ RUN addgroup -g 5000 vmail \
   dovecot-fts-flatcurve \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
+=======
+  git \
+  bison \
+  flex \
+  build-essential \
+  autoconf \
+  automake \
+  libtool \
+  make \
+  default-libmysqlclient-dev \
+  libicu-dev \
+  zlib1g-dev \
+  pkg-config \
+  libsqlite3-dev \
+  liblua5.3-dev \
+  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
+>>>>>>> 7ec7bd21c (Changed Dovecot Base to Bullseye again (Self compile))
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true
 
