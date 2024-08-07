@@ -147,6 +147,7 @@ function rspamd_maps($_action, $_data = null) {
       foreach ($maps as $map) {
         $is_valid = false;
         foreach ($RSPAMD_MAPS as $rspamd_map_type) {
+<<<<<<< HEAD
           if (in_array($map, $rspamd_map_type)) {
             $is_valid = true;
             break;
@@ -161,6 +162,18 @@ function rspamd_maps($_action, $_data = null) {
             'msg' => array('global_map_invalid', $map)
           );
         }
+=======
+          if (!in_array($map, $rspamd_map_type)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, '-'),
+              'msg' => array('global_map_invalid', $map)
+            );
+          } else {
+            array_push($valid_maps, $map);
+          }
+        }
+>>>>>>> c68a436a2 ([Web] fix invalid rspamd map check)
       }
       foreach ($valid_maps as $map) {
         try {
