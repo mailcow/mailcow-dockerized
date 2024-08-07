@@ -409,7 +409,7 @@ while (($#)); do
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
-    exit 1
+    exit 0
   esac
   shift
 done
