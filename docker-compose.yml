@@ -479,7 +479,6 @@ services:
         - mysql-mailcow
         - acme-mailcow
         - redis-mailcow
-
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
