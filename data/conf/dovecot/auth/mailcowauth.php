@@ -42,7 +42,7 @@ require_once 'functions.inc.php';
 require_once 'functions.auth.inc.php';
 require_once 'sessions.inc.php';
 
-// Init Keycloak Provider
+// Init provider
 $iam_provider = identity_provider('init');
 
 $result = check_login($post['username'], $post['password'], $post['protocol'], true);

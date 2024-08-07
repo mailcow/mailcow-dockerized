@@ -28,8 +28,12 @@ ${REDIS_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
 
 # Create missing directories
 [[ ! -d /etc/dovecot/sql/ ]] && mkdir -p /etc/dovecot/sql/
+<<<<<<< HEAD
 [[ ! -d /etc/dovecot/lua/ ]] && mkdir -p /etc/dovecot/lua/
 [[ ! -d /etc/dovecot/conf.d/ ]] && mkdir -p /etc/dovecot/conf.d/
+=======
+[[ ! -d /etc/dovecot/auth/ ]] && mkdir -p /etc/dovecot/auth/
+>>>>>>> e202d00be ([Dovecot] group auth files)
 [[ ! -d /var/vmail/_garbage ]] && mkdir -p /var/vmail/_garbage
 [[ ! -d /var/vmail/sieve ]] && mkdir -p /var/vmail/sieve
 [[ ! -d /etc/sogo ]] && mkdir -p /etc/sogo
@@ -136,7 +140,7 @@ user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_VALUE(attributes, '$.mailbox_format
 iterate_query = SELECT username FROM mailbox WHERE active = '1' OR active = '2';
 EOF
 
-cat <<EOF > /etc/dovecot/lua/passwd-verify.lua
+cat <<EOF > /etc/dovecot/auth/passwd-verify.lua
 function auth_password_verify(request, password)
   if request.domain == nil then
     return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
@@ -181,10 +185,10 @@ function auth_password_verify(request, password)
   -- check against app passwds for imap and smtp
   -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
   if request.service == "smtp" or request.service == "imap" or request.service == "sieve" or request.service == "pop3" then
-    skip_sasl_log = true
+    skip_sasl_log = false
     req.protocol = {}
     if tostring(req.real_rip) ~= "__IPV4_SOGO__" then
-      skip_sasl_log = false
+      skip_sasl_log = true
       req.protocol[request.service] = true
     end
     req_json = json.encode(req)
@@ -202,7 +206,7 @@ function auth_password_verify(request, password)
     }
     local api_response = json.decode(table.concat(res))
     if api_response.role == 'user' then
-      if skip_sasl_log == true then
+      if skip_sasl_log == false then
         con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
           VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
       end
@@ -262,10 +266,10 @@ fi
 
 
 # Replace patterns in app-passdb.lua
-sed -i "s/__DBUSER__/${DBUSER}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/lua/passwd-verify.lua
+sed -i "s/__DBUSER__/${DBUSER}/g" /etc/dovecot/auth/passwd-verify.lua
+sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/auth/passwd-verify.lua
+sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/auth/passwd-verify.lua
+sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/auth/passwd-verify.lua
 
 
 # Migrate old sieve_after file
@@ -382,8 +386,8 @@ sievec /usr/lib/dovecot/sieve/report-ham.sieve
 
 # Fix permissions
 chown root:root /etc/dovecot/sql/*.conf
-chown root:dovecot /etc/dovecot/sql/dovecot-dict-sql-sieve* /etc/dovecot/sql/dovecot-dict-sql-quota* /etc/dovecot/lua/passwd-verify.lua
-chmod 640 /etc/dovecot/sql/*.conf /etc/dovecot/lua/passwd-verify.lua
+chown root:dovecot /etc/dovecot/sql/dovecot-dict-sql-sieve* /etc/dovecot/sql/dovecot-dict-sql-quota* /etc/dovecot/auth/passwd-verify.lua
+chmod 640 /etc/dovecot/sql/*.conf /etc/dovecot/auth/passwd-verify.lua
 chown -R vmail:vmail /var/vmail/sieve
 chown -R vmail:vmail /var/volatile
 chown -R vmail:vmail /var/vmail_index
@@ -453,7 +457,7 @@ done
 
 # For some strange, unknown and stupid reason, Dovecot may run into a race condition, when this file is not touched before it is read by dovecot/auth
 # May be related to something inside Docker, I seriously don't know
-touch /etc/dovecot/lua/passwd-verify.lua
+touch /etc/dovecot/auth/passwd-verify.lua
 
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
   cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
