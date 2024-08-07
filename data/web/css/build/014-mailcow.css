@@ -386,6 +386,7 @@ button[aria-expanded='true'] > .caret {
     background-color: #f0f0f0;
 }
 .btn.btn-outline-secondary {
+  color: #000000 !important;
   border-color: #cfcfcf !important;  
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {

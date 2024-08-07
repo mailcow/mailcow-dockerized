@@ -8,157 +8,200 @@
     </div>
     <div id="collapse-tab-user-auth" class="card-body collapse" data-bs-parent="#user-content">
       {% if mailboxdata.attributes.force_pw_update == '1' %}
-          <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
+        <div class="alert alert-danger">{{ lang.user.force_pw_update|raw }}</div>
       {% endif %}
-      {% if not skip_sogo %}
       <div class="row">
-        <div class="hidden-xs col-md-3 col-xs-5 text-right"></div>
-        <div class="col-md-3 col-xs-12">
-          {% if dual_login and allow_admin_email_login == 'n' or mailboxdata.attributes.force_pw_update == '1' %}
-            <button disabled class="btn btn-secondary btn-block btn-xs-lg">
-              <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
-            </button>
-          {% else %}
-            <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-secondary btn-block btn-xs-lg">
-              <i class="bi bi-inbox-fill"></i> {{ lang.user.open_webmail_sso }}
-            </a>
+        <div class="col-xl-9 col-lg-7 col-md-12 col-12 d-flex flex-column mb-4">
+          {% if not skip_sogo %}
+          <div class="row mb-4">
+            <div class="col-12 col-lg-6 col-xl-4">
+              {% if dual_login and allow_admin_email_login == 'n' or mailboxdata.attributes.force_pw_update == '1' %}
+                <button disabled class="btn btn-secondary btn-block btn-xs-lg w-100">
+                  {{ lang.user.open_webmail_sso }} <i class="bi bi-arrow-right"></i>
+                </button>
+              {% else %}
+                <a target="_blank" href="/sogo-auth.php?login={{ mailcow_cc_username }}" role="button" class="btn btn-primary btn-lg btn-block btn-xs-lg w-100">
+                  {{ lang.user.open_webmail_sso }} <i class="bi bi-arrow-right"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
           {% endif %}
-        </div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="d-none d-sm-flex col-md-3 col-5 text-end"></div>
-        <div class="col-md-9 col-12">
-          <p class="text-muted text-muted-mt-0">{{ lang.user.direct_protocol_access|raw }}</p>
-          {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success mb-2">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success mb-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success mb-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success mb-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
-          {% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success mb-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}
-        </div>
-      </div>
-      <hr>
-      {% endif %}
-      <div class="row">
-        <div class="col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.in_use }}:</div>
-        <div class="col-md-5 col-12">
-          <div class="progress">
+
+          <legend>{{ lang.user.overview }}</legend>
+          <hr>
+          <div class="d-flex">
+            <h5><i class="bi bi-envelope-fill"></i> {{ mailboxdata.messages }} {{ lang.user.messages }}</h5>
+            <h5 class="ms-auto">{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}</h5>
+          </div>
+          <div class="progress mb-4" style="height: 20px";>
             <div class="progress-bar bg-{{ mailboxdata.percent_class }}" role="progressbar" aria-valuenow="{{ mailboxdata.percent_in_use }}" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;width: {{ mailboxdata.percent_in_use }}%;">
               {{ mailboxdata.percent_in_use }}%
             </div>
           </div>
-          <p>{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}<br>{{ mailboxdata.messages }} {{ lang.user.messages }}</p>
+          
+          <div class="row">
+            <div class="col-12 col-md-3 d-flex">
+              <span class="mt-2 w-100 text-md-end">{{ lang.user.protocols }}:</span>
+            </div>
+            <div class="col-12 col-md-9 d-flex">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.direct_protocol_access|raw }}"></i>
+              <div class="d-flex flex-wrap">
+              {% if mailboxdata.attributes.imap_access == 1 %}<div class="badge fs-6 bg-success m-2">IMAP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">IMAP <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.smtp_access == 1 %}<div class="badge fs-6 bg-success m-2">SMTP <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SMTP <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.sieve_access == 1 %}<div class="badge fs-6 bg-success m-2">Sieve <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">Sieve <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if mailboxdata.attributes.pop3_access == 1 %}<div class="badge fs-6 bg-success m-2">POP3 <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">POP3 <i class="bi bi-x-lg"></i></div>{% endif %}
+              {% if not skip_sogo %}{% if mailboxdata.attributes.sogo_access == 1 %}<div class="badge fs-6 bg-success m-2">SOGo <i class="bi bi-check-lg"></i></div>{% else %}<div class="badge fs-6 bg-danger">SOGo <i class="bi bi-x-lg"></i></div>{% endif %}{% endif %}       
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-12 col-md-3 d-flex">
+              <span class="mt-2 w-100 text-md-end">{{ lang.user.apple_connection_profile }}:</span>
+            </div>
+            <div class="col-12 col-md-8">
+              <div class="d-flex">
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }}"></i> 
+                <a href="/mobileconfig.php?only_email">{{ lang.user.email }} <small>[IMAP, SMTP]</small></a>
+              </div> 
+              {% if not skip_sogo %}
+              <div class="d-flex">
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }}"></i>  
+                <a href="/mobileconfig.php">{{ lang.user.email_and_dav }} <small>[IMAP, SMTP, Cal/CardDAV]</small></a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-12 col-md-3 d-flex">
+              <span class="mt-2 w-100 text-md-end">{{ lang.user.apple_connection_profile }}<br>{{ lang.user.with_app_password }}:</span>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="d-flex">
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}"></i> 
+                <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }} <small>[IMAP, SMTP]</small></a>
+              </div>
+              {% if not skip_sogo %}
+              <div class="d-flex">
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }} {{ lang.user.apple_connection_profile_with_app_password }}"></i> 
+                <a href="/mobileconfig.php?app_password">{{ lang.user.email_and_dav }} <small>[IMAP, SMTP, Cal/CardDAV]</small></a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 d-flex flex-column text-center align-items-center mt-4">
+              <a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">{{ lang.user.client_configuration }}</a>
+              <a class="mt-2" href="#userFilterModal" data-bs-toggle="modal">{{ lang.user.show_sieve_filters }}</a>
+            </div>
+          </div>
+
+          {# TFA #}
+          <legend class="mt-4">{{ lang.user.authentication }}</legend>
           <hr>
-          <p><a href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
-        </div>
-      </div>
-      <hr>
-      {# TFA #}
-      <div class="row">
-        <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.tfa }}:</div>
-        <div class="col-sm-9 col-xs-7">
-          <p id="tfa_pretty">{{ tfa_data.pretty }}</p>
-          {% include 'tfa_keys.twig' %}
-          <br>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 col-xs-5 text-right">{{ lang.tfa.set_tfa }}:</div>
-        <div class="col-sm-9 col-xs-7">
-          <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
-            <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
-            <option value="webauthn">{{ lang.tfa.webauthn }}</option>
-            <option value="totp">{{ lang.tfa.totp }}</option>
-            <option value="none">{{ lang.tfa.none }}</option>
-          </select>
-        </div>
-      </div>
-      <hr>
-      {# FIDO2 #}
-      <div class="row">
-        <div class="col-sm-3 col-12 text-sm-end text-start">
-          <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 col-12 text-sm-end text-start mb-4">
-          {{ lang.fido2.known_ids }}:
-        </div>
-        <div class="col-sm-9 col-12">
-          <div class="table-responsive">
-            <table class="table table-striped table-hover table-condensed" id="fido2_keys">
-              <tr>
-                <th>ID</th>
-                <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
-              </tr>
-              {% include 'fido2.twig' %}
-            </table>
+          <div class="row">
+            <div class="col-12 col-md-3 d-flex"></div>
+            <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center justify-content-sm-start">
+              <a class="btn btn-secondary" href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-12 col-md-3 d-flex">
+              <span class="mt-2 w-100 text-md-end">{{ lang.tfa.tfa }}:</span>
+            </div>
+            <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center justify-content-sm-start">
+              <span id="tfa_pretty">{{ tfa_data.pretty }}</span>
+              {% include 'tfa_keys.twig' %}
+            </div>
+          </div>
+          <div class="row mt-2 mb-4">
+            <div class="col-12 col-md-3 d-flex">
+              <span class="mt-2 w-100 text-md-end">{{ lang.tfa.set_tfa }}:</span>
+            </div>
+            <div class="col-12 col-md-9 d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.tfa_info|raw }}"></i>
+              <select data-style="ms-2 btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
+                <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
+                <option value="webauthn">{{ lang.tfa.webauthn }}</option>
+                <option value="totp">{{ lang.tfa.totp }}</option>
+                <option value="none">{{ lang.tfa.none }}</option>
+              </select>
+            </div>
+          </div>
+          {# FIDO2 #}
+          <div class="row mt-4">
+            <div class="col-sm-3 col-12 text-sm-end text-start">
+              <p><i class="bi bi-shield-fill-check"></i> {{ lang.fido2.fido2_auth }}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 col-12 text-sm-end text-start mb-4">
+              {{ lang.fido2.known_ids }}:
+            </div>
+            <div class="col-sm-9 col-12">
+              <div class="table-responsive">
+                <table class="table table-striped table-hover table-condensed" id="fido2_keys">
+                  <tr>
+                    <th>ID</th>
+                    <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
+                  </tr>
+                  {% include 'fido2.twig' %}
+                </table>
+              </div>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-3 col-sm-9">
+              <div class="btn-group nowrap">
+                <button class="btn btn-sm btn-primary d-block d-sm-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
+                <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" id="register-fido2-touchid"><i class="bi bi-apple"></i> {{ lang.fido2.set_fido2_touchid }}</a></li>
+                </ul>
+              </div>
+            </div>
           </div>
           <br>
-        </div>
-      </div>
-      <div class="row">
-        <div class="offset-sm-3 col-sm-9">
-          <div class="btn-group nowrap">
-            <button class="btn btn-sm btn-primary d-block d-sm-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
-            <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" id="register-fido2-touchid"><i class="bi bi-apple"></i> {{ lang.fido2.set_fido2_touchid }}</a></li>
-            </ul>
+          <div class="row" id="status-fido2">
+            <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
+            <div class="col-sm-9 col-7">
+              <div id="fido2-alerts">-</div>
+            </div>
+            <br>
           </div>
         </div>
-      </div>
-      <br>
-      <div class="row" id="status-fido2">
-        <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
-        <div class="col-sm-9 col-7">
-          <div id="fido2-alerts">-</div>
-        </div>
-        <br>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}:</div>
-        <div class="col-md-9 col-12">
-          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }}</p>
-          {% if not skip_sogo %}
-          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php">{{ lang.user.email_and_dav }}</a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_complete }}</p>
-          {% endif %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-file-earmark-text"></i> {{ lang.user.apple_connection_profile }}<br class="d-none d-lg-block" />{{ lang.user.with_app_password }}:</div>
-        <div class="col-md-9 col-12">
-          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }}</a> <small>IMAP, SMTP</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_mailonly }}<br /> {{ lang.user.apple_connection_profile_with_app_password }}</p>
-          {% if not skip_sogo %}
-          <p><i class="bi bi-file-earmark-post"></i> <a href="/mobileconfig.php?app_password">{{ lang.user.email_and_dav }}</a> <small>IMAP, SMTP, Cal/CardDAV</small></p>
-          <p class="text-muted">{{ lang.user.apple_connection_profile_complete }}<br /> {{ lang.user.apple_connection_profile_with_app_password }}</p>
-          {% endif %}
-        </div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="offset-sm-3 col-sm-9">
-          <p><a target="_blank" href="https://docs.mailcow.email/client/client/#{{ clientconfigstr }}">[{{ lang.user.client_configuration }}]</a></p>
-          <p><a href="#userFilterModal" data-bs-toggle="modal">[{{ lang.user.show_sieve_filters }}]</a></p>
+        <div class="ms-auto col-xl-3 col-lg-5 col-md-12 col-12 d-flex flex-column well flex-grow-1">
+          <legend class="d-flex">
+            <span>{{ lang.user.recent_successful_connections }}</span>
+            <div id="spinner-last-login" class="ms-auto my-auto spinner-border spinner-border-sm d-none" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </legend>
           <hr>
-          <h4 class="recent-login-success">{{ lang.user.recent_successful_connections }}</h4>
-          <div class="dropdown mt-2">
-            <button class="btn btn-secondary btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-bs-toggle="dropdown">{{ lang.user.login_history }}</button>
-            <ul class="dropdown-menu">
-              <li class="login-history" data-days="1"><a class="dropdown-item" href="#">1 {{ lang.user.day }}</a></li>
-              <li class="login-history" data-days="7"><a class="dropdown-item active" href="#">1 {{ lang.user.week }}</a></li>
-              <li class="login-history" data-days="14"><a class="dropdown-item" href="#">2 {{ lang.user.weeks }}</a></li>
-              <li class="login-history" data-days="31"><a class="dropdown-item" href="#">1 {{ lang.user.month }}</a></li>
-            </ul>
+          <h6 class="last-ui-login"></h6>
+          <div class="d-flex">
+            <span class="clear-last-logins mt-auto mb-2">
+              {{ lang.user.clear_recent_successful_connections }}
+            </span>
+            <div class="dropdown mt-4 mb-2 ms-auto">
+              <button class="btn btn-secondary btn-xs btn-xs-lg dropdown-toggle" type="button" id="history_sasl_days" data-bs-toggle="dropdown">{{ lang.user.login_history }}</button>
+              <ul class="dropdown-menu">
+                <li class="login-history" data-days="1"><a class="dropdown-item" href="#">1 {{ lang.user.day }}</a></li>
+                <li class="login-history" data-days="7"><a class="dropdown-item active" href="#">1 {{ lang.user.week }}</a></li>
+                <li class="login-history" data-days="14"><a class="dropdown-item" href="#">2 {{ lang.user.weeks }}</a></li>
+                <li class="login-history" data-days="31"><a class="dropdown-item" href="#">1 {{ lang.user.month }}</a></li>
+              </ul>
+            </div>
           </div>
+<<<<<<< HEAD
           <div class="last-login mt-4" id="recent-logins"></div>
           <span class="clear-last-logins mt-2">
             {{ lang.user.clear_recent_successful_connections }}
           </span>
+=======
+          <ul class="list-group last-sasl-login overflow-auto" style="flex: 1 1 0; min-height: 400px;"></ul>
+>>>>>>> 56a9f1a41 ([Web] organize user landing)
         </div>
       </div>
     </div>
