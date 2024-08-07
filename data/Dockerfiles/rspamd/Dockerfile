@@ -1,18 +1,27 @@
 FROM debian:bookworm-slim
+<<<<<<< HEAD
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RSPAMD_VER=rspamd_3.9.1-1~82f43560f
 ARG CODENAME=bookworm
 ENV LC_ALL=C
+=======
+LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
-RUN apt-get update && apt-get install -y \
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CODENAME=bookworm
+ENV LC_ALL C
+>>>>>>> ddaeebc82 ([Rspamd] Update to 3.6 (Ratelimit fix))
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   ca-certificates \
   gnupg2 \
   apt-transport-https \
   dnsutils \
   netcat-traditional \
+<<<<<<< HEAD
   wget \
   redis-tools \ 
   procps \ 
@@ -22,6 +31,13 @@ RUN apt-get update && apt-get install -y \
   && wget -P /tmp https://rspamd.com/apt-stable/pool/main/r/rspamd/${RSPAMD_VER}~${CODENAME}_${arch}.deb\
   && apt install -y /tmp/${RSPAMD_VER}~${CODENAME}_${arch}.deb \
   && rm -rf /var/lib/apt/lists/* /tmp/*\
+=======
+  && apt-key adv --fetch-keys https://rspamd.com/apt-stable/gpg.key \
+  && echo "deb https://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list \
+  && apt-get update \
+  && apt-get --no-install-recommends -y install rspamd redis-tools procps nano \
+  && rm -rf /var/lib/apt/lists/* \
+>>>>>>> ddaeebc82 ([Rspamd] Update to 3.6 (Ratelimit fix))
   && apt-get autoremove --purge \
   && apt-get clean \
   && mkdir -p /run/rspamd \
