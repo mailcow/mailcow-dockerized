@@ -168,6 +168,7 @@ services:
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
+        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-}
       restart: always
       networks:
         mailcow-network:
