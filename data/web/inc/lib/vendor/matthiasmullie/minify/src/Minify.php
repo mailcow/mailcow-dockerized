@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Abstract minifier class
+ * Abstract minifier class.
  *
  * Please report bugs on https://github.com/matthiasmullie/minify/issues
  *
@@ -8,6 +9,7 @@
  * @copyright Copyright (c) 2012, Matthias Mullie. All rights reserved
  * @license MIT License
  */
+
 namespace MatthiasMullie\Minify;
 
 use MatthiasMullie\Minify\Exceptions\IOException;
@@ -18,7 +20,6 @@ use Psr\Cache\CacheItemInterface;
  *
  * Please report bugs on https://github.com/matthiasmullie/minify/issues
  *
- * @package Minify
  * @author Matthias Mullie <minify@mullie.eu>
  * @copyright Copyright (c) 2012, Matthias Mullie. All rights reserved
  * @license MIT License
@@ -43,6 +44,8 @@ abstract class Minify
      * This array will hold content of strings and regular expressions that have
      * been extracted from the JS source code, so we can reliably match "code",
      * without having to worry about potential "code-like" characters inside.
+     *
+     * @internal
      *
      * @var string[]
      */
@@ -128,7 +131,7 @@ abstract class Minify
 
             // check if we can read the file
             if (!$this->canImportFile($path)) {
-                throw new IOException('The file "'.$path.'" could not be opened for reading. Check if PHP has enough permissions.');
+                throw new IOException('The file "' . $path . '" could not be opened for reading. Check if PHP has enough permissions.');
             }
 
             $this->add($path);
@@ -243,6 +246,9 @@ abstract class Minify
     /**
      * Register a pattern to execute against the source content.
      *
+     * If $replacement is a string, it must be plain text. Placeholders like $1 or \2 don't work.
+     * If you need that functionality, use a callback instead.
+     *
      * @param string          $pattern     PCRE pattern
      * @param string|callable $replacement Replacement value for matched pattern
      */
@@ -252,6 +258,49 @@ abstract class Minify
         $pattern .= 'S';
 
         $this->patterns[] = array($pattern, $replacement);
+    }
+
+    /**
+     * Both JS and CSS use the same form of multi-line comment, so putting the common code here.
+     */
+    protected function stripMultilineComments()
+    {
+        // First extract comments we want to keep, so they can be restored later
+        // PHP only supports $this inside anonymous functions since 5.4
+        $minifier = $this;
+        $callback = function ($match) use ($minifier) {
+            $count = count($minifier->extracted);
+            $placeholder = '/*' . $count . '*/';
+            $minifier->extracted[$placeholder] = $match[0];
+
+            return $placeholder;
+        };
+        $this->registerPattern('/
+            # optional newline
+            \n?
+
+            # start comment
+            \/\*
+
+            # comment content
+            (?:
+                # either starts with an !
+                !
+            |
+                # or, after some number of characters which do not end the comment
+                (?:(?!\*\/).)*?
+
+                # there is either a @license or @preserve tag
+                @(?:license|preserve)
+            )
+
+            # then match to the end of the comment
+            .*?\*\/\n?
+
+            /ixs', $callback);
+
+        // Then strip all other comments
+        $this->registerPattern('/\/\*.*?\*\//s', '');
     }
 
     /**
@@ -268,11 +317,13 @@ abstract class Minify
      */
     protected function replace($content)
     {
-        $processed = '';
+        $contentLength = strlen($content);
+        $output = '';
+        $processedOffset = 0;
         $positions = array_fill(0, count($this->patterns), -1);
         $matches = array();
 
-        while ($content) {
+        while ($processedOffset < $contentLength) {
             // find first match for all patterns
             foreach ($this->patterns as $i => $pattern) {
                 list($pattern, $replacement) = $pattern;
@@ -285,12 +336,12 @@ abstract class Minify
 
                 // no need to re-run matches that are still in the part of the
                 // content that hasn't been processed
-                if ($positions[$i] >= 0) {
+                if ($positions[$i] >= $processedOffset) {
                     continue;
                 }
 
                 $match = null;
-                if (preg_match($pattern, $content, $match, PREG_OFFSET_CAPTURE)) {
+                if (preg_match($pattern, $content, $match, PREG_OFFSET_CAPTURE, $processedOffset)) {
                     $matches[$i] = $match;
 
                     // we'll store the match position as well; that way, we
@@ -307,61 +358,53 @@ abstract class Minify
 
             // no more matches to find: everything's been processed, break out
             if (!$matches) {
-                $processed .= $content;
+                // output the remaining content
+                $output .= substr($content, $processedOffset);
                 break;
             }
 
             // see which of the patterns actually found the first thing (we'll
             // only want to execute that one, since we're unsure if what the
             // other found was not inside what the first found)
-            $discardLength = min($positions);
-            $firstPattern = array_search($discardLength, $positions);
-            $match = $matches[$firstPattern][0][0];
+            $matchOffset = min($positions);
+            $firstPattern = array_search($matchOffset, $positions);
+            $match = $matches[$firstPattern];
 
             // execute the pattern that matches earliest in the content string
-            list($pattern, $replacement) = $this->patterns[$firstPattern];
-            $replacement = $this->replacePattern($pattern, $replacement, $content);
+            list(, $replacement) = $this->patterns[$firstPattern];
 
-            // figure out which part of the string was unmatched; that's the
-            // part we'll execute the patterns on again next
-            $content = (string) substr($content, $discardLength);
-            $unmatched = (string) substr($content, strpos($content, $match) + strlen($match));
-
-            // move the replaced part to $processed and prepare $content to
-            // again match batch of patterns against
-            $processed .= substr($replacement, 0, strlen($replacement) - strlen($unmatched));
-            $content = $unmatched;
-
-            // first match has been replaced & that content is to be left alone,
-            // the next matches will start after this replacement, so we should
-            // fix their offsets
-            foreach ($positions as $i => $position) {
-                $positions[$i] -= $discardLength + strlen($match);
-            }
+            // add the part of the input between $processedOffset and the first match;
+            // that content wasn't matched by anything
+            $output .= substr($content, $processedOffset, $matchOffset - $processedOffset);
+            // add the replacement for the match
+            $output .= $this->executeReplacement($replacement, $match);
+            // advance $processedOffset past the match
+            $processedOffset = $matchOffset + strlen($match[0][0]);
         }
 
-        return $processed;
+        return $output;
     }
 
     /**
-     * This is where a pattern is matched against $content and the matches
-     * are replaced by their respective value.
-     * This function will be called plenty of times, where $content will always
-     * move up 1 character.
+     * If $replacement is a callback, execute it, passing in the match data.
+     * If it's a string, just pass it through.
      *
-     * @param string          $pattern     Pattern to match
      * @param string|callable $replacement Replacement value
-     * @param string          $content     Content to match pattern against
+     * @param array           $match       Match data, in PREG_OFFSET_CAPTURE form
      *
      * @return string
      */
-    protected function replacePattern($pattern, $replacement, $content)
+    protected function executeReplacement($replacement, $match)
     {
-        if (is_callable($replacement)) {
-            return preg_replace_callback($pattern, $replacement, $content, 1, $count);
-        } else {
-            return preg_replace($pattern, $replacement, $content, 1, $count);
+        if (!is_callable($replacement)) {
+            return $replacement;
         }
+        // convert $match from the PREG_OFFSET_CAPTURE form to the form the callback expects
+        foreach ($match as &$matchItem) {
+            $matchItem = $matchItem[0];
+        }
+
+        return $replacement($match);
     }
 
     /**
@@ -395,8 +438,8 @@ abstract class Minify
             }
 
             $count = count($minifier->extracted);
-            $placeholder = $match[1].$placeholderPrefix.$count.$match[1];
-            $minifier->extracted[$placeholder] = $match[1].$match[2].$match[1];
+            $placeholder = $match[1] . $placeholderPrefix . $count . $match[1];
+            $minifier->extracted[$placeholder] = $match[1] . $match[2] . $match[1];
 
             return $placeholder;
         };
@@ -413,7 +456,7 @@ abstract class Minify
          * considered as escape-char (times 2) and to get it in the regex,
          * escaped (times 2)
          */
-        $this->registerPattern('/(['.$chars.'])(.*?(?<!\\\\)(\\\\\\\\)*+)\\1/s', $callback);
+        $this->registerPattern('/([' . $chars . '])(.*?(?<!\\\\)(\\\\\\\\)*+)\\1/s', $callback);
     }
 
     /**
@@ -451,14 +494,20 @@ abstract class Minify
         $parsed = parse_url($path);
         if (
             // file is elsewhere
-            isset($parsed['host']) ||
+            isset($parsed['host'])
             // file responds to queries (may change, or need to bypass cache)
-            isset($parsed['query'])
+            || isset($parsed['query'])
         ) {
             return false;
         }
 
-        return strlen($path) < PHP_MAXPATHLEN && @is_file($path) && is_readable($path);
+        try {
+            return strlen($path) < PHP_MAXPATHLEN && @is_file($path) && is_readable($path);
+        }
+        // catch openbasedir exceptions which are not caught by @ on is_file()
+        catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -473,7 +522,7 @@ abstract class Minify
     protected function openFileForWriting($path)
     {
         if ($path === '' || ($handler = @fopen($path, 'w')) === false) {
-            throw new IOException('The file "'.$path.'" could not be opened for writing. Check if PHP has enough permissions.');
+            throw new IOException('The file "' . $path . '" could not be opened for writing. Check if PHP has enough permissions.');
         }
 
         return $handler;
@@ -491,11 +540,21 @@ abstract class Minify
     protected function writeToFile($handler, $content, $path = '')
     {
         if (
-            !is_resource($handler) ||
-            ($result = @fwrite($handler, $content)) === false ||
-            ($result < strlen($content))
+            !is_resource($handler)
+            || ($result = @fwrite($handler, $content)) === false
+            || ($result < strlen($content))
         ) {
-            throw new IOException('The file "'.$path.'" could not be written to. Check your disk space and file permissions.');
+            throw new IOException('The file "' . $path . '" could not be written to. Check your disk space and file permissions.');
         }
+    }
+
+    protected static function str_replace_first($search, $replace, $subject)
+    {
+        $pos = strpos($subject, $search);
+        if ($pos !== false) {
+            return substr_replace($subject, $replace, $pos, strlen($search));
+        }
+
+        return $subject;
     }
 }
