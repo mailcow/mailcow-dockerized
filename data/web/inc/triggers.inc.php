@@ -40,21 +40,43 @@ if (!empty($_GET['sso_token'])) {
 
 if (isset($_POST["verify_tfa_login"])) {
   if (verify_tfa_login($_SESSION['pending_mailcow_cc_username'], $_POST)) {
-    set_user_loggedin_session($_SESSION['pending_mailcow_cc_username']);
-    $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
-    $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
-      header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
-      die();
-    } else {
-      header("Location: /user");
+    if ($_SESSION['pending_mailcow_cc_role'] == "admin") {
+      $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
+      $_SESSION['mailcow_cc_role'] = "admin";
+      unset($_SESSION['pending_mailcow_cc_username']);
+      unset($_SESSION['pending_mailcow_cc_role']);
+      unset($_SESSION['pending_tfa_methods']);
+      
+		  header("Location: /debug");
       die();
     }
-  } else {
-    unset($_SESSION['pending_mailcow_cc_username']);
-    unset($_SESSION['pending_mailcow_cc_role']);
-    unset($_SESSION['pending_tfa_methods']);
+    elseif ($_SESSION['pending_mailcow_cc_role'] == "domainadmin") {
+      $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
+      $_SESSION['mailcow_cc_role'] = "domainadmin";
+      unset($_SESSION['pending_mailcow_cc_username']);
+      unset($_SESSION['pending_mailcow_cc_role']);
+      unset($_SESSION['pending_tfa_methods']);
+      
+		  header("Location: /mailbox");
+      die();
+    }
+    elseif ($_SESSION['pending_mailcow_cc_role'] == "user") {
+      set_user_loggedin_session($_SESSION['pending_mailcow_cc_username']);
+      $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
+      $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+      if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+        header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
+        die();
+      } else {
+        header("Location: /user");
+        die();
+      }
+    }
   }
+
+  unset($_SESSION['pending_mailcow_cc_username']);
+  unset($_SESSION['pending_mailcow_cc_role']);
+  unset($_SESSION['pending_tfa_methods']);
 }
 
 if (isset($_GET["cancel_tfa_login"])) {
@@ -80,7 +102,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   if ($as == "admin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
-		header("Location: /admin");
+		header("Location: /debug");
 	}
 	elseif ($as == "domainadmin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
