@@ -595,6 +595,7 @@ services:
       command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
       environment:
         - TZ=${TZ}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
       depends_on:
         - sogo-mailcow
         - dovecot-mailcow
