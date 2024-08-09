@@ -1164,6 +1164,7 @@
         "created_on": "Vytvoreno",
         "daily": "Každý den",
         "day": "den",
+        "description": "Popis",
         "delete_ays": "Potvrďte odstranění.",
         "direct_aliases": "Přímé aliasy",
         "direct_aliases_desc": "Na přímé aliasy se uplatňuje filtr spamu a nastavení pravidel TLS",

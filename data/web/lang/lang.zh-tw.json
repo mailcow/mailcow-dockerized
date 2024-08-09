@@ -1140,6 +1140,7 @@
         "created_on": "建立於",
         "daily": "每日",
         "day": "日",
+        "description": "描述",
         "delete_ays": "請確認刪除。",
         "direct_aliases": "直接別名",
         "direct_aliases_desc": "直接別名會受到垃圾郵件過濾器和 TLS 規則限制。",
