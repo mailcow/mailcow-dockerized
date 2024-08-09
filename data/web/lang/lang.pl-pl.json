@@ -363,6 +363,7 @@
         "create_syncjob": "Utwórz nowe polecenie synchronizacji",
         "daily": "Co dzień",
         "day": "Dzień",
+        "description": "Opis",
         "direct_aliases": "Aliasy bezpośrednie",
         "direct_aliases_desc": "Na aliasy bezpośrednie wpływają filtry spamu i ustawienia TLS.",
         "eas_reset": "Zresetuj pamięć podręczną urządzenia ActiveSync",

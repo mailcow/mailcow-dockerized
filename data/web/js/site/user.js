@@ -203,6 +203,11 @@ jQuery(function($){
           defaultContent: ''
         },
         {
+          title: lang.description,
+          data: 'description',
+          defaultContent: ''
+        },
+        {
           title: lang.alias_valid_until,
           data: 'validity',
           defaultContent: '',
