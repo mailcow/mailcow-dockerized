@@ -1192,6 +1192,7 @@
         "created_on": "Created on",
         "daily": "Daily",
         "day": "day",
+        "description": "Description",
         "delete_ays": "Please confirm the deletion process.",
         "direct_aliases": "Direct alias addresses",
         "direct_aliases_desc": "Direct alias addresses are affected by spam filter and TLS policy settings.",

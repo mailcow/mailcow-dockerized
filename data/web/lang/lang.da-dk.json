@@ -971,6 +971,7 @@
         "create_syncjob": "Opret nyt sync job",
         "daily": "Dagligt",
         "day": "dag",
+        "description": "Beskrivelse",
         "delete_ays": "Bekræft venligst ønsket om sletning.",
         "direct_aliases": "Direkte alias addresser",
         "direct_aliases_desc": "Direkte alias-adresser påvirkes af spamfilter og TLS-politiske indstillinger.",

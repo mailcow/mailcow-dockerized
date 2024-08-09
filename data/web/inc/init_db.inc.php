@@ -527,6 +527,7 @@ function init_db_schema() {
         "cols" => array(
           "address" => "VARCHAR(255) NOT NULL",
           "goto" => "TEXT NOT NULL",
+          "description" => "TEXT NOT NULL",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "validity" => "INT(11)"
