@@ -502,9 +502,31 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
 
     $user_res = $ldap_query->firstOrFail();
   } catch (Exception $e) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*'),
+      'msg' => $e->getMessage()
+    );
+    clear_session();
     return false;
   }
-  if (!$iam_provider->auth()->attempt($user_res['distinguishedname'][0], $pass)) {
+  try {
+    if (!$iam_provider->auth()->attempt($user_res['distinguishedname'][0], $pass)) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', $user_res),
+        'msg' => 'failed_ldap_auth'
+      );
+      clear_session();
+      return false;
+    }
+  } catch (Exception $e) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', $user_res),
+      'msg' => $e->getMessage()
+    );
+    clear_session();
     return false;
   }
 
@@ -512,6 +534,12 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
   // also return false if no mappers were defined
   $user_template = $user_res[$iam_settings['attribute_field']][0];
   if ($create && (empty($iam_settings['mappers']) || !$user_template)){
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', $user_res),
+      'msg' => 'no_matching_template'
+    );
+    clear_session();
     return false;
   } else if (!$create) {
     // login success - dont create mailbox
