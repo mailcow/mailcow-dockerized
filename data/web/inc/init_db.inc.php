@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "29072024_1000";
+    $db_version = "13082024_0927";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1005,7 +1005,7 @@ function init_db_schema() {
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),      
+      ),
       "pushover" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
@@ -1389,7 +1389,7 @@ function init_db_schema() {
         "key_size" => 2048,
         "max_quota_for_domain" => 10240 * 1048576,
       )
-    );     
+    );
     $default_mailbox_template = array(
       "template" => "Default",
       "type" => "mailbox",
@@ -1424,7 +1424,7 @@ function init_db_schema() {
         "acl_quarantine_category" => 1,
         "acl_app_passwds" => 1,
       )
-    );        
+    );
     $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");
     $stmt->execute(array(
       ":type" => "domain",
@@ -1438,8 +1438,8 @@ function init_db_schema() {
         ":type" => "domain",
         ":template" => $default_domain_template["template"],
         ":attributes" => json_encode($default_domain_template["attributes"])
-      )); 
-    }    
+      ));
+    }
     $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");
     $stmt->execute(array(
       ":type" => "mailbox",
@@ -1453,8 +1453,8 @@ function init_db_schema() {
         ":type" => "mailbox",
         ":template" => $default_mailbox_template["template"],
         ":attributes" => json_encode($default_mailbox_template["attributes"])
-      )); 
-    } 
+      ));
+    }
 
     if (php_sapi_name() == "cli") {
       echo "DB initialization completed" . PHP_EOL;
