@@ -1328,9 +1328,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
        
           try {
             update_sogo_static_view($username);
-          }catch (PDOException $e) {
+          } catch (PDOException $e) {
             $_SESSION['return'][] = array(
-              'type' => 'success',
+              'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => $e->getMessage()
             );
@@ -3257,9 +3257,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             try {
               update_sogo_static_view($username);
-            }catch (PDOException $e) {
+            } catch (PDOException $e) {
               $_SESSION['return'][] = array(
-                'type' => 'success',
+                'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                 'msg' => $e->getMessage()
               );
