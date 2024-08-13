@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.22
+      image: mailcow/unbound:1.23
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -175,6 +175,7 @@ services:
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
+        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-}
       restart: always
       labels:
         ofelia.enabled: "true"
@@ -190,7 +191,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:nightly-20240731
+      image: mailcow/sogo:nightly-20240813
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
