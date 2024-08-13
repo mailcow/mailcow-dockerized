@@ -5365,7 +5365,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'Could not move maildir to garbage collector: variables local_part and/or domain empty'
               );
             }
-            if (strtolower(getenv('SKIP_SOLR')) == 'n') {
+            if (strtolower(getenv('SKIP_SOLR')) == 'n' && strtolower(getenv('FLATCURVE_EXPERIMENTAL')) != 'y') {
               $curl = curl_init();
               curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot-fts/update?commit=true');
               curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: text/xml'));
