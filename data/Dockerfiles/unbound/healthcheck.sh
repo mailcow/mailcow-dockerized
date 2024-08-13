@@ -50,12 +50,14 @@ local failures=0
 for domain in "${domains[@]}" ; do
     success=false
     for ((i=1; i<=3; i++)); do
-        dig +short +timeout=2 +tries=1 "$domain" @127.0.0.1 > /dev/null
-        if [ $? -eq 0 ]; then
+        dig_output=$(dig +short +timeout=2 +tries=1 "$domain" @127.0.0.1 2>/dev/null)
+        dig_rc=$?
+
+        if [ $dig_rc -ne 0 ] || [ -z "$dig_output" ]; then
+            log_to_stdout "Healthcheck: DNS Resolution Failed on attempt $i for $domain! Trying again..."
+        else
             success=true
             break
-        else
-            log_to_stdout "Healthcheck: DNS Resolution Failed on attempt $i for $domain! Trying again..."
         fi
     done
     
