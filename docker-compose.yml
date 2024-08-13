@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.22
+      image: mailcow/unbound:1.23
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
