@@ -238,7 +238,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:nightly-20240807
+      image: mailcow/dovecot:nightly-20240814
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
