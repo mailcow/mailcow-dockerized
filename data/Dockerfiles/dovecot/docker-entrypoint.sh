@@ -147,10 +147,14 @@ plugin {
     fts_autoindex_exclude2 = \Trash
     fts = flatcurve
 
+    # Maximum term length can be set via the 'maxlen' argument (maxlen is
+    # specified in bytes, not number of UTF-8 characters)
+    fts_tokenizer_email_address = maxlen=100
+    fts_tokenizer_generic = algorithm=simple maxlen=30
+
     # These are not flatcurve settings, but required for Dovecot FTS. See
     # Dovecot FTS Configuration link above for further information.
     fts_languages = en es de
-    fts_tokenizer_generic = algorithm=simple
     fts_tokenizers = generic email-address
 
     # OPTIONAL: Recommended default FTS core configuration
