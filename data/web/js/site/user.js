@@ -205,7 +205,10 @@ jQuery(function($){
         {
           title: lang.description,
           data: 'description',
-          defaultContent: ''
+          defaultContent: '',
+          render: function (data, type) {
+            return escapeHtml(data);
+          }
         },
         {
           title: lang.alias_valid_until,
