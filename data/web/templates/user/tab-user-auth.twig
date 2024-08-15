@@ -105,8 +105,11 @@
           {% if mailboxdata.authsource == "mailcow" %}
           <div class="row">
             <div class="col-12 col-md-3 d-flex"></div>
-            <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center justify-content-sm-start">
+            <div class="col-12 col-md-9 d-flex flex-wrap">
               <a class="btn btn-secondary" href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a>
+              {% if acl.pw_reset == 1 %}
+              <a class="btn btn-secondary ms-4" href="#pwRecoveryEmailModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.pw_recovery_email }}</a></p>
+              {% endif %}
             </div>
           </div>
           {% endif %}
