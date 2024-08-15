@@ -498,7 +498,7 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
       $ldap_query = $ldap_query->rawFilter($iam_settings['filter']);
     }
     $ldap_query = $ldap_query->where($iam_settings['username_field'], '=', $user)
-      ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname', 'cn']);
+      ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname', 'dn']);
 
     $user_res = $ldap_query->firstOrFail();
   } catch (Exception $e) {
@@ -506,29 +506,26 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
     $_SESSION['return'] = array();
     $_SESSION['return'][] =  array(
       'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*'),
+      'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
       'msg' => 'ldap_error'
     );
     return false;
   }
   try {
-    if (!$iam_provider->auth()->attempt($user_res['distinguishedname'][0], $pass)) {
-      // fallback to cn
-      if (!$iam_provider->auth()->attempt($user_res['cn'][0], $pass)) {
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $user, '*', $user_res),
-          'msg' => 'ldap_auth_failed'
-        );
-        return false;
-      }
+    if (!$iam_provider->auth()->attempt($user_res['dn'], $pass)) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', $user_res),
+        'msg' => 'ldap_auth_failed'
+      );
+      return false;
     }
   } catch (Exception $e) {
     // clear $_SESSION['return'] to not leak data
     $_SESSION['return'] = array();
     $_SESSION['return'][] =  array(
       'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*'),
+      'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
       'msg' => 'ldap_error'
     );
     return false;
