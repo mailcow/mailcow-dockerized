@@ -23,7 +23,7 @@
         <li><button class="dropdown-item" data-bs-target="#tab-config-quarantine" aria-selected="false" aria-controls="tab-config-quarantine" role="tab" data-bs-toggle="tab">{{ lang.admin.quarantine }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-quota" aria-selected="false" aria-controls="tab-config-quota" role="tab" data-bs-toggle="tab">{{ lang.admin.quota_notifications }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-rsettings" aria-selected="false" aria-controls="tab-config-rsettings" role="tab" data-bs-toggle="tab">{{ lang.admin.rspamd_settings_map }}</button></li>
-        <li><button class="dropdown-item" data-bs-target="#tab-config-password-policy" aria-selected="false" aria-controls="tab-config-password-policy" role="tab" data-bs-toggle="tab">{{ lang.admin.password_policy }}</button></li>
+        <li><button class="dropdown-item" data-bs-target="#tab-config-password-settings" aria-selected="false" aria-controls="tab-config-password-settings" role="tab" data-bs-toggle="tab">{{ lang.admin.password_settings }}</button></li>
         <li><button class="dropdown-item" data-bs-target="#tab-config-customize" aria-selected="false" aria-controls="tab-config-customize" role="tab" data-bs-toggle="tab">{{ lang.admin.customize }}</button></li>
       </ul>
     </li>
@@ -53,7 +53,7 @@
         {% include 'admin/tab-config-quota.twig' %}
         {% include 'admin/tab-config-rsettings.twig' %}
         {% include 'admin/tab-config-customize.twig' %}
-        {% include 'admin/tab-config-password-policy.twig' %}
+        {% include 'admin/tab-config-password-settings.twig' %}
         {% include 'admin/tab-sys-mails.twig' %}
         {% include 'admin/tab-globalfilter-regex.twig' %}
       </div>

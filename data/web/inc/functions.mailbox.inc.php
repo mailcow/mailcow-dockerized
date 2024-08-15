@@ -184,6 +184,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'msg' => 'global_filter_written'
           );
           return true;
+        break;
         case 'filter':
           $sieve = new Sieve\SieveParser();
           if (!isset($_SESSION['acl']['filters']) || $_SESSION['acl']['filters'] != "1" ) {
@@ -1266,6 +1267,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
             $_data['quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $_data['app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+            $_data['pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['spam_alias'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_spam_alias']);
             $_data['tls_policy'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_tls_policy']);
@@ -1281,14 +1283,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_notification'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_notification']);
             $_data['quarantine_category'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_category']);
             $_data['app_passwds'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_app_passwds']);     
+            $_data['pw_reset'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_pw_reset']);     
           }
 
           try {
             $stmt = $pdo->prepare("INSERT INTO `user_acl` 
               (`username`, `spam_alias`, `tls_policy`, `spam_score`, `spam_policy`, `delimiter_action`, `syncjobs`, `eas_reset`, `sogo_profile_reset`,
-                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`) 
+                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`, `pw_reset`) 
               VALUES (:username, :spam_alias, :tls_policy, :spam_score, :spam_policy, :delimiter_action, :syncjobs, :eas_reset, :sogo_profile_reset,
-                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds) ");
+                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds, :pw_reset) ");
             $stmt->execute(array(
               ':username' => $username,
               ':spam_alias' => $_data['spam_alias'],
@@ -1304,7 +1307,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':quarantine_attachments' => $_data['quarantine_attachments'],
               ':quarantine_notification' => $_data['quarantine_notification'],
               ':quarantine_category' => $_data['quarantine_category'],
-              ':app_passwds' => $_data['app_passwds']
+              ':app_passwds' => $_data['app_passwds'],
+              ':pw_reset' => $_data['pw_reset']
             ));
           }
           catch (PDOException $e) {
@@ -1638,6 +1642,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
             $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+            $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['acl'] = (array)$_data['acl'];
             $attr['acl_spam_alias'] = 0;
@@ -2927,26 +2932,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
             }
             if (!empty($is_now)) {
-              $active     = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+              $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
-              (int)$sogo_access = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              (int)$imap_access = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
-              (int)$pop3_access = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
-              (int)$smtp_access = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
-              (int)$sieve_access = (isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
-              (int)$relayhost = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
-              (int)$quota_m = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
-              $name           = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
-              $domain         = $is_now['domain'];
-              $quota_b        = $quota_m * 1048576;
-              $password       = (!empty($_data['password'])) ? $_data['password'] : null;
-              $password2      = (!empty($_data['password2'])) ? $_data['password2'] : null;
-              $tags           = (is_array($_data['tags']) ? $_data['tags'] : array());
-              $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
-              $authsource     = $is_now['authsource'];
+              (int)$sogo_access     = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
+              (int)$imap_access     = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
+              (int)$pop3_access     = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
+              (int)$smtp_access     = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
+              (int)$sieve_access    = (isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
+              (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
+              $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
+              $domain               = $is_now['domain'];
+              $quota_b              = $quota_m * 1048576;
+              $password             = (!empty($_data['password'])) ? $_data['password'] : null;
+              $password2            = (!empty($_data['password2'])) ? $_data['password2'] : null;
+              $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+              $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
+              $authsource           = $is_now['authsource'];
               if (in_array($_data['authsource'], array('mailcow', 'keycloak', 'generic-oidc', 'ldap'))){
                 $authsource = $_data['authsource'];
               }
+              $pw_recovery_email    = (isset($_data['pw_recovery_email']) && $authsource == 'mailcow') ? $_data['pw_recovery_email'] : $is_now['attributes']['recovery_email'];
             }
             else {
               $_SESSION['return'][] = array(
@@ -3199,35 +3205,47 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':address' => $username,
               ':active' => $active
             ));
-            $stmt = $pdo->prepare("UPDATE `mailbox` SET
-                `active` = :active,
-                `name`= :name,
-                `quota` = :quota_b,
-                `authsource` = :authsource,
-                `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
-                `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
-                `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
-                `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
-                `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
-                `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
-                `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
-                `attributes` = JSON_SET(`attributes`, '$.attribute_hash', :attribute_hash)
-                  WHERE `username` = :username");
-            $stmt->execute(array(
-              ':active' => $active,
-              ':name' => $name,
-              ':quota_b' => $quota_b,
-              ':attribute_hash' => $attribute_hash,
-              ':force_pw_update' => $force_pw_update,
-              ':sogo_access' => $sogo_access,
-              ':imap_access' => $imap_access,
-              ':pop3_access' => $pop3_access,
-              ':sieve_access' => $sieve_access,
-              ':smtp_access' => $smtp_access,
-              ':relayhost' => $relayhost,
-              ':username' => $username,
-              ':authsource' => $authsource
-            ));
+            try {
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET
+                  `active` = :active,
+                  `name`= :name,
+                  `quota` = :quota_b,
+                  `authsource` = :authsource,
+                  `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
+                  `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
+                  `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
+                  `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
+                  `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
+                  `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
+                  `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
+                  `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email),
+                  `attributes` = JSON_SET(`attributes`, '$.attribute_hash', :attribute_hash)
+                    WHERE `username` = :username");
+              $stmt->execute(array(
+                ':active' => $active,
+                ':name' => $name,
+                ':quota_b' => $quota_b,
+                ':attribute_hash' => $attribute_hash,
+                ':force_pw_update' => $force_pw_update,
+                ':sogo_access' => $sogo_access,
+                ':imap_access' => $imap_access,
+                ':pop3_access' => $pop3_access,
+                ':sieve_access' => $sieve_access,
+                ':smtp_access' => $smtp_access,
+                ':recovery_email' => $pw_recovery_email,
+                ':relayhost' => $relayhost,
+                ':username' => $username,
+                ':authsource' => $authsource
+              ));
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+              return false;
+            }
             // save tags
             foreach($tags as $index => $tag){
               if (empty($tag)) continue;
@@ -3413,6 +3431,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attr['acl_quarantine_notification'] = (in_array('quarantine_notification', $_data['acl'])) ? 1 : 0;
               $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
               $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
+              $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
             } else {    
               foreach ($is_now as $key => $value){
                 $attr[$key] = $is_now[$key];

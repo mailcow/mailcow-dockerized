@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "31072024_1012";
+    $db_version = "15082024_1212";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -484,6 +484,7 @@ function init_db_schema() {
           "quarantine_notification" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine_category" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "pw_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           ),
         "keys" => array(
           "primary" => array(
@@ -697,6 +698,19 @@ function init_db_schema() {
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
       "da_sso" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "token" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("token", "created")
+          ),
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "reset_password" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",
           "token" => "VARCHAR(255) NOT NULL",

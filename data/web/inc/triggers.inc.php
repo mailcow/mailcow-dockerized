@@ -38,6 +38,26 @@ if (!empty($_GET['sso_token'])) {
   }
 }
 
+if (isset($_POST["pw_reset_request"]) && !empty($_POST['username'])) {
+  reset_password("issue", $_POST['username']);
+  header("Location: /");
+  exit;
+}
+if (isset($_POST["pw_reset"])) {
+  $username = reset_password("check", $_POST['token']);
+  $reset_result = reset_password("reset", array(
+    'new_password' => $_POST['new_password'], 
+    'new_password2' => $_POST['new_password2'],
+    'token' => $_POST['token'],
+    'username' => $username,
+    'check_tfa' => True
+  ));
+
+  if ($reset_result){
+    header("Location: /");
+    exit;
+  }
+}
 if (isset($_POST["verify_tfa_login"])) {
   if (verify_tfa_login($_SESSION['pending_mailcow_cc_username'], $_POST)) {
     if ($_SESSION['pending_mailcow_cc_role'] == "admin") {
@@ -61,15 +81,31 @@ if (isset($_POST["verify_tfa_login"])) {
       die();
     }
     elseif ($_SESSION['pending_mailcow_cc_role'] == "user") {
-      set_user_loggedin_session($_SESSION['pending_mailcow_cc_username']);
-      $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
-      $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-      if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
-        header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
+      if (isset($_SESSION['pending_pw_reset_token']) && isset($_SESSION['pending_pw_new_password'])) {
+        reset_password("reset", array(
+          'new_password' => $_SESSION['pending_pw_new_password'],
+          'new_password2' => $_SESSION['pending_pw_new_password'],
+          'token' => $_SESSION['pending_pw_reset_token'],
+          'username' => $_SESSION['pending_mailcow_cc_username']
+        ));
+        unset($_SESSION['pending_pw_reset_token']);
+        unset($_SESSION['pending_pw_new_password']);
+        unset($_SESSION['pending_mailcow_cc_username']);
+        unset($_SESSION['pending_tfa_methods']);
+  
+        header("Location: /");
         die();
       } else {
-        header("Location: /user");
-        die();
+        set_user_loggedin_session($_SESSION['pending_mailcow_cc_username']);
+        $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
+        $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+        if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+          header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
+          die();
+        } else {
+          header("Location: /user");
+          die();
+        }
       }
     }
   }
@@ -80,11 +116,13 @@ if (isset($_POST["verify_tfa_login"])) {
 }
 
 if (isset($_GET["cancel_tfa_login"])) {
-    unset($_SESSION['pending_mailcow_cc_username']);
-    unset($_SESSION['pending_mailcow_cc_role']);
-    unset($_SESSION['pending_tfa_methods']);
+  unset($_SESSION['pending_pw_reset_token']);
+  unset($_SESSION['pending_pw_new_password']);
+  unset($_SESSION['pending_mailcow_cc_username']);
+  unset($_SESSION['pending_mailcow_cc_role']);
+  unset($_SESSION['pending_tfa_methods']);
 
-    header("Location: /");
+  header("Location: /");
 }
 
 if (isset($_POST["quick_release"])) {
