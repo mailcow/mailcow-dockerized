@@ -328,6 +328,16 @@ for bin in curl docker git awk sha1sum grep cut; do
   fi  
 done
 
+# Check Docker Version (need at least 24.X)
+docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | cut -d '.' -f 1)
+
+if [[ $docker_version -lt 24 ]]; then
+  echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
+  echo -e "\e[33mmailcow needs a newer Docker version to work properly... continuing on your own risk!\e[0m"
+  echo -e "\e[31mPlease update your Docker installation... sleeping 10s\e[0m"
+  sleep 10
+fi
+
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 BRANCH=$(cd ${SCRIPT_DIR}; git rev-parse --abbrev-ref HEAD)
@@ -399,17 +409,18 @@ while (($#)); do
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
-    exit 1
+    exit 0
   esac
   shift
 done
+
+[[ ! -f mailcow.conf ]] && { echo -e "\e[31mmailcow.conf is missing! Is mailcow installed?\e[0m"; exit 1;}
 
 chmod 600 mailcow.conf
 source mailcow.conf
 
 detect_docker_compose_command
 
-[[ ! -f mailcow.conf ]] && { echo "mailcow.conf is missing! Is mailcow installed?"; exit 1;}
 DOTS=${MAILCOW_HOSTNAME//[^.]};
 if [ ${#DOTS} -lt 1 ]; then
   echo -e "\e[31mMAILCOW_HOSTNAME (${MAILCOW_HOSTNAME}) is not a FQDN!\e[0m"
@@ -424,7 +435,7 @@ elif [ ${#DOTS} -eq 1 ]; then
   echo "Find more information about why this message exists here: https://github.com/mailcow/mailcow-dockerized/issues/1572"
   read -r -p "Do you want to proceed anyway? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    echo "OK. Procceding."
+    echo "OK. Proceeding."
   else
     echo "OK. Exiting."
     exit 1
@@ -807,7 +818,7 @@ if ! [ $NEW_BRANCH ]; then
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
   else
-    echo -e "\e[33mYou are receiving updates from a unsupported branch.\e[0m"
+    echo -e "\e[33mYou are receiving updates from an unsupported branch.\e[0m"
     sleep 1
     echo -e "\e[33mThe mailcow stack might still work but it is recommended to switch to the master branch (stable builds).\e[0m"
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
@@ -818,14 +829,14 @@ elif [ $FORCE ]; then
   echo -e "\e[31mPlease rerun the update.sh Script without the --force/-f parameter.\e[0m"
   sleep 1
 elif [ $NEW_BRANCH == "master" ] && [ $CURRENT_BRANCH != "master" ]; then
-  echo -e "\e[33mYou are about to switch your mailcow Updates to the stable (master) branch.\e[0m"
+  echo -e "\e[33mYou are about to switch your mailcow updates to the stable (master) branch.\e[0m"
   sleep 1
-  echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
+  echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no data is lost...\e[0m"
   sleep 1
-  echo -e "\e[31mWARNING: Please see on GitHub or ask in the communitys if a switch to master is stable or not.
-  In some rear cases a Update back to master can destroy your mailcow configuration in case of Database Upgrades etc.
-  Normally a upgrade back to master should be safe during each full release. 
-  Check GitHub for Database Changes and Update only if there similar to the full release!\e[0m"
+  echo -e "\e[31mWARNING: Please see on GitHub or ask in the community if a switch to master is stable or not.
+  In some rear cases an update back to master can destroy your mailcow configuration such as database upgrade, etc.
+  Normally an upgrade back to master should be safe during each full release.
+  Check GitHub for Database changes and update only if there similar to the full release!\e[0m"
   read -r -p "Are you sure you that want to continue upgrading to the stable (master) branch? [y/N] " response
   if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --stable parameter again to trigger this process here."
@@ -972,7 +983,7 @@ if [ ! $DEV ]; then
     echo -e "\e[31m\nOh no, what happened?\n=> You most likely added files to your local mailcow instance that were now added to the official mailcow repository. Please move them to another location before updating mailcow.\e[0m"
     exit 1
   elif [[ ${MERGE_RETURN} == 1 ]]; then
-    echo -e "\e[93mPotenial conflict, trying to fix...\e[0m"
+    echo -e "\e[93mPotential conflict, trying to fix...\e[0m"
     git status --porcelain | grep -E "UD|DU" | awk '{print $2}' | xargs rm -v
     git add -A
     git commit -m "After update on ${DATE}" > /dev/null

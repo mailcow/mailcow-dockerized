@@ -1,10 +1,10 @@
-FROM debian:bullseye-slim
-LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
+FROM debian:bookworm-slim
+LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.7.5-2~8c86c1676   
-ARG CODENAME=bullseye
-ENV LC_ALL C
+ARG RSPAMD_VER=rspamd_3.9.1-1~82f43560f
+ARG CODENAME=bookworm
+ENV LC_ALL=C
 
 RUN apt-get update && apt-get install -y \
   tzdata \
@@ -12,11 +12,12 @@ RUN apt-get update && apt-get install -y \
   gnupg2 \
   apt-transport-https \
   dnsutils \
-  netcat \
+  netcat-traditional \
   wget \
   redis-tools \ 
   procps \ 
   nano \
+  lua-cjson \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -P /tmp https://rspamd.com/apt-stable/pool/main/r/rspamd/${RSPAMD_VER}~${CODENAME}_${arch}.deb\
   && apt install -y /tmp/${RSPAMD_VER}~${CODENAME}_${arch}.deb \
