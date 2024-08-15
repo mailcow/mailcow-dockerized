@@ -1073,13 +1073,17 @@ function update_sogo_static_view($mailbox = null) {
 function edit_user_account($_data) {
   global $lang;
   global $pdo;
+
   $_data_log = $_data;
   !isset($_data_log['user_new_pass']) ?: $_data_log['user_new_pass'] = '*';
   !isset($_data_log['user_new_pass2']) ?: $_data_log['user_new_pass2'] = '*';
   !isset($_data_log['user_old_pass']) ?: $_data_log['user_old_pass'] = '*';
+
   $username = $_SESSION['mailcow_cc_username'];
   $role = $_SESSION['mailcow_cc_role'];
   $password_old = $_data['user_old_pass'];
+  $pw_recovery_email = $_data['pw_recovery_email'];
+
   if (filter_var($username, FILTER_VALIDATE_EMAIL === false) || $role != 'user') {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -1088,20 +1092,24 @@ function edit_user_account($_data) {
     );
     return false;
   }
-  $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
-      WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `username` = :user");
-  $stmt->execute(array(':user' => $username));
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  if (!verify_hash($row['password'], $password_old)) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $_data_log),
-      'msg' => 'access_denied'
-    );
-    return false;
-  }
-  if (!empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
+
+  // edit password
+  if (!empty($password_old) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
+    $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `username` = :user");
+    $stmt->execute(array(':user' => $username));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  
+    if (!verify_hash($row['password'], $password_old)) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+  
     $password_new = $_data['user_new_pass'];
     $password_new2  = $_data['user_new_pass2'];
     if (password_check($password_new, $password_new2) !== true) {
@@ -1116,8 +1124,29 @@ function edit_user_account($_data) {
       ':password_hashed' => $password_hashed,
       ':username' => $username
     ));
+  
+    update_sogo_static_view();
   }
-  update_sogo_static_view();
+  // edit password recovery email
+  elseif (isset($pw_recovery_email)) {
+    if (!isset($_SESSION['acl']['pw_reset']) || $_SESSION['acl']['pw_reset'] != "1" ) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+
+    $pw_recovery_email = (!filter_var($pw_recovery_email, FILTER_VALIDATE_EMAIL)) ? '' : $pw_recovery_email;
+    $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email)
+      WHERE `username` = :username");
+    $stmt->execute(array(
+      ':recovery_email' => $pw_recovery_email,
+      ':username' => $username
+    ));
+  }
+
   $_SESSION['return'][] =  array(
     'type' => 'success',
     'log' => array(__FUNCTION__, $_data_log),
@@ -2261,6 +2290,386 @@ function uuid4() {
 
   return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
+function reset_password($action, $data = null) {
+  global $pdo;
+  global $redis;
+  global $mailcow_hostname;
+  global $PW_RESET_TOKEN_LIMIT;
+  global $PW_RESET_TOKEN_LIFETIME;
+
+	$_data_log = $data;
+  if (isset($_data_log['new_password'])) $_data_log['new_password'] = '*';
+  if (isset($_data_log['new_password2'])) $_data_log['new_password2'] = '*';
+
+  switch ($action) {
+    case 'check':
+      $token = $data;
+
+      $stmt = $pdo->prepare("SELECT `t1`.`username` FROM `reset_password` AS `t1` JOIN `mailbox` AS `t2` ON `t1`.`username` = `t2`.`username` WHERE `t1`.`token` = :token AND `t1`.`created` > DATE_SUB(NOW(), INTERVAL :lifetime MINUTE) AND `t2`.`active` = 1;");
+      $stmt->execute(array(
+        ':token' => preg_replace('/[^a-zA-Z0-9-]/', '', $token),
+        ':lifetime' => $PW_RESET_TOKEN_LIFETIME
+      ));
+      $return = $stmt->fetch(PDO::FETCH_ASSOC);
+      return empty($return['username']) ? false : $return['username'];
+    break;
+    case 'issue':
+      $username = $data;
+      
+      // perform cleanup
+      $stmt = $pdo->prepare("DELETE FROM `reset_password` WHERE created < DATE_SUB(NOW(), INTERVAL :lifetime MINUTE);");
+      $stmt->execute(array(':lifetime' => $PW_RESET_TOKEN_LIFETIME));
+
+      if (filter_var($username, FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+
+      $pw_reset_notification = reset_password('get_notification', 'raw');
+      if (!$pw_reset_notification) return false;
+      if (empty($pw_reset_notification['from']) || empty($pw_reset_notification['subject'])) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'password_reset_na'
+        );
+        return false;
+      }
+
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+        WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $mailbox_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if (empty($mailbox_data)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'password_reset_invalid_user'
+        );
+        return false;
+      }
+
+      $mailbox_attr = json_decode($mailbox_data['attributes'], true);
+      if (empty($mailbox_attr['recovery_email']) || filter_var($mailbox_attr['recovery_email'], FILTER_VALIDATE_EMAIL) === false) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => "password_reset_invalid_user"
+        );
+        return false;
+      }
+
+      $stmt = $pdo->prepare("SELECT * FROM `reset_password`
+        WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $generated_token_count = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+      if ($generated_token_count >= $PW_RESET_TOKEN_LIMIT) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => "reset_token_limit_exceeded"
+        );
+        return false;
+      }
+
+      $token = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+
+      $stmt = $pdo->prepare("INSERT INTO `reset_password` (`username`, `token`)
+        VALUES (:username, :token)");
+      $stmt->execute(array(
+        ':username' => $username,
+        ':token' => $token
+      ));
+
+      $reset_link = getBaseURL() . "/reset-password?token=" . $token;
+
+      $request_date = new DateTime();
+      $locale_date = locale_get_default();
+      $date_formatter = new IntlDateFormatter(
+        $locale_date, 
+        IntlDateFormatter::FULL, 
+        IntlDateFormatter::FULL
+      );
+      $formatted_request_date = $date_formatter->format($request_date);
+
+      // set template vars
+      // subject
+      $pw_reset_notification['subject'] = str_replace('{{hostname}}', $mailcow_hostname, $pw_reset_notification['subject']);
+      $pw_reset_notification['subject'] = str_replace('{{link}}', $reset_link, $pw_reset_notification['subject']);
+      $pw_reset_notification['subject'] = str_replace('{{username}}', $username, $pw_reset_notification['subject']);
+      $pw_reset_notification['subject'] = str_replace('{{username2}}', $mailbox_attr['recovery_email'], $pw_reset_notification['subject']);
+      $pw_reset_notification['subject'] = str_replace('{{date}}', $formatted_request_date, $pw_reset_notification['subject']);
+      $pw_reset_notification['subject'] = str_replace('{{token_lifetime}}', $PW_RESET_TOKEN_LIFETIME, $pw_reset_notification['subject']);
+      // text
+      $pw_reset_notification['text_tmpl'] = str_replace('{{hostname}}', $mailcow_hostname, $pw_reset_notification['text_tmpl']);
+      $pw_reset_notification['text_tmpl'] = str_replace('{{link}}', $reset_link, $pw_reset_notification['text_tmpl']);
+      $pw_reset_notification['text_tmpl'] = str_replace('{{username}}', $username, $pw_reset_notification['text_tmpl']);
+      $pw_reset_notification['text_tmpl'] = str_replace('{{username2}}', $mailbox_attr['recovery_email'], $pw_reset_notification['text_tmpl']);
+      $pw_reset_notification['text_tmpl'] = str_replace('{{date}}', $formatted_request_date, $pw_reset_notification['text_tmpl']);
+      $pw_reset_notification['text_tmpl'] = str_replace('{{token_lifetime}}', $PW_RESET_TOKEN_LIFETIME, $pw_reset_notification['text_tmpl']);
+      // html
+      $pw_reset_notification['html_tmpl'] = str_replace('{{hostname}}', $mailcow_hostname, $pw_reset_notification['html_tmpl']);
+      $pw_reset_notification['html_tmpl'] = str_replace('{{link}}', $reset_link, $pw_reset_notification['html_tmpl']);
+      $pw_reset_notification['html_tmpl'] = str_replace('{{username}}', $username, $pw_reset_notification['html_tmpl']);
+      $pw_reset_notification['html_tmpl'] = str_replace('{{username2}}', $mailbox_attr['recovery_email'], $pw_reset_notification['html_tmpl']);
+      $pw_reset_notification['html_tmpl'] = str_replace('{{date}}', $formatted_request_date, $pw_reset_notification['html_tmpl']);
+      $pw_reset_notification['html_tmpl'] = str_replace('{{token_lifetime}}', $PW_RESET_TOKEN_LIFETIME, $pw_reset_notification['html_tmpl']);
+
+
+      $email_sent = reset_password('send_mail', array(
+        "from" => $pw_reset_notification['from'],
+        "to" => $mailbox_attr['recovery_email'],
+        "subject" => $pw_reset_notification['subject'],
+        "text" => $pw_reset_notification['text_tmpl'],
+        "html" => $pw_reset_notification['html_tmpl']
+      ));
+
+      if (!$email_sent){
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => "recovery_email_failed"
+        );
+        return false;
+      }
+
+      list($localPart, $domainPart) = explode('@', $mailbox_attr['recovery_email']);
+      if (strlen($localPart) > 1) {
+        $maskedLocalPart = $localPart[0] . str_repeat('*', strlen($localPart) - 1);
+      } else {
+        $maskedLocalPart = "*";
+      }
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action, $_data_log),
+        'msg' => array("recovery_email_sent", $maskedLocalPart . '@' . $domainPart)
+      );
+      return array(
+        "username" => $username,
+        "issue" => "success"
+      );
+    break;
+    case 'reset':
+      $token = $data['token'];
+      $new_password = $data['new_password'];
+      $new_password2 = $data['new_password2'];
+      $username = $data['username'];
+      $check_tfa = $data['check_tfa'];
+
+      if (!$username || !$token) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'invalid_reset_token'
+        );
+        return false;
+      }
+
+      # check new password
+      if (!password_check($new_password, $new_password2)) {
+        return false;
+      }
+
+      if ($check_tfa){
+        // check for tfa authenticators
+        $authenticators = get_tfa($username);
+        if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
+          $_SESSION['pending_mailcow_cc_username'] = $username;
+          $_SESSION['pending_pw_reset_token'] = $token;
+          $_SESSION['pending_pw_new_password'] = $new_password;
+          $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+          $_SESSION['return'][] =  array(
+            'type' => 'info',
+            'log' => array(__FUNCTION__, $user, '*'),
+            'msg' => 'awaiting_tfa_confirmation'
+          );
+          return false;
+        }
+      }
+
+      # set new password
+      $password_hashed = hash_password($new_password);
+      $stmt = $pdo->prepare("UPDATE `mailbox` SET
+        `password` = :password_hashed,
+        `attributes` = JSON_SET(`attributes`, '$.passwd_update', NOW())
+        WHERE `username` = :username");
+      $stmt->execute(array(
+        ':password_hashed' => $password_hashed,
+        ':username' => $username
+      ));
+
+      // perform cleanup
+      $stmt = $pdo->prepare("DELETE FROM `reset_password` WHERE `username` = :username;");
+      $stmt->execute(array(
+        ':username' => $username
+      ));
+   
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action, $_data_log),
+        'msg' => 'password_changed_success'
+      );
+      return true;
+    break;
+    case 'get_notification':
+      $type = $data;
+
+      try {
+        $settings['from'] = $redis->Get('PW_RESET_FROM');
+        $settings['subject'] = $redis->Get('PW_RESET_SUBJ');
+        $settings['html_tmpl'] = $redis->Get('PW_RESET_HTML');
+        $settings['text_tmpl'] = $redis->Get('PW_RESET_TEXT');
+        if (empty($settings['html_tmpl']) && empty($settings['text_tmpl'])) {
+          $settings['html_tmpl'] = file_get_contents("/tpls/pw_reset_html.tpl");
+          $settings['text_tmpl'] = file_get_contents("/tpls/pw_reset_text.tpl");
+        }
+
+        if ($type != "raw") {
+          $settings['html_tmpl'] = htmlspecialchars($settings['html_tmpl']);
+          $settings['text_tmpl'] = htmlspecialchars($settings['text_tmpl']);
+        }
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+
+      return $settings;
+    break;
+    case 'send_mail':
+      $from = $data['from'];
+      $to = $data['to'];
+      $text = $data['text'];
+      $html = $data['html'];
+      $subject = $data['subject'];
+    
+      if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'from_invalid'
+        );
+        return false;
+      }
+      if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'to_invalid'
+        );
+        return false;
+      }
+      if (empty($subject)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'subject_empty'
+        );
+        return false;
+      }
+      if (empty($text)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'text_empty'
+        );
+        return false;
+      }
+    
+      ini_set('max_execution_time', 0);
+      ini_set('max_input_time', 0);
+      $mail = new PHPMailer;
+      $mail->Timeout = 10;
+      $mail->SMTPOptions = array(
+        'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+          'allow_self_signed' => true
+        )
+      );
+      $mail->isSMTP();
+      $mail->Host = 'postfix-mailcow';
+      $mail->SMTPAuth = false;
+      $mail->Port = 25;
+      $mail->setFrom($from);
+      $mail->Subject = $subject;
+      $mail->CharSet ="UTF-8";
+      if (!empty($html)) {
+        $mail->Body = $html;
+        $mail->AltBody = $text;
+      }
+      else {
+        $mail->Body = $text;
+      }
+      $mail->XMailer = 'MooMail';
+      $mail->AddAddress($to);
+      if (!$mail->send()) {
+        return false;
+      }
+      $mail->ClearAllRecipients();
+    
+      return true;
+    break;
+  }
+
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $action, $_data_log),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+
+  switch ($action) {
+    case 'edit_notification':
+      $subject = $data['subject'];
+      $from = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data['from']);
+
+      $from = (!filter_var($from, FILTER_VALIDATE_EMAIL)) ? "" : $from;
+      $subject = (empty($subject)) ? "" : $subject;
+      $text = (empty($data['text_tmpl'])) ? "" : $data['text_tmpl'];
+      $html = (empty($data['html_tmpl'])) ? "" : $data['html_tmpl'];
+
+      try {
+        $redis->Set('PW_RESET_FROM', $from);
+        $redis->Set('PW_RESET_SUBJ', $subject);
+        $redis->Set('PW_RESET_HTML', $html);
+        $redis->Set('PW_RESET_TEXT', $text);
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action, $_data_log),
+        'msg' => 'saved_settings'
+      );
+    break;
+  }
+}
+
 
 function get_logs($application, $lines = false) {
   if ($lines === false) {

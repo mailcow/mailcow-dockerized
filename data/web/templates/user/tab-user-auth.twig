@@ -50,6 +50,7 @@
           <p>{{ mailboxdata.quota_used|formatBytes(2) }} / {% if mailboxdata.quota == 0 %}∞{% else %}{{ mailboxdata.quota|formatBytes(2) }}{% endif %}<br>{{ mailboxdata.messages }} {{ lang.user.messages }}</p>
           <hr>
           <p><a href="#pwChangeModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.change_password }}</a></p>
+          {% if acl.pw_reset == 1 %}<p><a href="#pwRecoveryEmailModal" data-bs-toggle="modal"><i class="bi bi-pencil-fill"></i> {{ lang.user.pw_recovery_email }}</a></p>{% endif %}
         </div>
       </div>
       <hr>

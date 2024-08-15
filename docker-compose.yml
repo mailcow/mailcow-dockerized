@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.22
+      image: mailcow/unbound:1.23
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -80,7 +80,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.96
+      image: mailcow/rspamd:1.97
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -90,6 +90,7 @@ services:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       volumes:
         - ./data/hooks/rspamd:/hooks:Z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
@@ -110,7 +111,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.87
+      image: mailcow/phpfpm:1.88
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -167,6 +168,7 @@ services:
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
+        - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-}
       restart: always
       networks:
         mailcow-network:
@@ -174,7 +176,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.123
+      image: mailcow/sogo:1.124
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -221,7 +223,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.30
+      image: mailcow/dovecot:2.0
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -405,7 +407,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: mailcow/acme:1.88
+      image: mailcow/acme:1.89
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -461,7 +463,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:2.03
+      image: mailcow/watchdog:2.04
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -478,7 +480,6 @@ services:
         - mysql-mailcow
         - acme-mailcow
         - redis-mailcow
-
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -594,9 +595,10 @@ services:
     ofelia-mailcow:
       image: mcuadros/ofelia:latest
       restart: always
-      command: daemon --docker
+      command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
       environment:
         - TZ=${TZ}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
       depends_on:
         - sogo-mailcow
         - dovecot-mailcow

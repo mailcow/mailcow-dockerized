@@ -1,0 +1,33 @@
+<?xml version='1.0' standalone='yes'?>
+
+<extension name="enotify">
+    <command name="notify">
+        <parameter type="tag" name="from" occurrence="optional">
+            <parameter type="string" name="from-address" />
+        </parameter>
+
+        <parameter type="tag" name="importance" regex="(1|2|3)" occurrence="optional" />
+
+        <parameter type="tag" name="options" occurrence="optional">
+            <parameter type="stringlist" name="option-strings" />
+        </parameter>
+
+        <parameter type="tag" name="message" occurrence="optional">
+            <parameter type="string" name="message-text" />
+        </parameter>
+
+        <parameter type="string" name="method" />
+    </command>
+
+    <test name="valid_notify_method">
+        <parameter type="stringlist" name="notification-uris" />
+    </test>
+
+    <test name="notify_method_capability">
+        <parameter type="string" name="notification-uri" />
+        <parameter type="string" name="notification-capability" />
+        <parameter type="stringlist" name="key-list" />
+    </test>
+
+    <modifier name="encodeurl" />
+</extension>
