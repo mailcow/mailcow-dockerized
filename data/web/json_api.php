@@ -1973,7 +1973,6 @@ if (isset($_GET['query'])) {
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
         break;
-        break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
         break;
@@ -2068,6 +2067,9 @@ if (isset($_GET['query'])) {
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
+        break;
+        case "reset-password-notification":
+          process_edit_return(reset_password('edit_notification', $attr));
         break;
         // return no route found if no case is matched
         default:
