@@ -39,9 +39,6 @@ header('Content-Type: application/xml');
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
-<?php
-$records = dns_get_record('_imap._tcp.' . $domain, DNS_SRV); // check if IMAP is announced as "not provided" via SRV record
-if (count($records) == 0 || $records[0]['target'] != '') { ?>
       <incomingServer type="imap">
          <hostname><?=$autodiscover_config['imap']['server']; ?></hostname>
          <port><?=$autodiscover_config['imap']['tlsport']; ?></port>
@@ -49,7 +46,6 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
-<?php } ?>
 
 <?php
 $records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
@@ -81,9 +77,6 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
-<?php
-$records = dns_get_record('_smtp._tcp.' . $domain, DNS_SRV); // check if SMTP is announced as "not provided" via SRV record
-if (count($records) == 0 || $records[0]['target'] != '') { ?>
       <outgoingServer type="smtp">
          <hostname><?=$autodiscover_config['smtp']['server']; ?></hostname>
          <port><?=$autodiscover_config['smtp']['tlsport']; ?></port>
@@ -91,7 +84,6 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
-<?php } ?>
 
       <enable visiturl="https://<?=$mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/admin.php">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
