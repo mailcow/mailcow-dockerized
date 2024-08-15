@@ -172,6 +172,16 @@ if ($login_role === "user") {
         <AuthRequired>on</AuthRequired>
       </Protocol>
       <Protocol>
+        <Type>POP3</Type>
+        <Server><?=$autodiscover_config['pop3']['server'];?></Server>
+        <Port><?=$autodiscover_config['pop3']['port'];?></Port>
+        <DomainRequired>off</DomainRequired>
+        <LoginName><?=$email;?></LoginName>
+        <SPA>off</SPA>
+        <SSL>on</SSL>
+        <AuthRequired>on</AuthRequired>
+      </Protocol>
+      <Protocol>
         <Type>SMTP</Type>
         <Server><?=$autodiscover_config['smtp']['server'];?></Server>
         <Port><?=$autodiscover_config['smtp']['port'];?></Port>
