@@ -60,4 +60,4 @@ EXPOSE 588
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
