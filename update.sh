@@ -165,7 +165,7 @@ remove_obsolete_nginx_ports() {
           fi
         fi
     fi
-    done        
+    done
 }
 
 detect_docker_compose_command(){
@@ -322,10 +322,10 @@ unset COMPOSE_COMMAND
 unset DOCKER_COMPOSE_VERSION
 
 for bin in curl docker git awk sha1sum grep cut; do
-  if [[ -z $(command -v ${bin}) ]]; then 
-  echo "Cannot find ${bin}, exiting..." 
+  if [[ -z $(command -v ${bin}) ]]; then
+  echo "Cannot find ${bin}, exiting..."
   exit 1;
-  fi  
+  fi
 done
 
 # Check Docker Version (need at least 24.X)
