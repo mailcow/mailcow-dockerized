@@ -25,7 +25,7 @@ function print_usage() {
 
 DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
-if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
+if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
 fi
 
@@ -45,40 +45,40 @@ if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|
   exit 1
 fi
 
-if [[ -z ${BACKUP_LOCATION} ]]; then
-  while [[ -z ${BACKUP_LOCATION} ]]; do
+if [[ -z "${BACKUP_LOCATION}" ]]; then
+  while [[ -z "${BACKUP_LOCATION}" ]]; do
     read -ep "Backup location (absolute path, starting with /): " BACKUP_LOCATION
   done
 fi
 
-if [[ ! ${BACKUP_LOCATION} =~ ^/ ]]; then
+if [[ ! "${BACKUP_LOCATION}" =~ ^/ ]]; then
   echo -e "\e[31mBackup directory needs to be given as absolute path (starting with /).\e[0m"
   exit 1
 fi
 
-if [[ -f ${BACKUP_LOCATION} ]]; then
+if [[ -f "${BACKUP_LOCATION}" ]]; then
   echo -e "\e[31m${BACKUP_LOCATION} is a file!\e["
   exit 1
 fi
 
-if [[ ! -d ${BACKUP_LOCATION} ]]; then
+if [[ ! -d "${BACKUP_LOCATION}" ]]; then
   echo -e "\e[33m${BACKUP_LOCATION} is not a directory\e[0m"
   read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
   if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
     exit 1
   else
-    mkdir -p ${BACKUP_LOCATION}
-    chmod 755 ${BACKUP_LOCATION}
+    mkdir -p "${BACKUP_LOCATION}"
+    chmod 755 "${BACKUP_LOCATION}"
   fi
 else
-  if [[ ${1} == "backup" ]] && [[ -z $(echo $(stat -Lc %a ${BACKUP_LOCATION}) | grep -oE '[0-9][0-9][5-7]') ]]; then
+  if [[ ${1} == "backup" ]] && [[ -z $(echo $(stat -Lc %a "${BACKUP_LOCATION}") | grep -oE '[0-9][0-9][5-7]') ]]; then
     echo -e "\e[31m${BACKUP_LOCATION} is not write-able for others, that's required for a backup.\e[0m"
     echo "Execute \`chmod 755 ${BACKUP_LOCATION}\` and try again."
     exit 1
   fi
 fi
 
-BACKUP_LOCATION=$(echo ${BACKUP_LOCATION} | sed 's#/$##')
+BACKUP_LOCATION=$(echo "${BACKUP_LOCATION}" | sed 's#/$##')
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
@@ -137,32 +137,32 @@ function backup() {
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
@@ -179,7 +179,7 @@ function backup() {
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+          -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
           mariabackup --prepare --target-dir=/backup_mariadb ; \
           chown -R 999:999 /backup_mariadb ; \
@@ -189,7 +189,7 @@ function backup() {
     --delete-days)
       shift
       if [[ "${1}" =~ ^[0-9]+$ ]]; then
-        find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
+        find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
       else
         echo -e "\e[31mParameter of --delete-days is not a number.\e[0m"
       fi
@@ -368,11 +368,11 @@ if [[ ${1} == "backup" ]]; then
 elif [[ ${1} == "restore" ]]; then
   i=1
   declare -A FOLDER_SELECTION
-  if [[ $(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
+  if [[ $(find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
     echo -e "\e[31mSelected backup location has no subfolders\e[0m"
     exit 1
   fi
-  for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
+  for folder in $(ls -d "${BACKUP_LOCATION}"/mailcow-*/); do
     echo "[ ${i} ] - ${folder}"
     FOLDER_SELECTION[${i}]="${folder}"
     ((i++))
