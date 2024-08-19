@@ -52,17 +52,17 @@ if [[ -z ${BACKUP_LOCATION} ]]; then
 fi
 
 if [[ ! ${BACKUP_LOCATION} =~ ^/ ]]; then
-  echo "Backup directory needs to be given as absolute path (starting with /)."
+  echo -e "\e[31mBackup directory needs to be given as absolute path (starting with /).\e[0m"
   exit 1
 fi
 
 if [[ -f ${BACKUP_LOCATION} ]]; then
-  echo "${BACKUP_LOCATION} is a file!"
+  echo -e "\e[31m${BACKUP_LOCATION} is a file!\e["
   exit 1
 fi
 
 if [[ ! -d ${BACKUP_LOCATION} ]]; then
-  echo "${BACKUP_LOCATION} is not a directory"
+  echo -e "\e[33m${BACKUP_LOCATION} is not a directory\e[0m"
   read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
   if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
     exit 1
@@ -72,7 +72,8 @@ if [[ ! -d ${BACKUP_LOCATION} ]]; then
   fi
 else
   if [[ ${1} == "backup" ]] && [[ -z $(echo $(stat -Lc %a ${BACKUP_LOCATION}) | grep -oE '[0-9][0-9][5-7]') ]]; then
-    echo "${BACKUP_LOCATION} is not write-able for others, that's required for a backup."
+    echo -e "\e[31m${BACKUP_LOCATION} is not write-able for others, that's required for a backup.\e[0m"
+    echo "Execute \`chmod 755 ${BACKUP_LOCATION}\` and try again."
     exit 1
   fi
 fi
@@ -85,33 +86,33 @@ THREADS=$(echo ${THREADS:-1})
 ARCH=$(uname -m)
 
 if ! [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
-  echo "Thread input is not a number!"
+  echo -e "\e[31mThread input is not a number!\e[0m"
   exit 1
 elif [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
-  echo "Using ${THREADS} Thread(s) for this run."
-  echo "Notice: You can set the Thread count with the THREADS Variable before you run this script."
+  echo -e "\e[32mUsing ${THREADS} Thread(s) for this run.\e[0m"
+  echo -e "\e[33mNotice: You can set the Thread count with the THREADS Variable before you run this script.\e[0m"
 fi
 
 if [ ! -f ${COMPOSE_FILE} ]; then
-  echo "Compose file not found"
+  echo -e "\e[31mCompose file not found\e[0m"
   exit 1
 fi
 
 if [ ! -f ${ENV_FILE} ]; then
-  echo "Environment file not found"
+  echo -e "\e[31mEnvironment file not found\e[0m"
   exit 1
 fi
 
-echo "Using ${BACKUP_LOCATION} as backup/restore location."
+echo -e "\e[33mUsing ${BACKUP_LOCATION} as backup/restore location.\e[0m"
 echo
 
 source ${SCRIPT_DIR}/../mailcow.conf
 
 if [[ -z ${COMPOSE_PROJECT_NAME} ]]; then
-  echo "Could not determine compose project name"
+  echo -e "\e[31mCould not determine compose project name\e[0m"
   exit 1
 else
-  echo "Found project name ${COMPOSE_PROJECT_NAME}"
+  echo -e "\e[32mFound project name ${COMPOSE_PROJECT_NAME}\e[0m"
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
@@ -169,11 +170,11 @@ function backup() {
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       if [[ -z "${SQLIMAGE}" ]]; then
-        echo "Could not determine SQL image version, skipping backup..."
+        echo -e "\e[31mCould not determine SQL image version, skipping backup...\e[0m"
         shift
         continue
       else
-        echo "Using SQL image ${SQLIMAGE}, starting..."
+        echo -e "\e[32mUsing SQL image ${SQLIMAGE}, starting...\e[0m"
         docker run --name mailcow-backup --rm \
           --network $(docker network ls -qf name=^${CMPS_PRJ}_mailcow-network$) \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
@@ -191,7 +192,7 @@ function backup() {
       if [[ "${1}" =~ ^[0-9]+$ ]]; then
         find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
       else
-        echo "Parameter of --delete-days is not a number."
+        echo -e "\e[31mParameter of --delete-days is not a number.\e[0m"
       fi
       ;;
     esac
@@ -219,7 +220,7 @@ function restore() {
   fi
 
   echo
-  echo "Stopping watchdog-mailcow..."
+  echo -e "\e[33mStopping watchdog-mailcow...\e[0m"
   docker stop $(docker ps -qf name=watchdog-mailcow)
   echo
   RESTORE_LOCATION="${1}"
@@ -297,11 +298,11 @@ function restore() {
     mysql|mariadb)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
       if [[ -z "${SQLIMAGE}" ]]; then
-        echo "Could not determine SQL image version, skipping restore..."
+        echo -e "\e[31mCould not determine SQL image version, skipping restore...\e[0m"
         shift
         continue
       elif [ ! -f "${RESTORE_LOCATION}/mailcow.conf" ]; then
-        echo "Could not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore."
+        echo -e "\e[31mCould not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore.\e[0m"
         echo "If you lost that file, copy the last working mailcow.conf file to ${RESTORE_LOCATION} and restart the restore process."
         shift
         continue
@@ -369,7 +370,7 @@ elif [[ ${1} == "restore" ]]; then
   i=1
   declare -A FOLDER_SELECTION
   if [[ $(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
-    echo "Selected backup location has no subfolders"
+    echo -e "\e[31mSelected backup location has no subfolders\e[0m"
     exit 1
   fi
   for folder in $(ls -d ${BACKUP_LOCATION}/mailcow-*/); do
@@ -387,7 +388,7 @@ elif [[ ${1} == "restore" ]]; then
   declare -A FILE_SELECTION
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
   if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
-    echo "No datasets found"
+    echo -e "\e[31mNo datasets found\e[0m"
     exit 1
   fi
 
