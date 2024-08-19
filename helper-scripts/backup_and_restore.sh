@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------
+# Here's only the functions that are optimized,
+# checked and refactored.
+# 
+# This comment will be deleted once I finished 
+# working with this file.
+# ---------------------------------------------------
+
+# ----------------- Start Functions -----------------
+
+function print_usage() {
+  echo "Usage: ${0} [option] [argument]"
+  echo
+  echo "Options:"
+  echo -e "  backup\t[crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days]"
+  echo -e "  restore"
+  echo
+  echo "Environment Variables:"
+  echo -e "  THREADS\tnum\tNumber of threads"
+}
+
+# ----------------- End Functions -----------------
+
 DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
@@ -7,12 +30,18 @@ if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
 fi
 
 if [[ ! ${1} =~ (backup|restore) ]]; then
-  echo "First parameter needs to be 'backup' or 'restore'"
+  print_usage
   exit 1
 fi
 
 if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
-  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
+  if [[ -z "${2}" ]]; then
+    echo -e "\e[31mRequired argument for backup option\e[0m\n"
+  else
+    echo -e "\e[31mUnknown argument: ${2}\e[0m\n"
+  fi
+
+  print_usage
   exit 1
 fi
 
