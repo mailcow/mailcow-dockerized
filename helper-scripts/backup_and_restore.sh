@@ -56,26 +56,35 @@ if [[ ! "${BACKUP_LOCATION}" =~ ^/ ]]; then
   exit 1
 fi
 
-if [[ -f "${BACKUP_LOCATION}" ]]; then
-  echo -e "\e[31m${BACKUP_LOCATION} is a file!\e["
-  exit 1
-fi
-
-if [[ ! -d "${BACKUP_LOCATION}" ]]; then
-  echo -e "\e[33m${BACKUP_LOCATION} is not a directory\e[0m"
+# if "${BACKUP_LOCATION}" not exists, create it.
+if [[ ! -e "${BACKUP_LOCATION}" ]]; then
+  echo -e "\e[33m${BACKUP_LOCATION} is not exist\e[0m"
   read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
   if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
-    exit 1
+    echo -e "\e[33mExiting without creating the backup location.\e[0m"
+    exit 0
   else
     mkdir -p "${BACKUP_LOCATION}"
     chmod 755 "${BACKUP_LOCATION}"
+
+    if [[ ! "${?}" -eq 0 ]]; then
+      echo -e "\e[31mFailed, check the error above!\e[0m"
+      exit 1
+    fi
   fi
-else
+# if "${BACKUP_LOCATION}" is an exists directory,
+# then just check the permissions
+elif [[ -d "${BACKUP_LOCATION}" ]]; then
+  echo -e "\e[32mFound directory ${BACKUP_LOCATION}\e[0m"
   if [[ ${1} == "backup" ]] && [[ -z $(echo $(stat -Lc %a "${BACKUP_LOCATION}") | grep -oE '[0-9][0-9][5-7]') ]]; then
     echo -e "\e[31m${BACKUP_LOCATION} is not write-able for others, that's required for a backup.\e[0m"
     echo "Execute \`chmod 755 ${BACKUP_LOCATION}\` and try again."
     exit 1
   fi
+# else, the "${BACKUP_LOCATION}" is something else! an alien? yes!
+else
+  echo -e "\e[31m${BACKUP_LOCATION} is not a valid path! Maybe a file or a symbolic?\e["
+  exit 1
 fi
 
 BACKUP_LOCATION=$(echo "${BACKUP_LOCATION}" | sed 's#/$##')
