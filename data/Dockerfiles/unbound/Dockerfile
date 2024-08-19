@@ -33,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=10s \
   CMD sh -c '[ -f /tmp/healthcheck_status ] && [ "$(cat /tmp/healthcheck_status)" -eq 0 ] || exit 1'
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
