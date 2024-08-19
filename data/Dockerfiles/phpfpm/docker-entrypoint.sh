@@ -3,7 +3,7 @@
 function array_by_comma { local IFS=","; echo "$*"; }
 
 # Wait for containers
-while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
   echo "Waiting for SQL..."
   sleep 2
 done
@@ -44,7 +44,7 @@ until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
     echo "MySQL applied an upgrade, debug output:"
     echo ${SQL_FULL_UPGRADE_RETURN}
     sleep 3
-    while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
+    while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
       echo "Waiting for SQL to return, please wait"
       sleep 2
     done
