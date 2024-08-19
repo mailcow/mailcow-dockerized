@@ -18,7 +18,7 @@ function print_usage() {
   echo -e "  restore"
   echo
   echo "Environment Variables:"
-  echo -e "  THREADS\tnum\tNumber of threads"
+  echo -e "  THREADS\t<num>\tYou can set the thread count with the THREADS environment variable before you run this script."
 }
 
 # ----------------- End Functions -----------------
@@ -90,7 +90,6 @@ if ! [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
   exit 1
 elif [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
   echo -e "\e[32mUsing ${THREADS} Thread(s) for this run.\e[0m"
-  echo -e "\e[33mNotice: You can set the Thread count with the THREADS Variable before you run this script.\e[0m"
 fi
 
 if [ ! -f ${COMPOSE_FILE} ]; then
