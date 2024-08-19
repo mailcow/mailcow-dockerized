@@ -24,4 +24,4 @@ COPY main.py /app/main.py
 COPY modules/ /app/modules/
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD exec python main.py
+CMD ["python", "main.py"]
