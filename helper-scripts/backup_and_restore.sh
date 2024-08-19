@@ -94,11 +94,11 @@ ENV_FILE=${SCRIPT_DIR}/../.env
 THREADS=$(echo ${THREADS:-1})
 ARCH=$(uname -m)
 
-if ! [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
+if [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]]; then
+  echo -e "\e[32mUsing ${THREADS} thread(s) for this run.\e[0m"
+else
   echo -e "\e[31mThread input is not a number!\e[0m"
   exit 1
-elif [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]] ; then
-  echo -e "\e[32mUsing ${THREADS} Thread(s) for this run.\e[0m"
 fi
 
 if [ ! -f ${COMPOSE_FILE} ]; then
