@@ -18,7 +18,7 @@ if curl --connect-timeout 15 --retry 10 --max-time 30 https://www.spamassassin.h
   fi
 else
   echo "Failed to download SA rules. Exiting."
-  exit 1
+  exit 0 # Must be 0 otherwise dovecot would not start at all
 fi
 
 sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
