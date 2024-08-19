@@ -9,7 +9,7 @@ if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
 fi
 
 if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< $(uname -a); then
+  if grep -q Ubuntu <<< "$(uname -a)"; then
     echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
     echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
     exit 1
@@ -158,7 +158,7 @@ done
 MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 
 if [ -z "${SKIP_CLAMD}" ]; then
-  if [ ${MEM_TOTAL} -le "2621440" ]; then
+  if [ "${MEM_TOTAL}" -le "2621440" ]; then
     echo "Installed memory is <= 2.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
     echo "ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf."
     read -r -p  "Do you want to disable ClamAV now? [Y/n] " response
@@ -176,10 +176,10 @@ if [ -z "${SKIP_CLAMD}" ]; then
 fi
 
 if [ -z "${SKIP_SOLR}" ]; then
-  if [ ${MEM_TOTAL} -le "2097152" ]; then
+  if [ "${MEM_TOTAL}" -le "2097152" ]; then
     echo "Disabling Solr on low-memory system."
     SKIP_SOLR=y
-  elif [ ${MEM_TOTAL} -le "3670016" ]; then
+  elif [ "${MEM_TOTAL}" -le "3670016" ]; then
     echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
     echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
     echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
@@ -218,7 +218,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   done
 
   git fetch --all
-  git checkout -f $MAILCOW_BRANCH
+  git checkout -f "$MAILCOW_BRANCH"
 
 elif [[ ${SKIP_BRANCH} == y ]]; then
   echo -e "\033[33mEnabled Dev Mode.\033[0m"
