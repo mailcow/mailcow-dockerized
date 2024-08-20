@@ -28,7 +28,8 @@
         "spam_score": "Pontuação de spam",
         "syncjobs": "Trabalhos de sincronização",
         "tls_policy": "Política de TLS",
-        "unlimited_quota": "Cota ilimitada para mailboxes"
+        "unlimited_quota": "Cota ilimitada para mailboxes",
+        "pw_reset": "Permite redefinir a senha do usuário"
     },
     "add": {
         "activate_filter_warn": "Todos os outros filtros serão desativados quando a opção ativa estiver marcada.",
