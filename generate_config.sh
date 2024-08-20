@@ -41,7 +41,7 @@ if docker compose > /dev/null 2>&1; then
       echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
       echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
       sleep 2
-      echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
@@ -206,7 +206,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it´s number [1/2] " branch
+    read -r -p  "Choose the Branch with it's number [1/2] " branch
     case $branch in
       [2])
         MAILCOW_BRANCH="nightly"
