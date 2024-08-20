@@ -79,6 +79,11 @@ fi
 
 # if "${BACKUP_LOCATION}" not exists, create it.
 if [[ ! -e "${BACKUP_LOCATION}" ]]; then
+  if [[ "${1}" == "restore" ]]; then
+    echo -e "\e[31m${BACKUP_LOCATION} is not exists\e[0m"
+    exit 1
+  fi
+
   echo -e "\e[33m${BACKUP_LOCATION} is not exist\e[0m"
   read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
   if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
