@@ -379,16 +379,16 @@ function restore() {
 if [[ ${1} == "backup" ]]; then
   backup ${@,,}
 elif [[ ${1} == "restore" ]]; then
-  i=1
+  i=0
   declare -A FOLDER_SELECTION
   if [[ $(find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
     echo -e "\e[31mSelected backup location has no subfolders\e[0m"
     exit 1
   fi
   for folder in $(ls -d "${BACKUP_LOCATION}"/mailcow-*/); do
+    ((i++))
     echo "[ ${i} ] - ${folder}"
     FOLDER_SELECTION[${i}]="${folder}"
-    ((i++))
   done
   echo
   input_sel=0
