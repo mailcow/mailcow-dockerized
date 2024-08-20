@@ -117,7 +117,7 @@ fi
 chmod 600 ${ACME_BASE}/key.pem
 
 log_f "Waiting for database..."
-while ! mysqladmin status --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent > /dev/null; do
+while ! /usr/bin/mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent > /dev/null; do
   sleep 2
 done
 log_f "Database OK"

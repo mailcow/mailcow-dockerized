@@ -9,7 +9,7 @@ if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
 fi
 
 if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< $(uname -a); then
+  if grep -q Ubuntu <<< "$(uname -a)"; then
     echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
     echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
     exit 1
@@ -41,7 +41,7 @@ if docker compose > /dev/null 2>&1; then
       echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
       echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
       sleep 2
-      echo -e "\e[33mNotice: You´ll have to update this Compose Version via your Package Manager manually!\e[0m"
+      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
@@ -158,7 +158,7 @@ done
 MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 
 if [ -z "${SKIP_CLAMD}" ]; then
-  if [ ${MEM_TOTAL} -le "2621440" ]; then
+  if [ "${MEM_TOTAL}" -le "2621440" ]; then
     echo "Installed memory is <= 2.5 GiB. It is recommended to disable ClamAV to prevent out-of-memory situations."
     echo "ClamAV can be re-enabled by setting SKIP_CLAMD=n in mailcow.conf."
     read -r -p  "Do you want to disable ClamAV now? [Y/n] " response
@@ -176,10 +176,10 @@ if [ -z "${SKIP_CLAMD}" ]; then
 fi
 
 if [ -z "${SKIP_SOLR}" ]; then
-  if [ ${MEM_TOTAL} -le "2097152" ]; then
+  if [ "${MEM_TOTAL}" -le "2097152" ]; then
     echo "Disabling Solr on low-memory system."
     SKIP_SOLR=y
-  elif [ ${MEM_TOTAL} -le "3670016" ]; then
+  elif [ "${MEM_TOTAL}" -le "3670016" ]; then
     echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
     echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
     echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
@@ -206,7 +206,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it´s number [1/2] " branch
+    read -r -p  "Choose the Branch with it's number [1/2] " branch
     case $branch in
       [2])
         MAILCOW_BRANCH="nightly"
@@ -218,7 +218,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   done
 
   git fetch --all
-  git checkout -f $MAILCOW_BRANCH
+  git checkout -f "$MAILCOW_BRANCH"
 
 elif [[ ${SKIP_BRANCH} == y ]]; then
   echo -e "\033[33mEnabled Dev Mode.\033[0m"
