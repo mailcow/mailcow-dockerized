@@ -89,24 +89,33 @@
           </ul>
         </li>
         {% endif %}
-        {% if mailcow_apps or app_links %}
-        <li class="nav-item dropdown">
-          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg me-2"></i> {{ ui_texts.apps_name|raw }}</a>
-          <ul class="dropdown-menu">
-            {% for app in mailcow_apps %}
-              {% if not skip_sogo or not is_uri('SOGo', app.link) %}
-              <li {% if app.description %}title="{{ app.description }}"{% endif %}>
-                <a href="{{ app.link }}" class="dropdown-item">{{ app.name }}</a>
-              </li>
-              {% endif %}
-            {% endfor %}
-            {% for row in app_links %}
-              {% for key, val in row %}
-              <li><a href="{{ val }}" class="dropdown-item">{{ key }}</a></li>
+        {% if mailcow_apps|length == 1 and not app_links %}
+          {% set app = mailcow_apps[0] %}
+          {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+          <li class="nav-item"{% if app.description %} title="{{ app.description }}"{% endif %}>
+            <a href="{{ app.link }}" class="nav-link">{{ app.name }}</a>
+          </li>
+          {% endif %}
+        {% else %}
+          {% if mailcow_apps or app_links %}
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="bi bi-link-45deg me-2"></i> {{ ui_texts.apps_name|raw }}</a>
+            <ul class="dropdown-menu">
+              {% for app in mailcow_apps %}
+                {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+                <li {% if app.description %}title="{{ app.description }}"{% endif %}>
+                  <a href="{{ app.link }}" class="dropdown-item">{{ app.name }}</a>
+                </li>
+                {% endif %}
               {% endfor %}
-            {% endfor %}
-          </ul>
-        </li>
+              {% for row in app_links %}
+                {% for key, val in row %}
+                <li><a href="{{ val }}" class="dropdown-item">{{ key }}</a></li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </li>
+          {% endif %}
         {% endif %}
         {% if not dual_login and mailcow_cc_username %}
         <li class="logged-in-as nav-item"><a href="#" onclick="logout.submit()" class="nav-link"><b class="username-lia">{{ mailcow_cc_username }}</b> <i class="bi bi-power ms-2"></i></a></li>
@@ -235,7 +244,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $(".totp-authenticator-selection").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
       $(this).addClass("active");
-      
+
       var id = $(this).children('input').first().val();
       $("#totp_selected_id").val(id);
 
@@ -244,7 +253,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     if ($('.totp-authenticator-selection').length == 1 &&
         $('#pending_tfa_tab_yubi_otp').length == 0 &&
         $('.webauthn-authenticator-selection').length == 0){
-      
+
       // select default if only one authenticator exists
       $('.totp-authenticator-selection').addClass("active");
 
@@ -257,7 +266,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $('#pending_tfa_tab_totp').on('shown.bs.tab', function() {
       // autofocus
       setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 200);
-    });    
+    });
     // validate Yubi OTP tfa
     if ($('.webauthn-authenticator-selection').length == 0){
       // autofocus
@@ -276,10 +285,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $(".webauthn-authenticator-selection").click(function(){
       $(".webauthn-authenticator-selection").removeClass("active");
       $(this).addClass("active");
-      
+
       var id = $(this).children('input').first().val();
       $("#webauthn_selected_id").val(id);
-      
+
       var webauthn_status_auth = document.getElementById('webauthn_status_auth');
       webauthn_status_auth.style.setProperty('display', 'flex', 'important');
       var webauthn_return_code = document.getElementById('webauthn_return_code');
@@ -302,7 +311,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           console.log(json);
           if (json.success === false) throw new Error();
           if (json.type === "error") throw new Error(json.msg);
-      
+
           recursiveBase64StrToArrayBuffer(json);
           return json;
         }).then(getCredentialArgs => {
@@ -329,7 +338,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           webauthn_return_code.style.setProperty('display', 'block', 'important');
           webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
-      } 
+      }
     });
     $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
       // cancel pending login
