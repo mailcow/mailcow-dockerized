@@ -400,58 +400,64 @@ elif [[ ${1} == "restore" ]]; then
   while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
     read -p "Select a restore point: " input_sel
   done
-  i=1
+
   echo
-  declare -A FILE_SELECTION
+
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
   if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
     echo -e "\e[31mNo datasets found\e[0m"
     exit 1
   fi
 
+  i=0
+  declare -A FILE_SELECTION
+
   echo "[ 0 ] - all"
   # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
   FILE_SELECTION[0]=$(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
   for file in $(ls -f "${FOLDER_SELECTION[${input_sel}]}"); do
     if [[ ${file} =~ vmail ]]; then
+      ((i++))
       echo "[ ${i} ] - Mail directory (/var/vmail)"
       FILE_SELECTION[${i}]="vmail"
-      ((i++))
     elif [[ ${file} =~ crypt ]]; then
+      ((i++))
       echo "[ ${i} ] - Crypt data"
       FILE_SELECTION[${i}]="crypt"
-      ((i++))
     elif [[ ${file} =~ redis ]]; then
+      ((i++))
       echo "[ ${i} ] - Redis DB"
       FILE_SELECTION[${i}]="redis"
-      ((i++))
     elif [[ ${file} =~ rspamd ]]; then
       if [[ $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+        ((i++))
         echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
         FILE_SELECTION[${i}]="rspamd"
-        ((i++))
       elif [[ $ARCH != $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
         echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
       else
+        ((i++))
         echo "[ ${i} ] - Rspamd data"
         FILE_SELECTION[${i}]="rspamd"
-        ((i++))
       fi
     elif [[ ${file} =~ postfix ]]; then
+      ((i++))
       echo "[ ${i} ] - Postfix data"
       FILE_SELECTION[${i}]="postfix"
-      ((i++))
     elif [[ ${file} =~ mysql ]] || [[ ${file} =~ mariadb ]]; then
+      ((i++))
       echo "[ ${i} ] - SQL DB"
       FILE_SELECTION[${i}]="mysql"
-      ((i++))
     fi
   done
+
   echo
+
   input_sel=-1
-  while [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
+  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
     read -p "Select a dataset to restore: " input_sel
   done
+
   echo "Restoring ${FILE_SELECTION[${input_sel}]} from ${RESTORE_POINT}..."
   restore "${RESTORE_POINT}" ${FILE_SELECTION[${input_sel}]}
 fi
