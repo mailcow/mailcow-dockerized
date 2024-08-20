@@ -307,7 +307,7 @@ function quarantine($_action, $_data = null) {
           $max_score = floatval($_data['max_score']);
         }
         $max_age = intval($_data['max_age']);
-        $subject = iconv_mime_decode($_data['subject']);
+        $subject = $_data['subject'];
         if (!filter_var($_data['bcc'], FILTER_VALIDATE_EMAIL)) {
           $bcc = '';
         }
