@@ -21,7 +21,26 @@ function print_usage() {
   echo -e "  THREADS\t<num>\tYou can set the thread count with the THREADS environment variable before you run this script."
 }
 
+function check_required_tools() {
+  # Add the required tools to the array
+  local required_tools=("docker")
+
+  for bin in "${required_tools[@]}"; do
+    if [[ -z $(which ${bin}) ]]; then
+      echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+      exit 1
+    fi
+  done
+
+  if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
+    echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
+    exit 1
+  fi
+}
+
 # ----------------- End Functions -----------------
+
+check_required_tools
 
 DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
@@ -124,11 +143,6 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
-  >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
-  exit 1
-fi
-
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
@@ -136,12 +150,7 @@ function backup() {
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
   touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
-  for bin in docker; do
-  if [[ -z $(which ${bin}) ]]; then
-    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
-    exit 1
-  fi
-  done
+  
   while (( "$#" )); do
     case "$1" in
     vmail|all)
@@ -209,13 +218,6 @@ function backup() {
 }
 
 function restore() {
-  for bin in docker; do
-  if [[ -z $(which ${bin}) ]]; then
-    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
-    exit 1
-  fi
-  done
-
   if [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
   COMPOSE_COMMAND="docker compose"
 
