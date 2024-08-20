@@ -392,7 +392,7 @@ elif [[ ${1} == "restore" ]]; then
   done
   echo
   input_sel=0
-  while [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
+  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
     read -p "Select a restore point: " input_sel
   done
   i=1
