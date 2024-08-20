@@ -44,6 +44,8 @@ check_required_tools
 
 DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
 
+# This duplicated assignment is to address
+# issue in `https://github.com/mailcow/mailcow-dockerized/issues/957`
 if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
 fi
