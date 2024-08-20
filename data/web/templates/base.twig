@@ -211,8 +211,31 @@ function recursiveBase64StrToArrayBuffer(obj) {
     mailcow_alert_box('{{ alert_msg|raw|e("js") }}', '{{ alert_type }}');
     {% endfor %}
 
+
+    // Confirm PW Update modal
+    {% if pending_pw_update %}
+    new bootstrap.Modal(document.getElementById("ConfirmPWUpdateModal"), {
+      backdrop: 'static',
+      keyboard: false
+    }).show();
+
+    $('#ConfirmPWUpdateModal').on('hidden.bs.modal', function(){
+      // cancel pending login
+      $.ajax({
+        type: "GET",
+        cache: false,
+        dataType: 'script',
+        url: '/inc/ajax/destroy_pw_update.php',
+        complete: function(data){
+          window.location = window.location.href.split("#")[0];
+        }
+      });
+    });
+    {% endif %}
+
+
     // Confirm TFA modal
-  {% if pending_tfa_methods %}
+    {% if pending_tfa_methods %}
     new bootstrap.Modal(document.getElementById("ConfirmTFAModal"), {
       backdrop: 'static',
       keyboard: false
@@ -235,7 +258,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $(".totp-authenticator-selection").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
       $(this).addClass("active");
-      
+
       var id = $(this).children('input').first().val();
       $("#totp_selected_id").val(id);
 
@@ -244,7 +267,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     if ($('.totp-authenticator-selection').length == 1 &&
         $('#pending_tfa_tab_yubi_otp').length == 0 &&
         $('.webauthn-authenticator-selection').length == 0){
-      
+
       // select default if only one authenticator exists
       $('.totp-authenticator-selection').addClass("active");
 
@@ -257,7 +280,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $('#pending_tfa_tab_totp').on('shown.bs.tab', function() {
       // autofocus
       setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 200);
-    });    
+    });
     // validate Yubi OTP tfa
     if ($('.webauthn-authenticator-selection').length == 0){
       // autofocus
@@ -276,10 +299,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
     $(".webauthn-authenticator-selection").click(function(){
       $(".webauthn-authenticator-selection").removeClass("active");
       $(this).addClass("active");
-      
+
       var id = $(this).children('input').first().val();
       $("#webauthn_selected_id").val(id);
-      
+
       var webauthn_status_auth = document.getElementById('webauthn_status_auth');
       webauthn_status_auth.style.setProperty('display', 'flex', 'important');
       var webauthn_return_code = document.getElementById('webauthn_return_code');
@@ -302,7 +325,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           console.log(json);
           if (json.success === false) throw new Error();
           if (json.type === "error") throw new Error(json.msg);
-      
+
           recursiveBase64StrToArrayBuffer(json);
           return json;
         }).then(getCredentialArgs => {
@@ -329,7 +352,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
           webauthn_return_code.style.setProperty('display', 'block', 'important');
           webauthn_return_code.innerHTML = lang_tfa.error_code + ': ' + err + ' ' + lang_tfa.reload_retry;
         });
-      } 
+      }
     });
     $('#ConfirmTFAModal').on('hidden.bs.modal', function(){
       // cancel pending login
@@ -343,7 +366,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
         }
       });
     });
-  {% endif %}
+    {% endif %}
 
 
     // Validate FIDO2
@@ -540,7 +563,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
         Version: <a href="{{ mailcow_info.git_project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">{{ mailcow_info.version_tag }}
     </a>
   </span>
-  {% endif %}  
+  {% endif %}
   {% if mailcow_cc_username and mailcow_info.mailcow_branch|lower == "nightly" and mailcow_info.version_tag|default %}
   <span class="version">
     🛠️🐮 + 🐋 = 💕

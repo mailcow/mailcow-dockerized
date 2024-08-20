@@ -139,8 +139,7 @@
         <h3 class="modal-title">{{ lang.tfa.tfa }}</h3>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      
-      
+
       <div class="modal-body p-0 pt-4">
         <ul class="nav nav-tabs px-1" id="tabContent">
             {% if pending_tfa_authmechs["webauthn"] is defined and pending_tfa_authmechs["u2f"] is not defined %}
@@ -241,7 +240,7 @@
             <div role="tabpanel" class="tab-pane {% if pending_tfa_authmechs["totp"] %}active{% endif %}" id="tfa_tab_totp">
               <div class="card border-0" style="margin-bottom: 0px;">
                   <div class="card-body">
-                    <form role="form" method="post">        
+                    <form role="form" method="post">
                       <legend class="mt-2 mb-2">
                           <i class="bi bi-shield-fill-check"></i>
                           {{ lang.tfa.authenticators }}
@@ -306,6 +305,29 @@
           {% endif %}
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% if pending_pw_update %}
+<div class="modal fade" id="ConfirmPWUpdateModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmPWUpdateModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.user.change_password }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form method="post" autofill="off">
+          <input type="password" autocorrect="off" autocapitalize="none" class="form-control mb-2" name="new_password" placeholder="{{ lang.login.new_password }}" />
+          <input type="password" autocorrect="off" autocapitalize="none" class="form-control mb-2" name="new_password2" placeholder="{{ lang.login.new_password_confirm }}" />
+
+          <div class="d-flex justify-content-end mt-4" style="position: relative">
+            <button type="submit" class="btn btn-xs-lg d-block d-sm-inline btn-success" name="forced_pw_update">{{ lang.user.change_password }}</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

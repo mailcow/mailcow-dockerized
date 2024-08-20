@@ -32,11 +32,11 @@ foreach($_SESSION['pending_tfa_methods'] as $authdata){
 if (isset($pending_tfa_authmechs['webauthn'])) {
   $pending_tfa_authmechs['webauthn'] = true;
 }
-if (!isset($pending_tfa_authmechs['webauthn']) 
+if (!isset($pending_tfa_authmechs['webauthn'])
     && isset($pending_tfa_authmechs['yubi_otp'])) {
   $pending_tfa_authmechs['yubi_otp'] = true;
 }
-if (!isset($pending_tfa_authmechs['webauthn']) 
+if (!isset($pending_tfa_authmechs['webauthn'])
     && !isset($pending_tfa_authmechs['yubi_otp'])
     && isset($pending_tfa_authmechs['totp'])) {
   $pending_tfa_authmechs['totp'] = true;
@@ -60,6 +60,7 @@ $globalVariables = [
   ),
   'js_path' => '/cache/'.basename($JSPath),
   'pending_tfa_methods' => @$_SESSION['pending_tfa_methods'],
+  'pending_pw_update' => @$_SESSION['pending_pw_update'],
   'pending_tfa_authmechs' => $pending_tfa_authmechs,
   'pending_mailcow_cc_username' => @$_SESSION['pending_mailcow_cc_username'],
   'lang_footer' => json_encode($lang['footer']),

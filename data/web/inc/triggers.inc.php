@@ -10,15 +10,37 @@ if (!empty($_GET['sso_token'])) {
   }
 }
 
+
+if (isset($_POST["forced_pw_update"]) && !empty($_POST['new_password']) && !empty($_POST['new_password2'])) {
+  $result = edit_user_account(array(
+    'username' => $_SESSION['pending_mailcow_cc_username'],
+    'role' => $_SESSION['pending_mailcow_cc_role'],
+    'user_new_pass' => $_POST['new_password'],
+    'user_new_pass2' => $_POST['new_password2'],
+    'skip_old_password_check' => True
+  ));
+
+  if ($result) {
+    $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
+    $_SESSION['mailcow_cc_role'] = $_SESSION['pending_mailcow_cc_role'];
+    unset($_SESSION['pending_mailcow_cc_username']);
+    unset($_SESSION['pending_mailcow_cc_role']);
+    unset($_SESSION['pending_pw_update']);
+  }
+
+  header("Location: /");
+  exit;
+}
+
 if (isset($_POST["pw_reset_request"]) && !empty($_POST['username'])) {
-  reset_password("issue", $_POST['username']);
+  $resultreset_password("issue", $_POST['username']);
   header("Location: /");
   exit;
 }
 if (isset($_POST["pw_reset"])) {
   $username = reset_password("check", $_POST['token']);
   $reset_result = reset_password("reset", array(
-    'new_password' => $_POST['new_password'], 
+    'new_password' => $_POST['new_password'],
     'new_password2' => $_POST['new_password2'],
     'token' => $_POST['token'],
     'username' => $username,
@@ -47,13 +69,15 @@ if (isset($_POST["verify_tfa_login"])) {
       header("Location: /");
       exit;
     } else {
-      $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
-      $_SESSION['mailcow_cc_role'] = $_SESSION['pending_mailcow_cc_role'];
-      unset($_SESSION['pending_mailcow_cc_username']);
-      unset($_SESSION['pending_mailcow_cc_role']);
-      unset($_SESSION['pending_tfa_methods']);
-  
-      header("Location: /user");
+      if (!$_SESSION['pending_pw_update']) {
+        $_SESSION['mailcow_cc_username'] = $_SESSION['pending_mailcow_cc_username'];
+        $_SESSION['mailcow_cc_role'] = $_SESSION['pending_mailcow_cc_role'];
+        unset($_SESSION['pending_mailcow_cc_username']);
+        unset($_SESSION['pending_mailcow_cc_role']);
+        unset($_SESSION['pending_tfa_methods']);
+
+        header("Location: /user");
+      }
     }
   } else {
     unset($_SESSION['pending_pw_reset_token']);
@@ -97,24 +121,30 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		header("Location: /mailbox");
 	}
 	elseif ($as == "user") {
-		$_SESSION['mailcow_cc_username'] = $login_user;
-		$_SESSION['mailcow_cc_role'] = "user";
-        $http_parameters = explode('&', $_SESSION['index_query_string']);
-        unset($_SESSION['index_query_string']);
-        if (in_array('mobileconfig', $http_parameters)) {
-            if (in_array('only_email', $http_parameters)) {
-                header("Location: /mobileconfig.php?only_email");
-                die();
-            }
-            header("Location: /mobileconfig.php");
-            die();
+    if ($_SESSION['pending_pw_update']) {
+      $_SESSION['pending_mailcow_cc_username'] = $login_user;
+      $_SESSION['pending_mailcow_cc_role'] = "user";
+    } else {
+      $_SESSION['mailcow_cc_username'] = $login_user;
+      $_SESSION['mailcow_cc_role'] = "user";
+      $http_parameters = explode('&', $_SESSION['index_query_string']);
+      unset($_SESSION['index_query_string']);
+      if (in_array('mobileconfig', $http_parameters)) {
+        if (in_array('only_email', $http_parameters)) {
+          header("Location: /mobileconfig.php?only_email");
+          die();
         }
-		header("Location: /user");
+        header("Location: /mobileconfig.php");
+        die();
+      }
+      header("Location: /user");
+    }
 	}
 	elseif ($as != "pending") {
     unset($_SESSION['pending_mailcow_cc_username']);
     unset($_SESSION['pending_mailcow_cc_role']);
     unset($_SESSION['pending_tfa_methods']);
+    unset($_SESSION['pending_pw_update']);
 		unset($_SESSION['mailcow_cc_username']);
 		unset($_SESSION['mailcow_cc_role']);
 	}
