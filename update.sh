@@ -404,7 +404,7 @@ while (($#)); do
   --nightly            -   Switch your mailcow updates to the unstable (nightly) branch. FOR TESTING PURPOSES ONLY!!!!
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
-  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you´ve blocked any ICMP Connections to your mailcow machine)
+  --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you've blocked any ICMP Connections to your mailcow machine)
   --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly.
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
