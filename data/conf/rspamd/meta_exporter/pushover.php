@@ -53,7 +53,7 @@ $qid      = $headers['X-Rspamd-Qid'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
 $sender   = $headers['X-Rspamd-From'];
 $ip       = $headers['X-Rspamd-Ip'];
-$subject  = $headers['X-Rspamd-Subject'];
+$subject  = iconv_mime_decode($headers['X-Rspamd-Subject']);
 $messageid= $json_body->message_id;
 $priority = 0;
 

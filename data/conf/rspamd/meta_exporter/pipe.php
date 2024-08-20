@@ -52,7 +52,7 @@ $headers = getallheaders();
 
 $qid      = $headers['X-Rspamd-Qid'];
 $fuzzy    = $headers['X-Rspamd-Fuzzy'];
-$subject  = $headers['X-Rspamd-Subject'];
+$subject  = iconv_mime_decode($headers['X-Rspamd-Subject']);
 $score    = $headers['X-Rspamd-Score'];
 $rcpts    = $headers['X-Rspamd-Rcpt'];
 $user     = $headers['X-Rspamd-User'];
