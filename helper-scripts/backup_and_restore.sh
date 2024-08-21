@@ -358,7 +358,7 @@ function restore() {
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
     mysql|mariadb)
-      SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
+      SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
       if [[ -z "${SQLIMAGE}" ]]; then
         echo -e "\e[31mCould not determine SQL image version, skipping restore...\e[0m"
         shift
