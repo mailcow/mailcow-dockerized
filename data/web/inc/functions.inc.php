@@ -834,7 +834,7 @@ function update_sogo_static_view($mailbox = null) {
     // Check if the mailbox exists
     $stmt = $pdo->prepare("SELECT username FROM mailbox WHERE username = :mailbox AND active = '1'");
     $stmt->execute(array(':mailbox' => $mailbox));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);  
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row){
       $mailbox_exists = true;
     }
@@ -844,7 +844,7 @@ function update_sogo_static_view($mailbox = null) {
   $random_password = base64_encode(openssl_random_pseudo_bytes(24));
   $random_salt = base64_encode(openssl_random_pseudo_bytes(16));
   $random_hash = '{SSHA256}' . base64_encode(hash('sha256', base64_decode($password) . $salt, true) . $salt);
-  
+
   $subquery = "GROUP BY mailbox.username";
   if ($mailbox_exists) {
     $subquery = "AND mailbox.username = :mailbox";
@@ -882,7 +882,7 @@ function update_sogo_static_view($mailbox = null) {
         `kind` = VALUES(`kind`),
         `multiple_bookings` = VALUES(`multiple_bookings`)";
 
-  
+
   if ($mailbox_exists) {
     $stmt = $pdo->prepare($query);
     $stmt->execute(array(
@@ -895,9 +895,9 @@ function update_sogo_static_view($mailbox = null) {
       ':random_hash' => $random_hash
     ));
   }
-  
+
   $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
-  
+
   flush_memcached();
 }
 function edit_user_account($_data) {
@@ -930,7 +930,7 @@ function edit_user_account($_data) {
           AND `username` = :user AND authsource = 'mailcow'");
     $stmt->execute(array(':user' => $username));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
     if (!verify_hash($row['password'], $password_old)) {
       $_SESSION['return'][] =  array(
         'type' => 'danger',
@@ -939,7 +939,7 @@ function edit_user_account($_data) {
       );
       return false;
     }
-  
+
     $password_new = $_data['user_new_pass'];
     $password_new2  = $_data['user_new_pass2'];
     if (password_check($password_new, $password_new2) !== true) {
@@ -954,7 +954,7 @@ function edit_user_account($_data) {
       ':password_hashed' => $password_hashed,
       ':username' => $username
     ));
-  
+
     update_sogo_static_view();
   }
   // edit password recovery email
@@ -1210,7 +1210,7 @@ function set_tfa($_data) {
             $_data['registration']->certificate,
             0
         ));
-    
+
         $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_data_log),
@@ -1380,7 +1380,7 @@ function unset_tfa_key($_data) {
 
   try {
     if (!is_numeric($id)) $access_denied = true;
-    
+
     // set access_denied error
     if ($access_denied){
       $_SESSION['return'][] = array(
@@ -1389,7 +1389,7 @@ function unset_tfa_key($_data) {
         'msg' => 'access_denied'
       );
       return false;
-    } 
+    }
 
     // check if it's last key
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
@@ -1438,7 +1438,7 @@ function get_tfa($username = null, $id = null) {
         WHERE `username` = :username AND `active` = '1'");
     $stmt->execute(array(':username' => $username));
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
+
     // no tfa methods found
     if (count($results) == 0) {
         $data['name'] = 'none';
@@ -1646,8 +1646,8 @@ function verify_tfa_login($username, $_data) {
                   'msg' => array('webauthn_authenticator_failed')
               );
               return false;
-            } 
-            
+            }
+
             if (empty($process_webauthn['publicKey']) || $process_webauthn['publicKey'] === false) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
@@ -2009,7 +2009,7 @@ function cors($action, $data = null) {
           'msg' => 'access_denied'
         );
         return false;
-      }    
+      }
 
       $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
@@ -2042,7 +2042,7 @@ function cors($action, $data = null) {
         $redis->hMSet('CORS_SETTINGS', array(
           'allowed_origins' => implode(', ', $allowed_origins),
           'allowed_methods' => implode(', ', $allowed_methods)
-        ));   
+        ));
       } catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -2094,10 +2094,10 @@ function cors($action, $data = null) {
       header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
 
       // Access-Control settings requested, this is just a preflight request
-      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && 
+      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&
         isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
         isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-  
+
         $allowed_methods = explode(', ', $cors_settings["allowed_methods"]);
         if (in_array($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'], $allowed_methods, true))
           // method allowed send 200 OK
@@ -2216,7 +2216,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
           WHERE `authsource` != 'mailcow'
           AND `authsource` IS NOT NULL
-          AND `authsource` != :authsource");  
+          AND `authsource` != :authsource");
       $stmt->execute(array(':authsource' => $_data['authsource']));
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       if ($rows) {
@@ -2247,7 +2247,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         break;
         case "ldap":
           $_data['port']              = (!empty($_data['port'])) ? intval($_data['port']) : 389;
-          $_data['username_field']    = (!empty($_data['username_field'])) ? $_data['username_field'] : "mail";
+          $_data['username_field']    = (!empty($_data['username_field'])) ? strtolower($_data['username_field']) : "mail";
+          $_data['attribute_field']   = (!empty($_data['attribute_field'])) ? strtolower($_data['attribute_field']) : "";
           $_data['filter']            = (!empty($_data['filter'])) ? $_data['filter'] : "";
           $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
@@ -2259,7 +2260,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error');
         break;
       }
-      
+
       $pdo->beginTransaction();
       $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
       // add connection settings
@@ -2343,7 +2344,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $res = curl_exec($curl);
           $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
           curl_close ($curl);
-          
+
           if ($code != 200) {
             return false;
           }
@@ -2391,7 +2392,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
-      
+
       $stmt = $pdo->query("SELECT * FROM `mailbox`
           WHERE `authsource` != 'mailcow'
           AND `authsource` IS NOT NULL");
@@ -2428,7 +2429,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               'clientId'              => $iam_settings['client_id'],
               'clientSecret'          => $iam_settings['client_secret'],
               'redirectUri'           => $iam_settings['redirect_url'],
-              'version'               => $iam_settings['version'],                            
+              'version'               => $iam_settings['version'],
               // 'encryptionAlgorithm'   => 'RS256',                             // optional
               // 'encryptionKeyPath'     => '../key.pem'                         // optional
               // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
@@ -2488,7 +2489,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
-    
+
       try {
         $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
         $_SESSION['iam_token'] = $token->getToken();
@@ -2504,7 +2505,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       // check if email address is given
       if (empty($info['email'])) return false;
-    
+
       // token valid, get mailbox
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
         INNER JOIN domain on mailbox.domain = domain.domain
@@ -2530,7 +2531,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // also return false if no mappers were defined
       $user_template = $info['mailcow_template'];
       if (empty($iam_settings['mappers']) || empty($user_template)){
-        clear_session();  
+        clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $info['email']),
@@ -2542,7 +2543,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // check if matching attribute exist
       $mapper_key = array_search($user_template, $iam_settings['mappers']);
       if ($mapper_key === false) {
-        clear_session();  
+        clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $info['email']),
@@ -2560,7 +2561,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         'template' => $iam_settings['templates'][$mapper_key]
       ));
       if (!$create_res){
-        clear_session();  
+        clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $info['email']),
@@ -2568,7 +2569,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
-    
+
       set_user_loggedin_session($info['email']);
       $_SESSION['return'][] =  array(
         'type' => 'success',
@@ -2586,7 +2587,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
         $info = $provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
-        clear_session();  
+        clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__),
@@ -2596,7 +2597,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       if (empty($info['email'])){
-        clear_session();  
+        clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -2604,14 +2605,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
-    
+
       $_SESSION['mailcow_cc_username'] = $info['email'];
       $_SESSION['mailcow_cc_role'] = "user";
       return true;
     break;
     case "get-redirect":
       $iam_settings = identity_provider('get');
-      if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc') 
+      if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc')
         return false;
       $provider = $_data['iam_provider'];
       $authUrl = $provider->getAuthorizationUrl();
@@ -2667,7 +2668,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($code != 200) {
         return false;
       }
-      
+
       $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES (:key, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
       $stmt->execute(array(
         ':key' => 'access_token',
@@ -2702,7 +2703,7 @@ function reset_password($action, $data = null) {
     break;
     case 'issue':
       $username = $data;
-      
+
       // perform cleanup
       $stmt = $pdo->prepare("DELETE FROM `reset_password` WHERE created < DATE_SUB(NOW(), INTERVAL :lifetime MINUTE);");
       $stmt->execute(array(':lifetime' => $PW_RESET_TOKEN_LIFETIME));
@@ -2784,8 +2785,8 @@ function reset_password($action, $data = null) {
       $request_date = new DateTime();
       $locale_date = locale_get_default();
       $date_formatter = new IntlDateFormatter(
-        $locale_date, 
-        IntlDateFormatter::FULL, 
+        $locale_date,
+        IntlDateFormatter::FULL,
         IntlDateFormatter::FULL
       );
       $formatted_request_date = $date_formatter->format($request_date);
@@ -2901,7 +2902,7 @@ function reset_password($action, $data = null) {
       $stmt->execute(array(
         ':username' => $username
       ));
-   
+
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $action, $_data_log),
@@ -2944,7 +2945,7 @@ function reset_password($action, $data = null) {
       $text = $data['text'];
       $html = $data['html'];
       $subject = $data['subject'];
-    
+
       if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
@@ -2977,7 +2978,7 @@ function reset_password($action, $data = null) {
         );
         return false;
       }
-    
+
       ini_set('max_execution_time', 0);
       ini_set('max_input_time', 0);
       $mail = new PHPMailer;
@@ -3009,7 +3010,7 @@ function reset_password($action, $data = null) {
         return false;
       }
       $mail->ClearAllRecipients();
-    
+
       return true;
     break;
   }
