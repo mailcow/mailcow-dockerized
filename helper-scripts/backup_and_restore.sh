@@ -38,6 +38,51 @@ function check_required_tools() {
   fi
 }
 
+# declare_restore_point declares the `RESTORE_POINT`
+# globally which is the path to the backup folder.
+#
+# If the function succeeds, the variable `RESTORE_POINT`
+# will be declared globally.
+# If the function fails, it will exit with a status of 1.
+function declare_restore_point() {
+  local BACKUP_LOCATION="${1}"
+
+  # Check subfolders inside BACKUP_LOCATION
+  if [[ $(find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
+    echo -e "\e[31mSelected backup location has no subfolders\e[0m"
+    exit 1
+  fi
+
+  local i=0
+  local -A FOLDER_SELECTION
+
+  # Loop through the folders inside BACKUP_LOCATION,
+  # and print them to stdout, for the user to choose.
+  for folder in $(ls -d "${BACKUP_LOCATION}"/mailcow-*/); do
+    ((i++))
+    echo "[ ${i} ] - ${folder}"
+    FOLDER_SELECTION[${i}]="${folder}"
+  done
+
+  echo
+
+  # Prompt the user to choose what to restore.
+  local input_sel=0
+  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
+    read -p "Select a restore point: " input_sel
+  done
+
+  echo
+
+  # Declare the RESTORE_POINT variable globally,
+  # to be used outside the function.
+  RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
+  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
+    echo -e "\e[31mNo datasets found\e[0m"
+    exit 1
+  fi
+}
+
 # ----------------- End Functions -----------------
 
 check_required_tools
@@ -384,38 +429,17 @@ function restore() {
 if [[ ${1} == "backup" ]]; then
   backup ${@,,}
 elif [[ ${1} == "restore" ]]; then
-  i=0
-  declare -A FOLDER_SELECTION
-  if [[ $(find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
-    echo -e "\e[31mSelected backup location has no subfolders\e[0m"
-    exit 1
-  fi
-  for folder in $(ls -d "${BACKUP_LOCATION}"/mailcow-*/); do
-    ((i++))
-    echo "[ ${i} ] - ${folder}"
-    FOLDER_SELECTION[${i}]="${folder}"
-  done
-  echo
-  input_sel=0
-  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 1 ||  ${input_sel} -gt ${i} ]]; do
-    read -p "Select a restore point: " input_sel
-  done
-
-  echo
-
-  RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
-  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
-    echo -e "\e[31mNo datasets found\e[0m"
-    exit 1
-  fi
+  # Caling `declare_restore_point` will
+  # declare `RESTORE_POINT` globally.
+  declare_restore_point "${BACKUP_LOCATION}"
 
   i=0
   declare -A FILE_SELECTION
 
   echo "[ 0 ] - all"
   # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
-  FILE_SELECTION[0]=$(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
-  for file in $(ls -f "${FOLDER_SELECTION[${input_sel}]}"); do
+  FILE_SELECTION[0]=$(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
+  for file in $(ls -f "${RESTORE_POINT}"); do
     if [[ ${file} =~ vmail ]]; then
       ((i++))
       echo "[ ${i} ] - Mail directory (/var/vmail)"
@@ -429,11 +453,11 @@ elif [[ ${1} == "restore" ]]; then
       echo "[ ${i} ] - Redis DB"
       FILE_SELECTION[${i}]="redis"
     elif [[ ${file} =~ rspamd ]]; then
-      if [[ $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+      if [[ $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
         ((i++))
         echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
         FILE_SELECTION[${i}]="rspamd"
-      elif [[ $ARCH != $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
+      elif [[ $ARCH != $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
         echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
       else
         ((i++))
