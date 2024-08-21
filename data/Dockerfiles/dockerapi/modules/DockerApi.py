@@ -159,7 +159,7 @@ class DockerApi:
             postqueue_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postqueue " + i], user='postfix')
             # todo: check each exit code
           res = { 'type': 'success', 'msg': 'Scheduled immediate delivery'}
-          return Response(content=json.dumps(res, indent=4), media_type="application/json")        
+          return Response(content=json.dumps(res, indent=4), media_type="application/json")
   # api call: container_post - post_action: exec - cmd: mailq - task: list
   def container_post__exec__mailq__list(self, request_json, **kwargs):
     if 'container_id' in kwargs:
@@ -318,7 +318,7 @@ class DockerApi:
 
     if 'username' in request_json and 'script_name' in request_json:
       for container in self.sync_docker_client.containers.list(filters=filters):
-        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]  
+        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]
         sieve_return = container.exec_run(cmd)
         return self.exec_run_handler('utf8_text_only', sieve_return)
   # api call: container_post - post_action: exec - cmd: maildir - task: cleanup
@@ -342,6 +342,30 @@ class DockerApi:
           cmd = ["/bin/bash", "-c", cmd_vmail]
         maildir_cleanup = container.exec_run(cmd, user='vmail')
         return self.exec_run_handler('generic', maildir_cleanup)
+  # api call: container_post - post_action: exec - cmd: maildir - task: move
+  def container_post__exec__maildir__move(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    if 'old_maildir' in request_json and 'new_maildir' in request_json:
+      for container in self.sync_docker_client.containers.list(filters=filters):
+        vmail_name = request_json['old_maildir'].replace("'", "'\\''")
+        new_vmail_name = request_json['new_maildir'].replace("'", "'\\''")
+        cmd_vmail = "if [[ -d '/var/vmail/" + vmail_name + "' ]]; then /bin/mv '/var/vmail/" + vmail_name + "' '/var/vmail/" + new_vmail_name + "'; fi"
+
+        index_name = request_json['old_maildir'].split("/")
+        new_index_name = request_json['new_maildir'].split("/")
+        if len(index_name) > 1 and len(new_index_name) > 1:
+          index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
+          new_index_name = new_index_name[1].replace("'", "'\\''") + "@" + new_index_name[0].replace("'", "'\\''")
+          cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail_index/" + new_index_name + "_index'; fi"
+          cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        else:
+          cmd = ["/bin/bash", "-c", cmd_vmail]
+        maildir_move = container.exec_run(cmd, user='vmail')
+        return self.exec_run_handler('generic', maildir_move)
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
   def container_post__exec__rspamd__worker_password(self, request_json, **kwargs):
     if 'container_id' in kwargs:
@@ -374,6 +398,20 @@ class DockerApi:
           self.logger.error('failed changing Rspamd password')
           res = { 'type': 'danger', 'msg': 'command did not complete' }
           return Response(content=json.dumps(res, indent=4), media_type="application/json")
+  # api call: container_post - post_action: exec - cmd: sogo - task: rename
+  def container_post__exec__sogo__rename_user(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    if 'old_username' in request_json and 'new_username' in request_json:
+      for container in self.sync_docker_client.containers.list(filters=filters):
+        old_username = request_json['old_username'].replace("'", "'\\''")
+        new_username = request_json['new_username'].replace("'", "'\\''")
+
+        sogo_return = container.exec_run(['sogo-tool', 'rename-user', old_username, new_username], user='sogo')
+        return self.exec_run_handler('generic', sogo_return)
 
   # Collect host stats
   async def get_host_stats(self, wait=5):
@@ -462,7 +500,7 @@ class DockerApi:
         except:
           pass
       return ''.join(total_data)
-      
+
     try :
       socket = container.exec_run([shell_cmd], stdin=True, socket=True, user=user).output._sock
       if not cmd.endswith("\n"):
