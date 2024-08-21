@@ -534,7 +534,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.08
+      image: mailcow/dockerapi:2.09
       security_opt:
         - label=disable
       restart: always
@@ -552,7 +552,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3

@@ -2354,7 +2354,7 @@ jQuery(function($){
     else
       $(tab).find(".table_collapse_option").hide();
   }
-  
+
   function filterByDomain(json, column, table){
     var tableId = $(table.table().container()).attr('id');
     // Create the `select` element
@@ -2377,12 +2377,12 @@ jQuery(function($){
         }
       });
     });
-    
+
     // get unique domain list
     domains = domains.filter(function(value, index, array) {
       return array.indexOf(value) === index;
     });
-    
+
     // add domains to select
     domains.forEach(function(domain) {
         select.append($('<option>' + domain + '</option>'));
