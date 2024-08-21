@@ -140,6 +140,17 @@ function declare_file_selection() {
   FILE_SELECTION="${FILE_SELECTIONS[${input_sel}]}"
 }
 
+# restore_docker_component restores components used in
+# docker compose project name to the specified path.
+#
+# Parameters:
+#   1. RESTORE_LOCATION
+#   2. DOCKER_COMPOSE_PROJECT_NAME
+#   3. DOCKER_IMAGE_NAME
+#   4. COMPONENT_NAME
+#
+# If the function succeeds, will return with no value.
+# If the function fails, it will exit with a status of 1.
 function restore_docker_component() {
   local RESTORE_LOCATION="${1}"
   local DOCKER_COMPOSE_PROJECT_NAME="${2}"
