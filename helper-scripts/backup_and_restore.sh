@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-# ---------------------------------------------------
-# Here's only the functions that are optimized,
-# checked and refactored.
-# 
-# This comment will be deleted once I finished 
-# working with this file.
-# ---------------------------------------------------
-
 # ----------------- Start Functions -----------------
 
 function print_usage() {
@@ -146,6 +138,38 @@ function declare_file_selection() {
 
   # Declare the global variable
   FILE_SELECTION="${FILE_SELECTIONS[${input_sel}]}"
+}
+
+function restore_docker_component() {
+  local RESTORE_LOCATION="${1}"
+  local DOCKER_COMPOSE_PROJECT_NAME="${2}"
+  # Example: dovecot-mailcow, postfix-mailcow, redis-mailcow
+  local DOCKER_IMAGE_NAME="${3}"
+  # Example: vmail, redis, crypt, rspamd and postfix
+  local COMPONENT_NAME="${4}"
+
+  local CONTAINER_ID
+  local DOCKER_VOLUME_NAME
+
+  CONTAINER_ID="$(docker ps -qf name="${DOCKER_IMAGE_NAME}")"
+  DOCKER_VOLUME_NAME="$(docker volume ls -qf name=^${DOCKER_COMPOSE_PROJECT_NAME}_${COMPONENT_NAME}-vol-1$)"
+
+  if [[ -z "${DOCKER_VOLUME_NAME}" ]]; then
+    echo
+    echo -e "\e[31mFatal Error: Docker volume for [${DOCKER_COMPOSE_PROJECT_NAME}_${DOCKER_IMAGE_NAME}] not found!\e[0m"
+    exit 1
+  fi
+
+  # Restoring Process
+
+  docker stop "${CONTAINER_ID}"
+
+  docker run -i --name mailcow-backup --rm \
+    -v "${RESTORE_LOCATION}:/backup:z" \
+    -v "${DOCKER_VOLUME_NAME}:/${COMPONENT_NAME}:z" \
+    ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_"${COMPONENT_NAME}".tar.gz
+
+  docker start "${CONTAINER_ID}"
 }
 
 # ----------------- End Functions -----------------
@@ -355,12 +379,8 @@ function restore() {
   while (( "$#" )); do
     case "$1" in
     vmail)
-      docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_vmail.tar.gz
-      docker start $(docker ps -aqf name=dovecot-mailcow)
+      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "vmail"
+
       echo
       echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
       echo
@@ -374,20 +394,10 @@ function restore() {
       fi
       ;;
     redis)
-      docker stop $(docker ps -qf name=redis-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_redis.tar.gz
-      docker start $(docker ps -aqf name=redis-mailcow)
+      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "redis-mailcow" "redis"
       ;;
     crypt)
-      docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_crypt.tar.gz
-      docker start $(docker ps -aqf name=dovecot-mailcow)
+      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "crypt"
       ;;
     rspamd)
       if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
@@ -395,32 +405,18 @@ function restore() {
         sleep 2
         echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
         sleep 2
-        docker stop $(docker ps -qf name=rspamd-mailcow)
-        docker run -i --name mailcow-backup --rm \
-          -v ${RESTORE_LOCATION}:/backup:z \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
-        docker start $(docker ps -aqf name=rspamd-mailcow)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
+
       elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
         echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
         sleep 2
         echo -e "Skipping rspamd due to compatibility issues!\e[0m"
       else
-        docker stop $(docker ps -qf name=rspamd-mailcow)
-        docker run -i --name mailcow-backup --rm \
-          -v ${RESTORE_LOCATION}:/backup:z \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
-        docker start $(docker ps -aqf name=rspamd-mailcow)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
       fi
       ;;
     postfix)
-      docker stop $(docker ps -qf name=postfix-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_postfix.tar.gz
-      docker start $(docker ps -aqf name=postfix-mailcow)
+      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "postfix-mailcow" "postfix"
       ;;
     mysql|mariadb)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
