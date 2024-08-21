@@ -291,7 +291,7 @@ function backup() {
   chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
   cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
   touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
-  
+
   while (( "$#" )); do
     case "$1" in
     vmail|all)
@@ -326,7 +326,7 @@ function backup() {
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
-      SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
+      SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
       if [[ -z "${SQLIMAGE}" ]]; then
         echo -e "\e[31mCould not determine SQL image version, skipping backup...\e[0m"
         shift
