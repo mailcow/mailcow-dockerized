@@ -83,6 +83,71 @@ function declare_restore_point() {
   fi
 }
 
+# declare_file_selection declares the `FILE_SELECTION`
+# globally which is the path to the backup folder inside
+# `RESTORE_POINT` folder (which components to restore from).
+#
+# If the function succeeds, the variable `FILE_SELECTION`
+# will be declared globally.
+# If the function fails, it will exit with a status of 1.
+function declare_file_selection() {
+  local RESTORE_POINT="$1"
+
+  local i=0
+  local -A FILE_SELECTIONS
+
+  echo "[ ${i} ] - all"
+
+  # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
+  FILE_SELECTIONS[0]=$(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
+  for file in $(ls -f "${RESTORE_POINT}"); do
+    if [[ ${file} =~ vmail ]]; then
+      ((i++))
+      echo "[ ${i} ] - Mail directory (/var/vmail)"
+      FILE_SELECTIONS[${i}]="vmail"
+    elif [[ ${file} =~ crypt ]]; then
+      ((i++))
+      echo "[ ${i} ] - Crypt data"
+      FILE_SELECTIONS[${i}]="crypt"
+    elif [[ ${file} =~ redis ]]; then
+      ((i++))
+      echo "[ ${i} ] - Redis DB"
+      FILE_SELECTIONS[${i}]="redis"
+    elif [[ ${file} =~ rspamd ]]; then
+      if [[ $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+        ((i++))
+        echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
+        FILE_SELECTIONS[${i}]="rspamd"
+      elif [[ $ARCH != $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
+        echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
+      else
+        ((i++))
+        echo "[ ${i} ] - Rspamd data"
+        FILE_SELECTIONS[${i}]="rspamd"
+      fi
+    elif [[ ${file} =~ postfix ]]; then
+      ((i++))
+      echo "[ ${i} ] - Postfix data"
+      FILE_SELECTIONS[${i}]="postfix"
+    elif [[ ${file} =~ mysql ]] || [[ ${file} =~ mariadb ]]; then
+      ((i++))
+      echo "[ ${i} ] - SQL DB"
+      FILE_SELECTIONS[${i}]="mysql"
+    fi
+  done
+
+  echo
+
+  # Prompt the user to choose what to restore.
+  input_sel=-1
+  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
+    read -p "Select a dataset to restore: " input_sel
+  done
+
+  # Declare the global variable
+  FILE_SELECTION="${FILE_SELECTIONS[${input_sel}]}"
+}
+
 # ----------------- End Functions -----------------
 
 check_required_tools
@@ -433,55 +498,10 @@ elif [[ ${1} == "restore" ]]; then
   # declare `RESTORE_POINT` globally.
   declare_restore_point "${BACKUP_LOCATION}"
 
-  i=0
-  declare -A FILE_SELECTION
+  # Calling `declare_file_selection` will
+  # declare `FILE_SELECTION` globally.
+  declare_file_selection "${RESTORE_POINT}"
 
-  echo "[ 0 ] - all"
-  # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
-  FILE_SELECTION[0]=$(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
-  for file in $(ls -f "${RESTORE_POINT}"); do
-    if [[ ${file} =~ vmail ]]; then
-      ((i++))
-      echo "[ ${i} ] - Mail directory (/var/vmail)"
-      FILE_SELECTION[${i}]="vmail"
-    elif [[ ${file} =~ crypt ]]; then
-      ((i++))
-      echo "[ ${i} ] - Crypt data"
-      FILE_SELECTION[${i}]="crypt"
-    elif [[ ${file} =~ redis ]]; then
-      ((i++))
-      echo "[ ${i} ] - Redis DB"
-      FILE_SELECTION[${i}]="redis"
-    elif [[ ${file} =~ rspamd ]]; then
-      if [[ $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
-        ((i++))
-        echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
-        FILE_SELECTION[${i}]="rspamd"
-      elif [[ $ARCH != $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
-        echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
-      else
-        ((i++))
-        echo "[ ${i} ] - Rspamd data"
-        FILE_SELECTION[${i}]="rspamd"
-      fi
-    elif [[ ${file} =~ postfix ]]; then
-      ((i++))
-      echo "[ ${i} ] - Postfix data"
-      FILE_SELECTION[${i}]="postfix"
-    elif [[ ${file} =~ mysql ]] || [[ ${file} =~ mariadb ]]; then
-      ((i++))
-      echo "[ ${i} ] - SQL DB"
-      FILE_SELECTION[${i}]="mysql"
-    fi
-  done
-
-  echo
-
-  input_sel=-1
-  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
-    read -p "Select a dataset to restore: " input_sel
-  done
-
-  echo "Restoring ${FILE_SELECTION[${input_sel}]} from ${RESTORE_POINT}..."
-  restore "${RESTORE_POINT}" ${FILE_SELECTION[${input_sel}]}
+  echo "Restoring ${FILE_SELECTION} from ${RESTORE_POINT}..."
+  restore "${RESTORE_POINT}" "${FILE_SELECTION}"
 fi
