@@ -429,7 +429,7 @@ function restore() {
 if [[ ${1} == "backup" ]]; then
   backup ${@,,}
 elif [[ ${1} == "restore" ]]; then
-  # Caling `declare_restore_point` will
+  # Calling `declare_restore_point` will
   # declare `RESTORE_POINT` globally.
   declare_restore_point "${BACKUP_LOCATION}"
 
