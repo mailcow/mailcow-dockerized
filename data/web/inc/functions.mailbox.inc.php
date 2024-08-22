@@ -3247,6 +3247,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
 
+          // get imap acls
+          $exec_fields = array(
+            'cmd' => 'dovecot',
+            'task' => 'get_acl',
+            'maildir' => $domain . '/' . $old_local_part,
+          );
+          $imap_acls = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+          // delete imap acls
+          foreach ($imap_acls as $imap_acl) {
+            $exec_fields = array(
+              'cmd' => 'dovecot',
+              'task' => 'delete_acl',
+              'user' => $imap_acl['user'],
+              'mailbox' => $imap_acl['mailbox'],
+              'id' => $imap_acl['id']
+            );
+            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+          }
+
           // rename username in sql
           try {
             $pdo->beginTransaction();
@@ -3325,6 +3344,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'new_username' => $new_username
           );
           docker('post', 'sogo-mailcow', 'exec', $exec_fields);
+
+          // set imap acls
+          foreach ($imap_acls as $imap_acl) {
+            $exec_fields = array(
+              'cmd' => 'dovecot',
+              'task' => 'set_acl',
+              'user' => $imap_acl['user'],
+              'mailbox' => $imap_acl['mailbox'],
+              'id' => $new_username,
+              'rights' => $imap_acl['rights']
+            );
+            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+          }
 
           // create alias
           if ($create_alias == 1) {
