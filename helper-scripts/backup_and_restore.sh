@@ -31,13 +31,13 @@ function check_required_tools() {
 
   for bin in "${required_tools[@]}"; do
     if [[ -z $(which ${bin}) ]]; then
-      echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+      echo -e "${RED_COLOR}Cannot find ${bin} in local PATH, exiting...${RESET}"
       exit 1
     fi
   done
 
   if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
-    echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
+    echo -e "${RED_COLOR}BusyBox grep detected on local system, please install GNU grep${RESET}"
     exit 1
   fi
 }
@@ -53,7 +53,7 @@ function declare_restore_point() {
 
   # Check subfolders inside BACKUP_LOCATION
   if [[ $(find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 1 -type d 2> /dev/null| wc -l) -lt 1 ]]; then
-    echo -e "\e[31mSelected backup location has no subfolders\e[0m"
+    echo -e "${RED_COLOR}Selected backup location has no subfolders${RESET}"
     exit 1
   fi
 
@@ -82,7 +82,7 @@ function declare_restore_point() {
   # to be used outside the function.
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
   if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
-    echo -e "\e[31mNo datasets found\e[0m"
+    echo -e "${RED_COLOR}No datasets found${RESET}"
     exit 1
   fi
 }
@@ -111,7 +111,7 @@ function declare_restore_components() {
   echo
 
   # Print the available files to restore
-  echo -e "\e[32mMatching available components to restore:\e[0m"
+  echo -e "${GREEN_COLOR}Matching available components to restore:${RESET}"
 
   local i=0
   for component in "${RESTORE_COMPONENTS[@]}"; do
@@ -149,14 +149,14 @@ function restore_docker_component() {
 
   if [[ -z "${DOCKER_VOLUME_NAME}" ]]; then
     echo
-    echo -e "\e[31mFatal Error: Docker volume for [${DOCKER_COMPOSE_PROJECT_NAME}_${DOCKER_IMAGE_NAME}] not found!\e[0m"
+    echo -e "${RED_COLOR}Fatal Error: Docker volume for [${DOCKER_COMPOSE_PROJECT_NAME}_${DOCKER_IMAGE_NAME}] not found!${RESET}"
     exit 1
   fi
 
   if [[ ! -f "${RESTORE_LOCATION}/backup_${COMPONENT_NAME}.tar.gz" ]]; then
     echo
-    echo -e "\e[33mWarning: ${RESTORE_LOCATION} does not contains a backup for [${COMPONENT_NAME}]!\e[0m" >&2
-    echo -e "\e[33mSkipping restore for [${COMPONENT_NAME}]...\e[0m" >&2
+    echo -e "${YELLOW_COLOR}Warning: ${RESTORE_LOCATION} does not contains a backup for [${COMPONENT_NAME}]!${RESET}" >&2
+    echo -e "${YELLOW_COLOR}Skipping restore for [${COMPONENT_NAME}]...${RESET}" >&2
     return 1
   fi
 
@@ -177,34 +177,34 @@ function check_valid_backup_directory() {
 
   if [[ -z "${BACKUP_LOCATION}" ]]; then
     echo
-    echo -e "\e[31mFatal Error: Backup location not specified!\e[0m"
+    echo -e "${RED_COLOR}Fatal Error: Backup location not specified!${RESET}"
     exit 1
   fi
 
   if [[ ! -e "${BACKUP_LOCATION}" ]]; then
-    echo -e "\e[33m${BACKUP_LOCATION} is not exist\e[0m"
+    echo -e "${YELLOW_COLOR}${BACKUP_LOCATION} is not exist${RESET}"
     read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
     if ! [[ ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
-      echo -e "\e[31mexiting...\e[0m"
+      echo -e "${RED_COLOR}exiting...${RESET}"
       exit 0
     fi
 
     mkdir -p "${BACKUP_LOCATION}"
     chmod 755 "${BACKUP_LOCATION}"
     if [[ ! "${?}" -eq 0 ]]; then
-      echo -e "\e[31mFailed, check the error above!\e[0m"
+      echo -e "${RED_COLOR}Failed, check the error above!${RESET}"
       exit 1
     fi
   fi
 
   if [[ -d "${BACKUP_LOCATION}" ]]; then
     if [[ -z $(echo $(stat -Lc %a "${BACKUP_LOCATION}") | grep -oE '[0-9][0-9][5-7]') ]]; then
-      echo -e "\e[31m${BACKUP_LOCATION} is not writable!\e[0m"
-      echo -e "\e[33mTry: chmod 755 ${BACKUP_LOCATION}\e[0m"
+      echo -e "${RED_COLOR}${BACKUP_LOCATION} is not writable!${RESET}"
+      echo -e "${YELLOW_COLOR}Try: chmod 755 ${BACKUP_LOCATION}${RESET}"
       exit 1
     fi
   else
-    echo -e "\e[31m${BACKUP_LOCATION} is not a valid path! Maybe a file or a symbolic?\e["
+    echo -e "${RED_COLOR}${BACKUP_LOCATION} is not a valid path! Maybe a file or a symbolic?\e["
     exit 1
   fi
 }
@@ -214,34 +214,34 @@ function check_valid_restore_directory() {
 
   if [[ -z "${RESTORE_LOCATION}" ]]; then
     echo
-    echo -e "\e[31mFatal Error: restore location not specified!\e[0m"
+    echo -e "${RED_COLOR}Fatal Error: restore location not specified!${RESET}"
     exit 1
   fi
 
   if [[ ! -e "${RESTORE_LOCATION}" ]]; then
-    echo -e "\e[31m${RESTORE_LOCATION} is not exist\e[0m"
+    echo -e "${RED_COLOR}${RESTORE_LOCATION} is not exist${RESET}"
     exit 1
   fi
 
   if [[ ! -d "${RESTORE_LOCATION}" ]]; then
-    echo -e "\e[31m${RESTORE_LOCATION} is not a valid path! Maybe a file or a symbolic?\e[0m"
+    echo -e "${RED_COLOR}${RESTORE_LOCATION} is not a valid path! Maybe a file or a symbolic?${RESET}"
     exit 1
   fi
 }
 
 function delete_old_backups() {
   if [[ -z $(find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24))) ]]; then
-    echo -e "\e[33mNo backups to delete found.\e[0m"
+    echo -e "${YELLOW_COLOR}No backups to delete found.${RESET}"
     exit 0
   fi
 
-  echo -e "\e[34mBackups scheduled for deletion:\e[0m"
-  find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec printf "\e[33m- %s\e[0m\n" {} \;
-  read -p "$(echo -e "\e[1m\e[31mAre you sure you want to delete the above backups? type YES in capital letters to delete, else to skip: \e[0m")" DELETE_CONFIRM
+  echo -e "${BLUE_COLOR}Backups scheduled for deletion:${RESET}"
+  find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec printf "${YELLOW_COLOR}- %s${RESET}\n" {} \;
+  read -p "$(echo -e "${BOLD}${RED_COLOR}Are you sure you want to delete the above backups? type YES in capital letters to delete, else to skip: ${RESET}")" DELETE_CONFIRM
   if [[ "${DELETE_CONFIRM}" == "YES" ]]; then
     find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec rm -rvf {} \;
   else
-    echo -e "\e[33mOK, skipped.\e[0m"
+    echo -e "${YELLOW_COLOR}OK, skipped.${RESET}"
   fi
 }
 
@@ -280,12 +280,12 @@ ENV_FILE=${SCRIPT_DIR}/../.env
 ARCH=$(uname -m)
 
 if [ ! -f ${COMPOSE_FILE} ]; then
-  echo -e "\e[31mCompose file not found\e[0m"
+  echo -e "${RED_COLOR}Compose file not found${RESET}"
   exit 1
 fi
 
 if [ ! -f ${ENV_FILE} ]; then
-  echo -e "\e[31mEnvironment file not found\e[0m"
+  echo -e "${RED_COLOR}Environment file not found${RESET}"
   exit 1
 fi
 
@@ -298,12 +298,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     -b|--backup)
       if ! [[ $# -gt 1 ]]; then
-        echo -e "\e[31mInvalid Option: -b/--backup requires an argument\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -b/--backup requires an argument${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${2}" =~ ^/ ]]; then
-        echo -e "\e[31mInvalid Option: -b/--backup requires an absolute path\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -b/--backup requires an absolute path${RESET}" >&2
         exit 1
       fi
 
@@ -312,12 +312,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     -r|--restore)
       if ! [[ $# -gt 1 ]]; then
-        echo -e "\e[31mInvalid Option: -r/--restore requires an argument\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -r/--restore requires an argument${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${2}" =~ ^/ ]]; then
-        echo -e "\e[31mInvalid Option: -r/--restore requires an absolute path\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -r/--restore requires an absolute path${RESET}" >&2
         exit 1
       fi
 
@@ -326,17 +326,17 @@ while [[ $# -gt 0 ]]; do
       ;;
     -d|--delete-days|--delete)
       if ! [[ $# -gt 2 ]]; then
-        echo -e "\e[31mInvalid Option: -d/--delete-days requires <path> <days>\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -d/--delete-days requires <path> <days>${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${2}" =~ ^/ ]]; then
-        echo -e "\e[31mInvalid Option: -d/--delete-days requires an absolute path\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -d/--delete-days requires an absolute path${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${3}" =~ ^[0-9]+$ ]]; then
-        echo -e "\e[31mInvalid Option: -d/--delete-days requires a number\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -d/--delete-days requires a number${RESET}" >&2
         exit 1
       fi
 
@@ -346,12 +346,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     -c|--component)
       if ! [[ $# -gt 1 ]]; then
-        echo -e "\e[31mInvalid Option: -c/--component requires an argument\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -c/--component requires an argument${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${2}" =~ ^(crypt|vmail|redis|rspamd|postfix|mysql|all)$ ]]; then
-        echo -e "\e[31mInvalid Option: -c/--component requires one of the following: crypt|vmail|redis|rspamd|postfix|mysql|all\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -c/--component requires one of the following: crypt|vmail|redis|rspamd|postfix|mysql|all${RESET}" >&2
         exit 1
       fi
 
@@ -363,16 +363,16 @@ while [[ $# -gt 0 ]]; do
       ;;
     -t|--threads)
       if ! [[ $# -gt 1 ]]; then
-        echo -e "\e[31mInvalid Option: -t/--threads requires an argument\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -t/--threads requires an argument${RESET}" >&2
         exit 1
       fi
 
       if ! [[ "${2}" =~ ^[1-9][0-9]*$ ]]; then
-        echo -e "\e[31mInvalid Option: -t/--threads requires a positive number\e[0m" >&2
+        echo -e "${RED_COLOR}Invalid Option: -t/--threads requires a positive number${RESET}" >&2
         exit 1
       fi
 
-      echo -e "\e[32mUsing ${THREADS} thread(s) for this run.\e[0m"
+      echo -e "${GREEN_COLOR}Using ${THREADS} thread(s) for this run.${RESET}"
       MAILCOW_BACKUP_RESTORE_THREADS="${2}"
       shift 2
       ;;
@@ -403,7 +403,7 @@ if [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
 fi
 
 if [[ "${OPTION_COUNT}" -gt 1 ]] || [[ "${OPTION_COUNT}" -eq 0 ]]; then
-  echo -e "\e[31mYou should pass one of the following options: \e[33m-b/--backup\e[0m, \e[33m-r/--restore\e[0m or \e[33m-d/--delete\e[0m"
+  echo -e "${RED_COLOR}You should pass one of the following options: ${YELLOW_COLOR}-b/--backup${RESET}, ${YELLOW_COLOR}-r/--restore${RESET} or ${YELLOW_COLOR}-d/--delete${RESET}"
   exit 1
 fi
 
@@ -418,10 +418,10 @@ fi
 source ${SCRIPT_DIR}/../mailcow.conf
 
 if [[ -z ${COMPOSE_PROJECT_NAME} ]]; then
-  echo -e "\e[31mCould not determine compose project name\e[0m"
+  echo -e "${RED_COLOR}Could not determine compose project name${RESET}"
   exit 1
 else
-  echo -e "\e[32mFound project name ${COMPOSE_PROJECT_NAME}\e[0m"
+  echo -e "${GREEN_COLOR}Found project name ${COMPOSE_PROJECT_NAME}${RESET}"
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
@@ -433,7 +433,7 @@ function backup() {
   cp "${SCRIPT_DIR}/../mailcow.conf" "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}"
   touch "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
 
-  echo -e "\e[32mUsing ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this backup.\e[0m"
+  echo -e "${GREEN_COLOR}Using ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this backup.${RESET}"
 
   while (( "$#" )); do
     case "$1" in
@@ -471,11 +471,11 @@ function backup() {
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
       if [[ -z "${SQLIMAGE}" ]]; then
-        echo -e "\e[31mCould not determine SQL image version, skipping backup...\e[0m"
+        echo -e "${RED_COLOR}Could not determine SQL image version, skipping backup...${RESET}"
         shift
         continue
       else
-        echo -e "\e[32mUsing SQL image ${SQLIMAGE}, starting...\e[0m"
+        echo -e "${GREEN_COLOR}Using SQL image ${SQLIMAGE}, starting...${RESET}"
         docker run --name mailcow-backup --rm \
           --network $(docker network ls -qf name=^${CMPS_PRJ}_mailcow-network$) \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
@@ -499,19 +499,19 @@ function restore() {
   elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
     COMPOSE_COMMAND="docker-compose"
   else
-    echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
+    echo -e "${RED_COLOR}Can not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...${RESET}"
     exit 1
   fi
 
   echo
-  echo -e "\e[33mStopping watchdog-mailcow...\e[0m"
+  echo -e "${YELLOW_COLOR}Stopping watchdog-mailcow...${RESET}"
   docker stop $(docker ps -qf name=watchdog-mailcow)
   echo
   RESTORE_LOCATION="${1}"
   shift
   for component in ${RESTORE_COMPONENTS[@]}; do
     echo
-    echo -e "\n\e[32mRestoring ${component}...\e[0m"
+    echo -e "\n${GREEN_COLOR}Restoring ${component}...${RESET}"
     sleep 1
     case ${component} in
       vmail)
@@ -537,16 +537,16 @@ function restore() {
         ;;
       rspamd)
         if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
-          echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
+          echo -e "${YELLOW_COLOR}Could not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
           sleep 2
-          echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
+          echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.${RESET}"
           sleep 2
           restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
 
         elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
-          echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
+          echo -e "${RED_COLOR}The Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
           sleep 2
-          echo -e "Skipping rspamd due to compatibility issues!\e[0m"
+          echo -e "Skipping rspamd due to compatibility issues!${RESET}"
         else
           restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
         fi
@@ -557,11 +557,11 @@ function restore() {
       mysql|mariadb)
         SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
         if [[ -z "${SQLIMAGE}" ]]; then
-          echo -e "\e[31mCould not determine SQL image version, skipping restore...\e[0m"
+          echo -e "${RED_COLOR}Could not determine SQL image version, skipping restore...${RESET}"
           shift
           continue
         elif [ ! -f "${RESTORE_LOCATION}/mailcow.conf" ]; then
-          echo -e "\e[31mCould not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore.\e[0m"
+          echo -e "${RED_COLOR}Could not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore.${RESET}"
           echo "If you lost that file, copy the last working mailcow.conf file to ${RESTORE_LOCATION} and restart the restore process."
           shift
           continue
@@ -630,11 +630,11 @@ if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
 
   check_valid_backup_directory "${MAILCOW_BACKUP_LOCATION}"
 
-  echo -e "\e[32mUsing ${MAILCOW_BACKUP_LOCATION} as backup location...\e[0m"
+  echo -e "${GREEN_COLOR}Using ${MAILCOW_BACKUP_LOCATION} as backup location...${RESET}"
 
   # If you didn't specify any backup components, then exit
   if [[ ${#MAILCOW_BACKUP_COMPONENTS[@]} -eq 0 ]]; then
-    echo -e "\e[31mNo components specified for the backup, please see --help\e[0m"
+    echo -e "${RED_COLOR}No components specified for the backup, please see --help${RESET}"
     exit 1
   fi
 
@@ -650,11 +650,11 @@ if [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
 
   # If you didn't specify any backup components for the restore, then exit
   if [[ ${#MAILCOW_BACKUP_COMPONENTS[@]} -eq 0 ]]; then
-    echo -e "\e[31mNo components specified for the restore, please see --help\e[0m"
+    echo -e "${RED_COLOR}No components specified for the restore, please see --help${RESET}"
     exit 1
   fi
 
-  echo -e "\e[32mUsing ${MAILCOW_RESTORE_LOCATION} as restore location...\e[0m"
+  echo -e "${GREEN_COLOR}Using ${MAILCOW_RESTORE_LOCATION} as restore location...${RESET}"
 
   # Calling `declare_restore_point` will
   # declare `RESTORE_POINT` globally.
@@ -664,7 +664,7 @@ if [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
   # declare `RESTORE_COMPONENTS` globally.
   declare_restore_components "${RESTORE_POINT}"
 
-  echo -e "\n\e[32mRestoring will start in \e[1m5 seconds\e[0m. Press \e[1mCtrl+C\e[0m to stop.\n\e[0m"
+  echo -e "\n${GREEN_COLOR}Restoring will start in ${BOLD}5 seconds${RESET}. Press ${BOLD}Ctrl+C${RESET} to stop.\n${RESET}"
   sleep 5
 
   echo "Restoring ${MAILCOW_BACKUP_COMPONENTS[*]} from ${RESTORE_POINT}..."
