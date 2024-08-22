@@ -353,14 +353,14 @@ class DockerApi:
       for container in self.sync_docker_client.containers.list(filters=filters):
         vmail_name = request_json['old_maildir'].replace("'", "'\\''")
         new_vmail_name = request_json['new_maildir'].replace("'", "'\\''")
-        cmd_vmail = "if [[ -d '/var/vmail/" + vmail_name + "' ]]; then /bin/mv '/var/vmail/" + vmail_name + "' '/var/vmail/" + new_vmail_name + "'; fi"
+        cmd_vmail = f"if [[ -d '/var/vmail/{vmail_name}' ]]; then /bin/mv '/var/vmail/{vmail_name}' '/var/vmail/{new_vmail_name}'; fi"
 
         index_name = request_json['old_maildir'].split("/")
         new_index_name = request_json['new_maildir'].split("/")
         if len(index_name) > 1 and len(new_index_name) > 1:
           index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
           new_index_name = new_index_name[1].replace("'", "'\\''") + "@" + new_index_name[0].replace("'", "'\\''")
-          cmd_vmail_index = "if [[ -d '/var/vmail_index/" + index_name + "' ]]; then /bin/mv '/var/vmail_index/" + index_name + "' '/var/vmail_index/" + new_index_name + "_index'; fi"
+          cmd_vmail_index = f"if [[ -d '/var/vmail_index/{index_name}' ]]; then /bin/mv '/var/vmail_index/{index_name}' '/var/vmail_index/{new_index_name}_index'; fi"
           cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
         else:
           cmd = ["/bin/bash", "-c", cmd_vmail]
@@ -412,6 +412,83 @@ class DockerApi:
 
         sogo_return = container.exec_run(['sogo-tool', 'rename-user', old_username, new_username], user='sogo')
         return self.exec_run_handler('generic', sogo_return)
+  # api call: container_post - post_action: exec - cmd: dovecot - task: get_acl
+  def container_post__exec__dovecot__get_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      vmail_name = request_json['maildir'].replace("'", "'\\''")
+      shared_folders = container.exec_run(["/bin/bash", "-c", f"find /var/vmail/{vmail_name}/Maildir/Shared -mindepth 2 -type d | sed 's:^/var/vmail/{vmail_name}/Maildir/Shared/::' | tr '/' '\\\\'"])
+      shared_folders = shared_folders.output.decode('utf-8')
+      formatted_acls = []
+      if shared_folders:
+        shared_folders = shared_folders.splitlines()
+        for shared_folder in shared_folders:
+          if "\\." not in shared_folder:
+            continue
+          shared_folder = shared_folder.split("\\.")
+          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u {shared_folder[0]} {shared_folder[1]}"])
+          acls = acls.output.decode('utf-8').strip().splitlines()
+          if len(acls) >= 2:
+            for acl in acls[1:]:
+              id, rights = acls[1].split(maxsplit=1)
+              id = id.replace("user=", "")
+              formatted_acls.append({ 'user': shared_folder[0], 'id': id, 'mailbox': shared_folder[1], 'rights': rights.split() })
+
+      return Response(content=json.dumps(formatted_acls, indent=4), media_type="application/json")
+  # api call: container_post - post_action: exec - cmd: dovecot - task: delete_acl
+  def container_post__exec__dovecot__delete_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      user = request_json['user'].replace("'", "'\\''")
+      mailbox = request_json['mailbox'].replace("'", "'\\''")
+      id = request_json['id'].replace("'", "'\\''")
+
+      if user and mailbox and id:
+        acl_delete_return = container.exec_run(["/bin/bash", "-c", f'doveadm acl delete -u {user} {mailbox} "user={id}"'])
+        return self.exec_run_handler('generic', acl_delete_return)
+  # api call: container_post - post_action: exec - cmd: dovecot - task: set_acl
+  def container_post__exec__dovecot__set_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      user = request_json['user'].replace("'", "'\\''")
+      mailbox = request_json['mailbox'].replace("'", "'\\''")
+      id = request_json['id'].replace("'", "'\\''")
+      rights = ""
+
+      available_rights = [
+        "admin",
+        "create",
+        "delete",
+        "expunge",
+        "insert",
+        "lookup",
+        "post",
+        "read",
+        "write",
+        "write-deleted",
+        "write-seen"
+      ]
+      for right in request_json['rights']:
+        right = right.replace("'", "'\\''").lower()
+        if right in available_rights:
+          rights += right + " "
+
+      if user and mailbox and id and rights:
+        acl_set_return = container.exec_run(["/bin/bash", "-c", f'doveadm acl set -u {user} {mailbox} "user={id}" {rights}'])
+        return self.exec_run_handler('generic', acl_set_return)
+
 
   # Collect host stats
   async def get_host_stats(self, wait=5):
