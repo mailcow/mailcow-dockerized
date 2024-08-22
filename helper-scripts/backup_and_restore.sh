@@ -2,15 +2,27 @@
 
 # ----------------- Start Functions -----------------
 
+RED_COLOR="\e[31m"
+GREEN_COLOR="\e[32m"
+YELLOW_COLOR="\e[33m"
+BLUE_COLOR="\e[34m"
+BOLD="\e[1m"
+ITALIC="\e[3m"
+RESET="\e[0m"
+
 function print_usage() {
-  echo "Usage: ${0} [option] [argument]"
+  echo -e "${BOLD}Usage:${RESET} ${0} [command] [command_options]${RESET}"
   echo
-  echo "Options:"
-  echo -e "  backup\t[crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days]"
-  echo -e "  restore"
+  echo -e "${BOLD}Commands:${RESET}"
+  echo -e "\t${GREEN_COLOR}-h, --help${RESET}\t\t\t${ITALIC}Print this help message${RESET}"
+  echo -e "\t${GREEN_COLOR}-b, --backup${RESET}\t${ITALIC}<${GREEN_COLOR}path${RESET}${ITALIC}>\t\tBackup one or more components of mailcow (example: ${0} -b /path/to/backup/folder -c vmail -c crypt)${RESET}"
+  echo -e "\t${GREEN_COLOR}-r, --restore${RESET}\t${ITALIC}<${GREEN_COLOR}path${RESET}${ITALIC}>\t\tRestore the full mailcow configuration from a backup${RESET}"
+  echo -e "\t${GREEN_COLOR}-d, --delete${RESET}\t${ITALIC}<${GREEN_COLOR}path${RESET}${ITALIC}> <${RESET}${GREEN_COLOR}days${RESET}${ITALIC}>\tDelete backups older than X days in the given path${RESET}"
   echo
-  echo "Environment Variables:"
-  echo -e "  THREADS\t<num>\tYou can set the thread count with the THREADS environment variable before you run this script."
+  echo -e "${BOLD}Command Options:${RESET}"
+  echo -e "\t${GREEN_COLOR}-t, --threads${RESET}\t${ITALIC}<${GREEN_COLOR}num${RESET}${ITALIC}>\t\tSet the thread count for backup and restore operations${RESET}"
+  echo -e "\t${GREEN_COLOR}-c, --component${RESET}\t${ITALIC}<${GREEN_COLOR}component${RESET}${ITALIC}>\tSet the component(s) to backup or restore [vmail, crypt, redis, rspamd, postfix, mysql and all]${RESET}"
+  echo
 }
 
 function check_required_tools() {
@@ -75,69 +87,39 @@ function declare_restore_point() {
   fi
 }
 
-# declare_file_selection declares the `FILE_SELECTION`
-# globally which is the path to the backup folder inside
+# declare_restore_components declares the `RESTORE_COMPONENTS`
+# globally which is an array contains the components that should
+# be restored from the given `RESTORE_POINT`.
 # `RESTORE_POINT` folder (which components to restore from).
 #
-# If the function succeeds, the variable `FILE_SELECTION`
+# If the function succeeds, the variable `RESTORE_COMPONENTS`
 # will be declared globally.
 # If the function fails, it will exit with a status of 1.
-function declare_file_selection() {
+function declare_restore_components() {
   local RESTORE_POINT="$1"
 
   local i=0
-  local -A FILE_SELECTIONS
-
-  echo "[ ${i} ] - all"
+  RESTORE_COMPONENTS=()
 
   # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
-  FILE_SELECTIONS[0]=$(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
-  for file in $(ls -f "${RESTORE_POINT}"); do
-    if [[ ${file} =~ vmail ]]; then
-      ((i++))
-      echo "[ ${i} ] - Mail directory (/var/vmail)"
-      FILE_SELECTIONS[${i}]="vmail"
-    elif [[ ${file} =~ crypt ]]; then
-      ((i++))
-      echo "[ ${i} ] - Crypt data"
-      FILE_SELECTIONS[${i}]="crypt"
-    elif [[ ${file} =~ redis ]]; then
-      ((i++))
-      echo "[ ${i} ] - Redis DB"
-      FILE_SELECTIONS[${i}]="redis"
-    elif [[ ${file} =~ rspamd ]]; then
-      if [[ $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
-        ((i++))
-        echo "[ ${i} ] - Rspamd data (unkown Arch detected, restore with caution!)"
-        FILE_SELECTIONS[${i}]="rspamd"
-      elif [[ $ARCH != $(find "${RESTORE_POINT}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
-        echo -e "\e[31m[ NaN ] - Rspamd data (incompatible Arch, cannot restore it)\e[0m"
-      else
-        ((i++))
-        echo "[ ${i} ] - Rspamd data"
-        FILE_SELECTIONS[${i}]="rspamd"
-      fi
-    elif [[ ${file} =~ postfix ]]; then
-      ((i++))
-      echo "[ ${i} ] - Postfix data"
-      FILE_SELECTIONS[${i}]="postfix"
-    elif [[ ${file} =~ mysql ]] || [[ ${file} =~ mariadb ]]; then
-      ((i++))
-      echo "[ ${i} ] - SQL DB"
-      FILE_SELECTIONS[${i}]="mysql"
+  for file in $(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//'); do
+    if [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " ${file} " ]] || [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " all " ]]; then
+      RESTORE_COMPONENTS+=("${file}")
     fi
   done
 
   echo
 
-  # Prompt the user to choose what to restore.
-  input_sel=-1
-  while [[ ! "${input_sel}" =~ ^[0-9]+$ ]] || [[ ${input_sel} -lt 0 ||  ${input_sel} -gt ${i} ]]; do
-    read -p "Select a dataset to restore: " input_sel
+  # Print the available files to restore
+  echo -e "\e[32mMatching available components to restore:\e[0m"
+
+  local i=0
+  for component in "${RESTORE_COMPONENTS[@]}"; do
+    ((i++))
+    echo "[ ${i} ] - ${component}"
   done
 
-  # Declare the global variable
-  FILE_SELECTION="${FILE_SELECTIONS[${input_sel}]}"
+  echo
 }
 
 # restore_docker_component restores components used in
@@ -171,6 +153,13 @@ function restore_docker_component() {
     exit 1
   fi
 
+  if [[ ! -f "${RESTORE_LOCATION}/backup_${COMPONENT_NAME}.tar.gz" ]]; then
+    echo
+    echo -e "\e[33mWarning: ${RESTORE_LOCATION} does not contains a backup for [${COMPONENT_NAME}]!\e[0m" >&2
+    echo -e "\e[33mSkipping restore for [${COMPONENT_NAME}]...\e[0m" >&2
+    return 1
+  fi
+
   # Restoring Process
 
   docker stop "${CONTAINER_ID}"
@@ -178,9 +167,82 @@ function restore_docker_component() {
   docker run -i --name mailcow-backup --rm \
     -v "${RESTORE_LOCATION}:/backup:z" \
     -v "${DOCKER_VOLUME_NAME}:/${COMPONENT_NAME}:z" \
-    ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_"${COMPONENT_NAME}".tar.gz
+    ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pxvf /backup/backup_"${COMPONENT_NAME}".tar.gz
 
   docker start "${CONTAINER_ID}"
+}
+
+function check_valid_backup_directory() {
+  BACKUP_LOCATION="${1}"
+
+  if [[ -z "${BACKUP_LOCATION}" ]]; then
+    echo
+    echo -e "\e[31mFatal Error: Backup location not specified!\e[0m"
+    exit 1
+  fi
+
+  if [[ ! -e "${BACKUP_LOCATION}" ]]; then
+    echo -e "\e[33m${BACKUP_LOCATION} is not exist\e[0m"
+    read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
+    if ! [[ ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
+      echo -e "\e[31mexiting...\e[0m"
+      exit 0
+    fi
+
+    mkdir -p "${BACKUP_LOCATION}"
+    chmod 755 "${BACKUP_LOCATION}"
+    if [[ ! "${?}" -eq 0 ]]; then
+      echo -e "\e[31mFailed, check the error above!\e[0m"
+      exit 1
+    fi
+  fi
+
+  if [[ -d "${BACKUP_LOCATION}" ]]; then
+    if [[ -z $(echo $(stat -Lc %a "${BACKUP_LOCATION}") | grep -oE '[0-9][0-9][5-7]') ]]; then
+      echo -e "\e[31m${BACKUP_LOCATION} is not writable!\e[0m"
+      echo -e "\e[33mTry: chmod 755 ${BACKUP_LOCATION}\e[0m"
+      exit 1
+    fi
+  else
+    echo -e "\e[31m${BACKUP_LOCATION} is not a valid path! Maybe a file or a symbolic?\e["
+    exit 1
+  fi
+}
+
+function check_valid_restore_directory() {
+  RESTORE_LOCATION="${1}"
+
+  if [[ -z "${RESTORE_LOCATION}" ]]; then
+    echo
+    echo -e "\e[31mFatal Error: restore location not specified!\e[0m"
+    exit 1
+  fi
+
+  if [[ ! -e "${RESTORE_LOCATION}" ]]; then
+    echo -e "\e[31m${RESTORE_LOCATION} is not exist\e[0m"
+    exit 1
+  fi
+
+  if [[ ! -d "${RESTORE_LOCATION}" ]]; then
+    echo -e "\e[31m${RESTORE_LOCATION} is not a valid path! Maybe a file or a symbolic?\e[0m"
+    exit 1
+  fi
+}
+
+function delete_old_backups() {
+  if [[ -z $(find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24))) ]]; then
+    echo -e "\e[33mNo backups to delete found.\e[0m"
+    exit 0
+  fi
+
+  echo -e "\e[34mBackups scheduled for deletion:\e[0m"
+  find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec printf "\e[33m- %s\e[0m\n" {} \;
+  read -p "$(echo -e "\e[1m\e[31mAre you sure you want to delete the above backups? type YES in capital letters to delete, else to skip: \e[0m")" DELETE_CONFIRM
+  if [[ "${DELETE_CONFIRM}" == "YES" ]]; then
+    find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec rm -rvf {} \;
+  else
+    echo -e "\e[33mOK, skipped.\e[0m"
+  fi
 }
 
 # ----------------- End Functions -----------------
@@ -195,82 +257,27 @@ if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
 fi
 
-if [[ ! ${1} =~ (backup|restore) ]]; then
+if [[ $# -eq 0 ]]; then
   print_usage
-  exit 1
+  exit 0
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
-  if [[ -z "${2}" ]]; then
-    echo -e "\e[31mRequired argument for backup option\e[0m\n"
-  else
-    echo -e "\e[31mUnknown argument: ${2}\e[0m\n"
-  fi
+MAILCOW_BACKUP_COMPONENTS=()
 
-  print_usage
-  exit 1
-fi
+# These variables can be set using flags or environment variables
+# Such as `./script.sh -b /path/to/backup`
+# Or `MAILCOW_BACKUP_LOCATION=/path/to/backup ./script.sh`
+MAILCOW_BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION:-}"
+MAILCOW_RESTORE_LOCATION="${MAILCOW_RESTORE_LOCATION:-}"
+MAILCOW_DELETE_LOCATION="${MAILCOW_DELETE_LOCATION:-}"
+MAILCOW_DELETE_DAYS="${MAILCOW_DELETE_DAYS:-}"
+MAILCOW_BACKUP_RESTORE_THREADS=${MAILCOW_BACKUP_RESTORE_THREADS:-1}
 
-if [[ -z "${BACKUP_LOCATION}" ]]; then
-  while [[ -z "${BACKUP_LOCATION}" ]]; do
-    read -ep "Backup location (absolute path, starting with /): " BACKUP_LOCATION
-  done
-fi
-
-if [[ ! "${BACKUP_LOCATION}" =~ ^/ ]]; then
-  echo -e "\e[31mBackup directory needs to be given as absolute path (starting with /).\e[0m"
-  exit 1
-fi
-
-# if "${BACKUP_LOCATION}" not exists, create it.
-if [[ ! -e "${BACKUP_LOCATION}" ]]; then
-  if [[ "${1}" == "restore" ]]; then
-    echo -e "\e[31m${BACKUP_LOCATION} is not exists\e[0m"
-    exit 1
-  fi
-
-  echo -e "\e[33m${BACKUP_LOCATION} is not exist\e[0m"
-  read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
-  if [[ ! ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
-    echo -e "\e[33mExiting without creating the backup location.\e[0m"
-    exit 0
-  else
-    mkdir -p "${BACKUP_LOCATION}"
-    chmod 755 "${BACKUP_LOCATION}"
-
-    if [[ ! "${?}" -eq 0 ]]; then
-      echo -e "\e[31mFailed, check the error above!\e[0m"
-      exit 1
-    fi
-  fi
-# if "${BACKUP_LOCATION}" is an exists directory,
-# then just check the permissions
-elif [[ -d "${BACKUP_LOCATION}" ]]; then
-  echo -e "\e[32mFound directory ${BACKUP_LOCATION}\e[0m"
-  if [[ ${1} == "backup" ]] && [[ -z $(echo $(stat -Lc %a "${BACKUP_LOCATION}") | grep -oE '[0-9][0-9][5-7]') ]]; then
-    echo -e "\e[31m${BACKUP_LOCATION} is not write-able for others, that's required for a backup.\e[0m"
-    echo "Execute \`chmod 755 ${BACKUP_LOCATION}\` and try again."
-    exit 1
-  fi
-# else, the "${BACKUP_LOCATION}" is something else! an alien? yes!
-else
-  echo -e "\e[31m${BACKUP_LOCATION} is not a valid path! Maybe a file or a symbolic?\e["
-  exit 1
-fi
-
-BACKUP_LOCATION=$(echo "${BACKUP_LOCATION}" | sed 's#/$##')
+# Check for required files
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COMPOSE_FILE=${SCRIPT_DIR}/../docker-compose.yml
 ENV_FILE=${SCRIPT_DIR}/../.env
-THREADS=$(echo ${THREADS:-1})
 ARCH=$(uname -m)
-
-if [[ "${THREADS}" =~ ^[1-9][0-9]?$ ]]; then
-  echo -e "\e[32mUsing ${THREADS} thread(s) for this run.\e[0m"
-else
-  echo -e "\e[31mThread input is not a number!\e[0m"
-  exit 1
-fi
 
 if [ ! -f ${COMPOSE_FILE} ]; then
   echo -e "\e[31mCompose file not found\e[0m"
@@ -282,8 +289,131 @@ if [ ! -f ${ENV_FILE} ]; then
   exit 1
 fi
 
-echo -e "\e[33mUsing ${BACKUP_LOCATION} as backup/restore location.\e[0m"
-echo
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "${1}" in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    -b|--backup)
+      if ! [[ $# -gt 1 ]]; then
+        echo -e "\e[31mInvalid Option: -b/--backup requires an argument\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${2}" =~ ^/ ]]; then
+        echo -e "\e[31mInvalid Option: -b/--backup requires an absolute path\e[0m" >&2
+        exit 1
+      fi
+
+      MAILCOW_BACKUP_LOCATION=$(echo "${2}" | sed 's#/$##')
+      shift 2
+      ;;
+    -r|--restore)
+      if ! [[ $# -gt 1 ]]; then
+        echo -e "\e[31mInvalid Option: -r/--restore requires an argument\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${2}" =~ ^/ ]]; then
+        echo -e "\e[31mInvalid Option: -r/--restore requires an absolute path\e[0m" >&2
+        exit 1
+      fi
+
+      MAILCOW_RESTORE_LOCATION=$(echo "${2}" | sed 's#/$##')
+      shift 2
+      ;;
+    -d|--delete-days|--delete)
+      if ! [[ $# -gt 2 ]]; then
+        echo -e "\e[31mInvalid Option: -d/--delete-days requires <path> <days>\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${2}" =~ ^/ ]]; then
+        echo -e "\e[31mInvalid Option: -d/--delete-days requires an absolute path\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${3}" =~ ^[0-9]+$ ]]; then
+        echo -e "\e[31mInvalid Option: -d/--delete-days requires a number\e[0m" >&2
+        exit 1
+      fi
+
+      MAILCOW_DELETE_LOCATION=$(echo "${2}" | sed 's#/$##')
+      MAILCOW_DELETE_DAYS="${3}"
+      shift 3
+      ;;
+    -c|--component)
+      if ! [[ $# -gt 1 ]]; then
+        echo -e "\e[31mInvalid Option: -c/--component requires an argument\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${2}" =~ ^(crypt|vmail|redis|rspamd|postfix|mysql|all)$ ]]; then
+        echo -e "\e[31mInvalid Option: -c/--component requires one of the following: crypt|vmail|redis|rspamd|postfix|mysql|all\e[0m" >&2
+        exit 1
+      fi
+
+      # Do not allow duplicate components
+      if [[ ! " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " ${2} " ]]; then
+        MAILCOW_BACKUP_COMPONENTS+=("${2}")
+      fi
+      shift 2
+      ;;
+    -t|--threads)
+      if ! [[ $# -gt 1 ]]; then
+        echo -e "\e[31mInvalid Option: -t/--threads requires an argument\e[0m" >&2
+        exit 1
+      fi
+
+      if ! [[ "${2}" =~ ^[1-9][0-9]*$ ]]; then
+        echo -e "\e[31mInvalid Option: -t/--threads requires a positive number\e[0m" >&2
+        exit 1
+      fi
+
+      echo -e "\e[32mUsing ${THREADS} thread(s) for this run.\e[0m"
+      MAILCOW_BACKUP_RESTORE_THREADS="${2}"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      echo -e "${RED_COLOR}Invalid Option: ${1}${RESET}" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Prevent passing --restore , --backup or --delete together
+declare -i OPTION_COUNT=0
+
+if [[ ! -z "${MAILCOW_DELETE_LOCATION}" ]]; then
+  OPTION_COUNT=$((OPTION_COUNT+1))
+fi
+
+if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
+  OPTION_COUNT=$((OPTION_COUNT+1))
+fi
+
+if [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
+  OPTION_COUNT=$((OPTION_COUNT+1))
+fi
+
+if [[ "${OPTION_COUNT}" -gt 1 ]] || [[ "${OPTION_COUNT}" -eq 0 ]]; then
+  echo -e "\e[31mYou should pass one of the following options: \e[33m-b/--backup\e[0m, \e[33m-r/--restore\e[0m or \e[33m-d/--delete\e[0m"
+  exit 1
+fi
+
+# Merge backup components if all is passed
+if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]] || [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
+  if [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " all " ]]; then
+    # MAILCOW_BACKUP_COMPONENTS=("crypt" "vmail" "redis" "rspamd" "postfix" "mysql")
+    MAILCOW_BACKUP_COMPONENTS=("all")
+  fi
+fi
 
 source ${SCRIPT_DIR}/../mailcow.conf
 
@@ -298,43 +428,45 @@ fi
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-  mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
-  chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
-  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
-  touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
+  mkdir -p "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}"
+  chmod 755 "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}"
+  touch "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
+
+  echo -e "\e[32mUsing ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this backup.\e[0m"
 
   while (( "$#" )); do
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
+        -v "${MAILCOW_BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
         -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
       docker run --name mailcow-backup --rm \
         -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
         -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
         -v "${BACKUP_LOCATION}"/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${MAILCOW_BACKUP_RESTORE_THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
@@ -356,14 +488,6 @@ function backup() {
           /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
       fi
       ;;&
-    --delete-days)
-      shift
-      if [[ "${1}" =~ ^[0-9]+$ ]]; then
-        find "${BACKUP_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
-      else
-        echo -e "\e[31mParameter of --delete-days is not a number.\e[0m"
-      fi
-      ;;
     esac
     shift
   done
@@ -371,11 +495,9 @@ function backup() {
 
 function restore() {
   if [ "${DOCKER_COMPOSE_VERSION}" == "native" ]; then
-  COMPOSE_COMMAND="docker compose"
-
+    COMPOSE_COMMAND="docker compose"
   elif [ "${DOCKER_COMPOSE_VERSION}" == "standalone" ]; then
     COMPOSE_COMMAND="docker-compose"
-
   else
     echo -e "\e[31mCan not read DOCKER_COMPOSE_VERSION variable from mailcow.conf! Is your mailcow up to date? Exiting...\e[0m"
     exit 1
@@ -387,109 +509,112 @@ function restore() {
   echo
   RESTORE_LOCATION="${1}"
   shift
-  while (( "$#" )); do
-    case "$1" in
-    vmail)
-      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "vmail"
+  for component in ${RESTORE_COMPONENTS[@]}; do
+    echo
+    echo -e "\n\e[32mRestoring ${component}...\e[0m"
+    sleep 1
+    case ${component} in
+      vmail)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "vmail"
 
-      echo
-      echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
-      echo
-      echo "docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'"
-      echo
-      read -p "Force a resync now? [y|N] " FORCE_RESYNC
-      if [[ ${FORCE_RESYNC,,} =~ ^(yes|y)$ ]]; then
-        docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'
-      else
-        echo "OK, skipped."
-      fi
-      ;;
-    redis)
-      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "redis-mailcow" "redis"
-      ;;
-    crypt)
-      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "crypt"
-      ;;
-    rspamd)
-      if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
-        echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
-        sleep 2
-        echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
-        sleep 2
-        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
-
-      elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
-        echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
-        sleep 2
-        echo -e "Skipping rspamd due to compatibility issues!\e[0m"
-      else
-        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
-      fi
-      ;;
-    postfix)
-      restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "postfix-mailcow" "postfix"
-      ;;
-    mysql|mariadb)
-      SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
-      if [[ -z "${SQLIMAGE}" ]]; then
-        echo -e "\e[31mCould not determine SQL image version, skipping restore...\e[0m"
-        shift
-        continue
-      elif [ ! -f "${RESTORE_LOCATION}/mailcow.conf" ]; then
-        echo -e "\e[31mCould not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore.\e[0m"
-        echo "If you lost that file, copy the last working mailcow.conf file to ${RESTORE_LOCATION} and restart the restore process."
-        shift
-        continue
-      else
-        read -p "mailcow will be stopped and the currently active mailcow.conf will be modified to use the DB parameters found in ${RESTORE_LOCATION}/mailcow.conf - do you want to proceed? [Y|n] " MYSQL_STOP_MAILCOW
-        if [[ ${MYSQL_STOP_MAILCOW,,} =~ ^(no|n|N)$ ]]; then
+        echo
+        echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
+        echo
+        echo "docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'"
+        echo
+        read -p "Force a resync now? [y|N] " FORCE_RESYNC
+        if [[ ${FORCE_RESYNC,,} =~ ^(yes|y)$ ]]; then
+          docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'
+        else
           echo "OK, skipped."
+        fi
+        ;;
+      redis)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "redis-mailcow" "redis"
+        ;;
+      crypt)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "dovecot-mailcow" "crypt"
+        ;;
+      rspamd)
+        if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+          echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
+          sleep 2
+          echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
+          sleep 2
+          restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
+
+        elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
+          echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
+          sleep 2
+          echo -e "Skipping rspamd due to compatibility issues!\e[0m"
+        else
+          restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "rspamd-mailcow" "rspamd"
+        fi
+        ;;
+      postfix)
+        restore_docker_component "${RESTORE_LOCATION}" "${CMPS_PRJ}" "postfix-mailcow" "postfix"
+        ;;
+      mysql|mariadb)
+        SQLIMAGE=$(grep -iEo '(mysql|mariadb):.+' ${COMPOSE_FILE})
+        if [[ -z "${SQLIMAGE}" ]]; then
+          echo -e "\e[31mCould not determine SQL image version, skipping restore...\e[0m"
+          shift
+          continue
+        elif [ ! -f "${RESTORE_LOCATION}/mailcow.conf" ]; then
+          echo -e "\e[31mCould not find the corresponding mailcow.conf in ${RESTORE_LOCATION}, skipping restore.\e[0m"
+          echo "If you lost that file, copy the last working mailcow.conf file to ${RESTORE_LOCATION} and restart the restore process."
           shift
           continue
         else
-          echo "Stopping mailcow..."
-          ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          read -p "mailcow will be stopped and the currently active mailcow.conf will be modified to use the DB parameters found in ${RESTORE_LOCATION}/mailcow.conf - do you want to proceed? [Y|n] " MYSQL_STOP_MAILCOW
+          if [[ ${MYSQL_STOP_MAILCOW,,} =~ ^(no|n|N)$ ]]; then
+            echo "OK, skipped."
+            shift
+            continue
+          else
+            echo "Stopping mailcow..."
+            ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          fi
+          #docker stop $(docker ps -qf name=mysql-mailcow)
+          if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
+          docker run --name mailcow-backup --rm \
+            -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:rw,z \
+            --entrypoint= \
+            -v ${RESTORE_LOCATION}/mysql:/backup:z \
+            ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; /bin/rm -rf /var/lib/mysql/* ; rsync -avh --usermap=root:mysql --groupmap=root:mysql /backup/ /var/lib/mysql/"
+          elif [[ -f "${RESTORE_LOCATION}/backup_mysql.gz" ]]; then
+          docker run \
+            -i --name mailcow-backup --rm \
+            -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:z \
+            --entrypoint= \
+            -u mysql \
+            -v ${RESTORE_LOCATION}:/backup:z \
+            ${SQLIMAGE} /bin/sh -c "mysqld --skip-grant-tables & \
+            until mysqladmin ping; do sleep 3; done && \
+            echo Restoring... && \
+            gunzip < backup/backup_mysql.gz | mysql -uroot && \
+            mysql -uroot -e SHUTDOWN;"
+          elif [[ -f "${RESTORE_LOCATION}/backup_mariadb.tar.gz" ]]; then
+          docker run --name mailcow-backup --rm \
+            -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/backup_mariadb/:rw,z \
+            --entrypoint= \
+            -v ${RESTORE_LOCATION}:/backup:z \
+            ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
+              /bin/rm -rf /backup_mariadb/* ; \
+              /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz"
+          fi
+          echo "Modifying mailcow.conf..."
+          source ${RESTORE_LOCATION}/mailcow.conf
+          sed -i --follow-symlinks "/DBNAME/c\DBNAME=${DBNAME}" ${SCRIPT_DIR}/../mailcow.conf
+          sed -i --follow-symlinks "/DBUSER/c\DBUSER=${DBUSER}" ${SCRIPT_DIR}/../mailcow.conf
+          sed -i --follow-symlinks "/DBPASS/c\DBPASS=${DBPASS}" ${SCRIPT_DIR}/../mailcow.conf
+          sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
+          source ${SCRIPT_DIR}/../mailcow.conf
+          echo "Starting mailcow..."
+          ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
+          #docker start $(docker ps -aqf name=mysql-mailcow)
         fi
-        #docker stop $(docker ps -qf name=mysql-mailcow)
-        if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
-        docker run --name mailcow-backup --rm \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:rw,z \
-          --entrypoint= \
-          -v ${RESTORE_LOCATION}/mysql:/backup:z \
-          ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; /bin/rm -rf /var/lib/mysql/* ; rsync -avh --usermap=root:mysql --groupmap=root:mysql /backup/ /var/lib/mysql/"
-        elif [[ -f "${RESTORE_LOCATION}/backup_mysql.gz" ]]; then
-        docker run \
-          -i --name mailcow-backup --rm \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:z \
-          --entrypoint= \
-          -u mysql \
-          -v ${RESTORE_LOCATION}:/backup:z \
-          ${SQLIMAGE} /bin/sh -c "mysqld --skip-grant-tables & \
-          until mysqladmin ping; do sleep 3; done && \
-          echo Restoring... && \
-          gunzip < backup/backup_mysql.gz | mysql -uroot && \
-          mysql -uroot -e SHUTDOWN;"
-        elif [[ -f "${RESTORE_LOCATION}/backup_mariadb.tar.gz" ]]; then
-        docker run --name mailcow-backup --rm \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/backup_mariadb/:rw,z \
-          --entrypoint= \
-          -v ${RESTORE_LOCATION}:/backup:z \
-          ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
-            /bin/rm -rf /backup_mariadb/* ; \
-            /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz"
-        fi
-        echo "Modifying mailcow.conf..."
-        source ${RESTORE_LOCATION}/mailcow.conf
-        sed -i --follow-symlinks "/DBNAME/c\DBNAME=${DBNAME}" ${SCRIPT_DIR}/../mailcow.conf
-        sed -i --follow-symlinks "/DBUSER/c\DBUSER=${DBUSER}" ${SCRIPT_DIR}/../mailcow.conf
-        sed -i --follow-symlinks "/DBPASS/c\DBPASS=${DBPASS}" ${SCRIPT_DIR}/../mailcow.conf
-        sed -i --follow-symlinks "/DBROOT/c\DBROOT=${DBROOT}" ${SCRIPT_DIR}/../mailcow.conf
-        source ${SCRIPT_DIR}/../mailcow.conf
-        echo "Starting mailcow..."
-        ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d
-        #docker start $(docker ps -aqf name=mysql-mailcow)
-      fi
-      ;;
+        ;;
     esac
     shift
   done
@@ -498,17 +623,59 @@ function restore() {
   docker start $(docker ps -aqf name=watchdog-mailcow)
 }
 
-if [[ ${1} == "backup" ]]; then
-  backup ${@,,}
-elif [[ ${1} == "restore" ]]; then
+#
+# Backup Process
+#
+if [[ ! -z "${MAILCOW_BACKUP_LOCATION}" ]]; then
+
+  check_valid_backup_directory "${MAILCOW_BACKUP_LOCATION}"
+
+  echo -e "\e[32mUsing ${MAILCOW_BACKUP_LOCATION} as backup location...\e[0m"
+
+  # If you didn't specify any backup components, then exit
+  if [[ ${#MAILCOW_BACKUP_COMPONENTS[@]} -eq 0 ]]; then
+    echo -e "\e[31mNo components specified for the backup, please see --help\e[0m"
+    exit 1
+  fi
+
+  backup "${MAILCOW_BACKUP_COMPONENTS[@]}"
+fi
+
+#
+# Restore Process
+#
+if [[ ! -z "${MAILCOW_RESTORE_LOCATION}" ]]; then
+
+  check_valid_restore_directory "${MAILCOW_RESTORE_LOCATION}"
+
+  # If you didn't specify any backup components for the restore, then exit
+  if [[ ${#MAILCOW_BACKUP_COMPONENTS[@]} -eq 0 ]]; then
+    echo -e "\e[31mNo components specified for the restore, please see --help\e[0m"
+    exit 1
+  fi
+
+  echo -e "\e[32mUsing ${MAILCOW_RESTORE_LOCATION} as restore location...\e[0m"
+
   # Calling `declare_restore_point` will
   # declare `RESTORE_POINT` globally.
-  declare_restore_point "${BACKUP_LOCATION}"
+  declare_restore_point "${MAILCOW_RESTORE_LOCATION}"
 
-  # Calling `declare_file_selection` will
-  # declare `FILE_SELECTION` globally.
-  declare_file_selection "${RESTORE_POINT}"
+  # Calling `declare_restore_components` will
+  # declare `RESTORE_COMPONENTS` globally.
+  declare_restore_components "${RESTORE_POINT}"
 
-  echo "Restoring ${FILE_SELECTION} from ${RESTORE_POINT}..."
-  restore "${RESTORE_POINT}" "${FILE_SELECTION}"
+  echo -e "\n\e[32mRestoring will start in \e[1m5 seconds\e[0m. Press \e[1mCtrl+C\e[0m to stop.\n\e[0m"
+  sleep 5
+
+  echo "Restoring ${MAILCOW_BACKUP_COMPONENTS[*]} from ${RESTORE_POINT}..."
+  restore "${RESTORE_POINT}"
+fi
+
+#
+# Delete Process
+#
+if [[ ! -z "${MAILCOW_DELETE_LOCATION}" ]]; then
+  echo "Deleting backups older than ${MAILCOW_DELETE_DAYS} days in ${MAILCOW_DELETE_LOCATION}"
+
+  delete_old_backups
 fi
