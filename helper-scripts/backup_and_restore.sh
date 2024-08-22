@@ -372,8 +372,9 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
 
-      echo -e "${GREEN_COLOR}Using ${THREADS} thread(s) for this run.${RESET}"
       MAILCOW_BACKUP_RESTORE_THREADS="${2}"
+
+      echo -e "${GREEN_COLOR}Using ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this run.${RESET}"
       shift 2
       ;;
     --)
