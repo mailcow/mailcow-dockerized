@@ -111,7 +111,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.89
+      image: mailcow/phpfpm:1.90
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -552,7 +552,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3
