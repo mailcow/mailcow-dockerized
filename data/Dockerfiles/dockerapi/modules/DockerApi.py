@@ -412,35 +412,45 @@ class DockerApi:
 
         sogo_return = container.exec_run(['sogo-tool', 'rename-user', old_username, new_username], user='sogo')
         return self.exec_run_handler('generic', sogo_return)
-  # api call: container_post - post_action: exec - cmd: dovecot - task: get_acl
-  def container_post__exec__dovecot__get_acl(self, request_json, **kwargs):
+  # api call: container_post - post_action: exec - cmd: doveadm - task: get_acl
+  def container_post__exec__doveadm__get_acl(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
     elif 'container_name' in kwargs:
       filters = {"name": kwargs['container_name']}
 
     for container in self.sync_docker_client.containers.list(filters=filters):
-      vmail_name = request_json['maildir'].replace("'", "'\\''")
-      shared_folders = container.exec_run(["/bin/bash", "-c", f"find /var/vmail/{vmail_name}/Maildir/Shared -mindepth 2 -type d | sed 's:^/var/vmail/{vmail_name}/Maildir/Shared/::' | tr '/' '\\\\'"])
+      id = request_json['id'].replace("'", "'\\''")
+
+      shared_folders = container.exec_run(["/bin/bash", "-c", f"doveadm mailbox list -u {id}"])
       shared_folders = shared_folders.output.decode('utf-8')
+      shared_folders = shared_folders.splitlines()
+
       formatted_acls = []
-      if shared_folders:
-        shared_folders = shared_folders.splitlines()
-        for shared_folder in shared_folders:
-          if "\\." not in shared_folder:
-            continue
-          shared_folder = shared_folder.split("\\.")
-          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u {shared_folder[0]} {shared_folder[1]}"])
-          acls = acls.output.decode('utf-8').strip().splitlines()
-          if len(acls) >= 2:
-            for acl in acls[1:]:
-              id, rights = acls[1].split(maxsplit=1)
-              id = id.replace("user=", "")
-              formatted_acls.append({ 'user': shared_folder[0], 'id': id, 'mailbox': shared_folder[1], 'rights': rights.split() })
+      mailbox_seen = []
+      for shared_folder in shared_folders:
+        if "Shared" not in shared_folder and "/" not in shared_folder:
+          continue
+        shared_folder = shared_folder.split("/")
+        if len(shared_folder) < 3:
+          continue
+
+        user = shared_folder[1]
+        mailbox = '/'.join(shared_folder[2:])
+        if mailbox in mailbox_seen:
+          continue
+
+        acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u {user} {mailbox}"])
+        acls = acls.output.decode('utf-8').strip().splitlines()
+        if len(acls) >= 2:
+          for acl in acls[1:]:
+            _, rights = acls[1].split(maxsplit=1)
+            mailbox_seen.append(mailbox)
+            formatted_acls.append({ 'user': user, 'id': id, 'mailbox': mailbox, 'rights': rights.split() })
 
       return Response(content=json.dumps(formatted_acls, indent=4), media_type="application/json")
-  # api call: container_post - post_action: exec - cmd: dovecot - task: delete_acl
-  def container_post__exec__dovecot__delete_acl(self, request_json, **kwargs):
+  # api call: container_post - post_action: exec - cmd: doveadm - task: delete_acl
+  def container_post__exec__doveadm__delete_acl(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
     elif 'container_name' in kwargs:
@@ -454,8 +464,8 @@ class DockerApi:
       if user and mailbox and id:
         acl_delete_return = container.exec_run(["/bin/bash", "-c", f'doveadm acl delete -u {user} {mailbox} "user={id}"'])
         return self.exec_run_handler('generic', acl_delete_return)
-  # api call: container_post - post_action: exec - cmd: dovecot - task: set_acl
-  def container_post__exec__dovecot__set_acl(self, request_json, **kwargs):
+  # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl
+  def container_post__exec__doveadm__set_acl(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
     elif 'container_name' in kwargs:

@@ -3249,15 +3249,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           // get imap acls
           $exec_fields = array(
-            'cmd' => 'dovecot',
+            'cmd' => 'doveadm',
             'task' => 'get_acl',
-            'maildir' => $domain . '/' . $old_local_part,
+            'id' => $old_username
           );
           $imap_acls = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
           // delete imap acls
           foreach ($imap_acls as $imap_acl) {
             $exec_fields = array(
-              'cmd' => 'dovecot',
+              'cmd' => 'doveadm',
               'task' => 'delete_acl',
               'user' => $imap_acl['user'],
               'mailbox' => $imap_acl['mailbox'],
@@ -3348,7 +3348,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           // set imap acls
           foreach ($imap_acls as $imap_acl) {
             $exec_fields = array(
-              'cmd' => 'dovecot',
+              'cmd' => 'doveadm',
               'task' => 'set_acl',
               'user' => $imap_acl['user'],
               'mailbox' => $imap_acl['mailbox'],
