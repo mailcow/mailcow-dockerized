@@ -510,7 +510,7 @@ function restore() {
   echo
   RESTORE_LOCATION="${1}"
   shift
-  for component in ${RESTORE_COMPONENTS[@]}; do
+  for component in "${RESTORE_COMPONENTS[@]}"; do
     echo
     echo -e "\n${GREEN_COLOR}Restoring ${component}...${RESET}"
     sleep 1
