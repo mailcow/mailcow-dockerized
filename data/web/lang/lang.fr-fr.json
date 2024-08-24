@@ -656,7 +656,7 @@
         "none_inherit": "Aucun / Héritage",
         "quota_warning_bcc": "Avertissement sur les quotas BCC",
         "quota_warning_bcc_info": "Les avertissements seront envoyés en copies séparées aux destinataires suivants. Le sujet sera précédé du nom d'utilisateur correspondant entre parenthèses, par exemple : <code>Avertissement sur les quotas (user@example.com)</code>.",
-        "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni ne modifie le profil SOGo existant d'un utilisateur.",
+        "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni, ne modifie le profil SOGo existant d'un utilisateur.",
         "admin": "Modifier l'administrateur",
         "password_recovery_email": "Adresse email de récupération"
     },
@@ -1261,7 +1261,8 @@
         "lengthMenu": "Afficher les entrées _MENU_",
         "loadingRecords": "Chargement…",
         "processing": "Veuillez patienter…",
-        "collapse_all": "Tout réduire"
+        "collapse_all": "Tout réduire",
+        "info": "Affichage de _START_ de _END_ sur _TOTAL_ entrées"
     },
     "ratelimit": {
         "disabled": "Désactivé"
