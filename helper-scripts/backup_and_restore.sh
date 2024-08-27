@@ -115,6 +115,12 @@ function declare_restore_components() {
 
   echo
 
+  # If no components were found, exit with error
+  if [[ ${#RESTORE_COMPONENTS[@]} -eq 0 ]]; then
+    echo -e "${RED_COLOR}No components found to restore${RESET}"
+    exit 1
+  fi
+
   # Print the available files to restore
   echo -e "${GREEN_COLOR}Matching available components to restore:${RESET}"
 
