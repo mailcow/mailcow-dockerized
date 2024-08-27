@@ -3271,12 +3271,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $pdo->beginTransaction();
             $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
 
+            // Update username in mailbox table
             $pdo->prepare('UPDATE mailbox SET username = :new_username, local_part = :new_local_part WHERE username = :old_username')
               ->execute([
                 ':new_username' => $new_username,
                 ':new_local_part' => $new_local_part,
                 ':old_username' => $old_username
               ]);
+
+            $pdo->prepare("UPDATE alias SET address = :new_username, goto = :new_username2 WHERE address = :old_username")
+            ->execute([
+              ':new_username' => $new_username,
+              ':new_username2' => $new_username,
+              ':old_username' => $old_username
+            ]);
 
             // Update the username in all related tables
             $tables = [
@@ -3287,9 +3295,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'da_acl' => 'username',
               'quota2' => 'username',
               'quota2replica' => 'username',
-              'pushover' => 'username'
+              'pushover' => 'username',
+              'alias' => 'goto'
             ];
-
             foreach ($tables as $table => $column) {
               $pdo->prepare("UPDATE $table SET $column = :new_username WHERE $column = :old_username")
                 ->execute([
@@ -3298,6 +3306,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ]);
             }
 
+            // Update c_uid, c_name and mail in _sogo_static_view table
             $pdo->prepare("UPDATE _sogo_static_view SET c_uid = :new_username, c_name = :new_username2, mail = :new_username3 WHERE c_uid = :old_username")
               ->execute([
                 ':new_username' => $new_username,
@@ -3305,14 +3314,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':new_username3' => $new_username,
                 ':old_username' => $old_username
               ]);
-
-            $pdo->prepare("UPDATE alias SET address = :new_username, goto = :new_username2 WHERE address = :old_username")
-              ->execute([
-                ':new_username' => $new_username,
-                ':new_username2' => $new_username,
-                ':old_username' => $old_username
-              ]);
-
 
             // Re-enable foreign key checks
             $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
@@ -3325,6 +3326,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => $e->getMessage()
             );
+            return false;
           }
 
           // move maildir

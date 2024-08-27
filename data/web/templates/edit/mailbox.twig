@@ -504,7 +504,10 @@
                     <input name="domain" type="hidden" value="{{ result.domain }}">
                     <input name="old_local_part" type="hidden" value="{{ result.local_part }}">
                     <div class="row mb-2">
-                      <div class="offset-sm-2 col-sm-10 col-md-8 col-xl-6">
+                      <div class="col-sm-12 col-md-2">
+                        <span>{{ lang.edit.mailbox_rename_title }}</span>
+                      </div>
+                      <div class="col-sm-12 col-md-10 col-xl-8">
                         <div class="input-group mb-2">
                           <input type="text" class="form-control" name="new_local_part" autocomplete="off" value="{{ result.local_part }}">
                           <span class="input-group-text">@{{ result.domain }}</span>
@@ -512,12 +515,12 @@
                       </div>
                     </div>
                     <div class="row mb-4">
-                      <div class="offset-sm-2 col-sm-10">
+                      <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
                         <label><input type="checkbox" class="form-check-input" value="1" name="create_alias" checked> {{ lang.edit.mailbox_rename_alias }}</label>
                       </div>
                     </div>
                     <div class="row mb-2">
-                      <div class="offset-sm-2 col-sm-10">
+                      <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
                         <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/mailbox" href="#">{{ lang.edit.save }}</button>
                       </div>
                     </div>

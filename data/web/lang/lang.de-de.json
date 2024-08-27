@@ -645,6 +645,7 @@
         "mailbox_rename_agree": "Ich habe ein Backup erstellt.",
         "mailbox_rename_warning": "WICHTIG! Vor dem Umbenennen der Mailbox ein Backup erstellen.",
         "mailbox_rename_alias": "Alias automatisch erstellen",
+        "mailbox_rename_title": "Neuer Lokaler Mailbox Name",
         "max_aliases": "Max. Aliasse",
         "max_mailboxes": "Max. Mailboxanzahl",
         "max_quota": "Max. Größe per Mailbox (MiB)",
