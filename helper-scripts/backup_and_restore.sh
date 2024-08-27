@@ -101,6 +101,11 @@ function declare_restore_components() {
   local i=0
   RESTORE_COMPONENTS=()
 
+  # Fix mysql component is stored as `backup_mariadb.tar.gz`
+  if [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " mysql " ]]; then
+    MAILCOW_BACKUP_COMPONENTS+=("mariadb")
+  fi
+
   # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
   for file in $(find "${RESTORE_POINT}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//'); do
     if [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " ${file} " ]] || [[ " ${MAILCOW_BACKUP_COMPONENTS[*]} " =~ " all " ]]; then
