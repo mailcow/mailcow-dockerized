@@ -27,7 +27,7 @@ function print_usage() {
 
 function check_required_tools() {
   # Add the required tools to the array
-  local required_tools=("docker")
+  local required_tools=("docker" "grep" "find" "sed")
 
   for bin in "${required_tools[@]}"; do
     if [[ -z $(which ${bin}) ]]; then
@@ -38,6 +38,16 @@ function check_required_tools() {
 
   if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
     echo -e "${RED_COLOR}BusyBox grep detected on local system, please install GNU grep${RESET}"
+    exit 1
+  fi
+
+  if find --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
+    echo -e "${RED_COLOR}BusyBox find detected on local system, please install GNU findutils${RESET}"
+    exit 1
+  fi
+
+  if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
+    echo -e "${RED_COLOR}BusyBox sed detected on local system, please install GNU sed${RESET}"
     exit 1
   fi
 }
