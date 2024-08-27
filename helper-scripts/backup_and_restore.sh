@@ -212,6 +212,8 @@ function check_valid_backup_directory() {
         echo -e "${RED_COLOR}exiting...${RESET}"
         exit 0
       fi
+    else
+      echo -e "${GREEN_COLOR}Creating it now due to --yes flag...${RESET}"
     fi
 
     mkdir -p "${BACKUP_LOCATION}"
@@ -255,7 +257,7 @@ function check_valid_restore_directory() {
 }
 
 function delete_old_backups() {
-  if [[ -z $(find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24))) ]]; then
+  if [[ -z $(find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) 2> /dev/null) ]]; then
     echo -e "${YELLOW_COLOR}No backups to delete found.${RESET}"
     exit 0
   fi
