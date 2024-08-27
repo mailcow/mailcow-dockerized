@@ -22,6 +22,7 @@ function print_usage() {
   echo -e "${BOLD}Command Options:${RESET}"
   echo -e "\t${GREEN_COLOR}-t, --threads${RESET}\t${ITALIC}<${GREEN_COLOR}num${RESET}${ITALIC}>\t\tSet the thread count for backup and restore operations${RESET}"
   echo -e "\t${GREEN_COLOR}-c, --component${RESET}\t${ITALIC}<${GREEN_COLOR}component${RESET}${ITALIC}>\tSet the component(s) to backup or restore [vmail, crypt, redis, rspamd, postfix, mysql and all]${RESET}"
+  echo -e "\t${GREEN_COLOR}--yes${RESET}\t\t\t\t${ITALIC}Do not ask for confirmation, answer yes to all prompts (good for automation)${RESET}"
   echo
 }
 
@@ -204,10 +205,13 @@ function check_valid_backup_directory() {
 
   if [[ ! -e "${BACKUP_LOCATION}" ]]; then
     echo -e "${YELLOW_COLOR}${BACKUP_LOCATION} is not exist${RESET}"
-    read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
-    if ! [[ ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
-      echo -e "${RED_COLOR}exiting...${RESET}"
-      exit 0
+
+    if [[ "${MAILCOW_YES_TO_ALL}" = "0" ]]; then
+      read -p "Create it now? [y|N] " CREATE_BACKUP_LOCATION
+      if ! [[ ${CREATE_BACKUP_LOCATION,,} =~ ^(yes|y)$ ]]; then
+        echo -e "${RED_COLOR}exiting...${RESET}"
+        exit 0
+      fi
     fi
 
     mkdir -p "${BACKUP_LOCATION}"
@@ -258,11 +262,18 @@ function delete_old_backups() {
 
   echo -e "${BLUE_COLOR}Backups scheduled for deletion:${RESET}"
   find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec printf "${YELLOW_COLOR}- %s${RESET}\n" {} \;
-  read -p "$(echo -e "${BOLD}${RED_COLOR}Are you sure you want to delete the above backups? type YES in capital letters to delete, else to skip: ${RESET}")" DELETE_CONFIRM
-  if [[ "${DELETE_CONFIRM}" == "YES" ]]; then
+
+  if [[ "${MAILCOW_YES_TO_ALL}" = "1" ]]; then
+    echo -e "${GREEN_COLOR}Start deleting...${RESET}"
     find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec rm -rvf {} \;
+    echo -e "${GREEN_COLOR}Done.${RESET}"
   else
-    echo -e "${YELLOW_COLOR}OK, skipped.${RESET}"
+    read -p "$(echo -e "${BOLD}${RED_COLOR}Are you sure you want to delete the above backups? type YES in capital letters to delete, else to skip: ${RESET}")" DELETE_CONFIRM
+    if [[ "${DELETE_CONFIRM}" == "YES" ]]; then
+      find "${MAILCOW_DELETE_LOCATION}"/mailcow-* -maxdepth 0 -mmin +$((${MAILCOW_DELETE_DAYS}*60*24)) -exec rm -rvf {} \;
+    else
+      echo -e "${YELLOW_COLOR}OK, skipped.${RESET}"
+    fi
   fi
 }
 
@@ -292,7 +303,8 @@ MAILCOW_BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION:-}"
 MAILCOW_RESTORE_LOCATION="${MAILCOW_RESTORE_LOCATION:-}"
 MAILCOW_DELETE_LOCATION="${MAILCOW_DELETE_LOCATION:-}"
 MAILCOW_DELETE_DAYS="${MAILCOW_DELETE_DAYS:-}"
-MAILCOW_BACKUP_RESTORE_THREADS=${MAILCOW_BACKUP_RESTORE_THREADS:-1}
+MAILCOW_BACKUP_RESTORE_THREADS="${MAILCOW_BACKUP_RESTORE_THREADS:-1}"
+MAILCOW_YES_TO_ALL="${MAILCOW_YES_TO_ALL:-0}"
 
 # Check for required files
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -397,6 +409,10 @@ while [[ $# -gt 0 ]]; do
 
       echo -e "${GREEN_COLOR}Using ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this run.${RESET}"
       shift 2
+      ;;
+    --yes)
+      MAILCOW_YES_TO_ALL="1"
+      shift
       ;;
     --)
       shift
@@ -542,11 +558,18 @@ function restore() {
         echo
         echo "docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'"
         echo
-        read -p "Force a resync now? [y|N] " FORCE_RESYNC
-        if [[ ${FORCE_RESYNC,,} =~ ^(yes|y)$ ]]; then
+
+        # Skip prompt if --yes flag is present
+        if [[ "${MAILCOW_YES_TO_ALL}" == "1" ]]; then
+          echo -e "${GREEN_COLOR}Forcing a resync now due to --yes flag.${RESET}"
           docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'
         else
-          echo "OK, skipped."
+          read -p "Force a resync now? [y|N] " FORCE_RESYNC
+          if [[ ${FORCE_RESYNC,,} =~ ^(yes|y)$ ]]; then
+            docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'
+          else
+            echo "OK, skipped."
+          fi
         fi
         ;;
       redis)
@@ -586,14 +609,19 @@ function restore() {
           shift
           continue
         else
-          read -p "mailcow will be stopped and the currently active mailcow.conf will be modified to use the DB parameters found in ${RESTORE_LOCATION}/mailcow.conf - do you want to proceed? [Y|n] " MYSQL_STOP_MAILCOW
-          if [[ ${MYSQL_STOP_MAILCOW,,} =~ ^(no|n|N)$ ]]; then
-            echo "OK, skipped."
-            shift
-            continue
-          else
-            echo "Stopping mailcow..."
+          if [[ "${MAILCOW_YES_TO_ALL}" == "1" ]]; then
+            echo -e "${GREEN_COLOR}Stopping mailcow due to --yes flag.${RESET}"
             ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+          else
+            read -p "mailcow will be stopped and the currently active mailcow.conf will be modified to use the DB parameters found in ${RESTORE_LOCATION}/mailcow.conf - do you want to proceed? [Y|n] " MYSQL_STOP_MAILCOW
+            if [[ ${MYSQL_STOP_MAILCOW,,} =~ ^(no|n|N)$ ]]; then
+              echo "OK, skipped."
+              shift
+              continue
+            else
+              echo "Stopping mailcow..."
+              ${COMPOSE_COMMAND} -f ${COMPOSE_FILE} --env-file ${ENV_FILE} down
+            fi
           fi
           #docker stop $(docker ps -qf name=mysql-mailcow)
           if [[ -d "${RESTORE_LOCATION}/mysql" ]]; then
