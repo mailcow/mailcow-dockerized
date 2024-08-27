@@ -455,8 +455,6 @@ function backup() {
   cp "${SCRIPT_DIR}/../mailcow.conf" "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}"
   touch "${MAILCOW_BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
 
-  echo -e "${GREEN_COLOR}Using ${MAILCOW_BACKUP_RESTORE_THREADS} thread(s) for this backup.${RESET}"
-
   while (( "$#" )); do
     case "$1" in
     vmail|all)
