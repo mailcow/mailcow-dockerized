@@ -3297,22 +3297,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             // Update the username in all related tables
             $tables = [
-              'tags_mailbox' => 'username',
-              'sieve_filters' => 'username',
-              'app_passwd' => 'mailbox',
-              'user_acl' => 'username',
-              'da_acl' => 'username',
-              'quota2' => 'username',
-              'quota2replica' => 'username',
-              'pushover' => 'username',
-              'alias' => 'goto'
+              'tags_mailbox' => ['username'],
+              'sieve_filters' => ['username'],
+              'app_passwd' => ['mailbox'],
+              'user_acl' => ['username'],
+              'da_acl' => ['username'],
+              'quota2' => ['username'],
+              'quota2replica' => ['username'],
+              'pushover' => ['username'],
+              'alias' => ['goto'],
+              "imapsync" => ['user2'],
+              'bcc_maps' => ['local_dest', 'bcc_dest'],
+              'recipient_maps' => ['old_dest', 'new_dest']
             ];
-            foreach ($tables as $table => $column) {
-              $pdo->prepare("UPDATE $table SET $column = :new_username WHERE $column = :old_username")
-                ->execute([
-                  ':new_username' => $new_username,
-                  ':old_username' => $old_username
-                ]);
+            foreach ($tables as $table => $columns) {
+              foreach ($columns as $column) {
+                $stmt = $pdo->prepare("UPDATE $table SET $column = :new_username WHERE $column = :old_username")
+                  ->execute([
+                    ':new_username' => $new_username,
+                    ':old_username' => $old_username
+                  ]);
+              }
             }
 
             // Update c_uid, c_name and mail in _sogo_static_view table
