@@ -146,6 +146,11 @@ foreach ($response as $user) {
     continue;
   }
 
+  if (empty($user[$iam_settings['username_field']][0])){
+    logMsg("warning", "Skipping user " . $user['displayname'][0] . " due to empty LDAP ". $iam_settings['username_field'] . "property.'");
+    continue;
+  }
+
   if (!$row && intval($iam_settings['import_users']) == 1){
     // mailbox user does not exist, create...
     logMsg("info", "Creating user " .  $user[$iam_settings['username_field']][0]);
