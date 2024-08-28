@@ -3248,22 +3248,31 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           // get imap acls
-          $exec_fields = array(
-            'cmd' => 'doveadm',
-            'task' => 'get_acl',
-            'id' => $old_username
-          );
-          $imap_acls = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
-          // delete imap acls
-          foreach ($imap_acls as $imap_acl) {
+          try {
             $exec_fields = array(
               'cmd' => 'doveadm',
-              'task' => 'delete_acl',
-              'user' => $imap_acl['user'],
-              'mailbox' => $imap_acl['mailbox'],
-              'id' => $imap_acl['id']
+              'task' => 'get_acl',
+              'id' => $old_username
             );
-            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+            $imap_acls = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+            // delete imap acls
+            foreach ($imap_acls as $imap_acl) {
+              $exec_fields = array(
+                'cmd' => 'doveadm',
+                'task' => 'delete_acl',
+                'user' => $imap_acl['user'],
+                'mailbox' => $imap_acl['mailbox'],
+                'id' => $imap_acl['id']
+              );
+              docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+            }
+          } catch (Exception $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => $e->getMessage()
+            );
+            return false;
           }
 
           // rename username in sql
