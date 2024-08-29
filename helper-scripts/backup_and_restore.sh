@@ -564,8 +564,8 @@ function restore() {
         # Skip prompt if --yes flag is present
         if [[ "${MAILCOW_YES_TO_ALL}" == "1" ]]; then
           echo -e "${GREEN_COLOR}Forcing a resync now due to --yes flag.${RESET}"
-          # Why sleep 1 second? due to `https://github.com/mailcow/mailcow-dockerized/pull/6030#discussion_r1735971143`
-          sleep 1s
+          # Why sleep 2 seconds? due to `https://github.com/mailcow/mailcow-dockerized/pull/6030#discussion_r1735971143`
+          sleep 2s
           docker exec $(docker ps -qf name=dovecot-mailcow) doveadm force-resync -A '*'
         else
           read -p "Force a resync now? [y|N] " FORCE_RESYNC
