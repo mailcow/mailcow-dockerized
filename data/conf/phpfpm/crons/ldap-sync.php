@@ -147,7 +147,7 @@ foreach ($response as $user) {
   }
 
   if (empty($user[$iam_settings['username_field']][0])){
-    logMsg("warning", "Skipping user " . $user['displayname'][0] . " due to empty LDAP ". $iam_settings['username_field'] . "property.'");
+    logMsg("warning", "Skipping user " . $user['displayname'][0] . " due to empty LDAP ". $iam_settings['username_field'] . " property.");
     continue;
   }
 
