@@ -2359,7 +2359,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['ignore_ssl_error'] = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
           $options = array();
           if ($_data['ignore_ssl_error']) {
-            $options['LDAP_OPT_X_TLS_REQUIRE_CERT'] = "LDAP_OPT_X_TLS_NEVER";
+            $options[LDAP_OPT_X_TLS_REQUIRE_CERT] = LDAP_OPT_X_TLS_NEVER;
           }
           $provider = new \LdapRecord\Connection([
             'hosts'                     => [$_data['host']],
@@ -2455,7 +2455,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             $iam_settings['binddn'] && $iam_settings['bindpass']){
             $options = array();
             if ($iam_settings['ignore_ssl_error']) {
-              $options['LDAP_OPT_X_TLS_REQUIRE_CERT'] = "LDAP_OPT_X_TLS_NEVER";
+              $options[LDAP_OPT_X_TLS_REQUIRE_CERT] = LDAP_OPT_X_TLS_NEVER;
             }
             $provider = new \LdapRecord\Connection([
               'hosts'                     => [$iam_settings['host']],
