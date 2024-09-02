@@ -2373,9 +2373,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           ]);
           try {
             $provider->connect();
-          } catch (TypeError $e) {
-            return false;
-          } catch (\LdapRecord\Auth\BindException $e) {
+          } catch (Throwable $e) {
             return false;
           }
         break;
