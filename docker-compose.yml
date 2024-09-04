@@ -111,13 +111,14 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.89
+      image: mailcow/phpfpm:1.90
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
       volumes:
         - ./data/hooks/phpfpm:/hooks:Z
         - ./data/web:/web:z
+        - ./data/cron/phpfpm:/cron:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
         - rspamd-vol-1:/var/lib/rspamd
@@ -169,6 +170,10 @@ services:
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
         - FLATCURVE_EXPERIMENTAL=${FLATCURVE_EXPERIMENTAL:-}
+      labels:
+        ofelia.enabled: "true"
+        ofelia.job-exec.php_clear_sasl_log.schedule: "@every 1d"
+        ofelia.job-exec.php_clear_sasl_log.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /cron/clear_sasl_log.php || exit 0\""
       restart: always
       networks:
         mailcow-network:
@@ -552,7 +557,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3

@@ -174,23 +174,6 @@ END;
 //
 DELIMITER ;
 DROP EVENT IF EXISTS clean_sasl_log;
-DELIMITER //
-CREATE EVENT clean_sasl_log
-ON SCHEDULE EVERY 1 DAY DO
-BEGIN
-  DELETE sasl_log.* FROM sasl_log
-    LEFT JOIN (
-      SELECT username, service, MAX(datetime) AS lastdate
-      FROM sasl_log
-      GROUP BY username, service
-    ) AS last ON sasl_log.username = last.username AND sasl_log.service = last.service
-    WHERE datetime < DATE_SUB(NOW(), INTERVAL 31 DAY) AND datetime < lastdate;
-  DELETE FROM sasl_log
-    WHERE username NOT IN (SELECT username FROM mailbox) AND
-    datetime < DATE_SUB(NOW(), INTERVAL 31 DAY);
-END;
-//
-DELIMITER ;
 EOF
 fi
 
