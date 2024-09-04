@@ -84,6 +84,7 @@ services:
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
+        - clamd-mailcow
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
