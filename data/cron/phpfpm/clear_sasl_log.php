@@ -17,22 +17,23 @@ try {
 }
 catch (PDOException $e) {
   echo($e->getMessage() . PHP_EOL);
-  exit;
+  exit(1);
 }
 
 
+$dateThreshold = new DateTime();
+$dateThreshold->modify('-31 days');
+$dateThresholdFormatted = $dateThreshold->format('Y-m-d H:i:s');
+
+$batchSize = 1000;
+$lastProcessedDatetime = null;
+$lastProcessedUsername = "";
+$lastProcessedService = "";
+$loopCounter = 0;
+$rowCounter = 0;
+$clearedRowCounter = 0;
+
 try {
-  $dateThreshold = new DateTime();
-  $dateThreshold->modify('-31 days');
-  $dateThresholdFormatted = $dateThreshold->format('Y-m-d H:i:s');
-
-  $batchSize = 1000;
-  $lastProcessedDatetime = null;
-  $lastFetchedRows = 0;
-  $loopCounter = 0;
-  $rowCounter = 0;
-  $clearedRowCounter = 0;
-
   do {
     $loopCounter++;
     echo("Processing batch $loopCounter\n");
@@ -58,6 +59,7 @@ try {
 
     echo("Fetched $rowCount rows (total of $rowCounter)\n");
 
+    $pdo->beginTransaction();
     foreach ($rows as $row) {
       $stmt = $pdo->prepare("
         SELECT MAX(datetime) as max_date
@@ -85,22 +87,28 @@ try {
         $clearedRowCounter++;
       }
     }
+    $pdo->commit();
 
-    if ($lastFetchedRows == $rowCount && $rowCount != $batchSize) {
+    if ($lastProcessedDatetime == $rows[$rowCount - 1]['datetime'] &&
+      $lastProcessedUsername == $rows[$rowCount - 1]['username'] &&
+      $lastProcessedService == $rows[$rowCount - 1]['service'] ||
+      $rowCount != $batchSize) {
       $rowCount = 0;
     }
 
     // Update last processed datetime
     if ($rowCount > 0) {
       $lastProcessedDatetime = $rows[$rowCount - 1]['datetime'];
-      $lastFetchedRows = $rowCount;
+      $lastProcessedUsername = $rows[$rowCount - 1]['username'];
+      $lastProcessedService = $rows[$rowCount - 1]['service'];
     }
 
   } while ($rowCount > 0);
 }
 catch (PDOException $e) {
   echo($e->getMessage() . PHP_EOL);
-  exit;
+  exit(1);
 }
 
 echo("Succesfully cleared $clearedRowCounter rows of $rowCounter rows");
+exit(0);
