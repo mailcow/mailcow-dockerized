@@ -3308,7 +3308,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'alias' => ['goto'],
               "imapsync" => ['user2'],
               'bcc_maps' => ['local_dest', 'bcc_dest'],
-              'recipient_maps' => ['old_dest', 'new_dest']
+              'recipient_maps' => ['old_dest', 'new_dest'],
+              'sender_acl' => ['logged_in_as', 'send_as']
             ];
             foreach ($tables as $table => $columns) {
               foreach ($columns as $column) {
