@@ -360,6 +360,21 @@ while (($#)); do
         exit 3
       fi
     ;;
+    --check-tags)
+      echo "Checking remote tags for updates..."
+      LATEST_TAG_REV=$(git ls-remote --exit-code --quiet --tags origin | tail -1 | cut -f1)
+      if [ "$?" -ne 0 ]; then
+        echo "A problem occurred while trying to fetch the latest tag from github."
+        exit 99
+      fi
+      if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_TAG_REV}") ]]; then
+        echo -e "New tag is available.\nThe changes can be found here: https://github.com/mailcow/mailcow-dockerized/releases/latest"
+        exit 0
+      else
+        echo "No updates available."
+        exit 3
+      fi
+    ;;
     --ours)
       MERGE_STRATEGY=ours
     ;;
@@ -396,9 +411,10 @@ while (($#)); do
       DEV=y
     ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -d|--dev, -h|--help]
+    echo './update.sh [-c|--check, --check-tags, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -d|--dev, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
+  --check-tags         -   Check for newer tags and exit (exit codes => 0: newer tag available, 3: no newer tag)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
   --gc                 -   Run garbage collector to delete old image tags
   --nightly            -   Switch your mailcow updates to the unstable (nightly) branch. FOR TESTING PURPOSES ONLY!!!!

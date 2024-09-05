@@ -28,7 +28,8 @@
         "spam_score": "Punteggio SPAM",
         "syncjobs": "Processi di sync",
         "tls_policy": "Politica TLS",
-        "unlimited_quota": "Spazio illimitato per le caselle di posta"
+        "unlimited_quota": "Spazio illimitato per le caselle di posta",
+        "pw_reset": "Permettere di reimpostare la password dell'utente mailcow"
     },
     "add": {
         "activate_filter_warn": "Tutti gli altri filtri saranno disattivati, quando è attivo.",
@@ -116,7 +117,7 @@
         "activate_api": "Attiva API",
         "activate_send": "Attiva bottone di invio",
         "active": "Attiva",
-        "active_rspamd_settings_map": "Active settings map",
+        "active_rspamd_settings_map": "Mappa delle impostazioni attive",
         "add": "Aggiungi",
         "add_admin": "Aggiungi amministratore",
         "add_domain_admin": "Aggiungi amministratore di dominio",
@@ -124,7 +125,7 @@
         "add_relayhost": "Add sender-dependent transport",
         "add_relayhost_hint": "Tieni presente che i dati di autenticazione, se presenti, verranno archiviati come testo semplice.",
         "add_row": "Aggiungi riga",
-        "add_settings_rule": "Add settings rule",
+        "add_settings_rule": "Aggiungi regola delle impostazioni",
         "add_transport": "Aggiungi transport",
         "add_transports_hint": "Tieni presente che i dati di autenticazione, se presenti, verranno archiviati come testo semplice.",
         "additional_rows": " righe aggiuntive inserite",
@@ -134,7 +135,7 @@
         "admins": "Amministratori",
         "admins_ldap": "Amministratori LDAP",
         "advanced_settings": "Impostazioni avanzate",
-        "api_allow_from": "Allow API access from these IPs/CIDR network notations",
+        "api_allow_from": "Consenti l'accesso API da questi indirizzi IP/notazione di rete CIDR",
         "api_info": "Questa API è in modifica. La documentazione può essere trovata su <a href=\"/api\">/api</a>",
         "api_key": "Chiave API",
         "api_skip_ip_check": "Salta il controllo dell'IP per l'API",
@@ -156,7 +157,7 @@
         "dkim_domains_selector": "Selettore",
         "dkim_domains_wo_keys": "Seleziona i domini senza chiavi",
         "dkim_from": "Da",
-        "dkim_from_title": "Source domain to copy data from",
+        "dkim_from_title": "Dominio di origine da cui copiare i dati",
         "dkim_key_length": "Lunghezza chiave DKIM (bits)",
         "dkim_key_missing": "Chiave mancante",
         "dkim_key_unused": "Chiave non usata",
@@ -182,8 +183,8 @@
         "f2b_list_info": "Un host oppure una rete in blacklist, avrà sempre un peso maggiore rispetto ad una in whitelist. <b>L'aggiornamento della lista richiede alcuni secondi per la sua entrata in azione.</b>",
         "f2b_max_attempts": "Tentativi massimi",
         "f2b_max_ban_time": "Tempo massimo di blocco (s)",
-        "f2b_netban_ipv4": "IPv4 subnet size to apply ban on (8-32)",
-        "f2b_netban_ipv6": "IPv6 subnet size to apply ban on (8-128)",
+        "f2b_netban_ipv4": "Dimensione della subnet IPv4 su cui applicare il blocco (8-32)",
+        "f2b_netban_ipv6": "Dimensione della subnet IPv6 su cui applicare il blocco (8-128)",
         "f2b_parameters": "Parametri Fail2ban",
         "f2b_regex_info": "Log presi in considerazione: SOGo, Postfix, Dovecot, PHP-FPM.",
         "f2b_retry_window": "Retry window (s) for max. attempts",
@@ -219,16 +220,16 @@
         "merged_vars_hint": "Greyed out rows were merged from <code>vars.(local.)inc.php</code> and cannot be modified.",
         "message": "Messaggio",
         "message_size": "Dimensione mesaggio",
-        "nexthop": "Next hop",
+        "nexthop": "Prossimo hop",
         "no": "&#10005;",
         "no_active_bans": "Nessun ban attivo",
         "no_new_rows": "Nessuna ulteriore riga disponibile",
         "no_record": "Nessun risultato",
         "oauth2_client_id": "ID cliente",
-        "oauth2_client_secret": "Client secret",
+        "oauth2_client_secret": "Chiave segreta del client",
         "oauth2_info": "The OAuth2 implementation supports the grant type \"Authorization Code\" and issues refresh tokens.<br>\r\nThe server also automatically issues new refresh tokens, after a refresh token has been used.<br><br>\r\n&#8226; The default scope is <i>profile</i>. Only mailbox users can be authenticated against OAuth2. If the scope parameter is omitted, it falls back to <i>profile</i>.<br>\r\n&#8226; The <i>state</i> parameter is required to be sent by the client as part of the authorize request.<br><br>\r\nPaths for requests to the OAuth2 API: <br>\r\n<ul>\r\n  <li>Authorization endpoint: <code>/oauth/authorize</code></li>\r\n  <li>Token endpoint: <code>/oauth/token</code></li>\r\n  <li>Resource page:  <code>/oauth/profile</code></li>\r\n</ul>\r\nRegenerating the client secret will not expire existing authorization codes, but they will fail to renew their token.<br><br>\r\nRevoking client tokens will cause immediate termination of all active sessions. All clients need to re-authenticate.",
         "oauth2_redirect_uri": "URI di reindirizzamento",
-        "oauth2_renew_secret": "Generate new client secret",
+        "oauth2_renew_secret": "Genera una nuova chiave segreta per il client",
         "oauth2_revoke_tokens": "Revoca tutti i token del client",
         "optional": "facoltativo",
         "password": "Password",
@@ -269,7 +270,7 @@
         "recipients": "Destinatari",
         "refresh": "Aggiorna",
         "regen_api_key": "Rinnova la chiave delle API",
-        "regex_maps": "Regex maps",
+        "regex_maps": "Mappe Regex",
         "relay_from": "\"Da:\" indirizzi",
         "relay_rcpt": "\"A:\" indirizzi",
         "relay_run": "Esegui test",
@@ -286,7 +287,7 @@
         "rsetting_no_selection": "Seleziona una regola",
         "rsetting_none": "Nessuna regola presente",
         "rsettings_insert_preset": "Insert example preset \"%s\"",
-        "rsettings_preset_1": "Disable all but DKIM and rate limit for authenticated users",
+        "rsettings_preset_1": "Disattivare tutto tranne DKIM e il limite di velocità per gli utenti autenticati",
         "rsettings_preset_2": "I postmaster vogliono lo spam",
         "rsettings_preset_3": "Consenti solo mittenti specifici per una casella di posta (ad esempio: utilizzo solo come casella di posta interna)",
         "rspamd_com_settings": "A setting name will be auto-generated, please see the example presets below. For more details see <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd docs</a>",
@@ -341,7 +342,18 @@
         "rsettings_preset_4": "Disattivare Rspamd per un dominio",
         "options": "Opzioni",
         "cors_settings": "Impostazioni CORS",
-        "copy_to_clipboard": "Testo copiato negli appunti!"
+        "copy_to_clipboard": "Testo copiato negli appunti!",
+        "f2b_manage_external": "Gestione esterna di Fail2Ban",
+        "password_reset_info": "Se non viene fornita alcuna e-mail di recupero, questa funzione non può essere utilizzata.",
+        "password_reset_tmpl_text": "Template testuale",
+        "logo_dark_label": "Invertito per la modalità scura",
+        "ip_check": "Controllo IP",
+        "password_reset_settings": "Impostazioni per il recupero della password",
+        "password_reset_tmpl_html": "Template HTML",
+        "password_settings": "Impostazioni della password",
+        "queue_unban": "sblocca",
+        "restore_template": "Lasciare vuoto per ripristinare il modello predefinito.",
+        "logo_normal_label": "Normale"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -466,7 +478,13 @@
         "template_exists": "Il template %s esiste già",
         "template_id_invalid": "Il template con ID %s non è valido",
         "img_dimensions_exceeded": "L'immagine supera la dimensione massima consentita",
-        "img_size_exceeded": "L'immagine supera la dimensione massima del file"
+        "img_size_exceeded": "L'immagine supera la dimensione massima del file",
+        "extended_sender_acl_denied": "Autorizzazioni ACL mancanti per configurare indirizzi esterni come mittente",
+        "invalid_reset_token": "Token di reset non valido",
+        "password_reset_invalid_user": "La casella di posta elettronica non è stata trovata o non è stata impostata un'e-mail di recupero",
+        "password_reset_na": "Il recupero della password non è attualmente disponibile. Contattare l'amministratore.",
+        "recovery_email_failed": "Impossibile inviare un'e-mail di recupero. Contattare l'amministratore.",
+        "to_invalid": "Il destinatario non deve essere vuoto"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -503,7 +521,11 @@
         "memory": "Memoria",
         "timezone": "Fuso orario",
         "no_update_available": "Il sistema è aggiornato all'ultima versione",
-        "update_failed": "Impossibile verificare la presenza di un aggiornamento"
+        "update_failed": "Impossibile verificare la presenza di un aggiornamento",
+        "architecture": "Architettura",
+        "error_show_ip": "Impossibile risolvere gli indirizzi IP pubblici",
+        "show_ip": "Mostra IP pubblico",
+        "wip": "Attualmente in lavorazione"
     },
     "diagnostics": {
         "cname_from_a": "Valore letto dal record A/AAAA. Questo è supportato finché il record punta alla risorsa corretta.",
@@ -632,7 +654,11 @@
         "last_modified": "Ultima modifica",
         "pushover_sound": "Suono",
         "custom_attributes": "Attributi personalizzati",
-        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta"
+        "domain_footer_skip_replies": "Ignora il piè di pagina nelle e-mail di risposta",
+        "domain_footer_html": "Piè di pagina HTML",
+        "domain_footer_plain": "Piè di pagina PLAIN",
+        "footer_exclude": "Escludi dal piè di pagina",
+        "password_recovery_email": "E-mail di recupero password"
     },
     "fido2": {
         "confirm": "Conferma",
@@ -688,7 +714,13 @@
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
         "other_logins": "Key login",
         "password": "Password",
-        "username": "Nome utente"
+        "username": "Nome utente",
+        "request_reset_password": "Richiesta di modifica della password",
+        "back_to_mailcow": "Torna a mailcow",
+        "forgot_password": "> Password dimenticata?",
+        "new_password": "Nuova password",
+        "new_password_confirm": "Conferma la nuova password",
+        "reset_password": "Ripristino della password"
     },
     "mailbox": {
         "action": "Azione",
@@ -939,7 +971,9 @@
         "show_message": "Mostra messaggio",
         "unhold_mail": "Sblocca",
         "hold_mail_legend": "Blocca le mail selezionate. (Previene ulteriori tentativi di consegna)",
-        "legend": "Funzioni delle azioni della coda di posta:"
+        "legend": "Funzioni delle azioni della coda di posta:",
+        "unban": "Coda di sblocco",
+        "unhold_mail_legend": "Rilascia le mail selezionate per la consegna. (Richiede una prenotazione preventiva)"
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",
@@ -1028,7 +1062,12 @@
         "template_added": "Aggiunto template %s",
         "template_modified": "Le modifiche al template %s sono state salvate",
         "template_removed": "Il template con ID %s è stato cancellato",
-        "f2b_banlist_refreshed": "L'ID della lista blocchi è stato aggiornato con successo."
+        "f2b_banlist_refreshed": "L'ID della lista blocchi è stato aggiornato con successo.",
+        "domain_footer_modified": "Le modifiche al piè di pagina del dominio %s sono state salvate",
+        "cors_headers_edited": "Le impostazioni CORS sono state salvate",
+        "ip_check_opt_in_modified": "Il controllo dell'indirizzo IP è stato salvato con successo",
+        "password_changed_success": "La password è stata modificata con successo",
+        "recovery_email_sent": "Email di recupero inviata a %s"
     },
     "tfa": {
         "api_register": "%s usa le API Yubico Cloud. Richiedi una chiave API <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">qui</a>",
@@ -1220,7 +1259,9 @@
         "direct_protocol_access": "Questo utente della mailbox ha <b>accesso diretto ed esterno</b> ai seguenti protocolli e applicazioni. Questa impostazione è controllata dal tuo amministratore. Le password delle applicazioni possono essere create per garantire l'accesso ai singoli protocolli e applicazioni.<br>Il pulsante \"Accedi alla webmail\" fornisce un singolo accesso a SOGo ed è sempre disponibile.",
         "pushover_sound": "Suono",
         "attribute": "Attributo",
-        "value": "Valore"
+        "value": "Valore",
+        "password_reset_info": "Se non viene fornita alcuna e-mail per il recupero della password, questa funzione non può essere utilizzata.",
+        "pw_recovery_email": "Email di recupero password"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -1264,6 +1305,7 @@
         "aria": {
             "sortAscending": ": attivare l'ordinamento crescente delle colonne",
             "sortDescending": ": attivare l'ordinamento decrescente delle colonne"
-        }
+        },
+        "decimal": "."
     }
 }
