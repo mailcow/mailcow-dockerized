@@ -894,7 +894,7 @@ jQuery(function($){
             item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
 
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
+            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login + '/' + item.last_sso_login;
             /*
             if (!item.rl) {
               item.rl = '∞';
@@ -1015,7 +1015,8 @@ jQuery(function($){
             res = data.split("/");
             return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
               '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-              '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+              '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div><br>' +
+              '<div class="badge bg-info">SSO @ ' + unix_time_format(Number(res[3])) + '</div>';
           }
         },
         {
