@@ -4700,6 +4700,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             else if ($SaslLogs['service'] == 'pop3') {
               $last_pop3_login = strtotime($SaslLogs['datetime']);
             }
+			else if ($SaslLogs['service'] == 'SSO') {
+              $last_sso_login = strtotime($SaslLogs['datetime']);
+            }
           }
           if (!isset($last_imap_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
             $last_imap_login = 0;
@@ -4710,9 +4713,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (!isset($last_pop3_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
             $last_pop3_login = 0;
           }
+		  if (!isset($last_sso_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_sso_login = 0;
+          }
           $mailboxdata['last_imap_login'] = $last_imap_login;
           $mailboxdata['last_smtp_login'] = $last_smtp_login;
           $mailboxdata['last_pop3_login'] = $last_pop3_login;
+          $mailboxdata['last_sso_login'] = $last_sso_login;
 
           if (!isset($_extra) || $_extra != 'reduced') {
             $rl = ratelimit('get', 'mailbox', $_data);

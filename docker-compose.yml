@@ -84,6 +84,7 @@ services:
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
+        - clamd-mailcow
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -111,7 +112,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.89
+      image: mailcow/phpfpm:1.90
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -191,7 +192,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:nightly-20240819
+      image: mailcow/sogo:nightly-20240905
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -571,7 +572,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3

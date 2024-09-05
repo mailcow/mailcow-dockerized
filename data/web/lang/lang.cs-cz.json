@@ -28,7 +28,8 @@
         "spam_score": "Skóre spamu",
         "syncjobs": "Synchronizační úlohy",
         "tls_policy": "Pravidla TLS",
-        "unlimited_quota": "Neomezené kvóty pro mailové schránky"
+        "unlimited_quota": "Neomezené kvóty pro mailové schránky",
+        "pw_reset": "Povolit obnovení hesla uživatele mailcow"
     },
     "add": {
         "activate_filter_warn": "Pokud je zaškrtlá volba \"Aktivní\", budou všechny ostatní filtry deaktivovány.",
@@ -346,7 +347,14 @@
         "f2b_ban_time_increment": "Délka banu je prodlužována s každým dalším banem",
         "f2b_max_ban_time": "Maximální délka banu (s)",
         "cors_settings": "Nastavení CORS",
-        "queue_unban": "zrušit ban"
+        "queue_unban": "zrušit ban",
+        "password_reset_info": "Pokud není zadán žádný e-mail pro obnovení, nelze tuto funkci použít.",
+        "password_reset_settings": "Nastavení obnovení hesla",
+        "password_settings": "Nastavení hesel",
+        "password_reset_tmpl_html": "HTML šablona",
+        "password_reset_tmpl_text": "Textová šablona",
+        "reset_password_vars": "<code>{{link}}</code> Vygenerovaný odkaz pro obnovení hesla<br><code>{{username}}</code> Název mailboxu uživatele, který požádal o resetování hesla.<br><code>{{username2}}</code> Název schránky pro obnovení<br><code>{{date}}</code> Datum podání žádosti o obnovení hesla<br><code>{{token_lifetime}}</code> Délka životnosti tokenu v minutách<br><code>{{hostname}}</code> Název serveru mailcow",
+        "restore_template": "Ponechte prázdné pro obnovení výchozí šablony."
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
@@ -475,7 +483,10 @@
         "webauthn_publickey_failed": "Pro vybraný ověřovací prostředek nebyl uložen žádný veřejný klíč",
         "webauthn_username_failed": "Zvolený ověřovací prostředek patří k jinému účtu",
         "extended_sender_acl_denied": "chybějící ACL pro nastavení externích adres odesílatele",
-        "demo_mode_enabled": "Demo režim je zapnutý"
+        "demo_mode_enabled": "Demo režim je zapnutý",
+        "recovery_email_failed": "Nepodařilo se odeslat e-mail pro obnovení. Obraťte se prosím na svého správce.",
+        "password_reset_invalid_user": "Mailbox nebyl nalezen nebo není nastaven žádný e-mail pro obnovu",
+        "password_reset_na": "Obnovení hesla není v současné době k dispozici. Obraťte se prosím na svého správce."
     },
     "datatables": {
         "emptyTable": "Tabulka neobsahuje žádná data",
@@ -672,12 +683,17 @@
             "auth_user": "{= auth_user =} - Ověřené uživatelské jméno zadané MTA",
             "from_user": "{= from_user =}    - uživatelská část odesílatele, např. pro \"moo@mailcow.tld\" vrátí \"moo\"",
             "from_domain": "{= from_domain =} - Doména odesílatele",
-            "from_addr": "{= from_addr =} - E-mailová adresa odesílatele"
+            "from_addr": "{= from_addr =} - E-mailová adresa odesílatele",
+            "custom": "{= foo =}         - Pokud má schránka vlastní atribut „foo“ s hodnotou „bar“, vrátí „bar“"
         },
         "domain_footer": "Patička pro celou doménu",
         "domain_footer_html": "HTML text",
         "domain_footer_plain": "Prostý text",
-        "pushover_sound": "Zvukové upozornění"
+        "pushover_sound": "Zvukové upozornění",
+        "custom_attributes": "Vlastní atributy",
+        "footer_exclude": "Vyloučit ze zápatí",
+        "domain_footer_skip_replies": "Ignorovat patičku u odpovědí na e-maily",
+        "password_recovery_email": "E-mail pro obnovu hesla"
     },
     "fido2": {
         "confirm": "Potvrdit",
@@ -733,7 +749,14 @@
         "mobileconfig_info": "Ke stažení profilového souboru se přihlaste jako uživatel schránky.",
         "other_logins": "Přihlášení klíčem",
         "password": "Heslo",
-        "username": "Uživatelské jméno"
+        "username": "Uživatelské jméno",
+        "back_to_mailcow": "Zpět do mailcow",
+        "forgot_password": "> Zapomněli jste heslo?",
+        "invalid_pass_reset_token": "Token pro obnovení hesla je neplatný nebo jeho platnost vypršela.<br>Prosím, vyžádejte si nový odkaz pro obnovení hesla.",
+        "new_password": "Nové heslo",
+        "new_password_confirm": "Ověření nového hesla",
+        "reset_password": "Obnovit heslo",
+        "request_reset_password": "Požádat o změnu hesla"
     },
     "mailbox": {
         "action": "Akce",
@@ -1081,7 +1104,8 @@
         "verified_webauthn_login": "WebAuthn přihlášení ověřeno",
         "verified_yotp_login": "Yubico OTP přihlášení ověřeno",
         "cors_headers_edited": "Nastavení CORS byla uložena",
-        "domain_footer_modified": "Změny patičky domény %s byly uloženy"
+        "domain_footer_modified": "Změny patičky domény %s byly uloženy",
+        "recovery_email_sent": "E-mail k obnovení byl odeslán na adresu %s"
     },
     "tfa": {
         "api_register": "%s používá Yubico Cloud API. Prosím získejte API klíč pro své Yubico <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ZDE</a>",
@@ -1268,7 +1292,9 @@
         "with_app_password": "s heslem aplikace",
         "year": "rok",
         "years": "let",
-        "pushover_sound": "Zvukové upozornění"
+        "pushover_sound": "Zvukové upozornění",
+        "password_reset_info": "Pokud není zadán e-mail pro obnovení hesla, nelze tuto funkci použít.",
+        "pw_recovery_email": "E-mail pro obnovení hesla"
     },
     "warning": {
         "cannot_delete_self": "Nelze smazat právě přihlášeného uživatele",

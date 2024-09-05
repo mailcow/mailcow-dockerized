@@ -893,7 +893,7 @@ jQuery(function($){
             item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
 
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login;
+            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login + '/' + item.last_sso_login;
             /*
             if (!item.rl) {
               item.rl = '∞';
@@ -1012,9 +1012,10 @@ jQuery(function($){
           responsivePriority: 7,
           render: function (data, type) {
             res = data.split("/");
-            return '<div class="badge bg-info mb-2">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-              '<div class="badge bg-info mb-2">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-              '<div class="badge bg-info">SMTP @ ' + unix_time_format(Number(res[2])) + '</div>';
+            return '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
+              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
+              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(res[2])) + '</div><br>' +
+              '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(res[3])) + '</div>';
           }
         },
         {
@@ -2362,7 +2363,7 @@ jQuery(function($){
     else
       $(tab).find(".table_collapse_option").hide();
   }
-  
+
   function filterByDomain(json, column, table){
     var tableId = $(table.table().container()).attr('id');
     // Create the `select` element
@@ -2385,12 +2386,12 @@ jQuery(function($){
         }
       });
     });
-    
+
     // get unique domain list
     domains = domains.filter(function(value, index, array) {
       return array.indexOf(value) === index;
     });
-    
+
     // add domains to select
     domains.forEach(function(domain) {
         select.append($('<option>' + domain + '</option>'));
