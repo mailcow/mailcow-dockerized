@@ -939,10 +939,10 @@ function check_login($user, $pass, $app_passwd_data = false) {
     $stmt->execute(array(':user' => $user));
     $rows = array_merge($rows, $stmt->fetchAll(PDO::FETCH_ASSOC));
   }
-  foreach ($rows as $row) { 
+  foreach ($rows as $row) {
     // verify password
     if (verify_hash($row['password'], $pass) !== false) {
-      if (!array_key_exists("app_passwd_id", $row)){ 
+      if (!array_key_exists("app_passwd_id", $row)){
         // password is not a app password
         // check for tfa authenticators
         $authenticators = get_tfa($user);
@@ -953,11 +953,6 @@ function check_login($user, $pass, $app_passwd_data = false) {
           $_SESSION['pending_mailcow_cc_role'] = "user";
           $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
           unset($_SESSION['ldelay']);
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $user, '*'),
-            'msg' => array('logged_in_as', $user)
-          );
           return "pending";
         } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
           // no authenticators found, login successfull
@@ -966,6 +961,11 @@ function check_login($user, $pass, $app_passwd_data = false) {
           $stmt->execute(array(':user' => $user));
 
           unset($_SESSION['ldelay']);
+          $_SESSION['return'][] =  array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $user, '*'),
+            'msg' => array('logged_in_as', $user)
+          );
           return "user";
         }
       } elseif ($app_passwd_data['eas'] === true || $app_passwd_data['dav'] === true) {
@@ -1028,7 +1028,7 @@ function update_sogo_static_view($mailbox = null) {
     // Check if the mailbox exists
     $stmt = $pdo->prepare("SELECT username FROM mailbox WHERE username = :mailbox AND active = '1'");
     $stmt->execute(array(':mailbox' => $mailbox));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);  
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row){
       $mailbox_exists = true;
     }
@@ -1056,7 +1056,7 @@ function update_sogo_static_view($mailbox = null) {
               LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
             WHERE
               mailbox.active = '1'";
-  
+
   if ($mailbox_exists) {
     $query .= " AND mailbox.username = :mailbox";
     $stmt = $pdo->prepare($query);
@@ -1065,9 +1065,9 @@ function update_sogo_static_view($mailbox = null) {
     $query .= " GROUP BY mailbox.username";
     $stmt = $pdo->query($query);
   }
-  
+
   $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
-  
+
   flush_memcached();
 }
 function edit_user_account($_data) {
@@ -1100,7 +1100,7 @@ function edit_user_account($_data) {
           AND `username` = :user");
     $stmt->execute(array(':user' => $username));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-  
+
     if (!verify_hash($row['password'], $password_old)) {
       $_SESSION['return'][] =  array(
         'type' => 'danger',
@@ -1109,7 +1109,7 @@ function edit_user_account($_data) {
       );
       return false;
     }
-  
+
     $password_new = $_data['user_new_pass'];
     $password_new2  = $_data['user_new_pass2'];
     if (password_check($password_new, $password_new2) !== true) {
@@ -1124,7 +1124,7 @@ function edit_user_account($_data) {
       ':password_hashed' => $password_hashed,
       ':username' => $username
     ));
-  
+
     update_sogo_static_view();
   }
   // edit password recovery email
@@ -1374,7 +1374,7 @@ function set_tfa($_data) {
             $_data['registration']->certificate,
             0
         ));
-    
+
         $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_data_log),
@@ -1544,7 +1544,7 @@ function unset_tfa_key($_data) {
 
   try {
     if (!is_numeric($id)) $access_denied = true;
-    
+
     // set access_denied error
     if ($access_denied){
       $_SESSION['return'][] = array(
@@ -1553,7 +1553,7 @@ function unset_tfa_key($_data) {
         'msg' => 'access_denied'
       );
       return false;
-    } 
+    }
 
     // check if it's last key
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
@@ -1602,7 +1602,7 @@ function get_tfa($username = null, $id = null) {
         WHERE `username` = :username AND `active` = '1'");
     $stmt->execute(array(':username' => $username));
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
+
     // no tfa methods found
     if (count($results) == 0) {
         $data['name'] = 'none';
@@ -1810,8 +1810,8 @@ function verify_tfa_login($username, $_data) {
                   'msg' => array('webauthn_authenticator_failed')
               );
               return false;
-            } 
-            
+            }
+
             if (empty($process_webauthn['publicKey']) || $process_webauthn['publicKey'] === false) {
                 $_SESSION['return'][] =  array(
                     'type' => 'danger',
@@ -2173,7 +2173,7 @@ function cors($action, $data = null) {
           'msg' => 'access_denied'
         );
         return false;
-      }    
+      }
 
       $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
@@ -2206,7 +2206,7 @@ function cors($action, $data = null) {
         $redis->hMSet('CORS_SETTINGS', array(
           'allowed_origins' => implode(', ', $allowed_origins),
           'allowed_methods' => implode(', ', $allowed_methods)
-        ));   
+        ));
       } catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
@@ -2258,10 +2258,10 @@ function cors($action, $data = null) {
       header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
 
       // Access-Control settings requested, this is just a preflight request
-      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && 
+      if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&
         isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) &&
         isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-  
+
         $allowed_methods = explode(', ', $cors_settings["allowed_methods"]);
         if (in_array($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'], $allowed_methods, true))
           // method allowed send 200 OK
@@ -2315,7 +2315,7 @@ function reset_password($action, $data = null) {
     break;
     case 'issue':
       $username = $data;
-      
+
       // perform cleanup
       $stmt = $pdo->prepare("DELETE FROM `reset_password` WHERE created < DATE_SUB(NOW(), INTERVAL :lifetime MINUTE);");
       $stmt->execute(array(':lifetime' => $PW_RESET_TOKEN_LIFETIME));
@@ -2397,8 +2397,8 @@ function reset_password($action, $data = null) {
       $request_date = new DateTime();
       $locale_date = locale_get_default();
       $date_formatter = new IntlDateFormatter(
-        $locale_date, 
-        IntlDateFormatter::FULL, 
+        $locale_date,
+        IntlDateFormatter::FULL,
         IntlDateFormatter::FULL
       );
       $formatted_request_date = $date_formatter->format($request_date);
@@ -2514,7 +2514,7 @@ function reset_password($action, $data = null) {
       $stmt->execute(array(
         ':username' => $username
       ));
-   
+
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $action, $_data_log),
@@ -2557,7 +2557,7 @@ function reset_password($action, $data = null) {
       $text = $data['text'];
       $html = $data['html'];
       $subject = $data['subject'];
-    
+
       if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
@@ -2590,7 +2590,7 @@ function reset_password($action, $data = null) {
         );
         return false;
       }
-    
+
       ini_set('max_execution_time', 0);
       ini_set('max_input_time', 0);
       $mail = new PHPMailer;
@@ -2622,7 +2622,7 @@ function reset_password($action, $data = null) {
         return false;
       }
       $mail->ClearAllRecipients();
-    
+
       return true;
     break;
   }
