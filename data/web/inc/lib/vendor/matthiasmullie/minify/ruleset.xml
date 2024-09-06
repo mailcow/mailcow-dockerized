@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset>
+    <rule ref="PSR12" />
+
+    <file>./src</file>
+    <file>./tests</file>
+
+    <arg name="extensions" value="php" />
+    <arg name="encoding" value="UTF-8" />
+</ruleset>
