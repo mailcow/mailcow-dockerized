@@ -410,7 +410,7 @@ class DockerApi:
         old_username = request_json['old_username'].replace("'", "'\\''")
         new_username = request_json['new_username'].replace("'", "'\\''")
 
-        sogo_return = container.exec_run(['sogo-tool', 'rename-user', old_username, new_username], user='sogo')
+        sogo_return = container.exec_run(["/bin/bash", "-c", f"sogo-tool rename-user '{old_username}' '{new_username}'"], user='sogo')
         return self.exec_run_handler('generic', sogo_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: get_acl
   def container_post__exec__doveadm__get_acl(self, request_json, **kwargs):
@@ -422,7 +422,7 @@ class DockerApi:
     for container in self.sync_docker_client.containers.list(filters=filters):
       id = request_json['id'].replace("'", "'\\''")
 
-      shared_folders = container.exec_run(["/bin/bash", "-c", f"doveadm mailbox list -u {id}"])
+      shared_folders = container.exec_run(["/bin/bash", "-c", f"doveadm mailbox list -u '{id}'"])
       shared_folders = shared_folders.output.decode('utf-8')
       shared_folders = shared_folders.splitlines()
 
@@ -435,12 +435,12 @@ class DockerApi:
         if len(shared_folder) < 3:
           continue
 
-        user = shared_folder[1]
-        mailbox = '/'.join(shared_folder[2:])
+        user = shared_folder[1].replace("'", "'\\''")
+        mailbox = '/'.join(shared_folder[2:]).replace("'", "'\\''")
         if mailbox in mailbox_seen:
           continue
 
-        acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u {user} {mailbox}"])
+        acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' '{mailbox}'"])
         acls = acls.output.decode('utf-8').strip().splitlines()
         if len(acls) >= 2:
           for acl in acls[1:]:
@@ -462,7 +462,7 @@ class DockerApi:
       id = request_json['id'].replace("'", "'\\''")
 
       if user and mailbox and id:
-        acl_delete_return = container.exec_run(["/bin/bash", "-c", f'doveadm acl delete -u {user} {mailbox} "user={id}"'])
+        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' '{mailbox}' 'user={id}'"])
         return self.exec_run_handler('generic', acl_delete_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl
   def container_post__exec__doveadm__set_acl(self, request_json, **kwargs):
@@ -496,7 +496,7 @@ class DockerApi:
           rights += right + " "
 
       if user and mailbox and id and rights:
-        acl_set_return = container.exec_run(["/bin/bash", "-c", f'doveadm acl set -u {user} {mailbox} "user={id}" {rights}'])
+        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' '{mailbox}' 'user={id}' {rights}"])
         return self.exec_run_handler('generic', acl_set_return)
 
 
