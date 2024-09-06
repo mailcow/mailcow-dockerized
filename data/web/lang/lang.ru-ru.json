@@ -476,6 +476,10 @@
     "debug": {
         "chart_this_server": "Диаграмма (текущий сервер)",
         "containers_info": "Статус контейнеров Docker",
+        "container_running": "Работающий",
+        "container_disabled": "Контейнер остановлен или отключен",
+        "container_stopped": "Остановлен",
+        "current_time": "Системное время",
         "disk_usage": "Использование дискового пространства",
         "docs": "Проиндексировано объектов",
         "external_logs": "Внешние журналы",
@@ -496,6 +500,7 @@
         "started_on": "Запущен в",
         "static_logs": "Статические журналы",
         "success": "Успех",
+        "no_update_available": "Система обновлена до последней версии",
         "system_containers": "Система и контейнеры",
         "uptime": "Время работы",
         "username": "Имя пользователя"
@@ -674,6 +679,7 @@
         "apps": "Приложения",
         "debug": "Состояние сервера",
         "email": "E-Mail",
+        "mailcow_system": "Система",
         "mailcow_config": "Конфигурация",
         "quarantine": "Карантин",
         "restart_netfilter": "Перезапустить netfilter",
