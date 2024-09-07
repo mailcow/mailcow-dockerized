@@ -35,6 +35,12 @@
             <input type="number" class="form-control" id="quarantine_max_age" name="max_age" value="{{ q_data.max_age }}" min="1" required>
           </div>
         </div>
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_outgoing_enabled">{{ lang.admin.quarantine_outgoing_enabled|raw }}</label>
+          <div class="col-sm-8">
+            <input type="checkbox" class="form-check-input" id="quarantine_outgoing_enabled" name="outgoing_enabled" {% if q_data.outgoing_enabled == 'on' %} checked{% endif %}>
+          </div>
+        </div>
         <hr>
         <div class="row mb-4">
           <label class="col-sm-4 control-label text-sm-end" for="quarantine_redirect"><i class="bi bi-box-arrow-right"></i> {{ lang.admin.quarantine_redirect|raw }}</label>
