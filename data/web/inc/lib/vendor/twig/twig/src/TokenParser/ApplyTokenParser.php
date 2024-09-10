@@ -36,16 +36,16 @@ final class ApplyTokenParser extends AbstractTokenParser
         $ref = new TempNameExpression($name, $lineno);
         $ref->setAttribute('always_defined', true);
 
-        $filter = $this->parser->getExpressionParser()->parseFilterExpressionRaw($ref, $this->getTag());
+        $filter = $this->parser->getExpressionParser()->parseFilterExpressionRaw($ref);
 
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
         $body = $this->parser->subparse([$this, 'decideApplyEnd'], true);
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
 
         return new Node([
-            new SetNode(true, $ref, $body, $lineno, $this->getTag()),
-            new PrintNode($filter, $lineno, $this->getTag()),
-        ]);
+            new SetNode(true, $ref, $body, $lineno),
+            new PrintNode($filter, $lineno),
+        ], [], $lineno);
     }
 
     public function decideApplyEnd(Token $token): bool

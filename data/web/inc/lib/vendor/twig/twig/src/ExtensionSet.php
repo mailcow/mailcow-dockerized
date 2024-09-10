@@ -15,6 +15,9 @@ use Twig\Error\RuntimeError;
 use Twig\Extension\ExtensionInterface;
 use Twig\Extension\GlobalsInterface;
 use Twig\Extension\StagingExtension;
+use Twig\Node\Expression\AbstractExpression;
+use Twig\Node\Expression\Binary\AbstractBinary;
+use Twig\Node\Expression\Unary\AbstractUnary;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\TokenParserInterface;
 
@@ -31,11 +34,23 @@ final class ExtensionSet
     private $staging;
     private $parsers;
     private $visitors;
+    /** @var array<string, TwigFilter> */
     private $filters;
+    /** @var array<string, TwigFilter> */
+    private $dynamicFilters;
+    /** @var array<string, TwigTest> */
     private $tests;
+    /** @var array<string, TwigTest> */
+    private $dynamicTests;
+    /** @var array<string, TwigFunction> */
     private $functions;
+    /** @var array<string, TwigFunction> */
+    private $dynamicFunctions;
+    /** @var array<string, array{precedence: int, class: class-string<AbstractExpression>}> */
     private $unaryOperators;
+    /** @var array<string, array{precedence: int, class?: class-string<AbstractExpression>, associativity: ExpressionParser::OPERATOR_*}> */
     private $binaryOperators;
+    /** @var array<string, mixed> */
     private $globals;
     private $functionCallbacks = [];
     private $filterCallbacks = [];
@@ -62,7 +77,7 @@ final class ExtensionSet
         $class = ltrim($class, '\\');
 
         if (!isset($this->extensions[$class])) {
-            throw new RuntimeError(sprintf('The "%s" extension is not enabled.', $class));
+            throw new RuntimeError(\sprintf('The "%s" extension is not enabled.', $class));
         }
 
         return $this->extensions[$class];
@@ -117,11 +132,11 @@ final class ExtensionSet
         $class = \get_class($extension);
 
         if ($this->initialized) {
-            throw new \LogicException(sprintf('Unable to register extension "%s" as extensions have already been initialized.', $class));
+            throw new \LogicException(\sprintf('Unable to register extension "%s" as extensions have already been initialized.', $class));
         }
 
         if (isset($this->extensions[$class])) {
-            throw new \LogicException(sprintf('Unable to register extension "%s" as it is already registered.', $class));
+            throw new \LogicException(\sprintf('Unable to register extension "%s" as it is already registered.', $class));
         }
 
         $this->extensions[$class] = $extension;
@@ -130,7 +145,7 @@ final class ExtensionSet
     public function addFunction(TwigFunction $function): void
     {
         if ($this->initialized) {
-            throw new \LogicException(sprintf('Unable to add function "%s" as extensions have already been initialized.', $function->getName()));
+            throw new \LogicException(\sprintf('Unable to add function "%s" as extensions have already been initialized.', $function->getName()));
         }
 
         $this->staging->addFunction($function);
@@ -158,14 +173,11 @@ final class ExtensionSet
             return $this->functions[$name];
         }
 
-        foreach ($this->functions as $pattern => $function) {
-            $pattern = str_replace('\\*', '(.*?)', preg_quote($pattern, '#'), $count);
-
-            if ($count && preg_match('#^'.$pattern.'$#', $name, $matches)) {
+        foreach ($this->dynamicFunctions as $pattern => $function) {
+            if (preg_match($pattern, $name, $matches)) {
                 array_shift($matches);
-                $function->setArguments($matches);
 
-                return $function;
+                return $function->withDynamicArguments($name, $function->getName(), $matches);
             }
         }
 
@@ -186,7 +198,7 @@ final class ExtensionSet
     public function addFilter(TwigFilter $filter): void
     {
         if ($this->initialized) {
-            throw new \LogicException(sprintf('Unable to add filter "%s" as extensions have already been initialized.', $filter->getName()));
+            throw new \LogicException(\sprintf('Unable to add filter "%s" as extensions have already been initialized.', $filter->getName()));
         }
 
         $this->staging->addFilter($filter);
@@ -214,14 +226,11 @@ final class ExtensionSet
             return $this->filters[$name];
         }
 
-        foreach ($this->filters as $pattern => $filter) {
-            $pattern = str_replace('\\*', '(.*?)', preg_quote($pattern, '#'), $count);
-
-            if ($count && preg_match('#^'.$pattern.'$#', $name, $matches)) {
+        foreach ($this->dynamicFilters as $pattern => $filter) {
+            if (preg_match($pattern, $name, $matches)) {
                 array_shift($matches);
-                $filter->setArguments($matches);
 
-                return $filter;
+                return $filter->withDynamicArguments($name, $filter->getName(), $matches);
             }
         }
 
@@ -305,6 +314,9 @@ final class ExtensionSet
         $this->parserCallbacks[] = $callable;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getGlobals(): array
     {
         if (null !== $this->globals) {
@@ -317,12 +329,7 @@ final class ExtensionSet
                 continue;
             }
 
-            $extGlobals = $extension->getGlobals();
-            if (!\is_array($extGlobals)) {
-                throw new \UnexpectedValueException(sprintf('"%s::getGlobals()" must return an array of globals.', \get_class($extension)));
-            }
-
-            $globals = array_merge($globals, $extGlobals);
+            $globals = array_merge($globals, $extension->getGlobals());
         }
 
         if ($this->initialized) {
@@ -332,10 +339,15 @@ final class ExtensionSet
         return $globals;
     }
 
+    public function resetGlobals(): void
+    {
+        $this->globals = null;
+    }
+
     public function addTest(TwigTest $test): void
     {
         if ($this->initialized) {
-            throw new \LogicException(sprintf('Unable to add test "%s" as extensions have already been initialized.', $test->getName()));
+            throw new \LogicException(\sprintf('Unable to add test "%s" as extensions have already been initialized.', $test->getName()));
         }
 
         $this->staging->addTest($test);
@@ -363,22 +375,20 @@ final class ExtensionSet
             return $this->tests[$name];
         }
 
-        foreach ($this->tests as $pattern => $test) {
-            $pattern = str_replace('\\*', '(.*?)', preg_quote($pattern, '#'), $count);
+        foreach ($this->dynamicTests as $pattern => $test) {
+            if (preg_match($pattern, $name, $matches)) {
+                array_shift($matches);
 
-            if ($count) {
-                if (preg_match('#^'.$pattern.'$#', $name, $matches)) {
-                    array_shift($matches);
-                    $test->setArguments($matches);
-
-                    return $test;
-                }
+                return $test->withDynamicArguments($name, $test->getName(), $matches);
             }
         }
 
         return null;
     }
 
+    /**
+     * @return array<string, array{precedence: int, class: class-string<AbstractExpression>}>
+     */
     public function getUnaryOperators(): array
     {
         if (!$this->initialized) {
@@ -388,6 +398,9 @@ final class ExtensionSet
         return $this->unaryOperators;
     }
 
+    /**
+     * @return array<string, array{precedence: int, class?: class-string<AbstractExpression>, associativity: ExpressionParser::OPERATOR_*}>
+     */
     public function getBinaryOperators(): array
     {
         if (!$this->initialized) {
@@ -403,6 +416,9 @@ final class ExtensionSet
         $this->filters = [];
         $this->functions = [];
         $this->tests = [];
+        $this->dynamicFilters = [];
+        $this->dynamicFunctions = [];
+        $this->dynamicTests = [];
         $this->visitors = [];
         $this->unaryOperators = [];
         $this->binaryOperators = [];
@@ -419,17 +435,26 @@ final class ExtensionSet
     {
         // filters
         foreach ($extension->getFilters() as $filter) {
-            $this->filters[$filter->getName()] = $filter;
+            $this->filters[$name = $filter->getName()] = $filter;
+            if (str_contains($name, '*')) {
+                $this->dynamicFilters['#^'.str_replace('\\*', '(.*?)', preg_quote($name, '#')).'$#'] = $filter;
+            }
         }
 
         // functions
         foreach ($extension->getFunctions() as $function) {
-            $this->functions[$function->getName()] = $function;
+            $this->functions[$name = $function->getName()] = $function;
+            if (str_contains($name, '*')) {
+                $this->dynamicFunctions['#^'.str_replace('\\*', '(.*?)', preg_quote($name, '#')).'$#'] = $function;
+            }
         }
 
         // tests
         foreach ($extension->getTests() as $test) {
-            $this->tests[$test->getName()] = $test;
+            $this->tests[$name = $test->getName()] = $test;
+            if (str_contains($name, '*')) {
+                $this->dynamicTests['#^'.str_replace('\\*', '(.*?)', preg_quote($name, '#')).'$#'] = $test;
+            }
         }
 
         // token parsers
@@ -449,11 +474,11 @@ final class ExtensionSet
         // operators
         if ($operators = $extension->getOperators()) {
             if (!\is_array($operators)) {
-                throw new \InvalidArgumentException(sprintf('"%s::getOperators()" must return an array with operators, got "%s".', \get_class($extension), \is_object($operators) ? \get_class($operators) : \gettype($operators).(\is_resource($operators) ? '' : '#'.$operators)));
+                throw new \InvalidArgumentException(\sprintf('"%s::getOperators()" must return an array with operators, got "%s".', \get_class($extension), \is_object($operators) ? \get_class($operators) : \gettype($operators).(\is_resource($operators) ? '' : '#'.$operators)));
             }
 
             if (2 !== \count($operators)) {
-                throw new \InvalidArgumentException(sprintf('"%s::getOperators()" must return an array of 2 elements, got %d.', \get_class($extension), \count($operators)));
+                throw new \InvalidArgumentException(\sprintf('"%s::getOperators()" must return an array of 2 elements, got %d.', \get_class($extension), \count($operators)));
             }
 
             $this->unaryOperators = array_merge($this->unaryOperators, $operators[0]);

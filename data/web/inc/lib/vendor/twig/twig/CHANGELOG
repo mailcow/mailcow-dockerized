@@ -1,3 +1,178 @@
+# 3.14.0 (2024-09-09)
+
+ * Fix a security issue when an included sandboxed template has been loaded before without the sandbox context
+ * Add the possibility to reset globals via `Environment::resetGlobals()`
+ * Deprecate `Environment::mergeGlobals()`
+
+# 3.13.0 (2024-09-07)
+
+ * Add the `types` tag (experimental)
+ * Deprecate the `Twig\Test\NodeTestCase::getTests()` data provider, override `provideTests()` instead.
+ * Mark `Twig\Test\NodeTestCase::getEnvironment()` as final, override `createEnvironment()` instead.
+ * Deprecate `Twig\Test\NodeTestCase::getVariableGetter()`, call `createVariableGetter()` instead.
+ * Deprecate `Twig\Test\NodeTestCase::getAttributeGetter()`, call `createAttributeGetter()` instead.
+ * Deprecate not overriding `Twig\Test\IntegrationTestCase::getFixturesDirectory()`, this method will be abstract in 4.0
+ * Marked `Twig\Test\IntegrationTestCase::getTests()` and `getLegacyTests()` as final
+
+# 3.12.0 (2024-08-29)
+
+ * Deprecate the fact that the `extends` and `use` tags are always allowed in a sandboxed template.
+   This behavior will change in 4.0 where these tags will need to be explicitly allowed like any other tag.
+ * Deprecate the "tag" constructor argument of the "Twig\Node\Node" class as the tag is now automatically set by the Parser when needed
+ * Fix precedence of two-word tests when the first word is a valid test
+ * Deprecate the `spaceless` filter
+ * Deprecate some internal methods from `Parser`: `getBlockStack()`, `hasBlock()`, `getBlock()`, `hasMacro()`, `hasTraits()`, `getParent()`
+ * Deprecate passing `null` to `Twig\Parser::setParent()`
+ * Update `Node::__toString()` to include the node tag if set
+ * Add support for integers in methods of `Twig\Node\Node` that take a Node name
+ * Deprecate not passing a `BodyNode` instance as the body of a `ModuleNode` or `MacroNode` constructor
+ * Deprecate returning "null" from "TokenParserInterface::parse()".
+ * Deprecate `OptimizerNodeVisitor::OPTIMIZE_TEXT_NODES`
+ * Fix performance regression when `use_yield` is `false` (which is the default)
+ * Improve compatibility when `use_yield` is `false` (as extensions still using `echo` will work as is)
+ * Accept colons (`:`) in addition to equals (`=`) to separate argument names and values in named arguments
+ * Add the `html_cva` function (in the HTML extra package)
+ * Add support for named arguments to the `block` and `attribute` functions
+ * Throw a SyntaxError exception at compile time when a Twig callable has not the minimum number of required arguments
+ * Add a `CallableArgumentsExtractor` class
+ * Deprecate passing a name to `FunctionExpression`, `FilterExpression`, and `TestExpression`;
+   pass a `TwigFunction`, `TwigFilter`, or `TestFilter` instead
+ * Deprecate all Twig callable attributes on `FunctionExpression`, `FilterExpression`, and `TestExpression`
+ * Deprecate the `filter` node of `FilterExpression`
+ * Add the notion of Twig callables (functions, filters, and tests)
+ * Bump minimum PHP version to 8.0
+ * Fix integration tests when a test has more than one data/expect section and deprecations
+ * Add the `enum_cases` function
+
+# 3.11.0 (2024-08-08)
+
+ * Deprecate `OptimizerNodeVisitor::OPTIMIZE_RAW_FILTER`
+ * Add `Twig\Cache\ChainCache` and `Twig\Cache\ReadOnlyFilesystemCache`
+ * Add the possibility to deprecate attributes and nodes on `Node`
+ * Add the possibility to add a package and a version to the `deprecated` tag
+ * Add the possibility to add a package for filter/function/test deprecations
+ * Mark `ConstantExpression` as being `@final`
+ * Add the `find` filter
+ * Fix optimizer mode validation in `OptimizerNodeVisitor`
+ * Add the possibility to yield from a generator in `PrintNode`
+ * Add the `shuffle` filter
+ * Add the `singular` and `plural` filters in `StringExtension`
+ * Deprecate the second argument of `Twig\Node\Expression\CallExpression::compileArguments()`
+ * Deprecate `Twig\ExpressionParser\parseHashExpression()` in favor of
+   `Twig\ExpressionParser::parseMappingExpression()`
+ * Deprecate `Twig\ExpressionParser\parseArrayExpression()` in favor of
+   `Twig\ExpressionParser::parseSequenceExpression()`
+ * Add `sequence` and `mapping` tests
+ * Deprecate `Twig\Node\Expression\NameExpression::isSimple()` and
+    `Twig\Node\Expression\NameExpression::isSpecial()`
+
+# 3.10.3 (2024-05-16)
+
+ * Fix missing ; in generated code
+
+# 3.10.2 (2024-05-14)
+
+ * Fix support for the deprecated escaper signature
+
+# 3.10.1 (2024-05-12)
+
+ * Fix BC break on escaper extension
+ * Fix constant return type
+
+# 3.10.0 (2024-05-11)
+
+ * Make `CoreExtension::formatDate`, `CoreExtension::convertDate`, and
+   `CoreExtension::formatNumber` part of the public API
+ * Add `needs_charset` option for filters and functions
+ * Extract the escaping logic from the `EscaperExtension` class to a new
+   `EscaperRuntime` class.
+
+   The following methods from ``Twig\\Extension\\EscaperExtension`` are
+   deprecated: ``setEscaper()``, ``getEscapers()``, ``setSafeClasses``,
+   ``addSafeClasses()``. Use the same methods on the
+   ``Twig\\Runtime\\EscaperRuntime`` class instead.
+  * Fix capturing output from extensions that still use echo
+  * Fix a PHP warning in the Lexer on malformed templates
+  * Fix blocks not available under some circumstances
+  * Synchronize source context in templates when setting a Node on a Node
+
+# 3.9.3 (2024-04-18)
+
+ * Add missing `twig_escape_filter_is_safe` deprecated function
+ * Fix yield usage with CaptureNode
+ * Add missing unwrap call when using a TemplateWrapper instance internally
+ * Ensure Lexer is initialized early on
+
+# 3.9.2 (2024-04-17)
+
+ * Fix usage of display_end hook
+
+# 3.9.1 (2024-04-17)
+
+ * Fix missing `$blocks` variable in `CaptureNode`
+
+# 3.9.0 (2024-04-16)
+
+ * Add support for PHP 8.4
+ * Deprecate AbstractNodeVisitor
+ * Deprecate passing Template to Environment::resolveTemplate(), Environment::load(), and Template::loadTemplate()
+ * Add a new "yield" mode for output generation;
+   Node implementations that use "echo" or "print" should use "yield" instead;
+   all Node implementations should be flagged with `#[YieldReady]` once they've been made ready for "yield";
+   the "use_yield" Environment option can be turned on when all nodes have been made `#[YieldReady]`;
+   "yield" will be the only strategy supported in the next major version
+ * Add return type for Symfony 7 compatibility
+ * Fix premature loop exit in Security Policy lookup of allowed methods/properties
+ * Deprecate all internal extension functions in favor of methods on the extension classes
+ * Mark all extension functions as @internal
+ * Add SourcePolicyInterface to selectively enable the Sandbox based on a template's Source
+ * Throw a proper Twig exception when using cycle on an empty array
+
+# 3.8.0 (2023-11-21)
+
+ * Catch errors thrown during template rendering
+ * Fix IntlExtension::formatDateTime use of date formatter prototype
+ * Fix premature loop exit in Security Policy lookup of allowed methods/properties
+ * Remove NumberFormatter::TYPE_CURRENCY (deprecated in PHP 8.3)
+ * Restore return type annotations
+ * Allow Symfony 7 packages to be installed
+ * Deprecate `twig_test_iterable` function. Use the native `is_iterable` instead.
+
+# 3.7.1 (2023-08-28)
+
+ * Fix some phpdocs
+
+# 3.7.0 (2023-07-26)
+
+ * Add support for the ...spread operator on arrays and hashes
+
+# 3.6.1 (2023-06-08)
+
+ * Suppress some native return type deprecation messages
+
+# 3.6.0 (2023-05-03)
+
+ * Allow psr/container 2.0
+ * Add the new PHP 8.0 IntlDateFormatter::RELATIVE_* constants for date formatting
+ * Make the Lexer initialize itself lazily
+
+# 3.5.1 (2023-02-08)
+
+ * Arrow functions passed to the "reduce" filter now accept the current key as a third argument
+ * Restores the leniency of the matches twig comparison
+ * Fix error messages in sandboxed mode for "has some" and "has every"
+
+# 3.5.0 (2022-12-27)
+
+ * Make Twig\ExpressionParser non-internal
+ * Add "has some" and "has every" operators
+ * Add Compile::reset()
+ * Throw a better runtime error when the "matches" regexp is not valid
+ * Add "twig *_names" intl functions
+ * Fix optimizing closures callbacks
+ * Add a better exception when getting an undefined constant via `constant`
+ * Fix `if` nodes when outside of a block and with an empty body
+
 # 3.4.3 (2022-09-28)
 
  * Fix a security issue on filesystem loader (possibility to load a template outside a configured directory)
@@ -141,7 +316,7 @@
  * removed Parser::isReservedMacroName()
  * removed SanboxedPrintNode
  * removed Node::setTemplateName()
- * made classes maked as "@final" final
+ * made classes marked as "@final" final
  * removed InitRuntimeInterface, ExistsLoaderInterface, and SourceContextLoaderInterface
  * removed the "spaceless" tag
  * removed Twig\Environment::getBaseTemplateClass() and Twig\Environment::setBaseTemplateClass()

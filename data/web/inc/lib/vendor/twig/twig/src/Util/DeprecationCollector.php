@@ -20,11 +20,9 @@ use Twig\Source;
  */
 final class DeprecationCollector
 {
-    private $twig;
-
-    public function __construct(Environment $twig)
-    {
-        $this->twig = $twig;
+    public function __construct(
+        private Environment $twig,
+    ) {
     }
 
     /**
@@ -60,6 +58,8 @@ final class DeprecationCollector
             if (\E_USER_DEPRECATED === $type) {
                 $deprecations[] = $msg;
             }
+
+            return false;
         });
 
         foreach ($iterator as $name => $contents) {

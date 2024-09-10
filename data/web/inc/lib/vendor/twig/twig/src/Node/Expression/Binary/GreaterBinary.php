@@ -24,7 +24,7 @@ class GreaterBinary extends AbstractBinary
         }
 
         $compiler
-            ->raw('(1 === twig_compare(')
+            ->raw('(1 === CoreExtension::compare(')
             ->subcompile($this->getNode('left'))
             ->raw(', ')
             ->subcompile($this->getNode('right'))

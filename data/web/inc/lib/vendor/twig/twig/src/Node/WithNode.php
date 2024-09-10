@@ -11,6 +11,7 @@
 
 namespace Twig\Node;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 
 /**
@@ -18,16 +19,17 @@ use Twig\Compiler;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
+#[YieldReady]
 class WithNode extends Node
 {
-    public function __construct(Node $body, ?Node $variables, bool $only, int $lineno, string $tag = null)
+    public function __construct(Node $body, ?Node $variables, bool $only, int $lineno)
     {
         $nodes = ['body' => $body];
         if (null !== $variables) {
             $nodes['variables'] = $variables;
         }
 
-        parent::__construct($nodes, ['only' => $only], $lineno, $tag);
+        parent::__construct($nodes, ['only' => $only], $lineno);
     }
 
     public function compile(Compiler $compiler): void
@@ -36,35 +38,35 @@ class WithNode extends Node
 
         $parentContextName = $compiler->getVarName();
 
-        $compiler->write(sprintf("\$%s = \$context;\n", $parentContextName));
+        $compiler->write(\sprintf("\$%s = \$context;\n", $parentContextName));
 
         if ($this->hasNode('variables')) {
             $node = $this->getNode('variables');
             $varsName = $compiler->getVarName();
             $compiler
-                ->write(sprintf('$%s = ', $varsName))
+                ->write(\sprintf('$%s = ', $varsName))
                 ->subcompile($node)
                 ->raw(";\n")
-                ->write(sprintf("if (!twig_test_iterable(\$%s)) {\n", $varsName))
+                ->write(\sprintf("if (!is_iterable(\$%s)) {\n", $varsName))
                 ->indent()
-                ->write("throw new RuntimeError('Variables passed to the \"with\" tag must be a hash.', ")
+                ->write("throw new RuntimeError('Variables passed to the \"with\" tag must be a mapping.', ")
                 ->repr($node->getTemplateLine())
                 ->raw(", \$this->getSourceContext());\n")
                 ->outdent()
                 ->write("}\n")
-                ->write(sprintf("\$%s = twig_to_array(\$%s);\n", $varsName, $varsName))
+                ->write(\sprintf("\$%s = CoreExtension::toArray(\$%s);\n", $varsName, $varsName))
             ;
 
             if ($this->getAttribute('only')) {
                 $compiler->write("\$context = [];\n");
             }
 
-            $compiler->write(sprintf("\$context = \$this->env->mergeGlobals(array_merge(\$context, \$%s));\n", $varsName));
+            $compiler->write(\sprintf("\$context = \$%s + \$context + \$this->env->getGlobals();\n", $varsName));
         }
 
         $compiler
             ->subcompile($this->getNode('body'))
-            ->write(sprintf("\$context = \$%s;\n", $parentContextName))
+            ->write(\sprintf("\$context = \$%s;\n", $parentContextName))
         ;
     }
 }

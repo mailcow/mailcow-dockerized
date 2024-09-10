@@ -1,6 +1,0 @@
-/doc/_build/vendor
-/doc/_build/output
-/composer.lock
-/phpunit.xml
-/vendor
-.phpunit.result.cache

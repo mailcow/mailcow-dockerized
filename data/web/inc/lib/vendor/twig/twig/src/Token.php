@@ -17,10 +17,6 @@ namespace Twig;
  */
 final class Token
 {
-    private $value;
-    private $type;
-    private $lineno;
-
     public const EOF_TYPE = -1;
     public const TEXT_TYPE = 0;
     public const BLOCK_START_TYPE = 1;
@@ -35,17 +31,18 @@ final class Token
     public const INTERPOLATION_START_TYPE = 10;
     public const INTERPOLATION_END_TYPE = 11;
     public const ARROW_TYPE = 12;
+    public const SPREAD_TYPE = 13;
 
-    public function __construct(int $type, $value, int $lineno)
-    {
-        $this->type = $type;
-        $this->value = $value;
-        $this->lineno = $lineno;
+    public function __construct(
+        private int $type,
+        private $value,
+        private int $lineno,
+    ) {
     }
 
     public function __toString()
     {
-        return sprintf('%s(%s)', self::typeToString($this->type, true), $this->value);
+        return \sprintf('%s(%s)', self::typeToString($this->type, true), $this->value);
     }
 
     /**
@@ -67,9 +64,9 @@ final class Token
         }
 
         return ($this->type === $type) && (
-            null === $values ||
-            (\is_array($values) && \in_array($this->value, $values)) ||
-            $this->value == $values
+            null === $values
+            || (\is_array($values) && \in_array($this->value, $values))
+            || $this->value == $values
         );
     }
 
@@ -133,8 +130,11 @@ final class Token
             case self::ARROW_TYPE:
                 $name = 'ARROW_TYPE';
                 break;
+            case self::SPREAD_TYPE:
+                $name = 'SPREAD_TYPE';
+                break;
             default:
-                throw new \LogicException(sprintf('Token of type "%s" does not exist.', $type));
+                throw new \LogicException(\sprintf('Token of type "%s" does not exist.', $type));
         }
 
         return $short ? $name : 'Twig\Token::'.$name;
@@ -171,8 +171,10 @@ final class Token
                 return 'end of string interpolation';
             case self::ARROW_TYPE:
                 return 'arrow function';
+            case self::SPREAD_TYPE:
+                return 'spread operator';
             default:
-                throw new \LogicException(sprintf('Token of type "%s" does not exist.', $type));
+                throw new \LogicException(\sprintf('Token of type "%s" does not exist.', $type));
         }
     }
 }

@@ -30,18 +30,18 @@ final class WithTokenParser extends AbstractTokenParser
 
         $variables = null;
         $only = false;
-        if (!$stream->test(/* Token::BLOCK_END_TYPE */ 3)) {
+        if (!$stream->test(Token::BLOCK_END_TYPE)) {
             $variables = $this->parser->getExpressionParser()->parseExpression();
-            $only = (bool) $stream->nextIf(/* Token::NAME_TYPE */ 5, 'only');
+            $only = (bool) $stream->nextIf(Token::NAME_TYPE, 'only');
         }
 
-        $stream->expect(/* Token::BLOCK_END_TYPE */ 3);
+        $stream->expect(Token::BLOCK_END_TYPE);
 
         $body = $this->parser->subparse([$this, 'decideWithEnd'], true);
 
-        $stream->expect(/* Token::BLOCK_END_TYPE */ 3);
+        $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new WithNode($body, $variables, $only, $token->getLine(), $this->getTag());
+        return new WithNode($body, $variables, $only, $token->getLine());
     }
 
     public function decideWithEnd(Token $token): bool

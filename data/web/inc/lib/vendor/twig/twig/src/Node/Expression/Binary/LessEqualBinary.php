@@ -24,7 +24,7 @@ class LessEqualBinary extends AbstractBinary
         }
 
         $compiler
-            ->raw('(0 >= twig_compare(')
+            ->raw('(0 >= CoreExtension::compare(')
             ->subcompile($this->getNode('left'))
             ->raw(', ')
             ->subcompile($this->getNode('right'))
