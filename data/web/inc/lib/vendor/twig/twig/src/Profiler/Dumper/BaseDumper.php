@@ -50,7 +50,7 @@ abstract class BaseDumper
         if ($profile->getDuration() * 1000 < 1) {
             $str = $start."\n";
         } else {
-            $str = sprintf("%s %s\n", $start, $this->formatTime($profile, $percent));
+            $str = \sprintf("%s %s\n", $start, $this->formatTime($profile, $percent));
         }
 
         $nCount = \count($profile->getProfiles());

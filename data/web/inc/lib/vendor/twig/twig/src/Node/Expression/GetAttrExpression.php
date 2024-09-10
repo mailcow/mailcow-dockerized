@@ -57,7 +57,7 @@ class GetAttrExpression extends AbstractExpression
             return;
         }
 
-        $compiler->raw('twig_get_attribute($this->env, $this->source, ');
+        $compiler->raw('CoreExtension::getAttribute($this->env, $this->source, ');
 
         if ($this->getAttribute('ignore_strict_check')) {
             $this->getNode('node')->setAttribute('ignore_strict_check', true);
