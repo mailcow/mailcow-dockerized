@@ -19,6 +19,12 @@ Please see [the official documentation](https://docs.mailcow.email/) for install
 
 🐛 **If you found a critical security issue, please mail us to [info at servercow.de](mailto:info@servercow.de).**
 
+## Self-Hosting MailCow
+
+### Elestio
+
+[![Deploy on Elestio](https://elest.io/images/logos/deploy-to-elestio-btn.png)](https://elest.io/open-source/mailcow)
+
 ## Cowmunity
 
 [mailcow community](https://community.mailcow.email)
