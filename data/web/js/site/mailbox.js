@@ -894,7 +894,10 @@ jQuery(function($){
             item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
 
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login + '/' + item.last_sso_login;
+            item.last_mail_login = (item.attributes.imap_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(item.last_imap_login)) + '</div><br>' : '') +
+                                   (item.attributes.pop3_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(item.last_pop3_login)) + '</div><br>' : '') +
+                                   (item.attributes.smtp_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(item.last_smtp_login)) + '</div><br>' : '') +
+                                   '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(item.last_sso_login)) + '</div>';
             /*
             if (!item.rl) {
               item.rl = '∞';
@@ -1010,14 +1013,7 @@ jQuery(function($){
           data: 'last_mail_login',
           searchable: false,
           defaultContent: '',
-          responsivePriority: 7,
-          render: function (data, type) {
-            res = data.split("/");
-            return '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(res[2])) + '</div><br>' +
-              '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(res[3])) + '</div>';
-          }
+          responsivePriority: 7
         },
         {
           title: lang.last_pw_change,
