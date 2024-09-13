@@ -33,7 +33,7 @@
             <ul class="dropdown-menu">
               {% for domain in user_domains %}
                 <li>
-                  <a class="dropdown-item" data-action="add_item" data-api-url='add/time_limited_alias' data-api-attr='{"domain":"{{ domain }}"}' href="#">
+                  <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#tempAliasModal" onclick='$("#tempAliasModal #temp_alias_domain").val("{{ domain }}")' href="#">
                     @ {{ domain }}
                   </a>
                 </li>

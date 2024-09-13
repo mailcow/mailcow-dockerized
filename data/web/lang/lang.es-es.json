@@ -709,6 +709,7 @@
         "create_syncjob": "Crear nuevo trabajo de sincronización",
         "daily": "Cada día",
         "day": "Día",
+        "description": "Descripción",
         "direct_aliases": "Alias directos",
         "direct_aliases_desc": "Los alias directos se ven afectadas por el filtro de correo no deseado y la configuración de la política TLS del usuario.",
         "eas_reset": "Resetear el caché ActiveSync",
