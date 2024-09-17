@@ -21,11 +21,11 @@
         {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
         <div class="my-4 alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
         {% endif %}
-        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend><hr />
+        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend><hr>
         {% if is_mobileconfig %}
         <div class="my-4 alert alert-info ">{{ lang.login.mobileconfig_info }}</div>
         {% endif %}
-        <form method="post" autofill="off">
+        <form method="post" autocomplete="off">
           <div class="d-flex mt-3">
             <label class="visually-hidden" for="login_user">{{ lang.login.username }}</label>
             <div class="input-group">
@@ -71,7 +71,7 @@
         {% endif %}
         <div class="my-4" id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) %}
-        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
+        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr>
         <div class="my-2 d-grid gap-2 d-sm-block apps">
           {% for app in mailcow_apps %}
             {% if not skip_sogo or not is_uri('SOGo', app.link) %}
