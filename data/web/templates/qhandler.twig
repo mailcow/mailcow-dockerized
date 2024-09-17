@@ -14,7 +14,7 @@
             {{ lang.quarantine.remove }}
           {% endif %}
         </legend>
-        <hr />
+        <hr>
         <p>{{ lang.quarantine.qhandler_success }}</p>
       </div>
     </div>
@@ -26,10 +26,10 @@
       <div class="card-header"><i class="bi bi-patch-exclamation-fill"></i> {{ lang.header.quarantine }}</div>
       <div class="card-body">
         {% if action == 'release' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend><hr />
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.release }}</legend><hr>
         {% endif %}
         {% if action == 'delete' %}
-        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend><hr />
+        <legend id="qtitle" data-hash="{{ hash }}">{{ lang.quarantine.remove }}</legend><hr>
         {% endif %}
         <div id="qid_error" style="display:none" class="alert alert-danger"></div>
         <div>
@@ -58,7 +58,7 @@
           <p id="qid_detail_fuzzy"></p>
         </div>
         <div id="qactions">
-          <form method="post" autofill="off">
+          <form method="post" autocomplete="off">
             <div>
               {% if action == 'release' %}
               <button type="submit" class="btn btn-success" name="quick_release" value="{{ hash }}">{{ lang.quarantine.confirm }}</button>
