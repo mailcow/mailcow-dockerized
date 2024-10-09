@@ -2,7 +2,7 @@
 function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
   global $pdo;
   global $redis;
-  
+
   $is_internal = $extra['is_internal'];
   $role = $extra['role'];
 
@@ -194,7 +194,7 @@ function user_login($user, $pass, $extra = null){
       $result = ldap_mbox_login($user, $pass, $iam_settings, array('is_internal' => $is_internal, 'create' => true));
       if ($result !== false) return $result;
     }
-  } 
+  }
   if ($row['active'] != 1) {
     return false;
   }
@@ -313,7 +313,7 @@ function user_login($user, $pass, $extra = null){
       }
     break;
   }
- 
+
   return false;
 }
 function apppass_login($user, $pass, $app_passwd_data, $extra = null){
@@ -364,7 +364,7 @@ function apppass_login($user, $pass, $app_passwd_data, $extra = null){
     ':user' => $user,
   ));
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  
+
   foreach ($rows as $row) {
     if ($protocol && $row[$protocol . '_access'] != '1'){
       continue;
@@ -476,7 +476,7 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
 }
 function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
   global $pdo;
-  
+
   $iam_provider = identity_provider();
   $is_internal = $extra['is_internal'];
   $create = $extra['create'];
@@ -489,6 +489,9 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
         'msg' => 'malformed_username'
       );
     }
+    return false;
+  }
+  if (!$iam_provider) {
     return false;
   }
 
