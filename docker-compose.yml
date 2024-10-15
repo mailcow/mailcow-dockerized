@@ -224,7 +224,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:2.1
+      image: mailcow/dovecot:2.2
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -308,7 +308,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.76
+      image: mailcow/postfix:1.77
       depends_on:
         mysql-mailcow:
           condition: service_started
