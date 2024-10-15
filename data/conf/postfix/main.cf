@@ -170,6 +170,8 @@ smtputf8_enable = no
 submission_smtpd_tls_mandatory_protocols = >=TLSv1.2
 smtps_smtpd_tls_mandatory_protocols = >=TLSv1.2
 parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks,qmqpd_authorized_clients
+# This Option is added to correctly set the X-Original-To Header when mails are send to lmtp (dovecot)
+lmtp_destination_recipient_limit=1
 
 # DO NOT EDIT ANYTHING BELOW #
 # Overrides #
