@@ -1,6 +1,7 @@
 <?php
+
 /**
- * IO Exception
+ * IO Exception.
  *
  * Please report bugs on https://github.com/matthiasmullie/minify/issues
  *
@@ -8,12 +9,12 @@
  * @copyright Copyright (c) 2012, Matthias Mullie. All rights reserved
  * @license MIT License
  */
+
 namespace MatthiasMullie\Minify\Exceptions;
 
 /**
- * IO Exception Class
+ * IO Exception Class.
  *
- * @package Minify\Exception
  * @author Matthias Mullie <minify@mullie.eu>
  */
 class IOException extends BasicException
