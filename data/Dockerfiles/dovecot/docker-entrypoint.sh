@@ -114,15 +114,15 @@ if [[ "${FLATCURVE_EXPERIMENTAL}" =~ ^([yY][eE][sS]|[yY]) ]]; then
 echo -e "\e[33mActivating Flatcurve as FTS Backend...\e[0m"
 echo -e "\e[33mDepending on your previous setup a full reindex might be needed... \e[0m"
 echo -e "\e[34mVisit https://docs.mailcow.email/manual-guides/Dovecot/u_e-dovecot-fts/#fts-related-dovecot-commands to learn how to reindex\e[0m"
-echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_flatcurve listescape replication' > /etc/dovecot/mail_plugins
+echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_flatcurve listescape replication lazy_expunge' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify mail_log fts fts_flatcurve listescape replication' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_flatcurve notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
 elif [[ "${SKIP_SOLR}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify listescape replication' > /etc/dovecot/mail_plugins
+echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify listescape replication lazy_expunge' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify listescape replication mail_log' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
 else
-echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_solr listescape replication' > /etc/dovecot/mail_plugins
+echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_solr listescape replication lazy_expunge' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify mail_log fts fts_solr listescape replication' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_solr notify listescape replication' > /etc/dovecot/mail_plugins_lmtp
 fi
