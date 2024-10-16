@@ -105,7 +105,7 @@ retry      unix  -       -       n       -       -       error
 discard    unix  -       -       n       -       -       discard
 local      unix  -       n       n       -       -       local
 virtual    unix  -       n       n       -       -       virtual
-lmtp       unix  -       -       n       -       -       lmtp
+lmtp       unix  -       -       n       -       -       lmtp flags=O
 anvil      unix  -       -       n       -       1       anvil
 scache     unix  -       -       n       -       1       scache
 maildrop   unix  -       n       n       -       -       pipe flags=DRhu
