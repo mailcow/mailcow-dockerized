@@ -17,7 +17,7 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.5
+      image: mariadb:10.11
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
