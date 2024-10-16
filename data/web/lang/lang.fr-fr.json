@@ -1101,6 +1101,7 @@
         "create_syncjob": "Créer une tâche de synchronisation",
         "daily": "Quotidien",
         "day": "jour",
+        "description": "Description",
         "delete_ays": "Veuillez confirmer le processus de suppression.",
         "direct_aliases": "Adresses alias directes",
         "direct_aliases_desc": "Les adresses d’alias directes sont affectées par le filtre anti-spam et les paramètres de politique TLS.",
