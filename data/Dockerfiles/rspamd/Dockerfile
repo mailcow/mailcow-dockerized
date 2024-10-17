@@ -1,8 +1,8 @@
 FROM debian:bookworm-slim
-LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.9.1-1~82f43560f
+ARG RSPAMD_VER=rspamd_3.10.1-1~9de95c2b6
 ARG CODENAME=bookworm
 ENV LC_ALL=C
 
