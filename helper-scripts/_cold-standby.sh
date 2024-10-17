@@ -230,7 +230,7 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
       --network $(docker network ls -qf name=${CMPS_PRJ}_) \
       -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
       --entrypoint= \
-      -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
+      -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup:Z \
       ${SQLIMAGE} mariabackup --host mysql --user root --password ${DBROOT} --backup --target-dir=/backup 2>/dev/null ; then
         >&2 echo -e "\e[31m[ERR]\e[0m - Could not create MariaDB backup on source"
         rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
@@ -240,7 +240,7 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
     if ! docker run --rm \
       --network $(docker network ls -qf name=${CMPS_PRJ}_) \
       --entrypoint= \
-      -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
+      -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup:Z \
       ${SQLIMAGE} mariabackup --prepare --target-dir=/backup 2> /dev/null ; then
         >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer MariaDB backup to remote"
         rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
