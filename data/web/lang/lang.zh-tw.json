@@ -511,7 +511,7 @@
         "architecture": "結構",
         "current_time": "系統時間",
         "container_running": "正在執行",
-        "memory": "記憶",
+        "memory": "記憶體",
         "container_disabled": "容器停止或停用",
         "container_stopped": "已停止",
         "cores": "核心",
