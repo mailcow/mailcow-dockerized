@@ -9,7 +9,7 @@ ARG IMAGICK_PECL_VERSION=3.7.0
 # renovate: datasource=github-tags depName=php/pecl-mail-mailparse versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MAILPARSE_PECL_VERSION=3.1.8
 # renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
-ARG MEMCACHED_PECL_VERSION=3.2.0
+ARG MEMCACHED_PECL_VERSION=3.3.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG REDIS_PECL_VERSION=6.1.0
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
