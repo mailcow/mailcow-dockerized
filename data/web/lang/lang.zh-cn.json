@@ -28,7 +28,8 @@
         "spam_score": "垃圾邮件分数",
         "syncjobs": "同步任务",
         "tls_policy": "TLS 策略",
-        "unlimited_quota": "无限邮箱容量配额"
+        "unlimited_quota": "无限邮箱容量配额",
+        "pw_reset": "允许重置mailcow使用者密码"
     },
     "add": {
         "activate_filter_warn": "当“启用”选项被勾选后，其它所有的过滤器都会被禁用。",
@@ -338,7 +339,26 @@
         "yes": "&#10003;",
         "options": "选项",
         "f2b_max_ban_time": "最长封禁时间（秒）",
-        "copy_to_clipboard": "复制到粘贴板"
+        "copy_to_clipboard": "复制到粘贴板",
+        "reset_password_vars": "<code>{{link}}</code> 生成的密码重置链接<br><code>{{username}}</code> 要求重置密码的使用者的邮箱名称<br><code>{{username2}}</code> 复原邮箱名称<br><code>{{date}}</code> 要求重置密码之日期<br><code>{{token_lifetime}}</code> 令牌(token)过期时间(以分钟计)<br><code>{{hostname}}</code> mailcow 主机名",
+        "logo_normal_label": "正常",
+        "f2b_manage_external_info": "Fail2Ban 还会持续维护封禁列表，但不会主动设置规则阻挡流量。请使用以下生成的封禁列表在外部阻止流量。",
+        "password_reset_info": "若无提供复原电子邮箱，此功能将无法使用。",
+        "f2b_ban_time_increment": "禁止时间会随着禁止次数增加",
+        "logo_dark_label": "为深色模式反色",
+        "cors_settings": "CORS 设定",
+        "f2b_manage_external": "外部管理Fail2Ban",
+        "ip_check_opt_in": "使用第三方服务 <strong>ipv4.mailcow.email</strong> 及 <strong>ipv6.mailcow.email</strong> 以解析外部IP地址。",
+        "password_reset_settings": "密码复原设置",
+        "password_reset_tmpl_html": "HTML 模版",
+        "password_reset_tmpl_text": "文字模版",
+        "password_settings": "密码设定",
+        "restore_template": "留空以恢复预设模版",
+        "ip_check": "IP 检查",
+        "ip_check_disabled": "IP 检查已禁用。你可透过以下路径启用<br> <strong>系统 > 配置 > 选项 > 页面自定义</strong>",
+        "queue_unban": "解除封禁",
+        "allowed_methods": "访问控制允许方式",
+        "allowed_origins": "访问控制允许原"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -459,7 +479,9 @@
         "value_missing": "请填入所有值",
         "yotp_verification_failed": "Yubico OTP 认证失败: %s",
         "template_exists": "模板 %s 已存在",
-        "template_name_invalid": "模板名称无效"
+        "template_name_invalid": "模板名称无效",
+        "cors_invalid_method": "制定的允许模式无效",
+        "cors_invalid_origin": "指定的允许原无效"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
