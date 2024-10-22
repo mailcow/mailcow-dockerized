@@ -40,7 +40,7 @@
         "exclude": "Izslēgt objektus (regex)",
         "full_name": "Pilns vārds",
         "goto_null": "Klusām dzēst pastu",
-        "hostname": "Hosta nosaukums",
+        "hostname": "Saimniekdators",
         "kind": "Veids",
         "mailbox_quota_m": "Maks. kvota pastkastei (MiB)",
         "mailbox_username": "Lietotājvārds (kriesā daļa no epasta adreses)",
@@ -69,7 +69,8 @@
         "username": "Lietotājvārds",
         "validate": "Apstiprināt",
         "validation_success": "Apstiprināts veiksmīgi",
-        "bcc_dest_format": "BCC galamērķim ir jābūt vienai derīgai e-pasta adresei.<br>Ja ir nepieciešams nosūtīt kopiju vairākām adresēm, jāizveido aizstājvārds un jāizmanto tas šeit."
+        "bcc_dest_format": "BCC galamērķim ir jābūt vienai derīgai e-pasta adresei.<br>Ja ir nepieciešams nosūtīt kopiju vairākām adresēm, jāizveido aizstājvārds un jāizmanto tas šeit.",
+        "domain_matches_hostname": "Domēns %s atbilst saimniekdatora nosaukumam"
     },
     "admin": {
         "access": "Pieeja",
@@ -165,7 +166,8 @@
         "f2b_regex_info": "Vērā ņemtie žurnāli: SOGO, Postfix, Dovecot, PHP-FPM.",
         "sys_mails": "Sistēmas pasts",
         "ip_check_disabled": "IP pārbaude ir atspējota. To var iespējot<br><strong>Sistēma > Konfigurācija > iespējas > Pielāgot</strong>",
-        "rspamd_com_settings": "Iestatījuma nosaukums tiks izveidots automātiski. Lūgums zemāk skatīt priekšiestatījumu piemērus. Vairāk informācijas ir <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentācijā</a>"
+        "rspamd_com_settings": "Iestatījuma nosaukums tiks izveidots automātiski. Lūgums zemāk skatīt priekšiestatījumu piemērus. Vairāk informācijas ir <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentācijā</a>",
+        "reset_password_vars": "<code>{{link}}</code> Izveidotā paroles atiestatīšanas saite<br><code>{{username}}</code> Lietotāja, kurš pieprasīja paroles atiestatīšanu, pastkastes nosaukums<br><code>{{username2}}</code> Atkopšanas pastkastes nosaukums<br><code>{{date}}</code> Paroles atiestatīšanas pieprasījuma veikšanas datums<br><code>{{token_lifetime}}</code> Pilnvaras derīgums minūtēs<br><code>{{hostname}}</code> mailcow saimniekdatora nosaukums"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",
@@ -216,7 +218,8 @@
         "target_domain_invalid": "Goto domēns ir nepareizs",
         "targetd_not_found": "Mērķa domēns nav atrasts",
         "username_invalid": "Lietotājvārds nevar tikt izmantots",
-        "validity_missing": "Lūdzu piešķiriet derīguma termiņu"
+        "validity_missing": "Lūdzu piešķiriet derīguma termiņu",
+        "domain_cannot_match_hostname": "Domēns nevar atbilst saimniekdatora nosaukumam"
     },
     "diagnostics": {
         "cname_from_a": "Vērtība, kas iegūta no A/AAAA ieraksta. Tas tiek atbalstīts tik ilgi, kamēr ieraksts norāda uz pareizo resursu.",
@@ -248,14 +251,14 @@
         "force_pw_update": "Piespiedu paroles atjaunošana pie nākošās pieslēgšanās",
         "force_pw_update_info": "Šis lietotājs varēs pieslēgties tikai %s.",
         "full_name": "Pilns vārds",
-        "hostname": "Hosta nosaukums",
+        "hostname": "Saimniekdatora nosaukums",
         "inactive": "Neaktīvs",
         "kind": "Veids",
         "mailbox": "Rediģēt pastkasti",
         "max_aliases": "Lielākais aizstājvārdu skaits",
         "max_mailboxes": "Maks. iespējamās pastkastes",
         "max_quota": "Maks. kvota uz pastkasti (MiB)",
-        "maxage": "Maximum age of messages in days that will be polled from remote<br><small>(0 = ignore age)</small>",
+        "maxage": "Lielākais ziņojumu, kuri tiks vaicāti attālajā serverī, vecums dienās<br><small>(0 = neņemt vērā vecumu)</small>",
         "maxbytespersecond": "Maks. baiti sekundē (0 ir vienāds ar neierobežotu skaitu)",
         "mins_interval": "Intervāls (min)",
         "multiple_bookings": "Vairāki rezervējumi",
@@ -325,7 +328,7 @@
     },
     "mailbox": {
         "action": "Rīcība",
-        "activate": "Activate",
+        "activate": "Aktivizēt",
         "active": "Aktīvs",
         "add": "Pievienot",
         "add_alias": "Pievienot aizstājvārdu",
@@ -449,11 +452,11 @@
         "qinfo": "Karantīnas sistēma datubāzē saglabās noraidīto pastu (sūtītājam <em>netiks</em> radīts iespaids par piegādātu pastu), kā arī pastu, kas tiek piegādāts kā kopija pastkastes mēstuļu mapē.\n  <br>\"Apgūt kā surogātpastu un izdzēst\" apgūs ziņojumu kā surogātpastu ar Bajesa teorēmu un aprēķinās arī nestriktas jaucējvērtības, lai nākotnē noraidītu līdzīgus ziņojumus.\n  <br>Lūgums apzināties, ka vairāku ziņojumu apgūšana var būt laikietilpīga atkarībā no sistēmas.<br>Melnā saraksta vienumi karantīnā netiek iekļauti."
     },
     "queue": {
-        "queue_manager": "Queue Manager",
+        "queue_manager": "Rindas pārvaldnieks",
         "info": "Pasta rinda satur visus e-pastus, kas gaida piegādi. Ja e-pasts ir iestrēdzis pasta rindā ilgu laiku, sistēma to automātiski izdzēš.<br>Attiecīgā pasta kļūdas ziņojums sniedz informāciju par to, kāpēc pastu neizdevās piegādāt."
     },
     "start": {
-        "help": "Rādīt/Paslēp palīdzības paneli",
+        "help": "Rādīt/Paslēpt palīdzības paneli",
         "imap_smtp_server_auth_info": "Lūgums izmantot pilnu e-pasta adresi un PLAIN autentifikācijas mehānismu.<br>\nPieteikšanās dati tiks šifrēti ar servera puses obligātu šifrēšanu.",
         "mailcow_apps_detail": "Izmantojiet lietotni mailcow, lai piekļūtu savam pastam, kalendāram, kontaktiem un citām lietām.",
         "mailcow_panel_detail": "<b>Domēna pārvaldītāji</b> izveido, maina vai izdzēš pastkastes un aizstājvārdus, maina domēnus un lasa papildu informāciju par piešķirtajiem domēniem.<br>\n<b>Pastkastes lietotāji</b> var izveidot laikā ierobežotus aizstājvārdus (surogātpasta aizstājvārdus), mainīt savu paroli un surogātpasta atlasīšanas iestatījumus."
@@ -489,7 +492,7 @@
         "relayhost_added": "Relejhosts %s pievienots",
         "relayhost_removed": "Relejhosts %s noņemts",
         "reset_main_logo": "Atjaunot noklusējuma logotipu",
-        "resource_added": "Resource %s has been added",
+        "resource_added": "Avots %s tika pievienots",
         "resource_modified": "Izmaiņas %s ir saglabātas",
         "resource_removed": "Resurs %s tika noņemts",
         "ui_texts": "Saglabāt UI izmaiņas tekstiem",
@@ -513,7 +516,8 @@
         "webauthn": "WebAuthn autentifikācija",
         "waiting_usb_auth": "<i>Gaida USB ierīci...</i><br><br>Lūdzu, tagad nospiežiet pogu uz Jūsu WebAuthn USB ierīces.",
         "waiting_usb_register": "<i>Gaida USB ierīci...</i><br><br>Lūdzu augšā ievadiet Jūsu paroli un apstipriniet WebAuthn reģistrāciju nospiežot pogu uz Jūsu WebAuthn USB ierīces.",
-        "yubi_otp": "Yubico OTP autentifikators"
+        "yubi_otp": "Yubico OTP autentifikators",
+        "authenticators": "Autentificētāji"
     },
     "user": {
         "action": "Rīcība",
@@ -557,7 +561,7 @@
         "no_record": "Nav ieraksta",
         "password_now": "Pašreizējā parole (Apstiprināt izmaiņas)",
         "remove": "Noņemt",
-        "running": "Running",
+        "running": "Darbojas",
         "save_changes": "Saglabāt izmaiņas",
         "shared_aliases": "Kopīgotās aizstājadreses",
         "shared_aliases_desc": "Tādi lietotāja iestatījumi kā surogātpasta atlasīšana vai šifrēšanas nosacījumi neietekmē kopīgotos aizstājvārdus. Atbilstošu surogātpasta atlasi var izveidot tikai pārvaldītājs kā domēnu aptverošu nosacījumu.",
@@ -594,7 +598,7 @@
         "tls_policy_warning": "<strong>Brīdinājums:</strong> Ja tiek izlemts ieviest šifrēta pasta nosūtīšanu, var tikt pazaudēti e-pasti.<br>Ziņojumi, kas neatbilst nosacījumiem, pasta sistēma atmetīs ar kļūdu.<br>Šī iespēja attiecas uz galveno e-pasta adresi (pieteikšanās vārdu), visām adresēm, kas atvasinātas no aizsājdomēniem, kā arī aizstājadreses, <b>kas norāda tikai uz šo pastkasti</b>.",
         "user_settings": "Lietotāja iestatījumi",
         "username": "Lietotājvārds",
-        "waiting": "Waiting",
+        "waiting": "Gaida",
         "week": "Nedēļa",
         "weeks": "Nedēļas",
         "open_logs": "Atvērt žurnālus",
@@ -615,7 +619,13 @@
         "system_containers": "Sistēma un konteineri",
         "current_time": "Sistēmas laiks",
         "external_logs": "Ārējie žurnāli",
-        "logs": "Žurnāli"
+        "logs": "Žurnāli",
+        "architecture": "Arhitektūra",
+        "disk_usage": "Diska lietojums",
+        "jvm_memory_solr": "JVM atmiņas lietojums",
+        "memory": "Atmiņa",
+        "timezone": "Laika josla",
+        "uptime": "Darbošanās laiks"
     },
     "warning": {
         "domain_added_sogo_failed": "Domēns pievienots, bet neizdevās pārsāknēt SOGO. Lūgums pārbaudīt servera žurnālus.",
