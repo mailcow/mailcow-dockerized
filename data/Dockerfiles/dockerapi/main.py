@@ -90,7 +90,7 @@ async def get_container(container_id : str):
         if container._id == container_id:
           container_info = await container.show()
           return Response(content=json.dumps(container_info, indent=4), media_type="application/json")
-     
+
       res = {
         "type": "danger",
         "msg": "no container found"
@@ -130,7 +130,7 @@ async def get_containers():
 async def post_containers(container_id : str, post_action : str, request: Request):
   global dockerapi
 
-  try : 
+  try:
     request_json = await request.json()
   except Exception as err:
     request_json = {}
@@ -191,7 +191,7 @@ async def post_container_update_stats(container_id : str):
 
   stats = json.loads(await dockerapi.redis_client.get(container_id + '_stats'))
   return Response(content=json.dumps(stats, indent=4), media_type="application/json")
-  
+
 
 # PubSub Handler
 async def handle_pubsub_messages(channel: aioredis.client.PubSub):
@@ -244,7 +244,7 @@ async def handle_pubsub_messages(channel: aioredis.client.PubSub):
               dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
           else:
             dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
-              
+
         await asyncio.sleep(0.0)
     except asyncio.TimeoutError:
       pass
