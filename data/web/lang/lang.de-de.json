@@ -641,7 +641,7 @@
         "mailbox": "Mailbox bearbeiten",
         "mailbox_quota_def": "Standard-Quota einer Mailbox",
         "mailbox_relayhost_info": "Wird auf eine Mailbox und direkte Alias-Adressen angewendet. Überschreibt die Einstellung einer Domain.",
-        "mailbox_rename": "Mailbox umbennnen",
+        "mailbox_rename": "Mailbox umbenennen",
         "mailbox_rename_agree": "Ich habe ein Backup erstellt.",
         "mailbox_rename_warning": "WICHTIG! Vor dem Umbenennen der Mailbox ein Backup erstellen.",
         "mailbox_rename_alias": "Alias automatisch erstellen",
