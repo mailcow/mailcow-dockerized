@@ -159,7 +159,7 @@ class DockerApi:
             postqueue_r = container.exec_run(["/bin/bash", "-c", "/usr/sbin/postqueue " + i], user='postfix')
             # todo: check each exit code
           res = { 'type': 'success', 'msg': 'Scheduled immediate delivery'}
-          return Response(content=json.dumps(res, indent=4), media_type="application/json")        
+          return Response(content=json.dumps(res, indent=4), media_type="application/json")
   # api call: container_post - post_action: exec - cmd: mailq - task: list
   def container_post__exec__mailq__list(self, request_json, **kwargs):
     if 'container_id' in kwargs:
@@ -318,7 +318,7 @@ class DockerApi:
 
     if 'username' in request_json and 'script_name' in request_json:
       for container in self.sync_docker_client.containers.list(filters=filters):
-        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]  
+        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]
         sieve_return = container.exec_run(cmd)
         return self.exec_run_handler('utf8_text_only', sieve_return)
   # api call: container_post - post_action: exec - cmd: maildir - task: cleanup
@@ -342,6 +342,30 @@ class DockerApi:
           cmd = ["/bin/bash", "-c", cmd_vmail]
         maildir_cleanup = container.exec_run(cmd, user='vmail')
         return self.exec_run_handler('generic', maildir_cleanup)
+  # api call: container_post - post_action: exec - cmd: maildir - task: move
+  def container_post__exec__maildir__move(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    if 'old_maildir' in request_json and 'new_maildir' in request_json:
+      for container in self.sync_docker_client.containers.list(filters=filters):
+        vmail_name = request_json['old_maildir'].replace("'", "'\\''")
+        new_vmail_name = request_json['new_maildir'].replace("'", "'\\''")
+        cmd_vmail = f"if [[ -d '/var/vmail/{vmail_name}' ]]; then /bin/mv '/var/vmail/{vmail_name}' '/var/vmail/{new_vmail_name}'; fi"
+
+        index_name = request_json['old_maildir'].split("/")
+        new_index_name = request_json['new_maildir'].split("/")
+        if len(index_name) > 1 and len(new_index_name) > 1:
+          index_name = index_name[1].replace("'", "'\\''") + "@" + index_name[0].replace("'", "'\\''")
+          new_index_name = new_index_name[1].replace("'", "'\\''") + "@" + new_index_name[0].replace("'", "'\\''")
+          cmd_vmail_index = f"if [[ -d '/var/vmail_index/{index_name}' ]]; then /bin/mv '/var/vmail_index/{index_name}' '/var/vmail_index/{new_index_name}_index'; fi"
+          cmd = ["/bin/bash", "-c", cmd_vmail + " && " + cmd_vmail_index]
+        else:
+          cmd = ["/bin/bash", "-c", cmd_vmail]
+        maildir_move = container.exec_run(cmd, user='vmail')
+        return self.exec_run_handler('generic', maildir_move)
   # api call: container_post - post_action: exec - cmd: rspamd - task: worker_password
   def container_post__exec__rspamd__worker_password(self, request_json, **kwargs):
     if 'container_id' in kwargs:
@@ -374,6 +398,107 @@ class DockerApi:
           self.logger.error('failed changing Rspamd password')
           res = { 'type': 'danger', 'msg': 'command did not complete' }
           return Response(content=json.dumps(res, indent=4), media_type="application/json")
+  # api call: container_post - post_action: exec - cmd: sogo - task: rename
+  def container_post__exec__sogo__rename_user(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    if 'old_username' in request_json and 'new_username' in request_json:
+      for container in self.sync_docker_client.containers.list(filters=filters):
+        old_username = request_json['old_username'].replace("'", "'\\''")
+        new_username = request_json['new_username'].replace("'", "'\\''")
+
+        sogo_return = container.exec_run(["/bin/bash", "-c", f"sogo-tool rename-user '{old_username}' '{new_username}'"], user='sogo')
+        return self.exec_run_handler('generic', sogo_return)
+  # api call: container_post - post_action: exec - cmd: doveadm - task: get_acl
+  def container_post__exec__doveadm__get_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      id = request_json['id'].replace("'", "'\\''")
+
+      shared_folders = container.exec_run(["/bin/bash", "-c", f"doveadm mailbox list -u '{id}'"])
+      shared_folders = shared_folders.output.decode('utf-8')
+      shared_folders = shared_folders.splitlines()
+
+      formatted_acls = []
+      mailbox_seen = []
+      for shared_folder in shared_folders:
+        if "Shared" not in shared_folder and "/" not in shared_folder:
+          continue
+        shared_folder = shared_folder.split("/")
+        if len(shared_folder) < 3:
+          continue
+
+        user = shared_folder[1].replace("'", "'\\''")
+        mailbox = '/'.join(shared_folder[2:]).replace("'", "'\\''")
+        if mailbox in mailbox_seen:
+          continue
+
+        acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' '{mailbox}'"])
+        acls = acls.output.decode('utf-8').strip().splitlines()
+        if len(acls) >= 2:
+          for acl in acls[1:]:
+            _, rights = acls[1].split(maxsplit=1)
+            mailbox_seen.append(mailbox)
+            formatted_acls.append({ 'user': user, 'id': id, 'mailbox': mailbox, 'rights': rights.split() })
+
+      return Response(content=json.dumps(formatted_acls, indent=4), media_type="application/json")
+  # api call: container_post - post_action: exec - cmd: doveadm - task: delete_acl
+  def container_post__exec__doveadm__delete_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      user = request_json['user'].replace("'", "'\\''")
+      mailbox = request_json['mailbox'].replace("'", "'\\''")
+      id = request_json['id'].replace("'", "'\\''")
+
+      if user and mailbox and id:
+        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' '{mailbox}' 'user={id}'"])
+        return self.exec_run_handler('generic', acl_delete_return)
+  # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl
+  def container_post__exec__doveadm__set_acl(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      user = request_json['user'].replace("'", "'\\''")
+      mailbox = request_json['mailbox'].replace("'", "'\\''")
+      id = request_json['id'].replace("'", "'\\''")
+      rights = ""
+
+      available_rights = [
+        "admin",
+        "create",
+        "delete",
+        "expunge",
+        "insert",
+        "lookup",
+        "post",
+        "read",
+        "write",
+        "write-deleted",
+        "write-seen"
+      ]
+      for right in request_json['rights']:
+        right = right.replace("'", "'\\''").lower()
+        if right in available_rights:
+          rights += right + " "
+
+      if user and mailbox and id and rights:
+        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' '{mailbox}' 'user={id}' {rights}"])
+        return self.exec_run_handler('generic', acl_set_return)
+
 
   # Collect host stats
   async def get_host_stats(self, wait=5):
@@ -462,7 +587,7 @@ class DockerApi:
         except:
           pass
       return ''.join(total_data)
-      
+
     try :
       socket = container.exec_run([shell_cmd], stdin=True, socket=True, user=user).output._sock
       if not cmd.endswith("\n"):
