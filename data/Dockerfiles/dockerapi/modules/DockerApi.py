@@ -429,24 +429,38 @@ class DockerApi:
       formatted_acls = []
       mailbox_seen = []
       for shared_folder in shared_folders:
-        if "Shared" not in shared_folder and "/" not in shared_folder:
-          continue
-        shared_folder = shared_folder.split("/")
-        if len(shared_folder) < 3:
-          continue
+        if "Shared" not in shared_folder:
+          mailbox = shared_folder.replace("'", "'\\''")
+          if mailbox in mailbox_seen:
+            continue
 
-        user = shared_folder[1].replace("'", "'\\''")
-        mailbox = '/'.join(shared_folder[2:]).replace("'", "'\\''")
-        if mailbox in mailbox_seen:
-          continue
+          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{id}' '{mailbox}'"])
+          acls = acls.output.decode('utf-8').strip().splitlines()
+          if len(acls) >= 2:
+            for acl in acls[1:]:
+              user_id, rights = acl.split(maxsplit=1)
+              user_id = user_id.split('=')[1]
+              mailbox_seen.append(mailbox)
+              formatted_acls.append({ 'user': id, 'id': user_id, 'mailbox': mailbox, 'rights': rights.split() })
+        elif "Shared" in shared_folder and "/" in shared_folder:
+          shared_folder = shared_folder.split("/")
+          if len(shared_folder) < 3:
+            continue
 
-        acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' '{mailbox}'"])
-        acls = acls.output.decode('utf-8').strip().splitlines()
-        if len(acls) >= 2:
-          for acl in acls[1:]:
-            _, rights = acls[1].split(maxsplit=1)
-            mailbox_seen.append(mailbox)
-            formatted_acls.append({ 'user': user, 'id': id, 'mailbox': mailbox, 'rights': rights.split() })
+          user = shared_folder[1].replace("'", "'\\''")
+          mailbox = '/'.join(shared_folder[2:]).replace("'", "'\\''")
+          if mailbox in mailbox_seen:
+            continue
+
+          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' '{mailbox}'"])
+          acls = acls.output.decode('utf-8').strip().splitlines()
+          if len(acls) >= 2:
+            for acl in acls[1:]:
+              user_id, rights = acl.split(maxsplit=1)
+              user_id = user_id.split('=')[1].replace("'", "'\\''")
+              if user_id == id and mailbox not in mailbox_seen:
+                mailbox_seen.append(mailbox)
+                formatted_acls.append({ 'user': user, 'id': id, 'mailbox': mailbox, 'rights': rights.split() })
 
       return Response(content=json.dumps(formatted_acls, indent=4), media_type="application/json")
   # api call: container_post - post_action: exec - cmd: doveadm - task: delete_acl
