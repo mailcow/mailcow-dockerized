@@ -3364,12 +3364,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           // set imap acls
           foreach ($imap_acls as $imap_acl) {
+            $user_id = ($imap_acl['id'] == $old_username) ? $new_username : $imap_acl['id'];
+            $user = ($imap_acl['user'] == $old_username) ? $new_username : $imap_acl['user'];
             $exec_fields = array(
               'cmd' => 'doveadm',
               'task' => 'set_acl',
-              'user' => $imap_acl['user'],
+              'user' => $user,
               'mailbox' => $imap_acl['mailbox'],
-              'id' => $new_username,
+              'id' => $user_id,
               'rights' => $imap_acl['rights']
             );
             docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
