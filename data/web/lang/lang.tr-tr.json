@@ -28,7 +28,8 @@
         "spam_score": "Spam skoru",
         "syncjobs": "Görevleri senkronize et",
         "tls_policy": "TLS ilkesi",
-        "unlimited_quota": "E-postalar için sınırsız kota"
+        "unlimited_quota": "E-postalar için sınırsız kota",
+        "pw_reset": "Mailcow kullanıcı şifresini sıfırlamaya izin ver"
     },
     "add": {
         "activate_filter_warn": "Aktif edilirse diğer tüm filtreler devre dışı bırakılacak.",
@@ -350,7 +351,13 @@
         "reset_limit": "Hashi kaldır",
         "routing": "Yönlendirme",
         "rsetting_add_rule": "Kural ekle",
-        "rsetting_content": "Kural içeriği"
+        "rsetting_content": "Kural içeriği",
+        "password_reset_info": "Herhangi bir kurtarma e-postası sağlanmamışsa, bu işlev kullanılamaz.",
+        "restore_template": "Varsayılan şablonu geri yüklemek için boş bırakın.",
+        "password_reset_settings": "Parola Kurtarma Ayarları",
+        "password_reset_tmpl_html": "HTML Şablonu",
+        "password_reset_tmpl_text": "Metin Şablonu",
+        "password_settings": "Şifre Ayarları"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -661,7 +668,9 @@
         "tls_policy_map_entry_exists": "Bir TLS ilke haritası girişi \\\"%s\\\" mevcut",
         "tls_policy_map_parameter_invalid": "Politika parametresi geçersiz",
         "totp_verification_failed": "TOTP doğrulaması başarısız oldu",
-        "transport_dest_exists": "\\\"%s\\\" aktarım hedefi mevcut"
+        "transport_dest_exists": "\\\"%s\\\" aktarım hedefi mevcut",
+        "password_reset_invalid_user": "Posta kutusu bulunamadı veya kurtarma e-postası ayarlanmadı",
+        "invalid_reset_token": "Geçersiz sıfırlama token'ı"
     },
     "debug": {
         "container_disabled": "Container durduruldu veya devre dışı bırakıldı",
