@@ -11,6 +11,7 @@
 
 namespace Twig\Node;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 
 /**
@@ -18,11 +19,12 @@ use Twig\Compiler;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
+#[YieldReady]
 class ForLoopNode extends Node
 {
-    public function __construct(int $lineno, string $tag = null)
+    public function __construct(int $lineno)
     {
-        parent::__construct([], ['with_loop' => false, 'ifexpr' => false, 'else' => false], $lineno, $tag);
+        parent::__construct([], ['with_loop' => false, 'ifexpr' => false, 'else' => false], $lineno);
     }
 
     public function compile(Compiler $compiler): void
@@ -36,7 +38,7 @@ class ForLoopNode extends Node
                 ->write("++\$context['loop']['index0'];\n")
                 ->write("++\$context['loop']['index'];\n")
                 ->write("\$context['loop']['first'] = false;\n")
-                ->write("if (isset(\$context['loop']['length'])) {\n")
+                ->write("if (isset(\$context['loop']['revindex0'], \$context['loop']['revindex'])) {\n")
                 ->indent()
                 ->write("--\$context['loop']['revindex0'];\n")
                 ->write("--\$context['loop']['revindex'];\n")

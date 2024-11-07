@@ -20,11 +20,11 @@ class EndsWithBinary extends AbstractBinary
         $left = $compiler->getVarName();
         $right = $compiler->getVarName();
         $compiler
-            ->raw(sprintf('(is_string($%s = ', $left))
+            ->raw(\sprintf('(is_string($%s = ', $left))
             ->subcompile($this->getNode('left'))
-            ->raw(sprintf(') && is_string($%s = ', $right))
+            ->raw(\sprintf(') && is_string($%s = ', $right))
             ->subcompile($this->getNode('right'))
-            ->raw(sprintf(') && (\'\' === $%2$s || $%2$s === substr($%1$s, -strlen($%2$s))))', $left, $right))
+            ->raw(\sprintf(') && str_ends_with($%1$s, $%2$s))', $left, $right))
         ;
     }
 

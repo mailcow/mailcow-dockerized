@@ -18,7 +18,7 @@ if (isset($_POST["pw_reset_request"]) && !empty($_POST['username'])) {
 if (isset($_POST["pw_reset"])) {
   $username = reset_password("check", $_POST['token']);
   $reset_result = reset_password("reset", array(
-    'new_password' => $_POST['new_password'], 
+    'new_password' => $_POST['new_password'],
     'new_password2' => $_POST['new_password2'],
     'token' => $_POST['token'],
     'username' => $username,
@@ -52,7 +52,7 @@ if (isset($_POST["verify_tfa_login"])) {
       unset($_SESSION['pending_mailcow_cc_username']);
       unset($_SESSION['pending_mailcow_cc_role']);
       unset($_SESSION['pending_tfa_methods']);
-  
+
       header("Location: /user");
     }
   } else {
@@ -89,27 +89,30 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	if ($as == "admin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
-		header("Location: /admin");
+		header("Location: /debug");
+    die();
 	}
 	elseif ($as == "domainadmin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
 		header("Location: /mailbox");
+    die();
 	}
 	elseif ($as == "user") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
-        $http_parameters = explode('&', $_SESSION['index_query_string']);
-        unset($_SESSION['index_query_string']);
-        if (in_array('mobileconfig', $http_parameters)) {
-            if (in_array('only_email', $http_parameters)) {
-                header("Location: /mobileconfig.php?only_email");
-                die();
-            }
-            header("Location: /mobileconfig.php");
-            die();
-        }
+    $http_parameters = explode('&', $_SESSION['index_query_string']);
+    unset($_SESSION['index_query_string']);
+    if (in_array('mobileconfig', $http_parameters)) {
+      if (in_array('only_email', $http_parameters)) {
+        header("Location: /mobileconfig.php?only_email");
+        die();
+      }
+      header("Location: /mobileconfig.php");
+      die();
+    }
 		header("Location: /user");
+    die();
 	}
 	elseif ($as != "pending") {
     unset($_SESSION['pending_mailcow_cc_username']);
