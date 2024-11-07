@@ -80,10 +80,11 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.97
+      image: mailcow/rspamd:1.98
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
+        - clamd-mailcow
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -111,7 +112,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.89
+      image: mailcow/phpfpm:1.91
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -176,7 +177,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.125
+      image: mailcow/sogo:1.127
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -210,9 +211,9 @@ services:
         ofelia.job-exec.sogo_sessions.schedule: "@every 1m"
         ofelia.job-exec.sogo_sessions.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool -v expire-sessions $${SOGO_EXPIRE_SESSION} || exit 0\""
         ofelia.job-exec.sogo_ealarms.schedule: "@every 1m"
-        ofelia.job-exec.sogo_ealarms.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/sieve.creds || exit 0\""
+        ofelia.job-exec.sogo_ealarms.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/cron.creds || exit 0\""
         ofelia.job-exec.sogo_eautoreply.schedule: "@every 5m"
-        ofelia.job-exec.sogo_eautoreply.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds || exit 0\""
+        ofelia.job-exec.sogo_eautoreply.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/cron.creds || exit 0\""
         ofelia.job-exec.sogo_backup.schedule: "@every 24h"
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       restart: always
@@ -223,7 +224,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:2.1
+      image: mailcow/dovecot:2.2
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -307,7 +308,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.76
+      image: mailcow/postfix:1.77
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -534,7 +535,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.08
+      image: mailcow/dockerapi:2.09
       security_opt:
         - label=disable
       restart: always
@@ -552,7 +553,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3

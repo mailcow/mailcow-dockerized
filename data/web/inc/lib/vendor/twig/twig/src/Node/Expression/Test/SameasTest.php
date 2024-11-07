@@ -27,7 +27,7 @@ class SameasTest extends TestExpression
             ->raw('(')
             ->subcompile($this->getNode('node'))
             ->raw(' === ')
-            ->subcompile($this->getNode('arguments')->getNode(0))
+            ->subcompile($this->getNode('arguments')->getNode('0'))
             ->raw(')')
         ;
     }

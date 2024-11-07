@@ -509,7 +509,7 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
-        break;          
+        break;
         case "fail2ban":
           if (!isset($_SESSION['mailcow_cc_role'])){
             switch ($object) {
@@ -2019,6 +2019,9 @@ if (isset($_GET['query'])) {
         break;
         case "rl-mbox":
           process_edit_return(ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
+        break;
+        case "rename-mbox":
+          process_edit_return(mailbox('edit', 'mailbox_rename', array_merge(array('mailbox' => $items), $attr)));
         break;
         case "user-acl":
           process_edit_return(acl('edit', 'user', array_merge(array('username' => $items), $attr)));

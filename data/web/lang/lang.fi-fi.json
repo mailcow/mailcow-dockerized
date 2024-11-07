@@ -267,7 +267,11 @@
         "upload": "Lataa",
         "username": "Käyttäjätunnus",
         "validate_license_now": "Vahvista GUID-tunnus lisenssi palvelinta vastaan",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "allowed_methods": "Kulunvalvonta-salli-menetelmät",
+        "admins": "Järjestelmänvalvojat",
+        "admins_ldap": "LDAP-ylläpitäjät",
+        "advanced_settings": "Lisäasetukset"
     },
     "danger": {
         "access_denied": "Käyttö estetty tai lomake tiedot eivät kelpaa",

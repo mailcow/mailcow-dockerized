@@ -28,7 +28,8 @@
         "unlimited_quota": "Quota illimité pour les boîtes de réception",
         "domain_desc": "Modifier la description du domaine",
         "domain_relayhost": "Changer le relais pour un domaine",
-        "mailbox_relayhost": "Changer le relais d’une boîte de réception"
+        "mailbox_relayhost": "Changer le relais d’une boîte de réception",
+        "pw_reset": "Autoriser la réinitialisation du mot de passe de l'utilisateur"
     },
     "add": {
         "activate_filter_warn": "Tous les autres filtres seront désactivés, quand activé est coché.",
@@ -343,7 +344,15 @@
         "f2b_manage_external": "Gérer Fail2Ban en externe",
         "transport_test_rcpt_info": "&#8226 ; Utilisez null@hosted.mailcow.de pour tester le relais vers une destination étrangère.",
         "relay_rcpt": "Adresse \"À :\"",
-        "is_mx_based": "Basé sur MX"
+        "is_mx_based": "Basé sur MX",
+        "password_reset_info": "Si aucune adresse de messagerie de récupération n'est fournie, cette fonction ne peut pas être utilisée.",
+        "password_settings": "Paramètres des mots de passe",
+        "reset_password_vars": "<code>{{link}}</code> Le lien généré pour la réinitialisation du mot de passe<br><code>{{username}}</code> L'adresse de la boîte mail de l'utilisateur qui a demandé la réinitialisation du mot de passe ayant un compte mailcow<br><code>{{username2}}</code> L'adresse de la boîte mail de récupération<br><code>{{date}}</code> La date à laquelle la demande de réinitialisation du mot de passe a été faite<br><code>{{token_lifetime}}</code> La durée de vie du jeton en minutes<br><code>{{hostname}}</code> Le nom d'hôte de votre serveur mailcow",
+        "password_reset_settings": "Paramètres de récupération des mots de passe",
+        "password_reset_tmpl_html": "Modèle HTML",
+        "password_reset_tmpl_text": "Modèle en texte",
+        "restore_template": "Laisser vide pour restaurer le modèle par défaut.",
+        "admins_ldap": "Si aucune adresse de messagerie de récupération n'est fournie, cette fonction ne peut pas être utilisée."
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -474,7 +483,13 @@
         "cors_invalid_method": "Allow-Method specifiée invalide",
         "cors_invalid_origin": "Allow-Origin spécifiée invalide",
         "extended_sender_acl_denied": "ACL manquante pour définir les adresses des expéditeurs externes",
-        "webauthn_username_failed": "L'authentificateur sélectionné appartient à un autre compte"
+        "webauthn_username_failed": "L'authentificateur sélectionné appartient à un autre compte",
+        "recovery_email_failed": "Impossible d'envoyer un email de réinitialisation. Veuillez contacter votre administrateur.",
+        "invalid_reset_token": "Jeton de réinitialisation invalide",
+        "password_reset_invalid_user": "Boîte mail introuvable ou aucune adresse de récupération n'a été définie",
+        "password_reset_na": "La réinitialisation des mots de passe est actuellement indisponible. Veuillez contacter votre administrateur.",
+        "reset_token_limit_exceeded": "Le nombre limite de jetons de réinitialisation a été dépassé. Veuillez réessayer plus tard.",
+        "to_invalid": "Le destinataire ne doit pas être vide"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -641,8 +656,9 @@
         "none_inherit": "Aucun / Héritage",
         "quota_warning_bcc": "Avertissement sur les quotas BCC",
         "quota_warning_bcc_info": "Les avertissements seront envoyés en copies séparées aux destinataires suivants. Le sujet sera précédé du nom d'utilisateur correspondant entre parenthèses, par exemple : <code>Avertissement sur les quotas (user@example.com)</code>.",
-        "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni ne modifie le profil SOGo existant d'un utilisateur.",
-        "admin": "Modifier l'administrateur"
+        "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni, ne modifie le profil SOGo existant d'un utilisateur.",
+        "admin": "Modifier l'administrateur",
+        "password_recovery_email": "Adresse email de récupération"
     },
     "footer": {
         "cancel": "Annuler",
@@ -681,7 +697,14 @@
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte de réception pour télécharger le profil de connexion Apple demandé.",
         "other_logins": "Clé d'authentification",
         "password": "Mot de passe",
-        "username": "Nom d'utilisateur"
+        "username": "Nom d'utilisateur",
+        "back_to_mailcow": "Revenir sur mailcow",
+        "forgot_password": "> Mot de passe oublié ?",
+        "invalid_pass_reset_token": "Le jeton de réinitialisation du mot de passe est invalide ou a expiré.<br>Veuillez demander un nouveau lien de réinitialisation de mot de passe.",
+        "new_password": "Nouveau mot de passe",
+        "new_password_confirm": "Confirmer le nouveau mot de passe",
+        "reset_password": "Réinitialiser le mot de passe",
+        "request_reset_password": "Demander le changement du mot de passe"
     },
     "mailbox": {
         "action": "Action",
@@ -1004,7 +1027,9 @@
         "template_added": "Modèles ajoutés %s",
         "template_removed": "Le modèle ayant l'ID %s a été supprimé",
         "domain_add_dkim_available": "A DKIM key did already exist",
-        "ip_check_opt_in_modified": "Le contrôle de l'IP a été enregistré avec succès"
+        "ip_check_opt_in_modified": "Le contrôle de l'IP a été enregistré avec succès",
+        "password_changed_success": "Le mot de passe a été modifié avec succès",
+        "recovery_email_sent": "Email de réinitialisation envoyé à %s"
     },
     "tfa": {
         "api_register": "%s utilise l'API Yubico Cloud. Veuillez obtenir une clé API pour votre clé <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ici</a>",
@@ -1202,7 +1227,9 @@
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Nom d'utilisateur ou mot de passe incorrect",
         "value": "Valeur",
         "allowed_protocols": "Protocoles autorisés",
-        "mailbox": "Boîte de réception"
+        "mailbox": "Boîte de réception",
+        "password_reset_info": "Si aucun email pour la récupération du mot de passe n'est fourni, cette fonction ne peut pas être utilisée.",
+        "pw_recovery_email": "Email de récupération pour son mot de passe"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
@@ -1234,7 +1261,8 @@
         "lengthMenu": "Afficher les entrées _MENU_",
         "loadingRecords": "Chargement…",
         "processing": "Veuillez patienter…",
-        "collapse_all": "Tout réduire"
+        "collapse_all": "Tout réduire",
+        "info": "Affichage de _START_ de _END_ sur _TOTAL_ entrées"
     },
     "ratelimit": {
         "disabled": "Désactivé"

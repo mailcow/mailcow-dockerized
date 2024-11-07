@@ -28,7 +28,8 @@
         "spam_score": "垃圾郵件分數",
         "syncjobs": "同步任務",
         "tls_policy": "TLS 規則",
-        "unlimited_quota": "信箱容量配額無上限"
+        "unlimited_quota": "信箱容量配額無上限",
+        "pw_reset": "允許重置mailcow使用者密碼"
     },
     "add": {
         "activate_filter_warn": "當\"啟用\"被勾選，所有其他過濾器都會被消除。",
@@ -351,7 +352,14 @@
         "ip_check_opt_in": "選擇使用第三方服務 <strong>ipv4.mailcow.email</strong> 和 <strong>ipv6.mailcow.email</strong> 來解析外部 IP 位址。",
         "ip_check_disabled": "IP 檢查已停用。 您可以在<br> <strong>系統 > 配置 > 選項 > 自訂</strong>下啟用它",
         "options": "選項",
-        "queue_unban": "解除禁令"
+        "queue_unban": "解除禁令",
+        "reset_password_vars": "<code>{{link}}</code> 生成密碼重置連結<br><code>{{username}}</code> 請求密碼重置的使用者信箱<br><code>{{username2}}</code> 備援電子信箱名稱<br><code>{{date}}</code> 密碼重置要求之日期<br><code>{{token_lifetime}}</code> 權杖(token)壽命(以分鐘計)<br><code>{{hostname}}</code> mailcow 主機名稱(hostname)",
+        "password_reset_info": "若無提供備援電子郵件，此功能將無法使用。",
+        "password_reset_settings": "密碼復原設定",
+        "password_reset_tmpl_html": "HTML 範本",
+        "password_reset_tmpl_text": "文字範本",
+        "password_settings": "密碼設定",
+        "restore_template": "留白以還原預設範本"
     },
     "danger": {
         "access_denied": "存取拒絕或表單資料有誤",
@@ -480,7 +488,14 @@
         "extended_sender_acl_denied": "缺少設定外部寄件者地址的 ACL",
         "template_exists": "模板 %s 已存在",
         "template_id_invalid": "範本 ID %s 無效",
-        "template_name_invalid": "模板名稱無效"
+        "template_name_invalid": "模板名稱無效",
+        "password_reset_invalid_user": "查無此信箱或無設定備援郵件",
+        "password_reset_na": "密碼恢復目前無法使用。請聯繫您的管理員。",
+        "to_invalid": "收件者不能為空",
+        "img_size_exceeded": "圖片超出最大檔案大小",
+        "recovery_email_failed": "無法寄送還原電子郵件。請聯絡您的管理員。",
+        "reset_token_limit_exceeded": "重置權杖(token)已達上限。請稍後再試。",
+        "img_dimensions_exceeded": "圖片超出最大圖片大小"
     },
     "debug": {
         "chart_this_server": "圖表 (此伺服器)",
@@ -511,7 +526,7 @@
         "architecture": "結構",
         "current_time": "系統時間",
         "container_running": "正在執行",
-        "memory": "記憶",
+        "memory": "記憶體",
         "container_disabled": "容器停止或停用",
         "container_stopped": "已停止",
         "cores": "核心",
@@ -650,7 +665,19 @@
         "validate_save": "驗證並儲存",
         "domain_footer_info": "網域範圍的頁尾將會新增至與該網域內的位址關聯的所有外發電子郵件。 <br> 以下變數可用於頁尾：",
         "custom_attributes": "自訂屬性",
-        "pushover_sound": "聲音"
+        "pushover_sound": "聲音",
+        "domain_footer": "全域頁腳",
+        "domain_footer_info_vars": {
+            "from_name": "{= from_name =}   - 從信封中的名稱部分，例如：\"Mailcow &lt;moo@mailcow.tld&gt;\" 則回傳 \"Mailcow\"",
+            "auth_user": "{= auth_user =}   - MTA所認證之指定使用者名稱",
+            "from_user": "{= from_user =}   - 從信封中的使用者部分。例如：\"moo@mailcow.tld\" 則回傳\"moo\"",
+            "from_addr": "{= from_addr =}   - 從信封中的地址部分",
+            "from_domain": "{= from_domain =} - 從信封中的域名(domain)部分"
+        },
+        "domain_footer_skip_replies": "於回信中忽落頁腳",
+        "domain_footer_html": "HTML 頁腳",
+        "password_recovery_email": "密碼重置備援信箱",
+        "domain_footer_plain": "純文字頁腳"
     },
     "fido2": {
         "confirm": "確認",
@@ -706,7 +733,14 @@
         "mobileconfig_info": "請使用信箱使用者登入以下載 Apple 連接描述檔案。",
         "other_logins": "金鑰登入",
         "password": "密碼",
-        "username": "使用者名稱"
+        "username": "使用者名稱",
+        "back_to_mailcow": "返回至mailcow",
+        "invalid_pass_reset_token": "密碼重置權杖(token)無效或已過期<br>請重新請求新的重置連結。",
+        "forgot_password": "> 忘記密碼?",
+        "new_password": "新密碼",
+        "new_password_confirm": "確認新密碼",
+        "reset_password": "重置密碼",
+        "request_reset_password": "要求重置密碼"
     },
     "mailbox": {
         "action": "操作",
@@ -1042,7 +1076,9 @@
         "cors_headers_edited": "CORS 設定已儲存",
         "domain_footer_modified": "網域頁尾 %s 的變更已儲存",
         "f2b_banlist_refreshed": "禁止清單 ID 已成功刷新。",
-        "ip_check_opt_in_modified": "IP檢查已成功儲存"
+        "ip_check_opt_in_modified": "IP檢查已成功儲存",
+        "password_changed_success": "密碼重置成功",
+        "recovery_email_sent": "已寄送復原郵件至 %s"
     },
     "tfa": {
         "api_register": "%s 使用 Yubico Cloud API，請在<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">這裡</a>為這把金鑰獲取 API 金鑰",
@@ -1069,7 +1105,8 @@
         "webauthn": "WebAuthn 認證",
         "waiting_usb_auth": "<i>等待 USB 裝置...</i><br><br>請觸碰 USB 裝置上的按鈕。",
         "waiting_usb_register": "<i>等待 USB 裝置...</i><br><br>請輸入密碼並觸碰 USB 裝置上的按鈕來確認註冊。",
-        "yubi_otp": "Yubico OTP 認證"
+        "yubi_otp": "Yubico OTP 認證",
+        "authenticators": "驗證器(Authenticators)"
     },
     "user": {
         "action": "操作",
@@ -1233,7 +1270,9 @@
         "years": "年",
         "attribute": "屬性",
         "pushover_sound": "聲音",
-        "value": "數值"
+        "value": "數值",
+        "password_reset_info": "若無提供密碼備援電子信箱，此功能將無法使用。",
+        "pw_recovery_email": "密碼備援電子信箱"
     },
     "warning": {
         "cannot_delete_self": "不能刪除已登入的使用者",
