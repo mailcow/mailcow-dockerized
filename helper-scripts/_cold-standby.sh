@@ -150,7 +150,7 @@ else
   exit 1
 fi
 
- REMOTE_ARCH=$(ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" ${REMOTE_SSH_HOST} -p ${REMOTE_SSH_PORT} "uname -m") 
+ REMOTE_ARCH=$(ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" ${REMOTE_SSH_HOST} -p ${REMOTE_SSH_PORT} "uname -m")
 
 }
 
@@ -204,7 +204,7 @@ fi
 
 # Trigger a Redis save for a consistent Redis copy
 echo -ne "\033[1mRunning redis-cli save... \033[0m"
-docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
+docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} save
 
 # Syncing volumes related to compose project
 # Same here: make sure destination exists

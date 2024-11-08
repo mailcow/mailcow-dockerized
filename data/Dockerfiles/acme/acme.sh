@@ -4,9 +4,9 @@ exec 5>&1
 
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS}"
 else
-  export REDIS_CMDLINE="redis-cli -h redis -p 6379"
+  export REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS}"
 fi
 
 until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do

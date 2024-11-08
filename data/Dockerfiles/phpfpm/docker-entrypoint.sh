@@ -16,7 +16,7 @@ else
   REDIS_HOST="redis"
   REDIS_PORT="6379"
 fi
-REDIS_CMDLINE="redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT}"
+REDIS_CMDLINE="redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} -a ${REDISPASS}"
 
 until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
   echo "Waiting for Redis..."
@@ -26,7 +26,7 @@ done
 # Set redis session store
 echo -n '
 session.save_handler = redis
-session.save_path = "tcp://'${REDIS_HOST}':'${REDIS_PORT}'"
+session.save_path = "tcp://'${REDIS_HOST}':'${REDIS_PORT}'?auth='${REDISPASS}'"
 ' > /usr/local/etc/php/conf.d/session_store.ini
 
 # Check mysql_upgrade (master and slave)

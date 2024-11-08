@@ -68,6 +68,7 @@ try {
   else {
     $redis->connect('redis-mailcow', 6379);
   }
+  $redis->auth(getenv("REDISPASS"));
 }
 catch (Exception $e) {
 // Stop when redis is not available
@@ -321,7 +322,7 @@ $UI_TEXTS = customize('get', 'ui_texts');
 if (file_exists('/web/css/themes/'.$UI_THEME.'-bootstrap.css'))
   $css_minifier->add('/web/css/themes/'.$UI_THEME.'-bootstrap.css');
 else
-  $css_minifier->add('/web/css/themes/lumen-bootstrap.css'); 
+  $css_minifier->add('/web/css/themes/lumen-bootstrap.css');
 // minify css build files
 foreach ($css_dir as $css_file) {
   $css_minifier->add('/web/css/build/' . $css_file);

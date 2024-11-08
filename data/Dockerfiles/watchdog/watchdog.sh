@@ -40,9 +40,9 @@ done
 
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS}"
 else
-  REDIS_CMDLINE="redis-cli -h redis -p 6379"
+  REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS}"
 fi
 
 until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
@@ -330,7 +330,7 @@ redis_checks() {
     touch /tmp/redis-mailcow; echo "$(tail -50 /tmp/redis-mailcow)" > /tmp/redis-mailcow
     host_ip=$(get_container_ip redis-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_tcp -4 -H redis-mailcow -p 6379 -E -s "PING\n" -q "QUIT" -e "PONG" 2>> /tmp/redis-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_tcp -4 -H redis-mailcow -p 6379 -E -s "AUTH ${REDISPASS}\nPING\n" -q "QUIT" -e "PONG" 2>> /tmp/redis-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Redis" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
@@ -503,12 +503,12 @@ dovecot_repl_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${DOVECOT_REPL_THRESHOLD}
-  D_REPL_STATUS=$(redis-cli -h redis -r GET DOVECOT_REPL_HEALTH)
+  D_REPL_STATUS=$(redis-cli -h redis -a ${REDISPASS} -r GET DOVECOT_REPL_HEALTH)
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    D_REPL_STATUS=$(redis-cli --raw -h redis GET DOVECOT_REPL_HEALTH)
+    D_REPL_STATUS=$(redis-cli --raw -h redis -a ${REDISPASS} GET DOVECOT_REPL_HEALTH)
     if [[ "${D_REPL_STATUS}" != "1" ]]; then
       err_count=$(( ${err_count} + 1 ))
     fi
@@ -578,19 +578,19 @@ ratelimit_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${RATELIMIT_THRESHOLD}
-  RL_LOG_STATUS=$(redis-cli -h redis LRANGE RL_LOG 0 0 | jq .qid)
+  RL_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} LRANGE RL_LOG 0 0 | jq .qid)
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     RL_LOG_STATUS_PREV=${RL_LOG_STATUS}
-    RL_LOG_STATUS=$(redis-cli -h redis LRANGE RL_LOG 0 0 | jq .qid)
+    RL_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} LRANGE RL_LOG 0 0 | jq .qid)
     if [[ ${RL_LOG_STATUS_PREV} != ${RL_LOG_STATUS} ]]; then
       err_count=$(( ${err_count} + 1 ))
       echo 'Last 10 applied ratelimits (may overlap with previous reports).' > /tmp/ratelimit
       echo 'Full ratelimit buckets can be emptied by deleting the ratelimit hash from within mailcow UI (see /debug -> Protocols -> Ratelimit):' >> /tmp/ratelimit
       echo >> /tmp/ratelimit
-      redis-cli --raw -h redis LRANGE RL_LOG 0 10 | jq . >> /tmp/ratelimit
+      redis-cli --raw -h redis -a ${REDISPASS} LRANGE RL_LOG 0 10 | jq . >> /tmp/ratelimit
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -673,7 +673,7 @@ acme_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${ACME_THRESHOLD}
-  ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME)
+  ACME_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} GET ACME_FAIL_TIME)
   if [[ -z "${ACME_LOG_STATUS}" ]]; then
     ${REDIS_CMDLINE} SET ACME_FAIL_TIME 0
     ACME_LOG_STATUS=0
@@ -685,7 +685,7 @@ acme_checks() {
     ACME_LOG_STATUS_PREV=${ACME_LOG_STATUS}
     ACME_LC=0
     until [[ ! -z ${ACME_LOG_STATUS} ]] || [ ${ACME_LC} -ge 3 ]; do
-      ACME_LOG_STATUS=$(redis-cli -h redis GET ACME_FAIL_TIME 2> /dev/null)
+      ACME_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} GET ACME_FAIL_TIME 2> /dev/null)
       sleep 3
       ACME_LC=$((ACME_LC+1))
     done

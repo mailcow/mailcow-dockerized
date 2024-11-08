@@ -4,9 +4,9 @@ source /source_env.sh
 
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT}"
+  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS}"
 else
-  REDIS_CMDLINE="redis-cli -h redis -p 6379"
+  REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS}"
 fi
 
 # Is replication active?
