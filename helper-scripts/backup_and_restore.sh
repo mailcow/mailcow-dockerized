@@ -119,7 +119,7 @@ function backup() {
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
-      docker exec $(docker ps -qf name=redis-mailcow) redis-cli save
+      docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} save
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
