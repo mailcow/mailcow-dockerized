@@ -63,7 +63,7 @@
         "exclude": "拒绝对象 (Regex)",
         "full_name": "全称",
         "gal": "全球地址簿",
-        "gal_info": "<b>全球地址簿</b>包含了域名下的所有对象，并且此行为不能被用户更改。如果关闭，用户的 \"空闲/繁忙\" 的状态将无法在 SOGo 中显示。 <b>重启 SOGo 服务以应用更改。</b>",
+        "gal_info": "全球地址簿包含了域名下的所有对象，并且此行为不能被用户更改。如果关闭，用户的 \"空闲/繁忙\" 的状态将无法在 SOGo 中显示。 <b>重启 SOGo 服务以应用更改。</b>",
         "generate": "生成",
         "goto_ham": "学习为<span class=\"text-success\"><b>非垃圾邮件</b></span>",
         "goto_null": "静默丢弃邮件",
@@ -146,7 +146,7 @@
         "arrival_time": "到达时间 (服务器时间)",
         "authed_user": "已认证用户",
         "ays": "确定继续操作?",
-        "ban_list_info": "以下为被封禁的 IP 列表: <b>网络 (剩余封禁时间) - [操作]</b>。<br />被取消封禁的 IP 将会在几秒之内从封禁列表中移除<br />红色标签表示因黑名单而导致的永久封禁",
+        "ban_list_info": "以下为被封禁的 IP 列表: <b>网络 (剩余封禁时间) - [操作]</b>。<br />被取消封禁的 IP 将会在几秒之内从封禁列表中移除<br />红色标签表示因黑名单而导致的永久封禁。",
         "change_logo": "更改 Logo",
         "configuration": "配置",
         "convert_html_to_text": "将 HTML 转换为纯文本内容",
@@ -292,7 +292,7 @@
         "rsettings_preset_2": "允许管理员接收垃圾邮件",
         "rsettings_preset_3": "只允许指定的发件人发信 (例如只允许内部邮箱发送)",
         "rsettings_preset_4": "禁用域名的 Rspamd 服务",
-        "rspamd_com_settings": "设置名称将会自动生成，请看参考下方的示例预设。查看<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd 文档</a>以了解更多的细节。",
+        "rspamd_com_settings": "设置名称将会自动生成，请看参考下方的示例预设。查看<a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd 文档</a>以了解更多的细节",
         "rspamd_global_filters": "全局过滤规则",
         "rspamd_global_filters_agree": "我会小心谨慎的!",
         "rspamd_global_filters_info": "全局过滤规则包含了不同类型的全局黑名单和白名单。",
@@ -353,7 +353,7 @@
         "password_reset_tmpl_html": "HTML 模版",
         "password_reset_tmpl_text": "文字模版",
         "password_settings": "密码设定",
-        "restore_template": "留空以恢复预设模版",
+        "restore_template": "留空以恢复预设模版。",
         "ip_check": "IP 检查",
         "ip_check_disabled": "IP 检查已禁用。你可透过以下路径启用<br> <strong>系统 > 配置 > 选项 > 页面自定义</strong>",
         "queue_unban": "解除封禁",
@@ -481,7 +481,21 @@
         "template_exists": "模板 %s 已存在",
         "template_name_invalid": "模板名称无效",
         "cors_invalid_method": "制定的允许模式无效",
-        "cors_invalid_origin": "指定的允许原无效"
+        "cors_invalid_origin": "指定的允许原无效",
+        "reset_token_limit_exceeded": "Reset token 数量已达上限。请稍后再尝试。",
+        "extended_sender_acl_denied": "缺少设置外部发送者地址的 ACL",
+        "img_dimensions_exceeded": "图片超出最大图片大小",
+        "img_size_exceeded": "图片超过最大文件大小",
+        "invalid_reset_token": "不合法的 reset token",
+        "password_reset_invalid_user": "未找到此信箱或未设置恢复邮箱",
+        "password_reset_na": "密码恢复目前无法使用。请联系您的管理员。",
+        "recovery_email_failed": "无法发送恢复邮件。请联系您的管理员。",
+        "template_id_invalid": "Template ID %s 无效",
+        "to_invalid": "收件人不能为空",
+        "webauthn_authenticator_failed": "找不到所选的 authenticator",
+        "webauthn_publickey_failed": "没有为选定的身份验证器保存公钥",
+        "webauthn_username_failed": "所选的 authenticator 属于另一个账户",
+        "demo_mode_enabled": "演示模式已开启"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -516,7 +530,13 @@
         "error_show_ip": "无法解析公网IP地址",
         "show_ip": "显示公网IP",
         "update_available": "有可用更新",
-        "update_failed": "无法检查更新"
+        "update_failed": "无法检查更新",
+        "architecture": "结构",
+        "container_stopped": "已停止",
+        "current_time": "系统时间",
+        "timezone": "时区",
+        "no_update_available": "系统已经是最新版本",
+        "wip": "正在施工中"
     },
     "diagnostics": {
         "cname_from_a": "来自 A/AAAA 记录的值。但只要记录指向正确的资源即可。",
@@ -640,7 +660,31 @@
         "title": "编辑对象",
         "unchanged_if_empty": "如果不更改则留空",
         "username": "用户名",
-        "validate_save": "验证并保存"
+        "validate_save": "验证并保存",
+        "domain_footer_info_vars": {
+            "from_name": "{= from_name =}   - 信件中的 From name 字段，例如对于 \"Mailcow &lt;moo@mailcow.tld&gt;\" 来说它是 \"Mailcow\"",
+            "auth_user": "{= auth_user =}   - MTA 指定的经过认证的用户名",
+            "from_user": "{= from_user =}   - 信件中的 From user 字段，例如对于 \"moo@mailcow.tld\" 来说它是 \"moo\"",
+            "from_addr": "{= from_addr =}   - 信件中的 From address 字段",
+            "from_domain": "{= from_domain =} - 信件中的 From domain 字段",
+            "custom": "{= foo =}         - 如果信箱有一个自定义属性 \"foo\" 的值为 \"bar\"， 它将返回 \"bar\""
+        },
+        "created_on": "创建于",
+        "custom_attributes": "自定义属性",
+        "mailbox_rename": "重命名信箱",
+        "mailbox_rename_agree": "我已经创建了一个备份。",
+        "mailbox_rename_warning": "重要！ 重命名信箱之前请先创建备份。",
+        "mailbox_rename_alias": "自动创建别名",
+        "mailbox_rename_title": "新本地信箱的名字",
+        "password_recovery_email": "密码重置邮箱",
+        "domain_footer": "域页脚",
+        "domain_footer_html": "HTML footer",
+        "domain_footer_info": "Domain-wide footers 会被加入到该 domain 下的地址发出的所有邮件中。 <br> 下列变量可以在 footer 中使用：",
+        "domain_footer_plain": "纯文字 footer",
+        "domain_footer_skip_replies": "在回信中忽略 footer",
+        "footer_exclude": "从 footer 中排除",
+        "last_modified": "上次修改时间",
+        "pushover_sound": "声音"
     },
     "fido2": {
         "confirm": "确认",
@@ -675,13 +719,14 @@
     "header": {
         "administration": "配置和管理",
         "apps": "应用",
-        "debug": "系统信息",
+        "debug": "信息",
         "email": "E-Mail",
         "mailcow_config": "配置",
         "quarantine": "隔离",
         "restart_netfilter": "重启 netfilter",
         "restart_sogo": "重启 SOGo",
-        "user_settings": "用户设置"
+        "user_settings": "用户设置",
+        "mailcow_system": "系统"
     },
     "info": {
         "awaiting_tfa_confirmation": "等待 TFA 确认",
@@ -695,7 +740,14 @@
         "mobileconfig_info": "请使用邮箱用户登录以下载 Apple 连接描述文件。",
         "other_logins": "Key 登录",
         "password": "密码",
-        "username": "用户名"
+        "username": "用户名",
+        "forgot_password": "> 忘记密码？",
+        "back_to_mailcow": "返回到 mailcow",
+        "new_password": "新密码",
+        "new_password_confirm": "确认新密码",
+        "reset_password": "重置密码",
+        "request_reset_password": "请求重置密码",
+        "invalid_pass_reset_token": "密码重置 token 无效或已过期。<br> 请重新获取新的密码重置链接。"
     },
     "mailbox": {
         "action": "操作",
@@ -799,9 +851,9 @@
         "recipient_map": "收件人映射",
         "recipient_map_info": "收件人映射用于在邮件被发送前替换收件人的地址。",
         "recipient_map_new": "新收件人",
-        "recipient_map_new_info": "新收件人必须为合法的邮箱地址",
+        "recipient_map_new_info": "新收件人必须为合法的邮箱地址。",
         "recipient_map_old": "原收件人",
-        "recipient_map_old_info": "原收件人必须为合法的邮箱地址",
+        "recipient_map_old_info": "原收件人必须为合法的邮箱地址。",
         "recipient_maps": "收件人映射",
         "relay_all": "中继所有收件人",
         "remove": "删除",
@@ -818,7 +870,7 @@
         "sieve_preset_5": "自动回复 (休假)",
         "sieve_preset_6": "拒绝接收邮件并通知",
         "sieve_preset_7": "重定向邮件并保留或删除",
-        "sieve_preset_8": "删除发件人发送给自己别名地址的邮件",
+        "sieve_preset_8": "重定向来自特定发件人的邮件，标记为已读并放入子文件夹中",
         "sieve_preset_header": "请看下方的示例预设。 查看 <a href=\"https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)\" target=\"_blank\">Sieve Wikipedia 页面 (英文)</a>以了解更多细节。",
         "sogo_visible": "SOGo 别名显示",
         "sogo_visible_n": "在 SOGo 中隐藏别名",
@@ -860,10 +912,20 @@
         "mailbox_templates": "邮箱模板",
         "gal": "全局地址列表",
         "max_aliases": "最大别名数",
-        "max_mailboxes": "最大可能的邮箱数"
+        "max_mailboxes": "最大可能的邮箱数",
+        "created_on": "建立于",
+        "force_pw_update": "强制在下一次登陆时更新密码",
+        "add_template": "新增模板",
+        "goto_ham": "学习为 <b> 非垃圾邮件 </b>",
+        "goto_spam": "学习为 <b> 垃圾邮件 </b>",
+        "last_modified": "上次修改时间",
+        "max_quota": "每个信箱的最大容量配额",
+        "relay_unknown": "转发未知信箱",
+        "templates": "模板",
+        "template": "模板"
     },
     "oauth2": {
-        "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权",
+        "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权。",
         "authorize_app": "授权应用",
         "deny": "拒绝",
         "permit": "授权应用",
@@ -926,7 +988,19 @@
     },
     "queue": {
         "queue_manager": "队列管理器",
-        "delete": "全部删除"
+        "delete": "全部删除",
+        "info": "邮件队列包含所有等待投递的邮件。如果邮件长时间停留在邮件队列中，系统会自动将其删除。<br>对应的邮件错误信息会提供有关邮件无法送达的原因。",
+        "flush": "刷新队列",
+        "legend": "邮件队列操作功能：",
+        "ays": "请确认您要删除当前队列中的所有项目。",
+        "deliver_mail": "投递",
+        "deliver_mail_legend": "尝试重新投递选中的邮件。",
+        "hold_mail": "保留",
+        "hold_mail_legend": "保持选中的邮件。（不继续投递）",
+        "show_message": "显示内容",
+        "unban": "队列解除限制",
+        "unhold_mail": "取消保持",
+        "unhold_mail_legend": "允许选中的邮件继续投递。（需要在保持状态）"
     },
     "ratelimit": {
         "disabled": "禁用",
@@ -994,7 +1068,7 @@
         "nginx_reloaded": "Nginx 已重新启动",
         "object_modified": "已保存对象 %s 更改",
         "password_policy_saved": "已成功保存密码规则",
-        "pushover_settings_edited": "已成功设置 Pushover，请重新校验凭证",
+        "pushover_settings_edited": "Pushover 设置已保存，请重新校验凭证。",
         "qlearn_spam": "消息 ID %s 已被学习为垃圾邮件并被删除",
         "queue_command_success": "成功执行配额命令",
         "recipient_map_entry_deleted": "已删除接收人映射 ID %s",
@@ -1018,7 +1092,17 @@
         "verified_fido2_login": "FIDO2 登录验证成功",
         "verified_totp_login": "TOTP 登录验证成功",
         "verified_webauthn_login": "WebAuthn 登录验证成功",
-        "verified_yotp_login": "Yubico OTP 登录验证成功"
+        "verified_yotp_login": "Yubico OTP 登录验证成功",
+        "domain_footer_modified": "对域 footer %s 的修改已保存",
+        "cors_headers_edited": "CORS 设置已保存",
+        "ip_check_opt_in_modified": "IP 检查已保存",
+        "f2b_banlist_refreshed": "黑名单 ID 已成功刷新。",
+        "mailbox_renamed": "信箱 %s 已被重命名为 %s",
+        "password_changed_success": "密码重置成功",
+        "recovery_email_sent": "重置邮件已发送至 %s",
+        "template_added": "新增了模板 %s",
+        "template_modified": "模板 %s 的修改已保存",
+        "template_removed": "模板 ID %s 已删除"
     },
     "tfa": {
         "api_register": "%s 使用了 Yubico Cloud API，请<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">在此</a>为你的密钥获取 API 密钥",
@@ -1045,7 +1129,8 @@
         "webauthn": "WebAuthn 认证",
         "waiting_usb_auth": "<i>等待 USB 设备中...</i><br><br>现在请触碰你的 WebAuthn USB 设备上的按钮。",
         "waiting_usb_register": "<i>等待 USB 设备中...</i><br><br>请在上方输入你的密码并请触碰你的 WebAuthn USB 设备上的按钮以确认注册该 WebAuthn 设备。",
-        "yubi_otp": "Yubico OTP 认证"
+        "yubi_otp": "Yubico OTP 认证",
+        "authenticators": "验证器（Authenticators）"
     },
     "user": {
         "action": "操作",
@@ -1062,7 +1147,7 @@
         "alias_valid_until": "有效至",
         "aliases_also_send_as": "同时允许发送为",
         "aliases_send_as_all": "已关闭发件人可访性检查的域名和域名别名",
-        "app_hint": "应用密码是你登录 <b>IMAP 和 SMTP</b> 时的可选替代密码，用户名仍然保持不变。<br>应用密码不适用于 SOGo (包括 ActiveSync) ",
+        "app_hint": "应用密码是你登录 <b>IMAP 和 SMTP</b> 时的可选替代密码，用户名仍然保持不变。<br>应用密码不适用于 SOGo (包括 ActiveSync)。",
         "allowed_protocols": "允许使用的协议",
         "app_name": "应用名称",
         "app_passwds": "应用密码",
@@ -1206,7 +1291,12 @@
         "weeks": "周",
         "with_app_password": "包含应用密码",
         "year": "年",
-        "years": "年"
+        "years": "年",
+        "pw_recovery_email": "密码重置邮箱",
+        "password_reset_info": "如果不提供密码重置邮箱，此功能将无法使用。",
+        "pushover_sound": "声音",
+        "value": "值",
+        "attribute": "属性"
     },
     "warning": {
         "cannot_delete_self": "不能删除已登录的用户",
@@ -1233,6 +1323,17 @@
             "last": "最后一页",
             "previous": "上一页",
             "next": "下一页"
-        }
+        },
+        "aria": {
+            "sortDescending": ": 激活以降序对列进行排序",
+            "sortAscending": ": 激活以升序对列进行排序"
+        },
+        "decimal": ".",
+        "emptyTable": "表中没有可用的数据",
+        "infoFiltered": "（从 _MAX_ 个总条目中过滤）",
+        "thousands": ",",
+        "lengthMenu": "显示 _MENU_ 条目",
+        "loadingRecords": "加载中...",
+        "zeroRecords": "未找到符合条件的记录"
     }
 }
