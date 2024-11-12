@@ -1,17 +1,17 @@
-FROM php:8.2-fpm-alpine3.18
+FROM php:8.2-fpm-alpine3.20
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
-ARG APCU_PECL_VERSION=5.1.23
+ARG APCU_PECL_VERSION=5.1.24
 # renovate: datasource=github-tags depName=Imagick/imagick versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG IMAGICK_PECL_VERSION=3.7.0
 # renovate: datasource=github-tags depName=php/pecl-mail-mailparse versioning=semver-coerced extractVersion=^v(?<version>.*)$
-ARG MAILPARSE_PECL_VERSION=3.1.6
+ARG MAILPARSE_PECL_VERSION=3.1.8
 # renovate: datasource=github-tags depName=php-memcached-dev/php-memcached versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG MEMCACHED_PECL_VERSION=3.2.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG REDIS_PECL_VERSION=6.0.2
+ARG REDIS_PECL_VERSION=6.1.0
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.6.6
 

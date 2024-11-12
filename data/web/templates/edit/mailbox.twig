@@ -9,6 +9,7 @@
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mpushover">{{ lang.edit.pushover }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#macl">{{ lang.edit.acl }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mrl">{{ lang.edit.ratelimit }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mrename">⚠️ {{ lang.edit.mailbox_rename }}</button></li>
     </ul>
     <hr class="d-none d-md-block">
     <div class="tab-content">
@@ -308,10 +309,10 @@
         <div class="card mb-4">
           <div class="card-header d-flex d-md-none fs-5">
             <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-mattr" data-bs-toggle="collapse" aria-controls="collapse-tab-mattr">
-              {{ lang.edit.mailbox }} <span class="badge bg-info table-lines"></span>
+              {{ lang.edit.custom_attributes }} <span class="badge bg-info table-lines"></span>
             </button>
           </div>
-          <div id="collapse-tab-mattr" class="card-body collapse show" data-bs-parent="#mailbox-content">
+          <div id="collapse-tab-mattr" class="card-body collapse" data-bs-parent="#mailbox-content">
             <form class="form-inline" data-id="mbox_attr" role="form" method="post">
               <table class="table table-condensed" style="white-space: nowrap;" id="mbox_attr_table">
                 <tr>
@@ -486,15 +487,67 @@
                         {% include 'mailbox/rl-frame.twig' %}
                         </select>
                       </div>
-                    </div>  
+                    </div>
                   </div>
                   <div class="row mb-2">
-                    <div class="offset-sm-2 col-sm-10">  
+                    <div class="offset-sm-2 col-sm-10">
                       <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxratelimit" data-item="{{ mailbox }}" data-api-url='edit/rl-mbox' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
                       <p class="text-muted mt-2">{{ lang.edit.mbox_rl_info }}</p>
                     </div>
                   </div>
                 </form>
+            </div>
+        </div>
+      </div>
+      <div id="mrename" class="tab-pane fade" role="tabpanel" aria-labelledby="mailbox-rename">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-mrename" data-bs-toggle="collapse" aria-controls="collapse-tab-mrename">
+                ⚠️ {{ lang.edit.mailbox_rename }}<span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-mrename" class="card-body collapse" data-bs-parent="#mailbox-content">
+              <div class="well">
+                <div id="rename_warning">
+                  <p>{{ lang.edit.mailbox_rename_warning }}</p>
+                  <div id="confirm_show_rspamd_global_filters">
+                    <div class="row">
+                      <div class="offset-sm-2 col-sm-10">
+                        <label>
+                          <input type="checkbox" class="form-check-input" id="show_mailbox_rename_form"> {{ lang.edit.mailbox_rename_agree }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="rename_form" class="d-none">
+                  <form data-id="mboxrename" method="post">
+                    <input name="domain" type="hidden" value="{{ result.domain }}">
+                    <input name="old_local_part" type="hidden" value="{{ result.local_part }}">
+                    <div class="row mb-2">
+                      <div class="col-sm-12 col-md-2">
+                        <span>{{ lang.edit.mailbox_rename_title }}</span>
+                      </div>
+                      <div class="col-sm-12 col-md-10 col-xl-8">
+                        <div class="input-group mb-2">
+                          <input type="text" class="form-control" name="new_local_part" autocomplete="off" value="{{ result.local_part }}">
+                          <span class="input-group-text">@{{ result.domain }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-4">
+                      <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="create_alias" checked> {{ lang.edit.mailbox_rename_alias }}</label>
+                      </div>
+                    </div>
+                    <div class="row mb-2">
+                      <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
+                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/mailbox" href="#">{{ lang.edit.save }}</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
         </div>
       </div>

@@ -46,7 +46,7 @@ if (isset($_POST["pw_reset_request"]) && !empty($_POST['username'])) {
 if (isset($_POST["pw_reset"])) {
   $username = reset_password("check", $_POST['token']);
   $reset_result = reset_password("reset", array(
-    'new_password' => $_POST['new_password'], 
+    'new_password' => $_POST['new_password'],
     'new_password2' => $_POST['new_password2'],
     'token' => $_POST['token'],
     'username' => $username,
@@ -66,7 +66,7 @@ if (isset($_POST["verify_tfa_login"])) {
       unset($_SESSION['pending_mailcow_cc_username']);
       unset($_SESSION['pending_mailcow_cc_role']);
       unset($_SESSION['pending_tfa_methods']);
-      
+
 		  header("Location: /debug");
       die();
     }
@@ -76,7 +76,7 @@ if (isset($_POST["verify_tfa_login"])) {
       unset($_SESSION['pending_mailcow_cc_username']);
       unset($_SESSION['pending_mailcow_cc_role']);
       unset($_SESSION['pending_tfa_methods']);
-      
+
 		  header("Location: /mailbox");
       die();
     }
@@ -92,7 +92,7 @@ if (isset($_POST["verify_tfa_login"])) {
         unset($_SESSION['pending_pw_new_password']);
         unset($_SESSION['pending_mailcow_cc_username']);
         unset($_SESSION['pending_tfa_methods']);
-  
+
         header("Location: /");
         die();
       } else {
@@ -141,11 +141,13 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
 		header("Location: /debug");
+    die();
 	}
 	elseif ($as == "domainadmin") {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
 		header("Location: /mailbox");
+    die();
 	}
 	elseif ($as == "user") {
     set_user_loggedin_session($login_user);
