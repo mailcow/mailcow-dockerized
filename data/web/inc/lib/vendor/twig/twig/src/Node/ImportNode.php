@@ -11,6 +11,7 @@
 
 namespace Twig\Node;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\NameExpression;
@@ -20,11 +21,22 @@ use Twig\Node\Expression\NameExpression;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
+#[YieldReady]
 class ImportNode extends Node
 {
-    public function __construct(AbstractExpression $expr, AbstractExpression $var, int $lineno, string $tag = null, bool $global = true)
+    /**
+     * @param bool $global
+     */
+    public function __construct(AbstractExpression $expr, AbstractExpression $var, int $lineno, $global = true)
     {
-        parent::__construct(['expr' => $expr, 'var' => $var], ['global' => $global], $lineno, $tag);
+        if (null === $global || \is_string($global)) {
+            trigger_deprecation('twig/twig', '3.12', 'Passing a tag to %s() is deprecated.', __METHOD__);
+            $global = \func_num_args() > 4 ? func_get_arg(4) : true;
+        } elseif (!\is_bool($global)) {
+            throw new \TypeError(\sprintf('Argument 4 passed to "%s()" must be a boolean, "%s" given.', __METHOD__, get_debug_type($global)));
+        }
+
+        parent::__construct(['expr' => $expr, 'var' => $var], ['global' => $global], $lineno);
     }
 
     public function compile(Compiler $compiler): void

@@ -11,6 +11,8 @@
 
 namespace Twig\Extension;
 
+use Twig\ExpressionParser;
+use Twig\Node\Expression\AbstractExpression;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\TokenParserInterface;
 use Twig\TwigFilter;
@@ -63,6 +65,11 @@ interface ExtensionInterface
      * Returns a list of operators to add to the existing list.
      *
      * @return array<array> First array of unary operators, second array of binary operators
+     *
+     * @psalm-return array{
+     *     array<string, array{precedence: int, class: class-string<AbstractExpression>}>,
+     *     array<string, array{precedence: int, class?: class-string<AbstractExpression>, associativity: ExpressionParser::OPERATOR_*}>
+     * }
      */
     public function getOperators();
 }

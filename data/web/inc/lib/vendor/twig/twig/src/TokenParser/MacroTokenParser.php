@@ -32,26 +32,26 @@ final class MacroTokenParser extends AbstractTokenParser
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
-        $name = $stream->expect(/* Token::NAME_TYPE */ 5)->getValue();
+        $name = $stream->expect(Token::NAME_TYPE)->getValue();
 
         $arguments = $this->parser->getExpressionParser()->parseArguments(true, true);
 
-        $stream->expect(/* Token::BLOCK_END_TYPE */ 3);
+        $stream->expect(Token::BLOCK_END_TYPE);
         $this->parser->pushLocalScope();
         $body = $this->parser->subparse([$this, 'decideBlockEnd'], true);
-        if ($token = $stream->nextIf(/* Token::NAME_TYPE */ 5)) {
+        if ($token = $stream->nextIf(Token::NAME_TYPE)) {
             $value = $token->getValue();
 
             if ($value != $name) {
-                throw new SyntaxError(sprintf('Expected endmacro for macro "%s" (but "%s" given).', $name, $value), $stream->getCurrent()->getLine(), $stream->getSourceContext());
+                throw new SyntaxError(\sprintf('Expected endmacro for macro "%s" (but "%s" given).', $name, $value), $stream->getCurrent()->getLine(), $stream->getSourceContext());
             }
         }
         $this->parser->popLocalScope();
-        $stream->expect(/* Token::BLOCK_END_TYPE */ 3);
+        $stream->expect(Token::BLOCK_END_TYPE);
 
-        $this->parser->setMacro($name, new MacroNode($name, new BodyNode([$body]), $arguments, $lineno, $this->getTag()));
+        $this->parser->setMacro($name, new MacroNode($name, new BodyNode([$body]), $arguments, $lineno));
 
-        return new Node();
+        return new Node([], [], $lineno);
     }
 
     public function decideBlockEnd(Token $token): bool
