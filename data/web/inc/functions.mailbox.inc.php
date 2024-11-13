@@ -3351,7 +3351,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'old_maildir' => $domain . '/' . $old_local_part,
             'new_maildir' => $domain . '/' . $new_local_part
           );
-          docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+          if (getenv("CLUSTERMODE") == "replication") {
+            // broadcast to each dovecot container
+            docker('broadcast', 'dovecot-mailcow', 'exec', $exec_fields);
+          } else {
+            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+          }
 
           // rename username in sogo
           $exec_fields = array(
