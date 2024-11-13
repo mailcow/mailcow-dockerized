@@ -43,9 +43,10 @@ services:
 
     redis-mailcow:
       image: redis:7-alpine
-      command: '--requirepass ${REDISPASS}'
+      entrypoint: /docker-entrypoint.sh
       volumes:
         - redis-vol-1:/data/
+        - ./data/conf/redis/docker-entrypoint.sh:/docker-entrypoint.sh:z
       restart: always
       depends_on:
         - netfilter-mailcow
