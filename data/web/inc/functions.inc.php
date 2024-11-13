@@ -2515,6 +2515,8 @@ function reset_password($action, $data = null) {
         ':username' => $username
       ));
 
+      update_sogo_static_view($username);
+
       $_SESSION['return'][] = array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $action, $_data_log),
