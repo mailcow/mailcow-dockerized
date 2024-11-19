@@ -43,10 +43,10 @@ services:
 
     redis-mailcow:
       image: redis:7-alpine
-      entrypoint: /docker-entrypoint.sh
+      entrypoint: /redis-conf.sh
       volumes:
         - redis-vol-1:/data/
-        - ./data/conf/redis/docker-entrypoint.sh:/docker-entrypoint.sh:z
+        - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
       restart: always
       depends_on:
         - netfilter-mailcow
