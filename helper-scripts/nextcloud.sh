@@ -101,7 +101,7 @@ if [[ ${NC_PURGE} == "y" ]]; then
     echo -e "\033[33mNot purging anything...\033[0m"
     exit 1
   fi
-  docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c "cat <<EOF | redis-cli -a ${REDISPASS}
+  docker exec -it $(docker ps -f name=redis-mailcow -q) /bin/sh -c "cat <<EOF | redis-cli -a ${REDISPASS} --no-auth-warning
 SELECT 10
 FLUSHDB
 EOF

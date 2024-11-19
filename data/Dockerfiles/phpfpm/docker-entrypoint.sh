@@ -16,7 +16,7 @@ else
   REDIS_HOST="redis"
   REDIS_PORT="6379"
 fi
-REDIS_CMDLINE="redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} -a ${REDISPASS}"
+REDIS_CMDLINE="redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} -a ${REDISPASS} --no-auth-warning"
 
 until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
   echo "Waiting for Redis..."
