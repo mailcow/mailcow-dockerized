@@ -124,7 +124,7 @@ case "$SUCCESS" in
     ;;
   *) # non-zero is non-fun
     log_f "Failed to obtain certificate ${CERT} for domains '${CERT_DOMAINS[*]}'"
-    redis-cli -h redis SET ACME_FAIL_TIME "$(date +%s)"
+    redis-cli -h redis -a ${REDISPASS} --no-auth-warning SET ACME_FAIL_TIME "$(date +%s)"
     exit 100${SUCCESS}
     ;;
 esac

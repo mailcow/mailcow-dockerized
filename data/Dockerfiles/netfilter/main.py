@@ -106,7 +106,7 @@ def get_ip(address):
     ip = ip.ipv4_mapped
   if ip.is_private or ip.is_loopback:
     return False
-  
+
   return ip
 
 def ban(address):
@@ -434,9 +434,9 @@ if __name__ == '__main__':
       redis_slaveof_ip = os.getenv('REDIS_SLAVEOF_IP', '')
       redis_slaveof_port = os.getenv('REDIS_SLAVEOF_PORT', '')
       if "".__eq__(redis_slaveof_ip):
-        r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0)
+        r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0, password=os.environ['REDISPASS'])
       else:
-        r = redis.StrictRedis(host=redis_slaveof_ip, decode_responses=True, port=redis_slaveof_port, db=0)
+        r = redis.StrictRedis(host=redis_slaveof_ip, decode_responses=True, port=redis_slaveof_port, db=0, password=os.environ['REDISPASS'])
       r.ping()
       pubsub = r.pubsub()
     except Exception as ex:
@@ -452,7 +452,7 @@ if __name__ == '__main__':
   # clear bans in redis
   r.delete('F2B_ACTIVE_BANS')
   r.delete('F2B_PERM_BANS')
-  
+
   refreshF2boptions()
 
   watch_thread = Thread(target=watch)
