@@ -540,6 +540,7 @@ CONFIG_ARRAY=(
   "SPAMHAUS_DQS_KEY"
   "SKIP_UNBOUND_HEALTHCHECK"
   "DISABLE_NETFILTER_ISOLATION_RULE"
+  "REDISPASS"
 )
 
 detect_bad_asn
@@ -831,6 +832,14 @@ for option in "${CONFIG_ARRAY[@]}"; do
       echo '# Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n' >> mailcow.conf
       echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
       echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
+    fi
+  elif [[ "${option}" == "REDISPASS" ]]; then
+    if ! grep -q "${option}" mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo -e '\n# ------------------------------' >> mailcow.conf
+      echo '# REDIS configuration' >> mailcow.conf
+      echo -e '# ------------------------------\n' >> mailcow.conf
+      echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)" >> mailcow.conf
     fi
   elif ! grep -q "${option}" mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"
