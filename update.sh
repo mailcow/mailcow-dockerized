@@ -299,7 +299,7 @@ fix_broken_dnslist_conf() {
         echo -e "\e[35mOk, not deleting it! Please make sure you take a look at postfix upon start then..."
         return 2
       fi
-  fi  
+  fi
 
 }
 
