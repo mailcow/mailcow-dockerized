@@ -359,33 +359,26 @@ services:
 
     nginx-mailcow:
       depends_on:
-        - sogo-mailcow
-        - php-fpm-mailcow
         - redis-mailcow
-      image: nginx:mainline-alpine
+        - php-fpm-mailcow
+        - sogo-mailcow
+        - rspamd-mailcow
+      image: mailcow/nginx:1.00
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
-      command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
-        envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
-        envsubst < /etc/nginx/conf.d/templates/sogo.template > /etc/nginx/conf.d/sogo.active &&
-        . /etc/nginx/conf.d/templates/server_name.template.sh > /etc/nginx/conf.d/server_name.active &&
-        . /etc/nginx/conf.d/templates/sites.template.sh > /etc/nginx/conf.d/sites.active &&
-        . /etc/nginx/conf.d/templates/sogo_eas.template.sh > /etc/nginx/conf.d/sogo_eas.active &&
-        nginx -qt &&
-        until ping phpfpm -c1 > /dev/null; do sleep 1; done &&
-        until ping sogo -c1 > /dev/null; do sleep 1; done &&
-        until ping redis -c1 > /dev/null; do sleep 1; done &&
-        until ping rspamd -c1 > /dev/null; do sleep 1; done &&
-        exec nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
         - TZ=${TZ}
         - SKIP_SOGO=${SKIP_SOGO:-n}
-        - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
-        - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
+        - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
+        - PHPFPMHOST=${PHPFPMHOST:-php-fpm-mailcow}
+        - SOGOHOST=${SOGOHOST:-sogo-mailcow}
+        - RSPAMDHOST=${RSPAMDHOST:-rspamd-mailcow}
+        - REDISHOST=${REDISHOST:-redis-mailcow}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
