@@ -2,7 +2,7 @@
 
 source /source_env.sh
 
-MAX_AGE=$(redis-cli --raw -h redis-mailcow -a ${REDISPASS} GET Q_MAX_AGE)
+MAX_AGE=$(redis-cli --raw -h redis-mailcow -a ${REDISPASS} --no-auth-warning GET Q_MAX_AGE)
 
 if [[ -z ${MAX_AGE} ]]; then
   echo "Max age for quarantine items not defined"
