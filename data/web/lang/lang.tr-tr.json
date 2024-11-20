@@ -1207,6 +1207,7 @@
         "created_on": "Oluşturulma tarihi",
         "daily": "Günlük",
         "day": "Gün",
+        "description": "Açıklama",
         "delete_ays": "Lütfen silme işlemini onaylayın.",
         "direct_aliases": "Doğrudan takma ad adresleri",
         "eas_reset_help": "Birçok durumda cihaz önbelleğini sıfırlama, bozuk bir ActiveSync profilini kurtarmaya yardımcı olur.<br><b>Dikkat:</b> Tüm öğeler yeniden indirilecek!",
