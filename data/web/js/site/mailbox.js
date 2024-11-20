@@ -693,8 +693,8 @@ jQuery(function($){
             } else if (item.attributes.rl_frame === "d"){
               item.attributes.rl_frame = lang_rl.day;
             }
-            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
-
+            item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
+            item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
             if (item.template.toLowerCase() == "default"){
               item.action = '<div class="btn-group">' +
@@ -818,14 +818,8 @@ jQuery(function($){
           }
         },
         {
-          title: 'rl_frame',
-          data: 'attributes.rl_frame',
-          defaultContent: '',
-          class: 'none',
-        },
-        {
-          title: 'rl_value',
-          data: 'attributes.rl_value',
+          title: lang_edit.ratelimit,
+          data: 'attributes.ratelimit',
           defaultContent: '',
           class: 'none',
         },
@@ -1183,7 +1177,8 @@ jQuery(function($){
             } else if (item.attributes.rl_frame === "d"){
               item.attributes.rl_frame = lang_rl.day;
             }
-            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
+            item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
+            item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
             item.attributes.quota = humanFileSize(item.attributes.quota);
 
@@ -1328,14 +1323,8 @@ jQuery(function($){
           }
         },
         {
-          title: "rl_frame",
-          data: 'attributes.rl_frame',
-          defaultContent: '',
-          class: 'none',
-        },
-        {
-          title: 'rl_value',
-          data: 'attributes.rl_value',
+          title: lang_edit.ratelimit,
+          data: 'attributes.ratelimit',
           defaultContent: '',
           class: 'none',
         },
