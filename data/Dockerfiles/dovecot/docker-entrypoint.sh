@@ -110,13 +110,13 @@ EOF
 
 echo -n ${ACL_ANYONE} > /etc/dovecot/acl_anyone
 
-if [[ "${SKIP_FLATCURVE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-echo -e "\e[33mDetecting SKIP_FLATCURVE=y... not enabling Flatcurve (FTS) then...\e[0m"
+if [[ "${SKIP_FTS}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+echo -e "\e[33mDetecting SKIP_FTS=y... not enabling Flatcurve (FTS) then...\e[0m"
 echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify listescape replication lazy_expunge' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify listescape replication mail_log lazy_expunge' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl notify listescape replication lazy_expunge' > /etc/dovecot/mail_plugins_lmtp
 else
-echo -e "\e[32mDetecting SKIP_FLATCURVE=n... enabling Flatcurve (FTS)\e[0m"
+echo -e "\e[32mDetecting SKIP_FTS=n... enabling Flatcurve (FTS)\e[0m"
 echo -n 'quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_flatcurve listescape replication lazy_expunge' > /etc/dovecot/mail_plugins
 echo -n 'quota imap_quota imap_acl acl zlib imap_zlib imap_sieve mail_crypt mail_crypt_acl notify mail_log fts fts_flatcurve listescape replication lazy_expunge' > /etc/dovecot/mail_plugins_imap
 echo -n 'quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_flatcurve notify listescape replication lazy_expunge' > /etc/dovecot/mail_plugins_lmtp
@@ -349,7 +349,7 @@ EOF
 fi
 
 # Setting variables for indexer-worker inside fts.conf automatically according to mailcow.conf settings
-if [[ "${SKIP_FLATCURVE}" =~ ^([nN][oO]|[nN])+$ ]]; then
+if [[ "${SKIP_FTS}" =~ ^([nN][oO]|[nN])+$ ]]; then
   echo -e "\e[94mConfiguring FTS Settings...\e[0m"
   echo -e "\e[94mSetting FTS Memory Limit (per process) to ${FTS_HEAP} MB\e[0m"
   sed -i "s/vsz_limit\s*=\s*[0-9]*\s*MB*/vsz_limit=${FTS_HEAP} MB/" /etc/dovecot/conf.d/fts.conf

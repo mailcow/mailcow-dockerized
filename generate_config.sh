@@ -283,7 +283,6 @@ POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
-SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
 
 # Your timezone
@@ -380,15 +379,16 @@ SKIP_CLAMD=${SKIP_CLAMD}
 
 SKIP_SOGO=n
 
-# Skip Flatcurve (FTS) on low-memory systems or if you simply want to disable it.
+# Skip FTS (Fulltext Search) for Dovecot on low-memory systems or if you simply want to disable it.
+# Dovecot inside mailcow use Flatcurve as FTS Backend.
 
-SKIP_FLATCURVE=n
+SKIP_FTS=n
 
 # Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.
 # Flatcurve (Xapian backend) is used as the FTS Indexer. It is supposed to be efficient in CPU and RAM consumption.
 # However: Please always monitor your Resource consumption!
 
-FTS_HEAP=512
+FTS_HEAP=128
 
 # Controls how many processes the Dovecot indexing process can spawn at max.
 # Too many indexing processes can use a lot of CPU and Disk I/O.

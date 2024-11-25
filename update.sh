@@ -336,7 +336,7 @@ adapt_new_options() {
   "ACL_ANYONE"
   "FTS_HEAP"
   "FTS_PROCS"
-  "SKIP_FLATCURVE"
+  "SKIP_FTS"
   "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
@@ -468,11 +468,12 @@ adapt_new_options() {
         echo '# Please always monitor your Resource consumption!' >> mailcow.conf
         echo "FTS_HEAP=1024" >> mailcow.conf
       fi
-    elif [[ ${option} == "SKIP_FLATCURVE" ]]; then
+    elif [[ ${option} == "SKIP_FTS" ]]; then
       if ! grep -q ${option} mailcow.conf; then
         echo "Adding new option \"${option}\" to mailcow.conf"
-        echo '# Skip Flatcurve (FTS) on low-memory systems or if you simply want to disable it.' >> mailcow.conf
-        echo "SKIP_FLATCURVE=y" >> mailcow.conf
+        echo '# Skip FTS (Fulltext Search) for Dovecot on low-memory systems or if you simply want to disable it.' >> mailcow.conf
+        echo "# Dovecot inside mailcow use Flatcurve as FTS Backend." >> mailcow.conf
+        echo "SKIP_FTS=n" >> mailcow.conf
       fi
     elif [[ ${option} == "FTS_PROCS" ]]; then
       if ! grep -q ${option} mailcow.conf; then
@@ -480,7 +481,7 @@ adapt_new_options() {
         echo '# Controls how many processes the Dovecot indexing process can spawn at max.' >> mailcow.conf
         echo '# Too many indexing processes can use a lot of CPU and Disk I/O' >> mailcow.conf
         echo '# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations' >> mailcow.conf
-        echo "FTS_PROCS=5" >> mailcow.conf
+        echo "FTS_PROCS=2" >> mailcow.conf
       fi
     elif [[ ${option} == "ENABLE_SSL_SNI" ]]; then
       if ! grep -q ${option} mailcow.conf; then
@@ -646,49 +647,36 @@ adapt_new_options() {
 
 migrate_solr_config_options() {
 
-  SOLR_OPTIONS=(
-  "SOLR_HEAP"
-  "SOLR_PORT"
-  "SKIP_SOLR"
-  "FLATCURVE_EXPERIMENTAL"
-  )
-
   sed -i --follow-symlinks '$a\' mailcow.conf
-  for option in "${SOLR_OPTIONS[@]}"; do
-  if [[ $option == "SOLR_HEAP" ]]; then
-    if grep -q "${option}" mailcow.conf; then
-      echo "Replacing SOLR_HEAP with \"${option}\" in mailcow.conf"
-      sed -i '/# Solr heap size in MB\b/c\# Dovecot Indexing (FTS) Process heap size in MB, there is no recommendation, please see Dovecot docs.' mailcow.conf
-      sed -i '/# Solr is a prone to run\b/c\# Flatcurve is replacing solr as FTS Indexer completely. It is supposed to be much more efficient in CPU and RAM consumption.'  mailcow.conf
-      sed -i 's/SOLR_HEAP/FTS_HEAP/g' mailcow.conf
-    fi
+
+  if grep -q "SOLR_HEAP" mailcow.conf; then
+    echo "Removing SOLR_HEAP in mailcow.conf"
+    sed -i '/# Solr heap size in MB\b/d' mailcow.conf
+    sed -i '/# Solr is a prone to run\b/d' mailcow.conf
+    sed -i '/SOLR_HEAP\b/d' mailcow.conf
   fi
-  if [[ $option == "SKIP_SOLR" ]]; then
-    if grep -q "${option}" mailcow.conf; then
-      echo "Replacing $option in mailcow.conf with SKIP_FLATCURVE"
-      sed -i '/\bSkip Solr on low-memory\b/c\# Skip Flatcurve (FTS) on low-memory systems or if you simply want to disable it.' mailcow.conf
-      sed -i '/\bSolr is disabled by default\b/d' mailcow.conf
-      sed -i '/\bDisable Solr or\b/d' mailcow.conf
-      sed -i 's/SKIP_SOLR/SKIP_FLATCURVE/g' mailcow.conf
-    fi
+
+  if grep -q "SKIP_SOLR" mailcow.conf; then
+    echo "Removing SKIP_SOLR in mailcow.conf"
+    sed -i '/\bSkip Solr on low-memory\b/d' mailcow.conf
+    sed -i '/\bSolr is disabled by default\b/d' mailcow.conf
+    sed -i '/\bDisable Solr or\b/d' mailcow.conf
+    sed -i '/\bSKIP_SOLR\b/d' mailcow.conf
   fi
-  if [[ $option == "SOLR_PORT" ]]; then
-    if grep -q "${option}" mailcow.conf; then
-      echo "Removing ${option} in mailcow.conf"
-      sed -i '/\bSOLR_PORT\b/d' mailcow.conf
-    fi
+
+  if grep -q "SOLR_PORT" mailcow.conf; then
+    echo "Removing SOLR_PORT in mailcow.conf"
+    sed -i '/\bSOLR_PORT\b/d' mailcow.conf
   fi
-  if [[ $option == "FLATCURVE_EXPERIMENTAL" ]]; then
-    if grep -q "${option}" mailcow.conf; then
-      echo "Removing ${option} in mailcow.conf"
-      sed -i '/\bFLATCURVE_EXPERIMENTAL\b/d' mailcow.conf
-    fi
+
+  if grep -q "FLATCURVE_EXPERIMENTAL" mailcow.conf; then
+    echo "Removing FLATCURVE_EXPERIMENTAL in mailcow.conf"
+    sed -i '/\bFLATCURVE_EXPERIMENTAL\b/d' mailcow.conf
   fi
-  done
 
   solr_volume=$(docker volume ls -qf name=^${COMPOSE_PROJECT_NAME}_solr-vol-1)
   if [[ -n $solr_volume ]]; then
-    echo -e "\e[34mSolr has been replaced within mailcow since 2024-XX.\e[0m"
+    echo -e "\e[34mSolr has been replaced within mailcow since 2024-12.\e[0m"
     sleep 1
     echo -e "\e[34mTherefore the volume $solr_volume is unused.\e[0m"
     sleep 1
@@ -929,8 +917,6 @@ CONFIG_ARRAY=(
   "MAILDIR_GC_TIME"
   "MAILDIR_SUB"
   "ACL_ANYONE"
-  "SOLR_HEAP"
-  "SKIP_SOLR"
   "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
@@ -1056,21 +1042,6 @@ for option in "${CONFIG_ARRAY[@]}"; do
       echo '# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.' >> mailcow.conf
       echo '# Otherwise a user might share data with too many other users.' >> mailcow.conf
       echo 'ACL_ANYONE=disallow' >> mailcow.conf
-    fi
-  elif [[ "${option}" == "SOLR_HEAP" ]]; then
-    if ! grep -q "${option}" mailcow.conf; then
-      echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Solr heap size, there is no recommendation, please see Solr docs.' >> mailcow.conf
-      echo '# Solr is a prone to run OOM on large systems and should be monitored. Unmonitored Solr setups are not recommended.' >> mailcow.conf
-      echo '# Solr will refuse to start with total system memory below or equal to 2 GB.' >> mailcow.conf
-      echo "SOLR_HEAP=1024" >> mailcow.conf
-    fi
-  elif [[ "${option}" == "SKIP_SOLR" ]]; then
-    if ! grep -q "${option}" mailcow.conf; then
-      echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Solr is disabled by default after upgrading from non-Solr to Solr-enabled mailcows.' >> mailcow.conf
-      echo '# Disable Solr or if you do not want to store a readable index of your mails in solr-vol-1.' >> mailcow.conf
-      echo "SKIP_SOLR=y" >> mailcow.conf
     fi
   elif [[ "${option}" == "ENABLE_SSL_SNI" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
