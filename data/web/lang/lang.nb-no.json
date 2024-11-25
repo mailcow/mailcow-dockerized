@@ -328,7 +328,6 @@
         "update_available": "En oppdatering er tilgjengelig",
         "service": "Tjeneste",
         "show_ip": "Vis offentlig IP",
-        "solr_dead": "Solr starter, er deaktivert eller døde",
         "memory": "Minne",
         "online_users": "Tilkoblede brukere",
         "restart_container": "Omstart",
