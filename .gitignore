@@ -23,6 +23,7 @@ data/conf/dovecot/sni.conf
 data/conf/dovecot/sogo-sso.conf
 data/conf/dovecot/sogo_trusted_ip.conf
 data/conf/dovecot/sql
+data/conf/dovecot/local.d/fts.conf
 data/conf/nextcloud-*.bak
 data/conf/nginx/*.active
 data/conf/nginx/*.bak
