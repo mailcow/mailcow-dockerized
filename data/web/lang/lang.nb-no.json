@@ -333,7 +333,6 @@
         "online_users": "Tilkoblede brukere",
         "restart_container": "Omstart",
         "size": "Størrelse",
-        "solr_status": "Solr-status",
         "started_at": "Startet ved",
         "started_on": "Startet den",
         "static_logs": "Statiske logger",
