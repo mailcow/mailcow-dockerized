@@ -225,6 +225,7 @@
         "iam_description": "Configure an external Provider for Authentication<br>User's mailboxes will be automatically created upon their first login, provided that an attribute mapping has been set.",
         "iam_extra_permission": "For the following settings to work, the mailcow client in Keycloak needs a <code>Service account</code> and the permission to <code>view-users</code>.",
         "iam_host": "Host",
+        "iam_host_info": "Enter one or more LDAP hosts, separated by commas.",
         "iam_import_users": "Import Users",
         "iam_mapping": "Attribute Mapping",
         "iam_bindpass": "Bind Password",
