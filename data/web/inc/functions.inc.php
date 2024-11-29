@@ -2240,6 +2240,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes');
         break;
         case "ldap":
+          $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
           $_data['port']              = (!empty($_data['port'])) ? intval($_data['port']) : 389;
           $_data['username_field']    = (!empty($_data['username_field'])) ? strtolower($_data['username_field']) : "mail";
           $_data['attribute_field']   = (!empty($_data['attribute_field'])) ? strtolower($_data['attribute_field']) : "";
@@ -2356,7 +2357,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             $options[LDAP_OPT_X_TLS_REQUIRE_CERT] = LDAP_OPT_X_TLS_NEVER;
           }
           $provider = new \LdapRecord\Connection([
-            'hosts'                     => [$_data['host']],
+            'hosts'                     => explode(",", $_data['host']),
             'port'                      => $_data['port'],
             'base_dn'                   => $_data['basedn'],
             'username'                  => $_data['binddn'],
@@ -2450,7 +2451,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               $options[LDAP_OPT_X_TLS_REQUIRE_CERT] = LDAP_OPT_X_TLS_NEVER;
             }
             $provider = new \LdapRecord\Connection([
-              'hosts'                     => [$settings['host']],
+              'hosts'                     => explode(",", $settings['host']),
               'port'                      => $settings['port'],
               'base_dn'                   => $settings['basedn'],
               'username'                  => $settings['binddn'],
