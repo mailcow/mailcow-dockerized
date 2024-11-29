@@ -1708,7 +1708,7 @@ if (isset($_GET['query'])) {
               $score = array("score" => preg_replace("/\s+/", "", $score));
             process_get_return($score);
           case "identity_provider":
-            process_get_return(identity_provider('get'));
+            process_get_return($iam_settings);
           break;
         break;
         // return no route found if no case is matched

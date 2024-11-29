@@ -119,7 +119,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $quarantine_category = mailbox('get', 'quarantine_category', $mailbox);
         $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
         $rlyhosts = relayhost('get');
-        $iam_settings = identity_provider('get');
         $template = 'edit/mailbox.twig';
         $template_data = [
           'acl' => $_SESSION['acl'],

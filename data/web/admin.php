@@ -86,8 +86,6 @@ $cors_settings['allowed_origins'] = str_replace(", ", "\n", $cors_settings['allo
 $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_methods']);
 
 $f2b_data = fail2ban('get');
-// identity provider
-$iam_settings = identity_provider('get');
 // mbox templates
 $mbox_templates = mailbox('get', 'mailbox_templates');
 

@@ -1072,6 +1072,8 @@ function set_tfa($_data) {
   global $pdo;
   global $yubi;
   global $tfa;
+  global $iam_settings;
+
   $_data_log = $_data;
   $access_denied = null;
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
@@ -1100,7 +1102,6 @@ function set_tfa($_data) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row) {
       if ($row['authsource'] == 'ldap'){
-        $iam_settings = identity_provider('get');
         if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
         else $access_denied = false;
       } else {
@@ -2129,20 +2130,13 @@ function uuid4() {
 function identity_provider($_action = null, $_data = null, $_extra = null) {
   global $pdo;
   global $iam_provider;
+  global $iam_settings;
 
   $data_log = $_data;
   if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
   if (isset($data_log['access_token'])) $data_log['access_token'] = '*';
 
   switch ($_action) {
-    case NULL:
-      if ($iam_provider) {
-        return $iam_provider;
-      } else {
-        $iam_provider = identity_provider("init");
-        return $iam_provider;
-      }
-    break;
     case 'get':
       $settings = array();
       $stmt = $pdo->prepare("SELECT * FROM `identity_provider`;");
@@ -2414,20 +2408,20 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       return true;
     break;
     case "init":
-      $iam_settings = identity_provider('get');
+      $settings = identity_provider('get');
       $provider = null;
 
-      switch ($iam_settings['authsource']) {
+      switch ($settings['authsource']) {
         case "keycloak":
-          if ($iam_settings['server_url'] && $iam_settings['realm'] && $iam_settings['client_id'] &&
-            $iam_settings['client_secret'] && $iam_settings['redirect_url'] && $iam_settings['version']){
+          if ($settings['server_url'] && $settings['realm'] && $settings['client_id'] &&
+            $settings['client_secret'] && $settings['redirect_url'] && $settings['version']){
             $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
-              'authServerUrl'         => $iam_settings['server_url'],
-              'realm'                 => $iam_settings['realm'],
-              'clientId'              => $iam_settings['client_id'],
-              'clientSecret'          => $iam_settings['client_secret'],
-              'redirectUri'           => $iam_settings['redirect_url'],
-              'version'               => $iam_settings['version'],
+              'authServerUrl'         => $settings['server_url'],
+              'realm'                 => $settings['realm'],
+              'clientId'              => $settings['client_id'],
+              'clientSecret'          => $settings['client_secret'],
+              'redirectUri'           => $settings['redirect_url'],
+              'version'               => $settings['version'],
               // 'encryptionAlgorithm'   => 'RS256',                             // optional
               // 'encryptionKeyPath'     => '../key.pem'                         // optional
               // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
@@ -2435,34 +2429,34 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           }
         break;
         case "generic-oidc":
-          if ($iam_settings['client_id'] && $iam_settings['client_secret'] && $iam_settings['redirect_url'] &&
-            $iam_settings['authorize_url'] && $iam_settings['token_url'] && $iam_settings['userinfo_url']){
+          if ($settings['client_id'] && $settings['client_secret'] && $settings['redirect_url'] &&
+            $settings['authorize_url'] && $settings['token_url'] && $settings['userinfo_url']){
             $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-              'clientId'                => $iam_settings['client_id'],
-              'clientSecret'            => $iam_settings['client_secret'],
-              'redirectUri'             => $iam_settings['redirect_url'],
-              'urlAuthorize'            => $iam_settings['authorize_url'],
-              'urlAccessToken'          => $iam_settings['token_url'],
-              'urlResourceOwnerDetails' => $iam_settings['userinfo_url'],
-              'scopes'                  => $iam_settings['client_scopes']
+              'clientId'                => $settings['client_id'],
+              'clientSecret'            => $settings['client_secret'],
+              'redirectUri'             => $settings['redirect_url'],
+              'urlAuthorize'            => $settings['authorize_url'],
+              'urlAccessToken'          => $settings['token_url'],
+              'urlResourceOwnerDetails' => $settings['userinfo_url'],
+              'scopes'                  => $settings['client_scopes']
             ]);
           }
         break;
         case "ldap":
-          if ($iam_settings['host'] && $iam_settings['port'] && $iam_settings['basedn'] &&
-            $iam_settings['binddn'] && $iam_settings['bindpass']){
+          if ($settings['host'] && $settings['port'] && $settings['basedn'] &&
+            $settings['binddn'] && $settings['bindpass']){
             $options = array();
-            if ($iam_settings['ignore_ssl_error']) {
+            if ($settings['ignore_ssl_error']) {
               $options[LDAP_OPT_X_TLS_REQUIRE_CERT] = LDAP_OPT_X_TLS_NEVER;
             }
             $provider = new \LdapRecord\Connection([
-              'hosts'                     => [$iam_settings['host']],
-              'port'                      => $iam_settings['port'],
-              'base_dn'                   => $iam_settings['basedn'],
-              'username'                  => $iam_settings['binddn'],
-              'password'                  => $iam_settings['bindpass'],
-              'use_ssl'                   => $iam_settings['use_ssl'],
-              'use_tls'                   => $iam_settings['use_tls'],
+              'hosts'                     => [$settings['host']],
+              'port'                      => $settings['port'],
+              'base_dn'                   => $settings['basedn'],
+              'username'                  => $settings['binddn'],
+              'password'                  => $settings['bindpass'],
+              'use_ssl'                   => $settings['use_ssl'],
+              'use_tls'                   => $settings['use_tls'],
               'options'                   => $options
             ]);
             try {
@@ -2477,8 +2471,6 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       return $provider;
     break;
     case "verify-sso":
-      $provider = $_data['iam_provider'];
-      $iam_settings = identity_provider('get');
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc'){
         $_SESSION['return'][] =  array(
           'type' => 'danger',
@@ -2489,10 +2481,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       try {
-        $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
+        $token = $iam_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
         $_SESSION['iam_token'] = $token->getToken();
         $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
-        $info = $provider->getResourceOwner($token)->toArray();
+        $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
@@ -2577,13 +2569,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       return true;
     break;
     case "refresh-token":
-      $provider = $_data['iam_provider'];
-
       try {
-        $token = $provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
+        $token = $iam_provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
         $_SESSION['iam_token'] = $token->getToken();
         $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
-        $info = $provider->getResourceOwner($token)->toArray();
+        $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         clear_session();
         $_SESSION['return'][] =  array(
@@ -2609,17 +2599,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       return true;
     break;
     case "get-redirect":
-      $iam_settings = identity_provider('get');
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc')
         return false;
-      $provider = $_data['iam_provider'];
-      $authUrl = $provider->getAuthorizationUrl();
-      $_SESSION['oauth2state'] = $provider->getState();
+      $authUrl = $iam_provider->getAuthorizationUrl();
+      $_SESSION['oauth2state'] = $iam_provider->getState();
       return $authUrl;
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
-      $iam_settings = identity_provider('get');
       if ($iam_settings['authsource'] !== 'keycloak') return false;
       if (isset($iam_settings['access_token'])) {
         // check if access_token is valid
