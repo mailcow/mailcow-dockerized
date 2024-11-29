@@ -12,7 +12,7 @@ $return = array("success" => false);
 if(!isset($post['username']) || !isset($post['password']) || !isset($post['real_rip'])){
   error_log("MAILCOWAUTH: Bad Request");
   http_response_code(400); // Bad Request
-  echo json_encode($return); 
+  echo json_encode($return);
   exit();
 }
 
@@ -35,7 +35,7 @@ try {
 catch (PDOException $e) {
   error_log("MAILCOWAUTH: " . $e . PHP_EOL);
   http_response_code(500); // Internal Server Error
-  echo json_encode($return); 
+  echo json_encode($return);
   exit;
 }
 
@@ -57,7 +57,6 @@ if ($isSOGoRequest) {
     error_log('MAILCOWAUTH: SOGo SSO auth for user ' . $post['username']);
     $result = true;
   }
-  
 }
 if ($result === false){
   $result = apppass_login($post['username'], $post['password'], $protocol, array(
@@ -67,6 +66,10 @@ if ($result === false){
   if ($result) error_log('MAILCOWAUTH: App auth for user ' . $post['username']);
 }
 if ($result === false){
+  // Init Identity Provider
+  $iam_provider = identity_provider('init');
+  $iam_settings = identity_provider('get');
+  error_log('MAILCOWAUTH Try: User auth for user ' . $post['username']);
   $result = user_login($post['username'], $post['password'], $protocol, array('is_internal' => true));
   if ($result) error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
 }
@@ -80,6 +83,6 @@ if ($result) {
 }
 
 
-echo json_encode($return); 
+echo json_encode($return);
 session_destroy();
 exit;
