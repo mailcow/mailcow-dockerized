@@ -2222,6 +2222,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
+      $_data['ignore_ssl_error']  = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
@@ -2230,14 +2231,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval');
+          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error');
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email";
-          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes');
+          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error');
         break;
         case "ldap":
           $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
@@ -2249,7 +2250,6 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['use_ssl']           = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
           $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
-          $_data['ignore_ssl_error']  = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
           $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error');
@@ -2416,6 +2416,13 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         case "keycloak":
           if ($settings['server_url'] && $settings['realm'] && $settings['client_id'] &&
             $settings['client_secret'] && $settings['redirect_url'] && $settings['version']){
+            $guzzyClient = new GuzzleHttp\Client([
+              'defaults' => [
+                \GuzzleHttp\RequestOptions::CONNECT_TIMEOUT => 5,
+                \GuzzleHttp\RequestOptions::ALLOW_REDIRECTS => true],
+                \GuzzleHttp\RequestOptions::VERIFY => !$settings['ignore_ssl_error'],
+              ]
+            );
             $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
               'authServerUrl'         => $settings['server_url'],
               'realm'                 => $settings['realm'],
@@ -2427,11 +2434,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               // 'encryptionKeyPath'     => '../key.pem'                         // optional
               // 'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
             ]);
+            $provider->setHttpClient($guzzyClient);
           }
         break;
         case "generic-oidc":
           if ($settings['client_id'] && $settings['client_secret'] && $settings['redirect_url'] &&
             $settings['authorize_url'] && $settings['token_url'] && $settings['userinfo_url']){
+            $guzzyClient = new GuzzleHttp\Client([
+              'defaults' => [
+                \GuzzleHttp\RequestOptions::CONNECT_TIMEOUT => 5,
+                \GuzzleHttp\RequestOptions::ALLOW_REDIRECTS => true],
+                \GuzzleHttp\RequestOptions::VERIFY => !$settings['ignore_ssl_error'],
+              ]
+            );
             $provider = new \League\OAuth2\Client\Provider\GenericProvider([
               'clientId'                => $settings['client_id'],
               'clientSecret'            => $settings['client_secret'],
@@ -2441,6 +2456,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               'urlResourceOwnerDetails' => $settings['userinfo_url'],
               'scopes'                  => $settings['client_scopes']
             ]);
+            $provider->setHttpClient($guzzyClient);
           }
         break;
         case "ldap":
@@ -2468,7 +2484,6 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           }
         break;
       }
-
       return $provider;
     break;
     case "verify-sso":
