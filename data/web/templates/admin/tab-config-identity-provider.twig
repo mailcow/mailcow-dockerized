@@ -159,6 +159,16 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.ignore_ssl_error }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="ignore_ssl_error" value="1" {% if iam_settings.ignore_ssl_error == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
               <label class="control-label">{{ lang.admin.iam_periodic_full_sync }}</label>
             </div>
             <div class="col-12 col-md-9">
@@ -315,6 +325,16 @@
               </div>
             </div>
             {% endif %}
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.ignore_ssl_error }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="ignore_ssl_error" value="1" {% if iam_settings.ignore_ssl_error == 1 %}checked{% endif %}>
+              </div>
+            </div>
           </div>
           <div class="row mt-4 mb-2">
             <div class="offset-md-3 col-12 col-md-9 d-flex flex-wrap">
