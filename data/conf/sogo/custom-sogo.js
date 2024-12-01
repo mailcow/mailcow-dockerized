@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var loginForm = document.forms.namedItem("loginForm");
     if (loginForm) {
-        window.location.href = '/';
+        window.location.href = '/user';
     }
 
     angularReady = false;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function mcElementsExists() {
         if (document.getElementById("mc_backlink"))
             return true;
-        else 
+        else
             return false;
     }
     function addMCElements() {
