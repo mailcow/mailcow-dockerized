@@ -159,7 +159,8 @@ foreach ($response as $user) {
       'local_part' => explode('@',  $user[$iam_settings['username_field']][0])[0],
       'name' => $user['displayname'][0],
       'authsource' => 'ldap',
-      'template' => $mbox_template
+      'template' => $mbox_template,
+      'hasAccess' => true
     ));
   } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
     // mailbox user does exist, sync attribtues...
@@ -167,7 +168,8 @@ foreach ($response as $user) {
     mailbox('edit', 'mailbox_from_template', array(
       'username' =>  $user[$iam_settings['username_field']][0],
       'name' => $user['displayname'][0],
-      'template' => $mbox_template
+      'template' => $mbox_template,
+      'hasAccess' => true
     ));
   } else {
     // skip mailbox user
