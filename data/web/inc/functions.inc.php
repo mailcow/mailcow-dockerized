@@ -2512,27 +2512,6 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // check if email address is given
       if (empty($info['email'])) return false;
 
-      // token valid, get mailbox
-      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
-        INNER JOIN domain on mailbox.domain = domain.domain
-        WHERE `kind` NOT REGEXP 'location|thing|group'
-          AND `mailbox`.`active`='1'
-          AND `domain`.`active`='1'
-          AND `username` = :user
-          AND (`authsource`='keycloak' OR `authsource`='generic-oidc')");
-      $stmt->execute(array(':user' => $info['email']));
-      $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if ($row){
-        // success
-        set_user_loggedin_session($info['email']);
-        $_SESSION['return'][] =  array(
-          'type' => 'success',
-          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
-          'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
-        );
-        return true;
-      }
-
       // get mapped template, if not set return false
       // also return false if no mappers were defined
       $user_template = $info['mailcow_template'];
@@ -2558,13 +2537,43 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
+
+      // token valid, get mailbox
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+        INNER JOIN domain on mailbox.domain = domain.domain
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active`='1'
+          AND `domain`.`active`='1'
+          AND `username` = :user
+          AND (`authsource`='keycloak' OR `authsource`='generic-oidc')");
+      $stmt->execute(array(':user' => $info['email']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row){
+        // success
+        // update user
+        mailbox('edit', 'mailbox_from_template', array(
+          'username' => $info['email'],
+          'name' => $info['name'],
+          'template' => $iam_settings['templates'][$mapper_key],
+          'hasAccess' => true
+        ));
+        set_user_loggedin_session($info['email']);
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
+        );
+        return true;
+      }
+
       // create mailbox
       $create_res = mailbox('add', 'mailbox_from_template', array(
         'domain' => explode('@', $info['email'])[1],
         'local_part' => explode('@', $info['email'])[0],
-        'name' => $info['firstName'] . " " . $info['lastName'],
+        'name' => $info['name'],
         'authsource' => $iam_settings['authsource'],
-        'template' => $iam_settings['templates'][$mapper_key]
+        'template' => $iam_settings['templates'][$mapper_key],
+        'hasAccess' => true
       ));
       if (!$create_res){
         clear_session();
