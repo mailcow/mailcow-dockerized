@@ -22,6 +22,24 @@ if (file_exists('../../../web/inc/vars.local.inc.php')) {
 }
 require_once '../../../web/inc/lib/vendor/autoload.php';
 
+
+// Init Redis
+$redis = new Redis();
+try {
+  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
+    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  }
+  else {
+    $redis->connect('redis-mailcow', 6379);
+  }
+}
+catch (Exception $e) {
+  error_log("MAILCOWAUTH: " . $e . PHP_EOL);
+  http_response_code(500); // Internal Server Error
+  echo json_encode($return);
+  exit;
+}
+
 // Init database
 $dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
 $opt = [
@@ -44,6 +62,8 @@ require_once 'functions.inc.php';
 require_once 'functions.auth.inc.php';
 require_once 'sessions.inc.php';
 require_once 'functions.mailbox.inc.php';
+require_once 'functions.ratelimit.inc.php';
+require_once 'functions.acl.inc.php';
 
 
 $isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
@@ -69,8 +89,7 @@ if ($result === false){
   // Init Identity Provider
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');
-  error_log('MAILCOWAUTH Try: User auth for user ' . $post['username']);
-  $result = user_login($post['username'], $post['password'], $protocol, array('is_internal' => true));
+  $result = user_login($post['username'], $post['password'], array('is_internal' => true));
   if ($result) error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
 }
 
