@@ -1707,8 +1707,13 @@ if (isset($_GET['query'])) {
             if ($score)
               $score = array("score" => preg_replace("/\s+/", "", $score));
             process_get_return($score);
-          case "identity_provider":
-            process_get_return($iam_settings);
+          break;
+          case "identity-provider":
+            if($_SESSION['mailcow_cc_role'] === 'admin') {
+              process_get_return($iam_settings);
+            } else {
+              process_get_return(null);
+            }
           break;
         break;
         // return no route found if no case is matched
@@ -2086,7 +2091,6 @@ if (isset($_GET['query'])) {
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
-        case "identity_provider":
         case "identity-provider":
           process_edit_return(identity_provider('edit', $attr));
         break;
