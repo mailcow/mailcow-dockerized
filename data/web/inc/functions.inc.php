@@ -2512,31 +2512,9 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // check if email address is given
       if (empty($info['email'])) return false;
 
-      // get mapped template, if not set return false
-      // also return false if no mappers were defined
+      // get mapped template
       $user_template = $info['mailcow_template'];
-      if (empty($iam_settings['mappers']) || empty($user_template)){
-        clear_session();
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email']),
-          'msg' => array('login_failed', 'empty attribute mapping or missing template attribute')
-        );
-        return false;
-      }
-
-      // check if matching attribute exist
       $mapper_key = array_search($user_template, $iam_settings['mappers']);
-      if ($mapper_key === false) {
-        clear_session();
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email']),
-          'msg' => array('login_failed', 'specified template not found')
-        );
-        return false;
-      }
-
 
       // token valid, get mailbox
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
@@ -2550,13 +2528,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row){
         // success
-        // update user
-        mailbox('edit', 'mailbox_from_template', array(
-          'username' => $info['email'],
-          'name' => $info['name'],
-          'template' => $iam_settings['templates'][$mapper_key],
-          'hasAccess' => true
-        ));
+        if ($mapper_key !== false) {
+          // update user
+          mailbox('edit', 'mailbox_from_template', array(
+            'username' => $info['email'],
+            'name' => $info['name'],
+            'template' => $iam_settings['templates'][$mapper_key],
+            'hasAccess' => true
+          ));
+        }
         set_user_loggedin_session($info['email']);
         $_SESSION['return'][] =  array(
           'type' => 'success',
@@ -2564,6 +2544,25 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
         );
         return true;
+      }
+
+      if (empty($iam_settings['mappers']) || empty($user_template)){
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email']),
+          'msg' => array('login_failed', 'empty attribute mapping or missing template attribute')
+        );
+        return false;
+      }
+      if ($mapper_key === false) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email']),
+          'msg' => array('login_failed', 'specified template not found')
+        );
+        return false;
       }
 
       // create mailbox
