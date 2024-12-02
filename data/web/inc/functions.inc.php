@@ -2498,8 +2498,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       try {
         $token = $iam_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
-        $_SESSION['iam_token'] = $token->getToken();
-        $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
+        $plain_token = $token->getToken();
+        $plain_refreshtoken = $token->getRefreshToken();
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         $_SESSION['return'][] =  array(
@@ -2538,6 +2538,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           ));
         }
         set_user_loggedin_session($info['email']);
+        $_SESSION['iam_token'] = $plain_token;
+        $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -2585,6 +2587,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       set_user_loggedin_session($info['email']);
+      $_SESSION['iam_token'] = $plain_token;
+      $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -2595,8 +2599,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "refresh-token":
       try {
         $token = $iam_provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
-        $_SESSION['iam_token'] = $token->getToken();
-        $_SESSION['iam_refresh_token'] = $token->getRefreshToken();
+        $plain_token = $token->getToken();
+        $plain_refreshtoken = $token->getRefreshToken();
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         clear_session();
@@ -2618,8 +2622,9 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
-      $_SESSION['mailcow_cc_username'] = $info['email'];
-      $_SESSION['mailcow_cc_role'] = "user";
+      set_user_loggedin_session($info['email']);
+      $_SESSION['iam_token'] = $plain_token;
+      $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
       return true;
     break;
     case "get-redirect":
