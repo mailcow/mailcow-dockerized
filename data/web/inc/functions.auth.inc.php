@@ -449,18 +449,26 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     return false;
   }
 
-  // get mapped template, if not set return false
-  // also return false if no mappers were defined
+  // get mapped template
   $user_template = $user_res['attributes']['mailcow_template'][0];
-  if ($create && (empty($iam_settings['mappers']) || !$user_template)){
-    return false;
-  } else if (!$create) {
-    // login success - dont create mailbox
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+
+  if (!$create) {
+    // login success
+    if ($mapper_key !== false) {
+      // update user
+      mailbox('edit', 'mailbox_from_template', array(
+        'username' => $user,
+        'name' => $user_res['name'],
+        'template' => $iam_settings['templates'][$mapper_key],
+        'hasAccess' => true
+      ));
+    }
     return 'user';
   }
 
   // check if matching attribute exist
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  if (empty($iam_settings['mappers']) || !$user_template) return false;
   if ($mapper_key === false) return false;
 
   // create mailbox
@@ -469,7 +477,8 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['name'],
     'authsource' => 'keycloak',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $iam_settings['templates'][$mapper_key],
+    'hasAccess' => true
   ));
   if (!$create_res) return false;
 
@@ -536,18 +545,26 @@ function ldap_mbox_login($user, $pass, $extra = null){
     return false;
   }
 
-  // get mapped template, if not set return false
-  // also return false if no mappers were defined
+  // get mapped template
   $user_template = $user_res[$iam_settings['attribute_field']][0];
-  if ($create && (empty($iam_settings['mappers']) || !$user_template)){
-    return false;
-  } else if (!$create) {
-    // login success - dont create mailbox
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+
+  if (!$create) {
+    // login success
+    if ($mapper_key !== false) {
+      // update user
+      mailbox('edit', 'mailbox_from_template', array(
+        'username' => $user,
+        'name' => $user_res['displayname'][0],
+        'template' => $iam_settings['templates'][$mapper_key],
+        'hasAccess' => true
+      ));
+    }
     return 'user';
   }
 
   // check if matching attribute exist
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  if (empty($iam_settings['mappers']) || !$user_template) return false;
   if ($mapper_key === false) return false;
 
   // create mailbox
@@ -556,7 +573,8 @@ function ldap_mbox_login($user, $pass, $extra = null){
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['displayname'][0],
     'authsource' => 'ldap',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $iam_settings['templates'][$mapper_key],
+    'hasAccess' => true
   ));
   if (!$create_res) return false;
 
