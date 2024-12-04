@@ -480,7 +480,10 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     'template' => $iam_settings['templates'][$mapper_key],
     'hasAccess' => true
   ));
-  if (!$create_res) return false;
+  if (!$create_res){
+    clear_session();
+    return false;
+  }
 
   return 'user';
 }
@@ -576,7 +579,10 @@ function ldap_mbox_login($user, $pass, $extra = null){
     'template' => $iam_settings['templates'][$mapper_key],
     'hasAccess' => true
   ));
-  if (!$create_res) return false;
+  if (!$create_res){
+    clear_session();
+    return false;
+  }
 
   return 'user';
 }
