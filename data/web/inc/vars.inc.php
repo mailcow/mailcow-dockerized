@@ -93,6 +93,7 @@ $AVAILABLE_LANGUAGES = array(
   'gr-gr' => 'Ελληνικά (Greek)',
   'hu-hu' => 'Magyar (Hungarian)',
   'it-it' => 'Italiano (Italian)',
+  'ja-jp' => '日本語 (Japanese)',
   'ko-kr' => '한국어 (Korean)',
   'lv-lv' => 'latviešu (Latvian)',
   'lt-lt' => 'Lietuvių (Lithuanian)',
@@ -110,7 +111,6 @@ $AVAILABLE_LANGUAGES = array(
   'uk-ua' => 'Українська (Ukrainian)',
   'zh-cn' => '简体中文 (Simplified Chinese)',
   'zh-tw' => '繁體中文 (Traditional Chinese)',
-  'ja-jp' => '日本語 (Japanese)',
 );
 
 // default theme is lumen
