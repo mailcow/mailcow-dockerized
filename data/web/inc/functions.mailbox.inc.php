@@ -1075,6 +1075,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           $quota_b    = ($quota_m * 1048576);
           $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
+          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+            $force_pw_update = 0;
+          }
           $mailbox_attrs = json_encode(
             array(
               'force_pw_update' => strval($force_pw_update),
@@ -2935,12 +2938,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($is_now)) {
               $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
-              (int)$sogo_access     = (isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              (int)$imap_access     = (isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
-              (int)$pop3_access     = (isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
-              (int)$smtp_access     = (isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
-              (int)$sieve_access    = (isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
-              (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              (int)$sogo_access     = ((isset($_data['sogo_access']) && isset($_SESSION['acl']['sogo_access']) && $_SESSION['acl']['sogo_access'] == "1") || $_extra['hasAccess']) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
+              (int)$imap_access     = ((isset($_data['imap_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") || $_extra['hasAccess']) ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
+              (int)$pop3_access     = ((isset($_data['pop3_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") || $_extra['hasAccess']) ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
+              (int)$smtp_access     = ((isset($_data['smtp_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") || $_extra['hasAccess']) ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
+              (int)$sieve_access    = ((isset($_data['sieve_access']) && isset($_SESSION['acl']['protocol_access']) && $_SESSION['acl']['protocol_access'] == "1") || $_extra['hasAccess']) ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
+              (int)$relayhost       = ((isset($_data['relayhost']) && isset($_SESSION['acl']['mailbox_relayhost']) && $_SESSION['acl']['mailbox_relayhost'] == "1") || $_extra['hasAccess']) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
               (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain               = $is_now['domain'];
@@ -2952,6 +2955,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $authsource           = $is_now['authsource'];
               if (in_array($_data['authsource'], array('mailcow', 'keycloak', 'generic-oidc', 'ldap'))){
                 $authsource = $_data['authsource'];
+              }
+              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+                $force_pw_update = 0;
               }
               $pw_recovery_email    = (isset($_data['pw_recovery_email']) && $authsource == 'mailcow') ? $_data['pw_recovery_email'] : $is_now['attributes']['recovery_email'];
             }
@@ -2980,7 +2986,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $DomainData = mailbox('get', 'domain_details', $domain);
+            $DomainData = mailbox('get', 'domain_details', $domain, $_extra);
             if ($quota_m > ($is_now['max_new_quota'] / 1048576)) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
@@ -4629,7 +4635,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
         case 'domain_details':
           $domaindata = array();
           $_data = idn_to_ascii(strtolower(trim($_data)), 0, INTL_IDNA_VARIANT_UTS46);
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+          if (!$_extra['hasAccess'] && !hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
           $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` =  :domain");
