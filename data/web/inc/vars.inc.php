@@ -110,6 +110,7 @@ $AVAILABLE_LANGUAGES = array(
   'uk-ua' => 'Українська (Ukrainian)',
   'zh-cn' => '简体中文 (Simplified Chinese)',
   'zh-tw' => '繁體中文 (Traditional Chinese)',
+  'ja-jp' => '日本語 (Japanese)',
 );
 
 // default theme is lumen
