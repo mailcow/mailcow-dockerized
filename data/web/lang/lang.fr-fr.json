@@ -207,7 +207,7 @@
         "include_exclude_info": "Par défaut - sans sélection - <b>toutes les boîte de réception</b> sont adressées",
         "includes": "Inclure ces destinataires",
         "last_applied": "Dernière application",
-        "license_info": "Une licence n’est pas requise, mais contribue au développement.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Enregistrer votre GUID ici</a> or <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">acheter le support pour votre intallation Mailcow.</a>",
+        "license_info": "Une licence n’est pas requise, mais contribue au développement.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"SAL order\">Enregistrer votre GUID ici</a> ou <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Support order\">acheter le support pour votre installation Mailcow.</a>",
         "link": "Lien",
         "loading": "Veuillez patienter…",
         "logo_info": "Votre image sera redimensionnée à une hauteur de 40 pixels pour la barre de navigation du haut et à un maximum de 250 pixels en largeur pour la page d'accueil. Un graphique extensible est fortement recommandé.",

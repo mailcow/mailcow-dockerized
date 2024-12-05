@@ -24,6 +24,7 @@ catch (PDOException $e) {
 // Init Redis
 $redis = new Redis();
 $redis->connect('redis-mailcow', 6379);
+$redis->auth(getenv("REDISPASS"));
 
 // Functions
 function parse_email($email) {

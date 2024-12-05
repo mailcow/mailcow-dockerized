@@ -7,6 +7,7 @@ try {
   else {
     $redis->connect('redis-mailcow', 6379);
   }
+  $redis->auth(getenv("REDISPASS"));
 }
 catch (Exception $e) {
   exit;
