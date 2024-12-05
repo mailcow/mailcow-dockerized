@@ -510,16 +510,6 @@ if (isset($_GET['query'])) {
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
         break;
-        case "fail2ban":
-          if (!isset($_SESSION['mailcow_cc_role'])){
-            switch ($object) {
-              case 'banlist':
-                header('Content-Type: text/plain');
-                echo fail2ban('banlist', 'get', $extra);
-              break;
-            }
-          }
-        break;
       }
       if (isset($_SESSION['mailcow_cc_role'])) {
         switch ($category) {
@@ -1431,10 +1421,6 @@ if (isset($_GET['query'])) {
           break;
           case "fail2ban":
             switch ($object) {
-              case 'banlist':
-                header('Content-Type: text/plain');
-                echo fail2ban('banlist', 'get', $extra);
-              break;
               default:
                 $data = fail2ban('get');
                 process_get_return($data);

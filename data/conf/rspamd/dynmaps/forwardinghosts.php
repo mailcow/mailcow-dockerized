@@ -4,6 +4,7 @@ ini_set('error_reporting', 0);
 
 $redis = new Redis();
 $redis->connect('redis-mailcow', 6379);
+$redis->auth(getenv("REDISPASS"));
 
 function in_net($addr, $net) {
   $net = explode('/', $net);
