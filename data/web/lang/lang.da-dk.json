@@ -604,7 +604,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Log ind som postkassebruger for at downloade den anmodede Apple-forbindelsesprofil.",
-        "other_logins": "Nøgle login",
+        "other_logins": "eller log ind med",
         "password": "Adgangskode",
         "username": "Brugernavn"
     },

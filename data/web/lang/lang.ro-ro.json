@@ -677,7 +677,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Autentificare",
         "mobileconfig_info": "Autentificați-vă cu adresa de email pentru a descărca profilul de conexiune Apple.",
-        "other_logins": "Autentificare cu cheie",
+        "other_logins": "sau autentificare cu",
         "password": "Parolă",
         "username": "Nume de utilizator"
     },

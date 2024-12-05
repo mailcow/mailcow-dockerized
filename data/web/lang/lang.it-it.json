@@ -712,7 +712,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
-        "other_logins": "Key login",
+        "other_logins": "o accedi con",
         "password": "Password",
         "username": "Nome utente",
         "request_reset_password": "Richiesta di modifica della password",

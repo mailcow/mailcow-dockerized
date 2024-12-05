@@ -663,7 +663,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Aanmelden",
         "mobileconfig_info": "Log in als mailboxgebruiker om het Apple-verbindingsprofiel te downloaden.",
-        "other_logins": "Meld aan met key",
+        "other_logins": "of aanmelden met",
         "password": "Wachtwoord",
         "username": "Gebruikersnaam"
     },

@@ -731,7 +731,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "登入",
         "mobileconfig_info": "請使用信箱使用者登入以下載 Apple 連接描述檔案。",
-        "other_logins": "金鑰登入",
+        "other_logins": "或透過以下方式登入",
         "password": "密碼",
         "username": "使用者名稱",
         "back_to_mailcow": "返回至mailcow",

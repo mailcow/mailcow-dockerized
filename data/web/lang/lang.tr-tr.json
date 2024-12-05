@@ -895,7 +895,7 @@
         "login": "Giriş",
         "password": "Şifre",
         "username": "Kullanıcı Adı",
-        "other_logins": "Anahtar girişi"
+        "other_logins": "veya ile giriş yap"
     },
     "success": {
         "bcc_saved": "BCC harita girişi kaydedildi",

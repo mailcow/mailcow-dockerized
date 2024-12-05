@@ -333,7 +333,7 @@
         "username": "Lietotājvārds",
         "fido2_webauthn": "FIDO/WebAuthn pieteikšanās",
         "mobileconfig_info": "Lūgums pieteikties kā pastkastes lietotājam, lai lejupielādētu pieprasīto Apple savienojuma profilu.",
-        "other_logins": "Pieteikšanās ar atslēgu"
+        "other_logins": "vai pieslēgties ar"
     },
     "mailbox": {
         "action": "Rīcība",

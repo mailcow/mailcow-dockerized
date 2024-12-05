@@ -695,7 +695,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Connexion",
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte de réception pour télécharger le profil de connexion Apple demandé.",
-        "other_logins": "Clé d'authentification",
+        "other_logins": "ou se connecter avec",
         "password": "Mot de passe",
         "username": "Nom d'utilisateur",
         "back_to_mailcow": "Revenir sur mailcow",

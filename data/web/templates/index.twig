@@ -41,16 +41,7 @@
             </div>
           </div>
           <div class="d-flex justify-content-between mt-4" style="position: relative">
-            <div class="btn-group">
-              <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
-              <button type="button" class="btn btn-xs-lg btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a></li>
-                {% if has_iam_sso %}
-                <li><a class="dropdown-item" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a></li>
-                {% endif %}
-              </ul>
-            </div>
+            <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
             {% if not oauth2_request %}
             <div class="d-grid d-sm-block">
             <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,8 +60,15 @@
             {% endif %}
           </div>
         </form>
-        <div class="mt-3 mb-4">
+        <div class="mt-3">
           <a href="/reset-password">{{ lang.login.forgot_password }}</a>
+        </div>
+        <div class="hr-title mt-5"><strong>{{ lang.login.other_logins }}</strong></div>
+        <div class="d-flex flex-column align-items-center">
+          <a class="btn btn-xs-lg btn-secondary w-100" style="max-width: 400px;" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a>
+          {% if has_iam_sso %}
+          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a>
+          {% endif %}
         </div>
         {% if login_delay %}
         <p><div class="my-4 alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
