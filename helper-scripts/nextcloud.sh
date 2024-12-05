@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # renovate: datasource=github-releases depName=nextcloud/server versioning=semver extractVersion=^v(?<version>.*)$
-NEXTCLOUD_VERSION=28.0.11
+NEXTCLOUD_VERSION=28.0.13
 
 display_warning() {
     local message=("$@")
