@@ -162,6 +162,8 @@ function domainadmin_login($user, $pass){
 }
 function user_login($user, $pass, $extra = null){
   global $pdo;
+  global $iam_provider;
+  global $iam_settings;
 
   $is_internal = $extra['is_internal'];
 
@@ -186,12 +188,11 @@ function user_login($user, $pass, $extra = null){
 
   // user does not exist, try call idp login and create user if possible via rest flow
   if (!$row){
-    $iam_settings = identity_provider('get');
     if ($iam_settings['authsource'] == 'keycloak' && intval($iam_settings['mailpassword_flow']) == 1){
-      $result = keycloak_mbox_login_rest($user, $pass, $iam_settings, array('is_internal' => $is_internal, 'create' => true));
+      $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal, 'create' => true));
       if ($result !== false) return $result;
     } else if ($iam_settings['authsource'] == 'ldap') {
-      $result = ldap_mbox_login($user, $pass, $iam_settings, array('is_internal' => $is_internal, 'create' => true));
+      $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal, 'create' => true));
       if ($result !== false) return $result;
     }
   }
@@ -202,9 +203,8 @@ function user_login($user, $pass, $extra = null){
   switch ($row['authsource']) {
     case 'keycloak':
       // user authsource is keycloak, try using via rest flow
-      $iam_settings = identity_provider('get');
       if (intval($iam_settings['mailpassword_flow']) == 1){
-        $result = keycloak_mbox_login_rest($user, $pass, $iam_settings, array('is_internal' => $is_internal));
+        $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal));
         if ($result !== false) {
           // check for tfa authenticators
           $authenticators = get_tfa($user);
@@ -243,8 +243,7 @@ function user_login($user, $pass, $extra = null){
     break;
     case 'ldap':
       // user authsource is ldap
-      $iam_settings = identity_provider('get');
-      $result = ldap_mbox_login($user, $pass, $iam_settings, array('is_internal' => $is_internal));
+      $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal));
       if ($result !== false) {
         // check for tfa authenticators
         $authenticators = get_tfa($user);
@@ -397,8 +396,10 @@ function apppass_login($user, $pass, $app_passwd_data, $extra = null){
 // Keycloak REST Api Flow - auth user by mailcow_password attribute
 // This password will be used for direct UI, IMAP and SMTP Auth
 // To use direct user credentials, only Authorization Code Flow is valid
-function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
+function keycloak_mbox_login_rest($user, $pass, $extra = null){
   global $pdo;
+  global $iam_provider;
+  global $iam_settings;
 
   $is_internal = $extra['is_internal'];
   $create = $extra['create'];
@@ -448,36 +449,49 @@ function keycloak_mbox_login_rest($user, $pass, $iam_settings, $extra = null){
     return false;
   }
 
-  // get mapped template, if not set return false
-  // also return false if no mappers were defined
+  // get mapped template
   $user_template = $user_res['attributes']['mailcow_template'][0];
-  if ($create && (empty($iam_settings['mappers']) || !$user_template)){
-    return false;
-  } else if (!$create) {
-    // login success - dont create mailbox
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+
+  if (!$create) {
+    // login success
+    if ($mapper_key !== false) {
+      // update user
+      mailbox('edit', 'mailbox_from_template', array(
+        'username' => $user,
+        'name' => $user_res['name'],
+        'template' => $iam_settings['templates'][$mapper_key],
+        'hasAccess' => true
+      ));
+    }
     return 'user';
   }
 
   // check if matching attribute exist
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  if (empty($iam_settings['mappers']) || !$user_template) return false;
   if ($mapper_key === false) return false;
 
   // create mailbox
   $create_res = mailbox('add', 'mailbox_from_template', array(
     'domain' => explode('@', $user)[1],
     'local_part' => explode('@', $user)[0],
-    'name' => $user_res['firstName'] . " " . $user_res['lastName'],
+    'name' => $user_res['name'],
     'authsource' => 'keycloak',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $iam_settings['templates'][$mapper_key],
+    'hasAccess' => true
   ));
-  if (!$create_res) return false;
+  if (!$create_res){
+    clear_session();
+    return false;
+  }
 
   return 'user';
 }
-function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
+function ldap_mbox_login($user, $pass, $extra = null){
   global $pdo;
+  global $iam_provider;
+  global $iam_settings;
 
-  $iam_provider = identity_provider();
   $is_internal = $extra['is_internal'];
   $create = $extra['create'];
 
@@ -534,18 +548,26 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
     return false;
   }
 
-  // get mapped template, if not set return false
-  // also return false if no mappers were defined
+  // get mapped template
   $user_template = $user_res[$iam_settings['attribute_field']][0];
-  if ($create && (empty($iam_settings['mappers']) || !$user_template)){
-    return false;
-  } else if (!$create) {
-    // login success - dont create mailbox
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+
+  if (!$create) {
+    // login success
+    if ($mapper_key !== false) {
+      // update user
+      mailbox('edit', 'mailbox_from_template', array(
+        'username' => $user,
+        'name' => $user_res['displayname'][0],
+        'template' => $iam_settings['templates'][$mapper_key],
+        'hasAccess' => true
+      ));
+    }
     return 'user';
   }
 
   // check if matching attribute exist
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  if (empty($iam_settings['mappers']) || !$user_template) return false;
   if ($mapper_key === false) return false;
 
   // create mailbox
@@ -554,9 +576,13 @@ function ldap_mbox_login($user, $pass, $iam_settings, $extra = null){
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['displayname'][0],
     'authsource' => 'ldap',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $iam_settings['templates'][$mapper_key],
+    'hasAccess' => true
   ));
-  if (!$create_res) return false;
+  if (!$create_res){
+    clear_session();
+    return false;
+  }
 
   return 'user';
 }

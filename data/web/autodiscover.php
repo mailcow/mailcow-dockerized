@@ -55,6 +55,7 @@ $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
 
 // Init Identity Provider
 $iam_provider = identity_provider('init');
+$iam_settings = identity_provider('get');
 
 $login_user = strtolower(trim($_SERVER['PHP_AUTH_USER']));
 $login_pass = trim(htmlspecialchars_decode($_SERVER['PHP_AUTH_PW']));

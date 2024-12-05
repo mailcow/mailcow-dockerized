@@ -15,7 +15,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   header('Location: /mailbox');
   exit();
 }
-elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {    
+elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
   $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
   if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
@@ -32,7 +32,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 
 $has_iam_sso = false;
 if ($iam_provider){
-  $has_iam_sso = identity_provider("get-redirect", array('iam_provider' => $iam_provider)) ? true : false; 
+  $has_iam_sso = identity_provider("get-redirect") ? true : false;
 }
 
 
