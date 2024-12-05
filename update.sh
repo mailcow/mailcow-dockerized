@@ -303,6 +303,11 @@ fix_broken_dnslist_conf() {
 
 }
 
+version_greater_or_equal() {
+  printf '%s\n%s\n' "$1" "$2" | sort -V | head -n 1 | grep -q "^$2$"
+}
+  
+
 ############## End Function Section ##############
 
 # Check permissions
@@ -1051,7 +1056,18 @@ $COMPOSE_COMMAND pull
 
 # Fix missing SSL, does not overwrite existing files
 [[ ! -d data/assets/ssl ]] && mkdir -p data/assets/ssl
-cp --update=none -d data/assets/ssl-example/*.pem data/assets/ssl/
+# Some distros are still using an old version of coreutils that hasn't deprecated -n yet. The --update=none syntax wasn't added until 
+# coreutils 9,3, which is when the deprecation warning was added - check for which is installed, and execute the appropriate 
+# command to avoid warnings. 
+cp_threshold_version="9.3"
+cp_installed_version=$(cp --version | head -n 1 | awk '{print $NF}')
+if version_greater_or_equal "$cp_installed_version" "$cp_threshold_version"; then
+  # coreutils >= 9.3
+  cp --update=none -d data/assets/ssl-example/*.pem data/assets/ssl/
+else
+  # coreutils < 9.3
+  cp -n -d data/assets/ssl-example/*.pem data/assets/ssl/
+fi
 
 echo -e "Checking IPv6 settings... "
 if grep -q 'SYSCTL_IPV6_DISABLED=1' mailcow.conf; then
