@@ -81,7 +81,7 @@ body {
   align-items: center;
   padding: 0 10px !important;
 }
-.navbar-fixed-bottom .navbar-collapse, 
+.navbar-fixed-bottom .navbar-collapse,
 .navbar-fixed-top .navbar-collapse {
   max-height: 1000px
 }
@@ -143,18 +143,18 @@ body {
   }
 }
 @keyframes blink {
-  50% { 
-    color: transparent 
+  50% {
+    color: transparent
   }
 }
-.loader-dot { 
-  animation: 1s blink infinite 
+.loader-dot {
+  animation: 1s blink infinite
 }
-.loader-dot:nth-child(2) { 
-  animation-delay: 250ms 
+.loader-dot:nth-child(2) {
+  animation-delay: 250ms
 }
-.loader-dot:nth-child(3) { 
-  animation-delay: 500ms 
+.loader-dot:nth-child(3) {
+  animation-delay: 500ms
 }
 
 pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
@@ -220,13 +220,13 @@ legend {
 }
 .haveibeenpwned {
   cursor: pointer;
-  -webkit-user-select: none;  
-  -moz-user-select: none;    
-  -ms-user-select: none;      
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .full-width-select {
-  width: 100%!important;  
+  width: 100%!important;
 }
 .tooltip {
   font-family: inherit;
@@ -350,7 +350,7 @@ code {
 .caret {
   transform: rotate(0deg);
 }
-a[aria-expanded='true'] > .caret, 
+a[aria-expanded='true'] > .caret,
 button[aria-expanded='true'] > .caret {
   transform: rotate(-180deg);
 }
@@ -360,7 +360,7 @@ button[aria-expanded='true'] > .caret {
 }
 .list-group-header {
   background: #f7f7f7;
-} 
+}
 
 
 .bg-primary, .alert-primary, .btn-primary {
@@ -387,12 +387,12 @@ button[aria-expanded='true'] > .caret {
 }
 .btn.btn-outline-secondary {
   color: #000000 !important;
-  border-color: #cfcfcf !important;  
+  border-color: #cfcfcf !important;
 }
 .btn-check:checked+.btn-outline-secondary, .btn-check:active+.btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
     background-color: #f0f0f0 !important;
 }
-.btn-check:checked+.btn-light, .btn-check:active+.btn-light, .btn-light:active, .btn-light.active, .show>.btn-light.dropdown-toggle {    
+.btn-check:checked+.btn-light, .btn-check:active+.btn-light, .btn-light:active, .btn-light.active, .show>.btn-light.dropdown-toggle {
     color: #fff;
     background-color: #555;
     background-image: none;
@@ -410,4 +410,26 @@ button[aria-expanded='true'] > .caret {
 .badge.bg-danger > a {
     color: #fff !important;
     text-decoration: none;
+}
+
+.hr-title {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.hr-title::before,
+.hr-title::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.hr-title:not(:empty)::before {
+  margin-right: 10px;
+}
+
+.hr-title:not(:empty)::after {
+  margin-left: 10px;
 }

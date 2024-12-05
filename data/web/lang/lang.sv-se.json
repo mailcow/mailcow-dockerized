@@ -621,7 +621,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Logga in",
         "mobileconfig_info": "Logga in som en användare av brevlåda för att ladda ner den begärda Apple-anslutningsprofilen.",
-        "other_logins": "Loggain med nyckel",
+        "other_logins": "eller logga in med",
         "password": "Lösenord",
         "username": "Användarnamn"
     },

@@ -707,7 +707,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Prihlásenie",
         "mobileconfig_info": "Prosím, prihláste sa ako mailový používateľ pre stiahnutie požadovaného Apple profilu.",
-        "other_logins": "Prihlásenie kľúčom",
+        "other_logins": "alebo prihlásiť sa s",
         "password": "Heslo",
         "username": "Používateľské meno alebo email"
     },

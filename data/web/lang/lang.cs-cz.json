@@ -747,7 +747,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Přihlásit",
         "mobileconfig_info": "Ke stažení profilového souboru se přihlaste jako uživatel schránky.",
-        "other_logins": "Přihlášení klíčem",
+        "other_logins": "nebo přihlásit s",
         "password": "Heslo",
         "username": "Uživatelské jméno",
         "back_to_mailcow": "Zpět do mailcow",

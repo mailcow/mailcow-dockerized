@@ -722,7 +722,7 @@
     "login": {
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Увійти",
-        "other_logins": "Вхід за допомогою ключа",
+        "other_logins": "або увійти з",
         "password": "Пароль",
         "username": "Ім'я користувача",
         "delayed": "Вхід був затриманий на %s секунд.",
