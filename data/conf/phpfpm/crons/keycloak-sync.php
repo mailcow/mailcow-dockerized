@@ -114,7 +114,7 @@ $iam_provider = identity_provider('init');
 while (true) {
   // Get admin access token
   $admin_token = identity_provider("get-keycloak-admin-token");
-  
+
   // Make the API request to retrieve the users
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users?first=$start&max=$max";
   $ch = curl_init();
@@ -127,7 +127,7 @@ while (true) {
   $response = curl_exec($ch);
   $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
-  
+
   if ($code != 200){
     logMsg("err", "Recieved HTTP {$code}");
     session_destroy();
@@ -157,8 +157,8 @@ while (true) {
       logMsg("warning", "No attributes in keycloak found for user " . $user['email']);
       continue;
     }
-    if (!isset($user['attributes']['mailcow_template']) || 
-        !is_array($user['attributes']['mailcow_template']) || 
+    if (!isset($user['attributes']['mailcow_template']) ||
+        !is_array($user['attributes']['mailcow_template']) ||
         count($user['attributes']['mailcow_template']) == 0) {
       logMsg("warning", "No mailcow_template in keycloak found for user " . $user['email']);
       continue;
@@ -195,7 +195,8 @@ while (true) {
         'local_part' => explode('@', $user['email'])[0],
         'name' => $user['firstName'] . " " . $user['lastName'],
         'authsource' => 'keycloak',
-        'template' => $mbox_template
+        'template' => $mbox_template,
+        'hasAccess' => true
       ));
     } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
       // mailbox user does exist, sync attribtues...
@@ -203,7 +204,8 @@ while (true) {
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user['email'],
         'name' => $user['firstName'] . " " . $user['lastName'],
-        'template' => $mbox_template
+        'template' => $mbox_template,
+        'hasAccess' => true
       ));
     } else {
       // skip mailbox user
@@ -212,7 +214,7 @@ while (true) {
 
     sleep(0.025);
   }
-  
+
   // Update the pagination variables for the next batch
   $start += $max;
   sleep(1);

@@ -43,7 +43,7 @@
               {{ mailboxdata.percent_in_use }}%
             </div>
           </div>
-          
+
           <div class="row">
             <div class="col-12 col-md-3 d-flex">
               <span class="mt-2 w-100 text-md-end">{{ lang.user.protocols }}:</span>
@@ -64,12 +64,12 @@
             </div>
             <div class="col-12 col-md-8">
               <div class="d-flex">
-                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }}"></i> 
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }}"></i>
                 <a href="/mobileconfig.php?only_email">{{ lang.user.email }} <small>[IMAP, SMTP]</small></a>
-              </div> 
+              </div>
               {% if not skip_sogo %}
               <div class="d-flex">
-                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }}"></i>  
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }}"></i>
                 <a href="/mobileconfig.php">{{ lang.user.email_and_dav }} <small>[IMAP, SMTP, Cal/CardDAV]</small></a>
               </div>
               {% endif %}
@@ -81,12 +81,12 @@
             </div>
             <div class="col-12 col-md-9">
               <div class="d-flex">
-                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}"></i> 
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_mailonly }} {{ lang.user.apple_connection_profile_with_app_password }}"></i>
                 <a href="/mobileconfig.php?only_email&amp;app_password">{{ lang.user.email }} <small>[IMAP, SMTP]</small></a>
               </div>
               {% if not skip_sogo %}
               <div class="d-flex">
-                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }} {{ lang.user.apple_connection_profile_with_app_password }}"></i> 
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.user.apple_connection_profile_complete }} {{ lang.user.apple_connection_profile_with_app_password }}"></i>
                 <a href="/mobileconfig.php?app_password">{{ lang.user.email_and_dav }} <small>[IMAP, SMTP, Cal/CardDAV]</small></a>
               </div>
               {% endif %}
@@ -99,10 +99,10 @@
             </div>
           </div>
 
+          {% if mailboxdata.authsource == "mailcow" %}
           <legend class="mt-4">{{ lang.user.authentication }}</legend>
           <hr>
           {# Password Change #}
-          {% if mailboxdata.authsource == "mailcow" %}
           <div class="row">
             <div class="col-12 col-md-3 d-flex"></div>
             <div class="col-12 col-md-9 d-flex flex-wrap">

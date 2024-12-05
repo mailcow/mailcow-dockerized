@@ -3,18 +3,18 @@
 if ($iam_provider){
   if (isset($_GET['iam_sso'])){
     // redirect for sso
-    $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
+    $redirect_uri = identity_provider('get-redirect');
     $redirect_uri = !empty($redirect_uri) ? $redirect_uri : '/';
     header('Location: ' . $redirect_uri);
     die();
   }
   if ($_SESSION['iam_token'] && $_SESSION['iam_refresh_token']) {
     // Session found, try to refresh
-    $isRefreshed = identity_provider('refresh-token', array('iam_provider' => $iam_provider));
+    $isRefreshed = identity_provider('refresh-token');
 
     if (!$isRefreshed){
       // Session could not be refreshed, redirect to provider
-      $redirect_uri = identity_provider('get-redirect', array('iam_provider' => $iam_provider));
+      $redirect_uri = identity_provider('get-redirect');
       $redirect_uri = !empty($redirect_uri) ? $redirect_uri : '/';
       header('Location: ' . $redirect_uri);
       die();
@@ -23,7 +23,7 @@ if ($iam_provider){
     // Check given state against previously stored one to mitigate CSRF attack
     // Recieved access token in $_GET['code']
     // extract info and verify user
-    identity_provider('verify-sso', array('iam_provider' => $iam_provider));
+    identity_provider('verify-sso');
   }
 }
 
