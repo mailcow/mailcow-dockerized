@@ -1067,9 +1067,10 @@ if (isset($_GET['query'])) {
                   ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
                   ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
                   ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
+                  ['db' => 'name', 'dt' => 7],
                   ['db' => 'messages', 'dt' => 17, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
                   ['db' => 'tags', 'dt' => 20, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 21]
+                  ['db' => 'active', 'dt' => 21],
                 ];
 
                 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
