@@ -111,8 +111,10 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
       header("Location: /mobileconfig.php");
       die();
     }
-		header("Location: /user");
-    die();
+    if (!isset($_SESSION['oauth2_request'])) {
+      header("Location: /user");
+      die();
+    }
 	}
 	elseif ($as != "pending") {
     unset($_SESSION['pending_mailcow_cc_username']);
