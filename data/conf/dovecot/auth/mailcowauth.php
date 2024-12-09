@@ -32,6 +32,7 @@ try {
   else {
     $redis->connect('redis-mailcow', 6379);
   }
+  $redis->auth(getenv("REDISPASS"));
 }
 catch (Exception $e) {
   error_log("MAILCOWAUTH: " . $e . PHP_EOL);
