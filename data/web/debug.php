@@ -8,7 +8,6 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != "adm
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
-$solr_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_SOLR"])) ? false : solr_status();
 $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? false : true;
 
 
@@ -25,7 +24,6 @@ $vmail_df = explode(',', (string)json_decode(docker('post', 'dovecot-mailcow', '
 // containers
 $containers_info = (array) docker('info');
 if ($clamd_status === false) unset($containers_info['clamd-mailcow']);
-if ($solr_status === false) unset($containers_info['solr-mailcow']);
 ksort($containers_info);
 $containers = array();
 foreach ($containers_info as $container => $container_info) {
@@ -69,8 +67,6 @@ $template_data = [
   'timezone' => $timezone,
   'gal' => @$_SESSION['gal'],
   'license_guid' => license('guid'),
-  'solr_status' => $solr_status,
-  'solr_uptime' => round($solr_status['status']['dovecot-fts']['uptime'] / 1000 / 60 / 60),
   'clamd_status' => $clamd_status,
   'containers' => $containers,
   'ip_check' => customize('get', 'ip_check'),

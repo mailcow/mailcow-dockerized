@@ -5434,25 +5434,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'Could not move maildir to garbage collector: variables local_part and/or domain empty'
               );
             }
-            if (strtolower(getenv('SKIP_SOLR')) == 'n' && strtolower(getenv('FLATCURVE_EXPERIMENTAL')) != 'y') {
-              $curl = curl_init();
-              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot-fts/update?commit=true');
-              curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: text/xml'));
-              curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-              curl_setopt($curl, CURLOPT_POST, 1);
-              curl_setopt($curl, CURLOPT_POSTFIELDS, '<delete><query>user:' . $username . '</query></delete>');
-              curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-              $response = curl_exec($curl);
-              if ($response === false) {
-                $err = curl_error($curl);
-                $_SESSION['return'][] = array(
-                  'type' => 'warning',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'Could not remove Solr index: ' . print_r($err, true)
-                );
-              }
-              curl_close($curl);
-            }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username");
             $stmt->execute(array(
               ':username' => $username

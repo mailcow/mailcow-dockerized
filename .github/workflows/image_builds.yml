@@ -23,7 +23,6 @@ jobs:
           - "postfix-mailcow"
           - "rspamd-mailcow"
           - "sogo-mailcow"
-          - "solr-mailcow"
           - "unbound-mailcow"
           - "watchdog-mailcow"
     runs-on: ubuntu-latest
