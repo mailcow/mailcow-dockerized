@@ -15,7 +15,7 @@
     {% if acl.spam_alias == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="SpamAliases" role="tab" data-bs-toggle="tab" data-bs-target="#SpamAliases">{{ lang.user.spam_aliases }}</button></li>
     {% endif %}
-    {% if acl.spam_score == 1 %}
+    {% if acl.spam_score == 1 or acl.spam_policy == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" role="tab" aria-selected="false" aria-controls="Spamfilter" role="tab" data-bs-toggle="tab" data-bs-target="#Spamfilter">{{ lang.user.spamfilter }}</button></li>
     {% endif %}
     {% if acl.syncjobs == 1 %}
@@ -36,7 +36,7 @@
         {% include 'user/tab-user-details.twig' %}
         {% include 'user/tab-user-settings.twig' %}
         {% if acl.spam_alias == 1 %}{% include 'user/SpamAliases.twig' %}{% endif %}
-        {% if acl.spam_score == 1 %}{% include 'user/Spamfilter.twig' %}{% endif %}
+        {% if acl.spam_score == 1 or acl.spam_policy == 1 %}{% include 'user/Spamfilter.twig' %}{% endif %}
         {% if acl.syncjobs == 1 %}{% include 'user/Syncjobs.twig' %}{% endif %}
         {% if acl.app_passwds == 1 %}{% include 'user/AppPasswds.twig' %}{% endif %}
         {% if acl.pushover == 1 %}{% include 'user/Pushover.twig' %}{% endif %}
