@@ -382,10 +382,10 @@ services:
         - TZ=${TZ}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
-        - PHPFPMHOST=${PHPFPMHOST:-php-fpm-mailcow}
-        - SOGOHOST=${SOGOHOST:-sogo-mailcow}
-        - RSPAMDHOST=${RSPAMDHOST:-rspamd-mailcow}
-        - REDISHOST=${REDISHOST:-redis-mailcow}
+        - PHPFPMHOST=${PHPFPMHOST:-}
+        - SOGOHOST=${SOGOHOST:-}
+        - RSPAMDHOST=${RSPAMDHOST:-}
+        - REDISHOST=${REDISHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
       volumes:
         - ./data/web:/web:ro,z

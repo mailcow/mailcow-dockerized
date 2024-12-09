@@ -20,8 +20,9 @@ def nginx_conf(env, template_vars):
     f.write(config)
 
 def prepare_template_vars():
+  ipv4_network = os.getenv("IPV4_NETWORK", "172.22.1")
   template_vars = {
-    'IPV4_NETWORK': os.getenv("IPV4_NETWORK", "172.22.1"),
+    'IPV4_NETWORK': ipv4_network,
     'TRUSTED_NETWORK': os.getenv("TRUSTED_NETWORK", False),
     'SKIP_RSPAMD': os.getenv("SKIP_RSPAMD", "n").lower() in ("y", "yes"),
     'SKIP_SOGO': os.getenv("SKIP_SOGO", "n").lower() in ("y", "yes"),
@@ -30,7 +31,7 @@ def prepare_template_vars():
     'ADDITIONAL_SERVER_NAMES': os.getenv("ADDITIONAL_SERVER_NAMES", "").replace(',', ' '),
     'HTTP_PORT': os.getenv("HTTP_PORT", "80"),
     'HTTPS_PORT': os.getenv("HTTPS_PORT", "443"),
-    'SOGOHOST': os.getenv("SOGOHOST", "sogo-mailcow"),
+    'SOGOHOST': os.getenv("SOGOHOST", ipv4_network + ".248"),
     'RSPAMDHOST': os.getenv("RSPAMDHOST", "rspamd-mailcow"),
     'PHPFPMHOST': os.getenv("PHPFPMHOST", "php-fpm-mailcow"),
   }
