@@ -493,6 +493,7 @@
         "client_configuration": "Guies de configuració per als clients de correu més habituals",
         "create_syncjob": "Afegir treball de sincronitzaió",
         "day": "Dia",
+        "description": "Descripció",
         "direct_aliases": "Adreces àlies directes",
         "direct_aliases_desc": "Els àlies directes sí que es veuen afectat per la configuració de l'usuari",
         "eas_reset": "Fer un reset de la cache d'ActiveSync del dispositiu",

@@ -48,6 +48,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data["validity"] = 8760;
           }
           $domain = $_data['domain'];
+          $description = $_data['description'];
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
           if (!empty($valid_alias_domains)) {
@@ -62,10 +63,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $validity = strtotime("+" . $_data["validity"] . " hour");
-          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `goto`, `validity`) VALUES
-            (:address, :goto, :validity)");
+          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`) VALUES
+            (:address, :description, :goto, :validity)");
           $stmt->execute(array(
             ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
+            ':description' => $description,
             ':goto' => $username,
             ':validity' => $validity
           ));
@@ -4201,6 +4203,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $stmt = $pdo->prepare("SELECT `address`,
             `goto`,
+            `description`,
             `validity`,
             `created`,
             `modified`
