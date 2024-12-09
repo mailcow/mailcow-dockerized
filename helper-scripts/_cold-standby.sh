@@ -202,6 +202,17 @@ if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
   exit 1
 fi
 
+# Let the remote side create all network, volumes and containers to prevent need for external:true #
+echo -e "\e[33mCreating networks, volumes and containers on remote...\e[0m"
+
+if ! ssh -o StrictHostKeyChecking=no \
+  -i "${REMOTE_SSH_KEY}" \
+  ${REMOTE_SSH_HOST} \
+  -p ${REMOTE_SSH_PORT} \
+  ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" create 2>&1 ; then
+    >&2 echo -e "\e[31m[ERR]\e[0m - Could not create networks, volumes and containers on remote"
+fi
+
 # Trigger a Redis save for a consistent Redis copy
 echo -ne "\033[1mRunning redis-cli save... \033[0m"
 docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
