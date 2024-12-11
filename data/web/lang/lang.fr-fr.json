@@ -374,7 +374,7 @@
         "dkim_domain_or_sel_invalid": "Domaine ou sélection DKIM non valide : %s",
         "domain_cannot_match_hostname": "Le domaine ne correspond pas au nom d’hôte",
         "domain_exists": "Le domaine %s exite déjà",
-        "domain_invalid": "Le mom de domaine est vide ou non valide",
+        "domain_invalid": "Le nom de domaine est vide ou non valide",
         "domain_not_empty": "Impossible de supprimer le domaine non vide %s",
         "domain_not_found": "Le domaine %s est introuvable",
         "domain_quota_m_in_use": "Le quota de domaine doit être supérieur ou égal à %s Mo",
@@ -658,7 +658,12 @@
         "quota_warning_bcc_info": "Les avertissements seront envoyés en copies séparées aux destinataires suivants. Le sujet sera précédé du nom d'utilisateur correspondant entre parenthèses, par exemple : <code>Avertissement sur les quotas (user@example.com)</code>.",
         "sogo_access_info": "L'authentification unique à partir de l'interface de messagerie reste opérationnelle. Ce paramètre n'affecte pas l'accès à tous les autres services et ne supprime ni, ne modifie le profil SOGo existant d'un utilisateur.",
         "admin": "Modifier l'administrateur",
-        "password_recovery_email": "Adresse email de récupération"
+        "password_recovery_email": "Adresse email de récupération",
+        "mailbox_rename_title": "Nouveau nom de la partie locale de la boîte de réception",
+        "mailbox_rename": "Renommer la boîte de réception",
+        "mailbox_rename_agree": "J'ai fait une sauvegarde.",
+        "mailbox_rename_warning": "IMPORTANT ! Faites une sauvegarde avant de renommer la boîte de réception.",
+        "mailbox_rename_alias": "Créer un alias automatiquement"
     },
     "footer": {
         "cancel": "Annuler",
@@ -1029,7 +1034,8 @@
         "domain_add_dkim_available": "A DKIM key did already exist",
         "ip_check_opt_in_modified": "Le contrôle de l'IP a été enregistré avec succès",
         "password_changed_success": "Le mot de passe a été modifié avec succès",
-        "recovery_email_sent": "Email de réinitialisation envoyé à %s"
+        "recovery_email_sent": "Email de réinitialisation envoyé à %s",
+        "mailbox_renamed": "La boîte de réception a été renommée de %s à %s"
     },
     "tfa": {
         "api_register": "%s utilise l'API Yubico Cloud. Veuillez obtenir une clé API pour votre clé <a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">ici</a>",
