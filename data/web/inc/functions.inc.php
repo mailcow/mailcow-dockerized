@@ -2908,50 +2908,6 @@ function getGUID() {
         .substr($charid,16, 4).$hyphen
         .substr($charid,20,12);
 }
-function solr_status() {
-  $curl = curl_init();
-  $endpoint = 'http://solr:8983/solr/admin/cores';
-  $params = array(
-    'action' => 'STATUS',
-    'core' => 'dovecot-fts',
-    'indexInfo' => 'true'
-  );
-  $url = $endpoint . '?' . http_build_query($params);
-  curl_setopt($curl, CURLOPT_URL, $url);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($curl, CURLOPT_POST, 0);
-  curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-  $response_core = curl_exec($curl);
-  if ($response_core === false) {
-    $err = curl_error($curl);
-    curl_close($curl);
-    return false;
-  }
-  else {
-    curl_close($curl);
-    $curl = curl_init();
-    $status_core = json_decode($response_core, true);
-    $url = 'http://solr:8983/solr/admin/info/system';
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_POST, 0);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-    $response_sysinfo = curl_exec($curl);
-    if ($response_sysinfo === false) {
-      $err = curl_error($curl);
-      curl_close($curl);
-      return false;
-    }
-    else {
-      curl_close($curl);
-      $status_sysinfo = json_decode($response_sysinfo, true);
-      $status = array_merge($status_core, $status_sysinfo);
-      return (!empty($status['status']['dovecot-fts']) && !empty($status['jvm']['memory'])) ? $status : false;
-    }
-    return (!empty($status['status']['dovecot-fts'])) ? $status['status']['dovecot-fts'] : false;
-  }
-  return false;
-}
 
 function cleanupJS($ignore = '', $folder = '/tmp/*.js') {
   $now = time();
