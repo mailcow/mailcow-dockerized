@@ -643,7 +643,6 @@
         "logs": "Žurnāli",
         "architecture": "Arhitektūra",
         "disk_usage": "Diska lietojums",
-        "jvm_memory_solr": "JVM atmiņas lietojums",
         "memory": "Atmiņa",
         "timezone": "Laika josla",
         "uptime": "Darbošanās laiks"

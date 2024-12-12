@@ -346,12 +346,10 @@
         "log_info": "<p>Los <b>logs en memoria</b> son recopilados en listas de Redis y recortados a LOG_LINES (%d) cada minuto para prevenir sobrecarga en el sistema.\r\n  <br>Los logs en memoria no están destinados a ser persistentes. Todas las aplicaciones que logean a la memoria, también logean en el daemon de Docker y, por lo tanto, en el controlador de registro predeterminado.\r\n  El log en memoria se debe utilizar para analizar problemas menores con los contenedores.</p>\r\n  <p>Los <b>logs externos</b> se recopilan a través de la API de la aplicación dada.</p>\r\n  <p>Los <b>logs estáticos</b> son principalmente registros de actividad, que no están registrados en Dockerd pero que aún deben ser persistentes (excepto los registros de API).</p>",
         "logs": "Logs",
         "restart_container": "Reiniciar",
-        "solr_dead": "Solr está empezando, deshabilitado o caído.",
         "docs": "Docs",
         "last_modified": "Última modificación",
         "size": "Tamaño",
         "started_at": "Iniciado el",
-        "solr_status": "Solr status",
         "uptime": "Uptime",
         "static_logs": "Logs estáticos",
         "system_containers": "Sistema y Contenedores"
