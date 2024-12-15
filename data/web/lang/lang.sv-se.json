@@ -990,6 +990,7 @@
         "created_on": "Skapad vid",
         "daily": "Dagligen",
         "day": "dag",
+        "description": "Beskrivning",
         "delete_ays": "Är du säker att du vill ta bort det här objektet?",
         "direct_aliases": "Direkta aliasadresser",
         "direct_aliases_desc": "Endast direkta aliasadresser påverkas av spamfilter och TLS-policyföreskrifter.",

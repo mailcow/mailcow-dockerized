@@ -1061,6 +1061,7 @@
         "created_on": "Creat în",
         "daily": "Zilnic",
         "day": "zi",
+        "description": "Descriere",
         "delete_ays": "Vă rugăm să confirmați stergerea.",
         "direct_aliases": "Adrese alias directe",
         "direct_aliases_desc": "Adresele alias directe sunt afectate de setările filtrului de spam și ale politicii TLS.",

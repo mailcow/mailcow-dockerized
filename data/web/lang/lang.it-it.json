@@ -1123,6 +1123,7 @@
         "created_on": "Creato il",
         "daily": "Giornaliero",
         "day": "giorno",
+        "description": "Descrizione",
         "delete_ays": "Please confirm the deletion process.",
         "direct_aliases": "Direct alias addresses",
         "direct_aliases_desc": "Direct alias addresses are affected by spam filter and TLS policy settings.",
