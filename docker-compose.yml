@@ -206,6 +206,9 @@ services:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
+        - ./data/conf/sogo/custom-shortlogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
+        - ./data/conf/sogo/custom-fulllogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg:z
+        - ./data/conf/sogo/custom-fulllogo.png:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-logo.png:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/
