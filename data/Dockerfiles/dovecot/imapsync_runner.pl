@@ -150,6 +150,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   "--passfile1", $passfile1->filename,
   "--port1", $port1,
   "--host2", "localhost",
+  (!exists($ENV{IMAP_PORT})? () : ('--port2', $ENV{IMAP_PORT})),
   "--user2", $user2 . '*' . trim($master_user),
   "--passfile2", $passfile2->filename,
   ($dry eq "1" ? ('--dry') : ()),
