@@ -1182,6 +1182,7 @@
         "created_on": "Erstellt am",
         "daily": "Täglich",
         "day": "Tag",
+        "description": "Beschreibung",
         "delete_ays": "Soll der Löschvorgang wirklich ausgeführt werden?",
         "direct_aliases": "Direkte Alias-Adressen",
         "direct_aliases_desc": "Nur direkte Alias-Adressen werden für benutzerdefinierte Einstellungen berücksichtigt.",

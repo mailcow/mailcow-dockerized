@@ -1113,6 +1113,7 @@
         "created_on": "Vytvorené",
         "daily": "Denne",
         "day": "deň",
+        "description": "Popis",
         "delete_ays": "Potvrďte zmazanie.",
         "direct_aliases": "Priame alias adresy",
         "direct_aliases_desc": "Priame aliasy sú ovplyvnené spam filtrom a nastavením TLS pravidiel.",
