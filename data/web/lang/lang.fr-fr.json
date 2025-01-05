@@ -805,7 +805,7 @@
         "last_mail_login": "Dernière connexion mail",
         "last_modified": "Dernière modification",
         "last_run": "Dernière exécution",
-        "last_run_reset": "Calendrier suivant",
+        "last_run_reset": "Exécuter maintenant",
         "mailbox": "Boîte de réception",
         "mailbox_defquota": "Taille de boîte de réception par défaut",
         "mailbox_quota": "Taille max. d’une boîte de réception",
