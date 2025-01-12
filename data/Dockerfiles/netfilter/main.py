@@ -161,6 +161,49 @@ def ban(address):
   else:
     logger.logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
+def instant_ban(address):
+    global f2boptions
+    global lock
+
+    refreshF2boptions()
+    NETBAN_IPV4 = "/" + str(f2boptions["netban_ipv4"])
+    NETBAN_IPV6 = "/" + str(f2boptions["netban_ipv6"])
+
+    ip = get_ip(address)
+    if not ip:
+        return
+    address = str(ip)
+    self_network = ipaddress.ip_network(address)
+
+    with lock:
+        temp_whitelist = set(WHITELIST)
+    if temp_whitelist:
+        for wl_key in temp_whitelist:
+            wl_net = ipaddress.ip_network(wl_key, False)
+            if wl_net.overlaps(self_network):
+                logger.logInfo(
+                    "Address %s is whitelisted by rule %s" % (self_network, wl_net)
+                )
+                return
+
+    net = ipaddress.ip_network(
+        (address + (NETBAN_IPV4 if type(ip) is ipaddress.IPv4Address else NETBAN_IPV6)),
+        strict=False,
+    )
+    net = str(net)
+
+    cur_time = int(round(time.time()))
+    NET_BAN_TIME = calcNetBanTime(4)  # Max Ban Time -> 4 is my default max retry
+    logger.logCrit("Instantly banning %s for %d minutes" % (net, NET_BAN_TIME / 60))
+    if type(ip) is ipaddress.IPv4Address and int(f2boptions["manage_external"]) != 1:
+        with lock:
+            tables.banIPv4(net)
+    elif int(f2boptions["manage_external"]) != 1:
+        with lock:
+            tables.banIPv6(net)
+
+    r.hset("F2B_ACTIVE_BANS", "%s" % net, cur_time + NET_BAN_TIME)
+
 def unban(net):
   global lock
 
@@ -232,6 +275,7 @@ def watch():
 
   logger.logInfo('Watching Redis channel F2B_CHANNEL')
   pubsub.subscribe('F2B_CHANNEL')
+  instant_ban_rules = {3, 4} # rule id´s for instant banning
 
   while not quit_now:
     try:
@@ -248,8 +292,19 @@ def watch():
               ip = ipaddress.ip_address(addr)
               if ip.is_private or ip.is_loopback:
                 continue
-              logger.logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
-              ban(addr)
+              # Instant Bannen for defind Rule-IDs
+              if rule_id in instant_ban_rules:
+                logger.logCrit(
+                    "Rule ID %s triggered instant ban for %s"
+                    % (rule_id, addr)
+                )
+                instant_ban(addr)
+              else:
+                logger.logWarn(
+                  "%s matched rule id %s (%s)"
+                  % (addr, rule_id, item["data"])
+                )
+                ban(addr)
     except Exception as ex:
       logger.logWarn('Error reading log line from pubsub: %s' % ex)
       pubsub = None
