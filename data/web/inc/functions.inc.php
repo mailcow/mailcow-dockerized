@@ -1174,7 +1174,7 @@ function user_get_alias_details($username) {
     AND `goto` != :username_goto2
     AND `address` != :username_address");
   $stmt->execute(array(
-    ':username_goto' => '(^|,)'.$username.'($|,)',
+    ':username_goto' => '(^|,)'.preg_quote($username, '/').'($|,)',
     ':username_goto2' => $username,
     ':username_address' => $username
     ));
@@ -1222,7 +1222,7 @@ function user_get_alias_details($username) {
     $data['aliases_send_as_all'] = $row['send_as'];
   }
   $stmt = $pdo->prepare("SELECT IFNULL(GROUP_CONCAT(`address` SEPARATOR ', '), '') as `address` FROM `alias` WHERE `goto` REGEXP :username AND `address` LIKE '@%';");
-  $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
+  $stmt->execute(array(':username' => '(^|,)'.preg_quote($username, '/').'($|,)'));
   $run = $stmt->fetchAll(PDO::FETCH_ASSOC);
   while ($row = array_shift($run)) {
     $data['is_catch_all'] = $row['address'];
