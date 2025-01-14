@@ -3768,7 +3768,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $data['external_sender_aliases']                = array();
           // Fixed addresses
           $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
-          $stmt->execute(array(':goto' => '(^|,)'.$_data.'($|,)'));
+          $stmt->execute(array(':goto' => '(^|,)'.preg_quote($_data, '/').'($|,)'));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows)) {
             $data['fixed_sender_aliases'][] = $row['address'];
@@ -5534,7 +5534,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             $stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
                 WHERE `goto` REGEXP :username");
-            $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
+            $stmt->execute(array(':username' => '(^|,)'.preg_quote($username, '/').'($|,)'));
             $GotoData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($GotoData as $gotos) {
               $goto_exploded = explode(',', $gotos['goto']);
