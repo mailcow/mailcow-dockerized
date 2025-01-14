@@ -293,7 +293,7 @@ def watch():
               if ip.is_private or ip.is_loopback:
                 continue
               # Instant Bannen for defind Rule-IDs
-              if rule_id in instant_ban_rules:
+              if int(rule_id) in instant_ban_rules:
                 logger.logCrit(
                     "Rule ID %s triggered instant ban for %s"
                     % (rule_id, addr)
