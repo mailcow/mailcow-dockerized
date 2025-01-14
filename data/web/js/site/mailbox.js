@@ -179,9 +179,8 @@ $(document).ready(function() {
     // Get script_data textarea content from form the button was clicked in
     var script = $('textarea[name="script_data"]', $(this).parents('form:first')).val();
     $.ajax({
-      dataType: 'json',
       url: "/inc/ajax/sieve_validation.php",
-      type: "get",
+      type: "post",
       data: { script: script },
       complete: function(data) {
         var response = (data.responseText);
