@@ -1183,6 +1183,7 @@
         "created_on": "Criado em",
         "daily": "Diariamente",
         "day": "dia",
+        "description": "Descrição",
         "delete_ays": "Confirme o processo de exclusão.",
         "direct_aliases": "Endereços de alias diretos",
         "direct_aliases_desc": "Os endereços de alias diretos são afetados pelo filtro de spam e pelas configurações da política TLS.",

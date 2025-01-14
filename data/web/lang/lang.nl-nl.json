@@ -1025,6 +1025,7 @@
         "create_syncjob": "Voeg sync job toe",
         "daily": "Dagelijks",
         "day": "dag",
+        "description": "Beschrijving",
         "delete_ays": "Bevestig de verwijdering.",
         "direct_aliases": "Directe aliasadressen",
         "direct_aliases_desc": "Directe aliasadressen worden beïnvloed door spamfilters en het versleutelingsbeleid.",

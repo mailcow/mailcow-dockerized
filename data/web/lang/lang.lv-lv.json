@@ -551,6 +551,7 @@
         "client_configuration": "Parādīt konfigurācijas norādes e-pasta klientiem un tālruņiem",
         "create_syncjob": "Izveidot jaunu sinhronizācijas darbu",
         "day": "Dienas",
+        "description": "Apraksts",
         "direct_aliases": "Tiešas aizstājadreses",
         "direct_aliases_desc": "Tiešās aizstājadreses ir surogātpasta atlasīšanas un TLS nosacījumu iestatījumu ietekmētas.",
         "eas_reset": "Atiestatīt ActiveSync ierīces kešatmiņu",
