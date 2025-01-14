@@ -908,6 +908,7 @@
         "create_syncjob": "새 동기화 작업 생성",
         "daily": "매일",
         "day": "일",
+        "description": "Description",
         "delete_ays": "진짜 삭제하겠습니까?",
         "direct_aliases": "Direct alias addresses",
         "direct_aliases_desc": "Direct alias addresses are affected by spam filter and TLS policy settings.",

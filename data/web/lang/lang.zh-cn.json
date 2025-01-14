@@ -1161,6 +1161,7 @@
         "created_on": "添加于",
         "daily": "每日",
         "day": "日",
+        "description": "描述",
         "delete_ays": "请确认删除。",
         "direct_aliases": "直接别名",
         "direct_aliases_desc": "垃圾邮件过滤和 TLS 策略会作用于直接别名。",

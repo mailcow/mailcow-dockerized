@@ -807,6 +807,7 @@
         "create_syncjob": "Luo uusi synkronointi työ",
         "daily": "Päivittäin",
         "day": "Päivä",
+        "description": "Kuvaus",
         "direct_aliases": "Suorat alias osoitteet",
         "direct_aliases_desc": "Roska posti suodatus-ja TLS-käytäntö asetukset vaikuttavat suora aliaksen osoitteisiin.",
         "eas_reset": "Tyhjennä ActiveSync-laitteen väli muisti",
