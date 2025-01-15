@@ -23,8 +23,8 @@ function acl($_action, $_scope = null, $_data = null, $_extra = null) {
               $acl_post[$acl_val] = 1;
             }
             // Users cannot change their own ACL
-            if (!$_extra['hasAccess'] && (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)
-              || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin'))) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)
+              || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin' && $_SESSION['access_all_exception'] != '1')) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
@@ -130,7 +130,7 @@ function acl($_action, $_scope = null, $_data = null, $_extra = null) {
     case 'get':
       switch ($_scope) {
         case 'user':
-          if (!$_extra['hasAccess'] && !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+          if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
           $stmt = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");

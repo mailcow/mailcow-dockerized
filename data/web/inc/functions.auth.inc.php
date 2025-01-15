@@ -457,12 +457,13 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     // login success
     if ($mapper_key !== false) {
       // update user
+      $_SESSION['access_all_exception'] = '1';
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user,
         'name' => $user_res['name'],
-        'template' => $iam_settings['templates'][$mapper_key],
-        'hasAccess' => true
+        'template' => $iam_settings['templates'][$mapper_key]
       ));
+      $_SESSION['access_all_exception'] = '0';
     }
     return 'user';
   }
@@ -472,14 +473,15 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   if ($mapper_key === false) return false;
 
   // create mailbox
+  $_SESSION['access_all_exception'] = '1';
   $create_res = mailbox('add', 'mailbox_from_template', array(
     'domain' => explode('@', $user)[1],
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['name'],
     'authsource' => 'keycloak',
-    'template' => $iam_settings['templates'][$mapper_key],
-    'hasAccess' => true
+    'template' => $iam_settings['templates'][$mapper_key]
   ));
+  $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
     clear_session();
     return false;
@@ -556,12 +558,13 @@ function ldap_mbox_login($user, $pass, $extra = null){
     // login success
     if ($mapper_key !== false) {
       // update user
+      $_SESSION['access_all_exception'] = '1';
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user,
         'name' => $user_res['displayname'][0],
-        'template' => $iam_settings['templates'][$mapper_key],
-        'hasAccess' => true
+        'template' => $iam_settings['templates'][$mapper_key]
       ));
+      $_SESSION['access_all_exception'] = '0';
     }
     return 'user';
   }
@@ -571,14 +574,15 @@ function ldap_mbox_login($user, $pass, $extra = null){
   if ($mapper_key === false) return false;
 
   // create mailbox
+  $_SESSION['access_all_exception'] = '1';
   $create_res = mailbox('add', 'mailbox_from_template', array(
     'domain' => explode('@', $user)[1],
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['displayname'][0],
     'authsource' => 'ldap',
-    'template' => $iam_settings['templates'][$mapper_key],
-    'hasAccess' => true
+    'template' => $iam_settings['templates'][$mapper_key]
   ));
+  $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
     clear_session();
     return false;

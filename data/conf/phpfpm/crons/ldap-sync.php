@@ -152,6 +152,7 @@ foreach ($response as $user) {
     continue;
   }
 
+  $_SESSION['access_all_exception'] = '1';
   if (!$row && intval($iam_settings['import_users']) == 1){
     // mailbox user does not exist, create...
     logMsg("info", "Creating user " .  $user[$iam_settings['username_field']][0]);
@@ -160,8 +161,7 @@ foreach ($response as $user) {
       'local_part' => explode('@',  $user[$iam_settings['username_field']][0])[0],
       'name' => $user['displayname'][0],
       'authsource' => 'ldap',
-      'template' => $mbox_template,
-      'hasAccess' => true
+      'template' => $mbox_template
     ));
   } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
     // mailbox user does exist, sync attribtues...
@@ -169,13 +169,13 @@ foreach ($response as $user) {
     mailbox('edit', 'mailbox_from_template', array(
       'username' =>  $user[$iam_settings['username_field']][0],
       'name' => $user['displayname'][0],
-      'template' => $mbox_template,
-      'hasAccess' => true
+      'template' => $mbox_template
     ));
   } else {
     // skip mailbox user
     logMsg("info", "Skipping user " .  $user[$iam_settings['username_field']][0]);
   }
+  $_SESSION['access_all_exception'] = '0';
 
   sleep(0.025);
 }

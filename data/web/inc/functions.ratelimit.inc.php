@@ -4,7 +4,7 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
   $_data_log = $_data;
   switch ($_action) {
     case 'edit':
-      if ((!isset($_SESSION['acl']['ratelimit']) || $_SESSION['acl']['ratelimit'] != "1") && !$_extra['hasAccess']) {
+      if (!hasACLAccess("ratelimit")) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -92,8 +92,8 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (((!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)
-                || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin'))) && !$_extra['hasAccess']) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)
+                || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin' && $_SESSION['access_all_exception'] != '1')) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
@@ -139,7 +139,7 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
     case 'get':
       switch ($_scope) {
         case 'domain':
-          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data) && !$_extra['hasAccess']) {
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
             return false;
           }
           try {
@@ -164,7 +164,7 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
           return false;
         break;
         case 'mailbox':
-          if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data && !$_extra['hasAccess'])
+          if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)
             || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) {
             return false;
           }
