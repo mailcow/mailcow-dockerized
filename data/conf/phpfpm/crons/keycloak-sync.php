@@ -188,6 +188,7 @@ while (true) {
       continue;
     }
 
+    $_SESSION['access_all_exception'] = '1';
     if (!$row && intval($iam_settings['import_users']) == 1){
       // mailbox user does not exist, create...
       logMsg("info", "Creating user " . $user['email']);
@@ -196,8 +197,7 @@ while (true) {
         'local_part' => explode('@', $user['email'])[0],
         'name' => $user['firstName'] . " " . $user['lastName'],
         'authsource' => 'keycloak',
-        'template' => $mbox_template,
-        'hasAccess' => true
+        'template' => $mbox_template
       ));
     } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
       // mailbox user does exist, sync attribtues...
@@ -205,13 +205,13 @@ while (true) {
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user['email'],
         'name' => $user['firstName'] . " " . $user['lastName'],
-        'template' => $mbox_template,
-        'hasAccess' => true
+        'template' => $mbox_template
       ));
     } else {
       // skip mailbox user
       logMsg("info", "Skipping user " . $user['email']);
     }
+    $_SESSION['access_all_exception'] = '0';
 
     sleep(0.025);
   }

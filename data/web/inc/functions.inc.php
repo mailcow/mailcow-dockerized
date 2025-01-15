@@ -538,10 +538,13 @@ function logger($_data = false) {
 }
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
-  if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
+  if (empty($domain) || !is_valid_domain_name($domain)) {
     return false;
   }
-  if (empty($domain) || !is_valid_domain_name($domain)) {
+  if (isset($_SESSION['access_all_exception']) && $_SESSION['access_all_exception'] == "1") {
+    return true;
+  }
+  if (!filter_var($username, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $username))) {
     return false;
   }
   if ($role != 'admin' && $role != 'domainadmin') {
@@ -577,6 +580,9 @@ function hasDomainAccess($username, $role, $domain) {
 }
 function hasMailboxObjectAccess($username, $role, $object) {
   global $pdo;
+  if (isset($_SESSION['access_all_exception']) && $_SESSION['access_all_exception'] == "1") {
+    return true;
+  }
   if (empty($username) || empty($role) || empty($object)) {
     return false;
   }
@@ -600,6 +606,9 @@ function hasMailboxObjectAccess($username, $role, $object) {
 // does also verify mailboxes as a mailbox is a alias == goto
 function hasAliasObjectAccess($username, $role, $object) {
   global $pdo;
+  if (isset($_SESSION['access_all_exception']) && $_SESSION['access_all_exception'] == "1") {
+    return true;
+  }
   if (empty($username) || empty($role) || empty($object)) {
     return false;
   }
@@ -615,6 +624,16 @@ function hasAliasObjectAccess($username, $role, $object) {
   if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
     return true;
   }
+  return false;
+}
+function hasACLAccess($type) {
+  if (isset($_SESSION['access_all_exception']) && $_SESSION['access_all_exception'] == "1") {
+    return true;
+  }
+  if (isset($_SESSION['acl'][$type]) && $_SESSION['acl'][$type] == "1") {
+    return true;
+  }
+
   return false;
 }
 function pem_to_der($pem_key) {
@@ -2530,12 +2549,13 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         // success
         if ($mapper_key !== false) {
           // update user
+          $_SESSION['access_all_exception'] = '1';
           mailbox('edit', 'mailbox_from_template', array(
             'username' => $info['email'],
             'name' => $info['name'],
-            'template' => $iam_settings['templates'][$mapper_key],
-            'hasAccess' => true
+            'template' => $iam_settings['templates'][$mapper_key]
           ));
+          $_SESSION['access_all_exception'] = '0';
         }
         set_user_loggedin_session($info['email']);
         $_SESSION['iam_token'] = $plain_token;
@@ -2568,14 +2588,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       // create mailbox
+      $_SESSION['access_all_exception'] = '1';
       $create_res = mailbox('add', 'mailbox_from_template', array(
         'domain' => explode('@', $info['email'])[1],
         'local_part' => explode('@', $info['email'])[0],
         'name' => $info['name'],
         'authsource' => $iam_settings['authsource'],
-        'template' => $iam_settings['templates'][$mapper_key],
-        'hasAccess' => true
+        'template' => $iam_settings['templates'][$mapper_key]
       ));
+      $_SESSION['access_all_exception'] = '0';
       if (!$create_res){
         clear_session();
         $_SESSION['return'][] =  array(
