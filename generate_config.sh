@@ -394,7 +394,7 @@ FTS_HEAP=128
 # Too many indexing processes can use a lot of CPU and Disk I/O.
 # Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
 
-FTS_PROCS=5
+FTS_PROCS=1
 
 # Allow admins to log into SOGo as email user (without any password)
 

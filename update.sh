@@ -466,7 +466,7 @@ adapt_new_options() {
         echo '# Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.' >> mailcow.conf
         echo '# Flatcurve is used as FTS Engine. It is supposed to be pretty efficient in CPU and RAM consumption.' >> mailcow.conf
         echo '# Please always monitor your Resource consumption!' >> mailcow.conf
-        echo "FTS_HEAP=1024" >> mailcow.conf
+        echo "FTS_HEAP=128" >> mailcow.conf
       fi
     elif [[ ${option} == "SKIP_FTS" ]]; then
       if ! grep -q ${option} mailcow.conf; then
@@ -481,7 +481,7 @@ adapt_new_options() {
         echo '# Controls how many processes the Dovecot indexing process can spawn at max.' >> mailcow.conf
         echo '# Too many indexing processes can use a lot of CPU and Disk I/O' >> mailcow.conf
         echo '# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations' >> mailcow.conf
-        echo "FTS_PROCS=2" >> mailcow.conf
+        echo "FTS_PROCS=1" >> mailcow.conf
       fi
     elif [[ ${option} == "ENABLE_SSL_SNI" ]]; then
       if ! grep -q ${option} mailcow.conf; then
