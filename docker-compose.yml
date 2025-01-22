@@ -372,7 +372,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: mailcow/nginx:1.00
+      image: mailcow/nginx:1.01
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -383,6 +383,7 @@ services:
         - TZ=${TZ}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
+        - DISABLE_IPv6=${DISABLE_IPv6:-n}
         - PHPFPMHOST=${PHPFPMHOST:-}
         - SOGOHOST=${SOGOHOST:-}
         - RSPAMDHOST=${RSPAMDHOST:-}
