@@ -2,6 +2,27 @@ import os
 import subprocess
 from jinja2 import Environment, FileSystemLoader
 
+def includes_conf(env, template_vars):
+  server_name = "server_name.active"
+  listen_plain = "listen_plain.active"
+  listen_ssl = "listen_ssl.active"
+
+  server_name_config = f"server_name {template_vars['MAILCOW_HOSTNAME']} autodiscover.* autoconfig.* {template_vars['ADDITIONAL_SERVER_NAMES']};"
+  listen_plain_config = f"listen {template_vars['HTTP_PORT']};"
+  listen_ssl_config = f"listen {template_vars['HTTPS_PORT']};"
+  if not template_vars['DISABLE_IPv6']:
+    listen_plain_config += f"\nlisten [::]:{template_vars['HTTP_PORT']};"
+    listen_ssl_config += f"\nlisten [::]:{template_vars['HTTPS_PORT']} ssl;"
+  listen_ssl_config += "\nhttp2 on;"
+
+  with open(f"/etc/nginx/conf.d/{server_name}", "w") as f:
+    f.write(server_name_config)
+
+  with open(f"/etc/nginx/conf.d/{listen_plain}", "w") as f:
+    f.write(listen_plain_config)
+
+  with open(f"/etc/nginx/conf.d/{listen_ssl}", "w") as f:
+    f.write(listen_ssl_config)
 
 def sites_default_conf(env, template_vars):
   config_name = "sites-default.conf"
@@ -34,6 +55,7 @@ def prepare_template_vars():
     'SOGOHOST': os.getenv("SOGOHOST", ipv4_network + ".248"),
     'RSPAMDHOST': os.getenv("RSPAMDHOST", "rspamd-mailcow"),
     'PHPFPMHOST': os.getenv("PHPFPMHOST", "php-fpm-mailcow"),
+    'DISABLE_IPv6': os.getenv("DISABLE_IPv6", "n").lower() in ("y", "yes"),
   }
 
   ssl_dir = '/etc/ssl/mail/'
@@ -60,17 +82,14 @@ def prepare_template_vars():
   return template_vars
 
 def main():
-  env = Environment(loader=FileSystemLoader('./etc/nginx/conf.d'))
+  env = Environment(loader=FileSystemLoader('./etc/nginx/conf.d/templates'))
 
   # Render config
   print("Render config")
   template_vars = prepare_template_vars()
   sites_default_conf(env, template_vars)
   nginx_conf(env, template_vars)
-
-  # Validate config
-  print("Validate config")
-  subprocess.run(["nginx", "-qt"])
+  includes_conf(env, template_vars)
 
 
 if __name__ == "__main__":
