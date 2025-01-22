@@ -65,7 +65,9 @@ http {
     # rspamd dynmaps:
     server {
         listen 8081;
+        {% if not DISABLE_IPv6 %}
         listen [::]:8081;
+        {%endif%}
         index index.php index.html;
         server_name _;
         error_log  /var/log/nginx/error.log;
