@@ -3101,6 +3101,7 @@ function clear_session(){
   session_write_close();
 }
 function set_user_loggedin_session($user) {
+  session_regenerate_id(true);
   $_SESSION['mailcow_cc_username'] = $user;
   $_SESSION['mailcow_cc_role'] = 'user';
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
