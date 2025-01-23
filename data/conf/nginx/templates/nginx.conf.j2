@@ -27,8 +27,6 @@ http {
 
     #gzip  on;
 
-    include /etc/nginx/conf.d/*.conf;
-
     # map-size.conf:
     map_hash_max_size 256;
     map_hash_bucket_size 256;
@@ -147,4 +145,6 @@ http {
         include /etc/nginx/includes/sites-default.conf;
     }
     {% endfor %}
+
+    include /etc/nginx/conf.d/*.conf;
 }
