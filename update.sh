@@ -471,7 +471,7 @@ adapt_new_options() {
     elif [[ ${option} == "SKIP_FTS" ]]; then
       if ! grep -q ${option} mailcow.conf; then
         echo "Adding new option \"${option}\" to mailcow.conf"
-        echo '# Skip FTS (Fulltext Search) for Dovecot on low-memory systems or if you simply want to disable it.' >> mailcow.conf
+        echo '# Skip FTS (Fulltext Search) for Dovecot on low-memory, low-threaded systems or if you simply want to disable it.' >> mailcow.conf
         echo "# Dovecot inside mailcow use Flatcurve as FTS Backend." >> mailcow.conf
         echo "SKIP_FTS=y" >> mailcow.conf
       fi
