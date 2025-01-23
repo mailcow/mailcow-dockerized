@@ -406,6 +406,7 @@
         "create_syncjob": "Új szinkronizációs művelet létrehozása",
         "daily": "Napi",
         "day": "nap",
+        "description": "Leírás",
         "delete_ays": "Erősítse meg a törlést.",
         "direct_aliases": "Közvetlen alias címek",
         "eas_reset": "ActiveSync eszköz gyorsítótár ürítése",

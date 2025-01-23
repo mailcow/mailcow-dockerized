@@ -32,6 +32,7 @@ if (!empty($_GET['sso_token'])) {
   $username = domain_admin_sso('check', $_GET['sso_token']);
 
   if ($username !== false) {
+    session_regenerate_id();
     $_SESSION['mailcow_cc_username'] = $username;
     $_SESSION['mailcow_cc_role'] = 'domainadmin';
     header('Location: /mailbox');
@@ -137,13 +138,15 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   $login_user = strtolower(trim($_POST["login_user"]));
   $as = check_login($login_user, $_POST["pass_user"]);
 
-  if ($as == "admin") {
+	if ($as == "admin") {
+    session_regenerate_id();
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
 		header("Location: /debug");
     die();
 	}
 	elseif ($as == "domainadmin") {
+    session_regenerate_id();
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
 		header("Location: /mailbox");
@@ -151,6 +154,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	}
 	elseif ($as == "user") {
     set_user_loggedin_session($login_user);
+    session_regenerate_id();
     $http_parameters = explode('&', $_SESSION['index_query_string']);
     unset($_SESSION['index_query_string']);
     if (in_array('mobileconfig', $http_parameters)) {
@@ -171,6 +175,10 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
       header("Location: /user");
       die();
     }
+    if (!isset($_SESSION['oauth2_request'])) {
+      header("Location: /user");
+      die();
+    }
 	}
 	elseif ($as != "pending") {
     unset($_SESSION['pending_mailcow_cc_username']);
@@ -178,7 +186,9 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     unset($_SESSION['pending_tfa_methods']);
 		unset($_SESSION['mailcow_cc_username']);
 		unset($_SESSION['mailcow_cc_role']);
-	}
+	} else {
+    session_regenerate_id();
+  }
 }
 
 if (isset($_SESSION['mailcow_cc_role']) && (isset($_SESSION['acl']['login_as']) && $_SESSION['acl']['login_as'] == "1")) {

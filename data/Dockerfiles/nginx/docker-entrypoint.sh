@@ -1,9 +1,9 @@
 #!/bin/sh
 
-until ping ${REDISHOST} -c1 > /dev/null; do
-  echo "Waiting for Redis..."
-  sleep 1
-done
+PHPFPMHOST=${PHPFPMHOST:-"php-fpm-mailcow"}
+SOGOHOST=${SOGOHOST:-"$IPV4_NETWORK.248"}
+RSPAMDHOST=${RSPAMDHOST:-"rspamd-mailcow"}
+
 until ping ${PHPFPMHOST} -c1 > /dev/null; do
   echo "Waiting for PHP..."
   sleep 1

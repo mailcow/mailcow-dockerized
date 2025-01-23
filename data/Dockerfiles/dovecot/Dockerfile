@@ -109,7 +109,6 @@ RUN addgroup -g 5000 vmail \
   dovecot-submissiond \
   dovecot-pigeonhole-plugin \
   dovecot-pop3d \
-  dovecot-fts-solr \
   dovecot-fts-flatcurve \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$arch" \
