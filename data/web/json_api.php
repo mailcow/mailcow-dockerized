@@ -1078,9 +1078,10 @@ if (isset($_GET['query'])) {
                   ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
                   ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
                   ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
-                  ['db' => 'messages', 'dt' => 18, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
+                  ['db' => 'name', 'dt' => 7],
+                  ['db' => 'messages', 'dt' => 17, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
                   ['db' => 'tags', 'dt' => 20, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 21]
+                  ['db' => 'active', 'dt' => 21],
                 ];
 
                 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
@@ -1637,23 +1638,6 @@ if (isset($_GET['query'])) {
                     'used_percent' => $vmail_df[4]
                   );
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
-                break;
-                case "solr":
-                  $solr_status = solr_status();
-                  $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
-                  $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
-                  if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                    $solr_enabled = false;
-                  }
-                  else {
-                    $solr_enabled = true;
-                  }
-                  echo json_encode(array(
-                    'type' => 'info',
-                    'solr_enabled' => $solr_enabled,
-                    'solr_size' => $solr_size,
-                    'solr_documents' => $solr_documents
-                  ));
                 break;
                 case "host":
                   if (!$extra){
