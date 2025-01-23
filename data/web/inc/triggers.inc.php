@@ -4,7 +4,7 @@ if (!empty($_GET['sso_token'])) {
   $username = domain_admin_sso('check', $_GET['sso_token']);
 
   if ($username !== false) {
-    session_regenerate_id();
+    session_regenerate_id(true);
     $_SESSION['mailcow_cc_username'] = $username;
     $_SESSION['mailcow_cc_role'] = 'domainadmin';
     header('Location: /mailbox');
@@ -88,21 +88,21 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 	$as = check_login($login_user, $_POST["pass_user"]);
 
 	if ($as == "admin") {
-    session_regenerate_id();
+    session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
 		header("Location: /debug");
     die();
 	}
 	elseif ($as == "domainadmin") {
-    session_regenerate_id();
+    session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
 		header("Location: /mailbox");
     die();
 	}
 	elseif ($as == "user") {
-    session_regenerate_id();
+    session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
     $http_parameters = explode('&', $_SESSION['index_query_string']);
@@ -127,7 +127,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		unset($_SESSION['mailcow_cc_username']);
 		unset($_SESSION['mailcow_cc_role']);
 	} else {
-    session_regenerate_id();
+    session_regenerate_id(true);
   }
 }
 
