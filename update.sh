@@ -682,14 +682,14 @@ migrate_solr_config_options() {
       read -r -p "Remove $solr_volume? [y/N] " response
       if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         echo -e "\e[33mRemoving $solr_volume...\e[0m"
-        docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m" && exit
+        docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m"
         echo -e "\e[32mSuccessfully removed $solr_volume!\e[0m"
       else
         echo -e "Not removing $solr_volume. Run \`docker volume rm $solr_volume\` manually if needed."
       fi
     else
       echo -e "\e[33mForce removing $solr_volume...\e[0m"
-      docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m" && exit
+      docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m"
       echo -e "\e[32mSuccessfully removed $solr_volume!\e[0m"
     fi
   fi
