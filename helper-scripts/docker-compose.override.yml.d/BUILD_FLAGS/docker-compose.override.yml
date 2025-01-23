@@ -34,8 +34,5 @@ services:
   dockerapi-mailcow:
     build: ./data/Dockerfiles/dockerapi
 
-  solr-mailcow:
-    build: ./data/Dockerfiles/solr
-
   olefy-mailcow:
     build: ./data/Dockerfiles/olefy

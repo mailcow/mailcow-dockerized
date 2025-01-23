@@ -15,15 +15,15 @@ if [[ "$response" =~ ^(yes|y)$ ]]; then
     docker stop ${RSPAMD_ID}
     echo "LUA will return nil when it succeeds or print a warning/error when it fails."
     echo "Deleting all RS* keys - if any"
-    docker exec -it ${REDIS_ID} redis-cli EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'RS*'
+    docker exec -it ${REDIS_ID} redis-cli -a ${REDISPASS} --no-auth-warning EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'RS*'
     echo "Deleting all BAYES* keys - if any"
-    docker exec -it ${REDIS_ID} redis-cli EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'BAYES*'
+    docker exec -it ${REDIS_ID} redis-cli -a ${REDISPASS} --no-auth-warning EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'BAYES*'
     echo "Deleting all learned* keys - if any"
-    docker exec -it ${REDIS_ID} redis-cli EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'learned*'
+    docker exec -it ${REDIS_ID} redis-cli -a ${REDISPASS} --no-auth-warning EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'learned*'
     echo "Deleting all fuzzy* keys - if any"
-    docker exec -it ${REDIS_ID} redis-cli EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'fuzzy*'
+    docker exec -it ${REDIS_ID} redis-cli -a ${REDISPASS} --no-auth-warning EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'fuzzy*'
     echo "Deleting all tRFANN* keys - if any"
-    docker exec -it ${REDIS_ID} redis-cli EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'tRFANN*'
+    docker exec -it ${REDIS_ID} redis-cli -a ${REDISPASS} --no-auth-warning EVAL "for _,k in ipairs(redis.call('keys', ARGV[1])) do redis.call('del', k) end" 0 'tRFANN*'
     echo "Starting Rspamd container"
     docker start ${RSPAMD_ID}
   fi
