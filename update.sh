@@ -676,23 +676,21 @@ migrate_solr_config_options() {
 
   solr_volume=$(docker volume ls -qf name=^${COMPOSE_PROJECT_NAME}_solr-vol-1)
   if [[ -n $solr_volume ]]; then
-    echo -e "\e[34mSolr has been replaced within mailcow since 2025-01.\e[0m"
+    echo -e "\e[34mSolr has been replaced within mailcow since 2025-01.\nThe volume $solr_volume is unused.\e[0m"
     sleep 1
-    echo -e "\e[34mTherefore the volume $solr_volume is unused.\e[0m"
-    sleep 1
-    read -r -p "Would you like to remove the $solr_volume? " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-      echo -e "\e[33mRemoving $solr_volume...\e[0m"
-      docker volume rm $solr_volume
-      if [[ $? != 0 ]]; then
-        echo -e "\e[31mCould not remove the volume... Please remove it manually!\e[0m"
+    if [ ! "$FORCE" ]; then
+      read -r -p "Remove $solr_volume? [y/N] " response
+      if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        echo -e "\e[33mRemoving $solr_volume...\e[0m"
+        docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m" && exit
+        echo -e "\e[32mSuccessfully removed $solr_volume!\e[0m"
       else
-        echo -e "\e[32mSucessfully removed $solr_volume!\e[0m"
+        echo -e "Not removing $solr_volume. Run \`docker volume rm $solr_volume\` manually if needed."
       fi
     else
-      echo "Ok! Not removing $solr_volume then."
-      echo "Once you decided on removing the volume simply run docker volume rm $solr_volume to remove it manually."
-      echo "This can be done anytime. mailcow does not use this volume anymore."
+      echo -e "\e[33mForce removing $solr_volume...\e[0m"
+      docker volume rm $solr_volume || echo -e "\e[31mFailed to remove. Remove it manually!\e[0m" && exit
+      echo -e "\e[32mSuccessfully removed $solr_volume!\e[0m"
     fi
   fi
 
