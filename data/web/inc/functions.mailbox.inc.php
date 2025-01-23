@@ -48,6 +48,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data["validity"] = 8760;
           }
           $domain = $_data['domain'];
+          $description = $_data['description'];
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
           if (!empty($valid_alias_domains)) {
@@ -62,10 +63,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $validity = strtotime("+" . $_data["validity"] . " hour");
-          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `goto`, `validity`) VALUES
-            (:address, :goto, :validity)");
+          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`) VALUES
+            (:address, :description, :goto, :validity)");
           $stmt->execute(array(
             ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
+            ':description' => $description,
             ':goto' => $username,
             ':validity' => $validity
           ));
@@ -3768,7 +3770,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $data['external_sender_aliases']                = array();
           // Fixed addresses
           $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
-          $stmt->execute(array(':goto' => '(^|,)'.$_data.'($|,)'));
+          $stmt->execute(array(':goto' => '(^|,)'.preg_quote($_data, '/').'($|,)'));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows)) {
             $data['fixed_sender_aliases'][] = $row['address'];
@@ -4201,6 +4203,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $stmt = $pdo->prepare("SELECT `address`,
             `goto`,
+            `description`,
             `validity`,
             `created`,
             `modified`
@@ -5434,25 +5437,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'Could not move maildir to garbage collector: variables local_part and/or domain empty'
               );
             }
-            if (strtolower(getenv('SKIP_SOLR')) == 'n' && strtolower(getenv('FLATCURVE_EXPERIMENTAL')) != 'y') {
-              $curl = curl_init();
-              curl_setopt($curl, CURLOPT_URL, 'http://solr:8983/solr/dovecot-fts/update?commit=true');
-              curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: text/xml'));
-              curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-              curl_setopt($curl, CURLOPT_POST, 1);
-              curl_setopt($curl, CURLOPT_POSTFIELDS, '<delete><query>user:' . $username . '</query></delete>');
-              curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-              $response = curl_exec($curl);
-              if ($response === false) {
-                $err = curl_error($curl);
-                $_SESSION['return'][] = array(
-                  'type' => 'warning',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'Could not remove Solr index: ' . print_r($err, true)
-                );
-              }
-              curl_close($curl);
-            }
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username");
             $stmt->execute(array(
               ':username' => $username
@@ -5553,7 +5537,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ));
             $stmt = $pdo->prepare("SELECT `address`, `goto` FROM `alias`
                 WHERE `goto` REGEXP :username");
-            $stmt->execute(array(':username' => '(^|,)'.$username.'($|,)'));
+            $stmt->execute(array(':username' => '(^|,)'.preg_quote($username, '/').'($|,)'));
             $GotoData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($GotoData as $gotos) {
               $goto_exploded = explode(',', $gotos['goto']);

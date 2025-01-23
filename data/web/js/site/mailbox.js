@@ -179,9 +179,8 @@ $(document).ready(function() {
     // Get script_data textarea content from form the button was clicked in
     var script = $('textarea[name="script_data"]', $(this).parents('form:first')).val();
     $.ajax({
-      dataType: 'json',
       url: "/inc/ajax/sieve_validation.php",
-      type: "get",
+      type: "post",
       data: { script: script },
       complete: function(data) {
         var response = (data.responseText);
@@ -693,8 +692,8 @@ jQuery(function($){
             } else if (item.attributes.rl_frame === "d"){
               item.attributes.rl_frame = lang_rl.day;
             }
-            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
-
+            item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
+            item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
             if (item.template.toLowerCase() == "default"){
               item.action = '<div class="btn-group">' +
@@ -818,14 +817,8 @@ jQuery(function($){
           }
         },
         {
-          title: 'rl_frame',
-          data: 'attributes.rl_frame',
-          defaultContent: '',
-          class: 'none',
-        },
-        {
-          title: 'rl_value',
-          data: 'attributes.rl_value',
+          title: lang_edit.ratelimit,
+          data: 'attributes.ratelimit',
           defaultContent: '',
           class: 'none',
         },
@@ -894,7 +887,10 @@ jQuery(function($){
             item.quota.value = humanFileSize(item.quota_used) + "/" + item.quota.value;
 
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.last_mail_login = item.last_imap_login + '/' + item.last_pop3_login + '/' + item.last_smtp_login + '/' + item.last_sso_login;
+            item.last_mail_login = (item.attributes.imap_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(item.last_imap_login)) + '</div><br>' : '') +
+                                   (item.attributes.pop3_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(item.last_pop3_login)) + '</div><br>' : '') +
+                                   (item.attributes.smtp_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(item.last_smtp_login)) + '</div><br>' : '') +
+                                   '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(item.last_sso_login)) + '</div>';
             /*
             if (!item.rl) {
               item.rl = '∞';
@@ -1010,14 +1006,7 @@ jQuery(function($){
           data: 'last_mail_login',
           searchable: false,
           defaultContent: '',
-          responsivePriority: 7,
-          render: function (data, type) {
-            res = data.split("/");
-            return '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(res[0])) + '</div><br>' +
-              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(res[1])) + '</div><br>' +
-              '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(res[2])) + '</div><br>' +
-              '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(res[3])) + '</div>';
-          }
+          responsivePriority: 7
         },
         {
           title: lang.last_pw_change,
@@ -1183,7 +1172,8 @@ jQuery(function($){
             } else if (item.attributes.rl_frame === "d"){
               item.attributes.rl_frame = lang_rl.day;
             }
-            item.attributes.rl_value = escapeHtml(item.attributes.rl_value);
+            item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
+            item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
             item.attributes.quota = humanFileSize(item.attributes.quota);
 
@@ -1328,14 +1318,8 @@ jQuery(function($){
           }
         },
         {
-          title: "rl_frame",
-          data: 'attributes.rl_frame',
-          defaultContent: '',
-          class: 'none',
-        },
-        {
-          title: 'rl_value',
-          data: 'attributes.rl_value',
+          title: lang_edit.ratelimit,
+          data: 'attributes.ratelimit',
           defaultContent: '',
           class: 'none',
         },

@@ -26,7 +26,7 @@ for bin in openssl curl docker git awk sha1sum grep cut; do
 done
 
 # Check Docker Version (need at least 24.X)
-docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | cut -d '.' -f 1)
+docker_version=$(docker -v | grep -oP '\d+\.\d+\.\d+' | head -n 1 | cut -d '.' -f 1)
 
 if [[ $docker_version -lt 24 ]]; then
   echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
@@ -43,7 +43,7 @@ if docker compose > /dev/null 2>&1; then
       sleep 2
       echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
       exit 1
     fi
@@ -56,14 +56,14 @@ elif docker-compose > /dev/null 2>&1; then
       sleep 2
       echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
     else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m" 
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
       exit 1
     fi
   fi
 
 else
-  echo -e "\e[31mCannot find Docker Compose.\e[0m" 
+  echo -e "\e[31mCannot find Docker Compose.\e[0m"
   echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
   exit 1
 fi
@@ -175,28 +175,6 @@ if [ -z "${SKIP_CLAMD}" ]; then
   fi
 fi
 
-if [ -z "${SKIP_SOLR}" ]; then
-  if [ "${MEM_TOTAL}" -le "2097152" ]; then
-    echo "Disabling Solr on low-memory system."
-    SKIP_SOLR=y
-  elif [ "${MEM_TOTAL}" -le "3670016" ]; then
-    echo "Installed memory is <= 3.5 GiB. It is recommended to disable Solr to prevent out-of-memory situations."
-    echo "Solr is a prone to run OOM and should be monitored. The default Solr heap size is 1024 MiB and should be set in mailcow.conf according to your expected load."
-    echo "Solr can be re-enabled by setting SKIP_SOLR=n in mailcow.conf but will refuse to start with less than 2 GB total memory."
-    read -r -p  "Do you want to disable Solr now? [Y/n] " response
-    case $response in
-      [nN][oO]|[nN])
-        SKIP_SOLR=n
-        ;;
-      *)
-        SKIP_SOLR=y
-      ;;
-    esac
-  else
-    SKIP_SOLR=n
-  fi
-fi
-
 if [[ ${SKIP_BRANCH} != y ]]; then
   echo "Which branch of mailcow do you want to use?"
   echo ""
@@ -229,7 +207,7 @@ else
   echo -e "\033[31mCould not determine branch input..."
   echo -e "\033[31mExiting."
   exit 1
-fi  
+fi
 
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
@@ -263,6 +241,12 @@ DBUSER=mailcow
 
 DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
+
+# ------------------------------
+# REDIS configuration
+# ------------------------------
+
+REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
 # ------------------------------
 # HTTP/S Bindings
@@ -299,7 +283,6 @@ POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
-SOLR_PORT=127.0.0.1:18983
 REDIS_PORT=127.0.0.1:7654
 
 # Your timezone
@@ -396,14 +379,22 @@ SKIP_CLAMD=${SKIP_CLAMD}
 
 SKIP_SOGO=n
 
-# Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+# Skip FTS (Fulltext Search) for Dovecot on low-memory, low-threaded systems or if you simply want to disable it.
+# Dovecot inside mailcow use Flatcurve as FTS Backend.
 
-SKIP_SOLR=${SKIP_SOLR}
+SKIP_FTS=n
 
-# Solr heap size in MB, there is no recommendation, please see Solr docs.
-# Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+# Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.
+# Flatcurve (Xapian backend) is used as the FTS Indexer. It is supposed to be efficient in CPU and RAM consumption.
+# However: Please always monitor your Resource consumption!
 
-SOLR_HEAP=1024
+FTS_HEAP=128
+
+# Controls how many processes the Dovecot indexing process can spawn at max.
+# Too many indexing processes can use a lot of CPU and Disk I/O.
+# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
+
+FTS_PROCS=1
 
 # Allow admins to log into SOGo as email user (without any password)
 
@@ -510,7 +501,7 @@ WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 
 # Spamhaus Data Query Service Key
 # Optional: Leave empty for none
-# Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist. 
+# Enter your key here if you are using a blocked ASN (OVH, AWS, Cloudflare e.g) for the unregistered Spamhaus Blocklist.
 # If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.
 # Otherwise it will work normally.
 SPAMHAUS_DQS_KEY=
