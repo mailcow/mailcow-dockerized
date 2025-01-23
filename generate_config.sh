@@ -379,7 +379,7 @@ SKIP_CLAMD=${SKIP_CLAMD}
 
 SKIP_SOGO=n
 
-# Skip FTS (Fulltext Search) for Dovecot on low-memory systems or if you simply want to disable it.
+# Skip FTS (Fulltext Search) for Dovecot on low-memory, low-threaded systems or if you simply want to disable it.
 # Dovecot inside mailcow use Flatcurve as FTS Backend.
 
 SKIP_FTS=n
