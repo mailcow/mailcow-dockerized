@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "20112024_1105";
+    $db_version = "24012025_0923";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
