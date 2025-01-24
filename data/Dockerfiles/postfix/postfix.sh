@@ -395,7 +395,7 @@ EOF
 
 if [ ! -f /opt/postfix/conf/dns_blocklists.cf ]; then
   cat <<EOF > /opt/postfix/conf/dns_blocklists.cf
-# This file can be edited. 
+# This file can be edited.
 # Delete this file and restart postfix container to revert any changes.
 postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   hostkarma.junkemailfilter.com=127.0.0.1*-2
@@ -417,6 +417,9 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
 EOF
 fi
 DNSBL_CONFIG=$(grep -v '^#' /opt/postfix/conf/dns_blocklists.cf | grep '\S')
+
+# Remove discontinued Nixspam DNSBL from existing dns_blocklists.cf
+sed -i '/ix\.dnsbl\.manitu\.net\*2/d' /opt/postfix/conf/dns_blocklists.cf
 
 if [ ! -z "$DNSBL_CONFIG" ]; then
   echo -e "\e[33mChecking if ASN for your IP is listed for Spamhaus Bad ASN List...\e[0m"
