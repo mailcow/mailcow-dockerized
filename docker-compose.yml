@@ -389,6 +389,7 @@ services:
         - RSPAMDHOST=${RSPAMDHOST:-}
         - REDISHOST=${REDISHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - REDIRECT_HTTP=${REDIRECT_HTTP:-n}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z

@@ -44,10 +44,14 @@ http {
     # Default
     server {
         listen 127.0.0.1:65510; # sogo-auth verify internal
+        {% if not REDIRECT_HTTP %}
         listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         {% if not DISABLE_IPv6 %}
+        {% if not REDIRECT_HTTP %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         {%endif%}
         http2 on;
@@ -59,7 +63,28 @@ http {
 
         include /etc/nginx/includes/sites-default.conf;
     }
-
+    {% if REDIRECT_HTTP %}
+    server {
+       root /web;
+       listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+       {% if not DISABLE_IPv6 %}
+       listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+       {%endif%}
+       server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES }};
+       if ( $request_uri ~* "%0A|%0D" ) { return 403; }
+       location ^~ /.well-known/acme-challenge/ {
+           auth_basic off;
+           auth_request off;
+           allow all;
+           default_type "text/plain";
+           try_files $uri =404;
+       }
+       location / {
+           return 301 https://$host$uri$is_args$args;
+      }
+    }
+    {%endif%}
+    
     # rspamd dynmaps:
     server {
         listen 8081;
