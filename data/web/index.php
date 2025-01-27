@@ -1,18 +1,11 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.user.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
   $oauth2_request = $_SESSION['oauth2_request'];
   unset($_SESSION['oauth2_request']);
   header('Location: ' . $oauth2_request);
-  exit();
-}
-elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
-  header('Location: /debug');
-  exit();
-}
-elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-  header('Location: /mailbox');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
@@ -23,6 +16,14 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   } else {
     header("Location: /user");
   }
+  exit();
+}
+elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
+  header('Location: /admin/dashboard');
+  exit();
+}
+elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+  header('Location: /domainadmin/mailbox');
   exit();
 }
 
@@ -36,7 +37,7 @@ if ($iam_provider){
 }
 
 
-$template = 'index.twig';
+$template = 'user_index.twig';
 $template_data = [
   'oauth2_request' => @$_SESSION['oauth2_request'],
   'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
