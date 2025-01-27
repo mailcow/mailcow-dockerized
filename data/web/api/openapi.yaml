@@ -1531,6 +1531,9 @@ paths:
                 port1:
                   description: the smtp port of the target mail server
                   type: string
+                user1:
+                  description: the username of the mailbox
+                  type: string
                 password:
                   description: the password of the mailbox
                   type: string
@@ -5415,12 +5418,6 @@ paths:
                       started_at: "2019-12-22T20:59:58.382274592Z"
                       state: running
                       type: info
-                    solr-mailcow:
-                      container: solr-mailcow
-                      image: "mailcow/solr:1.7"
-                      started_at: "2019-12-22T20:59:59.635413798Z"
-                      state: running
-                      type: info
                     unbound-mailcow:
                       container: unbound-mailcow
                       image: "mailcow/unbound:1.10"
@@ -5442,30 +5439,6 @@ paths:
         hey where started and a few other details.
       operationId: Get container status
       summary: Get container status
-  /api/v1/get/status/solr:
-    get:
-      responses:
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "200":
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    solr_documents: null
-                    solr_enabled: false
-                    solr_size: null
-                    type: info
-          description: OK
-          headers: {}
-      tags:
-        - Status
-      description: >-
-        Using this endpoint you can get the status of all containers and when
-        hey where started and a few other details.
-      operationId: Get solr status
-      summary: Get solr status
   /api/v1/get/status/vmail:
     get:
       responses:

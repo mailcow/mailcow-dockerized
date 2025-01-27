@@ -93,6 +93,7 @@ $AVAILABLE_LANGUAGES = array(
   'gr-gr' => 'Ελληνικά (Greek)',
   'hu-hu' => 'Magyar (Hungarian)',
   'it-it' => 'Italiano (Italian)',
+  'ja-jp' => '日本語 (Japanese)',
   'ko-kr' => '한국어 (Korean)',
   'lv-lv' => 'latviešu (Latvian)',
   'lt-lt' => 'Lietuvių (Lithuanian)',
