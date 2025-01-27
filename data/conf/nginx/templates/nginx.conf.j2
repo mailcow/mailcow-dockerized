@@ -45,9 +45,11 @@ http {
     server {
         listen 127.0.0.1:65510; # sogo-auth verify internal
         listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
-        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        {% if not DISABLE_IPv6 %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        {%endif%}
         http2 on;
 
         ssl_certificate /etc/ssl/mail/cert.pem;
@@ -61,7 +63,9 @@ http {
     # rspamd dynmaps:
     server {
         listen 8081;
+        {% if not DISABLE_IPv6 %}
         listen [::]:8081;
+        {%endif%}
         index index.php index.html;
         server_name _;
         error_log  /var/log/nginx/error.log;
@@ -126,9 +130,11 @@ http {
     {% for cert in valid_cert_dirs %}
     server {
         listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
-        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        {% if not DISABLE_IPv6 %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        {%endif%}
         http2 on;
 
         ssl_certificate {{ cert.cert_path }}cert.pem;
@@ -139,4 +145,6 @@ http {
         include /etc/nginx/includes/sites-default.conf;
     }
     {% endfor %}
+
+    include /etc/nginx/conf.d/*.conf;
 }
