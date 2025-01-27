@@ -1,8 +1,17 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.admin.inc.php';
 
-if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != "admin") {
-  header('Location: /');
+if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+  header('Location: /domainadmin/mailbox');
+  exit();
+}
+elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
+  header('Location: /user');
+  exit();
+}
+elseif (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != "admin") {
+  header('Location: /admin');
   exit();
 }
 
@@ -15,7 +24,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
   $_SESSION['gal'] = json_decode($license_cache, true);
 }
 
-$js_minifier->add('/web/js/site/debug.js');
+$js_minifier->add('/web/js/site/dashboard.js');
 
 // vmail df
 $exec_fields = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
@@ -59,7 +68,7 @@ foreach ($containers_info as $container => $container_info) {
 $hostname = getenv('MAILCOW_HOSTNAME');
 $timezone = getenv('TZ');
 
-$template = 'debug.twig';
+$template = 'dashboard.twig';
 $template_data = [
   'log_lines' => getenv('LOG_LINES'),
   'vmail_df' => $vmail_df,

@@ -99,15 +99,30 @@ if (isset($_POST["logout"])) {
     unset($_SESSION['sogo-sso-user-allowed']);
     unset($_SESSION['sogo-sso-pass']);
     unset($_SESSION["dual-login"]);
-    header("Location: /mailbox");
+    if ($_SESSION["mailcow_cc_role"] == "admin"){
+      header("Location: /admin/mailbox");
+    } elseif ($_SESSION["mailcow_cc_role"] == "domainadmin") {
+      header("Location: /domainadmin/mailbox");
+    } else {
+      header("Location: /");
+    }
     exit();
   }
   else {
+    $role = $_SESSION["mailcow_cc_role"];
     session_regenerate_id(true);
     session_unset();
     session_destroy();
     session_write_close();
-    header("Location: /");
+    if ($role == "admin") {
+      header("Location: /admin");
+    }
+    elseif ($role == "domainadmin") {
+      header("Location: /domainadmin");
+    }
+    else {
+      header("Location: /");
+    }
   }
 }
 
