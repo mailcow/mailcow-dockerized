@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.admin.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
   header('Location: /admin/dashboard');
@@ -18,14 +19,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 
-if (isset($_GET['token'])) $is_reset_token_valid = reset_password("check", $_GET['token']);
-else $is_reset_token_valid = False;
 
-$template = 'reset-password.twig';
+$template = 'admin_index.twig';
 $template_data = [
-  'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
-  'is_reset_token_valid' => $is_reset_token_valid,
-  'reset_token' => $_GET['token']
+  'login_delay' => @$_SESSION['ldelay']
 ];
 
+$js_minifier->add('/web/js/site/index.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
