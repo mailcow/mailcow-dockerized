@@ -74,9 +74,6 @@ FROM alpine:3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
-EXPOSE 3310
-EXPOSE 7357
-
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
     tzdata \
