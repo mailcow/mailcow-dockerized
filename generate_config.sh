@@ -26,7 +26,7 @@ for bin in openssl curl docker git awk sha1sum grep cut; do
 done
 
 # Check Docker Version (need at least 24.X)
-docker_version=$(docker -v | grep -oE '\d+\.\d+\.\d+' | head -n 1 | cut -d '.' -f 1)
+docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
 
 if [[ $docker_version -lt 24 ]]; then
   echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
