@@ -27,11 +27,9 @@ RUN apk upgrade --no-cache \
     cargo \
     rust
 
-RUN mkdir -p /src \
-  && wget -P /src https://www.clamav.net/downloads/production/clamav-${CLAMD_VERSION}.tar.gz \
+RUN wget -P /src https://www.clamav.net/downloads/production/clamav-${CLAMD_VERSION}.tar.gz \
   && tar xzfv /src/clamav-${CLAMD_VERSION}.tar.gz \
   && cd /src/clamav-${CLAMD_VERSION} \
-  && mkdir build \
   && cmake . \
   -D CMAKE_BUILD_TYPE="Release"                                                       \
   -D CMAKE_INSTALL_PREFIX="/usr"                                                      \
