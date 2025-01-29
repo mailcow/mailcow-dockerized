@@ -638,6 +638,12 @@ adapt_new_options() {
         echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
         echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
       fi 
+    elif [[ ${option} == "REDIRECT_HTTP" ]]; then
+      if ! grep -q ${option} mailcow.conf; then
+        echo "Adding new option \"${option}\" to mailcow.conf"
+        echo '# Redirect HTTP connections to HTTPS - y/n' >> mailcow.conf
+        echo 'REDIRECT_HTTP=n' >> mailcow.conf
+      fi 
     elif ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=n" >> mailcow.conf
