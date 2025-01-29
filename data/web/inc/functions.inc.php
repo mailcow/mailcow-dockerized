@@ -2277,7 +2277,7 @@ function cors($action, $data = null) {
 }
 function getBaseURL() {
   $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-  $host = $_SERVER['HTTP_HOST'];
+  $host = $_SERVER['SERVER_NAME'];
   $base_url = $protocol . '://' . $host;
 
   return $base_url;
