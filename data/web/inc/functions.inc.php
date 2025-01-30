@@ -2275,9 +2275,25 @@ function cors($action, $data = null) {
     break;
   }
 }
-function getBaseURL() {
-  $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-  $host = $_SERVER['SERVER_NAME'];
+function getBaseURL($protocol = null) {
+  // Get current server name
+  $host = strtolower($_SERVER['SERVER_NAME']);
+
+  // craft allowed server name list
+  $mailcow_hostname = strtolower(getenv("MAILCOW_HOSTNAME"));
+  $additional_server_names = strtolower(getenv("ADDITIONAL_SERVER_NAMES")) ?: "";
+  $additional_server_names = preg_replace('/\s+/', '', $additional_server_names);
+  $allowed_server_names = $additional_server_names !== "" ? explode(',', $additional_server_names) : array();
+  array_push($allowed_server_names, $mailcow_hostname);
+
+  // Fallback to MAILCOW HOSTNAME if current server name is not in allowed list
+  if (!in_array($host, $allowed_server_names)) {
+    $host = $mailcow_hostname;
+  }
+
+  if (!isset($protocol)) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+  }
   $base_url = $protocol . '://' . $host;
 
   return $base_url;
