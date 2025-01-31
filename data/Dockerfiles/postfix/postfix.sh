@@ -509,6 +509,11 @@ chgrp -R postdrop /var/spool/postfix/public
 chgrp -R postdrop /var/spool/postfix/maildrop
 postfix set-permissions
 
+# Checking if there is a leftover of a crashed postfix container before starting a new one
+if [ -e /var/spool/postfix/pid/master.pid ]; then
+  rm -rf /var/spool/postfix/pid/master.pid
+fi
+
 # Check Postfix configuration
 postconf -c /opt/postfix/conf > /dev/null
 
