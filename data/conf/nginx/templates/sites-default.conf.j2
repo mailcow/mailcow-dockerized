@@ -137,13 +137,22 @@ location ~ /(?:m|M)ail/(?:c|C)onfig-v1.1.xml {
 
 {% if not SKIP_RSPAMD %}
 location /rspamd/ {
+    location /rspamd/auth {
+      # proxy_pass is not inherited
+      proxy_pass       http://{{ RSPAMDHOST }}:11334/auth;
+      proxy_intercept_errors on;
+      proxy_set_header Host      $http_host;
+      proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
+      proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
+      proxy_redirect off;
+      error_page 401 /_rspamderror.php;
+    }
+
     proxy_pass       http://{{ RSPAMDHOST }}:11334/;
     proxy_set_header Host      $http_host;
     proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
     proxy_redirect off;
-    proxy_intercept_errors on;
-    error_page 401 /_rspamderror.php;
 }
 {% endif %}
 
