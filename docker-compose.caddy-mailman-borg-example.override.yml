@@ -1,0 +1,141 @@
+services:
+  postfix-mailcow:
+    volumes:
+      - ./data/conf/mailman:/opt/mailman:Z
+  mailman-core:
+    # image: maxking/mailman-core:0.4 # Use a specific version tag (tag latest is not published)
+    image: ghcr.io/midzelis/mailman-core:rolling # custom build of dockerfile for aarch64, see https://github.com/maxking/docker-mailman/pull/741
+    hostname: mailman-core
+    restart: always
+    volumes:
+      - ./data/conf/mailman/core:/opt/mailman/
+    stop_grace_period: 30s
+    depends_on:
+      mailman-database:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://${MAILMAN_DB_USER}:${MAILMAN_DB_PASS}@mailman-database/${MAILMAN_DB_NAME}
+      - DATABASE_TYPE=postgres
+      - DATABASE_CLASS=mailman.database.postgresql.PostgreSQLDatabase
+      - HYPERKITTY_API_KEY=${HYPERKITTY_API_KEY}
+      - MTA=postfix
+    networks:
+      mailcow-network:
+        aliases:
+          - mailman-core
+
+  mailman-web:
+    # image: maxking/mailman-core:0.4 # Use a specific version tag (tag latest is not published)
+    image: ghcr.io/midzelis/mailman-web:rolling  # custom build of dockerfile for aarch64, see https://github.com/maxking/docker-mailman/pull/741
+    hostname: mailman-web
+    restart: always
+    depends_on:
+      mailman-database:
+        condition: service_healthy
+    volumes:
+      - ./data/conf/mailman/web/settings_local.py:/opt/mailman-web/settings_local.py
+      - mailman-web-vol-1:/opt/mailman-web-data:Z
+    environment:
+      - DATABASE_TYPE=postgres
+      - DATABASE_URL=postgresql://${MAILMAN_DB_USER}:${MAILMAN_DB_PASS}@mailman-database/${MAILMAN_DB_NAME}
+      - HYPERKITTY_API_KEY=${HYPERKITTY_API_KEY}
+      - SECRET_KEY=${DJANGO_KEY}
+      - SERVE_FROM_DOMAIN=${MAILMAN_DOMAIN}
+    networks:
+      mailcow-network:
+        aliases:
+          - mailman-web
+
+  mailman-database:
+    environment:
+      - POSTGRES_DB=${MAILMAN_DB_NAME}
+      - POSTGRES_USER=${MAILMAN_DB_USER}
+      - POSTGRES_PASSWORD=${MAILMAN_DB_PASS}
+    image: postgres:12-alpine
+    volumes:
+      - postgresql-vol-1:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname ${MAILMAN_DB_NAME} --username ${MAILMAN_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      mailcow-network:
+        aliases:
+          - mailman
+  
+  # borgmatic configuration
+  borgmatic-mailcow:
+    image: ghcr.io/borgmatic-collective/borgmatic
+    hostname: mailcow
+    restart: always
+    dns: ${IPV4_NETWORK:-172.22.1}.254
+    volumes:
+      - vmail-vol-1:/mnt/source/vmail:ro
+      - crypt-vol-1:/mnt/source/crypt:ro
+      - redis-vol-1:/mnt/source/redis:ro
+      - rspamd-vol-1:/mnt/source/rspamd:ro
+      - postfix-vol-1:/mnt/source/postfix:ro
+      - borg-config-vol-1:/root/.config/borg
+      - borg-cache-vol-1:/root/.cache/borg
+      - ./data/conf/borgmatic/etc:/etc/borgmatic.d:Z
+      - ./data/conf/borgmatic/ssh:/root/.ssh:Z
+      # also backup docker-mailman configuration
+      - .:/mnt/source/docker-mailman:ro
+    environment:
+      - TZ=${TZ}
+      - BORG_PASSPHRASE=${BORG_PASSPHRASE}
+      - MAILCOW_DBNAME=${DBNAME}
+      - MAILCOW_DBUSER=${DBUSER}
+      - MAILCOW_DBPASS=${DBPASS}
+      - MAILCOW_DBHOST=mysql-mailcow
+      - MAILMAN_DB_NAME=${MAILMAN_DB_NAME}
+      - MAILMAN_DB_USER=${MAILMAN_DB_USER}
+      - MAILMAN_DB_PASS=${MAILMAN_DB_PASS}
+      - MAILMAN_DB_HOST=mailman-database
+    networks:
+      mailcow-network:
+        aliases:
+          - borgmatic
+  nginx-mailcow:
+    depends_on:
+      - redis-mailcow
+      - php-fpm-mailcow
+      - sogo-mailcow
+      - rspamd-mailcow
+      - caddy
+  
+  # caddy reverse proxy
+  caddy:
+    build:
+      dockerfile: ./data/Dockerfiles/caddy/Dockerfile
+    hostname: caddy
+    restart: always
+    dns: ${IPV4_NETWORK:-172.22.1}.254
+    volumes:
+      - ./data/conf/caddy/etc:/etc/caddy:Z
+      - ./data/conf/caddy/data:/data
+      - ./data/conf/caddy/bin/reload.sh:/bin/reload.sh
+      - ./data/assets/ssl:/shared/ssl:Z
+      - mailman-web-vol-1:/opt/mailman-web-data:Z
+    ports:
+        - "${CADDY_BIND:-}:${CADDY_HTTPS_PORT:-443}:${CADDY_HTTPS_PORT:-443}"
+        - "${CADDY_BIND:-}:${CADDY_HTTP_PORT:-80}:${CADDY_HTTP_PORT:-80}"
+    environment:
+        - HTTPS_PORT=${HTTPS_PORT:-443}
+        - HTTP_PORT=${HTTP_PORT:-80}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - MAILMAN_DOMAIN=${MAILMAN_DOMAIN}
+        - CADDY_BIND=${CADDY_BIND}
+        - CADDY_HTTP_PORT=${CADDY_HTTP_PORT}
+        - CADDY_HTTPS_PORT=${CADDY_HTTPS_PORT}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+    networks:
+      mailcow-network:
+        aliases:
+          - caddy
+volumes:
+  borg-cache-vol-1:
+  borg-config-vol-1:
+  postgresql-vol-1:
+  mailman-web-vol-1:

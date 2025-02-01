@@ -1,0 +1,74 @@
+{
+	acme_ca https://acme-v02.api.letsencrypt.org/directory
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory # for staging
+
+	default_bind {$CADDY_BIND}
+	http_port {$CADDY_HTTP_PORT}
+	https_port {$CADDY_HTTPS_PORT}
+
+	# debug 
+
+	events {
+		# this will automatically reload docker containers on cert issuance
+		on cert_obtained exec /bin/reload.sh {event.data.identifier} {event.data.certificate_path} {event.data.private_key_path}
+	}
+
+	log {
+		format console
+		output file /var/log/caddy/system.log {
+			roll_disabled
+			roll_size 512M
+			roll_uncompressed
+			roll_local_time
+			roll_keep 3
+			roll_keep_for 48h
+		}
+	}
+}
+
+{$MAILCOW_HOSTNAME} autodiscover.{$MAILCOW_HOSTNAME} autoconfig.{$MAILCOW_HOSTNAME} {
+	log {
+		format console
+		output file /var/log/caddy/{$MAILCOW_HOSTNAME}.log {
+			roll_disabled
+			roll_size 512M
+			roll_uncompressed
+			roll_local_time
+			roll_keep 3
+			roll_keep_for 48h
+		}
+	}
+
+	reverse_proxy nginx-mailcow:{$HTTPS_PORT} {
+		transport http {
+			tls
+			tls_insecure_skip_verify
+		}
+	}
+}
+
+{$MAILMAN_DOMAIN} {
+	log {
+		format console
+		output file /var/log/caddy/{$MAILMAN_DOMAIN}.log {
+			roll_disabled
+			roll_size 512M
+			roll_uncompressed
+			roll_local_time
+			roll_keep 3
+			roll_keep_for 48h
+		}
+	}
+	handle /static/* {
+		root /opt/mailman-web-data
+		file_server {
+			browse
+		}
+	}
+
+	handle {
+		reverse_proxy mailman-web:8080 {
+			transport uwsgi
+		}
+	}
+}
