@@ -58,6 +58,7 @@ def prepare_template_vars():
     'RSPAMDHOST': os.getenv("RSPAMDHOST", "rspamd-mailcow"),
     'PHPFPMHOST': os.getenv("PHPFPMHOST", "php-fpm-mailcow"),
     'DISABLE_IPv6': os.getenv("DISABLE_IPv6", "n").lower() in ("y", "yes"),
+    'HTTP_REDIRECT': os.getenv("HTTP_REDIRECT", "n").lower() in ("y", "yes"),
   }
 
   ssl_dir = '/etc/ssl/mail/'
