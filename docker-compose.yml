@@ -174,6 +174,7 @@ services:
         - DEMO_MODE=${DEMO_MODE:-n}
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
+        - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
       restart: always
       networks:
         mailcow-network:
@@ -372,7 +373,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: mailcow/nginx:1.01
+      image: mailcow/nginx:1.02
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
