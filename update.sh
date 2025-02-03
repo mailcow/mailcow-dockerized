@@ -352,6 +352,7 @@ adapt_new_options() {
   "SPAMHAUS_DQS_KEY"
   "SKIP_UNBOUND_HEALTHCHECK"
   "DISABLE_NETFILTER_ISOLATION_RULE"
+  "HTTP_REDIRECT"
   )
 
   sed -i --follow-symlinks '$a\' mailcow.conf
@@ -637,7 +638,13 @@ adapt_new_options() {
         echo '# Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n' >> mailcow.conf
         echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
         echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
-      fi 
+      fi
+    elif [[ ${option} == "HTTP_REDIRECT" ]]; then
+      if ! grep -q ${option} mailcow.conf; then
+        echo "Adding new option \"${option}\" to mailcow.conf"
+        echo '# Redirect HTTP connections to HTTPS - y/n' >> mailcow.conf
+        echo 'HTTP_REDIRECT=n' >> mailcow.conf
+      fi
     elif ! grep -q ${option} mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo "${option}=n" >> mailcow.conf
