@@ -1,0 +1,35 @@
+source_directories:
+    - /mnt/source/vmail
+    - /mnt/source/crypt
+    - /mnt/source/redis
+    - /mnt/source/rspamd
+    - /mnt/source/postfix
+    - /mnt/source/docker-mailman
+repositories:
+    - path: ssh://root@example.org/./mailcow
+      label: backup1
+exclude_patterns:
+    - '/mnt/source/postfix/public/'
+    - '/mnt/source/postfix/private/'
+    - '/mnt/source/rspamd/rspamd.sock'
+
+keep_hourly: 24
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+
+mariadb_databases:
+    - name: ${MAILCOW_DBNAME}
+      hostname: ${MAILCOW_DBHOST}
+      username: ${MAILCOW_DBUSER}
+      password: ${MAILCOW_DBPASS}
+      options: "--default-character-set=utf8mb4 --skip-ssl"
+      list_options: "--skip-ssl"
+      restore_options: "--skip-ssl"
+
+postgresql_databases:
+    - name: ${MAILMAN_DB_NAME}
+      hostname: ${MAILMAN_DB_HOST}
+      username: ${MAILMAN_DB_USER}
+      password: ${MAILMAN_DB_PASS}
+
