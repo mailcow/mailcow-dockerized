@@ -51,7 +51,7 @@ def prepare_template_vars():
     'SKIP_SOGO': os.getenv("SKIP_SOGO", "n").lower() in ("y", "yes"),
     'NGINX_USE_PROXY_PROTOCOL': os.getenv("NGINX_USE_PROXY_PROTOCOL", "n").lower() in ("y", "yes"),
     'MAILCOW_HOSTNAME': os.getenv("MAILCOW_HOSTNAME", ""),
-    'ADDITIONAL_SERVER_NAMES': [item.strip() for item in additional_server_names.split(",")],
+    'ADDITIONAL_SERVER_NAMES': [item.strip() for item in additional_server_names.split(",") if item.strip()],
     'HTTP_PORT': os.getenv("HTTP_PORT", "80"),
     'HTTPS_PORT': os.getenv("HTTPS_PORT", "443"),
     'SOGOHOST': os.getenv("SOGOHOST", ipv4_network + ".248"),
