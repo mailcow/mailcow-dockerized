@@ -41,24 +41,79 @@ http {
         https https;
     }
 
-    # Default
+    {% if HTTP_REDIRECT %}
+    # HTTP to HTTPS redirect
+    server {
+        root /web;
+        listen {{ HTTP_PORT }} default_server;
+        listen [::]:{{ HTTP_PORT }} default_server;
+
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
+
+        if ( $request_uri ~* "%0A|%0D" ) { return 403; }
+        location ^~ /.well-known/acme-challenge/ {
+            allow all;
+            default_type "text/plain";
+        }
+        location / {
+            return 301 https://$host$uri$is_args$args;
+        }
+    }
+    {%endif%}
+
+    # Default Server Name
     server {
         listen 127.0.0.1:65510; # sogo-auth verify internal
+
+        {% if not HTTP_REDIRECT %}
         listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+
         {% if not DISABLE_IPv6 %}
+        {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         {%endif%}
+
         http2 on;
 
         ssl_certificate /etc/ssl/mail/cert.pem;
         ssl_certificate_key /etc/ssl/mail/key.pem;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES }};
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.*;
 
         include /etc/nginx/includes/sites-default.conf;
     }
+
+    # Additional Server Names
+    {% for SERVER_NAME in ADDITIONAL_SERVER_NAMES %}
+    server {
+        listen 127.0.0.1:65510; # sogo-auth verify internal
+
+        {% if not HTTP_REDIRECT %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+
+        {% if not DISABLE_IPv6 %}
+        {% if not HTTP_REDIRECT %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        {%endif%}
+
+        http2 on;
+
+        ssl_certificate /etc/ssl/mail/cert.pem;
+        ssl_certificate_key /etc/ssl/mail/key.pem;
+
+        server_name {{ SERVER_NAME }};
+
+        include /etc/nginx/includes/sites-default.conf;
+    }
+    {% endfor %}
 
     # rspamd dynmaps:
     server {
@@ -106,12 +161,18 @@ http {
 
     {% for cert in valid_cert_dirs %}
     server {
+        {% if not HTTP_REDIRECT %}
         listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+
         {% if not DISABLE_IPv6 %}
+        {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {%endif%}
         listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
         {%endif%}
+
         http2 on;
 
         ssl_certificate {{ cert.cert_path }}cert.pem;
