@@ -91,6 +91,7 @@ done
 ) &
 BACKGROUND_TASKS+=($!)
 
+echo "$(clamd -V) is starting... please wait a moment."
 nice -n10 clamd &
 BACKGROUND_TASKS+=($!)
 
