@@ -2337,12 +2337,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       switch ($_data['authsource']) {
         case 'keycloak':
-        case 'generic-oidc':
-          if ($_data['authsource'] == 'keycloak') {
-            $url = "{$_data['server_url']}/realms/{$_data['realm']}/protocol/openid-connect/token";
-          } else {
-            $url = $_data['token_url'];
-          }
+          $url = "{$_data['server_url']}/realms/{$_data['realm']}/protocol/openid-connect/token";
           $req = http_build_query(array(
             'grant_type'    => 'client_credentials',
             'client_id'     => $_data['client_id'],
@@ -2355,6 +2350,29 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
           curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+          if ($_data['ignore_ssl_error'] == "1"){
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+          }
+          $res = curl_exec($curl);
+          $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+          curl_close ($curl);
+
+          if ($code != 200) {
+            return false;
+          }
+        break;
+        case 'generic-oidc':
+          $url = $_data['token_url'];
+          $curl = curl_init();
+          curl_setopt($curl, CURLOPT_URL, $url);
+          curl_setopt($curl, CURLOPT_TIMEOUT, 7);
+          curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+          if ($_data['ignore_ssl_error'] == "1"){
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+          }
           $res = curl_exec($curl);
           $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
           curl_close ($curl);
