@@ -1114,6 +1114,7 @@
         "forwarding_host_removed": "Weiterleitungs-Host %s wurde entfernt",
         "global_filter_written": "Filterdatei wurde erfolgreich geschrieben",
         "hash_deleted": "Hash wurde gelöscht",
+        "iam_test_connection": "Verbindung erfolgreich",
         "ip_check_opt_in_modified": "IP Check wurde erfolgreich gespeichert",
         "item_deleted": "Objekt %s wurde entfernt",
         "item_released": "Objekt %s freigegeben",
