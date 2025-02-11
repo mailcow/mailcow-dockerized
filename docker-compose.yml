@@ -43,7 +43,7 @@ services:
 
     redis-mailcow:
       image: redis:7-alpine
-      entrypoint: /redis-conf.sh
+      entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
         - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
@@ -230,7 +230,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:2.3
+      image: mailcow/dovecot:2.31
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
