@@ -12,7 +12,7 @@ jobs:
       - name: Send message
         uses: thollander/actions-comment-pull-request@v3.0.1
         with:
-          GITHUB_TOKEN: ${{ secrets.CHECKIFPRISSTAGING_ACTION_PAT }}
+          github-token: ${{ secrets.CHECKIFPRISSTAGING_ACTION_PAT }}
           message: |
                    Thanks for contributing!
 
