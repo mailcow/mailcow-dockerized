@@ -182,7 +182,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.128
+      image: mailcow/sogo:1.129
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
