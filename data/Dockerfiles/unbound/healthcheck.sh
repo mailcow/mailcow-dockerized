@@ -50,7 +50,7 @@ local failures=0
 for domain in "${domains[@]}" ; do
     success=false
     for ((i=1; i<=3; i++)); do
-        dig_output=$(dig +short +timeout=2 +tries=1 "$domain" @127.0.0.1 2>/dev/null)
+        dig_output=$(dig +short +timeout=2 +tries=1 "$domain" @127.0.0.11 2>/dev/null)
         dig_rc=$?
 
         if [ $dig_rc -ne 0 ] || [ -z "$dig_output" ]; then
