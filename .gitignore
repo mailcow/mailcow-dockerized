@@ -52,7 +52,6 @@ data/gitea/
 data/gogs/
 data/hooks/dovecot/*
 data/hooks/phpfpm/*
-data/hooks/postfix/*
 data/hooks/rspamd/*
 data/hooks/sogo/*
 data/hooks/unbound/*
