@@ -416,10 +416,11 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   bl.mailspike.net=127.0.0.[10;11;12]*4
 EOF
 fi
-DNSBL_CONFIG=$(grep -v '^#' /opt/postfix/conf/dns_blocklists.cf | grep '\S')
 
-# Remove discontinued Nixspam DNSBL from existing dns_blocklists.cf
-sed -i '/ix\.dnsbl\.manitu\.net\*2/d' /opt/postfix/conf/dns_blocklists.cf
+# Remove discontinued DNSBLs from existing dns_blocklists.cf
+sed -i '/ix\.dnsbl\.manitu\.net\*2/d' /opt/postfix/conf/dns_blocklists.cf # Nixspam
+
+DNSBL_CONFIG=$(grep -v '^#' /opt/postfix/conf/dns_blocklists.cf | grep '\S')
 
 if [ ! -z "$DNSBL_CONFIG" ]; then
   echo -e "\e[33mChecking if ASN for your IP is listed for Spamhaus Bad ASN List...\e[0m"
