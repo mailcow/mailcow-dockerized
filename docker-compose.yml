@@ -376,7 +376,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: mailcow/nginx:1.02
+      image: mailcow/nginx:1.03
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -394,6 +394,8 @@ services:
         - RSPAMDHOST=${RSPAMDHOST:-}
         - REDISHOST=${REDISHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
+        - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z

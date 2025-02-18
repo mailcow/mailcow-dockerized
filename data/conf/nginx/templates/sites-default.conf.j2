@@ -52,10 +52,12 @@ set_real_ip_from 10.0.0.0/8;
 set_real_ip_from 172.16.0.0/12;
 set_real_ip_from 192.168.0.0/16;
 set_real_ip_from fc00::/7;
-{% if not TRUSTED_NETWORK %}
+{% for TRUSTED_PROXY in TRUSTED_PROXIES %}
+set_real_ip_from {{ TRUSTED_PROXY }};
+{% endfor %}
+{% if not NGINX_USE_PROXY_PROTOCOL %}
 real_ip_header X-Forwarded-For;
 {% else %}
-set_real_ip_from {{ TRUSTED_NETWORK }};
 real_ip_header proxy_protocol;
 {% endif %}
 real_ip_recursive on;

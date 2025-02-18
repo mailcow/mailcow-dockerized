@@ -43,10 +43,11 @@ def nginx_conf(env, template_vars):
 def prepare_template_vars():
   ipv4_network = os.getenv("IPV4_NETWORK", "172.22.1")
   additional_server_names = os.getenv("ADDITIONAL_SERVER_NAMES", "")
+  trusted_proxies = os.getenv("TRUSTED_PROXIES", "")
 
   template_vars = {
     'IPV4_NETWORK': ipv4_network,
-    'TRUSTED_NETWORK': os.getenv("TRUSTED_NETWORK", False),
+    'TRUSTED_PROXIES': [item.strip() for item in trusted_proxies.split(",") if item.strip()],
     'SKIP_RSPAMD': os.getenv("SKIP_RSPAMD", "n").lower() in ("y", "yes"),
     'SKIP_SOGO': os.getenv("SKIP_SOGO", "n").lower() in ("y", "yes"),
     'NGINX_USE_PROXY_PROTOCOL': os.getenv("NGINX_USE_PROXY_PROTOCOL", "n").lower() in ("y", "yes"),
