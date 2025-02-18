@@ -55,6 +55,7 @@ services:
       environment:
         - TZ=${TZ}
         - REDISPASS=${REDISPASS}
+        - REDISMASTERPASS=${REDISMASTERPASS:-}
       sysctls:
         - net.core.somaxconn=4096
       networks:
