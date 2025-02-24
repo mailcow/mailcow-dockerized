@@ -23,7 +23,7 @@ else:
 
 while True:
   try:
-    r = redis.StrictRedis(host='redis', decode_responses=True, port=6379, db=0, password=os.environ['REDISPASS'])
+    r = redis.StrictRedis(host='redis', decode_responses=True, port=6379, db=0, username='quota_notify', password='')
     r.ping()
   except Exception as ex:
     print('%s - trying again...'  % (ex))
