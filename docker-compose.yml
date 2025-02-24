@@ -457,7 +457,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.60
+      image: mailcow/netfilter:1.61
       stop_grace_period: 30s
       restart: always
       privileged: true
