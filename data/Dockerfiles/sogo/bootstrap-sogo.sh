@@ -140,8 +140,8 @@ if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox 
   patch -R /usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox < /navMailcowBtns.diff;
 fi
 
-# Copy logo, if any
-[[ -f /etc/sogo/sogo-full.svg ]] && cp /etc/sogo/sogo-full.svg /usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg
+# Rename custom logo, if any
+[[ -f /etc/sogo/sogo-full.svg ]] && mv /etc/sogo/sogo-full.svg /etc/sogo/custom-fulllogo.svg
 
 # Rsync web content
 echo "Syncing web content with named volume"

@@ -75,7 +75,12 @@ elseif (isset($_GET['login'])) {
 // only check for admin-login on sogo GUI requests
 elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
-  session_start();
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
+  if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
+  }
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
+
   // extract email address from "/SOGo/so/user@domain/xy"
   $url_parts = explode("/", $_SERVER['HTTP_X_ORIGINAL_URI']);
   $email_list = array(
