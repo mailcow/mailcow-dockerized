@@ -270,6 +270,9 @@ function recipient_map($_action, $_data = null, $attr = null) {
         $old_dest = substr($old_dest, 1);
       }
       $new_dest = strtolower(trim($_data['recipient_map_new']));
+      if (substr($new_dest, 0, 1) == '@') {
+        $new_dest = substr($new_dest, 1);
+      }
       $active = intval($_data['active']);
       if (is_valid_domain_name($old_dest)) {
         $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
@@ -331,6 +334,9 @@ function recipient_map($_action, $_data = null, $attr = null) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
           $new_dest = (!empty($_data['recipient_map_new'])) ? $_data['recipient_map_new'] : $is_now['recipient_map_new'];
           $old_dest = (!empty($_data['recipient_map_old'])) ? $_data['recipient_map_old'] : $is_now['recipient_map_old'];
+          if (substr($new_dest, 0, 1) == '@') {
+            $new_dest = substr($new_dest, 1);
+          }
           if (substr($old_dest, 0, 1) == '@') {
             $old_dest = substr($old_dest, 1);
           }
