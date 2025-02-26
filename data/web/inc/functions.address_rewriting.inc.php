@@ -270,6 +270,9 @@ function recipient_map($_action, $_data = null, $attr = null) {
         $old_dest = substr($old_dest, 1);
       }
       $new_dest = strtolower(trim($_data['recipient_map_new']));
+      if (substr($new_dest, 0, 1) == '@') {
+        $new_dest = substr($new_dest, 1);
+      }
       $active = intval($_data['active']);
       if (is_valid_domain_name($old_dest)) {
         $old_dest_sane = '@' . idn_to_ascii($old_dest, 0, INTL_IDNA_VARIANT_UTS46);
@@ -285,7 +288,13 @@ function recipient_map($_action, $_data = null, $attr = null) {
         );
         return false;
       }
-      if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+      if (is_valid_domain_name($new_dest)) {
+        $new_dest_sane = '@' . idn_to_ascii($new_dest, 0, INTL_IDNA_VARIANT_UTS46);
+      }
+      elseif (filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+        $new_dest_sane = $new_dest;
+      }
+      else {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -308,7 +317,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
         (:old_dest, :new_dest, :active)");
       $stmt->execute(array(
         ':old_dest' => $old_dest_sane,
-        ':new_dest' => $new_dest,
+        ':new_dest' => $new_dest_sane,
         ':active' => $active
       ));
       $_SESSION['return'][] = array(
@@ -325,6 +334,9 @@ function recipient_map($_action, $_data = null, $attr = null) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
           $new_dest = (!empty($_data['recipient_map_new'])) ? $_data['recipient_map_new'] : $is_now['recipient_map_new'];
           $old_dest = (!empty($_data['recipient_map_old'])) ? $_data['recipient_map_old'] : $is_now['recipient_map_old'];
+          if (substr($new_dest, 0, 1) == '@') {
+            $new_dest = substr($new_dest, 1);
+          }
           if (substr($old_dest, 0, 1) == '@') {
             $old_dest = substr($old_dest, 1);
           }
@@ -351,7 +363,13 @@ function recipient_map($_action, $_data = null, $attr = null) {
           );
           continue;
         }
-        if (!filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+        if (is_valid_domain_name($new_dest)) {
+          $new_dest_sane = '@' . idn_to_ascii($new_dest, 0, INTL_IDNA_VARIANT_UTS46);
+        }
+        elseif (filter_var($new_dest, FILTER_VALIDATE_EMAIL)) {
+          $new_dest_sane = $new_dest;
+        }
+        else {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data, $_attr),
@@ -378,7 +396,7 @@ function recipient_map($_action, $_data = null, $attr = null) {
             WHERE `id`= :id");
         $stmt->execute(array(
           ':old_dest' => $old_dest_sane,
-          ':new_dest' => $new_dest,
+          ':new_dest' => $new_dest_sane,
           ':active' => $active,
           ':id' => $id
         ));

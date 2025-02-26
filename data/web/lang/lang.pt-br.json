@@ -882,7 +882,7 @@
         "recipient_map": "Mapa do destinatário",
         "recipient_map_info": "Os mapas de destinatários são usados para substituir o endereço de destino em uma mensagem antes que ela seja entregue.",
         "recipient_map_new": "Novo destinatário",
-        "recipient_map_new_info": "O destino do mapa do destinatário deve ser um endereço de e-mail válido.",
+        "recipient_map_new_info": "O destino do mapa do destinatário deve ser um endereço de e-mail válido ou um nome de domínio.",
         "recipient_map_old": "Destinatário original",
         "recipient_map_old_info": "O destino original do mapa de um destinatário deve ser um endereço de e-mail válido ou um nome de domínio.",
         "recipient_maps": "Mapas de destinatários",

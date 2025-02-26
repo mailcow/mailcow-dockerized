@@ -167,6 +167,9 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         if (substr($result['recipient_map_old'], 0, 1) == '@') {
           $result['recipient_map_old'] = substr($result['recipient_map_old'], 1);
         }
+        if (substr($result['recipient_map_new'], 0, 1) == '@') {
+          $result['recipient_map_new'] = substr($result['recipient_map_new'], 1);
+        }
         $template = 'edit/recipient_map.twig';
         $template_data = ['map' => $map];
     }

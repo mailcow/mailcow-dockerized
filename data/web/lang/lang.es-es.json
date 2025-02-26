@@ -544,7 +544,7 @@
         "recipient_map": "Regla de destinatario",
         "recipient_map_info": "Las reglas de destinatarios se utilizan para reemplazar la dirección de destino en un mensaje antes de que se entregue.",
         "recipient_map_new": "Destinatario nuevo",
-        "recipient_map_new_info": "El destino de la regla debe ser una dirección de correo válida.",
+        "recipient_map_new_info": "El destino de la regla debe ser una dirección de correo electrónico válida o un nombre de dominio.",
         "recipient_map_old": "Destinatario original",
         "recipient_map_old_info": "El destino original de una regla de destinatario debe ser una dirección de correo electrónico válida o un nombre de dominio.",
         "recipient_maps": "Reglas de destinatario",

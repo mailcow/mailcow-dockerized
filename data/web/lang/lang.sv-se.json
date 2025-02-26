@@ -726,7 +726,7 @@
         "recipient_map": "Mottagaromskrivning",
         "recipient_map_info": "En omskrivning av mottagaradressen används för att ersätta destinationsadressen i ett meddelande innan den levereras.",
         "recipient_map_new": "Ny mottagare",
-        "recipient_map_new_info": "Den ursprungliga mottagaren måste vara en giltig e-postadress.",
+        "recipient_map_new_info": "Den ursprungliga mottagaren måste vara en giltiga e-postadresser eller ett domännamn.",
         "recipient_map_old": "Ursprunglig mottagaren",
         "recipient_map_old_info": "Den ursprungliga mottagaren måste vara en giltiga e-postadresser eller ett domännamn.",
         "recipient_maps": "Skriv om mottagaradressen",

@@ -607,7 +607,7 @@
         "recipient_map": "Vastaanottajien yhdistämis määritykset",
         "recipient_map_info": "Vastaanottajan karttoja käytetään korvaamaan viestin kohde osoite ennen sen toimittamista.",
         "recipient_map_new": "Uusi vastaanottaja",
-        "recipient_map_new_info": "Vastaanottajan yhdistämis kartan kohteen on oltava kelvollinen sähköposti osoite.",
+        "recipient_map_new_info": "Vastaanottajan yhdistämis kartan kohteen on oltava kelvollinen sähköposti osoite tai verkkotunnus alueen nimi.",
         "recipient_map_old": "Alkuperäinen vastaanottaja",
         "recipient_map_old_info": "Vastaanottajan yhdistämis määritysten alkuperäisen kohteen on oltava kelvollinen sähköposti osoite tai verkkotunnus alueen nimi.",
         "recipient_maps": "Vastaanottajien yhdistämis määritykset",

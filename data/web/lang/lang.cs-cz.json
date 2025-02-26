@@ -869,7 +869,7 @@
         "recipient_map": "Mapa příjemce",
         "recipient_map_info": "Mapy příjemců slouží k nahrazení cílové adresy zprávy před doručením.",
         "recipient_map_new": "Nový přijemce",
-        "recipient_map_new_info": "Cílová adresa mapy příjemce musí být platná emailová adresa.",
+        "recipient_map_new_info": "Cílová adresa mapy příjemce musí být emailová adresa nebo název domény.",
         "recipient_map_old": "Původní příjemce",
         "recipient_map_old_info": "Původní příjemce musí být platná emailová adresa nebo název domény.",
         "recipient_maps": "Mapy příjemců",
