@@ -185,7 +185,7 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it's number [1/2] " branch
+    read -r -p  "Choose the Branch with it's number [1/2/3] " branch
     case $branch in
       [3])
         MAILCOW_BRANCH="legacy"
