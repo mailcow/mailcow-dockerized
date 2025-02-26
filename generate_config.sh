@@ -181,11 +181,15 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   echo "Available Branches:"
   echo "- master branch (stable updates) | default, recommended [1]"
   echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+  echo "- legacy branch (supported until February 2026) | deprecated, security updates only [3]"
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
     read -r -p  "Choose the Branch with it's number [1/2] " branch
     case $branch in
+      [3])
+        MAILCOW_BRANCH="legacy"
+        ;;
       [2])
         MAILCOW_BRANCH="nightly"
         ;;
@@ -531,6 +535,10 @@ case ${git_branch} in
     mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
     ;;
   nightly)
+    mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
+    mailcow_last_git_version=""
+    ;;
+  legacy)
     mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
     mailcow_last_git_version=""
     ;;
