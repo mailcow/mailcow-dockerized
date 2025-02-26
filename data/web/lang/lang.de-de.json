@@ -881,7 +881,7 @@
         "recipient_map": "Empfängerumschreibung",
         "recipient_map_info": "Empfängerumschreibung ersetzen den Empfänger einer E-Mail vor dem Versand.",
         "recipient_map_new": "Neuer Empfänger",
-        "recipient_map_new_info": "Der neue Empfänger muss eine E-Mail-Adresse sein.",
+        "recipient_map_new_info": "Der neue Empfänger muss eine E-Mail-Adresse oder ein Domainname sein.",
         "recipient_map_old": "Original-Empfänger",
         "recipient_map_old_info": "Der originale Empfänger muss eine E-Mail-Adresse oder ein Domainname sein.",
         "recipient_maps": "Empfängerumschreibungen",

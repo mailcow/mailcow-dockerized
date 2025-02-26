@@ -822,7 +822,7 @@
         "recipient_map": "Mapa príjemcu",
         "recipient_map_info": "Mapy príjemcov sú používané ako náhrada cieľovej adresy u správy pred doručením.",
         "recipient_map_new": "Nový príjemca",
-        "recipient_map_new_info": "Mapový cieľ príjemcu musí byť platná emailová adresa.",
+        "recipient_map_new_info": "Mapový cieľ príjemcu musí byť platná emailová adresa alebo meno domény.",
         "recipient_map_old": "Originálny príjemca",
         "recipient_map_old_info": "Originálny cieľ mapy príjemcu musí byť platná emailová adresa alebo meno domény.",
         "recipient_maps": "Mapy príjemcov",
