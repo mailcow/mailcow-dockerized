@@ -887,7 +887,7 @@
         "recipient_map": "受信者マップ",
         "recipient_map_info": "受信者マップは、メッセージが配信される前に宛先アドレスを置き換えるために使用されます。",
         "recipient_map_new": "新しい受信者",
-        "recipient_map_new_info": "受信者マップの宛先は有効なメールアドレスである必要があります。",
+        "recipient_map_new_info": "受信者マップの宛先は有効なメールアドレスまたはドメイン名である必要があります。",
         "recipient_map_old": "元の受信者",
         "recipient_map_old_info": "受信者マップの元の宛先は有効なメールアドレスまたはドメイン名である必要があります。",
         "recipient_maps": "受信者マップ",

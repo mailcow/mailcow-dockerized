@@ -47,7 +47,9 @@ data/conf/sogo/custom-theme.js
 data/conf/sogo/plist_ldap
 data/conf/sogo/sieve.creds
 data/conf/sogo/cron.creds
-data/conf/sogo/sogo-full.svg
+data/conf/sogo/custom-fulllogo.svg
+data/conf/sogo/custom-shortlogo.svg
+data/conf/sogo/custom-fulllogo.png
 data/gitea/
 data/gogs/
 data/hooks/dovecot/*

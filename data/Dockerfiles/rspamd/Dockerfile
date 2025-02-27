@@ -2,7 +2,7 @@ FROM debian:bookworm-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.10.2-1~b8a232043
+ARG RSPAMD_VER=rspamd_3.11.0-2~90a175b45
 ARG CODENAME=bookworm
 ENV LC_ALL=C
 
