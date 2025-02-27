@@ -715,6 +715,7 @@ detect_major_update() {
     # Array with major versions
     # Add major versions here
     MAJOR_VERSIONS=(
+      "2025-02"
     )
 
     current_version=$(git describe --tags $(git rev-list --tags --max-count=1))
