@@ -5,6 +5,8 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/unbound:/hooks:Z
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
@@ -22,6 +24,8 @@ services:
         - unbound-mailcow
         - netfilter-mailcow
       stop_grace_period: 45s
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
@@ -44,6 +48,8 @@ services:
     redis-mailcow:
       image: redis:7.4.2-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - redis-vol-1:/data/
         - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
@@ -75,6 +81,8 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
         - clamd-db-vol-1:/var/lib/clamav
@@ -97,6 +105,8 @@ services:
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/rspamd:/hooks:Z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
@@ -121,6 +131,8 @@ services:
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/phpfpm:/hooks:Z
         - ./data/web:/web:z
@@ -203,6 +215,8 @@ services:
         - REDISPASS=${REDISPASS}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo/:/etc/sogo/:z
@@ -243,6 +257,8 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
         - NET_BIND_SERVICE
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/dovecot:/hooks:Z
         - ./data/conf/dovecot:/etc/dovecot:z
@@ -327,6 +343,8 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -364,6 +382,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
+      security_opt:
+        - no-new-privileges:true
       environment:
         - TZ=${TZ}
       networks:
@@ -397,6 +417,8 @@ services:
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
@@ -445,6 +467,8 @@ services:
         - REDISPASS=${REDISPASS}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:z
         - ./data/assets/ssl:/var/lib/acme/:z
@@ -473,6 +497,8 @@ services:
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
         - DISABLE_NETFILTER_ISOLATION_RULE=${DISABLE_NETFILTER_ISOLATION_RULE:-n}
       network_mode: "host"
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - /lib/modules:/lib/modules:ro
 
@@ -494,6 +520,8 @@ services:
         - mysql-mailcow
         - acme-mailcow
         - redis-mailcow
+      security_opt:
+        - no-new-privileges:true
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -561,6 +589,8 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
+      security_opt:
+        - no-new-privileges:true
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
       networks:
@@ -571,6 +601,8 @@ services:
     olefy-mailcow:
       image: ghcr.io/mailcow/olefy:1.13
       restart: always
+      security_opt:
+        - no-new-privileges:true
       environment:
         - TZ=${TZ}
         - OLEFY_BINDADDRESS=0.0.0.0
@@ -590,6 +622,8 @@ services:
       image: mcuadros/ofelia:latest
       restart: always
       command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
+      security_opt:
+        - no-new-privileges:true
       environment:
         - TZ=${TZ}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
@@ -624,6 +658,8 @@ services:
         - netfilter-mailcow
         - watchdog-mailcow
         - dockerapi-mailcow
+      security_opt:
+        - no-new-privileges:true
       environment:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
