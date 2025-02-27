@@ -24,7 +24,9 @@
         "protocol_access": "Cambiar protocolo de acceso",
         "quarantine_category": "Cambiar categoría de las notificaciones de cuarentena",
         "domain_relayhost": "Cambiar relayhost por un dominio",
-        "extend_sender_acl": "Permitir extender la ACL del remitente por direcciones externas"
+        "extend_sender_acl": "Permitir extender la ACL del remitente por direcciones externas",
+        "pw_reset": "Permitir el reset  de la contraseña del usario mailcow",
+        "sogo_access": "Permitir la gestión del acceso a SOGo"
     },
     "add": {
         "activate_filter_warn": "Todos los demás filtros se desactivarán cuando este filtro se active.",
@@ -95,7 +97,10 @@
         "app_password": "Añadir contraseña para la app",
         "public_comment": "Comentarios públicos",
         "disable_login": "Desactivar login (el correo entrante seguirá activo)",
-        "comment_info": "Los comentarios privados no son visibles al usuario, mientras que los comentarios públicos aparecerán sobre la información general del usuario"
+        "comment_info": "Los comentarios privados no son visibles al usuario, mientras que los comentarios públicos aparecerán sobre la información general del usuario",
+        "dry": "Simular la sincronización",
+        "private_comment": "Comentario privado",
+        "app_passwd_protocols": "Protocolos autorizados para la contraseña de la aplicación"
     },
     "admin": {
         "access": "Acceso",
@@ -539,7 +544,7 @@
         "recipient_map": "Regla de destinatario",
         "recipient_map_info": "Las reglas de destinatarios se utilizan para reemplazar la dirección de destino en un mensaje antes de que se entregue.",
         "recipient_map_new": "Destinatario nuevo",
-        "recipient_map_new_info": "El destino de la regla debe ser una dirección de correo válida.",
+        "recipient_map_new_info": "El destino de la regla debe ser una dirección de correo electrónico válida o un nombre de dominio.",
         "recipient_map_old": "Destinatario original",
         "recipient_map_old_info": "El destino original de una regla de destinatario debe ser una dirección de correo electrónico válida o un nombre de dominio.",
         "recipient_maps": "Reglas de destinatario",

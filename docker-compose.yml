@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.23
+      image: ghcr.io/mailcow/unbound:1.23
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -17,7 +17,7 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.5
+      image: mariadb:10.11
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
@@ -42,8 +42,8 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7-alpine
-      entrypoint: /redis-conf.sh
+      image: redis:7.4.2-alpine
+      entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
         - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
@@ -55,6 +55,7 @@ services:
       environment:
         - TZ=${TZ}
         - REDISPASS=${REDISPASS}
+        - REDISMASTERPASS=${REDISMASTERPASS:-}
       sysctls:
         - net.core.somaxconn=4096
       networks:
@@ -64,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.70
+      image: ghcr.io/mailcow/clamd:1.70
       restart: always
       depends_on:
         unbound-mailcow:
@@ -83,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.99
+      image: ghcr.io/mailcow/rspamd:2.0
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -116,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.92
+      image: ghcr.io/mailcow/phpfpm:1.92
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -182,7 +183,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.128
+      image: ghcr.io/mailcow/sogo:1.129
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -207,6 +208,9 @@ services:
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
+        - ./data/conf/sogo/custom-shortlogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
+        - ./data/conf/sogo/custom-fulllogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg:z
+        - ./data/conf/sogo/custom-fulllogo.png:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-logo.png:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
         - mysql-socket-vol-1:/var/run/mysqld/
@@ -230,7 +234,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:2.3
+      image: ghcr.io/mailcow/dovecot:2.31
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -317,7 +321,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.79
+      image: ghcr.io/mailcow/postfix:1.80
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -373,7 +377,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: mailcow/nginx:1.02
+      image: ghcr.io/mailcow/nginx:1.03
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -391,6 +395,8 @@ services:
         - RSPAMDHOST=${RSPAMDHOST:-}
         - REDISHOST=${REDISHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
+        - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
@@ -413,7 +419,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: mailcow/acme:1.91
+      image: ghcr.io/mailcow/acme:1.91
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -451,7 +457,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.60
+      image: ghcr.io/mailcow/netfilter:1.61
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -471,7 +477,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:2.06
+      image: ghcr.io/mailcow/watchdog:2.06
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -543,7 +549,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.10
+      image: ghcr.io/mailcow/dockerapi:2.10
       security_opt:
         - label=disable
       restart: always
@@ -563,7 +569,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: mailcow/olefy:1.13
+      image: ghcr.io/mailcow/olefy:1.13
       restart: always
       environment:
         - TZ=${TZ}
