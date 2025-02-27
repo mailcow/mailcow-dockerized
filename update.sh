@@ -36,23 +36,19 @@ docker_garbage() {
   IMGS_TO_DELETE=()
 
   declare -A IMAGES_INFO
-  # Erfasse alle in docker-compose verwendeten Images (sowohl mailcow/... als auch ghcr.io/mailcow/...)
   COMPOSE_IMAGES=($(grep -oP "image: \K(ghcr\.io/)?mailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
 
-  # Durchlaufe alle vorhandenen Images, die mailcow/ oder ghcr.io/mailcow/ beinhalten
   for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep -E '(mailcow/|ghcr\.io/mailcow/)'); do
       ID=$(echo "$existing_image" | cut -d ':' -f 1)
       REPOSITORY=$(echo "$existing_image" | cut -d ':' -f 2)
       TAG=$(echo "$existing_image" | cut -d ':' -f 3)
 
-      # Für das Image mailcow/backup: nur löschen, wenn es untagged ist (TAG gleich "<none>")
       if [[ "$REPOSITORY" == "mailcow/backup" || "$REPOSITORY" == "ghcr.io/mailcow/backup" ]]; then
           if [[ "$TAG" != "<none>" ]]; then
               continue
           fi
       fi
 
-      # Überspringe Images, die in der docker-compose.yml verwendet werden
       if [[ " ${COMPOSE_IMAGES[@]} " =~ " ${REPOSITORY}:${TAG} " ]]; then
           continue
       else
