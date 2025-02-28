@@ -4,7 +4,7 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 function quarantine($_action, $_data = null) {
 	global $pdo;
-	global $redis;
+	global $valkey;
 	global $lang;
 	$_data_log = $_data;
   switch ($_action) {
@@ -102,14 +102,14 @@ function quarantine($_action, $_data = null) {
         return false;
         }
         try {
-          $release_format = $redis->Get('Q_RELEASE_FORMAT');
+          $release_format = $valkey->Get('Q_RELEASE_FORMAT');
         }
         catch (RedisException $e) {
           logger(array('return' => array(
             array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             )
           )));
           return false;
@@ -180,7 +180,7 @@ function quarantine($_action, $_data = null) {
             array('221', '')
           );
           // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
           if (!$smtp_connection) {
             logger(array('return' => array(
               array(
@@ -192,7 +192,7 @@ function quarantine($_action, $_data = null) {
             return false;
           }
           for ($i=0; $i < count($postfix_talk); $i++) {
-            $smtp_resource = fgets($smtp_connection, 256); 
+            $smtp_resource = fgets($smtp_connection, 256);
             if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
               $ret = substr($smtp_resource, 0, 3);
               $ret = (empty($ret)) ? '-' : $ret;
@@ -332,23 +332,23 @@ function quarantine($_action, $_data = null) {
         }
         $exclude_domains = (array)$_data['exclude_domains'];
         try {
-          $redis->Set('Q_RETENTION_SIZE', intval($retention_size));
-          $redis->Set('Q_MAX_SIZE', intval($max_size));
-          $redis->Set('Q_MAX_SCORE', $max_score);
-          $redis->Set('Q_MAX_AGE', $max_age);
-          $redis->Set('Q_EXCLUDE_DOMAINS', json_encode($exclude_domains));
-          $redis->Set('Q_RELEASE_FORMAT', $release_format);
-          $redis->Set('Q_SENDER', $sender);
-          $redis->Set('Q_BCC', $bcc);
-          $redis->Set('Q_REDIRECT', $redirect);
-          $redis->Set('Q_SUBJ', $subject);
-          $redis->Set('Q_HTML', $html);
+          $valkey->Set('Q_RETENTION_SIZE', intval($retention_size));
+          $valkey->Set('Q_MAX_SIZE', intval($max_size));
+          $valkey->Set('Q_MAX_SCORE', $max_score);
+          $valkey->Set('Q_MAX_AGE', $max_age);
+          $valkey->Set('Q_EXCLUDE_DOMAINS', json_encode($exclude_domains));
+          $valkey->Set('Q_RELEASE_FORMAT', $release_format);
+          $valkey->Set('Q_SENDER', $sender);
+          $valkey->Set('Q_BCC', $bcc);
+          $valkey->Set('Q_REDIRECT', $redirect);
+          $valkey->Set('Q_SUBJ', $subject);
+          $valkey->Set('Q_HTML', $html);
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           return false;
         }
@@ -403,13 +403,13 @@ function quarantine($_action, $_data = null) {
             continue;
           }
           try {
-            $release_format = $redis->Get('Q_RELEASE_FORMAT');
+            $release_format = $valkey->Get('Q_RELEASE_FORMAT');
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -475,7 +475,7 @@ function quarantine($_action, $_data = null) {
               array('221', '')
             );
             // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
             if (!$smtp_connection) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
@@ -485,7 +485,7 @@ function quarantine($_action, $_data = null) {
               return false;
             }
             for ($i=0; $i < count($postfix_talk); $i++) {
-              $smtp_resource = fgets($smtp_connection, 256); 
+              $smtp_resource = fgets($smtp_connection, 256);
               if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
                 $ret = substr($smtp_resource, 0, 3);
                 $ret = (empty($ret)) ? '-' : $ret;
@@ -776,18 +776,18 @@ function quarantine($_action, $_data = null) {
     case 'settings':
       try {
         if ($_SESSION['mailcow_cc_role'] == "admin") {
-          $settings['exclude_domains'] = json_decode($redis->Get('Q_EXCLUDE_DOMAINS'), true);
+          $settings['exclude_domains'] = json_decode($valkey->Get('Q_EXCLUDE_DOMAINS'), true);
         }
-        $settings['max_size'] = $redis->Get('Q_MAX_SIZE');
-        $settings['max_score'] = $redis->Get('Q_MAX_SCORE');
-        $settings['max_age'] = $redis->Get('Q_MAX_AGE');
-        $settings['retention_size'] = $redis->Get('Q_RETENTION_SIZE');
-        $settings['release_format'] = $redis->Get('Q_RELEASE_FORMAT');
-        $settings['subject'] = $redis->Get('Q_SUBJ');
-        $settings['sender'] = $redis->Get('Q_SENDER');
-        $settings['bcc'] = $redis->Get('Q_BCC');
-        $settings['redirect'] = $redis->Get('Q_REDIRECT');
-        $settings['html_tmpl'] = htmlspecialchars($redis->Get('Q_HTML'));
+        $settings['max_size'] = $valkey->Get('Q_MAX_SIZE');
+        $settings['max_score'] = $valkey->Get('Q_MAX_SCORE');
+        $settings['max_age'] = $valkey->Get('Q_MAX_AGE');
+        $settings['retention_size'] = $valkey->Get('Q_RETENTION_SIZE');
+        $settings['release_format'] = $valkey->Get('Q_RELEASE_FORMAT');
+        $settings['subject'] = $valkey->Get('Q_SUBJ');
+        $settings['sender'] = $valkey->Get('Q_SENDER');
+        $settings['bcc'] = $valkey->Get('Q_BCC');
+        $settings['redirect'] = $valkey->Get('Q_REDIRECT');
+        $settings['html_tmpl'] = htmlspecialchars($valkey->Get('Q_HTML'));
         if (empty($settings['html_tmpl'])) {
           $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
         }
@@ -796,7 +796,7 @@ function quarantine($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }

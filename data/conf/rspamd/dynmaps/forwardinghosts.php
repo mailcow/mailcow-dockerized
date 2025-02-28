@@ -2,9 +2,9 @@
 header('Content-Type: text/plain');
 ini_set('error_reporting', 0);
 
-$redis = new Redis();
-$redis->connect('redis-mailcow', 6379);
-$redis->auth(getenv("REDISPASS"));
+$valkey = new Redis();
+$valkey->connect('valkey-mailcow', 6379);
+$valkey->auth(getenv("VALKEYPASS"));
 
 function in_net($addr, $net) {
   $net = explode('/', $net);
@@ -31,7 +31,7 @@ function in_net($addr, $net) {
 
 if (isset($_GET['host'])) {
   try {
-    foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
+    foreach ($valkey->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
       if (in_net($_GET['host'], $host)) {
         echo '200 PERMIT';
         exit;
@@ -46,7 +46,7 @@ if (isset($_GET['host'])) {
 } else {
   try {
     echo '240.240.240.240' . PHP_EOL;
-    foreach ($redis->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
+    foreach ($valkey->hGetAll('WHITELISTED_FWD_HOST') as $host => $source) {
       echo $host . PHP_EOL;
     }
   }

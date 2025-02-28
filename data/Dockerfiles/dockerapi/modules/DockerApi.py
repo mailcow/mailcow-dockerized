@@ -10,8 +10,8 @@ from datetime import datetime
 from fastapi import FastAPI, Response, Request
 
 class DockerApi:
-  def __init__(self, redis_client, sync_docker_client, async_docker_client, logger):
-    self.redis_client = redis_client
+  def __init__(self, valkey_client, sync_docker_client, async_docker_client, logger):
+    self.valkey_client = valkey_client
     self.sync_docker_client = sync_docker_client
     self.async_docker_client = async_docker_client
     self.logger = logger
@@ -533,7 +533,7 @@ class DockerApi:
         "architecture": platform.machine()
       }
 
-      await self.redis_client.set('host_stats', json.dumps(host_stats), ex=10)
+      await self.valkey_client.set('host_stats', json.dumps(host_stats), ex=10)
     except Exception as e:
       res = {
         "type": "danger",
@@ -550,14 +550,14 @@ class DockerApi:
           if container._id == container_id:
             res = await container.stats(stream=False)
 
-            if await self.redis_client.exists(container_id + '_stats'):
-              stats = json.loads(await self.redis_client.get(container_id + '_stats'))
+            if await self.valkey_client.exists(container_id + '_stats'):
+              stats = json.loads(await self.valkey_client.get(container_id + '_stats'))
             else:
               stats = []
             stats.append(res[0])
             if len(stats) > 3:
               del stats[0]
-            await self.redis_client.set(container_id + '_stats', json.dumps(stats), ex=60)
+            await self.valkey_client.set(container_id + '_stats', json.dumps(stats), ex=60)
       except Exception as e:
         res = {
           "type": "danger",

@@ -21,10 +21,10 @@ catch (PDOException $e) {
   http_response_code(501);
   exit;
 }
-// Init Redis
-$redis = new Redis();
-$redis->connect('redis-mailcow', 6379);
-$redis->auth(getenv("REDISPASS"));
+// Init Valkey
+$valkey = new Redis();
+$valkey->connect('valkey-mailcow', 6379);
+$valkey->auth(getenv("VALKEYPASS"));
 
 // Functions
 function parse_email($email) {
@@ -74,16 +74,16 @@ if ($fuzzy == 'unknown') {
 }
 
 try {
-  $max_size = (int)$redis->Get('Q_MAX_SIZE');
+  $max_size = (int)$valkey->Get('Q_MAX_SIZE');
   if (($max_size * 1048576) < $raw_size) {
     error_log(sprintf("QUARANTINE: Message too large: %d b exceeds %d b", $raw_size, ($max_size * 1048576)) . PHP_EOL);
     http_response_code(505);
     exit;
   }
-  if ($exclude_domains = $redis->Get('Q_EXCLUDE_DOMAINS')) {
+  if ($exclude_domains = $valkey->Get('Q_EXCLUDE_DOMAINS')) {
     $exclude_domains = json_decode($exclude_domains, true);
   }
-  $retention_size = (int)$redis->Get('Q_RETENTION_SIZE');
+  $retention_size = (int)$valkey->Get('Q_RETENTION_SIZE');
 }
 catch (RedisException $e) {
   error_log("QUARANTINE: " . $e . PHP_EOL);
@@ -103,7 +103,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
   // Skip if not a mailcow handled domain
   try {
-    if (!$redis->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
+    if (!$valkey->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
       continue;
     }
   }
@@ -171,7 +171,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
         }
         else {
           $parsed_goto = parse_email($goto);
-          if (!$redis->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
+          if (!$valkey->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
             error_log("RCPT RESOVLER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
           }
           else {

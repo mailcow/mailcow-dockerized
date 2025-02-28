@@ -22,10 +22,10 @@ catch (PDOException $e) {
   exit;
 }
 
-// Init Redis
-$redis = new Redis();
-$redis->connect('redis-mailcow', 6379);
-$redis->auth(getenv("REDISPASS"));
+// Init Valkey
+$valkey = new Redis();
+$valkey->connect('valkey-mailcow', 6379);
+$valkey->auth(getenv("VALKEYPASS"));
 
 function parse_email($email) {
   if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
@@ -60,7 +60,7 @@ $rcpt_final_mailboxes = array();
 
 // Skip if not a mailcow handled domain
 try {
-  if (!$redis->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
+  if (!$valkey->hGet('DOMAIN_MAP', $parsed_rcpt['domain'])) {
     exit;
   }
 }
@@ -122,7 +122,7 @@ try {
       }
       else {
         $parsed_goto = parse_email($goto);
-        if (!$redis->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
+        if (!$valkey->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
           error_log("ALIAS EXPANDER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
         }
         else {

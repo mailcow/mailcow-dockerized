@@ -8,8 +8,8 @@ for file in /hooks/*; do
   fi
 done
 
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  cp /etc/syslog-ng/syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng.conf
 fi
 
 # Fix OpenSSL 3.X TLS1.0, 1.1 support (https://community.mailcow.email/d/4062-hi-all/20)
@@ -21,6 +21,6 @@ if grep -qE '\!SSLv2|\!SSLv3|>=TLSv1(\.[0-1])?$' /opt/postfix/conf/main.cf /opt/
     echo "[tls_system_default]" >> /etc/ssl/openssl.cnf
     echo "MinProtocol = TLSv1" >> /etc/ssl/openssl.cnf
     echo "CipherString = DEFAULT@SECLEVEL=0" >> /etc/ssl/openssl.cnf
-fi  
+fi
 
 exec "$@"

@@ -126,7 +126,7 @@ function hash_password($password) {
   return $pw_hash;
 }
 function password_complexity($_action, $_data = null) {
-  global $redis;
+  global $valkey;
   global $lang;
   switch ($_action) {
     case 'edit':
@@ -147,7 +147,7 @@ function password_complexity($_action, $_data = null) {
         $numbers = (isset($_data['numbers'])) ? intval($_data['numbers']) : $is_now['numbers'];
       }
       try {
-        $redis->hMSet('PASSWD_POLICY', [
+        $valkey->hMSet('PASSWD_POLICY', [
           'length' => $length,
           'chars' => $chars,
           'special_chars' => $special_chars,
@@ -159,7 +159,7 @@ function password_complexity($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -171,11 +171,11 @@ function password_complexity($_action, $_data = null) {
     break;
     case 'get':
       try {
-        $length = $redis->hGet('PASSWD_POLICY', 'length');
-        $chars = $redis->hGet('PASSWD_POLICY', 'chars');
-        $special_chars = $redis->hGet('PASSWD_POLICY', 'special_chars');
-        $lowerupper = $redis->hGet('PASSWD_POLICY', 'lowerupper');
-        $numbers = $redis->hGet('PASSWD_POLICY', 'numbers');
+        $length = $valkey->hGet('PASSWD_POLICY', 'length');
+        $chars = $valkey->hGet('PASSWD_POLICY', 'chars');
+        $special_chars = $valkey->hGet('PASSWD_POLICY', 'special_chars');
+        $lowerupper = $valkey->hGet('PASSWD_POLICY', 'lowerupper');
+        $numbers = $valkey->hGet('PASSWD_POLICY', 'numbers');
         return array(
           'length' => $length,
           'chars' => $chars,
@@ -188,7 +188,7 @@ function password_complexity($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -253,7 +253,7 @@ function password_check($password1, $password2) {
 }
 function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   global $pdo;
-  global $redis;
+  global $valkey;
   $sasl_limit_days = intval($sasl_limit_days);
   switch ($action) {
     case 'get':
@@ -272,13 +272,13 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
           }
           elseif (filter_var($sasl[$k]['real_rip'], FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             try {
-              $sasl[$k]['location'] = $redis->hGet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip']);
+              $sasl[$k]['location'] = $valkey->hGet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip']);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               return false;
             }
@@ -294,13 +294,13 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
                 if ($ip_data_array !== false and !empty($ip_data_array['shortcountry'])) {
                   $sasl[$k]['location'] = $ip_data_array['shortcountry'];
                     try {
-                      $redis->hSet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip'], $ip_data_array['shortcountry']);
+                      $valkey->hSet('IP_SHORTCOUNTRY', $sasl[$k]['real_rip'], $ip_data_array['shortcountry']);
                     }
                     catch (RedisException $e) {
                       $_SESSION['return'][] = array(
                         'type' => 'danger',
                         'log' => array(__FUNCTION__, $_action, $_data_log),
-                        'msg' => array('redis_error', $e)
+                        'msg' => array('valkey_error', $e)
                       );
                       curl_close($curl);
                       return false;
@@ -813,7 +813,7 @@ function verify_hash($hash, $password) {
 }
 function check_login($user, $pass, $app_passwd_data = false) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $imap_server;
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
@@ -987,12 +987,12 @@ function check_login($user, $pass, $app_passwd_data = false) {
 
   if (!isset($_SESSION['ldelay'])) {
     $_SESSION['ldelay'] = "0";
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $valkey->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
   elseif (!isset($_SESSION['mailcow_cc_username'])) {
     $_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $valkey->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
 
@@ -2025,7 +2025,7 @@ function admin_api($access, $action, $data = null) {
 }
 function license($action, $data = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] =  array(
@@ -2075,13 +2075,13 @@ function license($action, $data = null) {
       }
       try {
         // json_encode needs "true"/"false" instead of true/false, to not encode it to 0 or 1
-        $redis->Set('LICENSE_STATUS_CACHE', json_encode($_SESSION['gal']));
+        $valkey->Set('LICENSE_STATUS_CACHE', json_encode($_SESSION['gal']));
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -2162,7 +2162,7 @@ function rspamd_ui($action, $data = null) {
   }
 }
 function cors($action, $data = null) {
-  global $redis;
+  global $valkey;
 
   switch ($action) {
     case "edit":
@@ -2203,7 +2203,7 @@ function cors($action, $data = null) {
       }
 
       try {
-        $redis->hMSet('CORS_SETTINGS', array(
+        $valkey->hMSet('CORS_SETTINGS', array(
           'allowed_origins' => implode(', ', $allowed_origins),
           'allowed_methods' => implode(', ', $allowed_methods)
         ));
@@ -2211,7 +2211,7 @@ function cors($action, $data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $action, $data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -2225,12 +2225,12 @@ function cors($action, $data = null) {
     break;
     case "get":
       try {
-        $cors_settings                  = $redis->hMGet('CORS_SETTINGS', array('allowed_origins', 'allowed_methods'));
+        $cors_settings                  = $valkey->hMGet('CORS_SETTINGS', array('allowed_origins', 'allowed_methods'));
       } catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $action, $data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
       }
 
@@ -2308,7 +2308,7 @@ function uuid4() {
 }
 function reset_password($action, $data = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $mailcow_hostname;
   global $PW_RESET_TOKEN_LIMIT;
   global $PW_RESET_TOKEN_LIFETIME;
@@ -2544,10 +2544,10 @@ function reset_password($action, $data = null) {
       $type = $data;
 
       try {
-        $settings['from'] = $redis->Get('PW_RESET_FROM');
-        $settings['subject'] = $redis->Get('PW_RESET_SUBJ');
-        $settings['html_tmpl'] = $redis->Get('PW_RESET_HTML');
-        $settings['text_tmpl'] = $redis->Get('PW_RESET_TEXT');
+        $settings['from'] = $valkey->Get('PW_RESET_FROM');
+        $settings['subject'] = $valkey->Get('PW_RESET_SUBJ');
+        $settings['html_tmpl'] = $valkey->Get('PW_RESET_HTML');
+        $settings['text_tmpl'] = $valkey->Get('PW_RESET_TEXT');
         if (empty($settings['html_tmpl']) && empty($settings['text_tmpl'])) {
           $settings['html_tmpl'] = file_get_contents("/tpls/pw_reset_html.tpl");
           $settings['text_tmpl'] = file_get_contents("/tpls/pw_reset_text.tpl");
@@ -2562,7 +2562,7 @@ function reset_password($action, $data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -2665,16 +2665,16 @@ function reset_password($action, $data = null) {
       $html = (empty($data['html_tmpl'])) ? "" : $data['html_tmpl'];
 
       try {
-        $redis->Set('PW_RESET_FROM', $from);
-        $redis->Set('PW_RESET_SUBJ', $subject);
-        $redis->Set('PW_RESET_HTML', $html);
-        $redis->Set('PW_RESET_TEXT', $text);
+        $valkey->Set('PW_RESET_FROM', $from);
+        $valkey->Set('PW_RESET_SUBJ', $subject);
+        $valkey->Set('PW_RESET_HTML', $html);
+        $valkey->Set('PW_RESET_TEXT', $text);
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -2702,7 +2702,7 @@ function get_logs($application, $lines = false) {
     $to = intval($to);
     if ($from < 1 || $to < $from) { return false; }
   }
-  global $redis;
+  global $valkey;
   global $pdo;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     return false;
@@ -2751,10 +2751,10 @@ function get_logs($application, $lines = false) {
   // Redis
   if ($application == "dovecot-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('DOVECOT_MAILLOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('DOVECOT_MAILLOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('DOVECOT_MAILLOG', 0, $lines);
+      $data = $valkey->lRange('DOVECOT_MAILLOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2765,10 +2765,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "postfix-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('POSTFIX_MAILLOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('POSTFIX_MAILLOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('POSTFIX_MAILLOG', 0, $lines);
+      $data = $valkey->lRange('POSTFIX_MAILLOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2779,10 +2779,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "sogo-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('SOGO_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('SOGO_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('SOGO_LOG', 0, $lines);
+      $data = $valkey->lRange('SOGO_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2793,10 +2793,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "watchdog-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('WATCHDOG_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('WATCHDOG_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('WATCHDOG_LOG', 0, $lines);
+      $data = $valkey->lRange('WATCHDOG_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2807,10 +2807,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "acme-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('ACME_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('ACME_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('ACME_LOG', 0, $lines);
+      $data = $valkey->lRange('ACME_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2821,10 +2821,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "ratelimited") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('RL_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('RL_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('RL_LOG', 0, $lines);
+      $data = $valkey->lRange('RL_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2835,10 +2835,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "api-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('API_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('API_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('API_LOG', 0, $lines);
+      $data = $valkey->lRange('API_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2849,10 +2849,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "netfilter-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('NETFILTER_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('NETFILTER_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('NETFILTER_LOG', 0, $lines);
+      $data = $valkey->lRange('NETFILTER_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {
@@ -2863,10 +2863,10 @@ function get_logs($application, $lines = false) {
   }
   if ($application == "autodiscover-mailcow") {
     if (isset($from) && isset($to)) {
-      $data = $redis->lRange('AUTODISCOVER_LOG', $from - 1, $to - 1);
+      $data = $valkey->lRange('AUTODISCOVER_LOG', $from - 1, $to - 1);
     }
     else {
-      $data = $redis->lRange('AUTODISCOVER_LOG', 0, $lines);
+      $data = $valkey->lRange('AUTODISCOVER_LOG', 0, $lines);
     }
     if ($data) {
       foreach ($data as $json_line) {

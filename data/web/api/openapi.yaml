@@ -5400,9 +5400,9 @@ paths:
                       started_at: "2019-12-22T21:00:07.186717617Z"
                       state: running
                       type: info
-                    redis-mailcow:
-                      container: redis-mailcow
-                      image: "redis:5-alpine"
+                    valkey-mailcow:
+                      container: valkey-mailcow
+                      image: "valkey:7.2.8-alpine"
                       started_at: "2019-12-22T20:59:56.827166834Z"
                       state: running
                       type: info
@@ -5755,8 +5755,8 @@ paths:
       tags:
         - Cross-Origin Resource Sharing (CORS)
       description: >-
-        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API. 
-        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests. 
+        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API.
+        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests.
         By editing the CORS settings, you can specify which domains and which methods are permitted to access the API resources from outside the mailcow domain.
       operationId: Edit Cross-Origin Resource Sharing (CORS) settings
       requestBody:

@@ -1,7 +1,7 @@
 <?php
 function oauth2($_action, $_type, $_data = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(

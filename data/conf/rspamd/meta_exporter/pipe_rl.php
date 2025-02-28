@@ -5,16 +5,16 @@ header('Content-Type: text/plain');
 require_once "vars.inc.php";
 // Do not show errors, we log to using error_log
 ini_set('error_reporting', 0);
-// Init Redis
-$redis = new Redis();
+// Init Valkey
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
   exit;
@@ -44,6 +44,6 @@ $data['message_id'] = $raw_data_decoded['message_id'];
 $data['header_subject'] = implode(' ', $raw_data_decoded['header_subject']);
 $data['header_from'] = implode(', ', $raw_data_decoded['header_from']);
 
-$redis->lpush('RL_LOG', json_encode($data));
+$valkey->lpush('RL_LOG', json_encode($data));
 exit;
 

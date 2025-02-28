@@ -1,6 +1,6 @@
 <?php
 function fail2ban($_action, $_data = null, $_extra = null) {
-  global $redis;
+  global $valkey;
   $_data_log = $_data;
   switch ($_action) {
     case 'get':
@@ -9,9 +9,9 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         return false;
       }
       try {
-        $f2b_options = json_decode($redis->Get('F2B_OPTIONS'), true);
-        $f2b_options['regex'] = json_decode($redis->Get('F2B_REGEX'), true);
-        $wl = $redis->hGetAll('F2B_WHITELIST');
+        $f2b_options = json_decode($valkey->Get('F2B_OPTIONS'), true);
+        $f2b_options['regex'] = json_decode($valkey->Get('F2B_REGEX'), true);
+        $wl = $valkey->hGetAll('F2B_WHITELIST');
         if (is_array($wl)) {
           foreach ($wl as $key => $value) {
             $tmp_wl_data[] = $key;
@@ -27,7 +27,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         else {
           $f2b_options['whitelist'] = "";
         }
-        $bl = $redis->hGetAll('F2B_BLACKLIST');
+        $bl = $valkey->hGetAll('F2B_BLACKLIST');
         if (is_array($bl)) {
           foreach ($bl as $key => $value) {
             $tmp_bl_data[] = $key;
@@ -43,7 +43,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         else {
           $f2b_options['blacklist'] = "";
         }
-        $pb = $redis->hGetAll('F2B_PERM_BANS');
+        $pb = $valkey->hGetAll('F2B_PERM_BANS');
         if (is_array($pb)) {
           foreach ($pb as $key => $value) {
             $f2b_options['perm_bans'][] = array(
@@ -56,8 +56,8 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         else {
           $f2b_options['perm_bans'] = "";
         }
-        $active_bans = $redis->hGetAll('F2B_ACTIVE_BANS');
-        $queue_unban = $redis->hGetAll('F2B_QUEUE_UNBAN');
+        $active_bans = $valkey->hGetAll('F2B_ACTIVE_BANS');
+        $queue_unban = $valkey->hGetAll('F2B_QUEUE_UNBAN');
         if (is_array($active_bans)) {
           foreach ($active_bans as $network => $banned_until) {
             $queued_for_unban = (isset($queue_unban[$network]) && $queue_unban[$network] == 1) ? 1 : 0;
@@ -78,7 +78,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -98,22 +98,22 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         // Reset regex filters
         if ($_data['action'] == "reset-regex") {
           try {
-            $redis->Del('F2B_REGEX');
+            $valkey->Del('F2B_REGEX');
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
           // Rules will also be recreated on log events, but rules may seem empty for a second in the UI
           docker('post', 'netfilter-mailcow', 'restart');
           $fail_count = 0;
-          $regex_result = json_decode($redis->Get('F2B_REGEX'), true);
+          $regex_result = json_decode($valkey->Get('F2B_REGEX'), true);
           while (empty($regex_result) && $fail_count < 10) {
-            $regex_result = json_decode($redis->Get('F2B_REGEX'), true);
+            $regex_result = json_decode($valkey->Get('F2B_REGEX'), true);
             $fail_count++;
             sleep(1);
           }
@@ -135,7 +135,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
               $rule_id++;
             }
             if (!empty($regex_array)) {
-              $redis->Set('F2B_REGEX', json_encode($regex_array, JSON_UNESCAPED_SLASHES));
+              $valkey->Set('F2B_REGEX', json_encode($regex_array, JSON_UNESCAPED_SLASHES));
             }
           }
           $_SESSION['return'][] = array(
@@ -154,13 +154,13 @@ function fail2ban($_action, $_data = null, $_extra = null) {
             if ($_data['action'] == "unban") {
               if (valid_network($network)) {
                 try {
-                  $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+                  $valkey->hSet('F2B_QUEUE_UNBAN', $network, 1);
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_data_log),
-                    'msg' => array('redis_error', $e)
+                    'msg' => array('valkey_error', $e)
                   );
                   continue;
                 }
@@ -171,15 +171,15 @@ function fail2ban($_action, $_data = null, $_extra = null) {
               if (empty($network)) { continue; }
               if (valid_network($network)) {
                 try {
-                  $redis->hSet('F2B_WHITELIST', $network, 1);
-                  $redis->hDel('F2B_BLACKLIST', $network, 1);
-                  $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+                  $valkey->hSet('F2B_WHITELIST', $network, 1);
+                  $valkey->hDel('F2B_BLACKLIST', $network, 1);
+                  $valkey->hSet('F2B_QUEUE_UNBAN', $network, 1);
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_data_log),
-                    'msg' => array('redis_error', $e)
+                    'msg' => array('valkey_error', $e)
                   );
                   continue;
                 }
@@ -204,15 +204,15 @@ function fail2ban($_action, $_data = null, $_extra = null) {
                 getenv('IPV6_NETWORK')
               ))) {
                 try {
-                  $redis->hSet('F2B_BLACKLIST', $network, 1);
-                  $redis->hDel('F2B_WHITELIST', $network, 1);
+                  $valkey->hSet('F2B_BLACKLIST', $network, 1);
+                  $valkey->hDel('F2B_WHITELIST', $network, 1);
                   //$response = docker('post', 'netfilter-mailcow', 'restart');
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_data_log),
-                    'msg' => array('redis_error', $e)
+                    'msg' => array('valkey_error', $e)
                   );
                   continue;
                 }
@@ -270,16 +270,16 @@ function fail2ban($_action, $_data = null, $_extra = null) {
       $f2b_options['banlist_id'] = $is_now['banlist_id'];
       $f2b_options['manage_external'] = ($manage_external > 0) ? 1 : 0;
       try {
-        $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
-        $redis->Del('F2B_WHITELIST');
-        $redis->Del('F2B_BLACKLIST');
+        $valkey->Set('F2B_OPTIONS', json_encode($f2b_options));
+        $valkey->Del('F2B_WHITELIST');
+        $valkey->Del('F2B_BLACKLIST');
         if(!empty($wl)) {
           $wl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $wl));
           $wl_array = array_filter($wl_array);
           if (is_array($wl_array)) {
             foreach ($wl_array as $wl_item) {
               if (valid_network($wl_item) || valid_hostname($wl_item)) {
-                $redis->hSet('F2B_WHITELIST', $wl_item, 1);
+                $valkey->hSet('F2B_WHITELIST', $wl_item, 1);
               }
               else {
                 $_SESSION['return'][] = array(
@@ -304,7 +304,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
                 getenv('IPV4_NETWORK') . '0',
                 getenv('IPV6_NETWORK')
               ))) {
-                $redis->hSet('F2B_BLACKLIST', $bl_item, 1);
+                $valkey->hSet('F2B_BLACKLIST', $bl_item, 1);
               }
               else {
                 $_SESSION['return'][] = array(
@@ -322,7 +322,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -334,13 +334,13 @@ function fail2ban($_action, $_data = null, $_extra = null) {
     break;
     case 'banlist':
       try {
-        $f2b_options = json_decode($redis->Get('F2B_OPTIONS'), true);
-      } 
+        $f2b_options = json_decode($valkey->Get('F2B_OPTIONS'), true);
+      }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         http_response_code(500);
         return false;
@@ -356,14 +356,14 @@ function fail2ban($_action, $_data = null, $_extra = null) {
       switch ($_data) {
         case 'get':
           try {
-            $bl = $redis->hKeys('F2B_BLACKLIST');
-            $active_bans = $redis->hKeys('F2B_ACTIVE_BANS');
-          } 
+            $bl = $valkey->hKeys('F2B_BLACKLIST');
+            $active_bans = $valkey->hKeys('F2B_ACTIVE_BANS');
+          }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             http_response_code(500);
             return false;
@@ -378,13 +378,13 @@ function fail2ban($_action, $_data = null, $_extra = null) {
 
           $f2b_options['banlist_id'] = uuid4();
           try {
-            $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
-          } 
+            $valkey->Set('F2B_OPTIONS', json_encode($f2b_options));
+          }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log, $_extra),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }

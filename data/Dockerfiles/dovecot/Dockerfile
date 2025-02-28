@@ -114,7 +114,7 @@ RUN addgroup -g 5000 vmail \
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng-valkey_slave.conf
 COPY imapsync /usr/local/bin/imapsync
 COPY imapsync_runner.pl /usr/local/bin/imapsync_runner.pl
 COPY report-spam.sieve /usr/lib/dovecot/sieve/report-spam.sieve

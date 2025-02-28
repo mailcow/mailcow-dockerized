@@ -6,8 +6,8 @@ if [[ "${SKIP_SOGO}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exit 0
 fi
 
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  cp /etc/syslog-ng/syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng.conf
 fi
 
 echo "$TZ" > /etc/timezone

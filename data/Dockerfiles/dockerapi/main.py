@@ -32,21 +32,21 @@ async def lifespan(app: FastAPI):
 
   logger.info("Init APP")
 
-  # Init redis client
-  if os.environ['REDIS_SLAVEOF_IP'] != "":
-    redis_client = redis = await aioredis.from_url(f"redis://{os.environ['REDIS_SLAVEOF_IP']}:{os.environ['REDIS_SLAVEOF_PORT']}/0", password=os.environ['REDISPASS'])
+  # Init valkey client
+  if os.environ['VALKEY_SLAVEOF_IP'] != "":
+    valkey_client = valkey = await aioredis.from_url(f"redis://{os.environ['VALKEY_SLAVEOF_IP']}:{os.environ['VALKEY_SLAVEOF_PORT']}/0", password=os.environ['VALKEYPASS'])
   else:
-    redis_client = redis = await aioredis.from_url("redis://redis-mailcow:6379/0", password=os.environ['REDISPASS'])
+    valkey_client = valkey = await aioredis.from_url("redis://valkey-mailcow:6379/0", password=os.environ['VALKEYPASS'])
 
   # Init docker clients
   sync_docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
   async_docker_client = aiodocker.Docker(url='unix:///var/run/docker.sock')
 
-  dockerapi = DockerApi(redis_client, sync_docker_client, async_docker_client, logger)
+  dockerapi = DockerApi(valkey_client, sync_docker_client, async_docker_client, logger)
 
-  logger.info("Subscribe to redis channel")
-  # Subscribe to redis channel
-  dockerapi.pubsub = redis.pubsub()
+  logger.info("Subscribe to valkey channel")
+  # Subscribe to valkey channel
+  dockerapi.pubsub = valkey.pubsub()
   await dockerapi.pubsub.subscribe("MC_CHANNEL")
   asyncio.create_task(handle_pubsub_messages(dockerapi.pubsub))
 
@@ -57,9 +57,9 @@ async def lifespan(app: FastAPI):
   dockerapi.sync_docker_client.close()
   await dockerapi.async_docker_client.close()
 
-  # Close redis
+  # Close valkey
   await dockerapi.pubsub.unsubscribe("MC_CHANNEL")
-  await dockerapi.redis_client.close()
+  await dockerapi.valkey_client.close()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -73,11 +73,11 @@ async def get_host_update_stats():
     dockerapi.host_stats_isUpdating = True
 
   while True:
-    if await dockerapi.redis_client.exists('host_stats'):
+    if await dockerapi.valkey_client.exists('host_stats'):
       break
     await asyncio.sleep(1.5)
 
-  stats = json.loads(await dockerapi.redis_client.get('host_stats'))
+  stats = json.loads(await dockerapi.valkey_client.get('host_stats'))
   return Response(content=json.dumps(stats, indent=4), media_type="application/json")
 
 @app.get("/containers/{container_id}/json")
@@ -185,11 +185,11 @@ async def post_container_update_stats(container_id : str):
     dockerapi.containerIds_to_update.append(container_id)
 
   while True:
-    if await dockerapi.redis_client.exists(container_id + '_stats'):
+    if await dockerapi.valkey_client.exists(container_id + '_stats'):
       break
     await asyncio.sleep(1.5)
 
-  stats = json.loads(await dockerapi.redis_client.get(container_id + '_stats'))
+  stats = json.loads(await dockerapi.valkey_client.get(container_id + '_stats'))
   return Response(content=json.dumps(stats, indent=4), media_type="application/json")
 
 

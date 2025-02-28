@@ -1,6 +1,6 @@
 <?php
 function ratelimit($_action, $_scope, $_data = null) {
-  global $redis;
+  global $valkey;
   $_data_log = $_data;
   switch ($_action) {
     case 'edit':
@@ -42,26 +42,26 @@ function ratelimit($_action, $_scope, $_data = null) {
             }
             if (empty($rl_value)) {
               try {
-                $redis->hDel('RL_VALUE', $object);
+                $valkey->hDel('RL_VALUE', $object);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
             }
             else {
               try {
-                $redis->hSet('RL_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
+                $valkey->hSet('RL_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
@@ -103,26 +103,26 @@ function ratelimit($_action, $_scope, $_data = null) {
             }
             if (empty($rl_value)) {
               try {
-                $redis->hDel('RL_VALUE', $object);
+                $valkey->hDel('RL_VALUE', $object);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
             }
             else {
               try {
-                $redis->hSet('RL_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
+                $valkey->hSet('RL_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
@@ -143,7 +143,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             return false;
           }
           try {
-            if ($rl_value = $redis->hGet('RL_VALUE', $_data)) {
+            if ($rl_value = $valkey->hGet('RL_VALUE', $_data)) {
               $rl = explode(' / 1', $rl_value);
               $data['value'] = $rl[0];
               $data['frame'] = $rl[1];
@@ -157,7 +157,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -169,7 +169,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             return false;
           }
           try {
-            if ($rl_value = $redis->hGet('RL_VALUE', $_data)) {
+            if ($rl_value = $valkey->hGet('RL_VALUE', $_data)) {
               $rl = explode(' / 1', $rl_value);
               $data['value'] = $rl[0];
               $data['frame'] = $rl[1];
@@ -183,7 +183,7 @@ function ratelimit($_action, $_scope, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -202,16 +202,16 @@ function ratelimit($_action, $_scope, $_data = null) {
         return false;
       }
       try {
-        $data_rllog = $redis->lRange('RL_LOG', 0, -1);
+        $data_rllog = $valkey->lRange('RL_LOG', 0, -1);
         if ($data_rllog) {
           foreach ($data_rllog as $json_line) {
             if (preg_match('/' . $data['hash'] . '/i', $json_line)) {
-              $redis->lRem('RL_LOG', $json_line, 0);
+              $valkey->lRem('RL_LOG', $json_line, 0);
             }
           }
         }
-        if ($redis->type($data['hash']) == Redis::REDIS_HASH) {
-          $redis->delete($data['hash']);
+        if ($valkey->type($data['hash']) == Redis::REDIS_HASH) {
+          $valkey->delete($data['hash']);
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
@@ -232,7 +232,7 @@ function ratelimit($_action, $_scope, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }

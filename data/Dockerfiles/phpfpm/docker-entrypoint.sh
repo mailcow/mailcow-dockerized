@@ -9,24 +9,24 @@ while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u
 done
 
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_HOST=$REDIS_SLAVEOF_IP
-  REDIS_PORT=$REDIS_SLAVEOF_PORT
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  VALKEY_HOST=$VALKEY_SLAVEOF_IP
+  VALKEY_PORT=$VALKEY_SLAVEOF_PORT
 else
-  REDIS_HOST="redis"
-  REDIS_PORT="6379"
+  VALKEY_HOST="valkey-mailcow"
+  VALKEY_PORT="6379"
 fi
-REDIS_CMDLINE="redis-cli -h ${REDIS_HOST} -p ${REDIS_PORT} -a ${REDISPASS} --no-auth-warning"
+VALKEY_CMDLINE="redis-cli -h ${VALKEY_HOST} -p ${VALKEY_PORT} -a ${VALKEYPASS} --no-auth-warning"
 
-until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
+until [[ $(${VALKEY_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Valkey..."
   sleep 2
 done
 
-# Set redis session store
+# Set valkey session store
 echo -n '
 session.save_handler = redis
-session.save_path = "tcp://'${REDIS_HOST}':'${REDIS_PORT}'?auth='${REDISPASS}'"
+session.save_path = "tcp://'${VALKEY_HOST}':'${VALKEY_PORT}'?auth='${VALKEYPASS}'"
 ' > /usr/local/etc/php/conf.d/session_store.ini
 
 # Check mysql_upgrade (master and slave)
@@ -91,22 +91,22 @@ fi
 if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   echo "We are master, preparing..."
   # Set a default release format
-  if [[ -z $(${REDIS_CMDLINE} --raw GET Q_RELEASE_FORMAT) ]]; then
-    ${REDIS_CMDLINE} --raw SET Q_RELEASE_FORMAT raw
+  if [[ -z $(${VALKEY_CMDLINE} --raw GET Q_RELEASE_FORMAT) ]]; then
+    ${VALKEY_CMDLINE} --raw SET Q_RELEASE_FORMAT raw
   fi
 
   # Set max age of q items - if unset
-  if [[ -z $(${REDIS_CMDLINE} --raw GET Q_MAX_AGE) ]]; then
-    ${REDIS_CMDLINE} --raw SET Q_MAX_AGE 365
+  if [[ -z $(${VALKEY_CMDLINE} --raw GET Q_MAX_AGE) ]]; then
+    ${VALKEY_CMDLINE} --raw SET Q_MAX_AGE 365
   fi
 
   # Set default password policy - if unset
-  if [[ -z $(${REDIS_CMDLINE} --raw HGET PASSWD_POLICY length) ]]; then
-    ${REDIS_CMDLINE} --raw HSET PASSWD_POLICY length 6
-    ${REDIS_CMDLINE} --raw HSET PASSWD_POLICY chars 0
-    ${REDIS_CMDLINE} --raw HSET PASSWD_POLICY special_chars 0
-    ${REDIS_CMDLINE} --raw HSET PASSWD_POLICY lowerupper 0
-    ${REDIS_CMDLINE} --raw HSET PASSWD_POLICY numbers 0
+  if [[ -z $(${VALKEY_CMDLINE} --raw HGET PASSWD_POLICY length) ]]; then
+    ${VALKEY_CMDLINE} --raw HSET PASSWD_POLICY length 6
+    ${VALKEY_CMDLINE} --raw HSET PASSWD_POLICY chars 0
+    ${VALKEY_CMDLINE} --raw HSET PASSWD_POLICY special_chars 0
+    ${VALKEY_CMDLINE} --raw HSET PASSWD_POLICY lowerupper 0
+    ${VALKEY_CMDLINE} --raw HSET PASSWD_POLICY numbers 0
   fi
 
   # Trigger db init
@@ -114,9 +114,9 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   php -c /usr/local/etc/php -f /web/inc/init_db.inc.php
 
   # Recreating domain map
-  echo "Rebuilding domain map in Redis..."
+  echo "Rebuilding domain map in Valkey..."
   declare -a DOMAIN_ARR
-    ${REDIS_CMDLINE} DEL DOMAIN_MAP > /dev/null
+    ${VALKEY_CMDLINE} DEL DOMAIN_MAP > /dev/null
   while read line
   do
     DOMAIN_ARR+=("$line")
@@ -128,7 +128,7 @@ if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 
   if [[ ! -z ${DOMAIN_ARR} ]]; then
   for domain in "${DOMAIN_ARR[@]}"; do
-    ${REDIS_CMDLINE} HSET DOMAIN_MAP ${domain} 1 > /dev/null
+    ${VALKEY_CMDLINE} HSET DOMAIN_MAP ${domain} 1 > /dev/null
   done
   fi
 

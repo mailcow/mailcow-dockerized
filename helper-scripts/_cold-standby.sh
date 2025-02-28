@@ -213,9 +213,9 @@ if ! ssh -o StrictHostKeyChecking=no \
     >&2 echo -e "\e[31m[ERR]\e[0m - Could not create networks, volumes and containers on remote"
 fi
 
-# Trigger a Redis save for a consistent Redis copy
+# Trigger a Valkey save for a consistent Valkey copy
 echo -ne "\033[1mRunning redis-cli save... \033[0m"
-docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
+docker exec $(docker ps -qf name=valkey-mailcow) redis-cli -a ${VALKEYPASS} --no-auth-warning save
 
 # Syncing volumes related to compose project
 # Same here: make sure destination exists
