@@ -460,7 +460,12 @@ services:
       image: ghcr.io/mailcow/netfilter:1.61
       stop_grace_period: 30s
       restart: always
-      privileged: true
+      cap_drop:
+        - ALL
+      cap_add:
+        - NET_ADMIN
+        - NET_RAW
+        - SYS_MODULE
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -630,7 +635,12 @@ services:
       security_opt:
         - label=disable
       restart: always
-      privileged: true
+      cap_drop:
+        - ALL
+      cap_add:
+        - NET_ADMIN
+        - NET_RAW
+        - SYS_MODULE
       network_mode: "host"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
