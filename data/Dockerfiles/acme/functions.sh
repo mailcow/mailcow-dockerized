@@ -5,13 +5,13 @@ log_f() {
     echo -n "$(date) - ${1}"
   elif [[ ${2} == "no_date" ]]; then
     echo "${1}"
-  elif [[ ${2} != "redis_only" ]]; then
+  elif [[ ${2} != "valkey_only" ]]; then
     echo "$(date) - ${1}"
   fi
   if [[ ${3} == "b64" ]]; then
-    ${REDIS_CMDLINE} LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"base64,$(printf '%s' "${MAILCOW_HOSTNAME} - ${1}")\"}" > /dev/null
+    ${VALKEY_CMDLINE} LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"base64,$(printf '%s' "${MAILCOW_HOSTNAME} - ${1}")\"}" > /dev/null
   else
-    ${REDIS_CMDLINE} LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${MAILCOW_HOSTNAME} - ${1}" | \
+    ${VALKEY_CMDLINE} LPUSH ACME_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${MAILCOW_HOSTNAME} - ${1}" | \
       tr '%&;$"[]{}-\r\n' ' ')\"}" > /dev/null
   fi
 }

@@ -1,13 +1,13 @@
 <?php
-$redis = new Redis();
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
   exit;
@@ -15,4 +15,4 @@ catch (Exception $e) {
 header('Content-Type: application/json');
 echo '{"error":"Unauthorized"}';
 error_log("Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);
-$redis->publish("F2B_CHANNEL", "Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);
+$valkey->publish("F2B_CHANNEL", "Rspamd UI: Invalid password by " . $_SERVER['REMOTE_ADDR']);

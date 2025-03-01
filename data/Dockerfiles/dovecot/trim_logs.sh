@@ -9,17 +9,17 @@ catch_non_zero() {
 }
 source /source_env.sh
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  VALKEY_CMDLINE="redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning"
 else
-  REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  VALKEY_CMDLINE="redis-cli -h valkey-mailcow -p 6379 -a ${VALKEYPASS} --no-auth-warning"
 fi
-catch_non_zero "${REDIS_CMDLINE} LTRIM ACME_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM POSTFIX_MAILLOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM DOVECOT_MAILLOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM SOGO_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM NETFILTER_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM AUTODISCOVER_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM API_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM RL_LOG 0 ${LOG_LINES}"
-catch_non_zero "${REDIS_CMDLINE} LTRIM WATCHDOG_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM ACME_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM POSTFIX_MAILLOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM DOVECOT_MAILLOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM SOGO_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM NETFILTER_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM AUTODISCOVER_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM API_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM RL_LOG 0 ${LOG_LINES}"
+catch_non_zero "${VALKEY_CMDLINE} LTRIM WATCHDOG_LOG 0 ${LOG_LINES}"

@@ -347,7 +347,7 @@ adapt_new_options() {
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
-  "REDIS_PORT"
+  "VALKEY_PORT"
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
@@ -397,7 +397,7 @@ adapt_new_options() {
     elif [[ ${option} == "LOG_LINES" ]]; then
       if ! grep -q ${option} mailcow.conf; then
         echo "Adding new option \"${option}\" to mailcow.conf"
-        echo '# Max log lines per service to keep in Redis logs' >> mailcow.conf
+        echo '# Max log lines per service to keep in Valkey logs' >> mailcow.conf
         echo "LOG_LINES=9999" >> mailcow.conf
       fi
     elif [[ ${option} == "IPV4_NETWORK" ]]; then
@@ -558,10 +558,10 @@ adapt_new_options() {
         echo '# SOGo session timeout in minutes' >> mailcow.conf
         echo "SOGO_EXPIRE_SESSION=480" >> mailcow.conf
       fi
-    elif [[ ${option} == "REDIS_PORT" ]]; then
+    elif [[ ${option} == "VALKEY_PORT" ]]; then
       if ! grep -q ${option} mailcow.conf; then
         echo "Adding new option \"${option}\" to mailcow.conf"
-        echo "REDIS_PORT=127.0.0.1:7654" >> mailcow.conf
+        echo "VALKEY_PORT=127.0.0.1:7654" >> mailcow.conf
       fi
     elif [[ ${option} == "DOVECOT_MASTER_USER" ]]; then
       if ! grep -q ${option} mailcow.conf; then
@@ -978,7 +978,7 @@ CONFIG_ARRAY=(
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
-  "REDIS_PORT"
+  "VALKEY_PORT"
   "DOVECOT_MASTER_USER"
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
@@ -989,7 +989,7 @@ CONFIG_ARRAY=(
   "SPAMHAUS_DQS_KEY"
   "SKIP_UNBOUND_HEALTHCHECK"
   "DISABLE_NETFILTER_ISOLATION_RULE"
-  "REDISPASS"
+  "VALKEYPASS"
 )
 
 detect_bad_asn
@@ -1030,7 +1030,7 @@ for option in "${CONFIG_ARRAY[@]}"; do
   elif [[ "${option}" == "LOG_LINES" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo '# Max log lines per service to keep in Redis logs' >> mailcow.conf
+      echo '# Max log lines per service to keep in Valkey logs' >> mailcow.conf
       echo "LOG_LINES=9999" >> mailcow.conf
     fi
   elif [[ "${option}" == "IPV4_NETWORK" ]]; then
@@ -1168,10 +1168,10 @@ for option in "${CONFIG_ARRAY[@]}"; do
       echo '# SOGo session timeout in minutes' >> mailcow.conf
       echo "SOGO_EXPIRE_SESSION=480" >> mailcow.conf
     fi
-  elif [[ "${option}" == "REDIS_PORT" ]]; then
+  elif [[ "${option}" == "VALKEY_PORT" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
-      echo "REDIS_PORT=127.0.0.1:7654" >> mailcow.conf
+      echo "VALKEY_PORT=127.0.0.1:7654" >> mailcow.conf
     fi
   elif [[ "${option}" == "DOVECOT_MASTER_USER" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
@@ -1267,13 +1267,13 @@ for option in "${CONFIG_ARRAY[@]}"; do
       echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
       echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
     fi
-  elif [[ "${option}" == "REDISPASS" ]]; then
+  elif [[ "${option}" == "VALKEYPASS" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
       echo -e '\n# ------------------------------' >> mailcow.conf
-      echo '# REDIS configuration' >> mailcow.conf
+      echo '# VALKEY configuration' >> mailcow.conf
       echo -e '# ------------------------------\n' >> mailcow.conf
-      echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)" >> mailcow.conf
+      echo "VALKEYPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)" >> mailcow.conf
     fi
   elif ! grep -q "${option}" mailcow.conf; then
     echo "Adding new option \"${option}\" to mailcow.conf"

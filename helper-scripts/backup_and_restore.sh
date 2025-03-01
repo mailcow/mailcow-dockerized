@@ -11,8 +11,8 @@ if [[ ! ${1} =~ (backup|restore) ]]; then
   exit 1
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
-  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
+if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|valkey|rspamd|postfix|mysql|all|--delete-days) ]]; then
+  echo "Second parameter needs to be 'vmail', 'crypt', 'valkey', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
   exit 1
 fi
 
@@ -118,12 +118,12 @@ function backup() {
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
-    redis|all)
-      docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
+    valkey|all)
+      docker exec $(docker ps -qf name=valkey-mailcow) redis-cli -a ${VALKEYPASS} --no-auth-warning save
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
+        -v $(docker volume ls -qf name=^${CMPS_PRJ}_valkey-vol-1$):/valkey:ro,z \
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_valkey.tar.gz /valkey
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
@@ -216,13 +216,13 @@ function restore() {
         echo "OK, skipped."
       fi
       ;;
-    redis)
-      docker stop $(docker ps -qf name=redis-mailcow)
+    valkey)
+      docker stop $(docker ps -qf name=valkey-mailcow)
       docker run -i --name mailcow-backup --rm \
         -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_redis.tar.gz
-      docker start $(docker ps -aqf name=redis-mailcow)
+        -v $(docker volume ls -qf name=^${CMPS_PRJ}_valkey-vol-1$):/valkey:z \
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_valkey.tar.gz
+      docker start $(docker ps -aqf name=valkey-mailcow)
       ;;
     crypt)
       docker stop $(docker ps -qf name=dovecot-mailcow)
@@ -357,7 +357,7 @@ elif [[ ${1} == "restore" ]]; then
   echo
   declare -A FILE_SELECTION
   RESTORE_POINT="${FOLDER_SELECTION[${input_sel}]}"
-  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(redis\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
+  if [[ -z $(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) -regex ".*\(valkey\|rspamd\|mariadb\|mysql\|crypt\|vmail\|postfix\).*") ]]; then
     echo "No datasets found"
     exit 1
   fi
@@ -374,9 +374,9 @@ elif [[ ${1} == "restore" ]]; then
       echo "[ ${i} ] - Crypt data"
       FILE_SELECTION[${i}]="crypt"
       ((i++))
-    elif [[ ${file} =~ redis ]]; then
-      echo "[ ${i} ] - Redis DB"
-      FILE_SELECTION[${i}]="redis"
+    elif [[ ${file} =~ valkey ]]; then
+      echo "[ ${i} ] - Valkey DB"
+      FILE_SELECTION[${i}]="valkey"
       ((i++))
     elif [[ ${file} =~ rspamd ]]; then
       if [[ $(find "${FOLDER_SELECTION[${input_sel}]}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
