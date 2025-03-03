@@ -25,7 +25,10 @@
         "syncjobs": "동기화 작업",
         "tls_policy": "TLS 정책",
         "unlimited_quota": "메일에 무제한 할당",
-        "domain_desc": "도메인 설명 변경"
+        "domain_desc": "도메인 설명 변경",
+        "pw_reset": "mailcow 사용자 비밀번호 재설정 허용",
+        "domain_relayhost": "도메인의 릴레이 호스트 변경",
+        "mailbox_relayhost": "메일함의 릴레이 호스트 변경"
     },
     "add": {
         "activate_filter_warn": "활성화가 체크되어 있으면 모든 다른 필터들은 비활성화됩니다.",
