@@ -1,7 +1,7 @@
 <?php
 function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $extra_headers = null) {
   global $DOCKER_TIMEOUT;
-  global $redis;
+  global $valkey;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: application/json' ));
   // We are using our mail certificates for dockerapi, the names will not match, the certs are trusted anyway
@@ -102,7 +102,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
             }
           }
           else {
-            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project']) 
+            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project'])
               && strtolower($decoded_response['Config']['Labels']['com.docker.compose.project']) == strtolower(getenv('COMPOSE_PROJECT_NAME'))) {
               unset($container['Config']['Env']);
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['State'] = $decoded_response['State'];
@@ -200,7 +200,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
         "request" => $attr2
       );
 
-      $redis->publish("MC_CHANNEL", json_encode($request));
+      $valkey->publish("MC_CHANNEL", json_encode($request));
       return true;
     break;
   }

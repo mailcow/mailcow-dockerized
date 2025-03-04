@@ -1,7 +1,7 @@
 <?php
 function policy($_action, $_scope, $_data = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $lang;
   $_data_log = $_data;
   switch ($_action) {

@@ -1,7 +1,7 @@
 <?php
 
 function dkim($_action, $_data = null, $privkey = false) {
-  global $redis;
+  global $valkey;
   global $lang;
   switch ($_action) {
     case 'add':
@@ -18,7 +18,7 @@ function dkim($_action, $_data = null, $privkey = false) {
           );
           continue;
         }
-        if ($redis->hGet('DKIM_PUB_KEYS', $domain)) {
+        if ($valkey->hGet('DKIM_PUB_KEYS', $domain)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data),
@@ -54,30 +54,30 @@ function dkim($_action, $_data = null, $privkey = false) {
               explode(PHP_EOL, $key_details['key'])
             ), 1, -1)
           );
-          // Save public key and selector to redis
+          // Save public key and selector to valkey
           try {
-            $redis->hSet('DKIM_PUB_KEYS', $domain, $pubKey);
-            $redis->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
+            $valkey->hSet('DKIM_PUB_KEYS', $domain, $pubKey);
+            $valkey->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             continue;
           }
-          // Export private key and save private key to redis
+          // Export private key and save private key to valkey
           openssl_pkey_export($keypair_ressource, $privKey);
           if (isset($privKey) && !empty($privKey)) {
             try {
-              $redis->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, trim($privKey));
+              $valkey->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, trim($privKey));
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               continue;
             }
@@ -121,15 +121,15 @@ function dkim($_action, $_data = null, $privkey = false) {
       $to_domains = array_filter($to_domains);
       foreach ($to_domains as $to_domain) {
         try {
-          $redis->hSet('DKIM_PUB_KEYS', $to_domain, $from_domain_dkim['pubkey']);
-          $redis->hSet('DKIM_SELECTORS', $to_domain, $from_domain_dkim['dkim_selector']);
-          $redis->hSet('DKIM_PRIV_KEYS', $from_domain_dkim['dkim_selector'] . '.' . $to_domain, base64_decode(trim($from_domain_dkim['privkey'])));
+          $valkey->hSet('DKIM_PUB_KEYS', $to_domain, $from_domain_dkim['pubkey']);
+          $valkey->hSet('DKIM_SELECTORS', $to_domain, $from_domain_dkim['dkim_selector']);
+          $valkey->hSet('DKIM_PRIV_KEYS', $from_domain_dkim['dkim_selector'] . '.' . $to_domain, base64_decode(trim($from_domain_dkim['privkey'])));
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           continue;
         }
@@ -178,7 +178,7 @@ function dkim($_action, $_data = null, $privkey = false) {
         );
         return false;
       }
-      if ($redis->hGet('DKIM_PUB_KEYS', $domain)) {
+      if ($valkey->hGet('DKIM_PUB_KEYS', $domain)) {
         if ($overwrite_existing == 0) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
@@ -198,15 +198,15 @@ function dkim($_action, $_data = null, $privkey = false) {
       }
       try {
         dkim('delete', array('domains' => $domain));
-        $redis->hSet('DKIM_PUB_KEYS', $domain, $pem_public_key);
-        $redis->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
-        $redis->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, $private_key_normalized);
+        $valkey->hSet('DKIM_PUB_KEYS', $domain, $pem_public_key);
+        $valkey->hSet('DKIM_SELECTORS', $domain, $dkim_selector);
+        $valkey->hSet('DKIM_PRIV_KEYS', $dkim_selector . '.' . $domain, $private_key_normalized);
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -219,7 +219,7 @@ function dkim($_action, $_data = null, $privkey = false) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -235,8 +235,8 @@ function dkim($_action, $_data = null, $privkey = false) {
         return false;
       }
       $dkimdata = array();
-      if ($redis_dkim_key_data = $redis->hGet('DKIM_PUB_KEYS', $_data)) {
-        $dkimdata['pubkey'] = $redis_dkim_key_data;
+      if ($valkey_dkim_key_data = $valkey->hGet('DKIM_PUB_KEYS', $_data)) {
+        $dkimdata['pubkey'] = $valkey_dkim_key_data;
         if (strlen($dkimdata['pubkey']) < 391) {
           $dkimdata['length'] = "1024";
         }
@@ -250,15 +250,15 @@ function dkim($_action, $_data = null, $privkey = false) {
           $dkimdata['length'] = ">= 8192";
         }
         if ($GLOBALS['SPLIT_DKIM_255'] === true) {
-          $dkim_txt_tmp = str_split('v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data, 255);
+          $dkim_txt_tmp = str_split('v=DKIM1;k=rsa;t=s;s=email;p=' . $valkey_dkim_key_data, 255);
           $dkimdata['dkim_txt'] = sprintf('"%s"', implode('" "', (array)$dkim_txt_tmp ) );
         }
         else {
-          $dkimdata['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $redis_dkim_key_data;
+          $dkimdata['dkim_txt'] = 'v=DKIM1;k=rsa;t=s;s=email;p=' . $valkey_dkim_key_data;
         }
-        $dkimdata['dkim_selector'] = $redis->hGet('DKIM_SELECTORS', $_data);
+        $dkimdata['dkim_selector'] = $valkey->hGet('DKIM_SELECTORS', $_data);
         if ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] || $privkey == true) {
-          $dkimdata['privkey'] = base64_encode($redis->hGet('DKIM_PRIV_KEYS', $dkimdata['dkim_selector'] . '.' . $_data));
+          $dkimdata['privkey'] = base64_encode($valkey->hGet('DKIM_PRIV_KEYS', $dkimdata['dkim_selector'] . '.' . $_data));
         }
         else {
           $dkimdata['privkey'] = '';
@@ -276,8 +276,8 @@ function dkim($_action, $_data = null, $privkey = false) {
         return false;
       }
       $blinddkim = array();
-      foreach ($redis->hKeys('DKIM_PUB_KEYS') as $redis_dkim_domain) {
-        $blinddkim[] = $redis_dkim_domain;
+      foreach ($valkey->hKeys('DKIM_PUB_KEYS') as $valkey_dkim_domain) {
+        $blinddkim[] = $valkey_dkim_domain;
       }
       return array_diff($blinddkim, array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains')));
     break;
@@ -301,16 +301,16 @@ function dkim($_action, $_data = null, $privkey = false) {
           continue;
         }
         try {
-          $selector = $redis->hGet('DKIM_SELECTORS', $domain);
-          $redis->hDel('DKIM_PUB_KEYS', $domain);
-          $redis->hDel('DKIM_PRIV_KEYS', $selector . '.' . $domain);
-          $redis->hDel('DKIM_SELECTORS', $domain);
+          $selector = $valkey->hGet('DKIM_SELECTORS', $domain);
+          $valkey->hDel('DKIM_PUB_KEYS', $domain);
+          $valkey->hDel('DKIM_PRIV_KEYS', $selector . '.' . $domain);
+          $valkey->hDel('DKIM_SELECTORS', $domain);
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           continue;
         }

@@ -101,7 +101,7 @@ ACME_RESPONSE=$(acme-tiny ${DIRECTORY_URL} ${ACME_CONTACT_PARAMETER} \
   --acme-dir /var/www/acme/ 2>&1 > /tmp/_cert.pem | tee /dev/fd/5; exit ${PIPESTATUS[0]})
 SUCCESS="$?"
 ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
-log_f "${ACME_RESPONSE_B64}" redis_only b64
+log_f "${ACME_RESPONSE_B64}" valkey_only b64
 case "$SUCCESS" in
   0) # cert requested
     log_f "Deploying certificate ${CERT}..."
@@ -124,7 +124,7 @@ case "$SUCCESS" in
     ;;
   *) # non-zero is non-fun
     log_f "Failed to obtain certificate ${CERT} for domains '${CERT_DOMAINS[*]}'"
-    redis-cli -h redis -a ${REDISPASS} --no-auth-warning SET ACME_FAIL_TIME "$(date +%s)"
+    redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning SET ACME_FAIL_TIME "$(date +%s)"
     exit 100${SUCCESS}
     ;;
 esac

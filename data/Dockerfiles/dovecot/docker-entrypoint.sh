@@ -13,18 +13,18 @@ until dig +short mailcow.email > /dev/null; do
 done
 
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  VALKEY_CMDLINE="redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning"
 else
-  REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  VALKEY_CMDLINE="redis-cli -h valkey-mailcow -p 6379 -a ${VALKEYPASS} --no-auth-warning"
 fi
 
-until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
+until [[ $(${VALKEY_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Valkey..."
   sleep 2
 done
 
-${REDIS_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
+${VALKEY_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
 
 # Create missing directories
 [[ ! -d /etc/dovecot/sql/ ]] && mkdir -p /etc/dovecot/sql/
@@ -458,8 +458,8 @@ done
 # May be related to something inside Docker, I seriously don't know
 touch /etc/dovecot/lua/passwd-verify.lua
 
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  cp /etc/syslog-ng/syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng.conf
 fi
 
 exec "$@"
