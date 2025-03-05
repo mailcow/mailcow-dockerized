@@ -28,7 +28,8 @@
         "domain_desc": "도메인 설명 변경",
         "pw_reset": "mailcow 사용자 비밀번호 재설정 허용",
         "domain_relayhost": "도메인의 릴레이 호스트 변경",
-        "mailbox_relayhost": "메일함의 릴레이 호스트 변경"
+        "mailbox_relayhost": "메일함의 릴레이 호스트 변경",
+        "quarantine_category": "검역소 알림 카테고리 변경"
     },
     "add": {
         "activate_filter_warn": "활성화가 체크되어 있으면 모든 다른 필터들은 비활성화됩니다.",
@@ -104,7 +105,9 @@
         "timeout2": "로컬 호스트 연결 시간 초과",
         "username": "사용자명",
         "validate": "확인하기",
-        "validation_success": "성공적으로 확인됨"
+        "validation_success": "성공적으로 확인됨",
+        "tags": "태그",
+        "app_passwd_protocols": "앱 비밀번호에 대해 허용되는 프로토콜"
     },
     "admin": {
         "access": "접근",
@@ -304,7 +307,50 @@
         "username": "사용자 이름",
         "validate_license_now": "라이선스 서버와 GUID 확인",
         "verify": "확인",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "domain_admin": "도메인 관리자",
+        "f2b_filter": "정규식 필터",
+        "f2b_manage_external": "외부에서 Fail2Ban 관리",
+        "f2b_max_ban_time": "최대 차단 시간(초)",
+        "f2b_regex_info": "고려되는 로그: SOGo, Postfix, Dovecot, PHP-FPM.",
+        "html": "HTML",
+        "oauth2_apps": "OAuth2 앱",
+        "oauth2_add_client": "OAuth2 클라이언트 추가",
+        "optional": "선택 사항",
+        "options": "옵션",
+        "password_length": "비밀번호 길이",
+        "password_policy_chars": "하나 이상의 알파벳 문자를 포함해야 합니다.",
+        "password_policy_length": "최소 암호 길이가 %d입니다.",
+        "password_policy_numbers": "숫자 하나 이상을 포함해야 합니다.",
+        "password_policy_special_chars": "특수 문자를 포함해야 합니다.",
+        "password_reset_info": "복구 이메일이 제공되지 않으면 이 기능을 사용할 수 없습니다.",
+        "password_reset_settings": "비밀번호 복구 설정",
+        "password_reset_tmpl_html": "HTML 템플릿",
+        "password_reset_tmpl_text": "Text 템플릿",
+        "password_settings": "비밀번호 설정",
+        "queue_unban": "차단 해제",
+        "restore_template": "기본 템플릿을 복원하려면 비워둡니다.",
+        "service": "서비스",
+        "success": "성공",
+        "dkim_overwrite_key": "기존 DKIM 키 덮어쓰기",
+        "f2b_ban_time_increment": "차단 시간은 차단될 때마다 증가합니다.",
+        "password_policy": "비밀번호 정책",
+        "quarantine_max_score": "메일의 스팸 점수가 이 값보다 높으면 알림을 삭제합니다:<br><small>기본값: 9999.0</small>",
+        "f2b_manage_external_info": "Fail2ban은 차단 목록을 유지하지만 트래픽을 차단하는 규칙을 능동적으로 설정하지는 않습니다. 트래픽을 외부에서 차단하려면 아래 생성된 차단 목록을 사용하세요.",
+        "password_policy_lowerupper": "소문자 및 대문자를 포함해야 합니다.",
+        "transport_test_rcpt_info": "&#8226; null@hosted.mailcow.de 을 사용하여 해외 목적지로 릴레이를 테스트하세요.",
+        "ip_check_disabled": "IP 확인이 비활성화됩니다. 아래에서 활성화할 수 있습니다<br> <strong>시스템 > 구성 > 옵션 > 사용자 정의</strong>",
+        "logo_normal_label": "일반",
+        "logo_dark_label": "다크 모드의 경우 반전",
+        "convert_html_to_text": "HTML을 일반 텍스트로 변환",
+        "copy_to_clipboard": "클립보드에 텍스트가 복사되었습니다!",
+        "cors_settings": "CORS 설정",
+        "rsettings_preset_4": "도메인에 대해 Rspamd 비활성화",
+        "ip_check": "IP 확인",
+        "admins": "관리자",
+        "admins_ldap": "LDAP 관리자",
+        "api_read_only": "읽기 전용 액세스",
+        "api_read_write": "읽기-쓰기 액세스"
     },
     "danger": {
         "access_denied": "접근이 거부되거나 잘못된 데이터 양식",
@@ -418,7 +464,28 @@
         "username_invalid": "%s는 사용지 이름으로 사용할 수 없습니다.",
         "validity_missing": "유효 기간을 지정해주세요.",
         "value_missing": "모든 값을 입력해주세요.",
-        "yotp_verification_failed": "Yubico OTP 검증 실패: %s"
+        "yotp_verification_failed": "Yubico OTP 검증 실패: %s",
+        "dkim_domain_or_sel_exists": "“%s\"에 대한 DKIM 키가 존재하며 덮어쓰지 않습니다.",
+        "img_size_exceeded": "이미지가 최대 파일 크기를 초과합니다.",
+        "invalid_reset_token": "잘못된 리셋 토큰",
+        "nginx_reload_failed": "Nginx 리로드 실패: %s",
+        "password_reset_na": "현재 비밀번호 복구를 사용할 수 없습니다. 관리자에게 문의하세요.",
+        "reset_f2b_regex": "정규식 필터를 제때 재설정하지 못했습니다. 다시 시도하거나 몇 초 더 기다렸다가 웹사이트를 다시 로드하세요.",
+        "template_exists": "템플릿 %s이(가) 이미 존재합니다.",
+        "template_id_invalid": "템플릿 ID %s가 잘못되었습니다.",
+        "template_name_invalid": "템플릿 이름이 잘못되었습니다.",
+        "tfa_token_invalid": "TFA 토큰이 유효하지 않습니다.",
+        "to_invalid": "수신자가 비어 있지 않아야 합니다.",
+        "webauthn_authenticator_failed": "선택한 인증기를 찾을 수 없습니다.",
+        "webauthn_username_failed": "선택한 인증기가 다른 계정에 속해 있습니다.",
+        "demo_mode_enabled": "데모 모드가 활성화됨",
+        "recovery_email_failed": "복구 이메일을 보낼 수 없습니다. 관리자에게 문의하세요.",
+        "password_reset_invalid_user": "사서함을 찾을 수 없거나 복구 이메일이 설정되어 있지 않습니다.",
+        "webauthn_publickey_failed": "선택한 인증기에 대한 공개 키가 저장되지 않았습니다.",
+        "fido2_verification_failed": "FIDO2 인증 실패: %s",
+        "extended_sender_acl_denied": "외부 발신자 주소를 설정하는 ACL 누락",
+        "img_dimensions_exceeded": "이미지가 최대 이미지 크기를 초과합니다.",
+        "reset_token_limit_exceeded": "토큰 재설정 한도를 초과했습니다. 나중에 다시 시도해 주세요."
     },
     "debug": {
         "chart_this_server": "Chart (this server)",
@@ -437,7 +504,9 @@
         "uptime": "Uptime",
         "started_on": "Started on",
         "static_logs": "Static logs",
-        "system_containers": "System & Containers"
+        "system_containers": "System & Containers",
+        "current_time": "시스템 시간",
+        "no_update_available": "시스템이 최신 버전입니다."
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
@@ -563,13 +632,14 @@
     "header": {
         "administration": "Configuration & Details",
         "apps": "Apps",
-        "debug": "System Information",
+        "debug": "정보",
         "email": "E-Mail",
         "mailcow_config": "Configuration",
         "quarantine": "Quarantine",
         "restart_netfilter": "Restart netfilter",
         "restart_sogo": "Restart SOGo",
-        "user_settings": "User Settings"
+        "user_settings": "User Settings",
+        "mailcow_system": "시스템"
     },
     "info": {
         "awaiting_tfa_confirmation": "Awaiting TFA confirmation",
@@ -1020,5 +1090,9 @@
         "quota_exceeded_scope": "Domain quota exceeded: Only unlimited mailboxes can be created in this domain scope.",
         "session_token": "Form token invalid: Token mismatch",
         "session_ua": "Form token invalid: User-Agent validation error"
+    },
+    "datatables": {
+        "collapse_all": "모두 접기",
+        "decimal": "."
     }
 }
