@@ -39,7 +39,11 @@ for ($i = 0; $i < count($mailcow_apps_processed); $i++) {
     $hide_mailcow_apps = false;
   }
   if (!empty($_SESSION['mailcow_cc_username'])){
-    $mailcow_apps_processed[$i]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $mailcow_apps_processed[$i]['user_link']);
+    if ($app_links_processed[$i]['user_link']) {
+      $mailcow_apps_processed[$i]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $mailcow_apps_processed[$i]['user_link']);
+    } else {
+      $mailcow_apps_processed[$i]['user_link'] = $mailcow_apps_processed[$i]['link'];
+    }
   }
 }
 if ($app_links_processed){
@@ -49,7 +53,11 @@ if ($app_links_processed){
       $hide_mailcow_apps = false;
     }
     if (!empty($_SESSION['mailcow_cc_username'])){
-      $app_links_processed[$i][$key]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $app_links_processed[$i][$key]['user_link']);
+      if ($app_links_processed[$i][$key]['user_link']) {
+        $app_links_processed[$i][$key]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $app_links_processed[$i][$key]['user_link']);
+      } else {
+        $app_links_processed[$i][$key]['user_link'] = $app_links_processed[$i][$key]['link'];
+      }
     }
   }
 }
