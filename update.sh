@@ -710,6 +710,44 @@ migrate_solr_config_options() {
   fi
 }
 
+detect_major_update() {
+  if [ ${BRANCH} == "master" ]; then
+    # Array with major versions
+    # Add major versions here
+    MAJOR_VERSIONS=(
+      "2025-02"
+    )
+
+    current_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+    release_url="https://github.com/mailcow/mailcow-dockerized/releases/tag"
+
+    updates_to_apply=()
+
+    for version in "${MAJOR_VERSIONS[@]}"; do
+      if [[ "$current_version" < "$version" ]]; then
+        updates_to_apply+=("$version")
+      fi
+    done
+
+    if [[ ${#updates_to_apply[@]} -gt 0 ]]; then
+      echo -e "\e[33m\nMAJOR UPDATES to be applied:\e[0m"
+      for update in "${updates_to_apply[@]}"; do
+        echo "$update - $release_url/$update"
+      done
+
+      echo -e "\n⚠️  Please read the release notes before proceeding.\n"
+
+      read -p "Do you want to proceed with the update? [y/n] " response
+      if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        echo "Proceeding with the update..."
+      else
+        echo "Update canceled. Exiting."
+        exit 1
+      fi
+    fi
+  fi
+}
+
 ############## End Function Section ##############
 
 # Check permissions
@@ -1345,6 +1383,7 @@ if [ ! "$FORCE" ]; then
     echo "OK, exiting."
     exit 0
   fi
+  detect_major_update
   migrate_docker_nat
 fi
 

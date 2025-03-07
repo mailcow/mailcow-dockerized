@@ -834,7 +834,7 @@
         "recipient_map": "Carte du destinataire",
         "recipient_map_info": "Les cartes des destinataires sont utilisées pour remplacer l’adresse de destination d’un message avant sa livraison.",
         "recipient_map_new": "Nouveau destinataire",
-        "recipient_map_new_info": "La destination de la carte du destinataire doit être une adresse de courriel valide.",
+        "recipient_map_new_info": "La destination de la carte du destinataire doit être une adresse de courriel valide ou un nom de domaine.",
         "recipient_map_old": "Destinataire original",
         "recipient_map_old_info": "Une carte de destination originale doit être une adresse de courriel valide ou un nom de domaine.",
         "recipient_maps": "Cartes des bénéficiaires",

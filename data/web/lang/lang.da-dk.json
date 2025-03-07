@@ -706,7 +706,7 @@
         "recipient_map": "Modtagerkort",
         "recipient_map_info": "Modtagerkort bruges til at erstatte destinationsadressen i en meddelelse, før den leveres.",
         "recipient_map_new": "Ny modtager",
-        "recipient_map_new_info": "Modtagerkortdestination skal være en gyldig e-mail-adresse.",
+        "recipient_map_new_info": "Modtagerkortdestination skal være gyldige e-mail-adresser eller et domænenavn.",
         "recipient_map_old": "Original modtager",
         "recipient_map_old_info": "En modtager kortlægger den originale destination, skal være gyldige e-mail-adresser eller et domænenavn.",
         "recipient_maps": "Modtagerkort",

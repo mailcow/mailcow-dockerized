@@ -764,7 +764,7 @@
         "recipient_map": "Ontvanger-map",
         "recipient_map_info": "Ontvanger-maps worden gebruikt om het doeladres van een bericht te vervangen voordat het in een mailbox terecht komt.",
         "recipient_map_new": "Nieuwe ontvanger",
-        "recipient_map_new_info": "De bestemming van een ontvanger-map dient een geldig mailadres te zijn.",
+        "recipient_map_new_info": "De bestemming van een ontvanger-map dient een geldig mailadres of domeinnaam te zijn.",
         "recipient_map_old": "Oorspronkelijke ontvanger",
         "recipient_map_old_info": "De oorspronkelijke bestemming van een ontvanger-map dient een geldig mailadres of domeinnaam te zijn.",
         "recipient_maps": "Ontvanger-maps",
