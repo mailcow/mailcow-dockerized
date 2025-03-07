@@ -277,7 +277,7 @@ function user_login($user, $pass, $extra = null){
       }
       return $result;
     break;
-    default:
+    case 'mailcow':
       // verify password
       if (verify_hash($row['password'], $pass) !== false) {
         // check for tfa authenticators
