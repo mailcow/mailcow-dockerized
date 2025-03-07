@@ -83,6 +83,14 @@ if (isset($_POST["verify_tfa_login"])) {
   unset($_SESSION['pending_mailcow_cc_role']);
   unset($_SESSION['pending_tfa_methods']);
 }
+if (isset($_POST["verify_fido2_login"])) {
+  fido2(array(
+    "action" => "verify",
+    "token" => $_POST["token"],
+    "user" => "user"
+  ));
+  exit;
+}
 
 if (isset($_GET["cancel_tfa_login"])) {
   unset($_SESSION['pending_pw_reset_token']);
