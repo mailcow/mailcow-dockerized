@@ -921,9 +921,7 @@
     },
     "start": {
         "help": "Afișează/Ascunde panoul de ajutor",
-        "imap_smtp_server_auth_info": "Utilizează adresa completă de email și mecanismul de autentificare SIMPLU.<br>\nDatele tale de conectare vor fi criptate prin criptarea obligatorie de la server.",
-        "mailcow_apps_detail": "Utilizează o aplicație mailcow pentru a accesa mailurile, agenda, contactele și altele.",
-        "mailcow_panel_detail": "<b>Administratorii de domeniu</b> creează, modifică sau șterg căsuțe poștale și aliasuri, modifică domenii și citesc informații suplimentare despre domeniile lor atribuite.<br>\n<b>Utilizatorii cu cutii poștale</b> pot să creeze aliasuri limitate în timp (aliasuri spam), să își schimbe parola și setările pentru filtrul de spam."
+        "imap_smtp_server_auth_info": "Utilizează adresa completă de email și mecanismul de autentificare SIMPLU.<br>\nDatele tale de conectare vor fi criptate prin criptarea obligatorie de la server."
     },
     "success": {
         "acl_saved": "ACL pentru obiectul %s a fost salvat",

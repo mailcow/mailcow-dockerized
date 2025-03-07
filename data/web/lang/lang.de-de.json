@@ -1067,9 +1067,7 @@
     },
     "start": {
         "help": "Hilfe ein-/ausblenden",
-        "imap_smtp_server_auth_info": "Bitte verwenden Sie Ihre vollständige E-Mail-Adresse sowie das PLAIN-Authentifizierungsverfahren.<br>\r\nIhre Anmeldedaten werden durch die obligatorische Verschlüsselung entgegen des Begriffes \"PLAIN\" nicht unverschlüsselt übertragen.",
-        "mailcow_apps_detail": "Verwenden Sie mailcow-Apps, um E-Mails abzurufen, Kalender und Kontakte zu verwalten und vieles mehr.",
-        "mailcow_panel_detail": "<b>Domain-Administratoren</b> erstellen, verändern oder löschen Mailboxen, verwalten die Domäne und sehen sonstige Einstellungen ein.<br>\r\n\tAls <b>Mailbox-Benutzer</b> erstellen Sie hier zeitlich limitierte Aliasse, ändern das Verhalten des Spamfilters, setzen ein neues Passwort und vieles mehr."
+        "imap_smtp_server_auth_info": "Bitte verwenden Sie Ihre vollständige E-Mail-Adresse sowie das PLAIN-Authentifizierungsverfahren.<br>\r\nIhre Anmeldedaten werden durch die obligatorische Verschlüsselung entgegen des Begriffes \"PLAIN\" nicht unverschlüsselt übertragen."
     },
     "success": {
         "acl_saved": "ACL für Objekt %s wurde gesetzt",

@@ -467,9 +467,7 @@
     },
     "start": {
         "help": "Rādīt/Paslēpt palīdzības paneli",
-        "imap_smtp_server_auth_info": "Lūgums izmantot pilnu e-pasta adresi un PLAIN autentificēšanās mehānismu.<br>\nPieteikšanās dati tiks šifrēti ar servera puses obligātu šifrēšanu.",
-        "mailcow_apps_detail": "Izmantojiet lietotni mailcow, lai piekļūtu savam pastam, kalendāram, kontaktiem un citām lietām.",
-        "mailcow_panel_detail": "<b>Domēna pārvaldītāji</b> izveido, maina vai izdzēš pastkastes un aizstājvārdus, maina domēnus un lasa papildu informāciju par piešķirtajiem domēniem.<br>\n<b>Pastkastes lietotāji</b> var izveidot laikā ierobežotus aizstājvārdus (surogātpasta aizstājvārdus), mainīt savu paroli un surogātpasta atlasīšanas iestatījumus."
+        "imap_smtp_server_auth_info": "Lūgums izmantot pilnu e-pasta adresi un PLAIN autentificēšanās mehānismu.<br>\nPieteikšanās dati tiks šifrēti ar servera puses obligātu šifrēšanu."
     },
     "success": {
         "admin_modified": "Izmaiņas administrātoram ir saglabātas",

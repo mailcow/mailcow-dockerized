@@ -1016,9 +1016,7 @@
     },
     "start": {
         "help": "Zobrazit/skrýt panel nápovědy",
-        "imap_smtp_server_auth_info": "Použijte celou e-mailovou adresu a zvolte způsob ověření PLAIN.<br>\r\nPřihlašovací údaje budou zašifrovány na straně serveru.",
-        "mailcow_apps_detail": "Použijte aplikace pro přístup k e-mailům, kalendáři, kontaktům atd.",
-        "mailcow_panel_detail": "<b>Správci domén</b> mohou vytvářet, upravovat nebo mazat schránky a aliasy, upravovat parametry domén a zobrazovat další informace o svých přidělených doménách.<br>\r\n<b>Uživatelé</b> mohou vytvářet dočasné aliasy (spam aliases), měnit svá hesla a nastavovat filtr spamu."
+        "imap_smtp_server_auth_info": "Použijte celou e-mailovou adresu a zvolte způsob ověření PLAIN.<br>\r\nPřihlašovací údaje budou zašifrovány na straně serveru."
     },
     "success": {
         "acl_saved": "ACL pro objekt %s uloženo",

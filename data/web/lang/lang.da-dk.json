@@ -822,9 +822,7 @@
     },
     "start": {
         "help": "Vis / skjul hjælpepanel",
-        "imap_smtp_server_auth_info": "Brug din fulde e-mail-adresse og PLAIN-godkendelsesmekanismen.<br>\r\nDine login-data bliver krypteret af den obligatoriske kryptering på serversiden.",
-        "mailcow_apps_detail": "Brug en mailcow-app til at få adgang til dine mails, kalender, kontakter og mere.",
-        "mailcow_panel_detail": "<b>Domæneadministratorer</b> oprette, ændre eller slette postkasser og aliasser, ændre domæner og læse yderligere information om deres tildelte domæner.<br>\r\n<b>Mailbox-brugere</b>er i stand til at oprette tidsbegrænsede aliaser (spamaliaser), ændre deres adgangskode og spamfilterindstillinger."
+        "imap_smtp_server_auth_info": "Brug din fulde e-mail-adresse og PLAIN-godkendelsesmekanismen.<br>\r\nDine login-data bliver krypteret af den obligatoriske kryptering på serversiden."
     },
     "success": {
         "acl_saved": "ACL til objekt %s gemt",
