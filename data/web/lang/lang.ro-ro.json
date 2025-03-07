@@ -789,7 +789,7 @@
         "recipient_map": "Hartă destinatar",
         "recipient_map_info": "Hărțile destinatarilor sunt folosite pentru a înlocui adresa de destinație a unui mesaj înainte de a fi livrat.",
         "recipient_map_new": "Destinatar nou",
-        "recipient_map_new_info": "Destinația hărții destinatarului trebuie să fie o adresă de email validă.",
+        "recipient_map_new_info": "Destinația hărții destinatarului trebuie să fie adrese de email valide sau nume de domeniu.",
         "recipient_map_old": "Destinatar original",
         "recipient_map_old_info": "Destinația originală a hărților destinatarilor trebuie să fie adrese de email valide sau nume de domeniu.",
         "recipient_maps": "Hărți destinatar",
