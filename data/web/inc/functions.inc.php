@@ -1250,6 +1250,7 @@ function set_tfa($_data) {
 }
 function fido2($_data) {
   global $pdo;
+  global $WebAuthn;
   $_data_log = $_data;
   // Not logging registration data, only actions
   // Silent errors for "get" requests
@@ -1382,6 +1383,81 @@ function fido2($_data) {
         'log' => array(__FUNCTION__, $_data_log),
         'msg' => array('object_modified', htmlspecialchars($username))
       );
+    break;
+    case "verify":
+      $tokenData = json_decode($_data['token']);
+      $clientDataJSON = base64_decode($tokenData->clientDataJSON);
+      $authenticatorData = base64_decode($tokenData->authenticatorData);
+      $signature = base64_decode($tokenData->signature);
+      $id = base64_decode($tokenData->id);
+      $challenge = $_SESSION['challenge'];
+      $process_fido2 = fido2(array("action" => "get_by_b64cid", "cid" => $tokenData->id));
+      if ($process_fido2['pub_key'] === false) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array("fido2_login", $_data['user'], $process_fido2['username']),
+          'msg' => "login_failed"
+        );
+        return false;
+      }
+      try {
+        $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_fido2['pub_key'], $challenge, null, $GLOBALS['FIDO2_UV_FLAG_LOGIN'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
+      }
+      catch (Throwable $ex) {
+        unset($process_fido2);
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array("fido2_login", $_data['user'], $process_fido2['username'], $ex->getMessage()),
+          'msg' => "login_failed"
+        );
+        return false;
+      }
+      $return = new stdClass();
+      $return->success = true;
+      $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $process_fido2['username']));
+      $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($obj_props['superadmin'] === 1 && (!$_data['user'] || $_data['user'] == "admin")) {
+        $_SESSION["mailcow_cc_role"] = "admin";
+      }
+      elseif ($obj_props['superadmin'] === 0 && (!$_data['user'] || $_data['user'] == "domainadmin")) {
+        $_SESSION["mailcow_cc_role"] = "domainadmin";
+      }
+      elseif (!isset($obj_props['superadmin']) && (!$_data['user'] || $_data['user'] == "user")) {
+        $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
+        $stmt->execute(array(':username' => $process_fido2['username']));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row['username'] == $process_fido2['username']) {
+          $_SESSION["mailcow_cc_role"] = "user";
+        }
+      }
+      else {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array("fido2_login", $_data['user'], $process_fido2['username']),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+      if (empty($_SESSION["mailcow_cc_role"])) {
+        session_unset();
+        session_destroy();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array("fido2_login", $_data['user'], $process_fido2['username']),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+      $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
+      $_SESSION["fido2_cid"] = $process_fido2['cid'];
+      unset($_SESSION["challenge"]);
+      $_SESSION['return'][] =  array(
+        'type' => 'success',
+        'log' => array("fido2_login", $_data['user'], $process_fido2['username']),
+        'msg' => array('logged_in_as', $process_fido2['username'])
+      );
+      return true;
     break;
   }
 }

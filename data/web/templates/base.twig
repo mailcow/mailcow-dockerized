@@ -391,16 +391,14 @@ function recursiveBase64StrToArrayBuffer(obj) {
         signature : cred.response.signature ? arrayBufferToBase64(cred.response.signature) : null
       };
     }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
-      return window.fetch("/api/v1/process/fido2-args", {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+      var formData = new FormData();
+      formData.append("token", AuthenticatorAttestationResponse);
+      formData.append("verify_fido2_login", "true");
+
+      return window.fetch(window.location.href, {method:'POST', body: formData, cache:'no-cache'});
     }).then(function(response) {
-      return response.json();
-    }).then(function(json) {
-      if (json.success) {
-        window.location = window.location.href.split("#")[0];
-  } else {
-    throw new Error();
-  }
-  }).catch(function(err) {
+      window.location = window.location.href.split("#")[0];
+    }).catch(function(err) {
     if (typeof err.message === 'undefined') {
       mailcow_alert_box(lang_fido2.fido2_validation_failed, "danger");
     } else {
