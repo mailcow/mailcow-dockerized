@@ -201,7 +201,7 @@
         "link": "Link",
         "loading": "잠시만 기다려주세요...",
         "logo_info": "이미지 크기는 상단 탐색 막대의 경우 40px, 시작 페이지의 경우 최대 너비 250px로 조정됩니다. 확장 가능한 그래픽을 권장합니다.",
-        "lookup_mx": "MX와 목적지 일치 (.outlook.com이 홉을 통해서 MX *.outlook.com을 대상으로 하는 모든 메일을 라우트한다.)",
+        "lookup_mx": "목적지가 MX 이름과 일치하는 정규 표현식입니다. (<code>.*\\.google\\.com</code>를 사용하여 이 홉을 통해 google.com으로 끝나는 모든 메일을 대상으로 하는 MX로 라우팅합니다.)",
         "main_name": "\"mailcow UI\" 이름",
         "merged_vars_hint": "회색으로 표시된 행은 <code>vars.(local.)php</code> 에서 병합되었고 이는 수정할 수 없습니다.",
         "message": "메세지",
@@ -350,7 +350,10 @@
         "admins": "관리자",
         "admins_ldap": "LDAP 관리자",
         "api_read_only": "읽기 전용 액세스",
-        "api_read_write": "읽기-쓰기 액세스"
+        "api_read_write": "읽기-쓰기 액세스",
+        "is_mx_based": "MX 기반",
+        "login_time": "로그인 시간",
+        "ip_check_opt_in": "외부 IP 주소 확인을 위해 타사 서비스 <strong>ipv4.mailcow.email</strong> 및 <strong>ipv6.mailcow.email</strong>을 사용하도록 설정합니다."
     },
     "danger": {
         "access_denied": "접근이 거부되거나 잘못된 데이터 양식",
@@ -485,7 +488,9 @@
         "fido2_verification_failed": "FIDO2 인증 실패: %s",
         "extended_sender_acl_denied": "외부 발신자 주소를 설정하는 ACL 누락",
         "img_dimensions_exceeded": "이미지가 최대 이미지 크기를 초과합니다.",
-        "reset_token_limit_exceeded": "토큰 재설정 한도를 초과했습니다. 나중에 다시 시도해 주세요."
+        "reset_token_limit_exceeded": "토큰 재설정 한도를 초과했습니다. 나중에 다시 시도해 주세요.",
+        "cors_invalid_method": "잘못된 허용 메서드를 지정했습니다.",
+        "cors_invalid_origin": "잘못된 허용 원본을 지정했습니다."
     },
     "debug": {
         "chart_this_server": "Chart (this server)",
@@ -506,7 +511,22 @@
         "static_logs": "Static logs",
         "system_containers": "System & Containers",
         "current_time": "시스템 시간",
-        "no_update_available": "시스템이 최신 버전입니다."
+        "no_update_available": "시스템이 최신 버전입니다.",
+        "architecture": "아키텍처",
+        "container_running": "실행 중",
+        "container_disabled": "컨테이너 중지 또는 비활성화",
+        "container_stopped": "중지됨",
+        "online_users": "온라인 사용자",
+        "service": "서비스",
+        "success": "성공",
+        "show_ip": "공인 IP 표시",
+        "timezone": "시간대",
+        "update_available": "사용 가능한 업데이트가 있습니다.",
+        "update_failed": "업데이트를 확인할 수 없습니다",
+        "username": "사용자 이름",
+        "memory": "메모리",
+        "error_show_ip": "공인 IP 주소를 확인할 수 없습니다",
+        "login_time": "시간"
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
@@ -614,7 +634,13 @@
         "title": "Edit object",
         "unchanged_if_empty": "If unchanged leave blank",
         "username": "Username",
-        "validate_save": "Validate and save"
+        "validate_save": "Validate and save",
+        "allow_from_smtp": "다음 IP만 <b>SMTP</b>를 사용하도록 허용합니다.",
+        "allow_from_smtp_info": "모든 발신자를 허용하려면 비워둡니다.<br>IPv4/IPv6 주소 및 네트워크.",
+        "allowed_protocols": "허용된 프로토콜",
+        "app_passwd_protocols": "앱 비밀번호에 대해 허용되는 프로토콜",
+        "acl": "ACL (권한)",
+        "admin": "관리자 수정"
     },
     "footer": {
         "cancel": "Cancel",
@@ -1093,6 +1119,22 @@
     },
     "datatables": {
         "collapse_all": "모두 접기",
-        "decimal": "."
+        "decimal": ".",
+        "emptyTable": "테이블에 사용 가능한 데이터가 없습니다.",
+        "expand_all": "모두 펼치기",
+        "infoEmpty": "0개 항목 중 0개부터 0개까지 표시",
+        "infoFiltered": "(_MAX_ 총 항목에서 필터링됨)",
+        "thousands": ",",
+        "lengthMenu": "_MENU_ 항목 표시",
+        "loadingRecords": "로딩 중...",
+        "processing": "잠시만 기다려 주세요...",
+        "search": "검색:",
+        "zeroRecords": "일치하는 레코드가 없습니다.",
+        "paginate": {
+            "first": "처음",
+            "last": "마지막",
+            "next": "다음",
+            "previous": "이전"
+        }
     }
 }
