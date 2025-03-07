@@ -118,7 +118,7 @@
               </li>
               {% endif %}
             {% endfor %}
-            {% for row in app_links %}
+            {% for row in app_links_processed %}
               {% for key, val in row %}
               <li><a href="{{ val.user_link }}" class="dropdown-item">{{ key }}</a></li>
               {% endfor %}

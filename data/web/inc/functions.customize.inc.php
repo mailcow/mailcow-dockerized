@@ -3,7 +3,7 @@ function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
   global $LOGO_LIMITS;
-  
+
   switch ($_action) {
     case 'add':
       // disable functionality when demo mode is enabled
@@ -267,12 +267,13 @@ function customize($_action, $_item, $_data = null) {
             return false;
           }
 
-          foreach($app_links as $key => $value){
-            foreach($value as $app => $details){
-              if (empty($details['user_link']) || empty($_SESSION['mailcow_cc_username'])){
-                $app_links[$key][$app]['user_link'] = $app_links[$key][$app]['link'];
-              } else {
-                $app_links[$key][$app]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $app_links[$key][$app]['user_link']);
+          // convert from old style
+          foreach($app_links as $i => $entry){
+            foreach($entry as $app => $link){
+              if (empty($link['link']) && empty($link['user_link'])){
+                $app_links[$i][$app] = array();
+                $app_links[$i][$app]['link'] = $link;
+                $app_links[$i][$app]['user_link'] = $link;
               }
             }
           }
