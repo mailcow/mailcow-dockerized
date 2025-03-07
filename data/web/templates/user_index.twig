@@ -65,10 +65,10 @@
         </div>
         <div class="hr-title mt-5"><strong>{{ lang.login.other_logins }}</strong></div>
         <div class="d-flex flex-column align-items-center">
-          <a class="btn btn-xs-lg btn-secondary w-100" style="max-width: 400px;" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a>
           {% if has_iam_sso %}
           <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a>
           {% endif %}
+          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a>
         </div>
         {% if login_delay %}
         <p><div class="my-4 alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
@@ -76,7 +76,7 @@
         <div class="my-4" id="fido2-alerts"></div>
         {% if not oauth2_request and (mailcow_apps or app_links) and not hide_mailcow_apps %}
         <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
-        <div class="my-2 d-grid gap-2 d-sm-block apps">
+        <div class="my-2 apps">
           {% for app in mailcow_apps %}
             {% if not app.hide %}
               {% if not skip_sogo or not is_uri('SOGo', app.link) %}
