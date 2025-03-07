@@ -101,7 +101,7 @@
     </div>
   </div>
 </div>
-{% if not oauth2_request %}
+{% if not oauth2_request and ui_texts.help_text %}
 <div class="row">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
     <div class="card">
@@ -110,18 +110,11 @@
       </div>
       <div id="collapse1" class="card-collapse collapse">
         <div class="card-body">
-          {% if ui_texts.help_text %}
           <p>{{ ui_texts.help_text|raw }}</p>
-          {% else %}
-          <p><span style="border-bottom: 1px dotted #999;">{{ ui_texts.main_name|raw }}</span></p>
-          <p>{{ lang.start.mailcow_panel_detail|raw }}</p>
-          <p><span style="border-bottom: 1px dotted #999;">{{ ui_texts.apps_name|raw }}</span></p>
-          <p>{{ lang.start.mailcow_apps_detail|raw }}</p>
-          {% endif %}
         </div>
       </div>
     </div>
   </div>
-  {% endif %}
 </div>
+{% endif %}
 {% endblock %}

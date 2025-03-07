@@ -1079,9 +1079,7 @@
     },
     "start": {
         "help": "Show/Hide help panel",
-        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br>\r\nYour login data will be encrypted by the server-side mandatory encryption.",
-        "mailcow_apps_detail": "Use a mailcow app to access your mails, calendar, contacts and more.",
-        "mailcow_panel_detail": "<b>Domain administrators</b> create, modify or delete mailboxes and aliases, change domains and read further information about their assigned domains.<br>\r\n<b>Mailbox users</b> are able to create time-limited aliases (spam aliases), change their password and spam filter settings."
+        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br>\r\nYour login data will be encrypted by the server-side mandatory encryption."
     },
     "success": {
         "acl_saved": "ACL for object %s saved",

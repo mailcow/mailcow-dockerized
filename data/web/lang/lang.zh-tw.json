@@ -985,9 +985,7 @@
     },
     "start": {
         "help": "顯示/隱藏 幫助面板",
-        "imap_smtp_server_auth_info": "請使用完整的信箱地址及明文認證 (PLAIN) 來登入。<br>\r\n你的登入資訊會在伺服器端被加密。",
-        "mailcow_apps_detail": "使用 mailcow 應用程式來存取你的郵件、行事曆、聯絡資訊及其他更多功能。",
-        "mailcow_panel_detail": "<b>域名管理員</b> 可以創建、修改、刪除信箱別名，以及讀取並修改被指定他們名下的域名。<br>\r\n<b>信箱使用者</b> 可以創建臨時別名 (垃圾郵件別名)，更改密碼和垃圾郵件過濾器設定。"
+        "imap_smtp_server_auth_info": "請使用完整的信箱地址及明文認證 (PLAIN) 來登入。<br>\r\n你的登入資訊會在伺服器端被加密。"
     },
     "success": {
         "acl_saved": "%s 的存取權限表已儲存",

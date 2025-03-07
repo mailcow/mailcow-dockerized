@@ -974,9 +974,7 @@
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",
-        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br />\r\nYour login data will be encrypted by the server-side mandatory encryption.",
-        "mailcow_apps_detail": "Usa l'app mailcow per accedere alla posta, calendari, contatti ed altro.",
-        "mailcow_panel_detail": "<b>Amministratori di dominio</b> crea, modifica od elimina caselle ed alias, cambia i domini e informazioni relative ai domini associati.<br />\r\n\t<b>Utenti di caselle</b> possono creare degli alias temporanei (spam aliases), cambiare la loro password e le impostazioni relative ai filtri spam."
+        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br />\r\nYour login data will be encrypted by the server-side mandatory encryption."
     },
     "success": {
         "acl_saved": "ACL for object %s saved",

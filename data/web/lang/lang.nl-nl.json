@@ -878,9 +878,7 @@
     },
     "start": {
         "help": "Toon/verberg hulppaneel",
-        "imap_smtp_server_auth_info": "Gebruik je volledige mailadres en het bijbehorende (onversleutelde) verificatiemechanisme.<br>De aanmeldgegevens worden versleuteld verzonden.",
-        "mailcow_apps_detail": "Gebruik een Mailcow-app om je mails, agenda, contacten en meer te bekijken.",
-        "mailcow_panel_detail": "<b>Domeinadministrators</b> kunnen mailboxen en aliassen aanmaken, wijzigen en verwijderen. Ook kunnen ze domeinen weergeven en aanpassen.<br><b>Gebruikers</b> kunnen tijdelijke aliassen aanmaken, hun wachtwoord aanpassen en de spamfilterinstellingen wijzigen."
+        "imap_smtp_server_auth_info": "Gebruik je volledige mailadres en het bijbehorende (onversleutelde) verificatiemechanisme.<br>De aanmeldgegevens worden versleuteld verzonden."
     },
     "success": {
         "acl_saved": "Toegangscontrole voor object %s is opgeslagen",

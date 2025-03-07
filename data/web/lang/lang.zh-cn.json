@@ -1008,9 +1008,7 @@
     },
     "start": {
         "help": "显示/隐藏 帮助面板",
-        "imap_smtp_server_auth_info": "请使用你的完整邮箱地址并使用 PLAIN (明文) 认证方法。<br>\r\n你的登录数据会被服务端强制加密。",
-        "mailcow_apps_detail": "使用 Mailcow 应用访问你的邮件、日历、联系人以及更多内容。",
-        "mailcow_panel_detail": "<b>域名管理员</b>可以创建、修改或删除邮箱的别名，更改分配给用户的域名并读取更多域名相关信息。<br>\r\n<b>邮箱用户</b>可以创建临时别名 (垃圾邮件别名)，更改密码以及设置垃圾邮件过滤器。"
+        "imap_smtp_server_auth_info": "请使用你的完整邮箱地址并使用 PLAIN (明文) 认证方法。<br>\r\n你的登录数据会被服务端强制加密。"
     },
     "success": {
         "acl_saved": "已保存对象 %s 的 ACL 设置",

@@ -968,9 +968,7 @@
     },
     "start": {
         "help": "Zobraziť/Skryť panel nápoveď",
-        "imap_smtp_server_auth_info": "Prosím použite celú vašu emailovú adresu a metódu overenia PLAIN.<br>\r\n Vaše prihlasovacie údaje budú zašifrované na strane servera.",
-        "mailcow_apps_detail": "Použite mailcow aplikácie pre prístup k vašej mailovej schránke, kalendáru, kontaktom a viac.",
-        "mailcow_panel_detail": "<b>Administrátori domény</b> môžu vytvárať, modifikovať alebo mazať schránky a aliasy, meniť domény a zobraziť informácie o priradených doménach.<br>\r\n<b>Bežný používatelia</b> majú možnosť vytvoriť časovo obmedzené aliasy (spam aliasy), meniť heslá a nastavenia spam filtra."
+        "imap_smtp_server_auth_info": "Prosím použite celú vašu emailovú adresu a metódu overenia PLAIN.<br>\r\n Vaše prihlasovacie údaje budú zašifrované na strane servera."
     },
     "success": {
         "acl_saved": "ACL pre objekt %s uložený",
