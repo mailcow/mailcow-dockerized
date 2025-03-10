@@ -569,7 +569,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.13
+      image: ghcr.io/mailcow/olefy:1.14
       restart: always
       environment:
         - TZ=${TZ}
