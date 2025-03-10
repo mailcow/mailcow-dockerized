@@ -2,7 +2,6 @@ FROM alpine:3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
-
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
   bash \

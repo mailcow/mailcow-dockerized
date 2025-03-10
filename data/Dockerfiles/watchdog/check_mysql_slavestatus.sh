@@ -132,9 +132,9 @@ fi
 
 # Connect to the DB server and store output in vars
 if [[ -n $socket ]]; then 
-  ConnectionResult=$(mysql ${optfile} ${socket} ${user} -e "show slave ${connection} status\G" 2>&1)
+  ConnectionResult=$(mariadb --skip-ssl ${optfile} ${socket} ${user} -e "show slave ${connection} status\G" 2>&1)
 else
-  ConnectionResult=$(mysql ${optfile} ${host} ${port} ${user} -e "show slave ${connection} status\G" 2>&1)
+  ConnectionResult=$(mariadb --skip-ssl ${optfile} ${host} ${port} ${user} -e "show slave ${connection} status\G" 2>&1)
 fi
 
 if [ -z "`echo "${ConnectionResult}" |grep Slave_IO_State`" ]; then
