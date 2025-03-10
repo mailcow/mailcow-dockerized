@@ -10,46 +10,6 @@ echo "If this script is run automatically by cron or a timer AND you are using b
 echo "The snapshots of your backup destination should run AFTER the cold standby script finished to ensure consistent snapshots."
 echo
 
-function docker_garbage() {
-  IMGS_TO_DELETE=()
-
-  for container in $(grep -oP "image: \Kmailcow.+" docker-compose.yml); do
-
-    REPOSITORY=${container/:*}
-    TAG=${container/*:}
-    V_MAIN=${container/*.}
-    V_SUB=${container/*.}
-    EXISTING_TAGS=$(docker images | grep ${REPOSITORY} | awk '{ print $2 }')
-
-    for existing_tag in ${EXISTING_TAGS[@]}; do
-
-      V_MAIN_EXISTING=${existing_tag/*.}
-      V_SUB_EXISTING=${existing_tag/*.}
-
-      # Not an integer
-      [[ ! ${V_MAIN_EXISTING} =~ ^[0-9]+$ ]] && continue
-      [[ ! ${V_SUB_EXISTING} =~ ^[0-9]+$ ]] && continue
-
-      if [[ ${V_MAIN_EXISTING} == "latest" ]]; then
-        echo "Found deprecated label \"latest\" for repository ${REPOSITORY}, it should be deleted."
-        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
-      elif [[ ${V_MAIN_EXISTING} -lt ${V_MAIN} ]]; then
-        echo "Found tag ${existing_tag} for ${REPOSITORY}, which is older than the current tag ${TAG} and should be deleted."
-        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
-      elif [[ ${V_SUB_EXISTING} -lt ${V_SUB} ]]; then
-        echo "Found tag ${existing_tag} for ${REPOSITORY}, which is older than the current tag ${TAG} and should be deleted."
-        IMGS_TO_DELETE+=(${REPOSITORY}:${existing_tag})
-      fi
-
-    done
-
-  done
-
-  if [[ ! -z ${IMGS_TO_DELETE[*]} ]]; then
-    docker rmi ${IMGS_TO_DELETE[*]}
-  fi
-}
-
 function preflight_local_checks() {
   if [[ -z "${REMOTE_SSH_KEY}" ]]; then
     >&2 echo -e "\e[31mREMOTE_SSH_KEY is not set\e[0m"
