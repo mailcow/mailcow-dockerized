@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -65,7 +65,7 @@ RUN addgroup -g 5000 vmail \
   perl-par-packer \
   perl-parse-recdescent \
   perl-lockfile-simple \
-  libproc \
+  libproc2 \
   perl-readonly \
   perl-regexp-common \
   perl-sys-meminfo \
