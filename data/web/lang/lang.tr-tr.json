@@ -635,7 +635,7 @@
         "pushover_key": "Pushover anahtarı yanlış formatta",
         "pushover_token": "Pushover token yanlış formatta",
         "recipient_map_entry_exists": "Alıcı haritası girişi \\\"%s\\\" var",
-        "redis_error": "Redis hatası: %s",
+        "valkey_error": "Valkey hatası: %s",
         "relayhost_invalid": "%s harita girişi geçersiz",
         "template_exists": "%s isimli şablon zaten mevcut",
         "template_id_invalid": "Şablon kimliği %s geçersiz",
@@ -675,7 +675,7 @@
     "debug": {
         "container_disabled": "Container durduruldu veya devre dışı bırakıldı",
         "last_modified": "Son değişiklik",
-        "log_info": "<p>mailcow <b>bellek içi günlükler</b>, Redis listelerinde toplanır ve çekiçlemeyi azaltmak için her dakika LOG_LINES (%d) olacak şekilde kırpılır.\\r\\n <br>Bellek içi günlükler ısrarcı. Bellekte oturum açan tüm uygulamalar, ayrıca Docker arka plan programında ve dolayısıyla varsayılan günlük sürücüsünde oturum açar.\\r\\n <br>Bellek içi günlük türü, kapsayıcılarla ilgili küçük sorunları ayıklamak için kullanılmalıdır.</p>\\r\\n <p><b>Harici günlükler</b>, verilen uygulamanın API'si aracılığıyla toplanır.</p>\\r\\n <p><b>Statik günlükler</b> çoğunlukla etkinlik günlükleridir. Dockerd'da günlüğe kaydedilmez ancak yine de kalıcı olmaları gerekir (API günlükleri hariç).</p>",
+        "log_info": "<p>mailcow <b>bellek içi günlükler</b>, Valkey listelerinde toplanır ve çekiçlemeyi azaltmak için her dakika LOG_LINES (%d) olacak şekilde kırpılır.\\r\\n <br>Bellek içi günlükler ısrarcı. Bellekte oturum açan tüm uygulamalar, ayrıca Docker arka plan programında ve dolayısıyla varsayılan günlük sürücüsünde oturum açar.\\r\\n <br>Bellek içi günlük türü, kapsayıcılarla ilgili küçük sorunları ayıklamak için kullanılmalıdır.</p>\\r\\n <p><b>Harici günlükler</b>, verilen uygulamanın API'si aracılığıyla toplanır.</p>\\r\\n <p><b>Statik günlükler</b> çoğunlukla etkinlik günlükleridir. Dockerd'da günlüğe kaydedilmez ancak yine de kalıcı olmaları gerekir (API günlükleri hariç).</p>",
         "architecture": "Mimari",
         "chart_this_server": "Grafik (bu sunucu)",
         "containers_info": "Kapsayıcı bilgileri",

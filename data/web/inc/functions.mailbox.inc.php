@@ -1,7 +1,7 @@
 <?php
 function mailbox($_action, $_type, $_data = null, $_extra = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
   global $lang;
   global $MAILBOX_DEFAULT_ATTRIBUTES;
   $_data_log = $_data;
@@ -626,13 +626,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           try {
-            $redis->hSet('DOMAIN_MAP', $domain, 1);
+            $valkey->hSet('DOMAIN_MAP', $domain, 1);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -644,7 +644,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $_data['key_size'] = (isset($_data['key_size'])) ? intval($_data['key_size']) : $DOMAIN_DEFAULT_ATTRIBUTES['key_size'];
           $_data['dkim_selector'] = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : $DOMAIN_DEFAULT_ATTRIBUTES['dkim_selector'];
           if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
-            if (!empty($redis->hGet('DKIM_SELECTORS', $domain))) {
+            if (!empty($valkey->hGet('DKIM_SELECTORS', $domain))) {
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -969,13 +969,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':active' => $active
             ));
             try {
-              $redis->hSet('DOMAIN_MAP', $alias_domain, 1);
+              $valkey->hSet('DOMAIN_MAP', $alias_domain, 1);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               return false;
             }
@@ -983,7 +983,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ratelimit('edit', 'domain', array('rl_value' => $_data['rl_value'], 'rl_frame' => $_data['rl_frame'], 'object' => $alias_domain));
             }
             if (!empty($_data['key_size']) && !empty($_data['dkim_selector'])) {
-              if (!empty($redis->hGet('DKIM_SELECTORS', $alias_domain))) {
+              if (!empty($valkey->hGet('DKIM_SELECTORS', $alias_domain))) {
                 $_SESSION['return'][] = array(
                   'type' => 'success',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1992,42 +1992,42 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (isset($_data['tagged_mail_handler']) && $_data['tagged_mail_handler'] == "subject") {
               try {
-                $redis->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 1);
-                $redis->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
+                $valkey->hSet('RCPT_WANTS_SUBJECT_TAG', $username, 1);
+                $valkey->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
             }
             else if (isset($_data['tagged_mail_handler']) && $_data['tagged_mail_handler'] == "subfolder") {
               try {
-                $redis->hSet('RCPT_WANTS_SUBFOLDER_TAG', $username, 1);
-                $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
+                $valkey->hSet('RCPT_WANTS_SUBFOLDER_TAG', $username, 1);
+                $valkey->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
             }
             else {
               try {
-                $redis->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
-                $redis->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
+                $valkey->hDel('RCPT_WANTS_SUBJECT_TAG', $username);
+                $valkey->hDel('RCPT_WANTS_SUBFOLDER_TAG', $username);
               }
               catch (RedisException $e) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => array('redis_error', $e)
+                  'msg' => array('valkey_error', $e)
                 );
                 continue;
               }
@@ -4225,10 +4225,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data = $_SESSION['mailcow_cc_username'];
           }
           try {
-            if ($redis->hGet('RCPT_WANTS_SUBJECT_TAG', $_data)) {
+            if ($valkey->hGet('RCPT_WANTS_SUBJECT_TAG', $_data)) {
               return "subject";
             }
-            elseif ($redis->hGet('RCPT_WANTS_SUBFOLDER_TAG', $_data)) {
+            elseif ($valkey->hGet('RCPT_WANTS_SUBFOLDER_TAG', $_data)) {
               return "subfolder";
             }
             else {
@@ -4239,7 +4239,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -5235,14 +5235,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt = $pdo->query("DELETE FROM `admin` WHERE `superadmin` = 0 AND `username` NOT IN (SELECT `username`FROM `domain_admins`);");
             $stmt = $pdo->query("DELETE FROM `da_acl` WHERE `username` NOT IN (SELECT `username`FROM `domain_admins`);");
             try {
-              $redis->hDel('DOMAIN_MAP', $domain);
-              $redis->hDel('RL_VALUE', $domain);
+              $valkey->hDel('DOMAIN_MAP', $domain);
+              $valkey->hDel('RL_VALUE', $domain);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               continue;
             }
@@ -5368,14 +5368,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':alias_domain' => $alias_domain,
             ));
             try {
-              $redis->hDel('DOMAIN_MAP', $alias_domain);
-              $redis->hDel('RL_VALUE', $domain);
+              $valkey->hDel('DOMAIN_MAP', $alias_domain);
+              $valkey->hDel('RL_VALUE', $domain);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               continue;
             }
@@ -5554,13 +5554,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ));
             }
             try {
-              $redis->hDel('RL_VALUE', $username);
+              $valkey->hDel('RL_VALUE', $username);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               continue;
             }

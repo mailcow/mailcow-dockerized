@@ -3,14 +3,14 @@ set -o pipefail
 exec 5>&1
 
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  export VALKEY_CMDLINE="redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning"
 else
-  export REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  export VALKEY_CMDLINE="redis-cli -h valkey-mailcow -p 6379 -a ${VALKEYPASS} --no-auth-warning"
 fi
 
-until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
+until [[ $(${VALKEY_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Valkey..."
   sleep 2
 done
 
@@ -360,7 +360,7 @@ while true; do
   if [[ -z ${VALIDATED_CERTIFICATES[*]} ]]; then
     log_f "Cannot validate any hostnames, skipping Let's Encrypt for 1 hour."
     log_f "Use SKIP_LETS_ENCRYPT=y in mailcow.conf to skip it permanently."
-    ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
+    ${VALKEY_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
     sleep 1h
     exec $(readlink -f "$0")
   fi
@@ -401,7 +401,7 @@ while true; do
       DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
       if [[ ${RELOAD_LOOP_C} -gt 3 ]]; then
         log_f "Some services do return old end dates, something went wrong!"
-        ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
+        ${VALKEY_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
         break;
       fi
     done
@@ -422,7 +422,7 @@ while true; do
       ;;
     *) # non-zero
       log_f "Some errors occurred, retrying in 30 minutes..."
-      ${REDIS_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
+      ${VALKEY_CMDLINE} SET ACME_FAIL_TIME "$(date +%s)"
       sleep 30m
       exec $(readlink -f "$0")
       ;;

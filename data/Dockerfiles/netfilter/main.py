@@ -41,24 +41,24 @@ def refreshF2boptions():
 
   f2boptions = {}
 
-  if not r.get('F2B_OPTIONS'):
-    f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
-    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
-    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
-    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
-    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
+  if not valkey.get('F2B_OPTIONS'):
+    f2boptions['ban_time'] = valkey.get('F2B_BAN_TIME')
+    f2boptions['max_ban_time'] = valkey.get('F2B_MAX_BAN_TIME')
+    f2boptions['ban_time_increment'] = valkey.get('F2B_BAN_TIME_INCREMENT')
+    f2boptions['max_attempts'] = valkey.get('F2B_MAX_ATTEMPTS')
+    f2boptions['retry_window'] = valkey.get('F2B_RETRY_WINDOW')
+    f2boptions['netban_ipv4'] = valkey.get('F2B_NETBAN_IPV4')
+    f2boptions['netban_ipv6'] = valkey.get('F2B_NETBAN_IPV6')
   else:
     try:
-      f2boptions = json.loads(r.get('F2B_OPTIONS'))
+      f2boptions = json.loads(valkey.get('F2B_OPTIONS'))
     except ValueError:
       logger.logCrit('Error loading F2B options: F2B_OPTIONS is not json')
       quit_now = True
       exit_code = 2
 
   verifyF2boptions(f2boptions)
-  r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
+  valkey.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
 
 def verifyF2boptions(f2boptions):
   verifyF2boption(f2boptions,'ban_time', 1800)
@@ -78,7 +78,7 @@ def refreshF2bregex():
   global f2bregex
   global quit_now
   global exit_code
-  if not r.get('F2B_REGEX'):
+  if not valkey.get('F2B_REGEX'):
     f2bregex = {}
     f2bregex[1] = r'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
     f2bregex[2] = r'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
@@ -89,11 +89,11 @@ def refreshF2bregex():
     f2bregex[7] = r'\w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): unknown user \(SHA1 of given password: [a-f0-9]+\)'
     f2bregex[8] = r'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
     f2bregex[9] = r'([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
-    r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
+    valkey.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
   else:
     try:
       f2bregex = {}
-      f2bregex = json.loads(r.get('F2B_REGEX'))
+      f2bregex = json.loads(valkey.get('F2B_REGEX'))
     except ValueError:
       logger.logCrit('Error loading F2B options: F2B_REGEX is not json')
       quit_now = True
@@ -156,7 +156,7 @@ def ban(address):
       with lock:
         tables.banIPv6(net)
 
-    r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
+    valkey.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
   else:
     logger.logWarn('%d more attempts in the next %d seconds until %s is banned' % (MAX_ATTEMPTS - bans[net]['attempts'], RETRY_WINDOW, net))
 
@@ -165,7 +165,7 @@ def unban(net):
 
   if not net in bans:
    logger.logInfo('%s is not banned, skipping unban and deleting from queue (if any)' % net)
-   r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
+   valkey.hdel('F2B_QUEUE_UNBAN', '%s' % net)
    return
 
   logger.logInfo('Unbanning %s' % net)
@@ -176,8 +176,8 @@ def unban(net):
     with lock:
       tables.unbanIPv6(net)
 
-  r.hdel('F2B_ACTIVE_BANS', '%s' % net)
-  r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
+  valkey.hdel('F2B_ACTIVE_BANS', '%s' % net)
+  valkey.hdel('F2B_QUEUE_UNBAN', '%s' % net)
   if net in bans:
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
@@ -203,10 +203,10 @@ def permBan(net, unban=False):
 
 
   if is_unbanned:
-    r.hdel('F2B_PERM_BANS', '%s' % net)
+    valkey.hdel('F2B_PERM_BANS', '%s' % net)
     logger.logCrit('Removed host/network %s from blacklist' % net)
   elif is_banned:
-    r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
+    valkey.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
     logger.logCrit('Added host/network %s to blacklist' % net)
 
 def clear():
@@ -219,17 +219,17 @@ def clear():
     tables.clearIPv6Table()
     try:
       if r is not None:
-        r.delete('F2B_ACTIVE_BANS')
-        r.delete('F2B_PERM_BANS')
+        valkey.delete('F2B_ACTIVE_BANS')
+        valkey.delete('F2B_PERM_BANS')
     except Exception as ex:
-      logger.logWarn('Error clearing redis keys F2B_ACTIVE_BANS and F2B_PERM_BANS: %s' % ex)
+      logger.logWarn('Error clearing valkey keys F2B_ACTIVE_BANS and F2B_PERM_BANS: %s' % ex)
 
 def watch():
   global pubsub
   global quit_now
   global exit_code
 
-  logger.logInfo('Watching Redis channel F2B_CHANNEL')
+  logger.logInfo('Watching Valkey channel F2B_CHANNEL')
   pubsub.subscribe('F2B_CHANNEL')
 
   while not quit_now:
@@ -280,7 +280,7 @@ def autopurge():
     time.sleep(10)
     refreshF2boptions()
     MAX_ATTEMPTS = int(f2boptions['max_attempts'])
-    QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
+    QUEUE_UNBAN = valkey.hgetall('F2B_QUEUE_UNBAN')
     if QUEUE_UNBAN:
       for net in QUEUE_UNBAN:
         unban(str(net))
@@ -352,7 +352,7 @@ def whitelistUpdate():
   global WHITELIST
   while not quit_now:
     start_time = time.time()
-    list = r.hgetall('F2B_WHITELIST')
+    list = valkey.hgetall('F2B_WHITELIST')
     new_whitelist = []
     if list:
       new_whitelist = genNetworkList(list)
@@ -367,7 +367,7 @@ def blacklistUpdate():
   global BLACKLIST
   while not quit_now:
     start_time = time.time()
-    list = r.hgetall('F2B_BLACKLIST')
+    list = valkey.hgetall('F2B_BLACKLIST')
     new_blacklist = []
     if list:
       new_blacklist = genNetworkList(list)
@@ -427,30 +427,30 @@ if __name__ == '__main__':
     logger.logInfo(f"Setting {chain_name} isolation")
     tables.create_mailcow_isolation_rule("br-mailcow", [3306, 6379, 8983, 12345], os.getenv("MAILCOW_REPLICA_IP"))
 
-  # connect to redis
+  # connect to valkey
   while True:
     try:
-      redis_slaveof_ip = os.getenv('REDIS_SLAVEOF_IP', '')
-      redis_slaveof_port = os.getenv('REDIS_SLAVEOF_PORT', '')
-      if "".__eq__(redis_slaveof_ip):
-        r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0, password=os.environ['REDISPASS'])
+      valkey_slaveof_ip = os.getenv('VALKEY_SLAVEOF_IP', '')
+      valkey_slaveof_port = os.getenv('VALKEY_SLAVEOF_PORT', '')
+      if "".__eq__(valkey_slaveof_ip):
+        valkey = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0, password=os.environ['VALKEYPASS'])
       else:
-        r = redis.StrictRedis(host=redis_slaveof_ip, decode_responses=True, port=redis_slaveof_port, db=0, password=os.environ['REDISPASS'])
-      r.ping()
-      pubsub = r.pubsub()
+        valkey = redis.StrictRedis(host=valkey_slaveof_ip, decode_responses=True, port=valkey_slaveof_port, db=0, password=os.environ['VALKEYPASS'])
+      valkey.ping()
+      pubsub = valkey.pubsub()
     except Exception as ex:
       print('%s - trying again in 3 seconds'  % (ex))
       time.sleep(3)
     else:
       break
-  logger.set_redis(r)
+  logger.set_valkey(r)
 
   # rename fail2ban to netfilter
-  if r.exists('F2B_LOG'):
-    r.rename('F2B_LOG', 'NETFILTER_LOG')
-  # clear bans in redis
-  r.delete('F2B_ACTIVE_BANS')
-  r.delete('F2B_PERM_BANS')
+  if valkey.exists('F2B_LOG'):
+    valkey.rename('F2B_LOG', 'NETFILTER_LOG')
+  # clear bans in valkey
+  valkey.delete('F2B_ACTIVE_BANS')
+  valkey.delete('F2B_PERM_BANS')
 
   refreshF2boptions()
 
