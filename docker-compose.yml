@@ -419,7 +419,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.91
+      image: ghcr.io/mailcow/acme:1.92
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
