@@ -241,7 +241,7 @@ function dkim($_action, $_data = null, $privkey = false) {
           $dkimdata['length'] = "1024";
         }
         elseif (strlen($dkimdata['pubkey']) < 564) {
-          $dkimdata['length'] = "2048"
+          $dkimdata['length'] = "2048";
         }
         elseif (strlen($dkimdata['pubkey']) < 736) {
           $dkimdata['length'] = "3072";
