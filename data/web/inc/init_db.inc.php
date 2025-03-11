@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "20112024_1105";
+    $db_version = "11032025_0926";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1385,7 +1385,7 @@ function init_db_schema()
         "relay_all_recipients" => 0,
         "relay_unknown_only" => 0,
         "dkim_selector" => "dkim",
-        "key_size" => 2048,
+        "key_size" => 4096,
         "max_quota_for_domain" => 10240 * 1048576,
       )
     );
