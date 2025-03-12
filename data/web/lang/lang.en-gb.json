@@ -433,6 +433,7 @@
         "file_open_error": "File cannot be opened for writing",
         "filter_type": "Wrong filter type",
         "from_invalid": "Sender must not be empty",
+        "generic_server_error": "An unexpected server error occurred. Please contact your administrator.",
         "global_filter_write_error": "Could not write filter file: %s",
         "global_map_invalid": "Global map ID %s invalid",
         "global_map_write_error": "Could not write global map ID %s: %s",

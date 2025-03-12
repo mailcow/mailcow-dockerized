@@ -216,7 +216,7 @@ function user_login($user, $pass, $extra = null){
             unset($_SESSION['ldelay']);
             $_SESSION['return'][] =  array(
               'type' => 'success',
-              'log' => array(__FUNCTION__, $user, '*'),
+              'log' => array(__FUNCTION__, $user, '*', 'Provider: Keycloak'),
               'msg' => array('logged_in_as', $user)
             );
             return "pending";
@@ -229,7 +229,7 @@ function user_login($user, $pass, $extra = null){
               $stmt->execute(array(':user' => $user));
               $_SESSION['return'][] =  array(
                 'type' => 'success',
-                'log' => array(__FUNCTION__, $user, '*'),
+                'log' => array(__FUNCTION__, $user, '*', 'Provider: Keycloak'),
                 'msg' => array('logged_in_as', $user)
               );
             }
@@ -255,7 +255,7 @@ function user_login($user, $pass, $extra = null){
           unset($_SESSION['ldelay']);
           $_SESSION['return'][] =  array(
             'type' => 'success',
-            'log' => array(__FUNCTION__, $user, '*'),
+            'log' => array(__FUNCTION__, $user, '*', 'Provider: LDAP'),
             'msg' => array('logged_in_as', $user)
           );
           return "pending";
@@ -268,7 +268,7 @@ function user_login($user, $pass, $extra = null){
             $stmt->execute(array(':user' => $user));
             $_SESSION['return'][] =  array(
               'type' => 'success',
-              'log' => array(__FUNCTION__, $user, '*'),
+              'log' => array(__FUNCTION__, $user, '*', 'Provider: LDAP'),
               'msg' => array('logged_in_as', $user)
             );
           }
@@ -290,7 +290,7 @@ function user_login($user, $pass, $extra = null){
           unset($_SESSION['ldelay']);
           $_SESSION['return'][] =  array(
             'type' => 'success',
-            'log' => array(__FUNCTION__, $user, '*'),
+            'log' => array(__FUNCTION__, $user, '*', 'Provider: mailcow'),
             'msg' => array('logged_in_as', $user)
           );
           return "pending";
@@ -303,7 +303,7 @@ function user_login($user, $pass, $extra = null){
             $stmt->execute(array(':user' => $user));
             $_SESSION['return'][] =  array(
               'type' => 'success',
-              'log' => array(__FUNCTION__, $user, '*'),
+              'log' => array(__FUNCTION__, $user, '*', 'Provider: mailcow'),
               'msg' => array('logged_in_as', $user)
             );
           }
@@ -434,12 +434,27 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
   if ($code != 200) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'Identity Provider returned HTTP ' . $code),
+      'msg' => 'generic_server_error'
+    );
     return false;
   }
   if (!isset($user_res['attributes']['mailcow_password']) || !is_array($user_res['attributes']['mailcow_password'])){
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'User has no mailcow_password attribute'),
+      'msg' => 'generic_server_error'
+    );
     return false;
   }
   if (empty($user_res['attributes']['mailcow_password'][0])){
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', "User's mailcow_password attribute is empty"),
+      'msg' => 'generic_server_error'
+    );
     return false;
   }
 
@@ -469,8 +484,14 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   }
 
   // check if matching attribute exist
-  if (empty($iam_settings['mappers']) || !$user_template) return false;
-  if ($mapper_key === false) return false;
+  if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
+      'msg' => 'generic_server_error'
+    );
+    return false;
+  }
 
   // create mailbox
   $_SESSION['access_all_exception'] = '1';
@@ -484,6 +505,11 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
     clear_session();
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'Could not create mailbox on login'),
+      'msg' => 'generic_server_error'
+    );
     return false;
   }
 
@@ -526,17 +552,12 @@ function ldap_mbox_login($user, $pass, $extra = null){
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
-      'msg' => 'ldap_error'
+      'msg' => 'generic_server_error'
     );
     return false;
   }
   try {
     if (!$iam_provider->auth()->attempt($user_res['dn'], $pass)) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $user, '*', $user_res),
-        'msg' => 'ldap_auth_failed'
-      );
       return false;
     }
   } catch (Exception $e) {
@@ -545,7 +566,7 @@ function ldap_mbox_login($user, $pass, $extra = null){
     $_SESSION['return'][] =  array(
       'type' => 'danger',
       'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
-      'msg' => 'ldap_error'
+      'msg' => 'generic_server_error'
     );
     return false;
   }
@@ -570,8 +591,14 @@ function ldap_mbox_login($user, $pass, $extra = null){
   }
 
   // check if matching attribute exist
-  if (empty($iam_settings['mappers']) || !$user_template) return false;
-  if ($mapper_key === false) return false;
+  if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
+      'msg' => 'generic_server_error'
+    );
+    return false;
+  }
 
   // create mailbox
   $_SESSION['access_all_exception'] = '1';
@@ -585,6 +612,11 @@ function ldap_mbox_login($user, $pass, $extra = null){
   $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
     clear_session();
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'Could not create mailbox on login'),
+      'msg' => 'generic_server_error'
+    );
     return false;
   }
 
