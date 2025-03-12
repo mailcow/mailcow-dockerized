@@ -2271,7 +2271,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
-        $settings["client_scopes"] = "openid profile email";
+        $settings["client_scopes"] = "openid profile email mailcow_template";
       }
       if ($_extra['hide_sensitive']){
         $settings['client_secret'] = '';
@@ -2348,7 +2348,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
-          $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email";
+          $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
           $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error');
         break;
         case "ldap":
@@ -2619,8 +2619,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc'){
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__),
-          'msg' => array('login_failed', "no OIDC provider configured")
+          'log' => array(__FUNCTION__, "no OIDC provider configured"),
+          'msg' => 'login_failed'
         );
         return false;
       }
@@ -2633,13 +2633,20 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       } catch (Throwable $e) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__),
-          'msg' => array('login_failed', $e->getMessage())
+          'log' => array(__FUNCTION__, $e->getMessage()),
+          'msg' => 'login_failed'
         );
         return false;
       }
       // check if email address is given
-      if (empty($info['email'])) return false;
+      if (empty($info['email'])) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, 'No email address found for user'),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
 
       // get mapped template
       $user_template = $info['mailcow_template'];
@@ -2678,21 +2685,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return true;
       }
 
-      if (empty($iam_settings['mappers']) || empty($user_template)){
+      if (empty($iam_settings['mappers']) || empty($user_template) || $mapper_key === false){
         clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email']),
-          'msg' => array('login_failed', 'empty attribute mapping or missing template attribute')
-        );
-        return false;
-      }
-      if ($mapper_key === false) {
-        clear_session();
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email']),
-          'msg' => array('login_failed', 'specified template not found')
+          'log' => array(__FUNCTION__, $info['email'], 'No matching attribute mapping was found'),
+          'msg' => 'login_failed'
         );
         return false;
       }
@@ -2711,8 +2709,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         clear_session();
         $_SESSION['return'][] =  array(
           'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email']),
-          'msg' => array('login_failed', 'mailbox creation failed')
+          'log' => array(__FUNCTION__, $info['email'], 'Could not create mailbox on login'),
+          'msg' => 'login_failed'
         );
         return false;
       }
