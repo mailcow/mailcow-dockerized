@@ -174,3 +174,29 @@ lmtp_destination_recipient_limit=1
 
 # DO NOT EDIT ANYTHING BELOW #
 # Overrides #
+
+postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
+  hostkarma.junkemailfilter.com=127.0.0.1*-2
+  list.dnswl.org=127.0.[0..255].0*-2
+  list.dnswl.org=127.0.[0..255].1*-4
+  list.dnswl.org=127.0.[0..255].2*-6
+  list.dnswl.org=127.0.[0..255].3*-8
+  bl.spamcop.net*2
+  bl.suomispam.net*2
+  hostkarma.junkemailfilter.com=127.0.0.2*3
+  hostkarma.junkemailfilter.com=127.0.0.4*2
+  hostkarma.junkemailfilter.com=127.0.1.2*1
+  backscatter.spameatingmonkey.net*2
+  bl.ipv6.spameatingmonkey.net*2
+  bl.spameatingmonkey.net*2
+  b.barracudacentral.org=127.0.0.2*7
+  bl.mailspike.net=127.0.0.2*5
+  bl.mailspike.net=127.0.0.[10;11;12]*4
+  zen.spamhaus.org=127.0.0.[10;11]*8
+  zen.spamhaus.org=127.0.0.[4..7]*6
+  zen.spamhaus.org=127.0.0.3*4
+  zen.spamhaus.org=127.0.0.2*3
+
+# User Overrides
+myhostname = mail.kodzar.com
+
