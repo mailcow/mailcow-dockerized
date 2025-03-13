@@ -178,25 +178,40 @@ function user_login($user, $pass, $extra = null){
     return false;
   }
 
-  $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+  $stmt = $pdo->prepare("SELECT
+      mailbox.*,
+      domain.active AS d_active
+      FROM `mailbox`
       INNER JOIN domain on mailbox.domain = domain.domain
       WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `domain`.`active`='1'
         AND `username` = :user");
   $stmt->execute(array(':user' => $user));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
   // user does not exist, try call idp login and create user if possible via rest flow
   if (!$row){
+    $result = false;
     if ($iam_settings['authsource'] == 'keycloak' && intval($iam_settings['mailpassword_flow']) == 1){
       $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal, 'create' => true));
-      if ($result !== false) return $result;
     } else if ($iam_settings['authsource'] == 'ldap') {
       $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal, 'create' => true));
-      if ($result !== false) return $result;
     }
-  }
-  if ($row['active'] != 1) {
+    if ($result !== false){
+      // double check if mailbox is active
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+      INNER JOIN domain on mailbox.domain = domain.domain
+      WHERE `kind` NOT REGEXP 'location|thing|group'
+        AND `mailbox`.`active`='1'
+        AND `domain`.`active`='1'
+        AND `username` = :user");
+      $stmt->execute(array(':user' => $user));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if (!empty($row)) {
+        return true;
+      }
+    }
+    clear_session();
     return false;
   }
 
@@ -206,6 +221,19 @@ function user_login($user, $pass, $extra = null){
       if (intval($iam_settings['mailpassword_flow']) == 1){
         $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal));
         if ($result !== false) {
+          // double check if mailbox and domain is active
+          $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+          INNER JOIN domain on mailbox.domain = domain.domain
+          WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `mailbox`.`active`='1'
+            AND `domain`.`active`='1'
+            AND `username` = :user");
+          $stmt->execute(array(':user' => $user));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($row)) {
+            return false;
+          }
+
           // check for tfa authenticators
           $authenticators = get_tfa($user);
           if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -245,6 +273,19 @@ function user_login($user, $pass, $extra = null){
       // user authsource is ldap
       $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal));
       if ($result !== false) {
+        // double check if mailbox and domain is active
+        $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+        INNER JOIN domain on mailbox.domain = domain.domain
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active`='1'
+          AND `domain`.`active`='1'
+          AND `username` = :user");
+        $stmt->execute(array(':user' => $user));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (empty($row)) {
+          return false;
+        }
+
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -278,6 +319,9 @@ function user_login($user, $pass, $extra = null){
       return $result;
     break;
     case 'mailcow':
+      if ($row['active'] != 1 || $row['d_active'] != 1) {
+        return false;
+      }
       // verify password
       if (verify_hash($row['password'], $pass) !== false) {
         // check for tfa authenticators

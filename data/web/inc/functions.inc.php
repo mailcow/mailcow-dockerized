@@ -2653,17 +2653,25 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
       // token valid, get mailbox
-      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+      $stmt = $pdo->prepare("SELECT
+        mailbox.*,
+        domain.active AS d_active
+        FROM `mailbox`
         INNER JOIN domain on mailbox.domain = domain.domain
         WHERE `kind` NOT REGEXP 'location|thing|group'
-          AND `mailbox`.`active`='1'
-          AND `domain`.`active`='1'
-          AND `username` = :user
-          AND (`authsource`='keycloak' OR `authsource`='generic-oidc')");
+          AND `username` = :user");
       $stmt->execute(array(':user' => $info['email']));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row){
-        // success
+        if (!in_array($row['authsource'], array("keycloak", "generic-oidc"))) {
+          clear_session();
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], "The user's authentication source is not of type OIDC"),
+            'msg' => 'login_failed'
+          );
+          return false;
+        }
         if ($mapper_key !== false) {
           // update user
           $_SESSION['access_all_exception'] = '1';
@@ -2673,6 +2681,26 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             'template' => $iam_settings['templates'][$mapper_key]
           ));
           $_SESSION['access_all_exception'] = '0';
+
+          // get updated row
+          $stmt = $pdo->prepare("SELECT
+            mailbox.*,
+            domain.active AS d_active
+            FROM `mailbox`
+            INNER JOIN domain on mailbox.domain = domain.domain
+            WHERE `kind` NOT REGEXP 'location|thing|group'
+              AND `username` = :user");
+          $stmt->execute(array(':user' => $info['email']));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        if ($row['active'] != 1 || $row['d_active'] != 1) {
+          clear_session();
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive'),
+            'msg' => 'login_failed'
+          );
+          return false;
         }
         set_user_loggedin_session($info['email']);
         $_SESSION['iam_token'] = $plain_token;
@@ -2710,6 +2738,25 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $info['email'], 'Could not create mailbox on login'),
+          'msg' => 'login_failed'
+        );
+        return false;
+      }
+
+      // double check if mailbox and domain is active
+      $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+      INNER JOIN domain on mailbox.domain = domain.domain
+      WHERE `kind` NOT REGEXP 'location|thing|group'
+        AND `mailbox`.`active`='1'
+        AND `domain`.`active`='1'
+        AND `username` = :user");
+      $stmt->execute(array(':user' => $info['email']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($row)) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive'),
           'msg' => 'login_failed'
         );
         return false;
