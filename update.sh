@@ -724,7 +724,13 @@ detect_major_update() {
       "2025-02"
     )
 
-    current_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+    current_version=""
+    if [[ -f "${SCRIPT_DIR}/data/web/inc/app_info.inc.php" ]]; then
+      current_version=$(grep 'MAILCOW_GIT_VERSION' ${SCRIPT_DIR}/data/web/inc/app_info.inc.php | sed -E 's/.*MAILCOW_GIT_VERSION="([^"]+)".*/\1/')
+    fi
+    if [[ -z "$current_version" ]]; then
+      return 1
+    fi
     release_url="https://github.com/mailcow/mailcow-dockerized/releases/tag"
 
     updates_to_apply=()
@@ -741,8 +747,7 @@ detect_major_update() {
         echo "$update - $release_url/$update"
       done
 
-      echo -e "\n⚠️  Please read the release notes before proceeding.\n"
-
+      echo -e "\nPlease read the release notes before proceeding."
       read -p "Do you want to proceed with the update? [y/n] " response
       if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         echo "Proceeding with the update..."
