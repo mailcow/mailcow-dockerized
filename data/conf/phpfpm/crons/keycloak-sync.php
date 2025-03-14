@@ -79,7 +79,7 @@ if ($iam_settings['authsource'] != "keycloak" || (intval($iam_settings['periodic
 
 // Set pagination variables
 $start = 0;
-$max = 25;
+$max = 100;
 
 // lock sync if already running
 $lock_file = '/tmp/iam-sync.lock';
@@ -167,11 +167,13 @@ while (true) {
     $mailcow_template = $user['attributes']['mailcow_template'];
 
     // try get mailbox user
-    $stmt = $pdo->prepare("SELECT `mailbox`.* FROM `mailbox`
-    INNER JOIN domain on mailbox.domain = domain.domain
-    WHERE `kind` NOT REGEXP 'location|thing|group'
-      AND `domain`.`active`='1'
-      AND `username` = :user");
+    $stmt = $pdo->prepare("SELECT
+      mailbox.*,
+      domain.active AS d_active
+      FROM `mailbox`
+      INNER JOIN domain on mailbox.domain = domain.domain
+      WHERE `kind` NOT REGEXP 'location|thing|group'
+        AND `username` = :user");
     $stmt->execute(array(':user' => $user['email']));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -192,13 +194,17 @@ while (true) {
     if (!$row && intval($iam_settings['import_users']) == 1){
       // mailbox user does not exist, create...
       logMsg("info", "Creating user " . $user['email']);
-      mailbox('add', 'mailbox_from_template', array(
+      $create_res = mailbox('add', 'mailbox_from_template', array(
         'domain' => explode('@', $user['email'])[1],
         'local_part' => explode('@', $user['email'])[0],
         'name' => $user['firstName'] . " " . $user['lastName'],
         'authsource' => 'keycloak',
         'template' => $mbox_template
       ));
+      if (!$create_res){
+        logMsg("err", "Could not create user " . $user['email']);
+        continue;
+      }
     } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
       // mailbox user does exist, sync attribtues...
       logMsg("info", "Syncing attributes for user " . $user['email']);
