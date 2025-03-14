@@ -1112,6 +1112,7 @@ paths:
                 domain: domain.tld
                 local_part: info
                 name: Full name
+                authsource: mailcow
                 password: atedismonsin
                 password2: atedismonsin
                 quota: "3072"
@@ -1132,11 +1133,16 @@ paths:
                 name:
                   description: Full name of the mailbox user
                   type: string
+                authsource:
+                  description: Specifies the authentication source for the mailbox.
+                  type: string
+                  enum: [mailcow, ldap, keycloak, generic-oidc]
+                  default: mailcow
                 password2:
                   description: mailbox password for confirmation
                   type: string
                 password:
-                  description: mailbox password
+                  description: mailbox password when using `mailcow` as the authentication source.
                   type: string
                 quota:
                   description: mailbox quota
@@ -3374,6 +3380,7 @@ paths:
                   active: "1"
                   force_pw_update: "0"
                   name: Full name
+                  authsource: mailcow
                   password: ""
                   password2: ""
                   quota: "3072"
@@ -3398,11 +3405,15 @@ paths:
                     name:
                       description: Full name of the mailbox user
                       type: string
+                    authsource:
+                      description: Specifies the authentication source for the mailbox.
+                      type: string
+                      enum: [mailcow, ldap, keycloak, generic-oidc]
                     password2:
                       description: new mailbox password for confirmation
                       type: string
                     password:
-                      description: new mailbox password
+                      description: new mailbox password when using `mailcow` as the authentication source.
                       type: string
                     quota:
                       description: mailbox quota
@@ -5755,8 +5766,8 @@ paths:
       tags:
         - Cross-Origin Resource Sharing (CORS)
       description: >-
-        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API. 
-        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests. 
+        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API.
+        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests.
         By editing the CORS settings, you can specify which domains and which methods are permitted to access the API resources from outside the mailcow domain.
       operationId: Edit Cross-Origin Resource Sharing (CORS) settings
       requestBody:
