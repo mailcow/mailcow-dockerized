@@ -25,7 +25,7 @@
                   <input type="hidden" value="default" name="sender_acl">
                   <input type="hidden" value="0" name="force_pw_update">
                   <input type="hidden" value="0" name="sogo_access">
-                  <input type="hidden" value="0" name="protocol_access">      
+                  <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
                     <div class="col-sm-10">
@@ -542,7 +542,7 @@
                     </div>
                     <div class="row mb-2">
                       <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
-                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/mailbox" href="#">{{ lang.edit.save }}</button>
+                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/{{mailcow_cc_role}}/mailbox" href="#">{{ lang.edit.save }}</button>
                       </div>
                     </div>
                   </form>
