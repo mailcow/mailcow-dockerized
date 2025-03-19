@@ -215,6 +215,8 @@
         "iam_client_id": "Client ID",
         "iam_client_secret": "Client Secret",
         "iam_client_scopes": "Client Scopes",
+        "iam_default_template": "Standardvorlage",
+        "iam_default_template_description": "Falls für einen Benutzer kein Template hinterlegt ist, wird die Standardvorlage zum Erstellen der Mailbox verwendet, jedoch nicht zum Aktualisieren der Mailbox.",
         "iam_description": "Konfiguriere einen externen Identity Provider für die Authentifizierung<br>Die Mailboxen der Benutzer werden bei ihrer ersten Anmeldung automatisch erstellt, vorausgesetzt, dass ein Attribut Mapping festgelegt wurde.",
         "iam_extra_permission": "Damit die folgenden Einstellungen funktionieren, benötigt der mailcow Client in Keycloak ein <code>Service-Konto</code> und die Berechtigung <code>view-users</code>.",
         "iam_host": "Host",

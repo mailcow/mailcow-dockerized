@@ -2387,8 +2387,16 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       $pdo->commit();
 
+      // add default template
+      if (isset($_data['default_template'])) {
+        $_data['default_template'] = (empty($_data['default_template'])) ? "" : $_data['default_template'];
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('default_template', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $_data['default_template']);
+        $stmt->execute();
+      }
+
       // add mappers
-      if ($_data['mappers'] && $_data['templates']){
+      if (isset($_data['mappers']) && isset($_data['templates'])){
         $_data['mappers'] = (!is_array($_data['mappers'])) ? array($_data['mappers']) : $_data['mappers'];
         $_data['templates'] = (!is_array($_data['templates'])) ? array($_data['templates']) : $_data['templates'];
 
@@ -2714,13 +2722,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       if (empty($iam_settings['mappers']) || empty($user_template) || $mapper_key === false){
-        clear_session();
-        $_SESSION['return'][] =  array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $info['email'], 'No matching attribute mapping was found'),
-          'msg' => 'login_failed'
-        );
-        return false;
+        if (!empty($iam_settings['default_template'])) {
+          $mbox_template = $iam_settings['default_template'];
+        } else {
+          clear_session();
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], 'No matching attribute mapping was found'),
+            'msg' => 'login_failed'
+          );
+          return false;
+        }
+      } else {
+        $mbox_template = $iam_settings['templates'][$mapper_key];
       }
 
       // create mailbox
@@ -2730,7 +2744,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         'local_part' => explode('@', $info['email'])[0],
         'name' => $info['name'],
         'authsource' => $iam_settings['authsource'],
-        'template' => $iam_settings['templates'][$mapper_key]
+        'template' => $mbox_template
       ));
       $_SESSION['access_all_exception'] = '0';
       if (!$create_res){

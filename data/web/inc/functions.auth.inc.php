@@ -529,12 +529,18 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
 
   // check if matching attribute exist
   if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
-      'msg' => 'generic_server_error'
-    );
-    return false;
+    if (!empty($iam_settings['default_template'])) {
+      $mbox_template = $iam_settings['default_template'];
+    } else {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
+        'msg' => 'generic_server_error'
+      );
+      return false;
+    }
+  } else {
+    $mbox_template = $iam_settings['templates'][$mapper_key];
   }
 
   // create mailbox
@@ -544,7 +550,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['name'],
     'authsource' => 'keycloak',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $mbox_template
   ));
   $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
@@ -636,12 +642,18 @@ function ldap_mbox_login($user, $pass, $extra = null){
 
   // check if matching attribute exist
   if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
-      'msg' => 'generic_server_error'
-    );
-    return false;
+    if (!empty($iam_settings['default_tempalte'])) {
+      $mbox_template = $iam_settings['default_tempalte'];
+    } else {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', 'No matching attribute mapping was found'),
+        'msg' => 'generic_server_error'
+      );
+      return false;
+    }
+  } else {
+    $mbox_template = $iam_settings['templates'][$mapper_key];
   }
 
   // create mailbox
@@ -651,7 +663,7 @@ function ldap_mbox_login($user, $pass, $extra = null){
     'local_part' => explode('@', $user)[0],
     'name' => $user_res['displayname'][0],
     'authsource' => 'ldap',
-    'template' => $iam_settings['templates'][$mapper_key]
+    'template' => $mbox_template
   ));
   $_SESSION['access_all_exception'] = '0';
   if (!$create_res){
