@@ -154,17 +154,6 @@ while (true) {
       logMsg("warning", "No email address in keycloak found for user " . $user['name']);
       continue;
     }
-    if (!isset($user['attributes'])){
-      logMsg("warning", "No attributes in keycloak found for user " . $user['email']);
-      continue;
-    }
-    if (!isset($user['attributes']['mailcow_template']) ||
-        !is_array($user['attributes']['mailcow_template']) ||
-        count($user['attributes']['mailcow_template']) == 0) {
-      logMsg("warning", "No mailcow_template in keycloak found for user " . $user['email']);
-      continue;
-    }
-    $mailcow_template = $user['attributes']['mailcow_template'];
 
     // try get mailbox user
     $stmt = $pdo->prepare("SELECT
@@ -178,20 +167,22 @@ while (true) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // check if matching attribute mapping exists
-    $mbox_template = null;
-    foreach ($iam_settings['mappers'] as $index => $mapper){
-      if (in_array($mapper, $user['attributes']['mailcow_template'])) {
-        $mbox_template = $mapper;
-        break;
-      }
-    }
-    if (!$mbox_template){
-      logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
-      continue;
-    }
+    $user_template = $user['attributes']['mailcow_template'][0];
+    $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
     $_SESSION['access_all_exception'] = '1';
     if (!$row && intval($iam_settings['import_users']) == 1){
+      if ($mapper_key === false){
+        if (!empty($iam_settings['default_template'])) {
+          $mbox_template = $iam_settings['default_template'];
+          logMsg("warning", "Using default template for user " . $user['email']);
+        } else {
+          logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
+          continue;
+        }
+      } else {
+        $mbox_template = $iam_settings['templates'][$mapper_key];
+      }
       // mailbox user does not exist, create...
       logMsg("info", "Creating user " . $user['email']);
       $create_res = mailbox('add', 'mailbox_from_template', array(
@@ -206,6 +197,11 @@ while (true) {
         continue;
       }
     } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
+      if ($mapper_key === false){
+        logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
+        continue;
+      }
+      $mbox_template = $iam_settings['templates'][$mapper_key];
       // mailbox user does exist, sync attribtues...
       logMsg("info", "Syncing attributes for user " . $user['email']);
       mailbox('edit', 'mailbox_from_template', array(

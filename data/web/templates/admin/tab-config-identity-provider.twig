@@ -93,6 +93,27 @@
             </div>
           </div>
           <div class="row mb-2" id="iam_keycloak_mapping_list">
+            <input type="hidden" name="mappers" value="">
+            <input type="hidden" name="templates" value="">
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-5 p-0 pe-2">
+                  <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_default_template_description }}"></i>
+                  <span>{{ lang.admin.iam_default_template}}</span>
+                </div>
+                <div class="col-5 p-0 pe-2 align-content-end">
+                  <select data-live-search="true" name="default_template" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" {% if not iam_settings.default_template %}selected{% endif %}>-- {{ lang.mailbox.template }} --</option>
+                  {% for mbox_template in mbox_templates %}
+                    <option {% if mbox_template.template == iam_settings.default_template %}selected{% endif %}>
+                      {{ mbox_template.template }}
+                    </option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex"></div>
+              </div>
+            </div>
             {% for key, role in iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
@@ -100,7 +121,7 @@
                   <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --" required>
                   {% for mbox_template in mbox_templates %}
                     <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
                       {{ mbox_template.template }}
@@ -114,14 +135,14 @@
               </div>
             </div>
             {% endfor %}
-            {% if not iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
                 <div class="col-5 p-0 pe-2">
-                  <input type="text" class="form-control me-2" name="mappers" value="" required>
+                  <input type="text" class="form-control me-2" name="mappers" value="">
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" selected>-- {{ lang.mailbox.template }} --</option>
                   {% for mbox_template in mbox_templates %}
                     <option>
                       {{ mbox_template.template }}
@@ -134,7 +155,6 @@
                 </div>
               </div>
             </div>
-            {% endif %}
           </div>
           <div class="row mb-2 mt-4">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end"></div>
@@ -283,6 +303,27 @@
             </div>
           </div>
           <div class="row mb-2" id="iam_generic_mapping_list">
+            <input type="hidden" name="mappers" value="">
+            <input type="hidden" name="templates" value="">
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-5 p-0 pe-2">
+                  <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_default_template_description }}"></i>
+                  <span>{{ lang.admin.iam_default_template}}</span>
+                </div>
+                <div class="col-5 p-0 pe-2 align-content-end">
+                  <select data-live-search="true" name="default_template" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" {% if not iam_settings.default_template %}selected{% endif %}>-- {{ lang.mailbox.template }} --</option>
+                  {% for mbox_template in mbox_templates %}
+                    <option {% if mbox_template.template == iam_settings.default_template %}selected{% endif %}>
+                      {{ mbox_template.template }}
+                    </option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex"></div>
+              </div>
+            </div>
             {% for key, role in iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
@@ -290,7 +331,7 @@
                   <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --" required>
                   {% for mbox_template in mbox_templates %}
                     <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
                       {{ mbox_template.template }}
@@ -304,14 +345,14 @@
               </div>
             </div>
             {% endfor %}
-            {% if not iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
                 <div class="col-5 p-0 pe-2">
-                  <input type="text" class="form-control me-2" name="mappers" value="" required>
+                  <input type="text" class="form-control me-2" name="mappers" value="">
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" selected>-- {{ lang.mailbox.template }} --</option>
                   {% for mbox_template in mbox_templates %}
                     <option>
                       {{ mbox_template.template }}
@@ -324,7 +365,6 @@
                 </div>
               </div>
             </div>
-            {% endif %}
           </div>
           <div class="row mb-4">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
@@ -463,6 +503,27 @@
             </div>
           </div>
           <div class="row mb-2" id="iam_ldap_mapping_list">
+            <input type="hidden" name="mappers" value="">
+            <input type="hidden" name="templates" value="">
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-5 p-0 pe-2">
+                  <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_default_template_description }}"></i>
+                  <span>{{ lang.admin.iam_default_template }}</span>
+                </div>
+                <div class="col-5 p-0 pe-2 align-content-end">
+                  <select data-live-search="true" name="default_template" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" {% if not iam_settings.default_template %}selected{% endif %}>-- {{ lang.mailbox.template }} --</option>
+                  {% for mbox_template in mbox_templates %}
+                    <option {% if mbox_template.template == iam_settings.default_template %}selected{% endif %}>
+                      {{ mbox_template.template }}
+                    </option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex"></div>
+              </div>
+            </div>
             {% for key, role in iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
@@ -470,7 +531,7 @@
                   <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --" required>
                   {% for mbox_template in mbox_templates %}
                     <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>
                       {{ mbox_template.template }}
@@ -484,14 +545,14 @@
               </div>
             </div>
             {% endfor %}
-            {% if not iam_settings.mappers %}
             <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
               <div class="row px-2">
                 <div class="col-5 p-0 pe-2">
-                  <input type="text" class="form-control me-2" name="mappers" value="" required>
+                  <input type="text" class="form-control me-2" name="mappers" value="">
                 </div>
                 <div class="col-5 p-0 pe-2">
-                  <select data-live-search="true" name="templates" class="form-control" title="{{ lang.mailbox.template }}" required>
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" selected>-- {{ lang.mailbox.template }} --</option>
                   {% for mbox_template in mbox_templates %}
                     <option>
                       {{ mbox_template.template }}
@@ -504,7 +565,6 @@
                 </div>
               </div>
             </div>
-            {% endif %}
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">

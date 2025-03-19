@@ -137,17 +137,8 @@ foreach ($response as $user) {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
   // check if matching attribute mapping exists
-  $mbox_template = null;
-  foreach ($iam_settings['mappers'] as $index => $mapper){
-    if ($mapper ==  $mailcow_template) {
-      $mbox_template = $iam_settings['templates'][$index];
-      break;
-    }
-  }
-  if (!$mbox_template){
-    logMsg("warning", "No matching attribute mapping found for user " . $user[$iam_settings['username_field']][0]);
-    continue;
-  }
+  $user_template = $user_res[$iam_settings['attribute_field']][0];
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
   if (empty($user[$iam_settings['username_field']][0])){
     logMsg("warning", "Skipping user " . $user['displayname'][0] . " due to empty LDAP ". $iam_settings['username_field'] . " property.");
@@ -156,6 +147,16 @@ foreach ($response as $user) {
 
   $_SESSION['access_all_exception'] = '1';
   if (!$row && intval($iam_settings['import_users']) == 1){
+    if ($mapper_key === false){
+      if (!empty($iam_settings['default_template'])) {
+        $mbox_template = $iam_settings['default_template'];
+      } else {
+        logMsg("warning", "No matching attribute mapping found for user " . $user[$iam_settings['username_field']][0]);
+        continue;
+      }
+    } else {
+      $mbox_template = $iam_settings['templates'][$mapper_key];
+    }
     // mailbox user does not exist, create...
     logMsg("info", "Creating user " .  $user[$iam_settings['username_field']][0]);
     $create_res = mailbox('add', 'mailbox_from_template', array(
@@ -170,6 +171,11 @@ foreach ($response as $user) {
       continue;
     }
   } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
+    if ($mapper_key === false){
+      logMsg("warning", "No matching attribute mapping found for user " . $user[$iam_settings['username_field']][0]);
+      continue;
+    }
+    $mbox_template = $iam_settings['templates'][$mapper_key];
     // mailbox user does exist, sync attribtues...
     logMsg("info", "Syncing attributes for user " . $user[$iam_settings['username_field']][0]);
     mailbox('edit', 'mailbox_from_template', array(

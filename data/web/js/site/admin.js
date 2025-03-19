@@ -711,7 +711,7 @@ jQuery(function($){
   // App links
   // setup eventlistener
   setAppHideEvent();
-  function setAppHideEvent(){ 
+  function setAppHideEvent(){
     $('.app_hide').off('change');
     $('.app_hide').on('change', function (e) {
       var value = $(this).is(':checked') ? '1' : '0';
@@ -756,13 +756,13 @@ jQuery(function($){
   $('.iam_test_connection').click(async function(e){
     e.preventDefault();
     var data = { attr: $('form[data-id="' + $(this).data('id') + '"]').serializeObject() };
-    var res = await fetch("/api/v1/edit/identity-provider-test", { 
+    var res = await fetch("/api/v1/edit/identity-provider-test", {
       headers: {
         "Content-Type": "application/json",
       },
-      method:'POST', 
-      cache:'no-cache', 
-      body: JSON.stringify(data) 
+      method:'POST',
+      cache:'no-cache',
+      body: JSON.stringify(data)
     });
     res = await res.json();
     if (res.type === 'success'){
@@ -772,79 +772,22 @@ jQuery(function($){
   });
 
   $('.iam_rolemap_add_keycloak').click(async function(e){
-    e.preventDefault();
-
-    var parent = $('#iam_keycloak_mapping_list')
-    $(parent).children().last().clone().appendTo(parent);
-    var newChild = $(parent).children().last();
-    $(newChild).find('input').val('');
-    $(newChild).find('.dropdown-toggle').remove();
-    $(newChild).find('.dropdown-menu').remove();
-    $(newChild).find('.bs-title-option').remove();
-    $(newChild).find('select').selectpicker('destroy');
-    $(newChild).find('select').selectpicker();
-
-    $('.iam_keycloak_rolemap_del').off('click');
-    $('.iam_keycloak_rolemap_del').click(async function(e){
-      e.preventDefault();
-      if ($(this).parent().parent().parent().parent().children().length > 1)
-        $(this).parent().parent().parent().remove();
-    });
+    addAttributeMappingRow('#iam_keycloak_mapping_list', '.iam_keycloak_rolemap_del', e);
   });
   $('.iam_rolemap_add_generic').click(async function(e){
-    e.preventDefault();
-
-    var parent = $('#iam_generic_mapping_list')
-    $(parent).children().last().clone().appendTo(parent);
-    var newChild = $(parent).children().last();
-    $(newChild).find('input').val('');
-    $(newChild).find('.dropdown-toggle').remove();
-    $(newChild).find('.dropdown-menu').remove();
-    $(newChild).find('.bs-title-option').remove();
-    $(newChild).find('select').selectpicker('destroy');
-    $(newChild).find('select').selectpicker();
-
-    $('.iam_generic_rolemap_del').off('click');
-    $('.iam_generic_rolemap_del').click(async function(e){
-      e.preventDefault();
-      if ($(this).parent().parent().parent().parent().children().length > 1)
-        $(this).parent().parent().parent().remove();
-    });
+    addAttributeMappingRow('#iam_generic_mapping_list', '.iam_generic_rolemap_del', e);
   });
   $('.iam_rolemap_add_ldap').click(async function(e){
-    e.preventDefault();
-
-    var parent = $('#iam_ldap_mapping_list')
-    $(parent).children().last().clone().appendTo(parent);
-    var newChild = $(parent).children().last();
-    $(newChild).find('input').val('');
-    $(newChild).find('.dropdown-toggle').remove();
-    $(newChild).find('.dropdown-menu').remove();
-    $(newChild).find('.bs-title-option').remove();
-    $(newChild).find('select').selectpicker('destroy');
-    $(newChild).find('select').selectpicker();
-
-    $('.iam_ldap_rolemap_del').off('click');
-    $('.iam_ldap_rolemap_del').click(async function(e){
-      e.preventDefault();
-      if ($(this).parent().parent().parent().parent().children().length > 1)
-        $(this).parent().parent().parent().remove();
-    });
+    addAttributeMappingRow('#iam_ldap_mapping_list', '.iam_ldap_rolemap_del', e);
   });
   $('.iam_keycloak_rolemap_del').click(async function(e){
-    e.preventDefault();
-    if ($(this).parent().parent().parent().parent().children().length > 1)
-      $(this).parent().parent().parent().remove();
+    deleteAttributeMappingRow(this, e);
   });
   $('.iam_generic_rolemap_del').click(async function(e){
-    e.preventDefault();
-    if ($(this).parent().parent().parent().parent().children().length > 1)
-      $(this).parent().parent().parent().remove();
+    deleteAttributeMappingRow(this, e);
   });
   $('.iam_ldap_rolemap_del').click(async function(e){
-    e.preventDefault();
-    if ($(this).parent().parent().parent().parent().children().length > 1)
-      $(this).parent().parent().parent().remove();
+    deleteAttributeMappingRow(this, e);
   });
   // selecting identity provider
   $('#iam_provider').on('change', function(){
@@ -863,4 +806,31 @@ jQuery(function($){
       $('#keycloak_settings').addClass('d-none');
     }
   });
+  function addAttributeMappingRow(list_id, del_class, e) {
+    e.preventDefault();
+
+    var parent = $(list_id)
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+    $(newChild).find('input').val('').prop('required', true);
+    $(newChild).find('.dropdown-toggle').remove();
+    $(newChild).find('.dropdown-menu').remove();
+    $(newChild).find('.bs-title-option').remove();
+    $(newChild).find('select').selectpicker('destroy');
+    $(newChild).find('select').selectpicker();
+    $(newChild).find('select').selectpicker().prop('required', true);
+
+    $(del_class).off('click');
+    $(del_class).click(async function(e){
+      deleteAttributeMappingRow(this, e);
+    });
+  }
+  function deleteAttributeMappingRow(elem, e) {
+    e.preventDefault();
+    if(!$(elem).parent().parent().parent().find('select').prop('required'))
+      return true;
+    if ($(elem).parent().parent().parent().parent().children().length > 1)
+      $(elem).parent().parent().parent().remove();
+  }
 });
