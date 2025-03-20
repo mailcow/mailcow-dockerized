@@ -1340,7 +1340,7 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
   echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
   sleep 1
   echo -e "\e[31mWARNING: A switch to stable or nightly is possible any time.\e[0m"
-  read -r -p "Are you sure you that want to continue upgrading to the legacy branch? [y/N] " response
+  read -r -p "Are you sure you want to continue upgrading to the legacy branch? [y/N] " response
   if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --legacy parameter again to trigger this process here."
     exit 0
