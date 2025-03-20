@@ -5847,12 +5847,11 @@ paths:
                           client_secret: "*"
                           redirect_url: "https://mail.mailcow.tld"
                           version: "26.1.3"
+                          default_template: "Default"
                           mappers:
-                            - "Default"
                             - "small_mbox"
                             - "medium_mbox"
                           templates:
-                            - "Default"
                             - "small"
                             - "medium"
                           ignore_ssl_error: true
@@ -5903,11 +5902,14 @@ paths:
                     version:
                       description: Specifies the Keycloak version. Required if `authsource` is keycloak.
                       type: string
+                    default_template:
+                      description: (Optional) If no matching Attribute Mapping exists for a User, the default template will be used for creating the mailbox, but not for updating the mailbox.
+                      type: string
                     mappers:
-                      description: Attribute values used to match a mailbox template. Each element corresponds to the respective index in the templates array (i.e., the first element matches the first element of templates, the second matches the second, and so on).
+                      description: (Optional) Attribute values used to match a mailbox template. Each element corresponds to the respective index in the templates array (i.e., the first element matches the first element of templates, the second matches the second, and so on).
                       type: array
                     templates:
-                      description: Defines the mailbox templates to be assigned. Each element corresponds to the respective index in the `mappers` array.
+                      description: (Optional) Defines the mailbox templates to be assigned. Each element corresponds to the respective index in the `mappers` array.
                       type: array
                     ignore_ssl_error:
                       description: If enabled, SSL certificate validation is bypassed
@@ -5988,8 +5990,9 @@ paths:
                     client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
                     redirect_url: "https://mail.mailcow.tld"
                     version: "26.1.3"
-                    mappers: ["Default", "small_mbox", "medium_mbox"]
-                    templates: ["Default", "small", "medium"]
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
                     ignore_ssl_error: true
                     mailpassword_flow: true
                     periodic_sync: true
@@ -6012,8 +6015,9 @@ paths:
                     attribute_field: "othermailbox"
                     binddn: "CN=LDAP Read Only,CN=Users,DC=mailcow,DC=local"
                     bindpass: "moohoo"
-                    mappers: ["Default", "small_mbox", "medium_mbox"]
-                    templates: ["Default", "small", "medium"]
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
                     periodic_sync: true
                     import_users: true
                     sync_interval: 30
@@ -6030,8 +6034,9 @@ paths:
                     client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
                     redirect_url: "https://mail.mailcow.tld"
                     client_scopes: "openid profile email mailcow_template"
-                    mappers: ["Default", "small_mbox", "medium_mbox"]
-                    templates: ["Default", "small", "medium"]
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
                     ignore_ssl_error: true
       summary: Edit external Identity Provider
 
