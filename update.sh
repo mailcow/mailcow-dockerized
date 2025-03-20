@@ -883,8 +883,12 @@ while (($#)); do
       echo -e "\e[32mRunning in Developer mode...\e[0m"
       DEV=y
     ;;
+    --legacy)
+      CURRENT_BRANCH="$(cd "${SCRIPT_DIR}"; git rev-parse --abbrev-ref HEAD)"
+      NEW_BRANCH="legacy"
+    ;;
     --help|-h)
-    echo './update.sh [-c|--check, --check-tags, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, -f|--force, -d|--dev, -h|--help]
+    echo './update.sh [-c|--check, --check-tags, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, --legacy, -f|--force, -d|--dev, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --check-tags         -   Check for newer tags and exit (exit codes => 0: newer tag available, 3: no newer tag)
@@ -894,7 +898,8 @@ while (($#)); do
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you'\''ve blocked any ICMP Connections to your mailcow machine)
-  --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly.
+  --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly or --legacy.
+  --legacy             -   Switch your mailcow updates to the legacy branch. The legacy branch will only recieve security updates until February 2026.
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
@@ -1300,6 +1305,11 @@ if ! [ "$NEW_BRANCH" ]; then
     sleep 1
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
+  elif [ "${BRANCH}" == "legacy" ]; then
+    echo -e "\e[31mYou are receiving legacy updates. The legacy branch will only recieve security updates until February 2026.\e[0m"
+    sleep 1
+    echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
+
   else
     echo -e "\e[33mYou are receiving updates from an unsupported branch.\e[0m"
     sleep 1
@@ -1353,6 +1363,29 @@ elif [ "$NEW_BRANCH" == "nightly" ] && [ "$CURRENT_BRANCH" != "nightly" ]; then
   BRANCH=$NEW_BRANCH
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_nightly_$(date +"%Y-%m-%d-%H-%M-%S")
+  mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
+  if ! git diff-index --quiet HEAD; then
+    echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
+    mkdir -p ${DIFF_DIRECTORY}
+    git diff "${BRANCH}" --stat > "${DIFF_FILE}"
+    git diff "${BRANCH}" >> "${DIFF_FILE}"
+  fi
+  git fetch origin
+  git checkout -f "${BRANCH}"
+elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
+  echo -e "\e[33mYou are about to switch your mailcow Updates to the legacy branch.\e[0m"
+  sleep 1
+  echo -e "\e[33mBefore you do: Please take a backup of all components to ensure that no Data is lost...\e[0m"
+  sleep 1
+  echo -e "\e[31mWARNING: A switch to stable or nightly is possible any time.\e[0m"
+  read -r -p "Are you sure you want to continue upgrading to the legacy branch? [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK. If you prepared yourself for that please run the update.sh Script with the --legacy parameter again to trigger this process here."
+    exit 0
+  fi
+  BRANCH=$NEW_BRANCH
+  DIFF_DIRECTORY=update_diffs
+  DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_legacy_$(date +"%Y-%m-%d-%H-%M-%S")
   mv diff_before_upgrade* ${DIFF_DIRECTORY}/ 2> /dev/null
   if ! git diff-index --quiet HEAD; then
     echo -e "\e[32mSaving diff to ${DIFF_FILE}...\e[0m"
