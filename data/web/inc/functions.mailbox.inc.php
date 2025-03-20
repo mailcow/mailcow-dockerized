@@ -1024,8 +1024,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (in_array($_data['authsource'], array('mailcow', 'keycloak', 'generic-oidc', 'ldap')) &&
-              $iam_settings['authsource'] == $_data['authsource']){
+          if ($_data['authsource'] == "mailcow" ||
+              in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
             $authsource = $_data['authsource'];
           }
           if (empty($name)) {
@@ -2958,8 +2958,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
               $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
               $authsource           = $is_now['authsource'];
-              if (in_array($_data['authsource'], array('mailcow', 'keycloak', 'generic-oidc', 'ldap')) &&
-                  $iam_settings['authsource'] == $_data['authsource']){
+              if ($_data['authsource'] == "mailcow" ||
+                  in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
                 $authsource = $_data['authsource'];
               }
               if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
