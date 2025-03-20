@@ -1267,7 +1267,7 @@ if ! [ "$NEW_BRANCH" ]; then
     sleep 1
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
-  elif [ "${BRANCH}" == "legcy" ]; then
+  elif [ "${BRANCH}" == "legacy" ]; then
     echo -e "\e[31mYou are receiving legacy updates. The legacy branch will only recieve security updates until February 2026.\e[0m"
     sleep 1
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
