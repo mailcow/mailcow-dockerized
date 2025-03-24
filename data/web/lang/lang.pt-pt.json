@@ -197,9 +197,7 @@
     },
     "start": {
         "help": "Mostrar/Ocultar painel de ajuda",
-        "imap_smtp_server_auth_info": "Utilize o endereço de email completo com o método de autentucação PLAIN.<br>\r\nOs dados de login serão encryptados pelo servidor.",
-        "mailcow_apps_detail": "Use um mailcow app para acessar seus emails, calendário, contatos e outras informações.",
-        "mailcow_panel_detail": "<b>Administradores:</b> podem criar, alterar ou apagar contas e apelidos , alterar domínios e outras informações de seus domínios atribuídos.<br>\r\n\t<b>utilizadors:</b> podem criar apelidos por tempo determinado , alterar senha e configuração do nível do filtro de spam."
+        "imap_smtp_server_auth_info": "Utilize o endereço de email completo com o método de autentucação PLAIN.<br>\r\nOs dados de login serão encryptados pelo servidor."
     },
     "success": {
         "admin_modified": "Administrador alterado com sucesso",

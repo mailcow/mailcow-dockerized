@@ -1112,6 +1112,7 @@ paths:
                 domain: domain.tld
                 local_part: info
                 name: Full name
+                authsource: mailcow
                 password: atedismonsin
                 password2: atedismonsin
                 quota: "3072"
@@ -1132,11 +1133,16 @@ paths:
                 name:
                   description: Full name of the mailbox user
                   type: string
+                authsource:
+                  description: Specifies the authentication source for the mailbox.
+                  type: string
+                  enum: [mailcow, ldap, keycloak, generic-oidc]
+                  default: mailcow
                 password2:
                   description: mailbox password for confirmation
                   type: string
                 password:
-                  description: mailbox password
+                  description: mailbox password when using `mailcow` as the authentication source.
                   type: string
                 quota:
                   description: mailbox quota
@@ -3374,6 +3380,7 @@ paths:
                   active: "1"
                   force_pw_update: "0"
                   name: Full name
+                  authsource: mailcow
                   password: ""
                   password2: ""
                   quota: "3072"
@@ -3398,11 +3405,15 @@ paths:
                     name:
                       description: Full name of the mailbox user
                       type: string
+                    authsource:
+                      description: Specifies the authentication source for the mailbox.
+                      type: string
+                      enum: [mailcow, ldap, keycloak, generic-oidc]
                     password2:
                       description: new mailbox password for confirmation
                       type: string
                     password:
-                      description: new mailbox password
+                      description: new mailbox password when using `mailcow` as the authentication source.
                       type: string
                     quota:
                       description: mailbox quota
@@ -5687,7 +5698,7 @@ paths:
         - description: name of domain
           in: path
           name: domain
-          required: false
+          required: true
           schema:
             type: string
         - description: e.g. api-key-string
@@ -5755,8 +5766,8 @@ paths:
       tags:
         - Cross-Origin Resource Sharing (CORS)
       description: >-
-        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API. 
-        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests. 
+        This endpoint allows you to manage Cross-Origin Resource Sharing (CORS) settings for the API.
+        CORS is a security feature implemented by web browsers to prevent unauthorized cross-origin requests.
         By editing the CORS settings, you can specify which domains and which methods are permitted to access the API resources from outside the mailcow domain.
       operationId: Edit Cross-Origin Resource Sharing (CORS) settings
       requestBody:
@@ -5814,6 +5825,220 @@ paths:
         Using this endpoint you can get the global spam filter score or the spam filter score of a certain mailbox.
       operationId: Get mailbox or global spam filter score
       summary: Get mailbox or global spam filter score
+  /api/v1/edit/identity-provider:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: "success"
+                      log:
+                        - "identity_provider"
+                        - "edit"
+                        - authsource: "keycloak"
+                          server_url: "https://auth.mailcow.tld"
+                          realm: "mailcow"
+                          client_id: "mailcow_client"
+                          client_secret: "*"
+                          redirect_url: "https://mail.mailcow.tld"
+                          version: "26.1.3"
+                          default_template: "Default"
+                          mappers:
+                            - "small_mbox"
+                            - "medium_mbox"
+                          templates:
+                            - "small"
+                            - "medium"
+                          ignore_ssl_error: true
+                          mailpassword_flow: true
+                          periodic_sync: true
+                          import_users: true
+                          sync_interval: 30
+                      msg:
+                        - "object_modified"
+                        - ""
+          description: OK
+          headers: { }
+      tags:
+        - Identity Provider
+      description: >-
+        Configure an external Identity Provider to use as user authentication
+      operationId: Edit external Identity Provider settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                items:
+                  type: array
+                  default: ["identity-provider"]
+                attr:
+                  type: object
+                  properties:
+                    authsource:
+                      description: Specifies the type of the Identity Provider
+                      type: string
+                      enum: [ldap, keycloak, generic-oidc]
+                    server_url:
+                      description: The base URL of your Keycloak server. Required if `authsource` is keycloak.
+                      type: string
+                    realm:
+                      description: The Keycloak realm where the mailcow client is configured. Required if `authsource` is keycloak.
+                      type: string
+                    client_id:
+                      description: The Client ID assigned to mailcow Client in OIDC Provider. Required if `authsource` is keycloak or generic-oidc.
+                      type: string
+                    client_secret:
+                      description: The Client Secret assigned to mailcow Client in OIDC Provider. Required if `authsource` is keycloak or generic-oidc.
+                      type: string
+                    redirect_url:
+                      description: The redirect URL that OIDC Provider will use after authentication. Required if `authsource` is keycloak or generic-oidc.
+                      type: string
+                    version:
+                      description: Specifies the Keycloak version. Required if `authsource` is keycloak.
+                      type: string
+                    default_template:
+                      description: (Optional) If no matching Attribute Mapping exists for a User, the default template will be used for creating the mailbox, but not for updating the mailbox.
+                      type: string
+                    mappers:
+                      description: (Optional) Attribute values used to match a mailbox template. Each element corresponds to the respective index in the templates array (i.e., the first element matches the first element of templates, the second matches the second, and so on).
+                      type: array
+                    templates:
+                      description: (Optional) Defines the mailbox templates to be assigned. Each element corresponds to the respective index in the `mappers` array.
+                      type: array
+                    ignore_ssl_error:
+                      description: If enabled, SSL certificate validation is bypassed
+                      type: boolean
+                      default: false
+                    mailpassword_flow:
+                      description: If enabled, mailcow will attempt to validate user credentials using the Keycloak Admin REST API instead of relying solely on the Authorization Code Flow.
+                      type: boolean
+                      default: false
+                    periodic_sync:
+                      description: If enabled, mailcow periodically performs a full sync of all users from Keycloak or LDAP.
+                      type: boolean
+                      default: false
+                    import_users:
+                      description: If enabled, new users are automatically imported from Keycloak or LDAP into mailcow.
+                      type: boolean
+                      default: false
+                    sync_interval:
+                      description: Defines the time interval (in minutes) for periodic synchronization and user imports.
+                      type: number
+                      default: 15
+                    host:
+                      description: The address of your LDAP server. You can provide a single hostname or a comma-separated list of hosts for fallback in case the primary server is unreachable. Required if `authsource` is ldap.
+                      type: string
+                    port:
+                      description: The port used to connect to the LDAP server. Required if `authsource` is ldap.
+                      type: string
+                    use_ssl:
+                      description: enable LDAPS connection. If Port is set to 389 it will be overriden to 636.
+                      type: boolean
+                      default: false
+                    use_tls:
+                      description: enable TLS connection. TLS is recommended over SSL. SSL Ports cannot be used.
+                      type: boolean
+                      default: false
+                    basedn:
+                      description: The Distinguished Name (DN) from which searches will be performed. Required if `authsource` is ldap.
+                      type: string
+                    username_field:
+                      description: The LDAP attribute used to identify users during authentication. Required if `authsource` is ldap.
+                      type: string
+                      default: mail
+                    filter:
+                      description: An optional LDAP search filter to refine which users can authenticate.
+                      type: string
+                    attribute_field:
+                      description: Specifies an LDAP attribute that holds a specific value which can be mapped to a mailbox template using the Attribute Mapping section. Required if `authsource` is ldap.
+                      type: string
+                    binddn:
+                      description: The Distinguished Name (DN) of the LDAP user that will be used to authenticate and perform LDAP searches. This account should have sufficient permissions to read the required attributes. Required if `authsource` is ldap.
+                      type: string
+                    bindpass:
+                      description: The password for the Bind DN user. It is required for authentication when connecting to the LDAP server. Required if `authsource` is ldap.
+                      type: string
+                    authorize_url:
+                      description: The OIDC provider's authorization server URL. Required if `authsource` is generic-oidc.
+                      type: string
+                    token_url:
+                      description: The OIDC provider's token server URL. Required if `authsource` is generic-oidc.
+                      type: string
+                    userinfo_url:
+                      description: The OIDC provider's user info server URL. Required if `authsource` is generic-oidc.
+                      type: string
+                    client_scopes:
+                      description: Specifies the OIDC scopes requested during authentication.
+                      type: string
+                      default: "openid profile email mailcow_template"
+            examples:
+              keycloak:
+                value:
+                  items:
+                    - "identity-provider"
+                  attr:
+                    authsource: "keycloak"
+                    server_url: "https://auth.mailcow.tld"
+                    realm: "mailcow"
+                    client_id: "mailcow_client"
+                    client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
+                    redirect_url: "https://mail.mailcow.tld"
+                    version: "26.1.3"
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
+                    ignore_ssl_error: true
+                    mailpassword_flow: true
+                    periodic_sync: true
+                    import_users: true
+                    sync_interval: 30
+              ldap:
+                value:
+                  items:
+                    - "identity-provider"
+                  attr:
+                    authsource: "ldap"
+                    host: "127.0.0.1"
+                    port: "389"
+                    use_ssl: false
+                    use_tls: false
+                    ignore_ssl_error: false
+                    basedn: "DC=mailcow,DC=local"
+                    username_field: "mail"
+                    filter: "(memberOf:1.2.840.113556.1.4.1941:=DC=mailcow,DC=local)"
+                    attribute_field: "othermailbox"
+                    binddn: "CN=LDAP Read Only,CN=Users,DC=mailcow,DC=local"
+                    bindpass: "moohoo"
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
+                    periodic_sync: true
+                    import_users: true
+                    sync_interval: 30
+              generic-oidc:
+                value:
+                  items:
+                    - "identity-provider"
+                  attr:
+                    authsource: "generic-oidc"
+                    authorize_url: "https://auth.mailcow.tld/application/o/authorize/"
+                    token_url: "https://auth.mailcow.tld/application/o/token/"
+                    userinfo_url: "https://auth.mailcow.tld/application/o/userinfo/"
+                    client_id: "mailcow_client"
+                    client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
+                    redirect_url: "https://mail.mailcow.tld"
+                    client_scopes: "openid profile email mailcow_template"
+                    default_template: "Default"
+                    mappers: ["small_mbox", "medium_mbox"]
+                    templates: ["small", "medium"]
+                    ignore_ssl_error: true
+      summary: Edit external Identity Provider
 
 tags:
   - name: Domains
@@ -5860,3 +6085,5 @@ tags:
     description: Edit domain ratelimits
   - name: Cross-Origin Resource Sharing (CORS)
     description: Manage Cross-Origin Resource Sharing (CORS) settings
+  - name: Identity Provider
+    description: Manage external Identity Provider settings

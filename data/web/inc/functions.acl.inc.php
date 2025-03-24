@@ -1,5 +1,5 @@
 <?php
-function acl($_action, $_scope = null, $_data = null) {
+function acl($_action, $_scope = null, $_data = null, $_extra = null) {
   global $pdo;
   global $lang;
   $_data_log = $_data;
@@ -24,7 +24,7 @@ function acl($_action, $_scope = null, $_data = null) {
             }
             // Users cannot change their own ACL
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)
-              || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin')) {
+              || ($_SESSION['mailcow_cc_role'] != 'admin' && $_SESSION['mailcow_cc_role'] != 'domainadmin' && $_SESSION['access_all_exception'] != '1')) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
@@ -34,7 +34,7 @@ function acl($_action, $_scope = null, $_data = null) {
             }
             // Read all available acl options by calling acl(get)
             // Set all available acl options we cannot find in the post data to 0, else 1
-            $is_now = acl('get', 'user', $username);
+            $is_now = acl('get', 'user', $username, $_extra);
             if (!empty($is_now)) {
               foreach ($is_now as $acl_now_name => $acl_now_val) {
                 $set_acls[$acl_now_name] = (isset($acl_post[$acl_now_name])) ? 1 : 0;

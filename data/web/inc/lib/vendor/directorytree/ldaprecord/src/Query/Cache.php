@@ -21,7 +21,7 @@ class Cache
     /**
      * Constructor.
      *
-     * @param CacheInterface $store
+     * @param  CacheInterface  $store
      */
     public function __construct(CacheInterface $store)
     {
@@ -31,8 +31,7 @@ class Cache
     /**
      * Get an item from the cache.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return mixed
      */
     public function get($key)
@@ -43,10 +42,9 @@ class Cache
     /**
      * Store an item in the cache.
      *
-     * @param string                                  $key
-     * @param mixed                                   $value
-     * @param DateTimeInterface|DateInterval|int|null $ttl
-     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @param  DateTimeInterface|DateInterval|int|null  $ttl
      * @return bool
      */
     public function put($key, $value, $ttl = null)
@@ -63,10 +61,9 @@ class Cache
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
      *
-     * @param string                                  $key
-     * @param DateTimeInterface|DateInterval|int|null $ttl
-     * @param Closure                                 $callback
-     *
+     * @param  string  $key
+     * @param  DateTimeInterface|DateInterval|int|null  $ttl
+     * @param  Closure  $callback
      * @return mixed
      */
     public function remember($key, $ttl, Closure $callback)
@@ -85,8 +82,7 @@ class Cache
     /**
      * Delete an item from the cache.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     public function delete($key)
