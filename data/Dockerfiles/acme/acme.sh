@@ -138,7 +138,7 @@ log_f "Resolver OK"
 log_f "Waiting for domain table..."
 while [[ -z ${DOMAIN_TABLE} ]]; do
   curl --silent http://nginx.${COMPOSE_PROJECT_NAME}_mailcow-network/ >/dev/null 2>&1
-  DOMAIN_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
+  DOMAIN_TABLE=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
   [[ -z ${DOMAIN_TABLE} ]] && sleep 10
 done
 log_f "OK" no_date
@@ -231,7 +231,7 @@ while true; do
 
   #########################################
   # IP and webroot challenge verification #
-  SQL_DOMAINS=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 and active=1" -Bs)
+  SQL_DOMAINS=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM domain WHERE backupmx=0 and active=1" -Bs)
   if [[ ! $? -eq 0 ]]; then
     log_f "Failed to read SQL domains, retrying in 1 minute..."
     sleep 1m

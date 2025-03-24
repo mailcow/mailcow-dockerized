@@ -14,11 +14,11 @@ do
 done
 
 # Wait for updated schema
-DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
+DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
 DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
 while [[ "${DBV_NOW}" != "${DBV_NEW}" ]]; do
   echo "Waiting for schema update..."
-  DBV_NOW=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
+  DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
   DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
   sleep 5
 done
@@ -112,7 +112,7 @@ while read -r line gal
   /etc/sogo/plist_ldap.sh ${line} ${gal} >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
   echo "            </array>
         </dict>" >> /var/lib/sogo/GNUstep/Defaults/sogod.plist
-done < <(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain, CASE gal WHEN '1' THEN 'YES' ELSE 'NO' END AS gal FROM domain;" -B -N)
+done < <(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain, CASE gal WHEN '1' THEN 'YES' ELSE 'NO' END AS gal FROM domain;" -B -N)
 
 # Generate footer
 echo '    </dict>
