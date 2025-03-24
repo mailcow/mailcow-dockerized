@@ -251,7 +251,7 @@
     "login": {
         "fido2_webauthn": "FIDO2/WebAuthn Prisijungimas",
         "login": "Prisijungti",
-        "other_logins": "Prisijungimas raktu",
+        "other_logins": "ar prisijungti su",
         "password": "Slaptažodis",
         "username": "Naudotojo vardas",
         "mobileconfig_info": "Prašome prisijungti kaip pašto dėžutės vartotojui, kad galėtumėte atsisiųsti pageidaujamą „Apple“ ryšio profilį."

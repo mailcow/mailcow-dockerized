@@ -25,9 +25,6 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class QtFileLoader implements LoaderInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue
     {
         if (!class_exists(XmlUtils::class)) {
@@ -67,7 +64,6 @@ class QtFileLoader implements LoaderInterface
                         $domain
                     );
                 }
-                $translation = $translation->nextSibling;
             }
 
             if (class_exists(FileResource::class)) {

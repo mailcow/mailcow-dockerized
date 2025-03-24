@@ -58,13 +58,22 @@
           <tr>
             <th>{{ lang.admin.app_name }}</th>
             <th>{{ lang.admin.link }}</th>
+            <th>{{ lang.admin.user_link }}</th>
+            <th style="width:125px;">{{ lang.admin.app_hide }}</th>
             <th style="width:100px;">&nbsp;</th>
           </tr>
           {% for row in app_links %}
             {% for key, val in row %}
               <tr>
                 <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="{{ key }}"></td>
-                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val.link }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required value="{{ val.user_link }}"></td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
+                    <input data-id="app_links" type="hidden" name="hide" {% if val.hide %}value="1"{% else %}value="0"{% endif %}>
+                    <input class="form-check-input app_hide" type="checkbox" value="1" {% if val.hide %}checked{% endif %}>
+                  </div>
+                </td>
                 <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">{{ lang.admin.remove_row }}</a></td>
               </tr>
             {% endfor %}
@@ -73,6 +82,12 @@
             <tr>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.name }}" disabled></td>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.link }}" disabled></td>
+              <td><input class="input-sm input-xs-lg form-control" value="{{ app.user_link }}" disabled></td>
+              <td>
+                <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
+                  <input class="form-check-input" data-id="app_links" type="checkbox" name="hide" value="1" disabled {% if app.hide %}checked{% endif %}>
+                </div>
+              </td>
               <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100 disabled" type="button">{{ lang.admin.remove_row }}</a></td>
             </tr>
           {% endfor %}

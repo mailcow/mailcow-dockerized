@@ -3,7 +3,7 @@ function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
   global $LOGO_LIMITS;
-  
+
   switch ($_action) {
     case 'add':
       // disable functionality when demo mode is enabled
@@ -122,10 +122,16 @@ function customize($_action, $_item, $_data = null) {
         case 'app_links':
           $apps = (array)$_data['app'];
           $links = (array)$_data['href'];
+          $user_links = (array)$_data['user_href'];
+          $hide = (array)$_data['hide'];
           $out = array();
-          if (count($apps) == count($links)) {
+          if (count($apps) == count($links) && count($apps) == count($user_links) && count($apps) == count($hide)) {
             for ($i = 0; $i < count($apps); $i++) {
-              $out[] = array($apps[$i] => $links[$i]);
+              $out[] = array($apps[$i] => array(
+                'link' => $links[$i],
+                'user_link' => $user_links[$i],
+                'hide' => ($hide[$i] === '0' || $hide[$i] === 0) ? false : true
+              ));
             }
             try {
               $redis->set('APP_LINKS', json_encode($out));
@@ -256,7 +262,23 @@ function customize($_action, $_item, $_data = null) {
             );
             return false;
           }
-          return ($app_links) ? $app_links : false;
+
+          if (empty($app_links)){
+            return false;
+          }
+
+          // convert from old style
+          foreach($app_links as $i => $entry){
+            foreach($entry as $app => $link){
+              if (empty($link['link']) && empty($link['user_link'])){
+                $app_links[$i][$app] = array();
+                $app_links[$i][$app]['link'] = $link;
+                $app_links[$i][$app]['user_link'] = $link;
+              }
+            }
+          }
+
+          return $app_links;
         break;
         case 'main_logo':
         case 'main_logo_dark':

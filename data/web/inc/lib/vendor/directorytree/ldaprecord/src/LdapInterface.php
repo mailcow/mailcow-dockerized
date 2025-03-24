@@ -9,28 +9,28 @@ interface LdapInterface
      *
      * @var string
      */
-    const PROTOCOL_SSL = 'ldaps://';
+    public const PROTOCOL_SSL = 'ldaps://';
 
     /**
      * The standard LDAP protocol string.
      *
      * @var string
      */
-    const PROTOCOL = 'ldap://';
+    public const PROTOCOL = 'ldap://';
 
     /**
      * The LDAP SSL port number.
      *
      * @var string
      */
-    const PORT_SSL = 636;
+    public const PORT_SSL = 636;
 
     /**
      * The standard LDAP port number.
      *
      * @var string
      */
-    const PORT = 389;
+    public const PORT = 389;
 
     /**
      * Various useful server control OID's.
@@ -38,37 +38,36 @@ interface LdapInterface
      * @see https://ldap.com/ldap-oid-reference-guide/
      * @see http://msdn.microsoft.com/en-us/library/cc223359.aspx
      */
-    const OID_SERVER_START_TLS = '1.3.6.1.4.1.1466.20037';
-    const OID_SERVER_PAGED_RESULTS = '1.2.840.113556.1.4.319';
-    const OID_SERVER_SHOW_DELETED = '1.2.840.113556.1.4.417';
-    const OID_SERVER_SORT = '1.2.840.113556.1.4.473';
-    const OID_SERVER_CROSSDOM_MOVE_TARGET = '1.2.840.113556.1.4.521';
-    const OID_SERVER_NOTIFICATION = '1.2.840.113556.1.4.528';
-    const OID_SERVER_EXTENDED_DN = '1.2.840.113556.1.4.529';
-    const OID_SERVER_LAZY_COMMIT = '1.2.840.113556.1.4.619';
-    const OID_SERVER_SD_FLAGS = '1.2.840.113556.1.4.801';
-    const OID_SERVER_TREE_DELETE = '1.2.840.113556.1.4.805';
-    const OID_SERVER_DIRSYNC = '1.2.840.113556.1.4.841';
-    const OID_SERVER_VERIFY_NAME = '1.2.840.113556.1.4.1338';
-    const OID_SERVER_DOMAIN_SCOPE = '1.2.840.113556.1.4.1339';
-    const OID_SERVER_SEARCH_OPTIONS = '1.2.840.113556.1.4.1340';
-    const OID_SERVER_PERMISSIVE_MODIFY = '1.2.840.113556.1.4.1413';
-    const OID_SERVER_ASQ = '1.2.840.113556.1.4.1504';
-    const OID_SERVER_FAST_BIND = '1.2.840.113556.1.4.1781';
-    const OID_SERVER_CONTROL_VLVREQUEST = '2.16.840.1.113730.3.4.9';
+    public const OID_SERVER_START_TLS = '1.3.6.1.4.1.1466.20037';
+    public const OID_SERVER_PAGED_RESULTS = '1.2.840.113556.1.4.319';
+    public const OID_SERVER_SHOW_DELETED = '1.2.840.113556.1.4.417';
+    public const OID_SERVER_SORT = '1.2.840.113556.1.4.473';
+    public const OID_SERVER_CROSSDOM_MOVE_TARGET = '1.2.840.113556.1.4.521';
+    public const OID_SERVER_NOTIFICATION = '1.2.840.113556.1.4.528';
+    public const OID_SERVER_EXTENDED_DN = '1.2.840.113556.1.4.529';
+    public const OID_SERVER_LAZY_COMMIT = '1.2.840.113556.1.4.619';
+    public const OID_SERVER_SD_FLAGS = '1.2.840.113556.1.4.801';
+    public const OID_SERVER_TREE_DELETE = '1.2.840.113556.1.4.805';
+    public const OID_SERVER_DIRSYNC = '1.2.840.113556.1.4.841';
+    public const OID_SERVER_VERIFY_NAME = '1.2.840.113556.1.4.1338';
+    public const OID_SERVER_DOMAIN_SCOPE = '1.2.840.113556.1.4.1339';
+    public const OID_SERVER_SEARCH_OPTIONS = '1.2.840.113556.1.4.1340';
+    public const OID_SERVER_PERMISSIVE_MODIFY = '1.2.840.113556.1.4.1413';
+    public const OID_SERVER_ASQ = '1.2.840.113556.1.4.1504';
+    public const OID_SERVER_FAST_BIND = '1.2.840.113556.1.4.1781';
+    public const OID_SERVER_CONTROL_VLVREQUEST = '2.16.840.1.113730.3.4.9';
 
     /**
      * Query OID's.
      *
      * @see https://ldapwiki.com/wiki/LDAP_MATCHING_RULE_IN_CHAIN
      */
-    const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';
+    public const OID_MATCHING_RULE_IN_CHAIN = '1.2.840.113556.1.4.1941';
 
     /**
      * Set the current connection to use SSL.
      *
-     * @param bool $enabled
-     *
+     * @param  bool  $enabled
      * @return $this
      */
     public function ssl();
@@ -83,8 +82,7 @@ interface LdapInterface
     /**
      * Set the current connection to use TLS.
      *
-     * @param bool $enabled
-     *
+     * @param  bool  $enabled
      * @return $this
      */
     public function tls();
@@ -138,8 +136,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-entries.php
      *
-     * @param resource $searchResults
-     *
+     * @param  resource  $searchResults
      * @return array
      */
     public function getEntries($searchResults);
@@ -169,9 +166,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-set-option.php
      *
-     * @param int   $option
-     * @param mixed $value
-     *
+     * @param  int  $option
+     * @param  mixed  $value
      * @return bool
      */
     public function setOption($option, $value);
@@ -179,8 +175,7 @@ interface LdapInterface
     /**
      * Set options on the current connection.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return void
      */
     public function setOptions(array $options = []);
@@ -190,9 +185,8 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-get-option.php
      *
-     * @param int   $option
-     * @param mixed $value
-     *
+     * @param  int  $option
+     * @param  mixed  $value
      * @return mixed
      */
     public function getOption($option, &$value = null);
@@ -213,9 +207,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-start-tls.php
      *
-     * @param string|array $hosts
-     * @param int          $port
-     *
+     * @param  string|array  $hosts
+     * @param  int  $port
      * @return resource|false
      */
     public function connect($hosts = [], $port = 389);
@@ -236,15 +229,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-search.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $serverControls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $serverControls
      * @return resource
      */
     public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
@@ -254,15 +246,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-list.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $serverControls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $serverControls
      * @return resource
      */
     public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
@@ -272,15 +263,14 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-read.php
      *
-     * @param string $dn
-     * @param string $filter
-     * @param array  $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
-     * @param int    $deref
-     * @param array  $serverControls
-     *
+     * @param  string  $dn
+     * @param  string  $filter
+     * @param  array  $fields
+     * @param  bool  $onlyAttributes
+     * @param  int  $size
+     * @param  int  $time
+     * @param  int  $deref
+     * @param  array  $serverControls
      * @return resource
      */
     public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = []);
@@ -290,13 +280,12 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-parse-result.php
      *
-     * @param resource $result
-     * @param int      $errorCode
-     * @param ?string  $dn
-     * @param ?string  $errorMessage
-     * @param ?array   $referrals
-     * @param ?array   $serverControls
-     *
+     * @param  resource  $result
+     * @param  int  $errorCode
+     * @param  ?string  $dn
+     * @param  ?string  $errorMessage
+     * @param  ?array  $referrals
+     * @param  ?array  $serverControls
      * @return bool
      */
     public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = []);
@@ -307,9 +296,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-bind.php
      *
-     * @param string $username
-     * @param string $password
-     *
+     * @param  string  $username
+     * @param  string  $password
      * @return bool
      *
      * @throws LdapRecordException
@@ -321,9 +309,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-add.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -335,8 +322,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-delete.php
      *
-     * @param string $dn
-     *
+     * @param  string  $dn
      * @return bool
      *
      * @throws LdapRecordException
@@ -348,11 +334,10 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-rename.php
      *
-     * @param string $dn
-     * @param string $newRdn
-     * @param string $newParent
-     * @param bool   $deleteOldRdn
-     *
+     * @param  string  $dn
+     * @param  string  $newRdn
+     * @param  string  $newParent
+     * @param  bool  $deleteOldRdn
      * @return bool
      *
      * @throws LdapRecordException
@@ -364,9 +349,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-modify.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -378,9 +362,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-modify-batch.php
      *
-     * @param string $dn
-     * @param array  $values
-     *
+     * @param  string  $dn
+     * @param  array  $values
      * @return bool
      *
      * @throws LdapRecordException
@@ -392,9 +375,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-add.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -406,9 +388,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-replace.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -420,9 +401,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-mod-del.php
      *
-     * @param string $dn
-     * @param array  $entry
-     *
+     * @param  string  $dn
+     * @param  array  $entry
      * @return bool
      *
      * @throws LdapRecordException
@@ -434,10 +414,9 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-control-paged-result.php
      *
-     * @param int    $pageSize
-     * @param bool   $isCritical
-     * @param string $cookie
-     *
+     * @param  int  $pageSize
+     * @param  bool  $isCritical
+     * @param  string  $cookie
      * @return bool
      */
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '');
@@ -447,9 +426,8 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-control-paged-result-response.php
      *
-     * @param resource $result
-     * @param string   $cookie
-     *
+     * @param  resource  $result
+     * @param  string  $cookie
      * @return bool
      */
     public function controlPagedResultResponse($result, &$cookie);
@@ -459,8 +437,7 @@ interface LdapInterface
      *
      * @see https://www.php.net/manual/en/function.ldap-free-result.php
      *
-     * @param resource $result
-     *
+     * @param  resource  $result
      * @return bool
      */
     public function freeResult($result);
@@ -479,8 +456,7 @@ interface LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-err2str.php
      *
-     * @param int $number
-     *
+     * @param  int  $number
      * @return string
      */
     public function err2Str($number);

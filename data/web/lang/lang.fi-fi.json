@@ -691,9 +691,7 @@
     },
     "start": {
         "help": "Näytä/Piilota help paneeli",
-        "imap_smtp_server_auth_info": "Käytä täydellistä sähkö posti osoitetta ja tavallista todennus mekanismia.<br>\r\nPalvelin puolen pakollinen salaus salaa kirjautumistietosi.",
-        "mailcow_apps_detail": "Käytä mailcow-sovellusta, kun haluat käyttää sähköposteja, kalenteria, yhteys tietoja ja paljon muuta",
-        "mailcow_panel_detail": "<b>Verkkotunnus alueen järjestelmänvalvojat</b> Luo, muokkaa tai poistaa posti laatikoita ja aliaksia, muita verkko tunnuksia ja lue lisä tietoja niiden määritetyista verkko tunnuksista.<br>\r\n<b>Posti laatikon käyttäjät</b> pystyvät luomaan rajoitetun ajan aliaksia (roska posti asetuksia), muuttamaan salasanaa ja roska posti suodattimen asetuksia."
+        "imap_smtp_server_auth_info": "Käytä täydellistä sähkö posti osoitetta ja tavallista todennus mekanismia.<br>\r\nPalvelin puolen pakollinen salaus salaa kirjautumistietosi."
     },
     "success": {
         "acl_saved": "Objektin ACL %s tallenettu",

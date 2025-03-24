@@ -34,9 +34,9 @@ final class TranslationPullCommand extends Command
 {
     use TranslationTrait;
 
-    private $providerCollection;
-    private $writer;
-    private $reader;
+    private TranslationProviderCollection $providerCollection;
+    private TranslationWriterInterface $writer;
+    private TranslationReaderInterface $reader;
     private string $defaultLocale;
     private array $transPaths;
     private array $enabledLocales;
@@ -64,9 +64,8 @@ final class TranslationPullCommand extends Command
         if ($input->mustSuggestOptionValuesFor('domains')) {
             $provider = $this->providerCollection->get($input->getArgument('provider'));
 
-            if ($provider && method_exists($provider, 'getDomains')) {
-                $domains = $provider->getDomains();
-                $suggestions->suggestValues($domains);
+            if (method_exists($provider, 'getDomains')) {
+                $suggestions->suggestValues($provider->getDomains());
             }
 
             return;
@@ -83,10 +82,7 @@ final class TranslationPullCommand extends Command
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $keys = $this->providerCollection->keys();
         $defaultProvider = 1 === \count($keys) ? $keys[0] : null;
@@ -99,6 +95,7 @@ final class TranslationPullCommand extends Command
                 new InputOption('domains', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Specify the domains to pull.'),
                 new InputOption('locales', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Specify the locales to pull.'),
                 new InputOption('format', null, InputOption::VALUE_OPTIONAL, 'Override the default output format.', 'xlf12'),
+                new InputOption('as-tree', null, InputOption::VALUE_OPTIONAL, 'Write messages as a tree-like structure. Needs --format=yaml. The given value defines the level where to switch to inline YAML'),
             ])
             ->setHelp(<<<'EOF'
 The <info>%command.name%</> command pulls translations from the given provider. Only
@@ -120,9 +117,6 @@ EOF
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -133,6 +127,7 @@ EOF
         $locales = $input->getOption('locales') ?: $this->enabledLocales;
         $domains = $input->getOption('domains');
         $format = $input->getOption('format');
+        $asTree = (int) $input->getOption('as-tree');
         $xliffVersion = '1.2';
 
         if ($intlIcu && !$force) {
@@ -141,7 +136,7 @@ EOF
 
         switch ($format) {
             case 'xlf20': $xliffVersion = '2.0';
-            // no break
+                // no break
             case 'xlf12': $format = 'xlf';
         }
 
@@ -149,6 +144,8 @@ EOF
             'path' => end($this->transPaths),
             'xliff_version' => $xliffVersion,
             'default_locale' => $this->defaultLocale,
+            'as_tree' => (bool) $asTree,
+            'inline' => $asTree,
         ];
 
         if (!$domains) {
@@ -159,7 +156,7 @@ EOF
 
         if ($force) {
             foreach ($providerTranslations->getCatalogues() as $catalogue) {
-                $operation = new TargetOperation((new MessageCatalogue($catalogue->getLocale())), $catalogue);
+                $operation = new TargetOperation(new MessageCatalogue($catalogue->getLocale()), $catalogue);
                 if ($intlIcu) {
                     $operation->moveMessagesToIntlDomainsIfPossible();
                 }

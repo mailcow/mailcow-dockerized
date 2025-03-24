@@ -181,11 +181,15 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   echo "Available Branches:"
   echo "- master branch (stable updates) | default, recommended [1]"
   echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+  echo "- legacy branch (supported until February 2026) | deprecated, security updates only [3]"
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it's number [1/2] " branch
+    read -r -p  "Choose the Branch with it's number [1/2/3] " branch
     case $branch in
+      [3])
+        MAILCOW_BRANCH="legacy"
+        ;;
       [2])
         MAILCOW_BRANCH="nightly"
         ;;
@@ -256,7 +260,7 @@ REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # Might be important: This will also change the binding within the container.
 # If you use a proxy within Docker, point it to the ports you set below.
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
-# IMPORTANT: Do not use port 8081, 9081 or 65510!
+# IMPORTANT: Do not use port 8081, 9081, 9082 or 65510!
 # Example: HTTP_BIND=1.2.3.4
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
@@ -531,6 +535,10 @@ case ${git_branch} in
     mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
     ;;
   nightly)
+    mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
+    mailcow_last_git_version=""
+    ;;
+  legacy)
     mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
     mailcow_last_git_version=""
     ;;
