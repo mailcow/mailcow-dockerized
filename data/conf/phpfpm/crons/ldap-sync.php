@@ -123,8 +123,6 @@ $response = $ldap_query->where($iam_settings['username_field'], "*")
 
 // Process the users
 foreach ($response as $user) {
-  $mailcow_template = $user[$iam_settings['attribute_field']][0];
-
   // try get mailbox user
   $stmt = $pdo->prepare("SELECT
     mailbox.*,
@@ -137,7 +135,7 @@ foreach ($response as $user) {
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
   // check if matching attribute mapping exists
-  $user_template = $user_res[$iam_settings['attribute_field']][0];
+  $user_template = $user[$iam_settings['attribute_field']][0];
   $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
   if (empty($user[$iam_settings['username_field']][0])){
