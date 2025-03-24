@@ -409,7 +409,7 @@ paths:
                   description: a list of domains for which a dkim key should be generated
                   type: string
                 key_size:
-                  description: the key size (1024 or 2048)
+                  description: the key size (1024, 2048, 3072 or 4096)
                   type: number
               type: object
       summary: Generate DKIM Key
