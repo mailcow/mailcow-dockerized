@@ -36,12 +36,18 @@ docker_garbage() {
   IMGS_TO_DELETE=()
 
   declare -A IMAGES_INFO
-  COMPOSE_IMAGES=($(grep -oP "image: \Kmailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
+  COMPOSE_IMAGES=($(grep -oP "image: \K(ghcr\.io/)?mailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
 
-  for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep 'mailcow/'); do
+  for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep -E '(mailcow/|ghcr\.io/mailcow/)'); do
       ID=$(echo "$existing_image" | cut -d ':' -f 1)
       REPOSITORY=$(echo "$existing_image" | cut -d ':' -f 2)
       TAG=$(echo "$existing_image" | cut -d ':' -f 3)
+
+      if [[ "$REPOSITORY" == "mailcow/backup" || "$REPOSITORY" == "ghcr.io/mailcow/backup" ]]; then
+          if [[ "$TAG" != "<none>" ]]; then
+              continue
+          fi
+      fi
 
       if [[ " ${COMPOSE_IMAGES[@]} " =~ " ${REPOSITORY}:${TAG} " ]]; then
           continue
@@ -57,7 +63,7 @@ docker_garbage() {
           echo "    ${IMAGES_INFO[$id]} ($id)"
       done
 
-      if [ ! $FORCE ]; then
+      if [ -z "$FORCE" ]; then
           read -r -p "Do you want to delete them to free up some space? [y/N] " response
           if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
               docker rmi ${IMGS_TO_DELETE[*]}
@@ -716,9 +722,16 @@ detect_major_update() {
     # Add major versions here
     MAJOR_VERSIONS=(
       "2025-02"
+      "2025-03"
     )
 
-    current_version=$(git describe --tags $(git rev-list --tags --max-count=1))
+    current_version=""
+    if [[ -f "${SCRIPT_DIR}/data/web/inc/app_info.inc.php" ]]; then
+      current_version=$(grep 'MAILCOW_GIT_VERSION' ${SCRIPT_DIR}/data/web/inc/app_info.inc.php | sed -E 's/.*MAILCOW_GIT_VERSION="([^"]+)".*/\1/')
+    fi
+    if [[ -z "$current_version" ]]; then
+      return 1
+    fi
     release_url="https://github.com/mailcow/mailcow-dockerized/releases/tag"
 
     updates_to_apply=()
@@ -735,8 +748,7 @@ detect_major_update() {
         echo "$update - $release_url/$update"
       done
 
-      echo -e "\n⚠️  Please read the release notes before proceeding.\n"
-
+      echo -e "\nPlease read the release notes before proceeding."
       read -p "Do you want to proceed with the update? [y/n] " response
       if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         echo "Proceeding with the update..."
