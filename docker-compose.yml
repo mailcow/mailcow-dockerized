@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.23
+      image: ghcr.io/mailcow/unbound:1.24
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.92
+      image: ghcr.io/mailcow/phpfpm:1.93
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -234,7 +234,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.31
+      image: ghcr.io/mailcow/dovecot:2.32
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -419,7 +419,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.91
+      image: ghcr.io/mailcow/acme:1.92
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -457,7 +457,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.61
+      image: ghcr.io/mailcow/netfilter:1.62
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -477,7 +477,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.06
+      image: ghcr.io/mailcow/watchdog:2.07
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -549,7 +549,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.10
+      image: ghcr.io/mailcow/dockerapi:2.11
       security_opt:
         - label=disable
       restart: always
@@ -569,7 +569,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.13
+      image: ghcr.io/mailcow/olefy:1.14
       restart: always
       environment:
         - TZ=${TZ}
