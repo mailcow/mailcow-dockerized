@@ -382,6 +382,10 @@ SKIP_UNBOUND_HEALTHCHECK=n
 
 SKIP_CLAMD=${SKIP_CLAMD}
 
+# Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n
+
+SKIP_OLEFY=n
+
 # Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
 
 SKIP_SOGO=n
