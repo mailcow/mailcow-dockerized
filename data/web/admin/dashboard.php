@@ -18,6 +18,7 @@ elseif (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? false : true;
+$olefy_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_OLEFY"])) ? false : true;
 
 
 if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CACHE')) {
@@ -33,6 +34,7 @@ $vmail_df = explode(',', (string)json_decode(docker('post', 'dovecot-mailcow', '
 // containers
 $containers_info = (array) docker('info');
 if ($clamd_status === false) unset($containers_info['clamd-mailcow']);
+if ($olefy_status === false) unset($containers_info['olefy-mailcow']);
 ksort($containers_info);
 $containers = array();
 foreach ($containers_info as $container => $container_info) {
@@ -77,6 +79,7 @@ $template_data = [
   'gal' => @$_SESSION['gal'],
   'license_guid' => license('guid'),
   'clamd_status' => $clamd_status,
+  'olefy_status' => $olefy_status,
   'containers' => $containers,
   'ip_check' => customize('get', 'ip_check'),
   'lang_admin' => json_encode($lang['admin']),
