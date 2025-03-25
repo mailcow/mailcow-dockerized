@@ -331,9 +331,7 @@
     },
     "start": {
         "help": "Súgó panel megjelenítése/elrejtése",
-        "imap_smtp_server_auth_info": "Kérjük használja a teljes email címét és a PLAIN hitelesítési mechanizmust.<br>\r\nAdatai el lesznek kódolva szerver-oldali kötelező titkosítással.",
-        "mailcow_apps_detail": "Használja a webmail appokat levelei, naptára és címjegyzéke eléréséhez.",
-        "mailcow_panel_detail": "<b>Domain adminisztrátorok</b> létre tudnak hozni, tudnak módosítani vagy törölni postafiókokat és aliasokat, módosíthatnak domaineket és hozzáférnek további információhoz a domainükről.<br>\r\n<b>Postafiók-felhasználók</b> létre tudnak hozni időkorlátos alias-okat (spam alias-okat), le tudják cserélni jelszavakat, valamint spam szűrőket állíthatnak be."
+        "imap_smtp_server_auth_info": "Kérjük használja a teljes email címét és a PLAIN hitelesítési mechanizmust.<br>\r\nAdatai el lesznek kódolva szerver-oldali kötelező titkosítással."
     },
     "success": {
         "admin_added": "Adminisztrátor %s hozzáadva",

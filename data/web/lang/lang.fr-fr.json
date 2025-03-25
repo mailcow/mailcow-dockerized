@@ -721,7 +721,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Connexion",
         "mobileconfig_info": "Veuillez vous connecter en tant qu’utilisateur de la boîte de réception pour télécharger le profil de connexion Apple demandé.",
-        "other_logins": "Clé d'authentification",
+        "other_logins": "ou se connecter avec",
         "password": "Mot de passe",
         "username": "Nom d'utilisateur",
         "back_to_mailcow": "Revenir sur mailcow",
@@ -987,9 +987,7 @@
     },
     "start": {
         "help": "Afficher/masquer le panneau d’aide",
-        "imap_smtp_server_auth_info": "Veuillez utiliser votre adresse courriel complète et le mécanisme d’authentification PLAIN.<br>\nVos données de connexion seront cryptées par le cryptage obligatoire côté serveur.",
-        "mailcow_apps_detail": "Utiliser une application mailcow pour accéder à vos messages, vos calendriers, vos contacts et plus.",
-        "mailcow_panel_detail": "<b>Les administrateurs de domaines</b> peuvent créer, modifier, ou supprimer des boîtes de réception et alias, changer de domaines et lire de plus amples renseignements sur les domaines qui leur sont attribués.<br>\n<b>Les utilisateurs de boîtes de réception</b> sont en mesure de créer des alias limités dans le temps (alias spam), de modifier leurs mots de passe et les paramètres du filtre anti-spam."
+        "imap_smtp_server_auth_info": "Veuillez utiliser votre adresse courriel complète et le mécanisme d’authentification PLAIN.<br>\nVos données de connexion seront cryptées par le cryptage obligatoire côté serveur."
     },
     "success": {
         "acl_saved": "ACL (Access Control List) pour l'objet %s enregistré",

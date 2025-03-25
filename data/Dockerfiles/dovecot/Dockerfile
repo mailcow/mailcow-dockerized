@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -34,9 +34,13 @@ RUN addgroup -g 5000 vmail \
   lua5.3-sql-mysql \
   icu-data-full \
   mariadb-connector-c \
+  lua-sec \
+  mariadb-dev \
+  glib-dev \
   gcompat \
   mariadb-client \
   perl \
+  perl-dev \
   perl-ntlm \
   perl-cgi \
   perl-crypt-openssl-rsa \
@@ -65,7 +69,7 @@ RUN addgroup -g 5000 vmail \
   perl-par-packer \
   perl-parse-recdescent \
   perl-lockfile-simple \
-  libproc \
+  libproc2 \
   perl-readonly \
   perl-regexp-common \
   perl-sys-meminfo \

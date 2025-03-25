@@ -32,12 +32,12 @@ abstract class OneToMany extends Relation
     /**
      * Constructor.
      *
-     * @param Builder $query
-     * @param Model   $parent
-     * @param string  $related
-     * @param string  $relationKey
-     * @param string  $foreignKey
-     * @param string  $relationName
+     * @param  Builder  $query
+     * @param  Model  $parent
+     * @param  string  $related
+     * @param  string  $relationKey
+     * @param  string  $foreignKey
+     * @param  string  $relationName
      */
     public function __construct(Builder $query, Model $parent, $related, $relationKey, $foreignKey, $relationName)
     {
@@ -49,8 +49,7 @@ abstract class OneToMany extends Relation
     /**
      * Set the relation to load with its parent.
      *
-     * @param Relation $relation
-     *
+     * @param  Relation  $relation
      * @return $this
      */
     public function with(Relation $relation)
@@ -63,8 +62,7 @@ abstract class OneToMany extends Relation
     /**
      * Whether to include recursive results.
      *
-     * @param bool $enable
-     *
+     * @param  bool  $enable
      * @return $this
      */
     public function recursive($enable = true)
@@ -100,8 +98,7 @@ abstract class OneToMany extends Relation
     /**
      * Execute the callback excluding the merged query result.
      *
-     * @param callable $callback
-     *
+     * @param  callable  $callback
      * @return mixed
      */
     protected function onceWithoutMerging($callback)
@@ -142,8 +139,7 @@ abstract class OneToMany extends Relation
     /**
      * Get the results for the models relation recursively.
      *
-     * @param string[] $loaded The distinguished names of models already loaded
-     *
+     * @param  string[]  $loaded  The distinguished names of models already loaded
      * @return Collection
      */
     protected function getRecursiveResults(array $loaded = [])
@@ -172,15 +168,14 @@ abstract class OneToMany extends Relation
     /**
      * Get the recursive relation results for given model.
      *
-     * @param Model $model
-     * @param array $loaded
-     *
+     * @param  Model  $model
+     * @param  array  $loaded
      * @return Collection
      */
     protected function getRecursiveRelationResults(Model $model, array $loaded)
     {
-        return method_exists($model, $this->relationName)
-            ? $model->{$this->relationName}()->getRecursiveResults($loaded)
+        return ($relation = $model->getRelation($this->relationName))
+            ? $relation->getRecursiveResults($loaded)
             : $model->newCollection();
     }
 }

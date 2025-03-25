@@ -28,7 +28,7 @@ ${REDIS_CMDLINE} SET DOVECOT_REPL_HEALTH 1 > /dev/null
 
 # Create missing directories
 [[ ! -d /etc/dovecot/sql/ ]] && mkdir -p /etc/dovecot/sql/
-[[ ! -d /etc/dovecot/lua/ ]] && mkdir -p /etc/dovecot/lua/
+[[ ! -d /etc/dovecot/auth/ ]] && mkdir -p /etc/dovecot/auth/
 [[ ! -d /etc/dovecot/conf.d/ ]] && mkdir -p /etc/dovecot/conf.d/
 [[ ! -d /var/vmail/_garbage ]] && mkdir -p /var/vmail/_garbage
 [[ ! -d /var/vmail/sieve ]] && mkdir -p /var/vmail/sieve
@@ -130,123 +130,6 @@ connect = "host=/var/run/mysqld/mysqld.sock dbname=${DBNAME} user=${DBUSER} pass
 user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_VALUE(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/${MAILDIR_SUB}:VOLATILEDIR=/var/volatile/%u:INDEX=/var/vmail_index/%u') AS mail, '%s' AS protocol, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND (active = '1' OR active = '2')
 iterate_query = SELECT username FROM mailbox WHERE active = '1' OR active = '2';
 EOF
-
-cat <<EOF > /etc/dovecot/lua/passwd-verify.lua
-function auth_password_verify(req, pass)
-
-  if req.domain == nil then
-    return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
-  end
-
-  if cur == nil then
-    script_init()
-  end
-
-  if req.user == nil then
-    req.user = ''
-  end
-
-  respbody = {}
-
-  -- check against mailbox passwds
-  local cur,errorString = con:execute(string.format([[SELECT password FROM mailbox
-    WHERE username = '%s'
-      AND active = '1'
-      AND domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.force_pw_update')), 0) != '1'
-      AND IFNULL(JSON_UNQUOTE(JSON_VALUE(attributes, '$.%s_access')), 1) = '1']], con:escape(req.user), con:escape(req.domain), con:escape(req.service)))
-  local row = cur:fetch ({}, "a")
-  while row do
-    if req.password_verify(req, row.password, pass) == 1 then
-      con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-        VALUES ("%s", 0, "%s", "%s")]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip)))
-      cur:close()
-      con:close()
-      return dovecot.auth.PASSDB_RESULT_OK, ""
-    end
-    row = cur:fetch (row, "a")
-  end
-
-  -- check against app passwds for imap and smtp
-  -- app passwords are only available for imap, smtp, sieve and pop3 when using sasl
-  if req.service == "smtp" or req.service == "imap" or req.service == "sieve" or req.service == "pop3" then
-    local cur,errorString = con:execute(string.format([[SELECT app_passwd.id, %s_access AS has_prot_access, app_passwd.password FROM app_passwd
-      INNER JOIN mailbox ON mailbox.username = app_passwd.mailbox
-      WHERE mailbox = '%s'
-        AND app_passwd.active = '1'
-        AND mailbox.active = '1'
-        AND app_passwd.domain IN (SELECT domain FROM domain WHERE domain='%s' AND active='1')]], con:escape(req.service), con:escape(req.user), con:escape(req.domain)))
-    local row = cur:fetch ({}, "a")
-    while row do
-      if req.password_verify(req, row.password, pass) == 1 then
-        -- if password is valid and protocol access is 1 OR real_rip matches SOGo, proceed
-        if tostring(req.real_rip) == "__IPV4_SOGO__" then
-          cur:close()
-          con:close()
-          return dovecot.auth.PASSDB_RESULT_OK, ""
-        elseif row.has_prot_access == "1" then
-          con:execute(string.format([[REPLACE INTO sasl_log (service, app_password, username, real_rip)
-            VALUES ("%s", %d, "%s", "%s")]], con:escape(req.service), row.id, con:escape(req.user), con:escape(req.real_rip)))
-          cur:close()
-          con:close()
-          return dovecot.auth.PASSDB_RESULT_OK, ""
-        end
-      end
-      row = cur:fetch (row, "a")
-    end
-  end
-
-  cur:close()
-  con:close()
-
-  return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
-
-  -- PoC
-  -- local reqbody = string.format([[{
-  --   "success":0,
-  --   "service":"%s",
-  --   "app_password":false,
-  --   "username":"%s",
-  --   "real_rip":"%s"
-  -- }]], con:escape(req.service), con:escape(req.user), con:escape(req.real_rip))
-  -- http.request {
-  --   method = "POST",
-  --   url = "http://nginx:8081/sasl_log.php",
-  --   source = ltn12.source.string(reqbody),
-  --   headers = {
-  --     ["content-type"] = "application/json",
-  --     ["content-length"] = tostring(#reqbody)
-  --   },
-  --   sink = ltn12.sink.table(respbody)
-  -- }
-
-end
-
-function auth_passdb_lookup(req)
-   return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, ""
-end
-
-function script_init()
-  mysql = require "luasql.mysql"
-  http = require "socket.http"
-  http.TIMEOUT = 5
-  ltn12 = require "ltn12"
-  env  = mysql.mysql()
-  con = env:connect("__DBNAME__","__DBUSER__","__DBPASS__","localhost")
-  return 0
-end
-
-function script_deinit()
-  con:close()
-  env:close()
-end
-EOF
-
-# Replace patterns in app-passdb.lua
-sed -i "s/__DBUSER__/${DBUSER}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__DBPASS__/${DBPASS}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__DBNAME__/${DBNAME}/g" /etc/dovecot/lua/passwd-verify.lua
-sed -i "s/__IPV4_SOGO__/${IPV4_NETWORK}.248/g" /etc/dovecot/lua/passwd-verify.lua
 
 
 # Migrate old sieve_after file
@@ -385,8 +268,8 @@ sievec /usr/lib/dovecot/sieve/report-ham.sieve
 
 # Fix permissions
 chown root:root /etc/dovecot/sql/*.conf
-chown root:dovecot /etc/dovecot/sql/dovecot-dict-sql-sieve* /etc/dovecot/sql/dovecot-dict-sql-quota* /etc/dovecot/lua/passwd-verify.lua
-chmod 640 /etc/dovecot/sql/*.conf /etc/dovecot/lua/passwd-verify.lua
+chown root:dovecot /etc/dovecot/sql/dovecot-dict-sql-sieve* /etc/dovecot/sql/dovecot-dict-sql-quota* /etc/dovecot/auth/passwd-verify.lua
+chmod 640 /etc/dovecot/sql/*.conf /etc/dovecot/auth/passwd-verify.lua
 chown -R vmail:vmail /var/vmail/sieve
 chown -R vmail:vmail /var/volatile
 chown -R vmail:vmail /var/vmail_index
@@ -414,15 +297,15 @@ printenv | sed 's/^\(.*\)$/export \1/g' > /source_env.sh
 
 # Clean stopped imapsync jobs
 rm -f /tmp/imapsync_busy.lock
-IMAPSYNC_TABLE=$(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'imapsync'" -Bs)
-[[ ! -z ${IMAPSYNC_TABLE} ]] && mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "UPDATE imapsync SET is_running='0'"
+IMAPSYNC_TABLE=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'imapsync'" -Bs)
+[[ ! -z ${IMAPSYNC_TABLE} ]] && mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "UPDATE imapsync SET is_running='0'"
 
 # Envsubst maildir_gc
 echo "$(envsubst < /usr/local/bin/maildir_gc.sh)" > /usr/local/bin/maildir_gc.sh
 
 # GUID generation
 while [[ ${VERSIONS_OK} != 'OK' ]]; do
-  if [[ ! -z $(mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = \"${DBNAME}\" AND TABLE_NAME = 'versions'") ]]; then
+  if [[ ! -z $(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -B -e "SELECT 'OK' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = \"${DBNAME}\" AND TABLE_NAME = 'versions'") ]]; then
     VERSIONS_OK=OK
   else
     echo "Waiting for versions table to be created..."
@@ -433,11 +316,11 @@ PUBKEY_MCRYPT=$(doveconf -P 2> /dev/null | grep -i mail_crypt_global_public_key 
 if [ -f ${PUBKEY_MCRYPT} ]; then
   GUID=$(cat <(echo ${MAILCOW_HOSTNAME}) /mail_crypt/ecpubkey.pem | sha256sum | cut -d ' ' -f1 | tr -cd "[a-fA-F0-9.:/] ")
   if [ ${#GUID} -eq 64 ]; then
-    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+    mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 REPLACE INTO versions (application, version) VALUES ("GUID", "${GUID}");
 EOF
   else
-    mysql --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
+    mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} << EOF
 REPLACE INTO versions (application, version) VALUES ("GUID", "INVALID");
 EOF
   fi
@@ -456,7 +339,7 @@ done
 
 # For some strange, unknown and stupid reason, Dovecot may run into a race condition, when this file is not touched before it is read by dovecot/auth
 # May be related to something inside Docker, I seriously don't know
-touch /etc/dovecot/lua/passwd-verify.lua
+touch /etc/dovecot/auth/passwd-verify.lua
 
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
   cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf

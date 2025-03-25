@@ -17,8 +17,7 @@ class Sid
     /**
      * Determines if the specified SID is valid.
      *
-     * @param string $sid
-     *
+     * @param  string  $sid
      * @return bool
      */
     public static function isValid($sid)
@@ -29,7 +28,7 @@ class Sid
     /**
      * Constructor.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      *
      * @throws InvalidArgumentException
      */
@@ -90,8 +89,7 @@ class Sid
     /**
      * Returns the string variant of a binary SID.
      *
-     * @param string $binary
-     *
+     * @param  string  $binary
      * @return string|null
      */
     protected function binarySidToString($binary)

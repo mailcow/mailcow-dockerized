@@ -27,6 +27,25 @@
                   <input type="hidden" value="0" name="sogo_access">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
+                    <div class="col-sm-10">
+                      <select
+                        data-style="btn btn-secondary"
+                        name="authsource" class="full-width-select form-control" required>
+                          <option value="mailcow" {% if result.authsource == "mailcow" %}selected{% endif %}>mailcow</option>
+                          {% if iam_settings.authsource == 'keycloak' %}
+                          <option value="keycloak" {% if result.authsource == "keycloak" %}selected{% endif %}>Keycloak</option>
+                          {% endif %}
+                          {% if iam_settings.authsource == 'generic-oidc' %}
+                          <option value="generic-oidc" {% if result.authsource == "generic-oidc" %}selected{% endif %}>Generic-OIDC</option>
+                          {% endif %}
+                          {% if iam_settings.authsource == 'ldap' %}
+                          <option value="ldap" {% if result.authsource == "ldap" %}selected{% endif %}>LDAP</option>
+                          {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
                     <label class="control-label col-sm-2" for="name">{{ lang.edit.full_name }}</label>
                     <div class="col-sm-10">
                       <input type="text" class="form-control" name="name" value="{{ result.name }}">
@@ -192,6 +211,7 @@
                       </div>
                     </div>
                   </div>
+                  {% if not result.authsource or result.authsource == 'mailcow' %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
                     <div class="col-sm-10">
@@ -223,6 +243,7 @@
                       {% endif %}
                     </div>
                   </div>
+                  {% endif %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="protocol_access">{{ lang.edit.allowed_protocols }}</label>
                     <div class="col-sm-10">
@@ -521,7 +542,7 @@
                     </div>
                     <div class="row mb-2">
                       <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
-                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/mailbox" href="#">{{ lang.edit.save }}</button>
+                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/{{mailcow_cc_role}}/mailbox" href="#">{{ lang.edit.save }}</button>
                       </div>
                     </div>
                   </form>

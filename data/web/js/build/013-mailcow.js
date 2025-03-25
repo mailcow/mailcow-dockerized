@@ -352,6 +352,17 @@ $(document).ready(function() {
       localStorage.setItem('theme', 'dark');
     }
   }
+
+  // Reveal Password Input
+  $(".reveal-password-input").on('click', '.toggle-password', function() {
+    $(this).parent().find('.toggle-password').children().toggleClass("bi-eye bi-eye-slash");
+    var input = $(this).parent().find('.password-field')
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
 });
 
 
