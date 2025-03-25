@@ -911,7 +911,7 @@ while (($#)); do
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you'\''ve blocked any ICMP Connections to your mailcow machine)
   --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly or --legacy.
-  --legacy             -   Switch your mailcow updates to the legacy branch. The legacy branch will only recieve security updates until February 2026.
+  --legacy             -   Switch your mailcow updates to the legacy branch. The legacy branch will only receive security updates until February 2026.
   -f|--force           -   Force update, do not ask questions
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
@@ -1318,7 +1318,7 @@ if ! [ "$NEW_BRANCH" ]; then
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
   elif [ "${BRANCH}" == "legacy" ]; then
-    echo -e "\e[31mYou are receiving legacy updates. The legacy branch will only recieve security updates until February 2026.\e[0m"
+    echo -e "\e[31mYou are receiving legacy updates. The legacy branch will only receive security updates until February 2026.\e[0m"
     sleep 1
     echo -e "\e[33mTo change that run the update.sh Script one time with the --stable parameter to switch to stable builds.\e[0m"
 
