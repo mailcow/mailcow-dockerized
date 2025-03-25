@@ -10,8 +10,11 @@
          stopOnFailure="false"
         >
     <testsuites>
-        <testsuite name="LdapRecord Test Suite">
-            <directory suffix="Test.php">./tests/</directory>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
         </testsuite>
     </testsuites>
 </phpunit>

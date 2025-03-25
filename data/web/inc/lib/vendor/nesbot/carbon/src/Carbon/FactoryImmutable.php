@@ -12,6 +12,9 @@
 namespace Carbon;
 
 use Closure;
+use DateTimeImmutable;
+use DateTimeZone;
+use Psr\Clock\ClockInterface;
 
 /**
  * A factory to generate CarbonImmutable instances with common settings.
@@ -111,7 +114,6 @@ use Closure;
  * @method CarbonImmutable                                    maxValue()                                                                                                                   Create a Carbon instance for the greatest supported date.
  * @method CarbonImmutable                                    minValue()                                                                                                                   Create a Carbon instance for the lowest supported date.
  * @method void                                               mixin($mixin)                                                                                                                Mix another object into the class.
- * @method CarbonImmutable                                    now($tz = null)                                                                                                              Get a Carbon instance for the current date and time.
  * @method CarbonImmutable                                    parse($time = null, $tz = null)                                                                                              Create a carbon instance from a string.
  *                                                                                                                                                                                         This is an alias for the constructor that allows better fluent syntax
  *                                                                                                                                                                                         as it allows you to do Carbon::parse('Monday next week')->fn() rather
@@ -175,10 +177,10 @@ use Closure;
  *                                                                                                                                                                                         parameter of null.
  *                                                                                                                                                                                         /!\ Use this method for unit tests only.
  * @method void                                               setToStringFormat($format)                                                                                                   @deprecated To avoid conflict between different third-party libraries, static setters should not be used.
- *                                                                                                                                                                                                     You should rather let Carbon object being casted to string with DEFAULT_TO_STRING_FORMAT, and
- *                                                                                                                                                                                                     use other method or custom format passed to format() method if you need to dump an other string
+ *                                                                                                                                                                                                     You should rather let Carbon object being cast to string with DEFAULT_TO_STRING_FORMAT, and
+ *                                                                                                                                                                                                     use other method or custom format passed to format() method if you need to dump another string
  *                                                                                                                                                                                                     format.
- *                                                                                                                                                                                         Set the default format used when type juggling a Carbon instance to a string
+ *                                                                                                                                                                                         Set the default format used when type juggling a Carbon instance to a string.
  * @method void                                               setTranslator(TranslatorInterface $translator)                                                                               Set the default translator instance to use.
  * @method CarbonImmutable                                    setUtf8($utf8)                                                                                                               @deprecated To avoid conflict between different third-party libraries, static setters should not be used.
  *                                                                                                                                                                                                     You should rather use UTF-8 language packages on every machine.
@@ -229,7 +231,7 @@ use Closure;
  *                                                                                                                                                                                                     You should rather use the ->settings() method.
  *                                                                                                                                                                                                     Or you can use method variants: addYearsWithOverflow/addYearsNoOverflow, same variants
  *                                                                                                                                                                                                     are available for quarters, years, decade, centuries, millennia (singular and plural forms).
- * @method mixed                                              withTestNow($testNow = null, $callback = null)                                                                               Temporarily sets a static date to be used within the callback.
+ * @method mixed                                              withTestNow($testNow, $callback)                                                                                             Temporarily sets a static date to be used within the callback.
  *                                                                                                                                                                                         Using setTestNow to set the date, executing the callback, then
  *                                                                                                                                                                                         clearing the test instance.
  *                                                                                                                                                                                         /!\ Use this method for unit tests only.
@@ -237,7 +239,21 @@ use Closure;
  *
  * </autodoc>
  */
-class FactoryImmutable extends Factory
+class FactoryImmutable extends Factory implements ClockInterface
 {
     protected $className = CarbonImmutable::class;
+
+    /**
+     * Get a Carbon instance for the current date and time.
+     *
+     * @param DateTimeZone|string|int|null $tz
+     *
+     * @return CarbonImmutable
+     */
+    public function now($tz = null): DateTimeImmutable
+    {
+        $className = $this->className;
+
+        return new $className(null, $tz);
+    }
 }

@@ -99,11 +99,11 @@ EOF
 
 if [ $? = 0 ]; then
   COMPOSE_COMMAND="docker compose"
-  echo "DEBUG: Using native docker compose on remote"
+  echo "INFO: Using native docker compose on remote"
 
 elif [ $? = 1 ]; then
   COMPOSE_COMMAND="docker-compose"
-  echo "DEBUG: Using standalone docker compose on remote"
+  echo "INFO: Using standalone docker compose on remote"
 
 else
   echo -e "\e[31mCannot find any Docker Compose on remote, exiting...\e[0m"
@@ -284,7 +284,7 @@ echo "OK"
     -i "${REMOTE_SSH_KEY}" \
     ${REMOTE_SSH_HOST} \
     -p ${REMOTE_SSH_PORT} \
-    ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" pull --no-parallel --quiet 2>&1 ; then
+    ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" pull --quiet 2>&1 ; then
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
   fi
 

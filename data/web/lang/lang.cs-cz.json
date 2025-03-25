@@ -656,8 +656,8 @@
         "sieve_desc": "Krátký popis",
         "sieve_type": "Typ filtru",
         "skipcrossduplicates": "Přeskočit duplicitní zprávy (\"první přijde, první mele\")",
-        "sogo_access": "Udělit přímý přihlašovací přístup do služby SOGo",
-        "sogo_access_info": "Jednotné přihlášení (SSO) z mail UI zůstává funkční. Toto nastavení neovlivňuje přístup ke všem ostatním službám ani neodstraňuje či nemění stávající profil uživatele SOGo.",
+        "sogo_access": "Přímé předání na SOGo",
+        "sogo_access_info": "Po přihlášení je uživatel automaticky přesměrován do služby SOGo.",
         "sogo_visible": "Alias dostupný v SOGo",
         "sogo_visible_info": "Tato volba určuje objekty, jež lze zobrazit v SOGo (sdílené nebo nesdílené aliasy, jež ukazuje alespoň na jednu schránku).",
         "spam_alias": "Vytvořit nebo změnit dočasné aliasy",
@@ -744,7 +744,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Přihlásit",
         "mobileconfig_info": "Ke stažení profilového souboru se přihlaste jako uživatel schránky.",
-        "other_logins": "Přihlášení klíčem",
+        "other_logins": "nebo přihlásit s",
         "password": "Heslo",
         "username": "Uživatelské jméno",
         "back_to_mailcow": "Zpět do mailcow",
@@ -1016,9 +1016,7 @@
     },
     "start": {
         "help": "Zobrazit/skrýt panel nápovědy",
-        "imap_smtp_server_auth_info": "Použijte celou e-mailovou adresu a zvolte způsob ověření PLAIN.<br>\r\nPřihlašovací údaje budou zašifrovány na straně serveru.",
-        "mailcow_apps_detail": "Použijte aplikace pro přístup k e-mailům, kalendáři, kontaktům atd.",
-        "mailcow_panel_detail": "<b>Správci domén</b> mohou vytvářet, upravovat nebo mazat schránky a aliasy, upravovat parametry domén a zobrazovat další informace o svých přidělených doménách.<br>\r\n<b>Uživatelé</b> mohou vytvářet dočasné aliasy (spam aliases), měnit svá hesla a nastavovat filtr spamu."
+        "imap_smtp_server_auth_info": "Použijte celou e-mailovou adresu a zvolte způsob ověření PLAIN.<br>\r\nPřihlašovací údaje budou zašifrovány na straně serveru."
     },
     "success": {
         "acl_saved": "ACL pro objekt %s uloženo",
@@ -1165,7 +1163,7 @@
         "delete_ays": "Potvrďte odstranění.",
         "direct_aliases": "Přímé aliasy",
         "direct_aliases_desc": "Na přímé aliasy se uplatňuje filtr spamu a nastavení pravidel TLS",
-        "direct_protocol_access": "Tento uživatel mailové schránky má <b>přímý externí přístup</b> k následujícím protokolům a aplikacím. Toto nastavení je řízeno správcem. Pro udělení přístupu k jednotlivým protokolům a aplikacím lze vytvořit hesla aplikací.<br>Tlačítko \" Přihlaste se do webmailu\" zajišťuje jednotné přihlášení k SOGo a je vždy k dispozici.",
+        "direct_protocol_access": "Tento uživatel mailové schránky má <b>přímý externí přístup</b> k následujícím protokolům a aplikacím. Toto nastavení je řízeno správcem. Pro udělení přístupu k jednotlivým protokolům a aplikacím lze vytvořit hesla aplikací.<br>Tlačítko \"Webmailu\" zajišťuje jednotné přihlášení k SOGo a je vždy k dispozici.",
         "eas_reset": "Smazat mezipaměť zařízení ActiveSync",
         "eas_reset_help": "Obnovení mezipaměti zařízení pomůže zpravidla obnovit poškozený profil služby ActiveSync.<br><b>Upozornění:</b> Všechna data budou opětovně stažena!",
         "eas_reset_now": "Smazat",
@@ -1206,7 +1204,7 @@
         "no_last_login": "Žádný záznam o přihlášení",
         "no_record": "Žádný záznam",
         "open_logs": "Otevřít záznam",
-        "open_webmail_sso": "Přihlaste se do webmailu",
+        "open_webmail_sso": "Webmailu",
         "password": "Heslo",
         "password_now": "Současné heslo (pro potvrzení změny)",
         "password_repeat": "Heslo (znovu)",

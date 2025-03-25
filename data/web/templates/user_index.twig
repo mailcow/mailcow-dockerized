@@ -1,0 +1,120 @@
+{% extends 'base.twig' %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="row mb-4" style="margin-top: 60px">
+  <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
+    <div class="card">
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-person-fill me-2"></i> {{ lang.login.login_user }}
+        <div class="ms-auto form-check form-switch my-auto d-flex align-items-center">
+          <label class="form-check-label"><i class="bi bi-moon-fill"></i></label>
+          <input class="form-check-input ms-2" type="checkbox" id="dark-mode-toggle">
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="text-center mailcow-logo mb-4">
+          <img class="main-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}" alt="mailcow">
+          <img class="main-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}" alt="mailcow-logo-dark">
+        </div>
+        {% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active %}
+        <div class="my-4 alert alert-{{ ui_texts.ui_announcement_type }} rot-enc ui-announcement-alert">{{ ui_texts.ui_announcement_text|rot13 }}</div>
+        {% endif %}
+        <legend>{% if oauth2_request %}{{ lang.oauth2.authorize_app }}{% else %}{{ ui_texts.main_name|raw }}{% endif %}</legend><hr />
+        {% if is_mobileconfig %}
+        <div class="my-4 alert alert-info ">{{ lang.login.mobileconfig_info }}</div>
+        {% endif %}
+        <form method="post" autofill="off">
+          <div class="d-flex mt-3">
+            <label class="visually-hidden" for="login_user">{{ lang.login.username }}</label>
+            <div class="input-group">
+              <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+              <input name="login_user" autocorrect="off" autocapitalize="none" type="{% if is_mobileconfig %}email{% else %}text{% endif %}" id="login_user" class="form-control" placeholder="{{ lang.login.username }}" required="" autofocus="" autocomplete="username">
+            </div>
+          </div>
+          <div class="d-flex mt-3">
+            <label class="visually-hidden" for="pass_user">{{ lang.login.password }}</label>
+            <div class="input-group">
+              <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+              <input name="pass_user" type="password" id="pass_user" class="form-control" placeholder="{{ lang.login.password }}" required="" autocomplete="current-password">
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mt-4" style="position: relative">
+            <button type="submit" class="btn btn-xs-lg btn-success" value="Login">{{ lang.login.login }}</button>
+            {% if not oauth2_request %}
+            <div class="d-grid d-sm-block">
+            <button type="button" {% if available_languages|length == 1 %}disabled="true"{% endif %} class="btn btn-secondary ms-auto dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span>
+            </button>
+            <ul class="dropdown-menu ms-auto login">
+              {% for key, val in available_languages %}
+                <li>
+                  <a class="dropdown-item {% if mailcow_locale == key %}active{% endif %}" href="?{{ query_string({'lang': key}) }}">
+                    <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+            </div>
+            {% endif %}
+          </div>
+        </form>
+        <div class="mt-3">
+          <a href="/reset-password">{{ lang.login.forgot_password }}</a>
+        </div>
+        <div class="hr-title mt-5"><strong>{{ lang.login.other_logins }}</strong></div>
+        <div class="d-flex flex-column align-items-center">
+          {% if has_iam_sso %}
+          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a>
+          {% endif %}
+          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a>
+        </div>
+        {% if login_delay %}
+        <p><div class="my-4 alert alert-info">{{ lang.login.delayed|format(login_delay) }}</b></div></p>
+        {% endif %}
+        <div class="my-4" id="fido2-alerts"></div>
+        {% if not oauth2_request and (mailcow_apps or app_links) and not hide_mailcow_apps %}
+        <legend><i class="bi bi-link-45deg"></i> {{ ui_texts.apps_name|raw }}</legend><hr />
+        <div class="my-2 apps">
+          {% for app in mailcow_apps %}
+            {% if not app.hide %}
+              {% if not skip_sogo or not is_uri('SOGo', app.link) %}
+              <div class="m-2">
+                <a href="{{ app.link }}" role="button" {% if app.description %}title="{{ app.description }}"{% endif %} class="btn btn-primary btn-block">{{ app.name }}</a>
+              </div>
+            {% endif %}
+          {% endif %}
+          {% endfor %}
+          {% for row in app_links %}
+            {% for key, val in row %}
+            {% if not val.hide %}
+              <div class="m-2">
+                <a href="{{ val.link }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
+              </div>
+            {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% if not oauth2_request and ui_texts.help_text %}
+<div class="row">
+  <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
+    <div class="card">
+      <div class="card-header">
+        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse1"><i class="bi bi-patch-question-fill"></i> {{ lang.start.help }}</a>
+      </div>
+      <div id="collapse1" class="card-collapse collapse">
+        <div class="card-body">
+          <p>{{ ui_texts.help_text|raw }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

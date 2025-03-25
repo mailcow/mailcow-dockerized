@@ -28,9 +28,9 @@ class DetailedError
     /**
      * Constructor.
      *
-     * @param int    $errorCode
-     * @param string $errorMessage
-     * @param string $diagnosticMessage
+     * @param  int  $errorCode
+     * @param  string  $errorMessage
+     * @param  string  $diagnosticMessage
      */
     public function __construct($errorCode, $errorMessage, $diagnosticMessage)
     {

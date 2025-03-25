@@ -762,7 +762,7 @@
         "mobileconfig_info": "Faça login como usuário da mailbox para baixar o perfil de conexão Apple solicitado.",
         "new_password": "Nova senha",
         "new_password_confirm": "Confirmar nova senha",
-        "other_logins": "Login com chave",
+        "other_logins": "ou faça login com",
         "password": "Senha",
         "reset_password": "Recuperar a senha",
         "request_reset_password": "Solicitar troca de senha",
@@ -1030,9 +1030,7 @@
     },
     "start": {
         "help": "Mostrar/ocultar painel de ajuda",
-        "imap_smtp_server_auth_info": "Use seu endereço de e-mail completo e o mecanismo de autenticação PLAIN. <br>\r\nSeus dados de login serão criptografados pela criptografia obrigatória do lado do servidor.",
-        "mailcow_apps_detail": "Use um aplicativo mailcow para acessar seus e-mails, calendário, contatos e muito mais.",
-        "mailcow_panel_detail": "<b>Os administradores de domínio</b> criam, modificam ou excluem mailboxes e aliases, alteram domínios e leem mais informações sobre seus domínios atribuídos. <br>\n<b>Os usuários de mailbox </b> podem criar aliases com limite de tempo (aliases de spam), alterar suas configurações de senha e filtro de spam."
+        "imap_smtp_server_auth_info": "Use seu endereço de e-mail completo e o mecanismo de autenticação PLAIN. <br>\r\nSeus dados de login serão criptografados pela criptografia obrigatória do lado do servidor."
     },
     "success": {
         "acl_saved": "ACL para o objeto %s salvo",

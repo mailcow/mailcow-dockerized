@@ -11,7 +11,10 @@ assignees: ''
 <!-- https://github.com/sponsors/stevebauman -->
 <!-- Thank you for your understanding. -->
 
-<!-- Please update the below information with your environment. -->
+<!--
+  Please update the below information with your environment.
+  Issues filed without the below information will be closed.
+-->
 **Environment:**
  - LDAP Server Type: [e.g. ActiveDirectory / OpenLDAP / FreeIPA]
  - PHP Version: [e.g. 7.3 / 7.4 / 8.0]

@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.23
+      image: ghcr.io/mailcow/unbound:1.24
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -84,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.0
+      image: ghcr.io/mailcow/rspamd:2.1
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.92
+      image: ghcr.io/mailcow/phpfpm:1.93
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -126,10 +126,18 @@ services:
         - ./data/web:/web:z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/conf/rspamd/custom/:/rspamd_custom_maps:z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
+        - ./data/web/inc/functions.mailbox.inc.php:/mailcowauth/functions.mailbox.inc.php:z
+        - ./data/web/inc/functions.ratelimit.inc.php:/mailcowauth/functions.ratelimit.inc.php:z
+        - ./data/web/inc/functions.acl.inc.php:/mailcowauth/functions.acl.inc.php:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/phpfpm/crons:/crons:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
@@ -177,13 +185,21 @@ services:
         - CLUSTERMODE=${CLUSTERMODE:-}
         - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
       restart: always
+      labels:
+        ofelia.enabled: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.129
+      image: ghcr.io/mailcow/sogo:1.131
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -234,7 +250,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.31
+      image: ghcr.io/mailcow/dovecot:2.33
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -403,6 +419,10 @@ services:
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
         - ./data/conf/nginx/:/etc/nginx/conf.d/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
+        - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
+        - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
+        - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
+        - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
@@ -419,7 +439,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.91
+      image: ghcr.io/mailcow/acme:1.92
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -457,7 +477,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.61
+      image: ghcr.io/mailcow/netfilter:1.62
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -477,7 +497,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.06
+      image: ghcr.io/mailcow/watchdog:2.07
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -549,7 +569,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.10
+      image: ghcr.io/mailcow/dockerapi:2.11
       security_opt:
         - label=disable
       restart: always
@@ -569,7 +589,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.13
+      image: ghcr.io/mailcow/olefy:1.14
       restart: always
       environment:
         - TZ=${TZ}

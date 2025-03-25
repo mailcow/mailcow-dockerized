@@ -9,7 +9,6 @@ $aliases = [
     Tightenco\Collect\Support\Collection::class => Illuminate\Support\Collection::class,
     Tightenco\Collect\Support\Enumerable::class => Illuminate\Support\Enumerable::class,
     Tightenco\Collect\Support\HigherOrderCollectionProxy::class => Illuminate\Support\HigherOrderCollectionProxy::class,
-    Tightenco\Collect\Support\HigherOrderWhenProxy::class => Illuminate\Support\HigherOrderWhenProxy::class,
     Tightenco\Collect\Support\LazyCollection::class => Illuminate\Support\LazyCollection::class,
     Tightenco\Collect\Support\Traits\EnumeratesValues::class => Illuminate\Support\Traits\EnumeratesValues::class,
 ];

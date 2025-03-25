@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.20
+FROM php:8.2-fpm-alpine3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -13,7 +13,7 @@ ARG MEMCACHED_PECL_VERSION=3.2.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG REDIS_PECL_VERSION=6.1.0
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG COMPOSER_VERSION=2.6.6
+ARG COMPOSER_VERSION=2.8.6
 
 RUN apk add -U --no-cache autoconf \
   aspell-dev \

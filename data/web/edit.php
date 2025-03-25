@@ -131,7 +131,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'rlyhosts' => $rlyhosts,
           'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
           'user_acls' => acl('get', 'user', $mailbox),
-          'mailbox_details' => $result
+          'mailbox_details' => $result,
+          'iam_settings' => $iam_settings,
         ];
       }
     }

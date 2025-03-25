@@ -47,8 +47,7 @@ class LdapFake implements LdapInterface
     /**
      * Create a new expected operation.
      *
-     * @param string $method
-     *
+     * @param  string  $method
      * @return LdapExpectation
      */
     public static function operation($method)
@@ -59,8 +58,7 @@ class LdapFake implements LdapInterface
     /**
      * Set the user that will pass binding.
      *
-     * @param string $dn
-     *
+     * @param  string  $dn
      * @return $this
      */
     public function shouldAuthenticateWith($dn)
@@ -73,8 +71,7 @@ class LdapFake implements LdapInterface
     /**
      * Add an LDAP method expectation.
      *
-     * @param LdapExpectation|array $expectations
-     *
+     * @param  LdapExpectation|array  $expectations
      * @return $this
      */
     public function expect($expectations = [])
@@ -105,8 +102,7 @@ class LdapFake implements LdapInterface
     /**
      * Determine if the method has any expectations.
      *
-     * @param string $method
-     *
+     * @param  string  $method
      * @return bool
      */
     public function hasExpectations($method)
@@ -117,8 +113,7 @@ class LdapFake implements LdapInterface
     /**
      * Get expectations by method.
      *
-     * @param string $method
-     *
+     * @param  string  $method
      * @return LdapExpectation[]|mixed
      */
     public function getExpectations($method)
@@ -129,9 +124,8 @@ class LdapFake implements LdapInterface
     /**
      * Remove an expectation by method and key.
      *
-     * @param string $method
-     * @param int    $key
-     *
+     * @param  string  $method
+     * @param  int  $key
      * @return void
      */
     public function removeExpectation($method, $key)
@@ -142,8 +136,7 @@ class LdapFake implements LdapInterface
     /**
      * Set the error number of a failed bind attempt.
      *
-     * @param int $number
-     *
+     * @param  int  $number
      * @return $this
      */
     public function shouldReturnErrorNumber($number = 1)
@@ -156,8 +149,7 @@ class LdapFake implements LdapInterface
     /**
      * Set the last error of a failed bind attempt.
      *
-     * @param string $message
-     *
+     * @param  string  $message
      * @return $this
      */
     public function shouldReturnError($message = '')
@@ -170,8 +162,7 @@ class LdapFake implements LdapInterface
     /**
      * Set the diagnostic message of a failed bind attempt.
      *
-     * @param string $message
-     *
+     * @param  string  $message
      * @return $this
      */
     public function shouldReturnDiagnosticMessage($message = '')
@@ -259,6 +250,16 @@ class LdapFake implements LdapInterface
         return $this->hasExpectations('isBound')
             ? $this->resolveExpectation('isBound')
             : $this->bound;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getHost()
+    {
+        return $this->hasExpectations('getHost')
+            ? $this->resolveExpectation('getHost')
+            : $this->host;
     }
 
     /**
@@ -454,9 +455,8 @@ class LdapFake implements LdapInterface
     /**
      * Resolve the methods expectations.
      *
-     * @param string $method
-     * @param array  $args
-     *
+     * @param  string  $method
+     * @param  array  $args
      * @return mixed
      *
      * @throws Exception
@@ -489,8 +489,7 @@ class LdapFake implements LdapInterface
     /**
      * Apply the expectation error to the fake.
      *
-     * @param LdapExpectation $expectation
-     *
+     * @param  LdapExpectation  $expectation
      * @return void
      */
     protected function applyExpectationError(LdapExpectation $expectation)
@@ -503,10 +502,9 @@ class LdapFake implements LdapInterface
     /**
      * Assert that the expected arguments match the operations arguments.
      *
-     * @param string       $method
-     * @param Constraint[] $expectedArgs
-     * @param array        $methodArgs
-     *
+     * @param  string  $method
+     * @param  Constraint[]  $expectedArgs
+     * @param  array  $methodArgs
      * @return void
      */
     protected function assertMethodArgumentsMatch($method, array $expectedArgs = [], array $methodArgs = [])

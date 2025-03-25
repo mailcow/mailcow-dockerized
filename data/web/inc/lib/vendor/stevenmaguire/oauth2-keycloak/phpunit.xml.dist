@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         failOnRisky="true"
+         failOnWarning="true"
+>
+    <coverage includeUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">vendor</directory>
+            <file>src/autoload.php</file>
+        </exclude>
+        <report>
+            <html outputDirectory="./build/coverage/html"
+                  lowUpperBound="35"
+                  highLowerBound="70"/>
+            <clover outputFile="./build/coverage/log/coverage.xml"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="Package Test Suite">
+            <directory suffix=".php">./test/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

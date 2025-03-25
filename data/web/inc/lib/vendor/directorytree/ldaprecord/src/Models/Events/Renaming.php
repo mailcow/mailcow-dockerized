@@ -23,9 +23,9 @@ class Renaming extends Event
     /**
      * Constructor.
      *
-     * @param Model  $model
-     * @param string $rdn
-     * @param string $newParentDn
+     * @param  Model  $model
+     * @param  string  $rdn
+     * @param  string  $newParentDn
      */
     public function __construct(Model $model, $rdn, $newParentDn)
     {

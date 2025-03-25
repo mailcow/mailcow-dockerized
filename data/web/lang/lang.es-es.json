@@ -621,9 +621,7 @@
     },
     "start": {
         "help": "Mostrar/Ocultar panel de ayuda",
-        "imap_smtp_server_auth_info": "Por favor utiliza tu dirección de correo completa y el mecanismo de autenticación PLAIN.<br>\r\nTus datos para iniciar sesión serán cifrados por el cifrado obligatorio del servidor",
-        "mailcow_apps_detail": "Utiliza una aplicación de mailcow para acceder a tus correos, calendario, contactos y más.",
-        "mailcow_panel_detail": "<b>Administradores por dominio</b> pueden crear, modificar o eliminar buzones y alias, modificar los dominios asignados y ver información más detallada sobre los dominios asignados<br>\r\n\t<b>Usuarios de buzón</b> son capaces de crear alias de tiempo limitado (spam alias), cambiar su contraseña y la configuración del filtro de spam del buzón."
+        "imap_smtp_server_auth_info": "Por favor utiliza tu dirección de correo completa y el mecanismo de autenticación PLAIN.<br>\r\nTus datos para iniciar sesión serán cifrados por el cifrado obligatorio del servidor"
     },
     "success": {
         "acl_saved": "ACL para el objeto %s guardado",

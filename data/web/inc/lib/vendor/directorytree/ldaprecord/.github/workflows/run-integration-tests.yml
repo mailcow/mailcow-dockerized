@@ -1,0 +1,62 @@
+name: run-integration-tests
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  run-tests:
+    runs-on: ${{ matrix.os }}
+
+    services:
+      ldap:
+        image: osixia/openldap:1.4.0
+        env:
+          LDAP_TLS_VERIFY_CLIENT: try
+          LDAP_OPENLDAP_UID: 1000
+          LDAP_OPENLDAP_GID: 1000
+          LDAP_ORGANISATION: Local
+          LDAP_DOMAIN: local.com
+          LDAP_ADMIN_PASSWORD: secret
+        ports:
+          - 389:389
+          - 636:636
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.1, 8.0, 7.4]
+
+    name: ${{ matrix.os }} - P${{ matrix.php }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
+      - name: Set ldap.conf file permissions
+        run: sudo chown -R $USER:$USER /etc/ldap/ldap.conf
+
+      - name: Create ldap.conf file disabling TLS verification
+        run: sudo echo "TLS_REQCERT never" > "/etc/ldap/ldap.conf"
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ldap, json
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Execute tests
+        run: vendor/bin/phpunit --testsuite Integration
