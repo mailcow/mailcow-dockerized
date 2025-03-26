@@ -1280,6 +1280,18 @@ for option in "${CONFIG_ARRAY[@]}"; do
       echo '# CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost' >> mailcow.conf
       echo 'DISABLE_NETFILTER_ISOLATION_RULE=n' >> mailcow.conf
     fi
+  elif [[ "${option}" == "SKIP_CLAMD" ]]; then
+    if ! grep -q "${option}" mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n' >> mailcow.conf
+      echo 'SKIP_CLAMD=n' >> mailcow.conf
+    fi
+  elif [[ "${option}" == "SKIP_OLEFY" ]]; then
+    if ! grep -q "${option}" mailcow.conf; then
+      echo "Adding new option \"${option}\" to mailcow.conf"
+      echo '# Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n' >> mailcow.conf
+      echo 'SKIP_OLEFY=n' >> mailcow.conf
+    fi
   elif [[ "${option}" == "REDISPASS" ]]; then
     if ! grep -q "${option}" mailcow.conf; then
       echo "Adding new option \"${option}\" to mailcow.conf"
