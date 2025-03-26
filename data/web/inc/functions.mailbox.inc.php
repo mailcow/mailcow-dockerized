@@ -3324,7 +3324,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           $is_now = mailbox('get', 'mailbox_details', $old_username);
-          if (empty($is_now)) {
+          if (empty($is_now) || ($is_now['active'] != '1' && $is_now['active'] != '2')) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
