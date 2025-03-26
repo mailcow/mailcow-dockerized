@@ -84,11 +84,15 @@ if (isset($_POST["verify_tfa_login"])) {
   unset($_SESSION['pending_tfa_methods']);
 }
 if (isset($_POST["verify_fido2_login"])) {
-  fido2(array(
+  $res = fido2(array(
     "action" => "verify",
     "token" => $_POST["token"],
     "user" => "user"
   ));
+  if (is_array($res) && $res['role'] == "user" && !empty($res['username'])){
+    set_user_loggedin_session($res['username']);
+    $_SESSION["fido2_cid"] = $res['cid'];
+  }
   exit;
 }
 
