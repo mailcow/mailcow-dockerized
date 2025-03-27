@@ -1385,6 +1385,7 @@ function fido2($_data) {
       );
     break;
     case "verify":
+      $role = "";
       $tokenData = json_decode($_data['token']);
       $clientDataJSON = base64_decode($tokenData->clientDataJSON);
       $authenticatorData = base64_decode($tokenData->authenticatorData);
@@ -1418,17 +1419,17 @@ function fido2($_data) {
       $stmt->execute(array(':username' => $process_fido2['username']));
       $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($obj_props['superadmin'] === 1 && (!$_data['user'] || $_data['user'] == "admin")) {
-        $_SESSION["mailcow_cc_role"] = "admin";
+        $role = "admin";
       }
       elseif ($obj_props['superadmin'] === 0 && (!$_data['user'] || $_data['user'] == "domainadmin")) {
-        $_SESSION["mailcow_cc_role"] = "domainadmin";
+        $role = "domainadmin";
       }
       elseif (!isset($obj_props['superadmin']) && (!$_data['user'] || $_data['user'] == "user")) {
         $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
         $stmt->execute(array(':username' => $process_fido2['username']));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row['username'] == $process_fido2['username']) {
-          $_SESSION["mailcow_cc_role"] = "user";
+          $role = "user";
         }
       }
       else {
@@ -1439,7 +1440,7 @@ function fido2($_data) {
         );
         return false;
       }
-      if (empty($_SESSION["mailcow_cc_role"])) {
+      if (empty($role)) {
         session_unset();
         session_destroy();
         $_SESSION['return'][] =  array(
@@ -1449,15 +1450,17 @@ function fido2($_data) {
         );
         return false;
       }
-      $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
-      $_SESSION["fido2_cid"] = $process_fido2['cid'];
       unset($_SESSION["challenge"]);
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array("fido2_login", $_data['user'], $process_fido2['username']),
         'msg' => array('logged_in_as', $process_fido2['username'])
       );
-      return true;
+      return array(
+        "role" => $role,
+        "username" => $process_fido2['username'],
+        "cid" => $process_fido2['cid']
+      );
     break;
   }
 }
