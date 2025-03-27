@@ -241,9 +241,9 @@ async def handle_pubsub_messages(channel: aioredis.client.PubSub):
               else:
                 dockerapi.logger.error("api call: missing container_name, post_action or request")
             else:
-              dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
+              dockerapi.logger.error("Unknown PubSub received - %s" % json.dumps(data_json))
           else:
-            dockerapi.logger.error("Unknwon PubSub recieved - %s" % json.dumps(data_json))
+            dockerapi.logger.error("Unknown PubSub received - %s" % json.dumps(data_json))
 
         await asyncio.sleep(0.0)
     except asyncio.TimeoutError:
