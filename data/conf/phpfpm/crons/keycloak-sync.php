@@ -130,7 +130,7 @@ while (true) {
   curl_close($ch);
 
   if ($code != 200){
-    logMsg("err", "Recieved HTTP {$code}");
+    logMsg("err", "Received HTTP {$code}");
     session_destroy();
     exit;
   }
@@ -141,7 +141,7 @@ while (true) {
     break;
   }
   if (!is_array($response)){
-    logMsg("err", "Recieved malformed response from keycloak api");
+    logMsg("err", "Received malformed response from keycloak api");
     break;
   }
   if (count($response) == 0) {
