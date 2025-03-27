@@ -49,7 +49,7 @@
 # 2013101601 Optical clean up                                           #
 # 2013101602 Rewrite help output                                        #
 # 2013101700 Handle Slave IO in 'Connecting' state                      #
-# 2013101701 Minor changes in output, handling UNKWNON situations now   #
+# 2013101701 Minor changes in output, handling UNKNOWN situations now   #
 # 2013101702 Exit CRITICAL when Slave IO in Connecting state            #
 # 2013123000 Slave_SQL_Running also matched Slave_SQL_Running_State     #
 # 2015011600 Added 'moving' check to catch possible connection issues   #
@@ -131,7 +131,7 @@ elif [[ -n "${socket}" && (-z "${user}" || -z "${password}") ]]; then
 fi
 
 # Connect to the DB server and store output in vars
-if [[ -n $socket ]]; then 
+if [[ -n $socket ]]; then
   ConnectionResult=$(mariadb --skip-ssl ${optfile} ${socket} ${user} -e "show slave ${connection} status\G" 2>&1)
 else
   ConnectionResult=$(mariadb --skip-ssl ${optfile} ${host} ${port} ${user} -e "show slave ${connection} status\G" 2>&1)
@@ -178,33 +178,33 @@ if [ ${check} = ${ok} ] && [ ${checkio} = ${ok} ]; then
   then echo "CRITICAL: Slave is ${delayinfo} seconds behind Master | delay=${delayinfo}s"; exit ${STATE_CRITICAL}
   elif [[ ${delayinfo} -ge ${warn_delay} ]]
   then echo "WARNING: Slave is ${delayinfo} seconds behind Master | delay=${delayinfo}s"; exit ${STATE_WARNING}
-  else 
+  else
     # Everything looks OK here but now let us check if the replication is moving
     if [[ -n ${moving} ]] && [[ -n ${tmpfile} ]] && [[ $readpos -eq $execpos ]]
-    then  
-      #echo "Debug: Read pos is $readpos - Exec pos is $execpos" 
+    then
+      #echo "Debug: Read pos is $readpos - Exec pos is $execpos"
       # Check if tmp file exists
       curtime=`date +%s`
-      if [[ -w $tmpfile ]] 
-      then 
+      if [[ -w $tmpfile ]]
+      then
         tmpfiletime=`date +%s -r $tmpfile`
         if [[ `expr $curtime - $tmpfiletime` -gt ${moving} ]]
         then
           exectmp=`cat $tmpfile`
           #echo "Debug: Exec pos in tmpfile is $exectmp"
           if [[ $exectmp -eq $execpos ]]
-          then 
+          then
             # The value read from the tmp file and from db are the same. Replication hasnt moved!
             echo "WARNING: Slave replication has not moved in ${moving} seconds. Manual check required."; exit ${STATE_WARNING}
-          else 
+          else
             # Replication has moved since the tmp file was written. Delete tmp file and output OK.
             rm $tmpfile
             echo "OK: Slave SQL running: ${check} Slave IO running: ${checkio} / master: ${masterinfo} / slave is ${delayinfo} seconds behind master | delay=${delayinfo}s"; exit ${STATE_OK};
           fi
-        else 
+        else
           echo "OK: Slave SQL running: ${check} Slave IO running: ${checkio} / master: ${masterinfo} / slave is ${delayinfo} seconds behind master | delay=${delayinfo}s"; exit ${STATE_OK};
         fi
-      else 
+      else
         echo "$execpos" > $tmpfile
         echo "OK: Slave SQL running: ${check} Slave IO running: ${checkio} / master: ${masterinfo} / slave is ${delayinfo} seconds behind master | delay=${delayinfo}s"; exit ${STATE_OK};
       fi
