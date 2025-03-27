@@ -346,7 +346,8 @@ paths:
                   description: the domain which emails should be forwarded
                   type: string
                 type:
-                  description: the type of bcc map can be `sender` or `recipient`
+                  description: the type of bcc map can be `sender` or `rcpt`
+                  enum: [sender, rcpt]
                   type: string
               type: object
       summary: Create BCC Map
