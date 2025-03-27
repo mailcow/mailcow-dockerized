@@ -21,7 +21,7 @@ if ($iam_provider){
     }
   } elseif ($_GET['code'] && $_GET['state'] === $_SESSION['oauth2state']) {
     // Check given state against previously stored one to mitigate CSRF attack
-    // Recieved access token in $_GET['code']
+    // Received access token in $_GET['code']
     // extract info and verify user
     identity_provider('verify-sso');
   }
