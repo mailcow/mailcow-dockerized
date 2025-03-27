@@ -30,11 +30,16 @@ if (isset($_POST["verify_tfa_login"])) {
   unset($_SESSION['pending_tfa_methods']);
 }
 if (isset($_POST["verify_fido2_login"])) {
-  fido2(array(
+  $res = fido2(array(
     "action" => "verify",
     "token" => $_POST["token"],
     "user" => "domainadmin"
   ));
+  if (is_array($res) && $res['role'] == "domainadmin" && !empty($res['username'])){
+    $_SESSION["mailcow_cc_username"] = $res['username'];
+    $_SESSION["mailcow_cc_role"] = $res['role'];
+    $_SESSION["fido2_cid"] = $res['cid'];
+  }
   exit;
 }
 

@@ -66,6 +66,14 @@ if (isset($_POST["verify_tfa_login"])) {
         die();
       } else {
         set_user_loggedin_session($_SESSION['pending_mailcow_cc_username']);
+
+        if (isset($_SESSION['oauth2_request'])) {
+          $oauth2_request = $_SESSION['oauth2_request'];
+          unset($_SESSION['oauth2_request']);
+          header('Location: ' . $oauth2_request);
+          die();
+        }
+
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
         if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
@@ -84,11 +92,15 @@ if (isset($_POST["verify_tfa_login"])) {
   unset($_SESSION['pending_tfa_methods']);
 }
 if (isset($_POST["verify_fido2_login"])) {
-  fido2(array(
+  $res = fido2(array(
     "action" => "verify",
     "token" => $_POST["token"],
     "user" => "user"
   ));
+  if (is_array($res) && $res['role'] == "user" && !empty($res['username'])){
+    set_user_loggedin_session($res['username']);
+    $_SESSION["fido2_cid"] = $res['cid'];
+  }
   exit;
 }
 
@@ -117,6 +129,12 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
         }
         header("Location: /mobileconfig.php");
         die();
+    }
+    if (isset($_SESSION['oauth2_request'])) {
+      $oauth2_request = $_SESSION['oauth2_request'];
+      unset($_SESSION['oauth2_request']);
+      header('Location: ' . $oauth2_request);
+      die();
     }
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
