@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = '/user';
     }
 });
+// logout function
+function mc_logout() {
+    fetch("/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "logout=1"
+    }).then(() => window.location.href = '/');
+}
 
 // Custom SOGo JS
 
