@@ -1,9 +1,8 @@
-59,65d58
-<                ng-show="::!activeUser.isSuperUser"
+60,65d58
 <                var:ng-click="navButtonClick"
 <                ng-href="/user">
 <       <md-icon>build</md-icon>
-<       <md-tooltip><var:string label:value="mailcow"/></md-tooltip>
+<       <md-tooltip>mailcow <var:string label:value="Preferences"/></md-tooltip>
 <     </md-button>
 <     <md-button class="md-icon-button"
 83c76
