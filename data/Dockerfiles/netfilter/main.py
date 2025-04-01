@@ -320,7 +320,8 @@ def isIpNetwork(address):
   return True
 
 def genNetworkList(list):
-  resolver = dns.resolver.Resolver()
+  resolver = dns.resolver.Resolver(configure=False)
+  resolver.nameservers = ['127.0.0.1']
   hostnames = []
   networks = []
   for key in list:
