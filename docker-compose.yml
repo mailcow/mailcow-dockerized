@@ -199,7 +199,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.131
+      image: ghcr.io/mailcow/sogo:1.133
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -477,7 +477,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.62
+      image: ghcr.io/mailcow/netfilter:1.61
       stop_grace_period: 30s
       restart: always
       privileged: true

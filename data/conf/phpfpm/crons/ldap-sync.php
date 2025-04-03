@@ -168,7 +168,7 @@ foreach ($response as $user) {
       logMsg("err", "Could not create user " . $user[$iam_settings['username_field']][0]);
       continue;
     }
-  } else if ($row && intval($iam_settings['periodic_sync']) == 1) {
+  } else if ($row && intval($iam_settings['periodic_sync']) == 1 && $row['authsource'] == "ldap") {
     if ($mapper_key === false){
       logMsg("warning", "No matching attribute mapping found for user " . $user[$iam_settings['username_field']][0]);
       continue;
