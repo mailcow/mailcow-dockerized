@@ -22,22 +22,6 @@ function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
     }
   }
 
-  // Try validate user
-  if (!isset($role) || $role == "user") {
-    $result = user_login($user, $pass);
-    if ($result !== false) {
-      if ($app_passwd_data['eas'] === true) {
-        $service = 'EAS';
-      } elseif ($app_passwd_data['dav'] === true) {
-        $service = 'DAV';
-      } else {
-        $service = 'MAILCOWUI';
-      }
-      $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
-      set_sasl_log($user, $real_rip, $service);
-      return $result;
-    }
-  }
 
   // Try validate app password
   if (!isset($role) || $role == "app") {
@@ -52,6 +36,23 @@ function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
       }
       $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
       set_sasl_log($user, $real_rip, $service, $pass);
+      return $result;
+    }
+  }
+
+  // Try validate user
+  if (!isset($role) || $role == "user") {
+    $result = user_login($user, $pass);
+    if ($result !== false) {
+      if ($app_passwd_data['eas'] === true) {
+        $service = 'EAS';
+      } elseif ($app_passwd_data['dav'] === true) {
+        $service = 'DAV';
+      } else {
+        $service = 'MAILCOWUI';
+      }
+      $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
+      set_sasl_log($user, $real_rip, $service);
       return $result;
     }
   }
