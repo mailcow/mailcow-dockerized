@@ -1,0 +1,16 @@
+services:
+    prometheus-exporter-mailcow:
+      image: thej6s/mailcow-exporter:latest
+      ports:
+        - "9099:9099"
+      restart: always
+      environment:
+        MAILCOW_EXPORTER_HOST: "<your-mail-domain>" # Replace with your Mailcow hostname
+        MAILCOW_EXPORTER_API_KEY: "<your-API-Key>" # Replace with your API key
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
+      networks:
+        mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.209
+          aliases:
+            - prometheus-exporter
