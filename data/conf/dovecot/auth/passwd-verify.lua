@@ -3,10 +3,10 @@ function auth_password_verify(request, password)
     return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
   end
 
-  json = require "cjson"
-  ltn12 = require "ltn12"
-  https = require "ssl.https"
-  https.TIMEOUT = 5
+  local json = require "cjson"
+  local ltn12 = require "ltn12"
+  local https = require "ssl.https"
+  https.TIMEOUT = 30
 
   local req = {
     username = request.user,
@@ -28,6 +28,12 @@ function auth_password_verify(request, password)
     sink = ltn12.sink.table(res),
     insecure = true
   }
+
+  if c ~= 200 then
+    dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
+    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream error"
+  end
+
   local api_response = json.decode(table.concat(res))
   if api_response.success == true then
     return dovecot.auth.PASSDB_RESULT_OK, ""
