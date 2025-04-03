@@ -184,7 +184,7 @@
           </div>
           {% endif %}
         </div>
-        <div class="ms-auto col-xl-3 col-lg-5 col-md-12 col-12 d-flex flex-column well flex-grow-1">
+        <div class="ms-auto col-xl-3 col-lg-5 col-md-12 col-12 d-flex flex-column well flex-grow-1" id="recent-logins">
           <legend class="d-flex">
             <span>{{ lang.user.recent_successful_connections }}</span>
             <div id="spinner-last-login" class="ms-auto my-auto spinner-border spinner-border-sm d-none" role="status">
@@ -192,7 +192,6 @@
             </div>
           </legend>
           <hr>
-          <h6 class="last-ui-login"></h6>
           <div class="d-flex">
             <span class="clear-last-logins mt-auto mb-2">
               {{ lang.user.clear_recent_successful_connections }}
