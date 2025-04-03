@@ -90,13 +90,7 @@ jQuery(function($){
           console.log('error reading last logins');
         },
         success: function (data) {
-          $('.last-ui-login').html('');
           $('.last-sasl-login').html('');
-          if (data.ui.time) {
-            $('.last-ui-login').html('<i class="bi bi-person-fill"></i> ' + lang.last_ui_login + ': ' + unix_time_format(data.ui.time));
-          } else {
-            $('.last-ui-login').text(lang.no_last_login);
-          }
           if (data.sasl) {
             $('.last-sasl-login').append('<ul class="list-group">');
             $.each(data.sasl, function (i, item) {

@@ -12,12 +12,11 @@ function auth_password_verify(request, password)
     username = request.user,
     password = password,
     real_rip = request.real_rip,
-    protocol = {}
+    service = request.service
   }
-  req.protocol[request.service] = true
   local req_json = json.encode(req)
-  local res = {} 
-  
+  local res = {}
+
   local b, c = https.request {
     method = "POST",
     url = "https://nginx:9082",
@@ -33,7 +32,7 @@ function auth_password_verify(request, password)
   if api_response.success == true then
     return dovecot.auth.PASSDB_RESULT_OK, ""
   end
-  
+
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
 end
 
