@@ -681,7 +681,7 @@ jQuery(function($){
     $(this).html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div> ');
     $.ajax({
       type: 'GET',
-      url: 'inc/ajax/transport_check.php',
+      url: '/inc/ajax/transport_check.php',
       dataType: 'text',
       data: $('#test_transport_form').serialize(),
       complete: function (data) {
