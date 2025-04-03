@@ -69,29 +69,34 @@ require_once 'functions.acl.inc.php';
 
 $isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
 $result = false;
-$protocol = $post['protocol'];
 if ($isSOGoRequest) {
-  $protocol = null;
   // This is a SOGo Auth request. First check for SSO password.
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
   if ($sogo_sso_pass === $post['password']){
     error_log('MAILCOWAUTH: SOGo SSO auth for user ' . $post['username']);
+    set_sasl_log($post['username'], $post['real_rip'], "SOGO");
     $result = true;
   }
 }
 if ($result === false){
-  $result = apppass_login($post['username'], $post['password'], $protocol, array(
+  $result = apppass_login($post['username'], $post['password'], array($post['service'] => true), array(
     'is_internal' => true,
     'remote_addr' => $post['real_rip']
   ));
-  if ($result) error_log('MAILCOWAUTH: App auth for user ' . $post['username']);
+  if ($result) {
+    error_log('MAILCOWAUTH: App auth for user ' . $post['username']);
+    set_sasl_log($post['username'], $post['real_rip'], $post['service']);
+  }
 }
 if ($result === false){
   // Init Identity Provider
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');
   $result = user_login($post['username'], $post['password'], array('is_internal' => true));
-  if ($result) error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
+  if ($result) {
+    error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
+    set_sasl_log($post['username'], $post['real_rip'], $post['service']);
+  }
 }
 
 if ($result) {
