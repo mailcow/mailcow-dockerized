@@ -16,7 +16,16 @@
         "login_as": "Pieteikšanās kā pastkastes lietotājam",
         "mailbox_relayhost": "Pasta kastītes relayhost maiņa",
         "prohibited": "Aizliegts ar ACL",
-        "protocol_access": "Protokola piekļuves maiņa"
+        "protocol_access": "Protokola piekļuves maiņa",
+        "pw_reset": "Ļaut atiestatīt mailcow lietotāja paroli",
+        "ratelimit": "Piekļuves biežuma ierobežojums",
+        "quarantine": "Karantīnas darbības",
+        "quarantine_attachments": "Karantīnas pielikumi",
+        "quarantine_category": "Mainīt karantīnas paziņojumu kategoriju",
+        "quarantine_notification": "Mainīt karantīnas paziņojumus",
+        "smtp_ip_access": "Mainīt SMTP atļautos saimniekdatorus",
+        "sogo_access": "Atļaut SOGo piekļuves pārvaldību",
+        "sogo_profile_reset": "Atiestatīt SOGo profilu"
     },
     "add": {
         "activate_filter_warn": "Visi pārējie filtri tiks deaktivizēti, kad aktīvs ir atzīmēts.",
@@ -24,8 +33,8 @@
         "add": "Pievienot",
         "add_domain_only": "Tikai pievienot domēnu",
         "add_domain_restart": "Pievienot domēnu un restartēt SOGo",
-        "alias_address": "Aizstājaddrese/s",
-        "alias_address_info": "<small>Pilna epasta addrese/s vai @piemērs.com, lai notvertu visas domēna ziņas (komatu atdalītas). <b>tikai mailcow domēni</b>.</small>",
+        "alias_address": "Aizstājadrese/s",
+        "alias_address_info": "<small>Pilna epasta adrese/s vai @example.com, lai notvertu visus domēna ziņojumus (atdalītas ar komatu). <b>Tikai mailcow domēni</b>.</small>",
         "alias_domain": "Aizstājdomēni",
         "alias_domain_info": "<small>Tikai derīgi domēna vārdi (komatu atdalīti).</small>",
         "automap": "Mēģiniet automatizēt mapes (\"Nosūtītie vienumi\", \"Nosūtītie\" => \"Nosūtītie\" etc.)",
@@ -63,15 +72,17 @@
         "skipcrossduplicates": "Izlaist dublētus ziņojumus pa mapēm (pirmais nāk, pirmais kalpo)",
         "syncjob": "Pievienot sinhronizācijas darbu",
         "syncjob_hint": "Ņemiet vērā, ka parole ir jāuzglabā vienkāršā tekstā!",
-        "target_address": "Iet uz adresēm",
-        "target_address_info": "<small>Pilna epasta addrese/s (comma-separated).</small>",
+        "target_address": "Mērķa adreses",
+        "target_address_info": "<small>Pilna epasta adrese/s (atdalītas ar komatu).</small>",
         "target_domain": "Mērķa domēns",
         "username": "Lietotājvārds",
         "validate": "Apstiprināt",
         "validation_success": "Apstiprināts veiksmīgi",
         "bcc_dest_format": "BCC galamērķim ir jābūt vienai derīgai e-pasta adresei.<br>Ja ir nepieciešams nosūtīt kopiju vairākām adresēm, jāizveido aizstājvārds un jāizmanto tas šeit.",
         "domain_matches_hostname": "Domēns %s atbilst saimniekdatora nosaukumam",
-        "disable_login": "Neļaut pieteikšanos (ienākošais pasts joprojām tiks pieņemts)"
+        "disable_login": "Neļaut pieteikšanos (ienākošais pasts joprojām tiks pieņemts)",
+        "app_password": "Pievienot lietotnes paroli",
+        "app_passwd_protocols": "Atļautie lietotnes paroles protokoli"
     },
     "admin": {
         "access": "Pieeja",
@@ -114,7 +125,7 @@
         "f2b_whitelist": "Baltā saraksta tīkls/hosts",
         "filter_table": "Filtru tabula",
         "forwarding_hosts": "Hostu pārsūtīšana",
-        "forwarding_hosts_add_hint": "Var norādīt vai nu IPv4/IPv6 addreses, tīklu ar CIDR apzīmējumu, saimniekdatoru nosaukumus (kas tiks atrisināti IP adresēs) vai arī domēna vārdus (kas tiks atrisināti IP adresēs, vaicājot SPF ierakstus, vai, ja tādu nav, MX ierakstus).",
+        "forwarding_hosts_add_hint": "Var norādīt vai nu IPv4/IPv6 adreses, tīklu ar CIDR apzīmējumu, saimniekdatoru nosaukumus (kas tiks atrisināti IP adresēs) vai arī domēna vārdus (kas tiks atrisināti IP adresēs, vaicājot SPF ierakstus, vai, ja tādu nav, MX ierakstus).",
         "forwarding_hosts_hint": "Ienākošie ziņojumi tiek bez nosacījumiem pieņemti no visiem šeit norādītajiem saimniekdatoriem. Tie tad netiek pārbaudīti pret DNSBL vai pakļauti ievietošanai pelēkajā sarakstā. No tiem saņemtās mēstules nekad netiek noraidītas, bet pēc izvēles tās var pārvietot mapē \"Nevēlams\". Visbiežāk to izmanto, lai norādītu pasta serverus, kuros ir uzstādīts nosacījums, kas pārsūta ienākošās e-pasta vēstules uz Tavu mailcow serveri.",
         "help_text": "Pārrakstīt palīdzības tekstu zem pieteikšanās maskas (var izmantot HTML)",
         "host": "Hosts",
@@ -142,7 +153,7 @@
         "recipients": "Adresāts",
         "refresh": "Atsvaidzināt",
         "regen_api_key": "Reģenerēt API atslēgu",
-        "relay_from": "\"No:\" addrese",
+        "relay_from": "\"No:\" adrese",
         "relay_run": "Palaist testu",
         "relayhosts_hint": "Norādīt no sūtītāja atkarīgas piegādes, lai varētu tos atlasīt domēnu konfigurācijas uzvednē.<br>\n  Piegādes pakalpojums vienmēr ir \"smtp\", tādējādi tiks mēģināts TLS, kad piedāvāts. Iekļautais TLS (SMTPS) netiek atbalstīts. Tiek ņemts vērā lietotāja atsevišķais izejošā TLS nosacījuma iestatījums.<br>\n  Ietekmē atlasītos domēnus, tajā skaitā aizstājdomēnus.",
         "remove": "Noņemt",
@@ -222,7 +233,8 @@
         "targetd_not_found": "Mērķa domēns nav atrasts",
         "username_invalid": "Lietotājvārds nevar tikt izmantots",
         "validity_missing": "Lūdzu piešķiriet derīguma termiņu",
-        "domain_cannot_match_hostname": "Domēns nevar atbilst saimniekdatora nosaukumam"
+        "domain_cannot_match_hostname": "Domēns nevar atbilst saimniekdatora nosaukumam",
+        "app_passwd_id_invalid": "Lietotnes paroles Id %s ir nederīgs"
     },
     "diagnostics": {
         "cname_from_a": "Vērtība, kas iegūta no A/AAAA ieraksta. Tas tiek atbalstīts tik ilgi, kamēr ieraksts norāda uz pareizo resursu.",
@@ -257,7 +269,7 @@
         "hostname": "Saimniekdatora nosaukums",
         "inactive": "Neaktīvs",
         "kind": "Veids",
-        "mailbox": "Rediģēt pastkasti",
+        "mailbox": "Labot pastkasti",
         "max_aliases": "Lielākais aizstājvārdu skaits",
         "max_mailboxes": "Maks. iespējamās pastkastes",
         "max_quota": "Maks. kvota uz pastkasti (MiB)",
@@ -283,8 +295,8 @@
         "spam_policy": "Pievienot vai noņemt vienumus baltajā-/melnajā sarakstā",
         "spam_score": "Iestatīt pielāgotu surogātpasta vērtējumu",
         "subfolder2": "Sinhronizēt galamērķa apakšmapē<br><small>(tukšs = neizmantot apakšmapi)</small>",
-        "syncjob": "Rediģēt sinhronizācijas darbu",
-        "target_address": "Iet uz adresi/ēm <small>(komatu atdalītas)</small>",
+        "syncjob": "Labot sinhronizācijas darbu",
+        "target_address": "Mērķa adrese/s <small>(atdalītas ar komatu)</small>",
         "target_domain": "Mērķa domēns",
         "title": "Labot priekšmetu",
         "unchanged_if_empty": "Ja neizmainīts atstājiet tukšu",
@@ -300,8 +312,11 @@
         "sogo_visible": "Aizstājvārds ir redzams SOGo",
         "sogo_visible_info": "Šī iespēja ietekmē tikai tos objektus, kurus var parādīt SOGo (koplietojamās vai nekoplietojamās aizstājadreses, kas norāda uz vismaz vienu vietējo pastkasti). Ja paslēpts, netiks parādīts SOGo kā atlasāms sūtītājs.",
         "mbox_rl_info": "Šis pieprasījumu ierobežojums tiek piemērots SASL pieteikšanās vārdam, tas atbilst jebkurai \"from\" adresei, ko izmanto lietotājs, kurš ir pieteicies. Pastkastes pieprasījumu ierobežojums pārraksta domēna mēroga pieprasījumu ierobežojumu.",
-        "sogo_access": "Nodrošināt tiešu pieteikšanās piekļuvi SOGo",
-        "disable_login": "Neļaut pieteikšanos (ienākošais pasts joprojām tiks pieņemts)"
+        "sogo_access": "Tieša pārvirzīšana uz SOGo",
+        "disable_login": "Neļaut pieteikšanos (ienākošais pasts joprojām tiks pieņemts)",
+        "app_passwd_protocols": "Atļautie lietotnes paroles protokoli",
+        "allowed_protocols": "Atļautie protokoli tiešai lietotāja piekļuvei (neietekmē lietotnes paroles protokolus)",
+        "app_passwd": "Lietotnes parole"
     },
     "footer": {
         "cancel": "Atcelt",
@@ -508,7 +523,9 @@
         "verified_fido2_login": "Apliecināta FIDO2 pieteikšanās",
         "verified_webauthn_login": "Apliecināta WebAuthn pieteikšanās",
         "verified_totp_login": "Apliecināta TOTP pieteikšanās",
-        "verified_yotp_login": "Apliecināta Yubico OTP pieteikšanās"
+        "verified_yotp_login": "Apliecināta Yubico OTP pieteikšanās",
+        "app_passwd_removed": "Noņemta lietotnes parole ar Id %s",
+        "app_passwd_added": "Pievienota jauna lietotnes parole"
     },
     "tfa": {
         "api_register": "%s izmanto Yubico Cloud API. Lūdzu iegūstiet API atslēgu priekš Jūsu atslēgas<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
@@ -523,7 +540,7 @@
         "scan_qr_code": "Lūdzu, skenējiet šo kodu ar savu autentifikācijas lietojumprogrammu vai ievadiet kodu manuāli.",
         "select": "Lūdzu izvēlaties",
         "set_tfa": "Uzstādīt difi faktoru autentifik;acijas metodi",
-        "tfa": "Divu faktoru autentifikācija",
+        "tfa": "Divpakāpju pieteikšanās",
         "totp": "Uz laiku bāzēta vienreizēja parole (Google Autentifikātors utt.)",
         "webauthn": "WebAuthn autentifikācija",
         "waiting_usb_auth": "<i>Gaida USB ierīci...</i><br><br>Lūdzu, tagad nospiežiet pogu uz Jūsu WebAuthn USB ierīces.",
@@ -618,12 +635,18 @@
         "apple_connection_profile_mailonly": "Šis savienojuma profils iekļauj IMAP un SMTP konfigurācijas parametrus Apple ierīcei.",
         "pushover_info": "Pašpiegādes paziņojumu iestatījumi attieksies uz visu tīro (ne surogātpasta) pastu, kas piegādāts uz <b>%s</b>, ieskaitot aizstājvārdus (kopīgotus, nekopīgotus, ar birkām).",
         "app_hint": "Lietotņu paroles ir aizstājējparoles, lai pieteiktos IMAP, SMTP, CalDAV, CardDAV un EAS. Lietotājvārds paliek nemainīgs. SOGo tīmekļa pasts nav pieejams ar lietotņu parolēm.",
-        "direct_protocol_access": "Šim pastkastes lietotājam ir <b> tieša, ārēja piekļuve</b> zemāk uzskaitītajiem protokoliem un lietotnēm. Šo iestatījumu pārrauga pārvaldītājs. Lietotņu paroles var izveidot, lai nodrošinātu piekļuvi atsevišķiem protokoliem un lietotnēm.<br>Poga \"Pieteikties tīmekļa pastā\" nodrošina vienotu pieteikšanos SOGo un vienmēr ir pieejama.",
+        "direct_protocol_access": "Šim pastkastes lietotājam ir <b> tieša, ārēja piekļuve</b> zemāk uzskaitītajiem protokoliem un lietotnēm. Šo iestatījumu pārrauga pārvaldītājs. Lietotņu paroles var izveidot, lai nodrošinātu piekļuvi atsevišķiem protokoliem un lietotnēm.<br>Poga \"Tīmekļa pasts\" nodrošina vienotu pieteikšanos SOGo un vienmēr ir pieejama.",
         "last_ui_login": "Pēdējā pieteikšanās saskarnē",
         "login_history": "Pieteikšanās vēsture",
         "no_last_login": "Nav informācijas par pēdējām pieteikšanās saskarnē reizēm",
-        "open_webmail_sso": "Pieteikšanās tīmekļa pastā",
-        "last_mail_login": "Pēdējā pasta pieteikšanās"
+        "open_webmail_sso": "Tīmekļa pasts",
+        "last_mail_login": "Pēdējā pasta pieteikšanās",
+        "change_password_hint_app_passwords": "Kontā ir %d lietotņu paroles, kas netiks mainītas. Lai pārvaldītu tās, jādodas uz cilni \"Lietotņu paroles\".",
+        "with_app_password": "ar lietotnes paroli",
+        "apple_connection_profile_with_app_password": "Jauna lietotnes parole ir izveidota un pievienota profilam, lai ierīces iestatīšanas laikā nebūtu nepieciešams ievadīt paroli. Lūgums nekopīgot datni, jo tā nodrošina pilnu piekļuvi pastkastei.",
+        "tfa_info": "Divpakāpju autentificēšanās palīdz aizsargāt kontu.Ja tā ir iespējota, var būt nepieciešamas lietotņu paroles, lai pieteiktos lietotnēs vai pakalpojumos, kas nenodrošina divpakāpju autentificēšanos (piem., e-pasta klienti).",
+        "app_passwds": "Lietotņu paroles",
+        "create_app_passwd": "Izveidot lietotnes paroli"
     },
     "datatables": {
         "paginate": {
