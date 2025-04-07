@@ -1,20 +1,15 @@
-59,65d58
-<                ng-show="::!activeUser.isSuperUser"
+60,65d58
 <                var:ng-click="navButtonClick"
 <                ng-href="/user">
 <       <md-icon>build</md-icon>
-<       <md-tooltip><var:string label:value="mailcow"/></md-tooltip>
+<       <md-tooltip>mailcow <var:string label:value="Preferences"/></md-tooltip>
 <     </md-button>
 <     <md-button class="md-icon-button"
 83c76
-<                onclick="document.getElementById('mc_logout').setAttribute('action', '/'); document.getElementById('mc_logout').submit();"
+<                onclick="mc_logout();"
 ---
 >                ng-show="::activeUser.path.logoff.length"
 85c78
 <                ng-href="#">
 ---
 >                ng-href="{{::activeUser.path.logoff}}">
-89,91d81
-<     <form method="POST" id="mc_logout" action="user">
-<       <input type="hidden" name="logout" value="1">
-<     </form>

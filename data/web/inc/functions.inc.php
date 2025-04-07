@@ -350,6 +350,34 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   }
 
 }
+function set_sasl_log($username, $real_rip, $service){
+  global $pdo;
+
+  try {
+    if (!empty($_SESSION['app_passwd_id'])) {
+      $app_password = $_SESSION['app_passwd_id'];
+    } else {
+      $app_password = 0;
+    }
+
+    $stmt = $pdo->prepare('REPLACE INTO `sasl_log` (`username`, `real_rip`, `service`, `app_password`) VALUES (:username, :real_rip, :service, :app_password)');
+    $stmt->execute(array(
+      ':username' => $username,
+      ':real_rip' => $real_rip,
+      ':service' => $service,
+      ':app_password' => $app_password
+    ));
+  } catch (PDOException $e) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_data_log),
+      'msg' => array('mysql_error', $e)
+    );
+    return false;
+  }
+
+  return true;
+}
 function flush_memcached() {
   try {
     $m = new Memcached();
