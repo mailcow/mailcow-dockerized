@@ -392,11 +392,11 @@
           <input type="hidden" name="authsource" value="ldap">
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
-              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_host_info }}"></i>
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_host_info }}"></i>
               <label class="control-label" for="iam_ldap_host">{{ lang.admin.iam_host }}:</label>
             </div>
             <div class="col-12 col-md-9 col-lg-4 d-flex">
-            <input type="text" class="form-control" id="iam_ldap_host" name="host" value="{{ iam_settings.host }}" required>
+              <input type="text" class="form-control" id="iam_ldap_host" name="host" value="{{ iam_settings.host }}" required>
             </div>
           </div>
           <div class="row mb-2">
@@ -409,21 +409,37 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_use_ssl_info }}"></i>
               <label class="control-label">{{ lang.admin.iam_use_ssl }}</label>
             </div>
-            <div class="col-12 col-md-9">
+            <div class="col-12 col-md-9 d-flex align-items-center">
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="use_ssl" value="1" {% if iam_settings.use_ssl == 1 %}checked{% endif %}>
+                <input class="form-check-input"
+                       type="checkbox"
+                       role="switch"
+                       id="use_ssl"
+                       name="use_ssl"
+                       value="1"
+                       onchange="if(this.checked) document.getElementById('use_tls').checked = false"
+                       {% if iam_settings.use_ssl == 1 %}checked{% endif %}>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_use_tls_info }}"></i>
               <label class="control-label">{{ lang.admin.iam_use_tls }}</label>
             </div>
-            <div class="col-12 col-md-9">
+            <div class="col-12 col-md-9 d-flex align-items-center">
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="use_tls" value="1" {% if iam_settings.use_tls == 1 %}checked{% endif %}>
+                <input class="form-check-input"
+                       type="checkbox"
+                       role="switch"
+                       id="use_tls"
+                       name="use_tls"
+                       value="1"
+                       onchange="if(this.checked) document.getElementById('use_ssl').checked = false"
+                       {% if iam_settings.use_tls == 1 %}checked{% endif %}>
               </div>
             </div>
           </div>
