@@ -238,7 +238,7 @@
         "iam_username_field": "Username Feld",
         "iam_binddn": "Bind DN",
         "iam_use_ssl": "Benutze SSL",
-        "iam_use_ssl_info": "TLS wird gegenüber SSL empfohlen. SSL gilt als veralteter Mechanismus für die sichere Ausführung von LDAP-Operationen.<br><br>Wenn SSL aktiviert ist und der Port auf 389 gesetzt wurde, wird dieser automatisch auf 636 geändert.",
+        "iam_use_ssl_info": "Wenn SSL aktiviert ist und der Port auf 389 gesetzt wurde, wird dieser automatisch auf 636 geändert.",
         "iam_use_tls": "Benutze StartTLS",
         "iam_use_tls_info": "Wenn TLS aktiviert wird, muss der Standardport deines LDAP-Servers (389) verwendet werden. SSL-Ports können dabei nicht verwendet werden.",
         "iam_version": "Version",
