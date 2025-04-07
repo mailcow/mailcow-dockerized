@@ -1335,7 +1335,7 @@
         "tag_in_subfolder": "In Unterordner",
         "tag_in_subject": "In Betreff",
         "text": "Text",
-        "tfa_info": "Zwei-Faktor-Authentifizierung hilft dabei, Ihr Konto zu schützen. Wenn Sie sie aktivieren, benötigen Sie möglicherweise App-Passwörter, um sich bei Apps oder Diensten anzumelden, die die Zwei-Faktor-Authentifizierung nicht unterstützen (z.B. Mailclients).",
+        "tfa_info": "Zwei-Faktor-Authentifizierung hilft dabei, Ihr Konto zu schützen. Wenn Sie sie aktivieren, benötigen Sie App-Passwörter, um sich bei Apps oder Diensten anzumelden, die die Zwei-Faktor-Authentifizierung nicht unterstützen (z.B. Mailclients).",
         "title": "Title",
         "tls_enforce_in": "TLS eingehend erzwingen",
         "tls_enforce_out": "TLS ausgehend erzwingen",

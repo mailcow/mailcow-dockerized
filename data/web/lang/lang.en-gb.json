@@ -1357,7 +1357,7 @@
         "tag_in_subfolder": "In subfolder",
         "tag_in_subject": "In subject",
         "text": "Text",
-        "tfa_info": "Two-factor authentication helps protect your account. If you enable it, you may need app passwords to log in to apps or services that don't support two-factor authentication (e.g. Mailclients).",
+        "tfa_info": "Two-factor authentication helps protect your account. If you enable it, you need app passwords to log in to apps or services that don't support two-factor authentication (e.g. Mailclients).",
         "title": "Title",
         "tls_enforce_in": "Enforce TLS incoming",
         "tls_enforce_out": "Enforce TLS outgoing",
