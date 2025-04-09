@@ -358,7 +358,43 @@
         "ip_check_disabled": "IP 检查已禁用。你可透过以下路径启用<br> <strong>系统 > 配置 > 选项 > 页面自定义</strong>",
         "queue_unban": "解除封禁",
         "allowed_methods": "访问控制允许方式",
-        "allowed_origins": "访问控制允许原"
+        "allowed_origins": "访问控制允许原",
+        "iam": "身份识别提供者",
+        "iam_attribute_field": "Attribute 域",
+        "iam_authorize_url": "Authorization endpoint",
+        "iam_auth_flow": "认证流程",
+        "iam_basedn": "Base DN",
+        "iam_client_id": "客户端 ID",
+        "iam_client_secret": "客户端凭据",
+        "iam_client_scopes": "客户端 Scopes",
+        "iam_default_template": "默认模板",
+        "iam_default_template_description": "如果未为用户分配模板，则在创建邮箱时将使用默认模板，但在更新邮箱时不会使用默认模板。",
+        "iam_description": "配置外部认证提供者<br>如果已设置好属性映射，用户在首次登录时将会自动创建其 Mailbox。",
+        "iam_host": "Host",
+        "iam_host_info": "请输入一个或多个 LDAP 主机，使用英文逗号分隔。",
+        "iam_import_users": "导入用户",
+        "iam_mapping": "属性映射",
+        "iam_bindpass": "密码绑定（Bind Password）",
+        "iam_periodic_full_sync": "周期性全量同步",
+        "iam_port": "端口",
+        "iam_realm": "Realm",
+        "iam_redirect_url": "重定向 Url",
+        "iam_rest_flow": "Mailpassword 流程",
+        "iam_server_url": "服务器 Url",
+        "iam_sso": "单点登录（SSO）",
+        "iam_sync_interval": "同步/导入周期（min）",
+        "iam_test_connection": "测试连接",
+        "iam_token_url": "Token endpoint",
+        "iam_userinfo_url": "User info endpoint",
+        "iam_username_field": "Username 域",
+        "iam_binddn": "Bind DN",
+        "iam_use_ssl": "使用 SSL",
+        "iam_use_tls": "使用 TLS",
+        "iam_version": "版本",
+        "ignore_ssl_error": "忽略 SSL 错误",
+        "iam_auth_flow_info": "除了在单点登录（SSO）中使用的 Authorization Code 流程（在 Keycloak 中是标准流程）之外，mailcow 还支持使用 Credentials 的身份认证流程。Mailpassword 流程尝试通过 Keycloak 的 Admin REST API 验证用户凭据，mailcow 会从 Keycloak 中的 <code>mailcow_password</code> 属性中获取哈希后的密码。",
+        "filter": "过滤",
+        "iam_extra_permission": "要使以下设置生效，Keycloak 中的 mailcow 客户端需要一个 <code>服务账户（Service account）</code> 以及 <code>查看用户（view-users）</code> 的权限。"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -495,7 +531,11 @@
         "webauthn_authenticator_failed": "找不到所选的 authenticator",
         "webauthn_publickey_failed": "没有为选定的身份验证器保存公钥",
         "webauthn_username_failed": "所选的 authenticator 属于另一个账户",
-        "demo_mode_enabled": "演示模式已开启"
+        "demo_mode_enabled": "演示模式已开启",
+        "generic_server_error": "服务器错误。请联系您的管理员。",
+        "authsource_in_use": "由于当前有一个或多个用户正在使用该身份提供者（IDP），因此无法更改或删除。",
+        "iam_test_connection": "连接失败",
+        "required_data_missing": "缺少需要的 %s 数据"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -744,7 +784,10 @@
         "new_password_confirm": "确认新密码",
         "reset_password": "重置密码",
         "request_reset_password": "请求重置密码",
-        "invalid_pass_reset_token": "密码重置 token 无效或已过期。<br> 请重新获取新的密码重置链接。"
+        "invalid_pass_reset_token": "密码重置 token 无效或已过期。<br> 请重新获取新的密码重置链接。",
+        "login_user": "用户登录",
+        "login_dadmin": "域管理员登录",
+        "login_admin": "管理员登录"
     },
     "mailbox": {
         "action": "操作",
@@ -919,7 +962,8 @@
         "max_quota": "每个信箱的最大容量配额",
         "relay_unknown": "转发未知信箱",
         "templates": "模板",
-        "template": "模板"
+        "template": "模板",
+        "iam": "身份提供者（IDP）"
     },
     "oauth2": {
         "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权。",
@@ -1097,7 +1141,8 @@
         "recovery_email_sent": "重置邮件已发送至 %s",
         "template_added": "新增了模板 %s",
         "template_modified": "模板 %s 的修改已保存",
-        "template_removed": "模板 ID %s 已删除"
+        "template_removed": "模板 ID %s 已删除",
+        "iam_test_connection": "连接成功"
     },
     "tfa": {
         "api_register": "%s 使用了 Yubico Cloud API，请<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">在此</a>为你的密钥获取 API 密钥",
@@ -1292,7 +1337,11 @@
         "password_reset_info": "如果不提供密码重置邮箱，此功能将无法使用。",
         "pushover_sound": "声音",
         "value": "值",
-        "attribute": "属性"
+        "attribute": "属性",
+        "protocols": "协议",
+        "authentication": "认证",
+        "tfa_info": "两步验证有助于保护您的账户安全。启用后，对于不支持两步验证的应用程序或服务（例如邮件客户端），需要使用应用专用密码进行登录。",
+        "overview": "概览"
     },
     "warning": {
         "cannot_delete_self": "不能删除已登录的用户",
