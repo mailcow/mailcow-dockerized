@@ -29,7 +29,7 @@ function auth_password_verify(request, password)
     insecure = true
   }
 
-  if c ~= 200 then
+  if c ~= 200 and c ~= 401 then
     dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
     return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream error"
   end
