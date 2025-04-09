@@ -51,7 +51,7 @@ jQuery(function($){
     $('.submit_rspamd_regex').attr({"disabled": true});
   });
   $("#show_rspamd_global_filters").click(function() {
-    $.get("inc/ajax/show_rspamd_global_filters.php");
+    $.get("/inc/ajax/show_rspamd_global_filters.php");
     $("#confirm_show_rspamd_global_filters").hide();
     $("#rspamd_global_filters").removeClass("d-none");
   });
@@ -655,7 +655,7 @@ jQuery(function($){
     $(this).html('<i class="bi bi-arrow-repeat icon-spin"></i> ');
     $.ajax({
       type: 'GET',
-      url: 'inc/ajax/relay_check.php',
+      url: '/inc/ajax/relay_check.php',
       dataType: 'text',
       data: $('#test_relayhost_form').serialize(),
       complete: function (data) {
