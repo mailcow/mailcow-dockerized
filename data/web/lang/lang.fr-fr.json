@@ -730,7 +730,10 @@
         "new_password": "Nouveau mot de passe",
         "new_password_confirm": "Confirmer le nouveau mot de passe",
         "reset_password": "Réinitialiser le mot de passe",
-        "request_reset_password": "Demander le changement du mot de passe"
+        "request_reset_password": "Demander le changement du mot de passe",
+        "login_user": "Connexion Utilisateur",
+        "login_dadmin": "Connexion Administrateur de domaine",
+        "login_admin": "Connexion Administrateur"
     },
     "mailbox": {
         "action": "Action",

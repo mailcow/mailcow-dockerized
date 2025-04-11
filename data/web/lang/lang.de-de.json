@@ -398,7 +398,8 @@
         "allowed_methods": "Access-Control-Allow-Methods",
         "allowed_origins": "Access-Control-Allow-Origin",
         "logo_dark_label": "Invertiert für den Darkmode",
-        "logo_normal_label": "Normal"
+        "logo_normal_label": "Normal",
+        "user_link": "Nutzer-Link"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -806,9 +807,9 @@
         "forgot_password": "> Passwort vergessen?",
         "invalid_pass_reset_token": "Der Rücksetz-Token für das Passwort ist ungültig oder abgelaufen.<br>Bitte fordern Sie einen neuen Link zur Passwortwiederherstellung an.",
         "login": "Anmelden",
-        "login_user": "Benutzer Anmelden",
-        "login_dadmin": "Domain-Administrator Anmelden",
-        "login_admin": "Administrator Anmelden",
+        "login_user": "Anmeldung als Benutzer",
+        "login_dadmin": "Anmeldung als Domain-Administrator",
+        "login_admin": "Anmeldung als Administrator",
         "mobileconfig_info": "Bitte als Mailbox-Benutzer einloggen, um das Verbindungsprofil herunterzuladen.",
         "new_password": "Neues Passwort",
         "new_password_confirm": "Neues Passwort bestätigen",
@@ -991,7 +992,8 @@
         "syncjob_EXIT_TLS_FAILURE": "Problem mit verschlüsselter Verbindung",
         "syncjob_EXIT_AUTHENTICATION_FAILURE": "Authentifizierungsproblem",
         "syncjob_EXIT_OVERQUOTA": "Ziel Mailbox ist über dem Limit",
-        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Kann keine Verbindung zum Zielserver herstellen"
+        "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Kann keine Verbindung zum Zielserver herstellen",
+        "iam": "Identitätsanbieter"
     },
     "oauth2": {
         "access_denied": "Bitte als Mailbox-Nutzer einloggen, um den Zugriff via OAuth2 zu erlauben.",
