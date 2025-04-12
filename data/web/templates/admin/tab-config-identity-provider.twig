@@ -64,10 +64,42 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
-              <label class="control-label" for="iam_keycloak_redirecturl">{{ lang.admin.iam_redirect_url }}:</label>
+              <label class="control-label">{{ lang.admin.iam_redirect_url }}:</label>
             </div>
             <div class="col-12 col-md-9 col-lg-4">
-              <input type="text" class="form-control" id="iam_keycloak_redirecturl" name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+              <div class="row px-2 align-items-center">
+                <span class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control"  name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+                </span>
+                <div class="col-2 p-0 d-flex">
+                  <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-auto iam_redirect_add_keycloak"><i class="bi bi-plus-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_keycloak_redirect_list">
+            <input type="hidden" name="redirect_url_extra" value="">
+            {% for key, url in iam_settings.redirect_url_extra %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="{{ iam_settings.redirect_url_extra[key] }}">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_keycloak_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_keycloak_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row mb-4">
@@ -274,10 +306,42 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
-              <label class="control-label" for="iam_redirect_url">{{ lang.admin.iam_redirect_url }}:</label>
+              <label class="control-label">{{ lang.admin.iam_redirect_url }}:</label>
             </div>
             <div class="col-12 col-md-9 col-lg-4">
-              <input type="text" class="form-control" id="iam_redirect_url" name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+              <div class="row px-2 align-items-center">
+                <span class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control" name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+                </span>
+                <div class="col-2 p-0 d-flex">
+                  <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-auto iam_redirect_add_generic"><i class="bi bi-plus-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_generic_redirect_list">
+            <input type="hidden" name="redirect_url_extra" value="">
+            {% for key, url in iam_settings.redirect_url_extra %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="{{ iam_settings.redirect_url_extra[key] }}">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_generic_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row px-2">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_generic_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row mb-4">
