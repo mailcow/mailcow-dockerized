@@ -2286,6 +2286,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       foreach($rows as $row){
         switch ($row["key"]) {
+          case "redirect_url_extra":
           case "mappers":
           case "templates":
             $settings[$row["key"]] = json_decode($row["value"]);
@@ -2417,6 +2418,18 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $stmt->execute();
       }
       $pdo->commit();
+
+      // add redirect_url_extra
+      if (isset($_data['redirect_url_extra'])){
+        $_data['redirect_url_extra'] = (!is_array($_data['redirect_url_extra'])) ? array($_data['redirect_url_extra']) : $_data['redirect_url_extra'];
+
+        $redirect_url_extra = array_filter($_data['redirect_url_extra']);
+        $redirect_url_extra = json_encode($redirect_url_extra);
+
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('redirect_url_extra', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $redirect_url_extra);
+        $stmt->execute();
+      }
 
       // add default template
       if (isset($_data['default_template'])) {
@@ -2851,7 +2864,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-redirect":
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc')
         return false;
-      $authUrl = $iam_provider->getAuthorizationUrl();
+      $options = [];
+      if (isset($iam_settings['redirect_url_extra'])) {
+        // check if the current domain is used in an extra redirect URL
+        $targetDomain = strtolower($_SERVER['HTTP_HOST']);
+        foreach ($iam_settings['redirect_url_extra'] as $testUrl) {
+          $testUrlParsed = parse_url($testUrl);
+          if (isset($testUrlParsed['host']) && strtolower($testUrlParsed['host']) == $targetDomain) {
+            $options['redirect_uri'] = $testUrl;
+            break;
+          }
+        }
+      }
+      $authUrl = $iam_provider->getAuthorizationUrl($options);
       $_SESSION['oauth2state'] = $iam_provider->getState();
       return $authUrl;
     break;
