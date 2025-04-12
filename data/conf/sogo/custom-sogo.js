@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var loginForm = document.forms.namedItem("loginForm");
     if (loginForm) {
-        window.location.href = '/user';
+        window.location.href = '/user?sogo';
     }
 });
 // logout function

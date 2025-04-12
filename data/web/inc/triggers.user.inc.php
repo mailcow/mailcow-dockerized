@@ -23,7 +23,13 @@ if ($iam_provider){
     // Check given state against previously stored one to mitigate CSRF attack
     // Received access token in $_GET['code']
     // extract info and verify user
-    identity_provider('verify-sso');
+    if (identity_provider('verify-sso')) {
+      if (isset($_SESSION['redirected_from'])) {
+        header('Location: ' . $_SESSION['redirected_from']);
+        unset($_SESSION['redirected_from']);
+        die();
+      }
+    }
   }
 }
 
@@ -76,7 +82,13 @@ if (isset($_POST["verify_tfa_login"])) {
 
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-        if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+
+        if (isset($_SESSION['redirected_from'])) {
+          $redirected_from = $_SESSION['redirected_from'];
+          unset($_SESSION['redirected_from']);
+          header('Location: ' . $redirected_from);
+          die();
+        } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
           header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
           die();
         } else {
@@ -139,7 +151,12 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+    if (isset($_SESSION['redirected_from'])) {
+      $redirected_from = $_SESSION['redirected_from'];
+      unset($_SESSION['redirected_from']);
+      header('Location: ' . $redirected_from);
+      die();
+    } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
       header("Location: /SOGo/so/{$login_user}");
       die();
     } else {

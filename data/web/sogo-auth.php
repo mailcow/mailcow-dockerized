@@ -69,6 +69,8 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
+  // Save current URL so the user can be redirected back after login
+  $_SESSION['redirected_from'] = $_SERVER['REQUEST_URI'];
   header("Location: /");
   exit;
 }
