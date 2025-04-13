@@ -11,7 +11,9 @@ if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
   $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-  if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+  if (isset($_GET['next'])) {
+    header("Location: " . rawurldecode($_GET['next']));
+  } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
     header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
   } else {
     header("Location: /user");
@@ -42,7 +44,8 @@ $template_data = [
   'oauth2_request' => @$_SESSION['oauth2_request'],
   'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
   'login_delay' => @$_SESSION['ldelay'],
-  'has_iam_sso' => $has_iam_sso
+  'has_iam_sso' => $has_iam_sso,
+  'next_redirect' => @$_GET['next']
 ];
 
 $js_minifier->add('/web/js/site/index.js');

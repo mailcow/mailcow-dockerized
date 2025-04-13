@@ -13,7 +13,8 @@ function mc_logout() {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         body: "logout=1"
-    }).then(() => window.location.href = '/');
+        // Force set next redirect back to SOGo to prevent race condition where sometimes it is set, other times it isn't
+    }).then(() => window.location.href = '/?next=%2Fuser%3Fsogo');
 }
 
 // Custom SOGo JS

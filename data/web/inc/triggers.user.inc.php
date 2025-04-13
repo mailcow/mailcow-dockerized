@@ -24,10 +24,10 @@ if ($iam_provider){
     // Received access token in $_GET['code']
     // extract info and verify user
     if (identity_provider('verify-sso')) {
-      if (isset($_SESSION['redirected_from'])) {
-        header('Location: ' . $_SESSION['redirected_from']);
-        unset($_SESSION['redirected_from']);
-        die();
+      $decoded_state = json_decode(base64_decode($_GET['state']));
+      if (isset($decoded_state->next)) {
+        // Restore next parameter for redirection later
+        $_GET['next'] = $decoded_state->next;
       }
     }
   }
@@ -83,10 +83,8 @@ if (isset($_POST["verify_tfa_login"])) {
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
 
-        if (isset($_SESSION['redirected_from'])) {
-          $redirected_from = $_SESSION['redirected_from'];
-          unset($_SESSION['redirected_from']);
-          header('Location: ' . $redirected_from);
+        if (isset($_GET['next'])) {
+          header("Location: " . rawurldecode($_GET['next']));
           die();
         } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
           header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
@@ -151,10 +149,8 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (isset($_SESSION['redirected_from'])) {
-      $redirected_from = $_SESSION['redirected_from'];
-      unset($_SESSION['redirected_from']);
-      header('Location: ' . $redirected_from);
+    if (isset($_GET['next'])) {
+      header("Location: " . rawurldecode($_GET['next']));
       die();
     } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
       header("Location: /SOGo/so/{$login_user}");

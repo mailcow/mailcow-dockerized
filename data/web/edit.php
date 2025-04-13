@@ -3,8 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 $AuthUsers = array("admin", "domainadmin", "user");
 if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
   // Save current URL so the user can be redirected back after login
-  $_SESSION['redirected_from'] = $_SERVER['REQUEST_URI'];
-  header('Location: /');
+  header('Location: /?next=' . rawurlencode($_SERVER['REQUEST_URI']));
   exit();
 }
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
