@@ -558,7 +558,7 @@ jQuery(function($){
     } else if (table == 'oauth2clientstable') {
       $.each(data, function (i, item) {
         item.action = '<div class="btn-group">' +
-          '<a href="/edit.php?oauth2client=' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="/edit/oauth2client/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-oauth2-client" data-api-url="delete/oauth2-client" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
           '</div>';
         item.scope = "profile";
@@ -573,7 +573,7 @@ jQuery(function($){
         item.action = '<div class="btn-group">' +
           '<a href="/edit/domainadmin/' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
           '<a href="#" data-action="delete_selected" data-id="single-domain-admin" data-api-url="delete/domain-admin" data-item="' + encodeURI(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
-          '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
+          '<a href="/domainadmin/?duallogin=' + encodeURIComponent(item.username) + '" class="btn btn-xs btn-xs-lg btn-xs-third btn-success"><i class="bi bi-person-fill"></i> Login</a>' +
           '</div>';
       });
     } else if (table == 'adminstable') {
