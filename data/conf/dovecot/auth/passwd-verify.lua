@@ -29,13 +29,20 @@ function auth_password_verify(request, password)
     insecure = true
   }
 
-  if c ~= 200 then
+  if c ~= 200 and c ~= 401 then
     dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
     return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream error"
   end
 
-  local api_response = json.decode(table.concat(res))
-  if api_response.success == true then
+  local response_str = table.concat(res)
+  local is_response_valid, response_json = pcall(json.decode, response_str)
+
+  if not is_response_valid then
+    dovecot.i_info("Invalid JSON received: " .. response_str)
+    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Invalid response format"
+  end
+
+  if response_json.success == true then
     return dovecot.auth.PASSDB_RESULT_OK, ""
   end
 
