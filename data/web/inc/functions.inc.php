@@ -1001,6 +1001,7 @@ function edit_user_account($_data) {
       ':password_hashed' => $password_hashed,
       ':username' => $username
     ));
+    $_SESSION['pending_pw_update'] = false;
 
     update_sogo_static_view();
   }

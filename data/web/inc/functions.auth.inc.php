@@ -242,6 +242,7 @@ function user_login($user, $pass, $extra = null){
     return false;
   }
 
+  $row['attributes'] = json_decode($row['attributes'], true);
   switch ($row['authsource']) {
     case 'keycloak':
       // user authsource is keycloak, try using via rest flow
@@ -259,6 +260,10 @@ function user_login($user, $pass, $extra = null){
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           if (empty($row)) {
             return false;
+          }
+
+          if (intval($row['attributes']['force_pw_update']) == 1) {
+            $_SESSION['pending_pw_update'] = true;
           }
 
           // check for tfa authenticators
@@ -313,6 +318,10 @@ function user_login($user, $pass, $extra = null){
           return false;
         }
 
+        if (intval($row['attributes']['force_pw_update']) == 1) {
+          $_SESSION['pending_pw_update'] = true;
+        }
+
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -351,6 +360,11 @@ function user_login($user, $pass, $extra = null){
       }
       // verify password
       if (verify_hash($row['password'], $pass) !== false) {
+
+        if (intval($row['attributes']['force_pw_update']) == 1) {
+          $_SESSION['pending_pw_update'] = true;
+        }
+
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {

@@ -94,7 +94,8 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
         !empty($email) &&
         filter_var($email, FILTER_VALIDATE_EMAIL) &&
         is_array($_SESSION[$session_var_user_allowed]) &&
-        in_array($email, $_SESSION[$session_var_user_allowed])
+        in_array($email, $_SESSION[$session_var_user_allowed]) &&
+        !$_SESSION['pending_pw_update']
     ) {
       $username = $email;
       $password = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
