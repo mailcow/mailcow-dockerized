@@ -76,7 +76,7 @@ if (isset($_POST["verify_tfa_login"])) {
 
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-        if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+        if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
           header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
           die();
         } else {
@@ -139,7 +139,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
       header("Location: /SOGo/so/{$login_user}");
       die();
     } else {
