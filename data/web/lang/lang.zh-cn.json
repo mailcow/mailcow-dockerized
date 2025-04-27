@@ -108,7 +108,8 @@
         "timeout2": "本地主机连接超时时间",
         "username": "用户名",
         "validate": "验证",
-        "validation_success": "验证成功"
+        "validation_success": "验证成功",
+        "dry": "模拟同步（Dry run）"
     },
     "admin": {
         "access": "权限管理",
@@ -994,7 +995,7 @@
         "neutral_danger": "无危险等级",
         "notified": "已发送通知",
         "qhandler_success": "已成功向系统发送请求，现在你可以关闭这个窗口了。",
-        "qid": "Rspamd QID",
+        "qid": "Rspamd 队列ID（QID）",
         "qinfo": "隔离系统会把已被拒绝接收的邮件以及作为拷贝发送到垃圾箱的邮件保存到数据库中 (发件人<em>不</em>会知道)。\r\n  <br>\"学习为垃圾并删除\" 会根据贝叶斯定理将消息作为垃圾学习并计算其模糊特征以拒绝未来收到相似消息。\r\n  <br>请注意，这取决于你的系统资源，学习多个消息可能会花费较长时间。<br>黑名单中项目会被隔离系统排除。",
         "qitem": "隔离项目",
         "quarantine": "隔离",
