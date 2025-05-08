@@ -239,21 +239,39 @@ def watch():
         for rule_id, rule_regex in f2bregex.items():
           if item['data'] and item['type'] == 'message':
             try:
-              result = re.search(rule_regex, item['data'])
-            except re.error:
-              result = False
-            if result:
-              addr = result.group(1)
-              ip = ipaddress.ip_address(addr)
-              if ip.is_private or ip.is_loopback:
-                continue
-              logger.logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
-              ban(addr)
+              # Try to find a valid IP address in the message
+              ip_match = re.search(r'\[([0-9a-f\.:]+)\]', item['data'])
+              if ip_match:
+                addr = ip_match.group(1)
+                try:
+                  ip = ipaddress.ip_address(addr)
+                  if ip.is_private or ip.is_loopback:
+                    continue
+                  # Check if this IP matches our rule
+                  result = re.search(rule_regex, item['data'])
+                  if result:
+                    logger.logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+                    ban(addr)
+                except ValueError:
+                  # Not a valid IP address, continue to next message
+                  continue
+            except Exception as ex:
+              logger.logWarn('Error processing message: %s - %s' % (item['data'], ex))
+              continue
     except Exception as ex:
       logger.logWarn('Error reading log line from pubsub: %s' % ex)
-      pubsub = None
-      quit_now = True
-      exit_code = 2
+      # Don't exit, just try to reconnect
+      try:
+        if pubsub:
+          pubsub.unsubscribe()
+        time.sleep(5)
+        pubsub = r.pubsub()
+        pubsub.subscribe('F2B_CHANNEL')
+      except Exception as ex2:
+        logger.logWarn('Error reconnecting to pubsub: %s' % ex2)
+        pubsub = None
+        quit_now = True
+        exit_code = 2
 
 def snat4(snat_target):
   global lock
