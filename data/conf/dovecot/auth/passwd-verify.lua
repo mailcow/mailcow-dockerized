@@ -29,9 +29,12 @@ function auth_password_verify(request, password)
     insecure = true
   }
 
+  -- Returning PASSDB_RESULT_PASSWORD_MISMATCH will reset the user's auth cache entry.
+  -- Returning PASSDB_RESULT_INTERNAL_FAILURE keeps the existing cache entry,
+  -- even if the TTL has expired. Useful to avoid cache eviction during backend issues.
   if c ~= 200 and c ~= 401 then
     dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
-    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream error"
+    return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Upstream error"
   end
 
   local response_str = table.concat(res)
@@ -39,7 +42,7 @@ function auth_password_verify(request, password)
 
   if not is_response_valid then
     dovecot.i_info("Invalid JSON received: " .. response_str)
-    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Invalid response format"
+    return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Invalid response format"
   end
 
   if response_json.success == true then
