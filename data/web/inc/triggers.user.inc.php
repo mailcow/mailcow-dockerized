@@ -86,7 +86,10 @@ if (isset($_POST["verify_tfa_login"])) {
         if (isset($_GET['next'])) {
           header("Location: " . rawurldecode($_GET['next']));
           die();
-        } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+        } else if (intval($user_details['attributes']['sogo_access']) == 1 &&
+            intval($user_details['attributes']['force_pw_update']) != 1 &&
+            getenv('SKIP_SOGO') != "y" &&
+            !$is_dual) {
           header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
           die();
         } else {
@@ -152,7 +155,10 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     if (isset($_GET['next'])) {
       header("Location: " . rawurldecode($_GET['next']));
       die();
-    } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+    } else if (intval($user_details['attributes']['sogo_access']) == 1 &&
+        intval($user_details['attributes']['force_pw_update']) != 1 &&
+        getenv('SKIP_SOGO') != "y" &&
+        !$is_dual) {
       header("Location: /SOGo/so/{$login_user}");
       die();
     } else {

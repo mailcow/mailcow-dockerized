@@ -169,7 +169,7 @@ function quarantine($_action, $_data = null) {
           }
         }
         elseif ($release_format == 'raw') {
-          $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/', 'X-Pre-Release-Spam-Flag $1', $detail_row['msg']);
+          $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $detail_row['msg']);
           $postfix_talk = array(
             array('220', 'HELO quarantine' . chr(10)),
             array('250', 'MAIL FROM: ' . $sender . chr(10)),
@@ -464,7 +464,7 @@ function quarantine($_action, $_data = null) {
             }
           }
           elseif ($release_format == 'raw') {
-            $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/', 'X-Pre-Release-Spam-Flag $1', $row['msg']);
+            $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $row['msg']);
             $postfix_talk = array(
               array('220', 'HELO quarantine' . chr(10)),
               array('250', 'MAIL FROM: ' . $sender . chr(10)),

@@ -32,6 +32,13 @@ import time
 import magic
 import re
 
+skip_olefy = os.getenv('SKIP_OLEFY', '')
+
+if skip_olefy.lower() in ['yes', 'y']:
+    print("SKIP_OLEFY=y, skipping Olefy...")
+    time.sleep(365 * 24 * 60 * 60)
+    sys.exit(0)
+
 # merge variables from /etc/olefy.conf and the defaults
 olefy_listen_addr_string = os.getenv('OLEFY_BINDADDRESS', '127.0.0.1,::1')
 olefy_listen_port = int(os.getenv('OLEFY_BINDPORT', '10050'))
@@ -113,7 +120,7 @@ def oletools( stream, tmp_file_name, lid ):
         out = bytes(out.decode('utf-8', 'ignore').replace('  ', ' ').replace('\t', '').replace('\n', '').replace('XLMMacroDeobfuscator: pywin32 is not installed (only is required if you want to use MS Excel)', ''), encoding="utf-8")
         failed = False
         if out.__len__() < 30:
-            logger.error('{} olevba returned <30 chars - rc: {!r}, response: {!r}, error: {!r}'.format(lid,cmd_tmp.returncode, 
+            logger.error('{} olevba returned <30 chars - rc: {!r}, response: {!r}, error: {!r}'.format(lid,cmd_tmp.returncode,
                 out.decode('utf-8', 'ignore'), err.decode('utf-8', 'ignore')))
             out = b'[ { "error": "Unhandled error - too short olevba response" } ]'
             failed = True

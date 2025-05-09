@@ -5847,6 +5847,7 @@ paths:
                           client_id: "mailcow_client"
                           client_secret: "*"
                           redirect_url: "https://mail.mailcow.tld"
+                          redirect_url_extra: ["https://extramail.mailcow.tld"]
                           version: "26.1.3"
                           default_template: "Default"
                           mappers:
@@ -5900,6 +5901,9 @@ paths:
                     redirect_url:
                       description: The redirect URL that OIDC Provider will use after authentication. Required if `authsource` is keycloak or generic-oidc.
                       type: string
+                    redirect_url_extra:
+                      description: Additional redirect URLs that OIDC Provider can use after authentication if valid.
+                      type: array
                     version:
                       description: Specifies the Keycloak version. Required if `authsource` is keycloak.
                       type: string
@@ -5990,6 +5994,7 @@ paths:
                     client_id: "mailcow_client"
                     client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
                     redirect_url: "https://mail.mailcow.tld"
+                    redirect_url_extra: ["https://extramail.mailcow.tld"]
                     version: "26.1.3"
                     default_template: "Default"
                     mappers: ["small_mbox", "medium_mbox"]
@@ -6034,6 +6039,7 @@ paths:
                     client_id: "mailcow_client"
                     client_secret: "Xy7GdPqvJ9m3R8sT2LkVZ5W1oNbCaYQf"
                     redirect_url: "https://mail.mailcow.tld"
+                    redirect_url_extra: ["https://extramail.mailcow.tld"]
                     client_scopes: "openid profile email mailcow_template"
                     default_template: "Default"
                     mappers: ["small_mbox", "medium_mbox"]

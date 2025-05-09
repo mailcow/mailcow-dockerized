@@ -79,7 +79,9 @@ if ($isSOGoRequest) {
   }
 }
 if ($result === false){
-  $result = apppass_login($post['username'], $post['password'], array($post['service'] => true), array(
+  // If it's a SOGo Request, don't check for protocol access
+  $service = ($isSOGoRequest) ? false : array($post['service'] => true);
+  $result = apppass_login($post['username'], $post['password'], $service, array(
     'is_internal' => true,
     'remote_addr' => $post['real_rip']
   ));

@@ -13,7 +13,7 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
   if (isset($_GET['next'])) {
     header("Location: " . rawurldecode($_GET['next']));
-  } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual) {
+  } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
     header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
   } else {
     header("Location: /user");
