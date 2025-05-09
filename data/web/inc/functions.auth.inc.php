@@ -655,8 +655,8 @@ function ldap_mbox_login($user, $pass, $extra = null){
 
   // check if matching attribute exist
   if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
-    if (!empty($iam_settings['default_tempalte'])) {
-      $mbox_template = $iam_settings['default_tempalte'];
+    if (!empty($iam_settings['default_template'])) {
+      $mbox_template = $iam_settings['default_template'];
     } else {
       $_SESSION['return'][] =  array(
         'type' => 'danger',
