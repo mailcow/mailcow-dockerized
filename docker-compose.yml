@@ -1,6 +1,6 @@
 services:
 
-    unbound-mailcow:
+    unbound:
       image: ghcr.io/mailcow/unbound:1.24
       environment:
         - TZ=${TZ}
@@ -14,13 +14,13 @@ services:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
           aliases:
-            - unbound
+            - unbound-mailcow
 
-    mysql-mailcow:
+    mysql:
       image: mariadb:10.11
       depends_on:
-        - unbound-mailcow
-        - netfilter-mailcow
+        - unbound
+        - netfilter
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -39,9 +39,9 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - mysql
+            - mysql-mailcow
 
-    redis-mailcow:
+    redis:
       image: redis:7.4.2-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
@@ -49,7 +49,7 @@ services:
         - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
       restart: always
       depends_on:
-        - netfilter-mailcow
+        - netfilter
       ports:
         - "${REDIS_PORT:-127.0.0.1:7654}:6379"
       environment:
@@ -62,13 +62,13 @@ services:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
-            - redis
+            - redis-mailcow
 
-    clamd-mailcow:
+    clamd:
       image: ghcr.io/mailcow/clamd:1.70
       restart: always
       depends_on:
-        unbound-mailcow:
+        unbound:
           condition: service_healthy
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -81,14 +81,14 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - clamd
+            - clamd-mailcow
 
-    rspamd-mailcow:
+    rspamd:
       image: ghcr.io/mailcow/rspamd:2.1
       stop_grace_period: 30s
       depends_on:
-        - dovecot-mailcow
-        - clamd-mailcow
+        - dovecot
+        - clamd
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -114,13 +114,13 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - rspamd
+            - rspamd-mailcow
 
-    php-fpm-mailcow:
+    php-fpm:
       image: ghcr.io/mailcow/phpfpm:1.93
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
-        - redis-mailcow
+        - redis
       volumes:
         - ./data/hooks/phpfpm:/hooks:Z
         - ./data/web:/web:z
@@ -197,9 +197,9 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - phpfpm
+            - phpfpm-mailcow
 
-    sogo-mailcow:
+    sogo:
       image: ghcr.io/mailcow/sogo:1.133
       environment:
         - DBNAME=${DBNAME}
@@ -248,14 +248,14 @@ services:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
           aliases:
-            - sogo
+            - sogo-mailcow
 
-    dovecot-mailcow:
+    dovecot:
       image: ghcr.io/mailcow/dovecot:2.33
       depends_on:
-        - mysql-mailcow
-        - netfilter-mailcow
-        - redis-mailcow
+        - mysql
+        - netfilter
+        - redis
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -335,14 +335,14 @@ services:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
           aliases:
-            - dovecot
+            - dovecot-mailcow
 
-    postfix-mailcow:
+    postfix:
       image: ghcr.io/mailcow/postfix:1.80
       depends_on:
-        mysql-mailcow:
+        mysql:
           condition: service_started
-        unbound-mailcow:
+        unbound:
           condition: service_healthy
       volumes:
         - ./data/hooks/postfix:/hooks:Z
@@ -376,9 +376,9 @@ services:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
           aliases:
-            - postfix
+            - postfix-mailcow
 
-    memcached-mailcow:
+    memcached:
       image: memcached:alpine
       restart: always
       environment:
@@ -386,14 +386,14 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - memcached
+            - memcached-mailcow
 
-    nginx-mailcow:
+    nginx:
       depends_on:
-        - redis-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - rspamd-mailcow
+        - redis
+        - php-fpm
+        - sogo
+        - rspamd
       image: ghcr.io/mailcow/nginx:1.03
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -432,13 +432,13 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - nginx
+            - nginx-mailcow
 
-    acme-mailcow:
+    acme:
       depends_on:
-        nginx-mailcow:
+        nginx:
           condition: service_started
-        unbound-mailcow:
+        unbound:
           condition: service_healthy
       image: ghcr.io/mailcow/acme:1.92
       dns:
@@ -475,9 +475,9 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - acme
+            - acme-mailcow
 
-    netfilter-mailcow:
+    netfilter:
       image: ghcr.io/mailcow/netfilter:1.61
       stop_grace_period: 30s
       restart: always
@@ -497,7 +497,7 @@ services:
       volumes:
         - /lib/modules:/lib/modules:ro
 
-    watchdog-mailcow:
+    watchdog:
       image: ghcr.io/mailcow/watchdog:2.07
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -510,11 +510,11 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
       depends_on:
-        - postfix-mailcow
-        - dovecot-mailcow
-        - mysql-mailcow
-        - acme-mailcow
-        - redis-mailcow
+        - postfix
+        - dovecot
+        - mysql
+        - acme
+        - redis
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -568,9 +568,9 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - watchdog
+            - watchdog-mailcow
 
-    dockerapi-mailcow:
+    dockerapi:
       image: ghcr.io/mailcow/dockerapi:2.11
       security_opt:
         - label=disable
@@ -588,9 +588,9 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - dockerapi
+            - dockerapi-mailcow
 
-    olefy-mailcow:
+    olefy:
       image: ghcr.io/mailcow/olefy:1.14
       restart: always
       environment:
@@ -603,13 +603,12 @@ services:
         - OLEFY_LOGLVL=20
         - OLEFY_MINLENGTH=500
         - OLEFY_DEL_TMP=1
-        - SKIP_OLEFY=${SKIP_OLEFY:-n}
       networks:
         mailcow-network:
           aliases:
-            - olefy
+            - olefy-mailcow
 
-    ofelia-mailcow:
+    ofelia:
       image: mcuadros/ofelia:latest
       restart: always
       command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
@@ -617,8 +616,8 @@ services:
         - TZ=${TZ}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
       depends_on:
-        - sogo-mailcow
-        - dovecot-mailcow
+        - sogo
+        - dovecot
       labels:
         ofelia.enabled: "true"
       security_opt:
@@ -628,25 +627,25 @@ services:
       networks:
         mailcow-network:
           aliases:
-            - ofelia
+            - ofelia-mailcow
 
-    ipv6nat-mailcow:
+    ipv6nat:
       depends_on:
-        - unbound-mailcow
-        - mysql-mailcow
-        - redis-mailcow
-        - clamd-mailcow
-        - rspamd-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - dovecot-mailcow
-        - postfix-mailcow
-        - memcached-mailcow
-        - nginx-mailcow
-        - acme-mailcow
-        - netfilter-mailcow
-        - watchdog-mailcow
-        - dockerapi-mailcow
+        - unbound
+        - mysql
+        - redis
+        - clamd
+        - rspamd
+        - php-fpm
+        - sogo
+        - dovecot
+        - postfix
+        - memcached
+        - nginx
+        - acme
+        - netfilter
+        - watchdog
+        - dockerapi
       environment:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
