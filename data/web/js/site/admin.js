@@ -789,6 +789,18 @@ jQuery(function($){
   $('.iam_ldap_rolemap_del').click(async function(e){
     deleteAttributeMappingRow(this, e);
   });
+  $('.iam_redirect_add_keycloak').click(async function(e){
+    addRedirectUrlRow('#iam_keycloak_redirect_list', '.iam_keycloak_redirect_del', e);
+  });
+  $('.iam_redirect_add_generic').click(async function(e){
+    addRedirectUrlRow('#iam_generic_redirect_list', '.iam_generic_redirect_del', e);
+  });
+  $('.iam_keycloak_redirect_del').click(async function(e){
+    deleteRedirectUrlRow(this, e);
+  });
+  $('.iam_generic_redirect_del').click(async function(e){
+    deleteRedirectUrlRow(this, e);
+  });
   // selecting identity provider
   $('#iam_provider').on('change', function(){
     // toggle password fields
@@ -831,6 +843,24 @@ jQuery(function($){
     if(!$(elem).parent().parent().parent().find('select').prop('required'))
       return true;
     if ($(elem).parent().parent().parent().parent().children().length > 1)
+      $(elem).parent().parent().parent().remove();
+  }
+  function addRedirectUrlRow(list_id, del_class, e) {
+    e.preventDefault();
+
+    var parent = $(list_id)
+    $(parent).children().last().clone().appendTo(parent);
+    var newChild = $(parent).children().last();
+    $(newChild).find('input').val('');
+
+    $(del_class).off('click');
+    $(del_class).click(async function(e){
+      deleteRedirectUrlRow(this, e);
+    });
+  }
+  function deleteRedirectUrlRow(elem, e) {
+    e.preventDefault();
+    if ($(elem).parent().parent().parent().parent().children().length > 2)
       $(elem).parent().parent().parent().remove();
   }
 });
