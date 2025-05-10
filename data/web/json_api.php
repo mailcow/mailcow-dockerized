@@ -1976,6 +1976,9 @@ if (isset($_GET['query'])) {
         case "ip_check":
           process_edit_return(customize('edit', 'ip_check', $attr));
         break;
+        case "custom_login":
+          process_edit_return(customize('edit', 'custom_login', $attr));
+        break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
             process_edit_return(domain_admin('edit', $attr));

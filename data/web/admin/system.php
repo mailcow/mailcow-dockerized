@@ -125,6 +125,7 @@ $template_data = [
   'logo_specs' => customize('get', 'main_logo_specs'),
   'logo_dark_specs' => customize('get', 'main_logo_dark_specs'),
   'ip_check' => customize('get', 'ip_check'),
+  'custom_login' => customize('get', 'custom_login'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,

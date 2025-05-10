@@ -22,6 +22,7 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 $template = 'domainadmin_index.twig';
 $template_data = [
   'login_delay' => @$_SESSION['ldelay'],
+  'custom_login' => customize('get', 'custom_login'),
 ];
 
 $js_minifier->add('/web/js/site/index.js');

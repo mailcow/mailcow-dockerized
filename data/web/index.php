@@ -35,9 +35,10 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
 
 $has_iam_sso = false;
 if ($iam_provider){
-  $has_iam_sso = identity_provider("get-redirect") ? true : false;
+  $iam_redirect_url = identity_provider("get-redirect");
+  $has_iam_sso = $iam_redirect_url ? true : false;
 }
-
+$custom_login = customize('get', 'custom_login');
 
 $template = 'user_index.twig';
 $template_data = [
@@ -45,7 +46,8 @@ $template_data = [
   'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
   'login_delay' => @$_SESSION['ldelay'],
   'has_iam_sso' => $has_iam_sso,
-  'next_redirect' => @$_GET['next']
+  'next_redirect' => @$_GET['next'],
+  'custom_login' => $custom_login,
 ];
 
 $js_minifier->add('/web/js/site/index.js');
