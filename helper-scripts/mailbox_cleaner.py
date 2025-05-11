@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 This script cleans up old messages from specified mailboxes (e.g., Trash, Junk)
-in a Mailcow environment. It can process a single user or all users, and it
+in a mailcow environment. It can process a single user or all users, and it
 supports dry-run mode.
 
 Ideally, this script should be run daily via cron.
@@ -53,7 +53,7 @@ def main() -> None:
     Main function to parse arguments and execute the cleanup process.
     """
     parser = argparse.ArgumentParser(
-        description="Clean up old messages from specified mailboxes in a Mailcow environment.",
+        description="Clean up old messages from specified mailboxes in a mailcow environment.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     group = parser.add_mutually_exclusive_group(required=True)
@@ -75,7 +75,7 @@ def main() -> None:
 
     if not os.path.isdir(args.mailcow_directory):
         raise FileNotFoundError(
-            f"Mailcow directory '{args.mailcow_directory}' does not exist or is not a directory.")
+            f"mailcow directory '{args.mailcow_directory}' does not exist or is not a directory.")
     # If --all is specified, get all users
     if args.all:
         doveadm_output = _run_doveadm_command(args.mailcow_directory, None, ["user", "*"])
