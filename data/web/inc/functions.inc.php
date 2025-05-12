@@ -2294,6 +2294,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           break;
           case "use_ssl":
           case "use_tls":
+          case "login_provisioning":
           case "ignore_ssl_errors":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
@@ -2301,6 +2302,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             $settings[$row["key"]] = $row["value"];
           break;
         }
+      }
+      // set login_provisioning if not exists
+      if (!array_key_exists('login_provisioning', $settings)) {
+        $settings['login_provisioning'] = 1;
       }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
@@ -2366,7 +2371,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
-      $_data['ignore_ssl_error']  = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
+      $_data['ignore_ssl_error']    = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
+      $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
@@ -2375,14 +2381,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error');
+          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
-          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error');
+          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "ldap":
           $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
@@ -2396,7 +2402,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error');
+          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning');
         break;
       }
 
@@ -2764,6 +2770,16 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           'msg' => array('logged_in_as', $_SESSION['mailcow_cc_username'])
         );
         return true;
+      }
+
+      // user doesn't exist, check if login provisioning is enabled
+      if (!$iam_settings['login_provisioning']){
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, "Auto-create users on login is deactivated"),
+          'msg' => 'login_failed'
+        );
+        return false;
       }
 
       if (empty($iam_settings['mappers']) || empty($user_template) || $mapper_key === false){
