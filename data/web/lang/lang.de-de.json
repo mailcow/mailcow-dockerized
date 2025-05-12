@@ -227,6 +227,7 @@
         "iam_host": "Host",
         "iam_host_info": "Gib einen oder mehrere LDAP-Hosts ein, getrennt durch Kommas.",
         "iam_import_users": "Importiere Benutzer",
+        "iam_login_provisioning": "Benutzer beim Login erstellen",
         "iam_mapping": "Attribut Mapping",
         "iam_bindpass": "Bind Passwort",
         "iam_periodic_full_sync": "Vollsynchronisation",
