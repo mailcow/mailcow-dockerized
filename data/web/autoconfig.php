@@ -85,7 +85,7 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
 
-      <enable visiturl="https://<?=$mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/admin.php">
+      <enable visiturl="https://<?=$mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/admin">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
          <instruction lang="de">Sollten Sie das Ihnen durch den Administrator vergebene Passwort noch nicht geändert haben, empfehlen wir dies nun zu tun. Auch ein altes Passwort sollte aus Sicherheitsgründen geändert werden.</instruction>
       </enable>
