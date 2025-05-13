@@ -388,8 +388,8 @@ function customize($_action, $_item, $_data = null) {
         break;
         case 'custom_login':
           try {
-            $custom_login = ($custom_login = $redis->get('CUSTOM_LOGIN')) ? $custom_login : array();
-            return json_decode($custom_login, true);
+            $custom_login = $redis->get('CUSTOM_LOGIN');
+            return $custom_login ? json_decode($custom_login, true) : array();
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
