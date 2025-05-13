@@ -84,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.1
+      image: ghcr.io/mailcow/rspamd:2.2
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -176,6 +176,7 @@ services:
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
         - SKIP_FTS=${SKIP_FTS:-y}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - SKIP_OLEFY=${SKIP_OLEFY:-n}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MASTER=${MASTER:-y}
@@ -497,7 +498,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.07
+      image: ghcr.io/mailcow/watchdog:2.08
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -538,6 +539,7 @@ services:
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
         - CHECK_UNBOUND=${CHECK_UNBOUND:-1}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - SKIP_OLEFY=${SKIP_OLEFY:-n}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - HTTPS_PORT=${HTTPS_PORT:-443}
@@ -589,7 +591,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.14
+      image: ghcr.io/mailcow/olefy:1.15
       restart: always
       environment:
         - TZ=${TZ}
@@ -601,6 +603,7 @@ services:
         - OLEFY_LOGLVL=20
         - OLEFY_MINLENGTH=500
         - OLEFY_DEL_TMP=1
+        - SKIP_OLEFY=${SKIP_OLEFY:-n}
       networks:
         mailcow-network:
           aliases:
