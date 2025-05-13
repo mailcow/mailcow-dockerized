@@ -242,6 +242,7 @@ function user_login($user, $pass, $extra = null){
     return false;
   }
 
+  $row['attributes'] = json_decode($row['attributes'], true);
   switch ($row['authsource']) {
     case 'keycloak':
       // user authsource is keycloak, try using via rest flow
@@ -351,6 +352,11 @@ function user_login($user, $pass, $extra = null){
       }
       // verify password
       if (verify_hash($row['password'], $pass) !== false) {
+
+        if (intval($row['attributes']['force_pw_update']) == 1) {
+          $_SESSION['pending_pw_update'] = true;
+        }
+
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -471,6 +477,9 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     }
     return false;
   }
+  if (!$iam_provider) {
+    return false;
+  }
 
   // get access_token for service account of mailcow client
   $admin_token = identity_provider("get-keycloak-admin-token");
@@ -540,6 +549,17 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     return 'user';
   }
 
+  // check if login provisioning is enabled before creating user
+  if (!$iam_settings['login_provisioning']){
+    if (!$is_internal){
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, "Auto-create users on login is deactivated"),
+        'msg' => 'login_failed'
+      );
+    }
+    return false;
+  }
   // check if matching attribute exist
   if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
     if (!empty($iam_settings['default_template'])) {
@@ -653,10 +673,21 @@ function ldap_mbox_login($user, $pass, $extra = null){
     return 'user';
   }
 
+  // check if login provisioning is enabled before creating user
+  if (!$iam_settings['login_provisioning']){
+    if (!$is_internal){
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, "Auto-create users on login is deactivated"),
+        'msg' => 'login_failed'
+      );
+    }
+    return false;
+  }
   // check if matching attribute exist
   if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
-    if (!empty($iam_settings['default_tempalte'])) {
-      $mbox_template = $iam_settings['default_tempalte'];
+    if (!empty($iam_settings['default_template'])) {
+      $mbox_template = $iam_settings['default_template'];
     } else {
       $_SESSION['return'][] =  array(
         'type' => 'danger',

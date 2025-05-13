@@ -994,6 +994,7 @@ PID=$!
 echo "Spawned cert_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
+if [[ "${SKIP_OLEFY}" =~ ^([nN][oO]|[nN])+$ ]]; then
 (
 while true; do
   if ! olefy_checks; then
@@ -1005,6 +1006,7 @@ done
 PID=$!
 echo "Spawned olefy_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
+fi
 
 (
 while true; do

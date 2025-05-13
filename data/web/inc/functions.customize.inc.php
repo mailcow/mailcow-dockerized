@@ -204,6 +204,35 @@ function customize($_action, $_item, $_data = null) {
             'msg' => 'ip_check_opt_in_modified'
           );
         break;
+        case 'custom_login':
+          $hide_user_quicklink        = ($_data['hide_user_quicklink'] == "1") ? 1 : 0;
+          $hide_domainadmin_quicklink = ($_data['hide_domainadmin_quicklink'] == "1") ? 1 : 0;
+          $hide_admin_quicklink       = ($_data['hide_admin_quicklink'] == "1") ? 1 : 0;
+          $force_sso                  = ($_data['force_sso'] == "1") ? 1 : 0;
+
+          $custom_login = array(
+            "hide_user_quicklink" => $hide_user_quicklink,
+            "hide_domainadmin_quicklink" => $hide_domainadmin_quicklink,
+            "hide_admin_quicklink" => $hide_admin_quicklink,
+            "force_sso" => $force_sso,
+          );
+          try {
+            $redis->set('CUSTOM_LOGIN', json_encode($custom_login));
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_item, $_data),
+            'msg' => 'custom_login_modified'
+          );
+        break;
       }
     break;
     case 'delete':
@@ -347,6 +376,20 @@ function customize($_action, $_item, $_data = null) {
           try {
             $ip_check = ($ip_check = $redis->get('IP_CHECK')) ? $ip_check : 0;
             return $ip_check;
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+        break;
+        case 'custom_login':
+          try {
+            $custom_login = ($custom_login = $redis->get('CUSTOM_LOGIN')) ? $custom_login : array();
+            return json_decode($custom_login, true);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
