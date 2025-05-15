@@ -1688,6 +1688,7 @@ paths:
                         - transport
                         - add
                         - active: "1"
+                          is_mx_based: "0"
                           destination: example2.org
                           nexthop: "host:25"
                           password: supersecurepw
@@ -1716,7 +1717,7 @@ paths:
           headers: {}
       tags:
         - Routing
-      description: Using this endpoint you can create Sender-Dependent Transports.
+      description: Using this endpoint you can create Transport Maps.
       operationId: Create Transport Maps
       requestBody:
         content:
@@ -1724,6 +1725,7 @@ paths:
             schema:
               example:
                 active: "1"
+                is_mx_based: "0"
                 destination: example.org
                 nexthop: "host:25"
                 password: supersecurepw
@@ -1731,6 +1733,9 @@ paths:
               properties:
                 active:
                   description: 1 for a active transport map 0 for a disabled transport map
+                  type: number
+                is_mx_based:
+                  description: Match destination using MX records (use a regex like `.*\.google\.com` to route all destinations with MX matching `*google.com`)
                   type: number
                 destination:
                   type: string
@@ -3937,6 +3942,85 @@ paths:
                   type: object
               type: object
       summary: Update mailbox ACL
+  /api/v1/edit/transport:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - transport
+                        - edit
+                        - id: ["1"]
+                          active: "1"
+                          is_mx_based: "0"
+                          destination: example2.org
+                          nexthop: "host:25"
+                          password: supersecurepw
+                          username: testuser
+                      msg:
+                        - object_modified
+                        - ""
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Using this endpoint you can edit Transport Maps.
+      operationId: Edit Transport Maps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items: ["1"]
+                attr:
+                  active: "1"
+                  is_mx_based: "0"
+                  destination: "example.org"
+                  nexthop: "host:25"
+                  password: "supersecurepw"
+                  username: "testuser"
+              properties:
+                active:
+                  description: 1 for a active transport map 0 for a disabled transport map
+                  type: number
+                is_mx_based:
+                  description: Match destination using MX records (use a regex like `.*\.google\.com` to route all destinations with MX matching `*google.com`)
+                  type: number
+                destination:
+                  type: string
+                nexthop:
+                  type: string
+                password:
+                  description: the password for the smtp user
+                  type: string
+                username:
+                  description: the username used to authenticate
+                  type: string
+              type: object
+      summary: Edit Transport Maps
   "/api/v1/get/alias/{id}":
     get:
       parameters:
