@@ -387,6 +387,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_domain" role="form">
           <input type="hidden" value="0" name="gal">
+          <input type="hidden" value="0" name="ldap_gal">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="backupmx">
           <input type="hidden" value="0" name="relay_all_recipients">
@@ -457,6 +458,14 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" id="addDomain_gal" value="1" name="gal" checked> {{ lang.edit.gal }}</label>
                 <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addDomain_ldap_gal" value="1" name="ldap_gal"> {{ lang.edit.ldap_gal }}</label>
+                <small class="text-muted">{{ lang.edit.ldap_gal_info|raw }}</small>
               </div>
             </div>
           </div>
@@ -597,6 +606,14 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="gal" checked> {{ lang.add.gal }}</label>
                 <small class="text-muted">{{ lang.add.gal_info|raw }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="ldap_gal"> {{ lang.add.ldap_gal }}</label>
+                <small class="text-muted">{{ lang.add.ldap_gal_info|raw }}</small>
               </div>
             </div>
           </div>
