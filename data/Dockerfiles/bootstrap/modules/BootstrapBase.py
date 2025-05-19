@@ -347,7 +347,7 @@ class BootstrapBase:
         if self.mysql_conn.is_connected():
           print("MySQL is up and ready!")
           break
-      except Error as e:
+      except mysql.connector.Error as e:
         print(f"Waiting for MySQL... ({e})")
         time.sleep(2)
 
@@ -389,6 +389,30 @@ class BootstrapBase:
 
       print(f"Waiting for schema update... (DB: {current_version}, Expected: {expected_version})")
       time.sleep(check_interval)
+
+  def wait_for_host(self, host, retry_interval=1.0, count=1):
+    """
+    Waits for a host to respond to ICMP ping.
+
+    Args:
+      host (str): Hostname or IP to ping.
+      retry_interval (float): Seconds to wait between pings.
+      count (int): Number of ping packets to send per check (default 1).
+    """
+    while True:
+      try:
+        result = subprocess.run(
+          ["ping", "-c", str(count), host],
+          stdout=subprocess.DEVNULL,
+          stderr=subprocess.DEVNULL
+        )
+        if result.returncode == 0:
+          print(f"{host} is reachable via ping.")
+          break
+      except Exception:
+        pass
+      print(f"Waiting for {host}...")
+      time.sleep(retry_interval)
 
   def _get_current_db_version(self):
     """

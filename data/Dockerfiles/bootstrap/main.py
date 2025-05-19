@@ -6,6 +6,8 @@ def main():
 
   if container_name == "sogo-mailcow":
     from modules.BootstrapSogo import Bootstrap
+  elif container_name == "nginx-mailcow":
+    from modules.BootstrapNginx import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)

@@ -41,7 +41,7 @@ http {
         https https;
     }
 
-    {% if HTTP_REDIRECT %}
+    {% if HTTP_REDIRECT|lower in ["y", "yes"] %}
     # HTTP to HTTPS redirect
     server {
         root /web;
@@ -65,16 +65,16 @@ http {
     server {
         listen 127.0.0.1:65510; # sogo-auth verify internal
 
-        {% if not HTTP_REDIRECT %}
-        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
-        {% if not HTTP_REDIRECT %}
-        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
         {%endif%}
 
         http2 on;
@@ -92,16 +92,16 @@ http {
     server {
         listen 127.0.0.1:65510; # sogo-auth verify internal
 
-        {% if not HTTP_REDIRECT %}
-        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
-        {% if not HTTP_REDIRECT %}
-        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
         {%endif%}
 
         http2 on;
@@ -118,7 +118,7 @@ http {
     # rspamd dynmaps:
     server {
         listen 8081;
-        {% if not DISABLE_IPv6 %}
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
         listen [::]:8081;
         {%endif%}
         index index.php index.html;
@@ -184,18 +184,18 @@ http {
 
     include /etc/nginx/conf.d/*.conf;
 
-    {% for cert in valid_cert_dirs %}
+    {% for cert in VALID_CERT_DIRS %}
     server {
-        {% if not HTTP_REDIRECT %}
-        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
-        {% if not HTTP_REDIRECT %}
-        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
         {%endif%}
-        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
         {%endif%}
 
         http2 on;

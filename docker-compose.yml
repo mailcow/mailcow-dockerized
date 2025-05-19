@@ -200,8 +200,9 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.133
+      image: ghcr.io/mailcow/sogo:nightly-16052025
       environment:
+        - CONTAINER_NAME=sogo-mailcow
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -394,10 +395,14 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.03
+      image: ghcr.io/mailcow/nginx:nightly-19052025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=nginx-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
@@ -407,10 +412,10 @@ services:
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
         - DISABLE_IPv6=${DISABLE_IPv6:-n}
         - HTTP_REDIRECT=${HTTP_REDIRECT:-n}
-        - PHPFPMHOST=${PHPFPMHOST:-}
-        - SOGOHOST=${SOGOHOST:-}
-        - RSPAMDHOST=${RSPAMDHOST:-}
-        - REDISHOST=${REDISHOST:-}
+        - PHPFPMHOST=${PHPFPMHOST:-php-fpm-mailcow}
+        - RSPAMDHOST=${RSPAMDHOST:-rspamd-mailcow}
+        - SOGOHOST=${SOGOHOST:-${IPV4_NETWORK:-172.22.1}.248}
+        - REDISHOST=${REDISHOST:-redis-mailcow}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
@@ -424,6 +429,7 @@ services:
         - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
         - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
         - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
