@@ -29,8 +29,8 @@ class Bootstrap(BootstrapBase):
     self.env = Environment(
       loader=FileSystemLoader("./etc/sogo/config_templates"),
       keep_trailing_newline=True,
-      lstrip_blocks=False,
-      trim_blocks=False
+      lstrip_blocks=True,
+      trim_blocks=True
     )
     extra_vars = {
       "SQL_DOMAINS": self.get_domains(),

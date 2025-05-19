@@ -8,8 +8,12 @@ for file in /hooks/*; do
   fi
 done
 
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
+python3 -u /bootstrap/main.py
+BOOTSTRAP_EXIT_CODE=$?
+
+if [ $BOOTSTRAP_EXIT_CODE -ne 0 ]; then
+  echo "Bootstrap failed with exit code $BOOTSTRAP_EXIT_CODE. Not starting Postfix."
+  exit $BOOTSTRAP_EXIT_CODE
 fi
 
 # Fix OpenSSL 3.X TLS1.0, 1.1 support (https://community.mailcow.email/d/4062-hi-all/20)
@@ -21,6 +25,16 @@ if grep -qE '\!SSLv2|\!SSLv3|>=TLSv1(\.[0-1])?$' /opt/postfix/conf/main.cf /opt/
     echo "[tls_system_default]" >> /etc/ssl/openssl.cnf
     echo "MinProtocol = TLSv1" >> /etc/ssl/openssl.cnf
     echo "CipherString = DEFAULT@SECLEVEL=0" >> /etc/ssl/openssl.cnf
-fi  
+fi
 
-exec "$@"
+
+# Start Postfix
+postconf -c /opt/postfix/conf > /dev/null
+if [[ $? != 0 ]]; then
+  echo "Postfix configuration error, refusing to start."
+  exit 1
+else
+  echo "Bootstrap succeeded. Starting Postfix..."
+  postfix -c /opt/postfix/conf start
+  sleep 126144000
+fi

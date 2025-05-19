@@ -1,0 +1,7 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT new_dest FROM recipient_maps
+  WHERE old_dest='%s'
+    AND active='1';

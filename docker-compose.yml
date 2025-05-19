@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:nightly-16052025
+      image: ghcr.io/mailcow/sogo:nightly-19052025
       environment:
         - CONTAINER_NAME=sogo-mailcow
         - DBNAME=${DBNAME}
@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:nightly-19052025
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -354,6 +354,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
+        - CONTAINER_NAME=postfix-mailcow
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}

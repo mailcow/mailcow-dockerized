@@ -1,0 +1,14 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT IF(EXISTS(
+  SELECT 'TLS_ACTIVE' FROM alias
+    LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto
+      WHERE (address='%s'
+        OR address IN (
+          SELECT CONCAT('%u', '@', target_domain) FROM alias_domain
+            WHERE alias_domain='%d'
+        )
+      ) AND JSON_UNQUOTE(JSON_VALUE(attributes, '$.tls_enforce_in')) = '1' AND mailbox.active = '1'
+  ), 'reject_plaintext_session', NULL) AS 'tls_enforce_in';

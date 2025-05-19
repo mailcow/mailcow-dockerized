@@ -1,0 +1,10 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT alias_domain from alias_domain WHERE alias_domain='%s' AND active='1'
+  UNION
+  SELECT domain FROM domain
+    WHERE domain='%s'
+      AND active = '1'
+      AND backupmx = '0'

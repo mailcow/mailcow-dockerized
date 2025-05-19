@@ -231,6 +231,21 @@ class BootstrapBase:
 
     shutil.move(str(src_path), str(dst_path))
 
+  def create_dir(self, path):
+    """
+    Creates a directory if it does not exist.
+
+    If the directory is missing, it will be created along with any necessary parent directories.
+
+    Args:
+      path (str or Path): The directory path to create.
+    """
+
+    dir_path = Path(path)
+    if not dir_path.exists():
+      print(f"Creating directory: {dir_path}")
+      dir_path.mkdir(parents=True, exist_ok=True)
+
   def patch_exists(self, target_file, patch_file, reverse=False):
     """
     Checks whether a patch can be applied (or reversed) to a target file.
@@ -414,6 +429,35 @@ class BootstrapBase:
       print(f"Waiting for {host}...")
       time.sleep(retry_interval)
 
+  def wait_for_dns(self, domain, retry_interval=1, timeout=30):
+    """
+    Waits until the domain resolves via DNS using pure Python (socket).
+
+    Args:
+      domain (str): The domain to resolve.
+      retry_interval (int): Time (seconds) to wait between attempts.
+      timeout (int): Maximum total wait time (seconds).
+
+    Returns:
+      bool: True if resolved, False if timed out.
+    """
+
+    start = time.time()
+    while True:
+      try:
+        socket.gethostbyname(domain)
+        print(f"{domain} is resolving via DNS.")
+        return True
+      except socket.gaierror:
+        pass
+
+      if time.time() - start > timeout:
+        print(f"DNS resolution for {domain} timed out.")
+        return False
+
+      print(f"Waiting for DNS for {domain}...")
+      time.sleep(retry_interval)
+
   def _get_current_db_version(self):
     """
     Fetches the current schema version from the database.
@@ -478,3 +522,41 @@ class BootstrapBase:
 
     allowed_chars = string.ascii_letters + string.digits + "_-"
     return ''.join(secrets.choice(allowed_chars) for _ in range(length))
+
+  def run_command(self, command, check=True, shell=False):
+    """
+    Executes an OS command and optionally checks for errors.
+
+    Args:
+      command (str or list): The command to execute. Can be a string (if shell=True)
+                            or a list of command arguments.
+      check (bool): If True, raises CalledProcessError on failure.
+      shell (bool): If True, runs the command in a shell.
+
+    Returns:
+      subprocess.CompletedProcess: The result of the command execution.
+
+    Logs:
+      Prints the command being run and any error output.
+    """
+
+    try:
+      result = subprocess.run(
+        command,
+        shell=shell,
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+      )
+      if result.stdout:
+        print(result.stdout.strip())
+      if result.stderr:
+        print(result.stderr.strip())
+      return result
+    except subprocess.CalledProcessError as e:
+      print(f"Command failed with exit code {e.returncode}: {e.cmd}")
+      print(e.stderr.strip())
+      if check:
+        raise
+      return e

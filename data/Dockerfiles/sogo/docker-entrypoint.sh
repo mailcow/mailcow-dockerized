@@ -8,7 +8,7 @@ for file in /hooks/*; do
   fi
 done
 
-python3 /bootstrap/main.py
+python3 -u /bootstrap/main.py
 BOOTSTRAP_EXIT_CODE=$?
 
 if [ $BOOTSTRAP_EXIT_CODE -ne 0 ]; then

@@ -1,0 +1,6 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT 'null@localhost' FROM mailbox
+  WHERE kind REGEXP 'location|thing|group' AND username = '%s';
