@@ -2882,6 +2882,18 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc')
         return false;
       $options = [];
+      if (isset($_GET['next'])) {
+        // Store next redirect URL to state for persistence
+        // It is preferable to store it with the OAuth state, because that must be cleared
+        // by mailcow and the OAuth provider. This helps prevent accidental redirects
+        // from stale session data and makes the behavior more intuitive.
+
+        // State must be less than approximately 2000 characters
+        $options['state'] = base64_encode(json_encode(array(
+          'random' => bin2hex(random_bytes(32 /* String length = 32 */ / 2)), // Add some random data to make state less predictable
+          'next' => $_GET['next'],
+        )));
+      }
       if (isset($iam_settings['redirect_url_extra'])) {
         // check if the current domain is used in an extra redirect URL
         $targetDomain = strtolower($_SERVER['HTTP_HOST']);
