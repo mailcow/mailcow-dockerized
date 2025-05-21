@@ -1,7 +1,14 @@
 import os
 import sys
+import signal
+
+def handle_sigterm(signum, frame):
+  print("Received SIGTERM, exiting gracefully...")
+  sys.exit(0)
 
 def main():
+  signal.signal(signal.SIGTERM, handle_sigterm)
+
   container_name = os.getenv("CONTAINER_NAME")
 
   if container_name == "sogo-mailcow":
@@ -12,6 +19,8 @@ def main():
     from modules.BootstrapPostfix import Bootstrap
   elif container_name == "dovecot-mailcow":
     from modules.BootstrapDovecot import Bootstrap
+  elif container_name == "rspamd-mailcow":
+    from modules.BootstrapRspamd import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)

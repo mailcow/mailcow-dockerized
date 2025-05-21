@@ -1,0 +1,16 @@
+{% if SKIP_OLEFY|lower in ['y', 'yes'] %}
+# OLEFY deactivated
+{% else %}
+oletools {
+  # default olefy settings
+  servers = "olefy-mailcow:10055";
+  # needs to be set explicitly for Rspamd < 1.9.5
+  scan_mime_parts = true;
+  # mime-part regex matching in content-type or filename
+  # block all macros
+  extended = true;
+  max_size = 3145728;
+  timeout = 20.0;
+  retransmits = 1;
+}
+{% endif %}

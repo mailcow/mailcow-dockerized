@@ -13,6 +13,7 @@ import redis
 import hashlib
 import json
 from pathlib import Path
+import dns.resolver
 import mysql.connector
 from jinja2 import Environment, FileSystemLoader
 
@@ -394,6 +395,29 @@ class BootstrapBase:
       sock.settimeout(1)
       result = sock.connect_ex((host, port))
       return result == 0
+
+  def resolve_docker_dns_record(self, hostname, record_type="A"):
+    """
+    Resolves DNS A or AAAA records for a given hostname.
+
+    Args:
+        hostname (str): The domain to query.
+        record_type (str): "A" for IPv4, "AAAA" for IPv6. Default is "A".
+
+    Returns:
+        list[str]: A list of resolved IP addresses.
+
+    Raises:
+        Exception: If resolution fails or no results are found.
+    """
+
+    try:
+      resolver = dns.resolver.Resolver()
+      resolver.nameservers = ["127.0.0.11"]
+      answers = resolver.resolve(hostname, record_type)
+      return [answer.to_text() for answer in answers]
+    except Exception as e:
+      raise Exception(f"Failed to resolve {record_type} record for {hostname}: {e}")
 
   def kill_proc(self, process):
     """

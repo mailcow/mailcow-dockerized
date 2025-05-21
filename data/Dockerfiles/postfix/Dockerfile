@@ -43,7 +43,8 @@ RUN groupadd -g 102 postfix \
 RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \
-	redis
+	redis \
+	dnspython
 
 COPY data/Dockerfiles/bootstrap /bootstrap
 COPY data/Dockerfiles/postfix/supervisord.conf /etc/supervisor/supervisord.conf

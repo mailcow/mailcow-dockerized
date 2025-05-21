@@ -118,7 +118,8 @@ RUN addgroup -g 5000 vmail \
 RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \
-  redis
+  redis \
+  dnspython
 
 
 COPY data/Dockerfiles/bootstrap /bootstrap

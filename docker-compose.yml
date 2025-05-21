@@ -84,12 +84,16 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.2
+      image: ghcr.io/mailcow/rspamd:nightly-19052025
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
         - clamd-mailcow
       environment:
+        - CONTAINER_NAME=rspamd-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
@@ -99,6 +103,7 @@ services:
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       volumes:
         - ./data/hooks/rspamd:/hooks:Z
+        - ./data/conf/rspamd/config_templates/:/etc/rspamd/config_templates:z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:Z
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:Z
@@ -106,6 +111,7 @@ services:
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
         - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       hostname: rspamd

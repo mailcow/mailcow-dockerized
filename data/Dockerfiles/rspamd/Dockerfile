@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   netcat-traditional \
   wget \
-  redis-tools \ 
-  procps \ 
+  redis-tools \
+  procps \
   nano \
   lua-cjson \
+  python3 python3-pip \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
   && wget -P /tmp https://rspamd.com/apt-stable/pool/main/r/rspamd/${RSPAMD_VER}~${CODENAME}_${arch}.deb\
   && apt install -y /tmp/${RSPAMD_VER}~${CODENAME}_${arch}.deb \
@@ -29,12 +30,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && echo 'alias ll="ls -la --color"' >> ~/.bashrc \
   && sed -i 's/#analysis_keyword_table > 0/analysis_cat_table.macro_exist == "M"/g' /usr/share/rspamd/lualib/lua_scanners/oletools.lua
 
-COPY settings.conf /etc/rspamd/settings.conf
-COPY set_worker_password.sh /set_worker_password.sh
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN pip install  --break-system-packages \
+  mysql-connector-python \
+  jinja2 \
+  redis \
+  dnspython
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+
+COPY data/Dockerfiles/bootstrap /bootstrap
+COPY data/Dockerfiles/rspamd/settings.conf /etc/rspamd/settings.conf
+COPY data/Dockerfiles/rspamd/set_worker_password.sh /set_worker_password.sh
+COPY data/Dockerfiles/rspamd/docker-entrypoint.sh /docker-entrypoint.sh
+
 
 STOPSIGNAL SIGTERM
-
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
