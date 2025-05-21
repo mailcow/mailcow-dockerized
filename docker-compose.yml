@@ -80,6 +80,7 @@ services:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
+        - ./data/hooks/clamd:/hooks:Z
         - ./data/conf/clamav/:/etc/clamav/:Z
         - mysql-socket-vol-1:/var/run/mysqld/
         - clamd-db-vol-1:/var/lib/clamav
