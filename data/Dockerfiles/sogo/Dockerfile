@@ -45,7 +45,8 @@ RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
 
 RUN pip install  --break-system-packages \
   mysql-connector-python \
-  jinja2
+  jinja2 \
+  redis
 
 
 COPY data/Dockerfiles/bootstrap /bootstrap

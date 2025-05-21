@@ -9,21 +9,25 @@ import time
 import socket
 import signal
 import re
+import redis
+import hashlib
 import json
 from pathlib import Path
 import mysql.connector
 from jinja2 import Environment, FileSystemLoader
 
 class BootstrapBase:
-  def __init__(self, container, db_config, db_table, db_settings):
+  def __init__(self, container, db_config, db_table, db_settings, redis_config):
     self.container = container
     self.db_config = db_config
     self.db_table = db_table
     self.db_settings = db_settings
+    self.redis_config = redis_config
 
     self.env = None
     self.env_vars = None
     self.mysql_conn = None
+    self.redis_conn = None
 
   def render_config(self, template_name, output_path):
     """
@@ -184,16 +188,21 @@ class BootstrapBase:
 
     Args:
         path (str or Path): Path to the file or directory.
-        user (str): Username for new owner.
-        group (str, optional): Group name; defaults to user's group if not provided.
+        user (str or int): Username or UID for new owner.
+        group (str or int, optional): Group name or GID; defaults to user's group if not provided.
         recursive (bool): If True and path is a directory, ownership is applied recursively.
 
     Raises:
         FileNotFoundError: If the path does not exist.
     """
 
-    uid = pwd.getpwnam(user).pw_uid
-    gid = grp.getgrnam(group or user).gr_gid
+    # Resolve UID
+    uid = int(user) if str(user).isdigit() else pwd.getpwnam(user).pw_uid
+    # Resolve GID
+    if group is not None:
+      gid = int(group) if str(group).isdigit() else grp.getgrnam(group).gr_gid
+    else:
+      gid = uid if isinstance(user, int) or str(user).isdigit() else grp.getgrnam(user).gr_gid
 
     p = Path(path)
     if not p.exists():
@@ -230,6 +239,67 @@ class BootstrapBase:
       raise FileExistsError(f"Destination already exists: {dst} (set overwrite=True to overwrite)")
 
     shutil.move(str(src_path), str(dst_path))
+
+  def copy_file(self, src, dst, overwrite=True):
+    """
+    Copies a file from src to dst using shutil.
+
+    Args:
+      src (str or Path): Source file path.
+      dst (str or Path): Destination file path.
+      overwrite (bool): Whether to overwrite the destination if it exists.
+
+    Raises:
+      FileNotFoundError: If the source file doesn't exist.
+      FileExistsError: If the destination exists and overwrite is False.
+      IOError: If the copy operation fails.
+    """
+
+    src_path = Path(src)
+    dst_path = Path(dst)
+
+    if not src_path.is_file():
+      raise FileNotFoundError(f"Source file not found: {src_path}")
+
+    if dst_path.exists() and not overwrite:
+      raise FileExistsError(f"Destination exists: {dst_path}")
+
+    dst_path.parent.mkdir(parents=True, exist_ok=True)
+
+    shutil.copy2(src_path, dst_path)
+
+  def remove(self, path, recursive=False, wipe_contents=False):
+    """
+    Removes a file or directory.
+
+    Args:
+      path (str or Path): The file or directory path to remove.
+      recursive (bool): If True, directories will be removed recursively.
+      wipe_contents (bool): If True and path is a directory, only its contents are removed, not the dir itself.
+
+    Raises:
+      FileNotFoundError: If the path does not exist.
+      ValueError: If a directory is passed without recursive or wipe_contents.
+    """
+
+    path = Path(path)
+
+    if not path.exists():
+      raise FileNotFoundError(f"Cannot remove: {path} does not exist")
+
+    if wipe_contents and path.is_dir():
+      for child in path.iterdir():
+        if child.is_dir():
+          shutil.rmtree(child)
+        else:
+          child.unlink()
+    elif path.is_file():
+      path.unlink()
+    elif path.is_dir():
+      if recursive:
+        shutil.rmtree(path)
+      else:
+        raise ValueError(f"{path} is a directory. Use recursive=True or wipe_contents=True to remove it.")
 
   def create_dir(self, path):
     """
@@ -375,6 +445,49 @@ class BootstrapBase:
 
     if self.mysql_conn and self.mysql_conn.is_connected():
       self.mysql_conn.close()
+
+  def connect_redis(self, retries=10, delay=2):
+    """
+    Establishes a Redis connection and stores it in `self.redis_conn`.
+
+    Args:
+      retries (int): Number of ping retries before giving up.
+      delay (int): Seconds between retries.
+    """
+
+    client = redis.Redis(
+      host=self.redis_config['host'],
+      port=self.redis_config['port'],
+      password=self.redis_config['password'],
+      db=self.redis_config['db'],
+      decode_responses=True
+    )
+
+    for _ in range(retries):
+      try:
+        if client.ping():
+          self.redis_conn = client
+          return
+      except redis.RedisError as e:
+        print(f"Waiting for Redis... ({e})")
+        time.sleep(delay)
+
+    raise ConnectionError("Redis is not available after multiple attempts.")
+
+  def close_redis(self):
+    """
+    Closes the Redis connection if it's open.
+
+    Safe to call even if Redis was never connected or already closed.
+    """
+
+    if self.redis_conn:
+      try:
+        self.redis_conn.close()
+      except Exception as e:
+        print(f"Error while closing Redis connection: {e}")
+      finally:
+        self.redis_conn = None
 
   def wait_for_schema_update(self, init_file_path="init_db.inc.php", check_interval=5):
     """
@@ -560,3 +673,6 @@ class BootstrapBase:
       if check:
         raise
       return e
+
+  def sha1_filter(self, value):
+    return hashlib.sha1(value.encode()).hexdigest()

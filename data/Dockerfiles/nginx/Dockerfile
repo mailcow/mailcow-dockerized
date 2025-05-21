@@ -9,7 +9,8 @@ RUN apk add --no-cache nginx \
   py3-pip && \
   pip install --upgrade pip && \
   pip install Jinja2 \
-  mysql-connector-python
+  mysql-connector-python \
+  redis
 
 RUN mkdir -p /etc/nginx/includes
 

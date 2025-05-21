@@ -252,7 +252,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.33
+      image: ghcr.io/mailcow/dovecot:nightly-19052025
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -267,6 +267,7 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
+        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - vmail-vol-1:/var/vmail
         - vmail-index-vol-1:/var/vmail_index
         - crypt-vol-1:/mail_crypt/
@@ -275,6 +276,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
+        - CONTAINER_NAME=dovecot-mailcow
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}

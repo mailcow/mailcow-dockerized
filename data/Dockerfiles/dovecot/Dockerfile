@@ -87,7 +87,7 @@ RUN addgroup -g 5000 vmail \
   perl-proc-processtable \
   perl-app-cpanminus \
   procps \
-  python3 \
+  python3 py3-pip \
   py3-mysqlclient \
   py3-html2text \
   py3-jinja2 \
@@ -115,25 +115,34 @@ RUN addgroup -g 5000 vmail \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true
 
-COPY trim_logs.sh /usr/local/bin/trim_logs.sh
-COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
-COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
-COPY imapsync /usr/local/bin/imapsync
-COPY imapsync_runner.pl /usr/local/bin/imapsync_runner.pl
-COPY report-spam.sieve /usr/lib/dovecot/sieve/report-spam.sieve
-COPY report-ham.sieve /usr/lib/dovecot/sieve/report-ham.sieve
-COPY rspamd-pipe-ham /usr/lib/dovecot/sieve/rspamd-pipe-ham
-COPY rspamd-pipe-spam /usr/lib/dovecot/sieve/rspamd-pipe-spam
-COPY sa-rules.sh /usr/local/bin/sa-rules.sh
-COPY maildir_gc.sh /usr/local/bin/maildir_gc.sh
-COPY docker-entrypoint.sh /
-COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
-COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
-COPY quota_notify.py /usr/local/bin/quota_notify.py
-COPY repl_health.sh /usr/local/bin/repl_health.sh
-COPY optimize-fts.sh /usr/local/bin/optimize-fts.sh
+RUN pip install  --break-system-packages \
+  mysql-connector-python \
+  jinja2 \
+  redis
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+
+COPY data/Dockerfiles/bootstrap /bootstrap
+COPY data/Dockerfiles/dovecot/trim_logs.sh /usr/local/bin/trim_logs.sh
+COPY data/Dockerfiles/dovecot/clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
+COPY data/Dockerfiles/dovecot/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY data/Dockerfiles/dovecot/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY data/Dockerfiles/dovecot/imapsync /usr/local/bin/imapsync
+COPY data/Dockerfiles/dovecot/imapsync_runner.pl /usr/local/bin/imapsync_runner.pl
+COPY data/Dockerfiles/dovecot/report-spam.sieve /usr/lib/dovecot/sieve/report-spam.sieve
+COPY data/Dockerfiles/dovecot/report-ham.sieve /usr/lib/dovecot/sieve/report-ham.sieve
+COPY data/Dockerfiles/dovecot/rspamd-pipe-ham /usr/lib/dovecot/sieve/rspamd-pipe-ham
+COPY data/Dockerfiles/dovecot/rspamd-pipe-spam /usr/lib/dovecot/sieve/rspamd-pipe-spam
+COPY data/Dockerfiles/dovecot/sa-rules.sh /usr/local/bin/sa-rules.sh
+COPY data/Dockerfiles/dovecot/docker-entrypoint.sh /
+COPY data/Dockerfiles/dovecot/supervisord.conf /etc/supervisor/supervisord.conf
+COPY data/Dockerfiles/dovecot/stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
+COPY data/Dockerfiles/dovecot/quarantine_notify.py /usr/local/bin/quarantine_notify.py
+COPY data/Dockerfiles/dovecot/quota_notify.py /usr/local/bin/quota_notify.py
+COPY data/Dockerfiles/dovecot/repl_health.sh /usr/local/bin/repl_health.sh
+COPY data/Dockerfiles/dovecot/optimize-fts.sh /usr/local/bin/optimize-fts.sh
+
+RUN chmod +x /docker-entrypoint.sh \
+  /usr/local/sbin/stop-supervisor.sh
+
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

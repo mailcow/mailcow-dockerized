@@ -10,13 +10,15 @@ def main():
     from modules.BootstrapNginx import Bootstrap
   elif container_name == "postfix-mailcow":
     from modules.BootstrapPostfix import Bootstrap
+  elif container_name == "dovecot-mailcow":
+    from modules.BootstrapDovecot import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)
 
   b = Bootstrap(
     container=container_name,
-    db_config = {
+    db_config={
       "host": "localhost",
       "user": os.getenv("DBUSER"),
       "password": os.getenv("DBPASS"),
@@ -25,7 +27,13 @@ def main():
       'connection_timeout': 2
     },
     db_table="service_settings",
-    db_settings=['sogo']
+    db_settings=['sogo'],
+    redis_config={
+      "host": os.getenv("REDIS_SLAVEOF_IP") or "redis-mailcow",
+      "port": int(os.getenv("REDIS_SLAVEOF_PORT") or 6379),
+      "password": os.getenv("REDISPASS"),
+      "db": 0
+    }
   )
 
   b.bootstrap()

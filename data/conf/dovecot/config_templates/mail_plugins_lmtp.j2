@@ -1,0 +1,5 @@
+{%- if SKIP_FTS|lower in ["y", "yes"] -%}
+quota sieve acl zlib mail_crypt mail_crypt_acl notify listescape replication
+{%- else -%}
+quota sieve acl zlib mail_crypt mail_crypt_acl fts fts_flatcurve notify listescape replication
+{%- endif -%}

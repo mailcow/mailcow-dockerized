@@ -1,0 +1,6 @@
+{% for domain, path in VALID_CERT_DIRS.items() %}
+local_name "{{ domain }}" {
+  ssl_cert = <{{ path }}/cert.pem
+  ssl_key = <{{ path }}/key.pem
+}
+{% endfor %}

@@ -1,4 +1,4 @@
-# mailcow FTS Flatcurve Settings, change them as you like.
+{% if SKIP_FTS|lower in ['n', 'no'] %}
 plugin {
     fts_autoindex = yes
     fts_autoindex_exclude = \Junk
@@ -24,14 +24,11 @@ plugin {
     fts_index_timeout = 300s
 }
 
-### THIS PART WILL BE CHANGED BY MODIFYING mailcow.conf AUTOMATICALLY DURING RUNTIME! ###
-
 service indexer-worker {
   # Max amount of simultaniously running indexer jobs.
-  process_limit=1
+  process_limit = {{ FTS_PROCS }}
 
   # Max amount of RAM used by EACH indexer process.
-  vsz_limit=128 MB
+  vsz_limit = {{ FTS_HEAP }} MB
 }
-
-### THIS PART WILL BE CHANGED BY MODIFYING mailcow.conf AUTOMATICALLY DURING RUNTIME! ###
+{% endif %}

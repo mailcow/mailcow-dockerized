@@ -14,6 +14,11 @@ import sys
 import html2text
 from subprocess import Popen, PIPE, STDOUT
 
+
+# Don't run if role is not master
+if os.getenv("MASTER").lower() in ["n", "no"]:
+  sys.exit()
+
 if len(sys.argv) > 2:
   percent = int(sys.argv[1])
   username = str(sys.argv[2])

@@ -42,7 +42,8 @@ RUN groupadd -g 102 postfix \
 
 RUN pip install  --break-system-packages \
   mysql-connector-python \
-  jinja2
+  jinja2 \
+	redis
 
 COPY data/Dockerfiles/bootstrap /bootstrap
 COPY data/Dockerfiles/postfix/supervisord.conf /etc/supervisor/supervisord.conf
@@ -55,6 +56,7 @@ COPY data/Dockerfiles/postfix/stop-supervisor.sh /usr/local/sbin/stop-supervisor
 COPY data/Dockerfiles/postfix/docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/rspamd-pipe-ham \
+	/docker-entrypoint.sh \
   /usr/local/bin/rspamd-pipe-spam \
   /usr/local/bin/whitelist_forwardinghosts.sh \
   /usr/local/sbin/stop-supervisor.sh

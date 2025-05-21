@@ -1,0 +1,3 @@
+{% if MAILCOW_REPLICA_IP and DOVEADM_REPLICA_PORT %}
+mail_replica = tcp:{{ MAILCOW_REPLICA_IP }}:{{ DOVEADM_REPLICA_PORT }}
+{% endif %}

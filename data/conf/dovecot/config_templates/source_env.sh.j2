@@ -1,0 +1,3 @@
+{% for key, value in ENV_VARS.items() %}
+export {{ key }}="{{ value | replace('"', '\\"') }}"
+{% endfor %}

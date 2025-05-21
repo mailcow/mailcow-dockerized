@@ -1,0 +1,9 @@
+{% set MAILDIR_SUB_SHARED = '' if not MAILDIR_SUB else '/' ~ MAILDIR_SUB %}
+namespace {
+  type = shared
+  separator = /
+  prefix = Shared/%%u/
+  location = maildir:%%h{{ MAILDIR_SUB_SHARED }}:INDEX=~{{ MAILDIR_SUB_SHARED }}/Shared/%%u
+  subscriptions = no
+  list = children
+}
