@@ -35,6 +35,7 @@ data/conf/portainer/
 data/conf/postfix/allow_mailcow_local.regexp
 data/conf/postfix/custom_postscreen_whitelist.cidr
 data/conf/postfix/custom_transport.pcre
+data/conf/postfix/main.cf
 data/conf/postfix/extra.cf
 data/conf/postfix/sni.map
 data/conf/postfix/sni.map.db
