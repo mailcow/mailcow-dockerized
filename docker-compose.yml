@@ -65,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.70
+      image: ghcr.io/mailcow/clamd:nightly-19052025
       restart: always
       depends_on:
         unbound-mailcow:
@@ -73,10 +73,15 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=clamd-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - clamd-db-vol-1:/var/lib/clamav
       networks:
         mailcow-network:

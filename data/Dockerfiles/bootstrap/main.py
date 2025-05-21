@@ -21,6 +21,8 @@ def main():
     from modules.BootstrapDovecot import Bootstrap
   elif container_name == "rspamd-mailcow":
     from modules.BootstrapRspamd import Bootstrap
+  elif container_name == "clamd-mailcow":
+    from modules.BootstrapClamd import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)

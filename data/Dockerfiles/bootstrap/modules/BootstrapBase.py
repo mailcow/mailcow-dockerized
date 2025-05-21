@@ -30,16 +30,14 @@ class BootstrapBase:
     self.mysql_conn = None
     self.redis_conn = None
 
-  def render_config(self, template_name, output_path):
+  def render_config(self, template_name, output_path, clean_blank_lines=False):
     """
     Renders a Jinja2 template and writes it to the specified output path.
 
-    The method uses the class's `self.env` Jinja2 environment and `self.env_vars`
-    for rendering template variables.
-
     Args:
-        template_name (str): Name of the template file.
-        output_path (str or Path): Path to write the rendered output file.
+      template_name (str): Name of the template file.
+      output_path (str or Path): Path to write the rendered output file.
+      clean_blank_lines (bool): If True, removes empty/whitespace-only lines from rendered output.
     """
 
     output_path = Path(output_path)
@@ -47,6 +45,12 @@ class BootstrapBase:
 
     template = self.env.get_template(template_name)
     rendered = template.render(self.env_vars)
+
+    if clean_blank_lines:
+      rendered = "\n".join(line for line in rendered.splitlines() if line.strip())
+
+    # converts output to Unix-style line endings
+    rendered = rendered.replace('\r\n', '\n').replace('\r', '\n')
 
     with open(output_path, "w") as f:
       f.write(rendered)
