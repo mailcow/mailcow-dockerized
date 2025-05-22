@@ -119,6 +119,7 @@ services:
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
         - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
+        - ./data/conf/rspamd/config.json:/etc/rspamd/config.json:Z
         - mysql-socket-vol-1:/var/run/mysqld/
         - rspamd-vol-1:/var/lib/rspamd
       restart: always

@@ -41,11 +41,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("nginx.conf.j2", "/etc/nginx/nginx.conf")
-    self.render_config("sites-default.conf.j2", "/etc/nginx/includes/sites-default.conf")
-    self.render_config("server_name.active.j2", "/etc/nginx/conf.d/server_name.active")
-    self.render_config("listen_plain.active.j2", "/etc/nginx/conf.d/listen_plain.active")
-    self.render_config("listen_ssl.active.j2", "/etc/nginx/conf.d/listen_ssl.active")
+    self.render_config("/etc/nginx/conf.d/config.json")
 
   def get_valid_cert_dirs(self):
     ssl_dir = '/etc/ssl/mail/'

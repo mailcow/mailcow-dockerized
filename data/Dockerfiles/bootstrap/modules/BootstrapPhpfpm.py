@@ -44,12 +44,7 @@ class Bootstrap(BootstrapBase):
 
 
     print("Render config")
-    self.render_config("opcache-recommended.ini.j2", "/usr/local/etc/php/conf.d/opcache-recommended.ini")
-    self.render_config("pools.conf.j2", "/usr/local/etc/php-fpm.d/z-pools.conf")
-    self.render_config("other.ini.j2", "/usr/local/etc/php/conf.d/zzz-other.ini")
-    self.render_config("upload.ini.j2", "/usr/local/etc/php/conf.d/upload.ini")
-    self.render_config("session_store.ini.j2", "/usr/local/etc/php/conf.d/session_store.ini")
-    self.render_config("0081-custom-mailcow.css.j2", "/web/css/build/0081-custom-mailcow.css")
+    self.render_config("/php-conf/config.json")
 
     self.copy_file("/usr/local/etc/php/conf.d/opcache-recommended.ini", "/php-conf/opcache-recommended.ini")
     self.copy_file("/usr/local/etc/php-fpm.d/z-pools.conf", "/php-conf/pools.conf")

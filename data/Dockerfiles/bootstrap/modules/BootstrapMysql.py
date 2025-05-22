@@ -46,7 +46,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("my.cnf.j2", "/etc/mysql/conf.d/my.cnf")
+    self.render_config("/etc/mysql/conf.d/config.json")
 
   def start_temporary(self, socket):
     """

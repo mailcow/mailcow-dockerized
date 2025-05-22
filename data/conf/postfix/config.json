@@ -1,0 +1,110 @@
+[
+  {
+    "template": "aliases.j2",
+    "output":   "/etc/aliases"
+  },
+  {
+    "template": "mysql_relay_ne.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_relay_ne.cf"
+  },
+  {
+    "template": "mysql_relay_recipient_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_relay_recipient_maps.cf"
+  },
+  {
+    "template": "mysql_tls_policy_override_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf"
+  },
+  {
+    "template": "mysql_tls_enforce_in_policy.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf"
+  },
+  {
+    "template": "mysql_sender_dependent_default_transport_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf"
+  },
+  {
+    "template": "mysql_transport_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_transport_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_resource_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf"
+  },
+  {
+    "template": "mysql_sasl_passwd_maps_sender_dependent.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf"
+  },
+  {
+    "template": "mysql_sasl_passwd_maps_transport_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_alias_domain_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_alias_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf"
+  },
+  {
+    "template": "mysql_recipient_bcc_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf"
+  },
+  {
+    "template": "mysql_sender_bcc_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf"
+  },
+  {
+    "template": "mysql_recipient_canonical_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_domains_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_domains_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_mailbox_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_relay_domain_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_sender_acl.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf"
+  },
+  {
+    "template": "mysql_mbr_access_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_mbr_access_maps.cf"
+  },
+  {
+    "template": "mysql_virtual_spamalias_maps.cf.j2",
+    "output":   "/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf"
+  },
+  {
+    "template": "sni.map.j2",
+    "output":   "/opt/postfix/conf/sni.map"
+  },
+  {
+    "template": "main.cf.j2",
+    "output":   "/opt/postfix/conf/main.cf"
+  },
+  {
+    "template": "dns_blocklists.cf.j2",
+    "output":   "/opt/postfix/conf/dns_blocklists.cf"
+  },
+  {
+    "template": "dns_reply.map.j2",
+    "output":   "/opt/postfix/conf/dns_reply.map"
+  },
+  {
+    "template": "custom_postscreen_whitelist.cidr.j2",
+    "output":   "/opt/postfix/conf/custom_postscreen_whitelist.cidr"
+  },
+  {
+    "template": "custom_transport.pcre.j2",
+    "output":   "/opt/postfix/conf/custom_transport.pcre"
+  }
+]

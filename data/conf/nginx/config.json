@@ -1,0 +1,22 @@
+[
+  {
+    "template": "nginx.conf.j2",
+    "output":   "/etc/nginx/nginx.conf"
+  },
+  {
+    "template": "sites-default.conf.j2",
+    "output":   "/etc/nginx/includes/sites-default.conf"
+  },
+  {
+    "template": "server_name.active.j2",
+    "output":   "/etc/nginx/conf.d/server_name.active"
+  },
+  {
+    "template": "listen_plain.active.j2",
+    "output":   "/etc/nginx/conf.d/listen_plain.active"
+  },
+  {
+    "template": "listen_ssl.active.j2",
+    "output":   "/etc/nginx/conf.d/listen_ssl.active"
+  }
+]

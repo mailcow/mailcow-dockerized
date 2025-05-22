@@ -48,8 +48,7 @@ class Bootstrap(BootstrapBase):
     self.set_syslog_redis()
 
     print("Render config")
-    self.render_config("sogod.plist.j2", "/var/lib/sogo/GNUstep/Defaults/sogod.plist")
-    self.render_config("UIxTopnavToolbar.wox.j2", "/usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox")
+    self.render_config("/etc/sogo/config.json")
 
     print("Fix permissions")
     self.set_owner("/var/lib/sogo", "sogo", "sogo", recursive=True)

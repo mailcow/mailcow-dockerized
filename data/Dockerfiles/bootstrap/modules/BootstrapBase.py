@@ -30,30 +30,53 @@ class BootstrapBase:
     self.mysql_conn = None
     self.redis_conn = None
 
-  def render_config(self, template_name, output_path, clean_blank_lines=False):
+  def render_config(self, config_file):
     """
-    Renders a Jinja2 template and writes it to the specified output path.
+    Renders multiple Jinja2 templates based on a JSON config file.
 
-    Args:
-      template_name (str): Name of the template file.
-      output_path (str or Path): Path to write the rendered output file.
-      clean_blank_lines (bool): If True, removes empty/whitespace-only lines from rendered output.
+    Each config entry must include:
+      - template (str): the template filename
+      - output (str): absolute path to the output file
+
+    Optional:
+      - clean_blank_lines (bool): remove empty lines from output
+      - if_not_exists (bool): skip rendering if output file already exists
     """
 
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    from pathlib import Path
+    import json
 
-    template = self.env.get_template(template_name)
-    rendered = template.render(self.env_vars)
+    config_path = Path(config_file)
+    if not config_path.exists():
+      print(f"Template config file not found: {config_path}")
+      return
 
-    if clean_blank_lines:
-      rendered = "\n".join(line for line in rendered.splitlines() if line.strip())
+    with config_path.open("r") as f:
+      entries = json.load(f)
 
-    # converts output to Unix-style line endings
-    rendered = rendered.replace('\r\n', '\n').replace('\r', '\n')
+    for entry in entries:
+      template_name = entry["template"]
+      output_path = Path(entry["output"])
+      clean_blank_lines = entry.get("clean_blank_lines", False)
+      if_not_exists = entry.get("if_not_exists", False)
 
-    with open(output_path, "w") as f:
-      f.write(rendered)
+      if if_not_exists and output_path.exists():
+        print(f"Skipping {output_path} (already exists)")
+        continue
+
+      output_path.parent.mkdir(parents=True, exist_ok=True)
+      template = self.env.get_template(template_name)
+      rendered = template.render(self.env_vars)
+
+      if clean_blank_lines:
+        rendered = "\n".join(line for line in rendered.splitlines() if line.strip())
+
+      rendered = rendered.replace('\r\n', '\n').replace('\r', '\n')
+
+      with output_path.open("w") as f:
+        f.write(rendered)
+
+      print(f"Rendered {template_name} to {output_path}")
 
   def prepare_template_vars(self, overwrite_path, extra_vars = None):
     """

@@ -47,7 +47,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("whitelist.ign2.j2", "/var/lib/clamav/whitelist.ign2", clean_blank_lines=True)
+    self.render_config("/etc/clamav/config.json")
 
     # Fix permissions
     self.set_owner("/var/lib/clamav", "clamav", "clamav", recursive=True)

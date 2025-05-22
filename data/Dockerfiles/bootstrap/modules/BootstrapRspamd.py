@@ -80,13 +80,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("mailcow_networks.map.j2", "/etc/rspamd/custom/mailcow_networks.map")
-    self.render_config("dovecot_trusted.map.j2", "/etc/rspamd/custom/dovecot_trusted.map")
-    self.render_config("rspamd_trusted.map.j2", "/etc/rspamd/custom/rspamd_trusted.map")
-    self.render_config("external_services.conf.j2", "/etc/rspamd/local.d/external_services.conf")
-    self.render_config("redis.conf.j2", "/etc/rspamd/local.d/redis.conf")
-    self.render_config("dqs-rbl.conf.j2", "/etc/rspamd/custom/dqs-rbl.conf")
-    self.render_config("worker-controller-password.inc.j2", "/etc/rspamd/override.d/worker-controller-password.inc")
+    self.render_config("/etc/rspamd/config.json")
 
     # Fix missing default global maps, if any
     # These exists in mailcow UI and should not be removed

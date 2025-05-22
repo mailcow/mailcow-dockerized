@@ -55,23 +55,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("dovecot-dict-sql-quota.conf.j2", "/etc/dovecot/sql/dovecot-dict-sql-quota.conf")
-    self.render_config("dovecot-dict-sql-userdb.conf.j2", "/etc/dovecot/sql/dovecot-dict-sql-userdb.conf")
-    self.render_config("dovecot-dict-sql-sieve_before.conf.j2", "/etc/dovecot/sql/dovecot-dict-sql-sieve_before.conf")
-    self.render_config("dovecot-dict-sql-sieve_after.conf.j2", "/etc/dovecot/sql/dovecot-dict-sql-sieve_after.conf")
-    self.render_config("mail_plugins.j2", "/etc/dovecot/mail_plugins")
-    self.render_config("mail_plugins_imap.j2", "/etc/dovecot/mail_plugins_imap")
-    self.render_config("mail_plugins_lmtp.j2", "/etc/dovecot/mail_plugins_lmtp")
-    self.render_config("global_sieve_after.sieve.j2", "/var/vmail/sieve/global_sieve_after.sieve")
-    self.render_config("global_sieve_before.sieve.j2", "/var/vmail/sieve/global_sieve_before.sieve")
-    self.render_config("dovecot-master.passwd.j2", "/etc/dovecot/dovecot-master.passwd")
-    self.render_config("dovecot-master.userdb.j2", "/etc/dovecot/dovecot-master.userdb")
-    self.render_config("sieve.creds.j2", "/etc/sogo/sieve.creds")
-    self.render_config("sogo-sso.pass.j2", "/etc/phpfpm/sogo-sso.pass")
-    self.render_config("cron.creds.j2", "/etc/sogo/cron.creds")
-    self.render_config("source_env.sh.j2", "/source_env.sh")
-    self.render_config("maildir_gc.sh.j2", "/usr/local/bin/maildir_gc.sh")
-    self.render_config("dovecot.conf.j2", "/etc/dovecot/dovecot.conf")
+    self.render_config("/etc/dovecot/config.json")
 
     files = [
       "/etc/dovecot/mail_plugins",

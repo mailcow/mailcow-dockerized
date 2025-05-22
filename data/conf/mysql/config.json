@@ -1,0 +1,6 @@
+[
+  {
+    "template": "my.cnf.j2",
+    "output":   "/etc/mysql/conf.d/my.cnf"
+  }
+]

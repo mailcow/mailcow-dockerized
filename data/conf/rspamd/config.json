@@ -1,0 +1,30 @@
+[
+  {
+    "template": "mailcow_networks.map.j2",
+    "output":   "/etc/rspamd/custom/mailcow_networks.map"
+  },
+  {
+    "template": "dovecot_trusted.map.j2",
+    "output":   "/etc/rspamd/custom/dovecot_trusted.map"
+  },
+  {
+    "template": "rspamd_trusted.map.j2",
+    "output":   "/etc/rspamd/custom/rspamd_trusted.map"
+  },
+  {
+    "template": "external_services.conf.j2",
+    "output":   "/etc/rspamd/local.d/external_services.conf"
+  },
+  {
+    "template": "redis.conf.j2",
+    "output":   "/etc/rspamd/local.d/redis.conf"
+  },
+  {
+    "template": "dqs-rbl.conf.j2",
+    "output":   "/etc/rspamd/custom/dqs-rbl.conf"
+  },
+  {
+    "template": "worker-controller-password.inc.j2",
+    "output":   "/etc/rspamd/override.d/worker-controller-password.inc"
+  }
+]

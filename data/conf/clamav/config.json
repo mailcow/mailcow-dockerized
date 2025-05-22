@@ -1,0 +1,7 @@
+[
+  {
+    "template": "whitelist.ign2.j2",
+    "output": "/var/lib/clamav/whitelist.ign2",
+    "clean_blank_lines": true
+  }
+]

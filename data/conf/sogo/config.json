@@ -1,0 +1,10 @@
+[
+  {
+    "template": "sogod.plist.j2",
+    "output":   "/var/lib/sogo/GNUstep/Defaults/sogod.plist"
+  },
+  {
+    "template": "UIxTopnavToolbar.wox.j2",
+    "output":   "/usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox"
+  }
+]
