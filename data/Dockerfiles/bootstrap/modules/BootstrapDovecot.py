@@ -272,7 +272,7 @@ class Bootstrap(BootstrapBase):
     """
 
     try:
-      result = self.run_command(["doveconf", "-P"], check=True)
+      result = self.run_command(["doveconf", "-P"], check=True, log_output=False)
       pubkey_path = None
       for line in result.stdout.splitlines():
         if "mail_crypt_global_public_key" in line:

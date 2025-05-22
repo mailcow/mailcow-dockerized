@@ -670,24 +670,20 @@ class BootstrapBase:
     allowed_chars = string.ascii_letters + string.digits + "_-"
     return ''.join(secrets.choice(allowed_chars) for _ in range(length))
 
-  def run_command(self, command, check=True, shell=False, input_stream=None):
+  def run_command(self, command, check=True, shell=False, input_stream=None, log_output=True):
     """
-    Executes an OS command and optionally checks for errors.
-    Supports piping via input_stream.
+    Executes a shell command and optionally logs output.
 
     Args:
-      command (str or list): The command to execute.
-      check (bool): Raise CalledProcessError on failure if True.
-      shell (bool): Run in a shell if True.
-      input_stream: A pipe source to use as stdin (e.g. another process's stdout).
+      command (str or list): Command to run.
+      check (bool): Raise if non-zero exit.
+      shell (bool): Run in shell.
+      input_stream: stdin stream.
+      log_output (bool): If True, print output.
 
     Returns:
-      subprocess.CompletedProcess: The result of the command execution.
-
-    Logs:
-      Prints command output and errors.
+      subprocess.CompletedProcess
     """
-
     try:
       result = subprocess.run(
         command,
@@ -698,10 +694,11 @@ class BootstrapBase:
         stderr=subprocess.PIPE,
         text=True
       )
-      if result.stdout:
-        print(result.stdout.strip())
-      if result.stderr:
-        print(result.stderr.strip())
+      if log_output:
+        if result.stdout:
+          print(result.stdout.strip())
+        if result.stderr:
+          print(result.stderr.strip())
       return result
     except subprocess.CalledProcessError as e:
       print(f"Command failed with exit code {e.returncode}: {e.cmd}")
