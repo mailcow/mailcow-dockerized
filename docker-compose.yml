@@ -17,16 +17,18 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.11
+      image: ghcr.io/mailcow/mariadb:nightly-19052025
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
       stop_grace_period: 45s
       volumes:
+        - ./data/hooks/mariadb:/hooks:z
+        - ./data/conf/mysql/:/etc/mysql/conf.d/:z
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
-        - ./data/conf/mysql/:/etc/mysql/conf.d/:ro,Z
       environment:
+        - CONTAINER_NAME=mysql-mailcow
         - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}

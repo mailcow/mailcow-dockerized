@@ -23,6 +23,8 @@ def main():
     from modules.BootstrapRspamd import Bootstrap
   elif container_name == "clamd-mailcow":
     from modules.BootstrapClamd import Bootstrap
+  elif container_name == "mysql-mailcow":
+    from modules.BootstrapMysql import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)
@@ -31,9 +33,9 @@ def main():
     container=container_name,
     db_config={
       "host": "localhost",
-      "user": os.getenv("DBUSER"),
-      "password": os.getenv("DBPASS"),
-      "database": os.getenv("DBNAME"),
+      "user": os.getenv("DBUSER") or os.getenv("MYSQL_USER"),
+      "password": os.getenv("DBPASS") or os.getenv("MYSQL_PASSWORD"),
+      "database": os.getenv("DBNAME") or os.getenv("MYSQL_DATABASE"),
       "unix_socket": "/var/run/mysqld/mysqld.sock",
       'connection_timeout': 2
     },
