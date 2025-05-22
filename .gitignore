@@ -31,6 +31,11 @@ data/conf/nginx/*.bak
 data/conf/nginx/*.conf
 data/conf/nginx/*.custom
 data/conf/phpfpm/sogo-sso/sogo-sso.pass
+data/conf/phpfpm/opcache-recommended.ini
+data/conf/phpfpm/other.ini
+data/conf/phpfpm/pools.conf
+data/conf/phpfpm/session_store.ini
+data/conf/phpfpm/upload.ini
 data/conf/portainer/
 data/conf/postfix/allow_mailcow_local.regexp
 data/conf/postfix/custom_postscreen_whitelist.cidr

@@ -131,7 +131,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.93
+      image: ghcr.io/mailcow/phpfpm:nightly-19052025
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -151,12 +151,8 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
-        - ./data/conf/phpfpm/crons:/crons:z
+        - ./data/conf/phpfpm:/php-conf:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
-        - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
-        - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
         - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
         - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ./data/assets/templates:/tpls:z
@@ -164,6 +160,7 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=php-fpm-mailcow
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
@@ -204,10 +201,10 @@ services:
         ofelia.enabled: "true"
         ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /php-conf/crons/keycloak-sync.php || exit 0\""
         ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /php-conf/crons/ldap-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:

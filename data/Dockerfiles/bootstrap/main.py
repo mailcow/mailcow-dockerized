@@ -25,6 +25,8 @@ def main():
     from modules.BootstrapClamd import Bootstrap
   elif container_name == "mysql-mailcow":
     from modules.BootstrapMysql import Bootstrap
+  elif container_name == "php-fpm-mailcow":
+    from modules.BootstrapPhpfpm import Bootstrap
   else:
     print(f"No bootstrap handler for container: {container_name}", file=sys.stderr)
     sys.exit(1)

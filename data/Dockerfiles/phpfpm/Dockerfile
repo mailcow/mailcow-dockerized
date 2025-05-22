@@ -63,6 +63,7 @@ RUN apk add -U --no-cache autoconf \
   samba-client \
   zlib-dev \
   tzdata \
+  python3 py3-pip \
   && pecl install APCu-${APCU_PECL_VERSION} \
   && pecl install imagick-${IMAGICK_PECL_VERSION} \
   && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
@@ -72,7 +73,7 @@ RUN apk add -U --no-cache autoconf \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     --with-webp \
     --with-xpm \
@@ -107,8 +108,18 @@ RUN apk add -U --no-cache autoconf \
     pcre-dev \
     zlib-dev
 
-COPY ./docker-entrypoint.sh /
+RUN pip install  --break-system-packages \
+  mysql-connector-python \
+  jinja2 \
+  redis \
+  dnspython
+
+
+COPY data/Dockerfiles/bootstrap /bootstrap
+COPY data/Dockerfiles/phpfpm/docker-entrypoint.sh /
+
+RUN chmod +x /docker-entrypoint.sh
+
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-
 CMD ["php-fpm"]
