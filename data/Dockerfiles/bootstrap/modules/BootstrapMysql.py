@@ -9,7 +9,22 @@ import subprocess
 
 class Bootstrap(BootstrapBase):
   def bootstrap(self):
-    self.upgrade_mysql()
+    dbuser = "root"
+    dbpass = os.getenv("MYSQL_ROOT_PASSWORD", "")
+    socket = "/var/run/mysqld/mysqld.sock"
+
+    print("Starting temporary mysqld for upgrade...")
+    self.start_temporary(socket)
+
+    self.connect_mysql()
+
+    print("Running mysql_upgrade...")
+    self.upgrade_mysql(dbuser, dbpass, socket)
+
+    print("Shutting down temporary mysqld...")
+    self.close_mysql()
+    self.stop_temporary(dbuser, dbpass, socket)
+
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
@@ -28,27 +43,63 @@ class Bootstrap(BootstrapBase):
     print("Render config")
     self.render_config("my.cnf.j2", "/etc/mysql/conf.d/my.cnf")
 
-  def upgrade_mysql(self, max_retries=5, wait_interval=3):
+  def start_temporary(self, socket):
     """
-    Runs mysql_upgrade in a controlled way using run_command.
-    Starts mysqld in background, upgrades, shuts down, then restarts in foreground.
+    Starts a temporary mysqld process in the background using the given UNIX socket.
+
+    The server is started with networking disabled (--skip-networking).
+
+    Args:
+      socket (str): Path to the UNIX socket file for MySQL to listen on.
+
+    Returns:
+      subprocess.Popen: The running mysqld process object.
     """
 
-    dbuser = "root"
-    dbpass = os.getenv("MYSQL_ROOT_PASSWORD", "")
-    socket = "/var/run/mysqld/mysqld.sock"
-
-    print("Starting temporary mysqld for upgrade...")
-    temp_proc = subprocess.Popen([
+    return subprocess.Popen([
       "mysqld",
       "--user=mysql",
       "--skip-networking",
       f"--socket={socket}"
     ])
 
-    self.connect_mysql()
+  def stop_temporary(self, dbuser, dbpass, socket):
+    """
+    Shuts down the temporary mysqld instance gracefully.
 
-    print("Running mysql_upgrade...")
+    Uses mariadb-admin to issue a shutdown command to the running server.
+
+    Args:
+      dbuser (str): The MySQL username with shutdown privileges (typically 'root').
+      dbpass (str): The password for the MySQL user.
+      socket (str): Path to the UNIX socket the server is listening on.
+    """
+
+    self.run_command([
+      "mariadb-admin",
+      "shutdown",
+      f"--socket={socket}",
+      "-u", dbuser,
+      f"-p{dbpass}"
+    ])
+
+  def upgrade_mysql(self, dbuser, dbpass, socket, max_retries=5, wait_interval=3):
+    """
+    Executes mysql_upgrade to check and fix any schema or table incompatibilities.
+
+    Retries the upgrade command if it fails, up to a maximum number of attempts.
+
+    Args:
+      dbuser (str): MySQL username with privilege to perform the upgrade.
+      dbpass (str): Password for the MySQL user.
+      socket (str): Path to the MySQL UNIX socket for local communication.
+      max_retries (int): Maximum number of attempts before giving up. Default is 5.
+      wait_interval (int): Number of seconds to wait between retries. Default is 3.
+
+    Returns:
+      bool: True if upgrade succeeded, False if all attempts failed.
+    """
+
     retries = 0
     while retries < max_retries:
       result = self.run_command([
@@ -67,14 +118,4 @@ class Bootstrap(BootstrapBase):
         time.sleep(wait_interval)
     else:
       print("mysql_upgrade failed after all retries.")
-      temp_proc.terminate()
       return False
-
-    print("Shutting down temporary mysqld...")
-    self.run_command([
-      "mariadb-admin",
-      "shutdown",
-      f"--socket={socket}",
-      "-u", dbuser,
-      f"-p{dbpass}"
-    ])
