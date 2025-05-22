@@ -20,6 +20,8 @@ class Bootstrap(BootstrapBase):
 
     print("Running mysql_upgrade...")
     self.upgrade_mysql(dbuser, dbpass, socket)
+    print("Checking timezone support with CONVERT_TZ...")
+    self.check_and_import_timezone_support(dbuser, dbpass, socket)
 
     print("Shutting down temporary mysqld...")
     self.close_mysql()
@@ -119,3 +121,41 @@ class Bootstrap(BootstrapBase):
     else:
       print("mysql_upgrade failed after all retries.")
       return False
+
+  def check_and_import_timezone_support(self, dbuser, dbpass, socket):
+    """
+    Checks if MySQL supports timezone conversion (CONVERT_TZ).
+    If not, it imports timezone info using mysql_tzinfo_to_sql piped into mariadb.
+    """
+
+    try:
+      cursor = self.mysql_conn.cursor()
+      cursor.execute("SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC')")
+      result = cursor.fetchone()
+      cursor.close()
+
+      if not result or result[0] is None:
+        print("Timezone conversion failed or returned NULL. Importing timezone info...")
+
+        # Use mysql_tzinfo_to_sql piped into mariadb
+        tz_dump = subprocess.Popen(
+          ["mysql_tzinfo_to_sql", "/usr/share/zoneinfo"],
+          stdout=subprocess.PIPE
+        )
+
+        self.run_command([
+          "mariadb",
+          "--socket", socket,
+          "-u", dbuser,
+          f"-p{dbpass}",
+          "mysql"
+        ], input_stream=tz_dump.stdout)
+
+        tz_dump.stdout.close()
+        tz_dump.wait()
+
+        print("Timezone info successfully imported.")
+      else:
+        print(f"Timezone support is working. Sample result: {result[0]}")
+    except Exception as e:
+      print(f"Failed to verify or import timezone info: {e}")

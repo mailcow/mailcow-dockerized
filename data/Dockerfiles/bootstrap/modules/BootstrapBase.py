@@ -273,33 +273,39 @@ class BootstrapBase:
 
     shutil.copy2(src_path, dst_path)
 
-  def remove(self, path, recursive=False, wipe_contents=False):
+  def remove(self, path, recursive=False, wipe_contents=False, exclude=None):
     """
-    Removes a file or directory.
+    Removes a file or directory with optional exclusion logic.
 
     Args:
       path (str or Path): The file or directory path to remove.
       recursive (bool): If True, directories will be removed recursively.
       wipe_contents (bool): If True and path is a directory, only its contents are removed, not the dir itself.
+      exclude (list[str], optional): List of filenames to exclude from deletion.
 
     Raises:
       FileNotFoundError: If the path does not exist.
       ValueError: If a directory is passed without recursive or wipe_contents.
     """
 
+
     path = Path(path)
+    exclude = set(exclude or [])
 
     if not path.exists():
       raise FileNotFoundError(f"Cannot remove: {path} does not exist")
 
     if wipe_contents and path.is_dir():
       for child in path.iterdir():
+        if child.name in exclude:
+          continue
         if child.is_dir():
           shutil.rmtree(child)
         else:
           child.unlink()
     elif path.is_file():
-      path.unlink()
+      if path.name not in exclude:
+        path.unlink()
     elif path.is_dir():
       if recursive:
         shutil.rmtree(path)
@@ -664,21 +670,22 @@ class BootstrapBase:
     allowed_chars = string.ascii_letters + string.digits + "_-"
     return ''.join(secrets.choice(allowed_chars) for _ in range(length))
 
-  def run_command(self, command, check=True, shell=False):
+  def run_command(self, command, check=True, shell=False, input_stream=None):
     """
     Executes an OS command and optionally checks for errors.
+    Supports piping via input_stream.
 
     Args:
-      command (str or list): The command to execute. Can be a string (if shell=True)
-                            or a list of command arguments.
-      check (bool): If True, raises CalledProcessError on failure.
-      shell (bool): If True, runs the command in a shell.
+      command (str or list): The command to execute.
+      check (bool): Raise CalledProcessError on failure if True.
+      shell (bool): Run in a shell if True.
+      input_stream: A pipe source to use as stdin (e.g. another process's stdout).
 
     Returns:
       subprocess.CompletedProcess: The result of the command execution.
 
     Logs:
-      Prints the command being run and any error output.
+      Prints command output and errors.
     """
 
     try:
@@ -686,6 +693,7 @@ class BootstrapBase:
         command,
         shell=shell,
         check=check,
+        stdin=input_stream,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
