@@ -17,7 +17,7 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader('./opt/postfix/conf/config_templates'),
+      loader=FileSystemLoader('/opt/postfix/conf/config_templates'),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True

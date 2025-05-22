@@ -30,7 +30,7 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader('./etc/dovecot/config_templates'),
+      loader=FileSystemLoader('/etc/dovecot/config_templates'),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True
