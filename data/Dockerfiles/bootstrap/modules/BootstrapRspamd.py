@@ -60,7 +60,10 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader('/etc/rspamd/config_templates'),
+      loader=FileSystemLoader([
+        '/etc/rspamd/custom_templates',
+        '/etc/rspamd/config_templates'
+      ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True

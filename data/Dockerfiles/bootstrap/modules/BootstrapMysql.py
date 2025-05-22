@@ -30,7 +30,10 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader('/etc/mysql/conf.d/config_templates'),
+      loader=FileSystemLoader([
+        '/etc/mysql/conf.d/custom_templates',
+        '/etc/mysql/conf.d/config_templates'
+      ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True

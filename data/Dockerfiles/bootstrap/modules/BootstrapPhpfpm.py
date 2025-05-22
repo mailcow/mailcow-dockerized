@@ -15,7 +15,10 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader('/php-conf/config_templates'),
+      loader=FileSystemLoader([
+        '/php-conf/custom_templates',
+        '/php-conf/config_templates'
+      ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True

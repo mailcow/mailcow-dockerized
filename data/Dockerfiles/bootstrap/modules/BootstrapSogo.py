@@ -27,7 +27,10 @@ class Bootstrap(BootstrapBase):
 
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
-      loader=FileSystemLoader("/etc/sogo/config_templates"),
+      loader=FileSystemLoader([
+        '/etc/sogo/custom_templates',
+        '/etc/sogo/config_templates'
+      ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True
