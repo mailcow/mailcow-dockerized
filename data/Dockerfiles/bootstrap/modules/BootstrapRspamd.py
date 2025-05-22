@@ -61,8 +61,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/rspamd/custom_templates',
-        '/etc/rspamd/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -80,7 +80,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("/etc/rspamd/config.json")
+    self.render_config("/service_config")
 
     # Fix missing default global maps, if any
     # These exists in mailcow UI and should not be removed

@@ -106,5 +106,25 @@
   {
     "template": "custom_transport.pcre.j2",
     "output":   "/opt/postfix/conf/custom_transport.pcre"
+  },
+  {
+    "template": "allow_mailcow_local.regexp.j2",
+    "output":   "/opt/postfix/conf/allow_mailcow_local.regexp"
+  },
+  {
+    "template": "anonymize_headers.pcre.j2",
+    "output":   "/opt/postfix/conf/anonymize_headers.pcre"
+  },
+  {
+    "template": "local_transport.j2",
+    "output":   "/opt/postfix/conf/local_transport"
+  },
+  {
+    "template": "master.cf.j2",
+    "output":   "/opt/postfix/conf/master.cf"
+  },
+  {
+    "template": "smtp_dsn_filter.j2",
+    "output":   "/opt/postfix/conf/smtp_dsn_filter"
   }
 ]

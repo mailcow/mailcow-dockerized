@@ -18,15 +18,15 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/opt/postfix/conf/custom_templates',
-        '/opt/postfix/conf/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
       trim_blocks=True
     )
-    with open("/opt/postfix/conf/extra.cf", "r") as f:
-      extra_config = f.read()
+    extra_config_path = Path("/opt/postfix/conf/extra.cf")
+    extra_config = extra_config_path.read_text() if extra_config_path.exists() else ""
     extra_vars = {
       "VALID_CERT_DIRS": self.get_valid_cert_dirs(),
       "EXTRA_CF": extra_config
@@ -40,7 +40,7 @@ class Bootstrap(BootstrapBase):
     self.set_syslog_redis()
 
     print("Render config")
-    self.render_config("/opt/postfix/conf/config.json")
+    self.render_config("/service_config")
 
     # Create SNI Config
     self.run_command(["postmap", "-F", "hash:/opt/postfix/conf/sni.map"])

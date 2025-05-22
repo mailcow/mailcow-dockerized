@@ -32,8 +32,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/clamav/custom_templates',
-        '/etc/clamav/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -47,7 +47,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("/etc/clamav/config.json")
+    self.render_config("/service_config")
 
     # Fix permissions
     self.set_owner("/var/lib/clamav", "clamav", "clamav", recursive=True)

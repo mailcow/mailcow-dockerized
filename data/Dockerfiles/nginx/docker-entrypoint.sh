@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# Run hooks
+for file in /hooks/*; do
+  if [ -x "${file}" ]; then
+    echo "Running hook ${file}"
+    "${file}"
+  fi
+done
+
 python3 -u /bootstrap/main.py
 BOOTSTRAP_EXIT_CODE=$?
 

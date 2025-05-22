@@ -31,8 +31,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/mysql/conf.d/custom_templates',
-        '/etc/mysql/conf.d/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -46,7 +46,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("/etc/mysql/conf.d/config.json")
+    self.render_config("/service_config")
 
   def start_temporary(self, socket):
     """

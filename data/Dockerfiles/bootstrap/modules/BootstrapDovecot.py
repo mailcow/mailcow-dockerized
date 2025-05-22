@@ -31,8 +31,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/dovecot/custom_templates',
-        '/etc/dovecot/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -55,7 +55,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("/etc/dovecot/config.json")
+    self.render_config("/service_config")
 
     files = [
       "/etc/dovecot/mail_plugins",

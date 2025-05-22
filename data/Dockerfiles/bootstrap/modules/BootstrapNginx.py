@@ -23,8 +23,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/nginx/conf.d/custom_templates',
-        '/etc/nginx/conf.d/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -41,7 +41,7 @@ class Bootstrap(BootstrapBase):
     self.set_timezone()
 
     print("Render config")
-    self.render_config("/etc/nginx/conf.d/config.json")
+    self.render_config("/service_config")
 
   def get_valid_cert_dirs(self):
     ssl_dir = '/etc/ssl/mail/'

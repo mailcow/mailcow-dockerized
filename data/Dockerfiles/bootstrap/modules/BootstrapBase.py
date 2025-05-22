@@ -30,25 +30,27 @@ class BootstrapBase:
     self.mysql_conn = None
     self.redis_conn = None
 
-  def render_config(self, config_file):
+  def render_config(self, config_dir):
     """
-    Renders multiple Jinja2 templates based on a JSON config file.
+    Renders multiple Jinja2 templates from a config.json file in a given directory.
 
-    Each config entry must include:
-      - template (str): the template filename
-      - output (str): absolute path to the output file
+    Args:
+      config_dir (str or Path): Path to the directory containing config.json
 
-    Optional:
-      - clean_blank_lines (bool): remove empty lines from output
-      - if_not_exists (bool): skip rendering if output file already exists
+    Behavior:
+      - Renders each template defined in config.json
+      - Writes the result to the specified output path
+      - Also copies the rendered file to: <config_dir>/rendered_configs/<relative_output_path>
     """
 
-    from pathlib import Path
     import json
+    from pathlib import Path
 
-    config_path = Path(config_file)
+    config_dir = Path(config_dir)
+    config_path = config_dir / "config.json"
+
     if not config_path.exists():
-      print(f"Template config file not found: {config_path}")
+      print(f"config.json not found in: {config_dir}")
       return
 
     with config_path.open("r") as f:
@@ -76,7 +78,11 @@ class BootstrapBase:
       with output_path.open("w") as f:
         f.write(rendered)
 
-      print(f"Rendered {template_name} to {output_path}")
+      rendered_copy_path = config_dir / "rendered_configs" / output_path.name
+      rendered_copy_path.parent.mkdir(parents=True, exist_ok=True)
+      self.copy_file(output_path, rendered_copy_path)
+
+      print(f"Rendered {template_name} → {output_path}")
 
   def prepare_template_vars(self, overwrite_path, extra_vars = None):
     """

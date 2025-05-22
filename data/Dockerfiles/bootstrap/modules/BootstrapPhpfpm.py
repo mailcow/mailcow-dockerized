@@ -16,8 +16,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/php-conf/custom_templates',
-        '/php-conf/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -44,7 +44,7 @@ class Bootstrap(BootstrapBase):
 
 
     print("Render config")
-    self.render_config("/php-conf/config.json")
+    self.render_config("/service_config")
 
     self.copy_file("/usr/local/etc/php/conf.d/opcache-recommended.ini", "/php-conf/opcache-recommended.ini")
     self.copy_file("/usr/local/etc/php-fpm.d/z-pools.conf", "/php-conf/pools.conf")

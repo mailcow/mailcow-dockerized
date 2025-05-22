@@ -28,8 +28,8 @@ class Bootstrap(BootstrapBase):
     # Setup Jinja2 Environment and load vars
     self.env = Environment(
       loader=FileSystemLoader([
-        '/etc/sogo/custom_templates',
-        '/etc/sogo/config_templates'
+        '/service_config/custom_templates',
+        '/service_config/config_templates'
       ]),
       keep_trailing_newline=True,
       lstrip_blocks=True,
@@ -48,7 +48,7 @@ class Bootstrap(BootstrapBase):
     self.set_syslog_redis()
 
     print("Render config")
-    self.render_config("/etc/sogo/config.json")
+    self.render_config("/service_config")
 
     print("Fix permissions")
     self.set_owner("/var/lib/sogo", "sogo", "sogo", recursive=True)

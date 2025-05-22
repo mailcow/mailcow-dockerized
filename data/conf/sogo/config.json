@@ -6,5 +6,9 @@
   {
     "template": "UIxTopnavToolbar.wox.j2",
     "output":   "/usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox"
+  },
+  {
+    "template": "sogo.conf.j2",
+    "output":   "/etc/sogo/sogo.conf"
   }
 ]
