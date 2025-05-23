@@ -19,7 +19,6 @@ class BootstrapMysql(BootstrapBase):
     self.upgrade_mysql(dbuser, dbpass, socket)
     print("Checking timezone support with CONVERT_TZ...")
     self.check_and_import_timezone_support(dbuser, dbpass, socket)
-    time.sleep(15)
 
     print("Shutting down temporary mysqld...")
     self.close_mysql()
