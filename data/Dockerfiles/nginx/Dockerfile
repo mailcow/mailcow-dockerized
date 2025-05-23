@@ -7,6 +7,14 @@ RUN apk add --no-cache nginx \
   python3 py3-pip \
   supervisor
 
+RUN apk add --no-cache --virtual .build-deps \
+      gcc \
+      musl-dev \
+      python3-dev \
+      linux-headers \
+  && pip install --break-system-packages psutil \
+  && apk del .build-deps
+
 RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \

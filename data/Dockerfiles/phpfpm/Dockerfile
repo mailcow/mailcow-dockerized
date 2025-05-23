@@ -108,6 +108,14 @@ RUN apk add -U --no-cache autoconf \
     pcre-dev \
     zlib-dev
 
+RUN apk add --no-cache --virtual .build-deps \
+      gcc \
+      musl-dev \
+      python3-dev \
+      linux-headers \
+  && pip install --break-system-packages psutil \
+  && apk del .build-deps
+
 RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \

@@ -15,7 +15,8 @@ RUN pip install \
   mysql-connector-python \
   jinja2 \
   redis \
-  dnspython
+  dnspython \
+  psutil
 
 
 COPY data/Dockerfiles/bootstrap /bootstrap

@@ -87,11 +87,11 @@ RUN addgroup -g 5000 vmail \
   perl-proc-processtable \
   perl-app-cpanminus \
   procps \
-  python3 py3-pip \
-  py3-mysqlclient \
+  python3 py3-pip python3-dev \
   py3-html2text \
-  py3-jinja2 \
-  py3-redis \
+  linux-headers \
+  musl-dev \
+  gcc \
   redis \
   syslog-ng \
   syslog-ng-redis \
@@ -119,7 +119,8 @@ RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \
   redis \
-  dnspython
+  dnspython \
+  psutil
 
 
 COPY data/Dockerfiles/bootstrap /bootstrap

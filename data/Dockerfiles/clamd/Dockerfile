@@ -94,7 +94,15 @@ RUN apk upgrade --no-cache \
     install -d -m 755 -g "clamav" -o "clamav" "/var/log/clamav" && \
     chown -R clamav:clamav /var/lib/clamav
 
-RUN pip install  --break-system-packages \
+RUN apk add --no-cache --virtual .build-deps \
+      gcc \
+      musl-dev \
+      python3-dev \
+      linux-headers \
+  && pip install --break-system-packages psutil \
+  && apk del .build-deps
+
+RUN pip install --break-system-packages \
   mysql-connector-python \
   jinja2 \
   redis \

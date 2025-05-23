@@ -44,7 +44,8 @@ RUN pip install  --break-system-packages \
   mysql-connector-python \
   jinja2 \
 	redis \
-	dnspython
+	dnspython \
+  psutil
 
 COPY data/Dockerfiles/bootstrap /bootstrap
 COPY data/Dockerfiles/postfix/supervisord.conf /etc/supervisor/supervisord.conf
