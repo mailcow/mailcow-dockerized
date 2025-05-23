@@ -1,0 +1,2 @@
+session.save_handler = redis
+session.save_path = "tcp://{{ REDIS_SLAVEOF_IP or 'redis-mailcow' }}:{{ REDIS_SLAVEOF_PORT or '6379' }}?auth={{ REDISPASS }}"

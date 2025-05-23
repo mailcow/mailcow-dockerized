@@ -1,0 +1,70 @@
+[
+  {
+    "template": "dovecot-dict-sql-quota.conf.j2",
+    "output":   "/etc/dovecot/sql/dovecot-dict-sql-quota.conf"
+  },
+  {
+    "template": "dovecot-dict-sql-userdb.conf.j2",
+    "output":   "/etc/dovecot/sql/dovecot-dict-sql-userdb.conf"
+  },
+  {
+    "template": "dovecot-dict-sql-sieve_before.conf.j2",
+    "output":   "/etc/dovecot/sql/dovecot-dict-sql-sieve_before.conf"
+  },
+  {
+    "template": "dovecot-dict-sql-sieve_after.conf.j2",
+    "output":   "/etc/dovecot/sql/dovecot-dict-sql-sieve_after.conf"
+  },
+  {
+    "template": "mail_plugins.j2",
+    "output":   "/etc/dovecot/mail_plugins"
+  },
+  {
+    "template": "mail_plugins_imap.j2",
+    "output":   "/etc/dovecot/mail_plugins_imap"
+  },
+  {
+    "template": "mail_plugins_lmtp.j2",
+    "output":   "/etc/dovecot/mail_plugins_lmtp"
+  },
+  {
+    "template": "global_sieve_after.sieve.j2",
+    "output":   "/var/vmail/sieve/global_sieve_after.sieve"
+  },
+  {
+    "template": "global_sieve_before.sieve.j2",
+    "output":   "/var/vmail/sieve/global_sieve_before.sieve"
+  },
+  {
+    "template": "dovecot-master.passwd.j2",
+    "output":   "/etc/dovecot/dovecot-master.passwd"
+  },
+  {
+    "template": "dovecot-master.userdb.j2",
+    "output":   "/etc/dovecot/dovecot-master.userdb"
+  },
+  {
+    "template": "sieve.creds.j2",
+    "output":   "/etc/sogo/sieve.creds"
+  },
+  {
+    "template": "sogo-sso.pass.j2",
+    "output":   "/etc/phpfpm/sogo-sso.pass"
+  },
+  {
+    "template": "cron.creds.j2",
+    "output":   "/etc/sogo/cron.creds"
+  },
+  {
+    "template": "source_env.sh.j2",
+    "output":   "/source_env.sh"
+  },
+  {
+    "template": "maildir_gc.sh.j2",
+    "output":   "/usr/local/bin/maildir_gc.sh"
+  },
+  {
+    "template": "dovecot.conf.j2",
+    "output":   "/etc/dovecot/dovecot.conf"
+  }
+]

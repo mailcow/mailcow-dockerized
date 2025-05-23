@@ -1,0 +1,34 @@
+{% if SKIP_FTS|lower in ['n', 'no'] %}
+plugin {
+    fts_autoindex = yes
+    fts_autoindex_exclude = \Junk
+    fts_autoindex_exclude2 = \Trash
+    # Tweak this setting if you only want to ensure big and frequent folders are indexed, not all.
+    fts_autoindex_max_recent_msgs = 20
+    fts = flatcurve
+
+    # Maximum term length can be set via the 'maxlen' argument (maxlen is
+    # specified in bytes, not number of UTF-8 characters)
+    fts_tokenizer_email_address = maxlen=100
+    fts_tokenizer_generic = algorithm=simple maxlen=30
+
+    # These are not flatcurve settings, but required for Dovecot FTS. See
+    # Dovecot FTS Configuration link above for further information.
+    fts_languages = en es de
+    fts_tokenizers = generic email-address
+
+    # OPTIONAL: Recommended default FTS core configuration
+    fts_filters = normalizer-icu snowball stopwords
+    fts_filters_en = lowercase snowball english-possessive stopwords
+
+    fts_index_timeout = 300s
+}
+
+service indexer-worker {
+  # Max amount of simultaniously running indexer jobs.
+  process_limit = {{ FTS_PROCS }}
+
+  # Max amount of RAM used by EACH indexer process.
+  vsz_limit = {{ FTS_HEAP }} MB
+}
+{% endif %}

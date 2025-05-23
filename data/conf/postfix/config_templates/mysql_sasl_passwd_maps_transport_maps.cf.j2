@@ -1,0 +1,9 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT CONCAT_WS(':', username, password) AS auth_data FROM transports
+  WHERE nexthop = '%s'
+  AND active = '1'
+  AND username != ''
+  LIMIT 1;

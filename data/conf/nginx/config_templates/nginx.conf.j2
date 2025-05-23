@@ -1,0 +1,211 @@
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    # map-size.conf:
+    map_hash_max_size 256;
+    map_hash_bucket_size 256;
+
+    # site.conf:
+    proxy_cache_path /tmp levels=1:2 keys_zone=sogo:10m inactive=24h  max_size=1g;
+    server_names_hash_max_size 512;
+    server_names_hash_bucket_size 128;
+
+    map $http_x_forwarded_proto $client_req_scheme {
+        default $scheme;
+        https https;
+    }
+
+    {% if HTTP_REDIRECT|lower in ["y", "yes"] %}
+    # HTTP to HTTPS redirect
+    server {
+        root /web;
+        listen {{ HTTP_PORT }} default_server;
+        listen [::]:{{ HTTP_PORT }} default_server;
+
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
+
+        if ( $request_uri ~* "%0A|%0D" ) { return 403; }
+        location ^~ /.well-known/acme-challenge/ {
+            allow all;
+            default_type "text/plain";
+        }
+        location / {
+            return 301 https://$host$uri$is_args$args;
+        }
+    }
+    {%endif%}
+
+    # Default Server Name
+    server {
+        listen 127.0.0.1:65510; # sogo-auth verify internal
+
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+        {%endif%}
+
+        http2 on;
+
+        ssl_certificate /etc/ssl/mail/cert.pem;
+        ssl_certificate_key /etc/ssl/mail/key.pem;
+
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.*;
+
+        include /etc/nginx/includes/sites-default.conf;
+    }
+
+    # Additional Server Names
+    {% for SERVER_NAME in ADDITIONAL_SERVER_NAMES %}
+    server {
+        listen 127.0.0.1:65510; # sogo-auth verify internal
+
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+        {%endif%}
+
+        http2 on;
+
+        ssl_certificate /etc/ssl/mail/cert.pem;
+        ssl_certificate_key /etc/ssl/mail/key.pem;
+
+        server_name {{ SERVER_NAME }};
+
+        include /etc/nginx/includes/sites-default.conf;
+    }
+    {% endfor %}
+
+    # rspamd dynmaps:
+    server {
+        listen 8081;
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        listen [::]:8081;
+        {%endif%}
+        index index.php index.html;
+        server_name _;
+        error_log  /var/log/nginx/error.log;
+        access_log /var/log/nginx/access.log;
+        root /dynmaps;
+
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass {{ PHPFPMHOST }}:9001;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+
+    # rspamd meta_exporter:
+    server {
+        listen 9081;
+        index index.php index.html;
+        server_name _;
+        error_log  /var/log/nginx/error.log;
+        access_log /var/log/nginx/access.log;
+        root /meta_exporter;
+        client_max_body_size 10M;
+        location ~ \.php$ {
+            client_max_body_size 10M;
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass {{ PHPFPMHOST }}:9001;
+            fastcgi_index pipe.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+
+    server {
+        listen 9082 ssl http2;
+
+        ssl_certificate /etc/ssl/mail/cert.pem;
+        ssl_certificate_key /etc/ssl/mail/key.pem;
+
+        index mailcowauth.php;
+        server_name _;
+        error_log  /var/log/nginx/error.log;
+        access_log /var/log/nginx/access.log;
+        root /mailcowauth;
+        client_max_body_size 10M;
+        location ~ \.php$ {
+            client_max_body_size 10M;
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass phpfpm:9001;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+
+    include /etc/nginx/conf.d/*.conf;
+
+    {% for cert in VALID_CERT_DIRS %}
+    server {
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen {{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+
+        {% if not DISABLE_IPv6|lower in ["y", "yes"] %}
+        {% if not HTTP_REDIRECT|lower in ["y", "yes"] %}
+        listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%};
+        {%endif%}
+        listen [::]:{{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %} proxy_protocol{%endif%} ssl;
+        {%endif%}
+
+        http2 on;
+
+        ssl_certificate {{ cert.cert_path }}cert.pem;
+        ssl_certificate_key {{ cert.cert_path }}key.pem;
+
+        server_name {{ cert.domains }};
+
+        include /etc/nginx/includes/sites-default.conf;
+    }
+    {% endfor %}
+}

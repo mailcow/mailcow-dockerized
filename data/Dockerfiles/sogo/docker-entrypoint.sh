@@ -1,17 +1,5 @@
 #!/bin/bash
 
-if [[ "${SKIP_SOGO}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-  echo "SKIP_SOGO=y, skipping SOGo..."
-  sleep 365d
-  exit 0
-fi
-
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  cp /etc/syslog-ng/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng.conf
-fi
-
-echo "$TZ" > /etc/timezone
-
 # Run hooks
 for file in /hooks/*; do
   if [ -x "${file}" ]; then
@@ -20,4 +8,13 @@ for file in /hooks/*; do
   fi
 done
 
-exec "$@"
+python3 -u /bootstrap/main.py
+BOOTSTRAP_EXIT_CODE=$?
+
+if [ $BOOTSTRAP_EXIT_CODE -ne 0 ]; then
+  echo "Bootstrap failed with exit code $BOOTSTRAP_EXIT_CODE. Not starting SOGo."
+  exit $BOOTSTRAP_EXIT_CODE
+fi
+
+echo "Bootstrap succeeded. Starting SOGo..."
+exec gosu sogo /usr/sbin/sogod

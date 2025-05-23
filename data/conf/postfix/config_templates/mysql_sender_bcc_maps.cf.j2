@@ -1,0 +1,8 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT bcc_dest FROM bcc_maps
+  WHERE local_dest='%s'
+    AND type='sender'
+    AND active='1';

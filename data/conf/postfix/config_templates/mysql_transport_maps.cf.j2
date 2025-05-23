@@ -1,0 +1,7 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT CONCAT('smtp_via_transport_maps:', nexthop) AS transport FROM transports
+  WHERE active = '1'
+  AND destination = '%s';

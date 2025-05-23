@@ -17,16 +17,18 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.11
+      image: ghcr.io/mailcow/mariadb:nightly-19052025
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
       stop_grace_period: 45s
       volumes:
+        - ./data/hooks/mariadb:/hooks:z
+        - ./data/conf/mysql:/service_config:z
         - mysql-vol-1:/var/lib/mysql/
         - mysql-socket-vol-1:/var/run/mysqld/
-        - ./data/conf/mysql/:/etc/mysql/conf.d/:ro,Z
       environment:
+        - CONTAINER_NAME=mysql-mailcow
         - TZ=${TZ}
         - MYSQL_ROOT_PASSWORD=${DBROOT}
         - MYSQL_DATABASE=${DBNAME}
@@ -65,7 +67,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.70
+      image: ghcr.io/mailcow/clamd:nightly-19052025
       restart: always
       depends_on:
         unbound-mailcow:
@@ -73,10 +75,16 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=clamd-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
-        - ./data/conf/clamav/:/etc/clamav/:Z
+        - ./data/hooks/clamd:/hooks:Z
+        - ./data/conf/clamav:/service_config:Z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - clamd-db-vol-1:/var/lib/clamav
       networks:
         mailcow-network:
@@ -84,12 +92,16 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.2
+      image: ghcr.io/mailcow/rspamd:nightly-19052025
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
         - clamd-mailcow
       environment:
+        - CONTAINER_NAME=rspamd-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
@@ -99,6 +111,10 @@ services:
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       volumes:
         - ./data/hooks/rspamd:/hooks:Z
+        - ./data/conf/rspamd/config_templates/:/service_config/config_templates:z
+        - ./data/conf/rspamd/custom_templates/:/service_config/custom_templates:z
+        - ./data/conf/rspamd/rendered_configs/:/service_config/rendered_configs:z
+        - ./data/conf/rspamd/config.json:/service_config/config.json:Z
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:Z
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:Z
@@ -106,6 +122,7 @@ services:
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro,Z
         - ./data/conf/rspamd/rspamd.conf.local:/etc/rspamd/rspamd.conf.local:Z
         - ./data/conf/rspamd/rspamd.conf.override:/etc/rspamd/rspamd.conf.override:Z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       hostname: rspamd
@@ -117,7 +134,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.93
+      image: ghcr.io/mailcow/phpfpm:nightly-19052025
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -137,19 +154,15 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
-        - ./data/conf/phpfpm/crons:/crons:z
+        - ./data/conf/phpfpm:/service_config:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/sogo-sso/:z
-        - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
-        - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
-        - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
         - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
         - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
         - ./data/assets/templates:/tpls:z
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=php-fpm-mailcow
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
@@ -190,18 +203,19 @@ services:
         ofelia.enabled: "true"
         ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /php-conf/crons/keycloak-sync.php || exit 0\""
         ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /php-conf/crons/ldap-sync.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.133
+      image: ghcr.io/mailcow/sogo:nightly-19052025
       environment:
+        - CONTAINER_NAME=sogo-mailcow
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -222,7 +236,9 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - ./data/hooks/sogo:/hooks:Z
-        - ./data/conf/sogo/:/etc/sogo/:z
+        - ./data/conf/sogo:/service_config:z
+        - ./data/conf/sogo/cron.creds:/etc/sogo/cron.creds:z
+        - ./data/conf/sogo/sieve.creds:/etc/sogo/sieve.creds:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-shortlogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
@@ -251,7 +267,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.33
+      image: ghcr.io/mailcow/dovecot:nightly-19052025
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -262,18 +278,21 @@ services:
         - NET_BIND_SERVICE
       volumes:
         - ./data/hooks/dovecot:/hooks:Z
-        - ./data/conf/dovecot:/etc/dovecot:z
+        - ./data/conf/dovecot/auth:/etc/dovecot/auth:z
+        - ./data/conf/dovecot:/service_config:z
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/:z
+        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - vmail-vol-1:/var/vmail
         - vmail-index-vol-1:/var/vmail_index
         - crypt-vol-1:/mail_crypt/
-        - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
+        - ./data/conf/rspamd/custom/sa-rules:/etc/rspamd/custom/sa-rules:z
         - ./data/assets/templates:/templates:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
+        - CONTAINER_NAME=dovecot-mailcow
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
@@ -338,7 +357,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:nightly-19052025
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -346,13 +365,16 @@ services:
           condition: service_healthy
       volumes:
         - ./data/hooks/postfix:/hooks:Z
-        - ./data/conf/postfix:/opt/postfix/conf:z
+        - ./data/conf/postfix:/service_config:z
+        - ./data/conf/postfix/postscreen_access.cidr:/opt/postfix/conf/postscreen_access.cidr:z
+        - ./data/conf/postfix/extra.cf:/opt/postfix/conf/extra.cf:z
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
       environment:
+        - CONTAINER_NAME=postfix-mailcow
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
@@ -394,10 +416,14 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.03
+      image: ghcr.io/mailcow/nginx:nightly-19052025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - CONTAINER_NAME=nginx-mailcow
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
@@ -407,23 +433,25 @@ services:
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
         - DISABLE_IPv6=${DISABLE_IPv6:-n}
         - HTTP_REDIRECT=${HTTP_REDIRECT:-n}
-        - PHPFPMHOST=${PHPFPMHOST:-}
-        - SOGOHOST=${SOGOHOST:-}
-        - RSPAMDHOST=${RSPAMDHOST:-}
-        - REDISHOST=${REDISHOST:-}
+        - PHPFPMHOST=${PHPFPMHOST:-php-fpm-mailcow}
+        - RSPAMDHOST=${RSPAMDHOST:-rspamd-mailcow}
+        - SOGOHOST=${SOGOHOST:-${IPV4_NETWORK:-172.22.1}.248}
+        - REDISHOST=${REDISHOST:-redis-mailcow}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
       volumes:
+        - ./data/hooks/nginx:/hooks:Z
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
         - ./data/assets/ssl/:/etc/ssl/mail/:ro,z
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:z
+        - ./data/conf/nginx:/service_config:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - ./data/conf/dovecot/auth/mailcowauth.php:/mailcowauth/mailcowauth.php:z
         - ./data/web/inc/functions.inc.php:/mailcowauth/functions.inc.php:z
         - ./data/web/inc/functions.auth.inc.php:/mailcowauth/functions.auth.inc.php:z
         - ./data/web/inc/sessions.inc.php:/mailcowauth/sessions.inc.php:z
+        - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/
       ports:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"

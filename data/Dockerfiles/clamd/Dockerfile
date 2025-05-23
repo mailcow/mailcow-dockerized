@@ -41,7 +41,7 @@ RUN wget -P /src https://www.clamav.net/downloads/production/clamav-${CLAMD_VERS
   -D ENABLE_MILTER=ON                                                                 \
   -D ENABLE_MAN_PAGES=OFF                                                             \
   -D ENABLE_STATIC_LIB=OFF                                                            \
-  -D ENABLE_JSON_SHARED=ON                                                            \ 
+  -D ENABLE_JSON_SHARED=ON                                                            \
   && cmake --build . \
   && make DESTDIR="/clamav" -j$(($(nproc) - 1)) install \
   && rm -r "/clamav/usr/lib/pkgconfig/" \
@@ -88,23 +88,42 @@ RUN apk upgrade --no-cache \
     pcre2 \
     zlib \
     libgcc \
+    py3-pip \
   && addgroup -S "clamav" && \
     adduser -D -G "clamav" -h "/var/lib/clamav" -s "/bin/false" -S "clamav" && \
     install -d -m 755 -g "clamav" -o "clamav" "/var/log/clamav" && \
     chown -R clamav:clamav /var/lib/clamav
 
+RUN apk add --no-cache --virtual .build-deps \
+      gcc \
+      musl-dev \
+      python3-dev \
+      linux-headers \
+  && pip install --break-system-packages psutil \
+  && apk del .build-deps
+
+RUN pip install --break-system-packages \
+  mysql-connector-python \
+  jinja2 \
+  redis \
+  dnspython
+
+
 COPY --from=builder "/clamav" "/"
 
-# init
-COPY clamd.sh /clamd.sh
-RUN chmod +x /sbin/tini
 
-# healthcheck
-COPY healthcheck.sh /healthcheck.sh
-COPY clamdcheck.sh /usr/local/bin
-RUN chmod +x /healthcheck.sh
-RUN chmod +x /usr/local/bin/clamdcheck.sh
+COPY data/Dockerfiles/bootstrap /bootstrap
+COPY data/Dockerfiles/clamd/docker-entrypoint.sh /docker-entrypoint.sh
+COPY data/Dockerfiles/clamd/clamd.sh /clamd.sh
+COPY data/Dockerfiles/clamd/healthcheck.sh /healthcheck.sh
+COPY data/Dockerfiles/clamd/clamdcheck.sh /usr/local/bin
 HEALTHCHECK --start-period=6m CMD "/healthcheck.sh"
 
-ENTRYPOINT []
+RUN chmod +x /docker-entrypoint.sh \
+  /clamd.sh \
+  /healthcheck.sh \
+  /usr/local/bin/clamdcheck.sh \
+  /sbin/tini
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/sbin/tini", "-g", "--", "/clamd.sh"]

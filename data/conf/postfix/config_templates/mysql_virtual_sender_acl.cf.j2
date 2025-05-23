@@ -1,0 +1,50 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+# First select queries domain and alias_domain to determine if domains are active.
+query = SELECT goto FROM alias
+  WHERE id IN (
+      SELECT COALESCE (
+        (
+          SELECT id FROM alias
+            WHERE address='%s'
+            AND (active='1' OR active='2')
+        ), (
+          SELECT id FROM alias
+            WHERE address='@%d'
+            AND (active='1' OR active='2')
+        )
+      )
+    )
+    AND active='1'
+    AND (domain IN
+      (SELECT domain FROM domain
+        WHERE domain='%d'
+          AND active='1')
+      OR domain in (
+        SELECT alias_domain FROM alias_domain
+          WHERE alias_domain='%d'
+            AND active='1'
+      )
+    )
+  UNION
+  SELECT logged_in_as FROM sender_acl
+    WHERE send_as='@%d'
+      OR send_as='%s'
+      OR send_as='*'
+      OR send_as IN (
+        SELECT CONCAT('@',target_domain) FROM alias_domain
+          WHERE alias_domain = '%d')
+      OR send_as IN (
+        SELECT CONCAT('%u','@',target_domain) FROM alias_domain
+          WHERE alias_domain = '%d')
+      AND logged_in_as NOT IN (
+        SELECT goto FROM alias
+          WHERE address='%s')
+  UNION
+  SELECT username FROM mailbox, alias_domain
+    WHERE alias_domain.alias_domain = '%d'
+      AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain)
+      AND (mailbox.active = '1' OR mailbox.active ='2')
+      AND alias_domain.active='1';

@@ -1,0 +1,19 @@
+connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS }}"
+map {
+  pattern = priv/sieve/name/\$script_name
+  table = sieve_after
+  username_field = username
+  value_field = id
+  fields {
+    script_name = \$script_name
+  }
+}
+map {
+  pattern = priv/sieve/data/\$id
+  table = sieve_after
+  username_field = username
+  value_field = script_data
+  fields {
+    id = \$id
+  }
+}

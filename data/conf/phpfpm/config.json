@@ -1,0 +1,26 @@
+[
+  {
+    "template": "opcache-recommended.ini.j2",
+    "output":   "/usr/local/etc/php/conf.d/opcache-recommended.ini"
+  },
+  {
+    "template": "pools.conf.j2",
+    "output":   "/usr/local/etc/php-fpm.d/z-pools.conf"
+  },
+  {
+    "template": "other.ini.j2",
+    "output":   "/usr/local/etc/php/conf.d/zzz-other.ini"
+  },
+  {
+    "template": "upload.ini.j2",
+    "output":   "/usr/local/etc/php/conf.d/upload.ini"
+  },
+  {
+    "template": "session_store.ini.j2",
+    "output":   "/usr/local/etc/php/conf.d/session_store.ini"
+  },
+  {
+    "template": "0081-custom-mailcow.css.j2",
+    "output":   "/web/css/build/0081-custom-mailcow.css"
+  }
+]

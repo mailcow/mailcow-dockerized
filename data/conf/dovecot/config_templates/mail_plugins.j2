@@ -1,0 +1,5 @@
+{%- if SKIP_FTS|lower in ["y", "yes"] -%}
+quota acl zlib mail_crypt mail_crypt_acl mail_log notify listescape replication lazy_expunge
+{%- else -%}
+quota acl zlib mail_crypt mail_crypt_acl mail_log notify fts fts_flatcurve listescape replication lazy_expunge
+{%- endif -%}

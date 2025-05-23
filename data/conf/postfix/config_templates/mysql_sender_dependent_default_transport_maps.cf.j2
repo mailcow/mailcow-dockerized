@@ -1,0 +1,43 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT GROUP_CONCAT(transport SEPARATOR '') AS transport_maps
+  FROM (
+    SELECT IF(EXISTS(SELECT 'smtp_type' FROM alias
+      LEFT OUTER JOIN mailbox ON mailbox.username = alias.goto
+        WHERE (address = '%s'
+          OR address IN (
+            SELECT CONCAT('%u', '@', target_domain) FROM alias_domain
+              WHERE alias_domain = '%d'
+          )
+        )
+        AND JSON_UNQUOTE(JSON_VALUE(attributes, '$.tls_enforce_out')) = '1'
+        AND mailbox.active = '1'
+    ), 'smtp_enforced_tls:', 'smtp:') AS 'transport'
+    UNION ALL
+    SELECT COALESCE(
+      (SELECT hostname FROM relayhosts
+      LEFT OUTER JOIN mailbox ON JSON_UNQUOTE(JSON_VALUE(mailbox.attributes, '$.relayhost')) = relayhosts.id
+        WHERE relayhosts.active = '1'
+          AND (
+            mailbox.username IN (SELECT alias.goto from alias
+              JOIN mailbox ON mailbox.username = alias.goto
+                WHERE alias.active = '1'
+                  AND alias.address = '%s'
+                  AND alias.address NOT LIKE '@%%'
+            )
+          )
+      ),
+      (SELECT hostname FROM relayhosts
+      LEFT OUTER JOIN domain ON domain.relayhost = relayhosts.id
+        WHERE relayhosts.active = '1'
+          AND (domain.domain = '%d'
+            OR domain.domain IN (
+              SELECT target_domain FROM alias_domain
+                WHERE alias_domain = '%d'
+            )
+          )
+      )
+    )
+  ) AS transport_view;

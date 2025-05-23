@@ -27,6 +27,7 @@ RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
   psmisc \
   wget \
   patch \
+  python3 python3-pip \
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
@@ -42,18 +43,21 @@ RUN echo "Building from repository $SOGO_DEBIAN_REPOSITORY" \
   && rm -rf /var/lib/apt/lists/* \
   && touch /etc/default/locale
 
-COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
-COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
-COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY acl.diff /acl.diff
-COPY navMailcowBtns.diff /navMailcowBtns.diff
-COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
-COPY docker-entrypoint.sh /
+RUN pip install  --break-system-packages \
+  mysql-connector-python \
+  jinja2 \
+  redis \
+  dnspython \
+  psutil
 
-RUN chmod +x /bootstrap-sogo.sh \
-  /usr/local/sbin/stop-supervisor.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY data/Dockerfiles/bootstrap /bootstrap
+COPY data/Dockerfiles/sogo/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY data/Dockerfiles/sogo/syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY data/Dockerfiles/sogo/supervisord.conf /etc/supervisor/supervisord.conf
+COPY data/Dockerfiles/sogo/stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
+COPY data/Dockerfiles/sogo/docker-entrypoint.sh /
+
+RUN chmod +x /usr/local/sbin/stop-supervisor.sh
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

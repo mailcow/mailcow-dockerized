@@ -1,0 +1,7 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT goto FROM spamalias
+  WHERE address='%s'
+    AND validity >= UNIX_TIMESTAMP()

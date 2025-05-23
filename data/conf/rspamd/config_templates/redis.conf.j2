@@ -1,0 +1,10 @@
+{% if REDIS_SLAVEOF_IP and REDIS_SLAVEOF_PORT %}
+read_servers = "redis-mailcow:6379";
+write_servers = "{{ REDIS_SLAVEOF_IP }}:{{ REDIS_SLAVEOF_PORT }}";
+password = "{{ REDISPASS }}";
+timeout = 10;
+{% else %}
+servers = "redis-mailcow:6379";
+password = "{{ REDISPASS }}";
+timeout = 10;
+{% endif %}

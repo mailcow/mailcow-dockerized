@@ -1,0 +1,15 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT DISTINCT
+  CASE WHEN '%d' IN (
+    SELECT domain FROM domain
+      WHERE relay_all_recipients=1
+        AND domain='%d'
+        AND backupmx=1
+  )
+  THEN '%s' ELSE (
+    SELECT goto FROM alias WHERE address='%s' AND active='1'
+  )
+  END AS result;

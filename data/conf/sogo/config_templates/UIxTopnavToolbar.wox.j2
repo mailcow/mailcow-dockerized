@@ -1,0 +1,102 @@
+<?xml version='1.0' standalone='yes'?>
+<container
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:var="http://www.skyrix.com/od/binding"
+    xmlns:const="http://www.skyrix.com/od/constant"
+    xmlns:label="OGo:label">
+
+  <div class="md-toolbar-tools sg-toolbar-group-1" layout="row">
+    <md-button ng-click="toggleLeft()"
+               class="md-icon-button hide show-gt-md"
+               label:aria-label="Toggle Menu">
+      {% raw %}
+      <md-tooltip ng-if="leftIsClose" md-direction="bottom">{{ ::'Reduce' | loc }}</md-tooltip>
+      <md-tooltip ng-else="leftIsClose" md-direction="bottom">{{ ::'Expand' | loc }}</md-tooltip>
+      <md-icon>{{ leftIsClose ? 'fullscreen_exit' : 'fullscreen' }}</md-icon>
+      {% endraw %}
+    </md-button>
+    <md-button ng-click="toggleLeft()"
+               class="md-icon-button hide-gt-md"
+               label:aria-label="Toggle Menu">
+      <md-icon>menu</md-icon>
+    </md-button>
+    <div class="sg-date-group sg-padded hide show-gt-md" layout="column" layout-align="space-between end">
+      <p class="sg-day" ng-bind="currentDay.weekday"><!-- weekday --></p>
+      <p class="sg-month" ng-bind="currentDay.month"><!-- month --></p>
+      <p class="sg-year" ng-bind="currentDay.year"><!-- year --></p>
+    </div>
+    <p class="sg-md-display-3 sg-date-today hide show-gt-md" ng-bind="currentDay.day"><!-- day --></p>
+  </div>
+  <div class="md-toolbar-tools sg-toolbar-group-last" layout="row" layout-align="end center">
+    <md-button class="md-icon-button"
+               ng-show="::activeUser.path.calendar.length"
+               ng-disabled="::baseURL.endsWith('/Calendar/')"
+               var:ng-click="navButtonClick"
+               {% raw %}
+               ng-href="{{::activeUser.path.calendar}}">
+               {% endraw %}
+      <md-tooltip><var:string label:value="Calendar"/></md-tooltip>
+      <md-icon>event</md-icon>
+    </md-button>
+    <md-button class="md-icon-button"
+               ng-disabled="::baseURL.endsWith('/Contacts/')"
+               var:ng-click="navButtonClick"
+               {% raw %}
+               ng-href="{{::activeUser.path.contacts}}">
+               {% endraw %}
+      <md-icon>contacts</md-icon>
+      <md-tooltip><var:string label:value="Address Book"/></md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button"
+               ng-show="::activeUser.path.mail.length"
+               ng-disabled="baseURL.endsWith('/Mail/')"
+               var:ng-click="navButtonClick"
+               {% raw %}
+               ng-href="{{::activeUser.path.mail}}">
+               {% endraw %}
+      <md-icon>email</md-icon>
+      <var:if condition="userHasVacationDisabled">
+        <md-tooltip><var:string label:value="Mail"/></md-tooltip>
+      </var:if>
+      <var:if condition="userHasVacationEnabled">
+        <md-icon class="md-default-theme md-warn md-bg sg-icon--badge" label:aria-label="Vacation message is enabled">forward</md-icon>
+        <md-tooltip><var:string label:value="Vacation message is enabled"/></md-tooltip>
+      </var:if>
+    </md-button>
+    <md-button class="md-icon-button"
+               var:ng-click="navButtonClick"
+               ng-href="/user">
+      <md-icon>build</md-icon>
+      <md-tooltip>mailcow <var:string label:value="Preferences"/></md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button"
+               ng-disabled="::baseURL.endsWith('/Administration')"
+               ng-show="::activeUser.isSuperUser"
+               var:ng-click="navButtonClick"
+               {% raw %}
+               ng-href="{{::activeUser.path.administration}}">
+               {% endraw %}
+      <md-icon>settings_applications</md-icon>
+      <md-tooltip><var:string label:value="Administration"/></md-tooltip>
+    </md-button>
+    <div class="hide-xs" style="width: 40px"
+         ng-show="::activeUser.path.logoff.length"><!-- divider --></div>
+    <md-button class="md-icon-button"
+               ng-show="::activeUser.path.help.length"
+               {% raw %}
+               ng-href="{{::activeUser.path.help}}"
+               {% endraw %}
+               target="_blank">
+      <md-icon>help_outline</md-icon>
+      <md-tooltip><var:string label:value="Help"/></md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button"
+               onclick="mc_logout();"
+               var:ng-click="navButtonClick"
+               ng-href="#">
+      <md-icon>settings_power</md-icon>
+      <md-tooltip><var:string label:value="Disconnect"/></md-tooltip>
+    </md-button>
+  </div>
+
+</container>

@@ -1,0 +1,8 @@
+user = {{ DBUSER }}
+password = {{ DBPASS }}
+hosts = unix:/var/run/mysqld/mysqld.sock
+dbname = {{ DBNAME }}
+query = SELECT CONCAT('FILTER smtp_via_transport_maps:', nexthop) as transport FROM transports
+  WHERE '%s' REGEXP destination
+    AND active='1'
+    AND is_mx_based='1';

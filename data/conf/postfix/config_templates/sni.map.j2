@@ -1,0 +1,7 @@
+{% if not SKIP_LETS_ENCRYPT|lower in ['y', 'yes'] %}
+{% for cert_dir, domains in VALID_CERT_DIRS.items() %}
+{% for domain in domains %}
+{{ domain }} {{ cert_dir }}/key.pem {{ cert_dir }}/cert.pem
+{% endfor %}
+{% endfor %}
+{% endif %}

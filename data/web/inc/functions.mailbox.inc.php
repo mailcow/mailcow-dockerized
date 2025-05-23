@@ -538,6 +538,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $relay_unknown_only = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_unknown_only'];
           $backupmx = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $DOMAIN_DEFAULT_ATTRIBUTES['backupmx'];
           $gal = (isset($_data['gal'])) ? intval($_data['gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['gal'];
+          $ldap_gal = (isset($_data['gal'])) ? intval($_data['ldap_gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['ldap_gal'];
           if ($relay_all_recipients == 1) {
             $backupmx = '1';
           }
@@ -593,8 +594,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':domain' => '%@' . $domain
           ));
           // save domain
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `ldap_gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :ldap_gal, :active, :relay_unknown_only, :relay_all_recipients)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
@@ -605,6 +606,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':quota' => $quota,
             ':backupmx' => $backupmx,
             ':gal' => $gal,
+            ':ldap_gal' => $ldap_gal,
             ':active' => $active,
             ':relay_unknown_only' => $relay_unknown_only,
             ':relay_all_recipients' => $relay_all_recipients
@@ -1551,9 +1553,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['rl_value']                   = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
           $attr['active']                     = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr['gal']                        = (isset($_data['gal'])) ? intval($_data['gal']) : 1;
+          $attr['ldap_gal']                   = (isset($_data['ldap_gal'])) ? intval($_data['ldap_gal']) : 1;
           $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
           $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
-          $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+          $attr['relay_unknown_only']         = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -2626,6 +2629,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $is_now = mailbox('get', 'domain_details', $domain);
               if (!empty($is_now)) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
+                $ldap_gal             = (isset($_data['ldap_gal'])) ? intval($_data['ldap_gal']) : $is_now['ldap_gal'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
                 $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
@@ -2642,10 +2646,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `description` = :description,
               `gal` = :gal
+              `ldap_gal` = :ldap_gal
                 WHERE `domain` = :domain");
               $stmt->execute(array(
                 ':description' => $description,
                 ':gal' => $gal,
+                ':ldap_gal' => $ldap_gal,
                 ':domain' => $domain
               ));
               // save tags
@@ -2678,6 +2684,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx'];
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
+                $ldap_gal             = (isset($_data['ldap_gal'])) ? intval($_data['ldap_gal']) : $is_now['ldap_gal'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients'];
                 $relay_unknown_only   = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $is_now['relay_unknown_only'];
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
@@ -2792,6 +2799,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only` = :relay_unknown_only,
               `backupmx` = :backupmx,
               `gal` = :gal,
+              `ldap_gal` = :ldap_gal,
               `active` = :active,
               `quota` = :quota,
               `defquota` = :defquota,
@@ -2806,6 +2814,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':relay_unknown_only' => $relay_unknown_only,
                 ':backupmx' => $backupmx,
                 ':gal' => $gal,
+                ':ldap_gal' => $ldap_gal,
                 ':active' => $active,
                 ':quota' => $quota,
                 ':defquota' => $defquota,
@@ -2890,9 +2899,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['rl_value']                   = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
             $attr['active']                     = isset($_data['active']) ? intval($_data['active']) : 1;
             $attr['gal']                        = (isset($_data['gal'])) ? intval($_data['gal']) : 1;
+            $attr['ldap_gal']                   = (isset($_data['ldap_gal'])) ? intval($_data['ldap_gal']) : 0;
             $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
             $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
-            $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+            $attr['relay_unknown_only']         = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
             $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
             $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -4673,6 +4683,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only`,
               `backupmx`,
               `gal`,
+              `ldap_gal`,
               `active`
                 FROM `domain` WHERE `domain`= :domain");
           $stmt->execute(array(
@@ -4733,6 +4744,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['backupmx_int'] = $row['backupmx'];
           $domaindata['gal'] = $row['gal'];
           $domaindata['gal_int'] = $row['gal'];
+          $domaindata['ldap_gal'] = $row['ldap_gal'];
+          $domaindata['ldap_gal_int'] = $row['ldap_gal'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
           $domaindata['active_int'] = $row['active'];

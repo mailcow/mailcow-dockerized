@@ -1,0 +1,14 @@
+{% set QUOTA_TABLE = "quota2" if MASTER|lower in ["y", "yes"] else "quota2replica" %}
+connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS }}"
+map {
+  pattern = priv/quota/storage
+  table = {{ QUOTA_TABLE }}
+  username_field = username
+  value_field = bytes
+}
+map {
+  pattern = priv/quota/messages
+  table = {{ QUOTA_TABLE }}
+  username_field = username
+  value_field = messages
+}

@@ -1,0 +1,3 @@
+{%- set master_user = DOVECOT_MASTER_USER or RAND_USER %}
+{%- set master_pass = DOVECOT_MASTER_PASS or RAND_PASS %}
+{{ master_user }}@mailcow.local:{SHA1}{{ master_pass | sha1 }}::::::
