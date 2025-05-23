@@ -4,9 +4,8 @@ from pathlib import Path
 import os
 import sys
 import time
-import platform
 
-class Bootstrap(BootstrapBase):
+class BootstrapClamd(BootstrapBase):
   def bootstrap(self):
     # Skip Clamd if set
     if self.isYes(os.getenv("SKIP_CLAMD", "")):

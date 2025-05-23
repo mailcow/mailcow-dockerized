@@ -2,12 +2,10 @@ from jinja2 import Environment, FileSystemLoader
 from modules.BootstrapBase import BootstrapBase
 from pathlib import Path
 import os
-import sys
-import time
 import pwd
 import hashlib
 
-class Bootstrap(BootstrapBase):
+class BootstrapDovecot(BootstrapBase):
   def bootstrap(self):
     # Connect to MySQL
     self.connect_mysql()
@@ -15,7 +13,8 @@ class Bootstrap(BootstrapBase):
 
     # Connect to Redis
     self.connect_redis()
-    self.redis_conn.set("DOVECOT_REPL_HEALTH", 1)
+    if self.redis_connw:
+      self.redis_connw.set("DOVECOT_REPL_HEALTH", 1)
 
     # Wait for DNS
     self.wait_for_dns("mailcow.email")

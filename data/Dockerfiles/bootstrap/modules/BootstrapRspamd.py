@@ -1,12 +1,10 @@
 from jinja2 import Environment, FileSystemLoader
 from modules.BootstrapBase import BootstrapBase
 from pathlib import Path
-import os
-import sys
 import time
 import platform
 
-class Bootstrap(BootstrapBase):
+class BootstrapRspamd(BootstrapBase):
   def bootstrap(self):
     # Connect to MySQL
     self.connect_mysql()

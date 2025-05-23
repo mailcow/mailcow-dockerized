@@ -1,14 +1,9 @@
 from jinja2 import Environment, FileSystemLoader
 from modules.BootstrapBase import BootstrapBase
-from pathlib import Path
 import os
 import ipaddress
-import sys
-import time
-import platform
-import subprocess
 
-class Bootstrap(BootstrapBase):
+class BootstrapPhpfpm(BootstrapBase):
   def bootstrap(self):
     self.connect_mysql()
     self.connect_redis()
@@ -63,16 +58,16 @@ class Bootstrap(BootstrapBase):
     print("Setting default Redis keys if missing...")
 
     # Q_RELEASE_FORMAT
-    if self.redis_conn.get("Q_RELEASE_FORMAT") is None:
-      self.redis_conn.set("Q_RELEASE_FORMAT", "raw")
+    if self.redis_connw and self.redis_connr.get("Q_RELEASE_FORMAT") is None:
+        self.redis_connw.set("Q_RELEASE_FORMAT", "raw")
 
     # Q_MAX_AGE
-    if self.redis_conn.get("Q_MAX_AGE") is None:
-      self.redis_conn.set("Q_MAX_AGE", 365)
+    if self.redis_connw and self.redis_connr.get("Q_MAX_AGE") is None:
+      self.redis_connw.set("Q_MAX_AGE", 365)
 
     # PASSWD_POLICY hash defaults
-    if self.redis_conn.hget("PASSWD_POLICY", "length") is None:
-      self.redis_conn.hset("PASSWD_POLICY", mapping={
+    if self.redis_connw and self.redis_connr.hget("PASSWD_POLICY", "length") is None:
+      self.redis_connw.hset("PASSWD_POLICY", mapping={
         "length": 6,
         "chars": 0,
         "special_chars": 0,
@@ -82,7 +77,8 @@ class Bootstrap(BootstrapBase):
 
     # DOMAIN_MAP
     print("Rebuilding DOMAIN_MAP from MySQL...")
-    self.redis_conn.delete("DOMAIN_MAP")
+    if self.redis_connw:
+      self.redis_connw.delete("DOMAIN_MAP")
     domains = set()
     try:
       cursor = self.mysql_conn.cursor()
@@ -96,7 +92,8 @@ class Bootstrap(BootstrapBase):
 
       if domains:
         for domain in domains:
-          self.redis_conn.hset("DOMAIN_MAP", domain, 1)
+          if self.redis_connw:
+            self.redis_conn.hset("DOMAIN_MAP", domain, 1)
         print(f"{len(domains)} domains added to DOMAIN_MAP.")
       else:
         print("No domains found to insert into DOMAIN_MAP.")

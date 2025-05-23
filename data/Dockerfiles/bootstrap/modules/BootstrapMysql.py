@@ -1,27 +1,25 @@
 from jinja2 import Environment, FileSystemLoader
 from modules.BootstrapBase import BootstrapBase
-from pathlib import Path
 import os
-import sys
 import time
-import platform
 import subprocess
 
-class Bootstrap(BootstrapBase):
+class BootstrapMysql(BootstrapBase):
   def bootstrap(self):
     dbuser = "root"
     dbpass = os.getenv("MYSQL_ROOT_PASSWORD", "")
-    socket = "/var/run/mysqld/mysqld.sock"
+    socket = "/tmp/mysql-temp.sock"
 
     print("Starting temporary mysqld for upgrade...")
     self.start_temporary(socket)
 
-    self.connect_mysql()
+    self.connect_mysql(socket)
 
     print("Running mysql_upgrade...")
     self.upgrade_mysql(dbuser, dbpass, socket)
     print("Checking timezone support with CONVERT_TZ...")
     self.check_and_import_timezone_support(dbuser, dbpass, socket)
+    time.sleep(15)
 
     print("Shutting down temporary mysqld...")
     self.close_mysql()

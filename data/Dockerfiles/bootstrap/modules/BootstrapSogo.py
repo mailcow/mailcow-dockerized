@@ -5,7 +5,7 @@ import os
 import sys
 import time
 
-class Bootstrap(BootstrapBase):
+class BootstrapSogo(BootstrapBase):
   def bootstrap(self):
     # Skip SOGo if set
     if self.isYes(os.getenv("SKIP_SOGO", "")):
