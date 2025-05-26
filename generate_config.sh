@@ -217,6 +217,104 @@ if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
 
+# Check IPv6 support on the host
+if grep -qs '^1' /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null \
+  || ! ip -6 route show default &>/dev/null; then
+  ENABLE_IPV6_LINE="ENABLE_IPV6=false"
+  echo "IPv6 not detected on host — disabling IPv6 support."
+else
+  ENABLE_IPV6_LINE="ENABLE_IPV6=true"
+  echo "IPv6 detected on host — leaving IPv6 support enabled."
+fi
+
+# Check Docker daemon IPv6 settings
+# We require in /etc/docker/daemon.json:
+#   "ipv6": true
+#   "fixed-cidr-v6": "fd00:dead:beef:c0::/80"
+# For Docker < 27:
+#   "ip6tables": true
+#   "experimental": true
+DOCKER_DAEMON_CONFIG="/etc/docker/daemon.json"
+MISSING=()
+
+_has_kv() {
+  grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null
+}
+
+if [[ -f "$DOCKER_DAEMON_CONFIG" ]]; then
+  # ---- JSON validation ----
+  if command -v jq &>/dev/null; then
+    if ! jq empty "$DOCKER_DAEMON_CONFIG" 2>/dev/null; then
+      echo "ERROR: $DOCKER_DAEMON_CONFIG contains invalid JSON."
+      echo "Please fix the syntax (e.g. missing commas/braces) and rerun this script."
+      exit 1
+    fi
+  else
+    echo "WARNING: jq not found — cannot validate JSON syntax. Continuing anyway."
+  fi
+
+  # require "ipv6": true
+  if ! _has_kv ipv6 true; then
+    MISSING+=("ipv6: true")
+  fi
+
+  # require "fixed-cidr-v6": "fd00:dead:beef:c0::/80"
+  if ! grep -Eq '"fixed-cidr-v6"\s*:\s*".+"' "$DOCKER_DAEMON_CONFIG"; then
+    MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
+  fi
+
+  # determine Docker major version
+  DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
+
+  if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
+    # for Docker < 27, also require ip6tables and experimental
+    if _has_kv ipv6 true && ! _has_kv ip6tables true; then
+      MISSING+=("ip6tables: true")
+    fi
+    if ! _has_kv experimental true; then
+      MISSING+=("experimental: true")
+    fi
+  else
+    echo "Docker >= 27 detected — no ip6tables/experimental flags required."
+  fi
+
+  if (( ${#MISSING[@]} > 0 )); then
+    echo "Your Docker daemon.json is missing: ${MISSING[*]}"
+    read -p "Would you like to update $DOCKER_DAEMON_CONFIG now? [Y/n] " answer
+    answer=${answer:-Y}
+    if [[ $answer =~ ^[Yy]$ ]]; then
+      cp "$DOCKER_DAEMON_CONFIG" "${DOCKER_DAEMON_CONFIG}.bak"
+      echo "Backed up original to ${DOCKER_DAEMON_CONFIG}.bak"
+      if command -v jq &>/dev/null; then
+        TMP=$(mktemp)
+        # build jq filter
+        JQ_FILTER='.ipv6 = true | .["fixed-cidr-v6"] = "fd00:dead:beef:c0::/80"'
+        if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
+          JQ_FILTER+=' | .ip6tables = true | .experimental = true'
+        fi
+        jq "$JQ_FILTER" "$DOCKER_DAEMON_CONFIG" > "$TMP" && mv "$TMP" "$DOCKER_DAEMON_CONFIG"
+        echo "Updated $DOCKER_DAEMON_CONFIG."
+        echo "Restarting Docker daemon..."
+        if command -v systemctl &>/dev/null; then
+          systemctl restart docker
+        else
+          service docker restart
+        fi
+        echo "Docker restarted. Please rerun this script."
+        exit 1
+      else
+        echo "Please install jq or edit $DOCKER_DAEMON_CONFIG manually (add ipv6:true, fixed-cidr-v6:\"fd00:dead:beef:c0::/80\", plus ip6tables/experimental if Docker<27), then restart Docker and rerun this script."
+        exit 1
+      fi
+    else
+      ENABLE_IPV6_LINE="ENABLE_IPV6=false"
+      echo "User declined Docker config update — disabling IPv6 support."
+    fi
+  fi
+else
+  echo "Warning: $DOCKER_DAEMON_CONFIG not found — cannot verify Docker IPv6 settings."
+fi
+
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 cat << EOF > mailcow.conf
@@ -509,6 +607,12 @@ WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 # If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.
 # Otherwise it will work normally.
 SPAMHAUS_DQS_KEY=
+
+# IPv6 Controller Section
+# This variable controls the usage of IPv6 within mailcow.
+# Defaults to true
+# WARNING: MAKE SURE TO PROPERLY CONFIGURE IPv6 ON YOUR HOST FIRST BEFORE ENABLING THIS AS FAULTY CONFIGURATIONS CAN LEAD TO OPEN RELAYS!
+$ENABLE_IPV6_LINE
 
 # Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
 # CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
