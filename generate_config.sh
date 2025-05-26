@@ -1,32 +1,13 @@
 #!/usr/bin/env bash
 
+# Load mailcow Generic Scripts
+source _modules/core.sh
+source _modules/ipv6.sh
+
 set -o pipefail
 
-if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
-  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-  echo "Please update to 5.x or use another distribution."
-  exit 1
-fi
-
-if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< "$(uname -a)"; then
-    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
-    exit 1
-  fi
-fi
-
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
-# This will also cover sort
-if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
-if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
-
-for bin in openssl curl docker git awk sha1sum grep cut; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
-done
-
-# Check Docker Version (need at least 24.X)
-docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
+get_installed_tools
+get_docker_version
 
 if [[ $docker_version -lt 24 ]]; then
   echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
@@ -35,65 +16,7 @@ if [[ $docker_version -lt 24 ]]; then
   exit 1
 fi
 
-if docker compose > /dev/null 2>&1; then
-    if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
-      COMPOSE_VERSION=native
-      echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
-      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
-      sleep 2
-      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
-    else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-      exit 1
-    fi
-elif docker-compose > /dev/null 2>&1; then
-  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-    if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-      COMPOSE_VERSION=standalone
-      echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
-      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-      sleep 2
-      echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
-    else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-      exit 1
-    fi
-  fi
-
-else
-  echo -e "\e[31mCannot find Docker Compose.\e[0m"
-  echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-  exit 1
-fi
-
-detect_bad_asn() {
-  echo -e "\e[33mDetecting if your IP is listed on Spamhaus Bad ASN List...\e[0m"
-  response=$(curl --connect-timeout 15 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
-  if [ "$response" -eq 503 ]; then
-    if [ -z "$SPAMHAUS_DQS_KEY" ]; then
-      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
-      echo -e "\e[33mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!\e[0m"
-      sleep 2
-      echo ""
-      echo -e "\e[33mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account\e[0m"
-      echo -e "\e[33mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!\e[0m"
-      echo ""
-      sleep 2
-
-    else
-      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
-      echo -e "\e[32mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key...\e[0m"
-    fi
-  elif [ "$response" -eq 200 ]; then
-    echo -e "\e[33mCheck completed! Your IP is \e[32mclean\e[0m"
-  elif [ "$response" -eq 429 ]; then
-    echo -e "\e[33mCheck completed! \e[31mYour IP seems to be rate limited on the ASN Check service... please try again later!\e[0m"
-  else
-    echo -e "\e[31mCheck failed! \e[0mMaybe a DNS or Network problem?\e[0m"
-  fi
-}
+detect_bad_asn
 
 ### If generate_config.sh is started with --dev or -d it will not check out nightly or master branch and will keep on the current branch
 if [[ ${1} == "--dev" || ${1} == "-d" ]]; then
@@ -217,103 +140,8 @@ if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
 
-# Check IPv6 support on the host
-if grep -qs '^1' /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null \
-  || ! ip -6 route show default &>/dev/null; then
-  ENABLE_IPV6_LINE="ENABLE_IPV6=false"
-  echo "IPv6 not detected on host — disabling IPv6 support."
-else
-  ENABLE_IPV6_LINE="ENABLE_IPV6=true"
-  echo "IPv6 detected on host — leaving IPv6 support enabled."
-fi
-
-# Check Docker daemon IPv6 settings
-# We require in /etc/docker/daemon.json:
-#   "ipv6": true
-#   "fixed-cidr-v6": "fd00:dead:beef:c0::/80"
-# For Docker < 27:
-#   "ip6tables": true
-#   "experimental": true
-DOCKER_DAEMON_CONFIG="/etc/docker/daemon.json"
-MISSING=()
-
-_has_kv() {
-  grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null
-}
-
-if [[ -f "$DOCKER_DAEMON_CONFIG" ]]; then
-  # ---- JSON validation ----
-  if command -v jq &>/dev/null; then
-    if ! jq empty "$DOCKER_DAEMON_CONFIG" 2>/dev/null; then
-      echo "ERROR: $DOCKER_DAEMON_CONFIG contains invalid JSON."
-      echo "Please fix the syntax (e.g. missing commas/braces) and rerun this script."
-      exit 1
-    fi
-  else
-    echo "WARNING: jq not found — cannot validate JSON syntax. Continuing anyway."
-  fi
-
-  # require "ipv6": true
-  if ! _has_kv ipv6 true; then
-    MISSING+=("ipv6: true")
-  fi
-
-  # require "fixed-cidr-v6": "fd00:dead:beef:c0::/80"
-  if ! grep -Eq '"fixed-cidr-v6"\s*:\s*".+"' "$DOCKER_DAEMON_CONFIG"; then
-    MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
-  fi
-
-  # determine Docker major version
-  DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
-
-  if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
-    # for Docker < 27, also require ip6tables and experimental
-    if _has_kv ipv6 true && ! _has_kv ip6tables true; then
-      MISSING+=("ip6tables: true")
-    fi
-    if ! _has_kv experimental true; then
-      MISSING+=("experimental: true")
-    fi
-  else
-    echo "Docker >= 27 detected — no ip6tables/experimental flags required."
-  fi
-
-  if (( ${#MISSING[@]} > 0 )); then
-    echo "Your Docker daemon.json is missing: ${MISSING[*]}"
-    read -p "Would you like to update $DOCKER_DAEMON_CONFIG now? [Y/n] " answer
-    answer=${answer:-Y}
-    if [[ $answer =~ ^[Yy]$ ]]; then
-      cp "$DOCKER_DAEMON_CONFIG" "${DOCKER_DAEMON_CONFIG}.bak"
-      echo "Backed up original to ${DOCKER_DAEMON_CONFIG}.bak"
-      if command -v jq &>/dev/null; then
-        TMP=$(mktemp)
-        # build jq filter
-        JQ_FILTER='.ipv6 = true | .["fixed-cidr-v6"] = "fd00:dead:beef:c0::/80"'
-        if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
-          JQ_FILTER+=' | .ip6tables = true | .experimental = true'
-        fi
-        jq "$JQ_FILTER" "$DOCKER_DAEMON_CONFIG" > "$TMP" && mv "$TMP" "$DOCKER_DAEMON_CONFIG"
-        echo "Updated $DOCKER_DAEMON_CONFIG."
-        echo "Restarting Docker daemon..."
-        if command -v systemctl &>/dev/null; then
-          systemctl restart docker
-        else
-          service docker restart
-        fi
-        echo "Docker restarted. Please rerun this script."
-        exit 1
-      else
-        echo "Please install jq or edit $DOCKER_DAEMON_CONFIG manually (add ipv6:true, fixed-cidr-v6:\"fd00:dead:beef:c0::/80\", plus ip6tables/experimental if Docker<27), then restart Docker and rerun this script."
-        exit 1
-      fi
-    else
-      ENABLE_IPV6_LINE="ENABLE_IPV6=false"
-      echo "User declined Docker config update — disabling IPv6 support."
-    fi
-  fi
-else
-  echo "Warning: $DOCKER_DAEMON_CONFIG not found — cannot verify Docker IPv6 settings."
-fi
+get_ipv6_support
+docker_daemon_edit
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
@@ -700,5 +528,3 @@ else
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
-
-detect_bad_asn
