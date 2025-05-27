@@ -10,7 +10,14 @@ if [[ ! -d "${MODULE_DIR}" || -z "$(ls -A "${MODULE_DIR}")" ]]; then
   echo -e "\e[33m_modules is missing or empty – fetching all Modules from origin/${BRANCH}…\e[0m"
   git fetch origin "${BRANCH}"
   git checkout "origin/${BRANCH}" -- _modules
+  echo -e "\e[33mDone. Please restart the script...\e[0m"
+  exit 2
 fi
+
+source _modules/scripts/core.sh
+source _modules/scripts/ipv6_controller.sh
+source _modules/scripts/new_options.sh
+source _modules/scripts/migrate_options.sh
 
 detect_major_update() {
   if [ ${BRANCH} == "master" ]; then
