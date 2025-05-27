@@ -2,11 +2,11 @@
 
 ############## Begin Function Section ##############
 
-source _modules/core.sh
-source _modules/ipv6_controller.sh
+source _modules/scripts/core.sh
+source _modules/scripts/ipv6_controller.sh
 
-source _modules/new_options.sh
-source _modules/migrate_options.sh
+source _modules/scripts/new_options.sh
+source _modules/scripts/migrate_options.sh
 
 detect_major_update() {
   if [ ${BRANCH} == "master" ]; then
@@ -333,14 +333,34 @@ fi
 if [ ! "$DEV" ]; then
   echo -e "\e[32mChecking for newer update script...\e[0m"
   SHA1_1="$(sha1sum update.sh)"
-  git fetch origin #${BRANCH}
-  git checkout "origin/${BRANCH}" update.sh
-  SHA1_2=$(sha1sum update.sh)
+  git fetch origin
+  git checkout "origin/${BRANCH}" -- update.sh
+  SHA1_2="$(sha1sum update.sh)"
   if [[ "${SHA1_1}" != "${SHA1_2}" ]]; then
-    echo "update.sh changed, please run this script again, exiting."
     chmod +x update.sh
-    exit 2
+    EXIT_COUNT+=1
   fi
+
+  MODULE_DIR="$(dirname "$0")/_modules"
+  echo -e "\e[32mChecking for updates in _modules...\e[0m"
+  if [ ! -d "${MODULE_DIR}" ] || [ -z "$(ls -A "${MODULE_DIR}")" ]; then
+    echo -e "\e[33m_modules missing or empty — fetching from origin...\e[0m"
+    git checkout "origin/${BRANCH}" -- _modules
+  else
+    OLD_SUM="$(find "${MODULE_DIR}" -type f -exec sha1sum {} \; | sort | sha1sum)"
+    git fetch origin
+    git checkout "origin/${BRANCH}" -- _modules
+    NEW_SUM="$(find "${MODULE_DIR}" -type f -exec sha1sum {} \; | sort | sha1sum)"
+
+    if [[ "${OLD_SUM}" != "${NEW_SUM}" ]]; then
+      EXIT_COUNT+=1
+    fi
+  fi
+
+  if [ "${EXIT_COUNT}" -ge 1 ]; then
+    echo "Changes for the update Script, please run this script again, exiting!"
+    exit 2
+
 fi
 
 if [ ! "$FORCE" ]; then
@@ -392,7 +412,7 @@ done
 configure_ipv6
 
 [[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
-migrate_solr_config_options
+migrate_config_options
 adapt_new_options
 
 if [ ! "$DEV" ]; then

@@ -277,9 +277,10 @@ adapt_new_options() {
         ENABLE_IPV6)
             echo '# IPv6 Controller Section' >> mailcow.conf
             echo '# This variable controls the usage of IPv6 within mailcow.' >> mailcow.conf
-            echo '# Defaults to true' >> mailcow.conf
+            echo '# Can either be true or false | Defaults to true' >> mailcow.conf
             echo '# WARNING: MAKE SURE TO PROPERLY CONFIGURE IPv6 ON YOUR HOST FIRST BEFORE ENABLING THIS AS FAULTY CONFIGURATIONS CAN LEAD TO OPEN RELAYS!' >> mailcow.conf
-            echo $ENABLE_IPV6_LINE >> mailcow.conf
+            echo '# A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.' >> mailcow.conf
+            echo ENABLE_IPV6=${IPV6_BOOL} >> mailcow.conf
             ;;
     
         SKIP_CLAMD)

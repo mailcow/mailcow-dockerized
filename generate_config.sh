@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Load mailcow Generic Scripts
-source _modules/core.sh
-source _modules/ipv6.sh
+source _modules/scripts/core.sh
+source _modules/scripts/ipv6_controller.sh
 
 set -o pipefail
 
@@ -140,8 +140,7 @@ if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
 
-get_ipv6_support
-docker_daemon_edit
+configure_ipv6
 
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
@@ -445,9 +444,10 @@ SPAMHAUS_DQS_KEY=
 
 # IPv6 Controller Section
 # This variable controls the usage of IPv6 within mailcow.
-# Defaults to true
+# Can either be true or false | Defaults to true
 # WARNING: MAKE SURE TO PROPERLY CONFIGURE IPv6 ON YOUR HOST FIRST BEFORE ENABLING THIS AS FAULTY CONFIGURATIONS CAN LEAD TO OPEN RELAYS!
-$ENABLE_IPV6_LINE
+# A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.
+ENABLE_IPV6=${IPV6_BOOL}
 
 # Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
 # CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
