@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # _modules/scripts/ipv6_controller.sh
+# THIS SCRIPT IS DESIGNED TO BE RUNNING BY MAILCOW SCRIPTS ONLY!
+# DO NOT, AGAIN, NOT TRY TO RUN THIS SCRIPT STANDALONE!!!!!!
 
 # 1) Check if the host supports IPv6
 get_ipv6_support() {
