@@ -16,7 +16,7 @@ NC='\e[0m'
 caller="${BASH_SOURCE[1]##*/}"
 
 get_installed_tools(){
-    for bin in openssl curl docker git awk sha1sum grep cut; do
+    for bin in openssl curl docker git awk sha1sum grep cut jq; do
         if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
     done
 
