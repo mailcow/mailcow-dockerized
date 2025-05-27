@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# _modules/scripts/new_options.sh
+# THIS SCRIPT IS DESIGNED TO BE RUNNING BY MAILCOW SCRIPTS ONLY!
+# DO NOT, AGAIN, NOT TRY TO RUN THIS SCRIPT STANDALONE!!!!!!
 
 adapt_new_options() {
 
