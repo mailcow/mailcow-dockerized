@@ -23,6 +23,13 @@ docker_daemon_edit(){
   _has_kv() { grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null; }
 
   if [[ -f "$DOCKER_DAEMON_CONFIG" ]]; then
+
+    # reject empty or whitespace-only file immediately
+    if [[ ! -s "$DOCKER_DAEMON_CONFIG" ]] || ! grep -Eq '[{}]' "$DOCKER_DAEMON_CONFIG"; then
+      echo -e "${RED}ERROR: $DOCKER_DAEMON_CONFIG exists but is empty or contains no JSON braces – please initialize it with valid JSON (e.g. {}).${NC}"
+      exit 1
+    fi
+
     # Validate JSON if jq is present
     if command -v jq &>/dev/null && ! jq empty "$DOCKER_DAEMON_CONFIG" &>/dev/null; then
       echo -e "${RED}ERROR: Invalid JSON in $DOCKER_DAEMON_CONFIG – please correct manually.${NC}"
@@ -64,7 +71,7 @@ docker_daemon_edit(){
           exit 1
         fi
       else
-        echo "User declined Docker update – please insert these changes manually:"
+        echo -e "${YELLOW}User declined Docker update – please insert these changes manually:${NC}"
         echo "${MISSING[*]}"
         exit 1
       fi
@@ -98,7 +105,7 @@ EOF
 }
 EOF
       fi
-      echo "Created $DOCKER_DAEMON_CONFIG with IPv6 settings."
+      echo "${GREEN}Created $DOCKER_DAEMON_CONFIG with IPv6 settings.${NC}"
       echo "Restarting Docker..."
       (command -v systemctl &>/dev/null && systemctl restart docker) || service docker restart
       echo "Docker restarted."
