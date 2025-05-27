@@ -360,7 +360,8 @@ if [ ! "$DEV" ]; then
   if [ "${EXIT_COUNT}" -ge 1 ]; then
     echo "Changes for the update Script, please run this script again, exiting!"
     exit 2
-
+  fi
+  
 fi
 
 if [ ! "$FORCE" ]; then
