@@ -331,6 +331,7 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
 fi
 
 if [ ! "$DEV" ]; then
+  EXIT_COUNT=0
   echo -e "\e[32mChecking for newer update script...\e[0m"
   SHA1_1="$(sha1sum update.sh)"
   git fetch origin
@@ -357,11 +358,11 @@ if [ ! "$DEV" ]; then
     fi
   fi
 
-  if [ "${EXIT_COUNT}" -ge 1 ]; then
+  if [ ${EXIT_COUNT} -ge 1 ]; then
     echo "Changes for the update Script, please run this script again, exiting!"
     exit 2
   fi
-  
+
 fi
 
 if [ ! "$FORCE" ]; then
