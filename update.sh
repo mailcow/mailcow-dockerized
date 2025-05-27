@@ -2,11 +2,15 @@
 
 ############## Begin Function Section ##############
 
-source _modules/scripts/core.sh
-source _modules/scripts/ipv6_controller.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BRANCH="$(cd "${SCRIPT_DIR}" && git rev-parse --abbrev-ref HEAD)"
 
-source _modules/scripts/new_options.sh
-source _modules/scripts/migrate_options.sh
+MODULE_DIR="${SCRIPT_DIR}/_modules"
+if [[ ! -d "${MODULE_DIR}" || -z "$(ls -A "${MODULE_DIR}")" ]]; then
+  echo -e "\e[33m_modules is missing or empty – fetching all Modules from origin/${BRANCH}…\e[0m"
+  git fetch origin "${BRANCH}"
+  git checkout "origin/${BRANCH}" -- _modules
+fi
 
 detect_major_update() {
   if [ ${BRANCH} == "master" ]; then
