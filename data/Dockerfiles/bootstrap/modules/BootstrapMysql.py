@@ -37,7 +37,7 @@ class BootstrapMysql(BootstrapBase):
     )
     extra_vars = {
     }
-    self.env_vars = self.prepare_template_vars('/overwrites.json', extra_vars)
+    self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
 
     print("Set Timezone")
     self.set_timezone()

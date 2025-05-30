@@ -44,7 +44,7 @@ class BootstrapDovecot(BootstrapBase):
       "RAND_PASS2": self.rand_pass(),
       "ENV_VARS": dict(os.environ)
     }
-    self.env_vars = self.prepare_template_vars('/overwrites.json', extra_vars)
+    self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
     # Escape DBPASS
     self.env_vars['DBPASS'] = self.env_vars['DBPASS'].replace('"', r'\"')
     # Set custom filters

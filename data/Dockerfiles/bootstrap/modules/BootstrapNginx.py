@@ -32,7 +32,7 @@ class BootstrapNginx(BootstrapBase):
       'TRUSTED_PROXIES': [item.strip() for item in os.getenv("TRUSTED_PROXIES", "").split(",") if item.strip()],
       'ADDITIONAL_SERVER_NAMES': [item.strip() for item in os.getenv("ADDITIONAL_SERVER_NAMES", "").split(",") if item.strip()],
     }
-    self.env_vars = self.prepare_template_vars('/overwrites.json', extra_vars)
+    self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
 
     print("Set Timezone")
     self.set_timezone()

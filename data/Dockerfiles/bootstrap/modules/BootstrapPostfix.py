@@ -28,7 +28,7 @@ class BootstrapPostfix(BootstrapBase):
       "VALID_CERT_DIRS": self.get_valid_cert_dirs(),
       "EXTRA_CF": extra_config
     }
-    self.env_vars = self.prepare_template_vars('/overwrites.json', extra_vars)
+    self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
 
     print("Set Timezone")
     self.set_timezone()
@@ -38,6 +38,9 @@ class BootstrapPostfix(BootstrapBase):
 
     print("Render config")
     self.render_config("/service_config")
+
+    # Create aliases DB
+    self.run_command(["newaliases"])
 
     # Create SNI Config
     self.run_command(["postmap", "-F", "hash:/opt/postfix/conf/sni.map"])

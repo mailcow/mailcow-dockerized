@@ -72,7 +72,7 @@ class BootstrapRspamd(BootstrapBase):
       "RSPAMD_V4": rspamd_v4[0],
       "RSPAMD_V6": rspamd_v6[0],
     }
-    self.env_vars = self.prepare_template_vars('/overwrites.json', extra_vars)
+    self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
 
     print("Set Timezone")
     self.set_timezone()
