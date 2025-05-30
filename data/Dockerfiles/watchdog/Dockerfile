@@ -34,7 +34,7 @@ RUN apk add --update \
   && curl https://raw.githubusercontent.com/mludvig/smtp-cli/v3.10/smtp-cli -o /smtp-cli \
   && chmod +x smtp-cli
 
-COPY watchdog.sh /watchdog.sh
-COPY check_mysql_slavestatus.sh /usr/lib/nagios/plugins/check_mysql_slavestatus.sh
+COPY data/Dockerfiles/watchdog/watchdog.sh /watchdog.sh
+COPY data/Dockerfiles/watchdog/check_mysql_slavestatus.sh /usr/lib/nagios/plugins/check_mysql_slavestatus.sh
 
 CMD ["/watchdog.sh"]

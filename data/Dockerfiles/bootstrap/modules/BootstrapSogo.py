@@ -17,7 +17,7 @@ class BootstrapSogo(BootstrapBase):
     self.connect_mysql()
 
     # Wait until port is free
-    while self.is_port_open("sogo-mailcow", 20000):
+    while self.is_port_open(os.getenv("SOGO_HOST"), 20000):
       print("Port 20000 still in use — terminating sogod...")
       self.kill_proc("sogod")
       time.sleep(3)

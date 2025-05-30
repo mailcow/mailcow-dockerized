@@ -10,7 +10,7 @@ class BootstrapNginx(BootstrapBase):
     # wait for Hosts
     php_service = os.getenv("PHPFPMHOST") or "php-fpm-mailcow"
     rspamd_service = os.getenv("RSPAMDHOST") or "rspamd-mailcow"
-    sogo_service = os.getenv("SOGOHOST") or os.getenv("IPV4_NETWORK", "172.22.1") + ".248"
+    sogo_service = os.getenv("SOGOHOST")
     self.wait_for_host(php_service)
     if not self.isYes(os.getenv("SKIP_RSPAMD", False)):
       self.wait_for_host(rspamd_service)

@@ -198,6 +198,7 @@ services:
         - WEBAUTHN_ONLY_TRUSTED_VENDORS=${WEBAUTHN_ONLY_TRUSTED_VENDORS:-n}
         - CLUSTERMODE=${CLUSTERMODE:-}
         - ADDITIONAL_SERVER_NAMES=${ADDITIONAL_SERVER_NAMES:-}
+        - SOGO_HOST=${SOGO_HOST:-172.22.1.248}
       restart: always
       labels:
         ofelia.enabled: "true"
@@ -232,6 +233,11 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
+        - DB_HOST=${DB_HOST:-%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock}
+        - SOGO_HOST=${SOGO_HOST:-172.22.1.248}
+        - DOVECOT_HOST=${DOVECOT_HOST:-172.22.1.250}
+        - POSTFIX_HOST=${POSTFIX_HOST:-172.22.1.253}
+        - MEMCACHED_HOST=${MEMCACHED_HOST:-172.22.1.247}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
@@ -317,6 +323,7 @@ services:
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+        - SOGO_HOST=${SOGO_HOST:-172.22.1.248}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
@@ -407,6 +414,7 @@ services:
         - TZ=${TZ}
       networks:
         mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.247
           aliases:
             - memcached
 
@@ -526,7 +534,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.08
+      image: ghcr.io/mailcow/watchdog:nightly-19052025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -593,6 +601,7 @@ services:
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
+        - SOGO_HOST=${SOGO_HOST:-172.22.1.248}
       networks:
         mailcow-network:
           aliases:

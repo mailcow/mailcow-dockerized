@@ -402,7 +402,7 @@ sogo_checks() {
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     touch /tmp/sogo-mailcow; echo "$(tail -50 /tmp/sogo-mailcow)" > /tmp/sogo-mailcow
-    host_ip=$(get_container_ip sogo-mailcow)
+    host_ip=$SOGO_HOST
     err_c_cur=${err_count}
     /usr/lib/nagios/plugins/check_http -4 -H ${host_ip} -u /SOGo.index/ -p 20000 2>> /tmp/sogo-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
