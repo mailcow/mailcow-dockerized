@@ -10,19 +10,21 @@ class BootstrapMysql(BootstrapBase):
     dbpass = os.getenv("MYSQL_ROOT_PASSWORD", "")
     socket = "/tmp/mysql-temp.sock"
 
-    print("Starting temporary mysqld for upgrade...")
-    self.start_temporary(socket)
+    # Check if mysql has been initialized
+    if os.path.exists("/var/lib/mysql/mysql/db.frm"):
+      print("Starting temporary mysqld for upgrade...")
+      self.start_temporary(socket)
 
-    self.connect_mysql(socket)
+      self.connect_mysql(socket)
 
-    print("Running mysql_upgrade...")
-    self.upgrade_mysql(dbuser, dbpass, socket)
-    print("Checking timezone support with CONVERT_TZ...")
-    self.check_and_import_timezone_support(dbuser, dbpass, socket)
+      print("Running mysql_upgrade...")
+      self.upgrade_mysql(dbuser, dbpass, socket)
+      print("Checking timezone support with CONVERT_TZ...")
+      self.check_and_import_timezone_support(dbuser, dbpass, socket)
 
-    print("Shutting down temporary mysqld...")
-    self.close_mysql()
-    self.stop_temporary(dbuser, dbpass, socket)
+      print("Shutting down temporary mysqld...")
+      self.close_mysql()
+      self.stop_temporary(dbuser, dbpass, socket)
 
 
     # Setup Jinja2 Environment and load vars

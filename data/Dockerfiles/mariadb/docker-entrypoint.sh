@@ -17,4 +17,4 @@ if [ $BOOTSTRAP_EXIT_CODE -ne 0 ]; then
 fi
 
 echo "Bootstrap succeeded. Starting MariaDB..."
-exec gosu mysql "$@"
+exec /usr/local/bin/docker-entrypoint.sh "$@"
