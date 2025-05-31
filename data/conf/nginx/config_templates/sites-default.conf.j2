@@ -104,7 +104,7 @@ location ~ ^/cache/(.*)$ {
 location ~ \.php$ {
     try_files $uri =404;
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_pass {{ PHPFPMHOST }}:9002;
+    fastcgi_pass {{ PHPFPM_HOST }}:9002;
     fastcgi_index index.php;
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
@@ -115,7 +115,7 @@ location ~ \.php$ {
 
 location ~* ^/Autodiscover/Autodiscover.xml {
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_pass {{ PHPFPMHOST }}:9002;
+    fastcgi_pass {{ PHPFPM_HOST }}:9002;
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     try_files /autodiscover.php =404;
@@ -123,7 +123,7 @@ location ~* ^/Autodiscover/Autodiscover.xml {
 
 location ~* ^/Autodiscover/Autodiscover.json {
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_pass {{ PHPFPMHOST }}:9002;
+    fastcgi_pass {{ PHPFPM_HOST }}:9002;
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     try_files /autodiscover-json.php =404;
@@ -131,7 +131,7 @@ location ~* ^/Autodiscover/Autodiscover.json {
 
 location ~ /(?:m|M)ail/(?:c|C)onfig-v1.1.xml {
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_pass {{ PHPFPMHOST }}:9002;
+    fastcgi_pass {{ PHPFPM_HOST }}:9002;
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     try_files /autoconfig.php =404;
@@ -141,7 +141,7 @@ location ~ /(?:m|M)ail/(?:c|C)onfig-v1.1.xml {
 location /rspamd/ {
     location /rspamd/auth {
       # proxy_pass is not inherited
-      proxy_pass       http://{{ RSPAMDHOST }}:11334/auth;
+      proxy_pass       http://{{ RSPAMD_HOST }}:11334/auth;
       proxy_intercept_errors on;
       proxy_set_header Host      $http_host;
       proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
@@ -150,7 +150,7 @@ location /rspamd/ {
       error_page 401 /_rspamderror.php;
     }
 
-    proxy_pass       http://{{ RSPAMDHOST }}:11334/;
+    proxy_pass       http://{{ RSPAMD_HOST }}:11334/;
     proxy_set_header Host      $http_host;
     proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
@@ -182,7 +182,7 @@ location ^~ /Microsoft-Server-ActiveSync {
     proxy_set_header Authorization "$auth";
     proxy_set_header x-webobjects-auth-type "$auth_type";
 
-    proxy_pass http://{{ SOGOHOST }}:20000/SOGo/Microsoft-Server-ActiveSync;
+    proxy_pass http://{{ SOGO_HOST }}:20000/SOGo/Microsoft-Server-ActiveSync;
 
     proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
@@ -207,7 +207,7 @@ location ^~ /SOGo {
         proxy_set_header Authorization "$auth";
         proxy_set_header x-webobjects-auth-type "$auth_type";
 
-        proxy_pass http://{{ SOGOHOST }}:20000;
+        proxy_pass http://{{ SOGO_HOST }}:20000;
 
         proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
         proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};
@@ -229,7 +229,7 @@ location ^~ /SOGo {
     proxy_set_header Authorization "$auth";
     proxy_set_header x-webobjects-auth-type "$auth_type";
 
-    proxy_pass http://{{ SOGOHOST }}:20000;
+    proxy_pass http://{{ SOGO_HOST }}:20000;
 
     proxy_set_header X-Forwarded-For {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$proxy_add_x_forwarded_for{% else %}$proxy_protocol_addr{%endif%};
     proxy_set_header X-Real-IP {% if not NGINX_USE_PROXY_PROTOCOL|lower in ["y", "yes"] %}$remote_addr{% else %}$proxy_protocol_addr{%endif%};

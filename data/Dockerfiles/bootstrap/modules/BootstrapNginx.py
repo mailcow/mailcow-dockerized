@@ -8,9 +8,9 @@ class BootstrapNginx(BootstrapBase):
     self.connect_mysql()
 
     # wait for Hosts
-    php_service = os.getenv("PHPFPMHOST") or "php-fpm-mailcow"
-    rspamd_service = os.getenv("RSPAMDHOST") or "rspamd-mailcow"
-    sogo_service = os.getenv("SOGOHOST")
+    php_service = os.getenv("PHPFPM_HOST") or "php-fpm-mailcow"
+    rspamd_service = os.getenv("RSPAMD_HOST") or "rspamd-mailcow"
+    sogo_service = os.getenv("SOGO_HOST")
     self.wait_for_host(php_service)
     if not self.isYes(os.getenv("SKIP_RSPAMD", False)):
       self.wait_for_host(rspamd_service)

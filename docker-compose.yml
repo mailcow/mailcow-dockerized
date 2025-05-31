@@ -439,10 +439,10 @@ services:
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
         - DISABLE_IPv6=${DISABLE_IPv6:-n}
         - HTTP_REDIRECT=${HTTP_REDIRECT:-n}
-        - PHPFPMHOST=${PHPFPMHOST:-php-fpm-mailcow}
-        - RSPAMDHOST=${RSPAMDHOST:-rspamd-mailcow}
-        - SOGOHOST=${SOGOHOST:-${IPV4_NETWORK:-172.22.1}.248}
-        - REDISHOST=${REDISHOST:-redis-mailcow}
+        - PHPFPM_HOST=${PHPFPM_HOST:-php-fpm-mailcow}
+        - RSPAM_DHOST=${RSPAMD_HOST:-rspamd-mailcow}
+        - SOGO_HOST=${SOGO_HOST:-${IPV4_NETWORK:-172.22.1}.248}
+        - REDIS_HOST=${REDIS_HOST:-redis-mailcow}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
