@@ -3,7 +3,7 @@
 <plist version="0.9">
 <dict>
     <key>OCSAclURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_acl</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_acl</string>
     <key>SOGoIMAPServer</key>
     <string>imap://{{ DOVECOT_HOST }}:143/?TLS=YES&amp;tlsVerifyMode=none</string>
     <key>SOGoSieveServer</key>
@@ -15,19 +15,19 @@
     <key>SOGoEncryptionKey</key>
     <string>{{RAND_PASS}}</string>
     <key>OCSAdminURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_admin</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_admin</string>
     <key>OCSCacheFolderURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_cache_folder</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_cache_folder</string>
     <key>OCSEMailAlarmsFolderURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_alarms_folder</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_alarms_folder</string>
     <key>OCSFolderInfoURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_folder_info</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_folder_info</string>
     <key>OCSSessionsFolderURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_sessions_folder</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_sessions_folder</string>
     <key>OCSStoreURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_store</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_store</string>
     <key>SOGoProfileURL</key>
-    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/sogo_user_profile</string>
+    <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/sogo_user_profile</string>
     <key>SOGoTimeZone</key>
     <string>{{TZ}}</string>
     <key>domains</key>
@@ -69,7 +69,7 @@
           <key>prependPasswordScheme</key>
           <string>YES</string>
           <key>viewURL</key>
-          <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST }}/{{ DBNAME }}/_sogo_static_view</string>
+          <string>mysql://{{ DBUSER }}:{{ DBPASS }}@{{ DB_HOST | urlencode }}/{{ DBNAME }}/_sogo_static_view</string>
         </dict>
         {% if IAM_SETTINGS.authsource == "ldap" and domain.ldap_gal %}
         <dict>

@@ -1,4 +1,4 @@
 driver = mysql
-connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS }}"
+connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS | escape_quotes }}"
 user_query = SELECT CONCAT(JSON_UNQUOTE(JSON_VALUE(attributes, '$.mailbox_format')), mailbox_path_prefix, '%d/%n/{{ MAILDIR_SUB }}:VOLATILEDIR=/var/volatile/%u:INDEX=/var/vmail_index/%u') AS mail, '%s' AS protocol, 5000 AS uid, 5000 AS gid, concat('*:bytes=', quota) AS quota_rule FROM mailbox WHERE username = '%u' AND (active = '1' OR active = '2')
 iterate_query = SELECT username FROM mailbox WHERE active = '1' OR active = '2';

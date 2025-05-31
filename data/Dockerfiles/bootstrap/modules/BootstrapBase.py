@@ -13,6 +13,7 @@ import hashlib
 import json
 import psutil
 import signal
+from urllib.parse import quote
 from pathlib import Path
 import dns.resolver
 import mysql.connector
@@ -89,17 +90,19 @@ class BootstrapBase:
 
   def prepare_template_vars(self, overwrite_path, extra_vars = None):
     """
-    Loads and merges environment variables for Jinja2 templates from multiple sources.
+    Loads and merges environment variables for Jinja2 templates from multiple sources, and registers custom template filters.
 
-    This method combines:
+    This method combines variables from:
       1. System environment variables
-      2. Key/value pairs from the MySQL `service_settings` table
-      3. An optional dictionary of extra_vars
-      4. A JSON file with overrides (if the file exists)
+      2. The MySQL `service_settings` table (filtered by service type if defined)
+      3. An optional `extra_vars` dictionary
+      4. A JSON overwrite file (if it exists at the given path)
+
+    Also registers custom Jinja2 filters.
 
     Args:
         overwrite_path (str or Path): Path to a JSON file containing key-value overrides.
-        extra_vars (dict, optional): A dictionary of additional variables to include.
+        extra_vars (dict, optional): Additional variables to merge into the environment.
 
     Returns:
         dict: A dictionary containing all resolved template variables.
@@ -108,10 +111,15 @@ class BootstrapBase:
         Prints errors if database fetch or JSON parsing fails, but does not raise exceptions.
     """
 
-    # 1. Load env vars
+    # 1. setup filters
+    self.env.filters['sha1'] = self.sha1_filter
+    self.env.filters['urlencode'] = self.urlencode_filter
+    self.env.filters['escape_quotes'] = self.escape_quotes_filter
+
+    # 2. Load env vars
     env_vars = dict(os.environ)
 
-    # 2. Load from MySQL
+    # 3. Load from MySQL
     try:
       cursor = self.mysql_conn.cursor()
 
@@ -129,11 +137,11 @@ class BootstrapBase:
     except Exception as e:
       print(f"Failed to fetch DB service settings: {e}")
 
-    # 3. Load extra vars
+    # 4. Load extra vars
     if extra_vars:
       env_vars.update(extra_vars)
 
-    # 4. Load overwrites
+    # 5. Load overwrites
     overwrite_path = Path(overwrite_path)
     if overwrite_path.exists():
       try:
@@ -810,3 +818,9 @@ class BootstrapBase:
 
   def sha1_filter(self, value):
     return hashlib.sha1(value.encode()).hexdigest()
+
+  def urlencode_filter(self, value):
+    return quote(value, safe='')
+
+  def escape_quotes_filter(self, value):
+    return value.replace('"', r'\"')

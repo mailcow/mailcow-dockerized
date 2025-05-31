@@ -1,4 +1,4 @@
-connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS }}"
+connect = "host=/var/run/mysqld/mysqld.sock dbname={{ DBNAME }} user={{ DBUSER }} password={{ DBPASS | escape_quotes }}"
 map {
   pattern = priv/sieve/name/$script_name
   table = sieve_after

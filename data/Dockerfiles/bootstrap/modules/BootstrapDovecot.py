@@ -45,10 +45,6 @@ class BootstrapDovecot(BootstrapBase):
       "ENV_VARS": dict(os.environ)
     }
     self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
-    # Escape DBPASS
-    self.env_vars['DBPASS'] = self.env_vars['DBPASS'].replace('"', r'\"')
-    # Set custom filters
-    self.env.filters['sha1'] = self.sha1_filter
 
     print("Set Timezone")
     self.set_timezone()

@@ -233,7 +233,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
-        - DB_HOST=${DB_HOST:-%2Fvar%2Frun%2Fmysqld%2Fmysqld.sock}
+        - DB_HOST=${DB_HOST:-/var/run/mysqld/mysqld.sock}
         - SOGO_HOST=${SOGO_HOST:-172.22.1.248}
         - DOVECOT_HOST=${DOVECOT_HOST:-172.22.1.250}
         - POSTFIX_HOST=${POSTFIX_HOST:-172.22.1.253}
@@ -243,8 +243,7 @@ services:
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo:/service_config:z
-        - ./data/conf/sogo/cron.creds:/etc/sogo/cron.creds:z
-        - ./data/conf/sogo/sieve.creds:/etc/sogo/sieve.creds:z
+        - ./data/conf/sogo:/etc/sogo:z
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-shortlogo.svg:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
@@ -373,8 +372,7 @@ services:
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/service_config:z
-        - ./data/conf/postfix/postscreen_access.cidr:/opt/postfix/conf/postscreen_access.cidr:z
-        - ./data/conf/postfix/extra.cf:/opt/postfix/conf/extra.cf:z
+        - ./data/conf/postfix:/opt/postfix/conf:z
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
