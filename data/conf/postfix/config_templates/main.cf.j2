@@ -176,4 +176,4 @@ lmtp_destination_recipient_limit=1
 
 myhostname = {{ MAILCOW_HOSTNAME }}
 
-{{ EXTRA_CF | safe }}
+{% include "extra.cf.j2" %}
