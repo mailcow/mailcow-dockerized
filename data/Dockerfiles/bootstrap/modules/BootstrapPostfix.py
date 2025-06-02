@@ -22,11 +22,8 @@ class BootstrapPostfix(BootstrapBase):
       lstrip_blocks=True,
       trim_blocks=True
     )
-    extra_config_path = Path("/opt/postfix/conf/extra.cf")
-    extra_config = extra_config_path.read_text() if extra_config_path.exists() else ""
     extra_vars = {
-      "VALID_CERT_DIRS": self.get_valid_cert_dirs(),
-      "EXTRA_CF": extra_config
+      "VALID_CERT_DIRS": self.get_valid_cert_dirs()
     }
     self.env_vars = self.prepare_template_vars('/service_config/overwrites.json', extra_vars)
 

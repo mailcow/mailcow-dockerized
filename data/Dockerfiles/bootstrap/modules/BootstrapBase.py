@@ -527,9 +527,10 @@ class BootstrapBase:
       "user": self.db_config['user'],
       "password": self.db_config['password'],
       "database": self.db_config['database'],
-      "unix_socket": socket or self.db_config['unix_socket'],
       'connection_timeout': self.db_config['connection_timeout']
     }
+    if self.db_config['unix_socket']:
+      config["unix_socket"] = socket or self.db_config['unix_socket']
 
     while True:
       try:

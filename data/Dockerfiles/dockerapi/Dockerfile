@@ -19,9 +19,9 @@ RUN apk add --update --no-cache python3 \
   docker
 RUN mkdir /app/modules
 
-COPY docker-entrypoint.sh /app/
-COPY main.py /app/main.py
-COPY modules/ /app/modules/
+COPY data/Dockerfiles/dockerapi/docker-entrypoint.sh /app/
+COPY data/Dockerfiles/dockerapi/main.py /app/main.py
+COPY data/Dockerfiles/dockerapi/modules/ /app/modules/
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["python", "main.py"]
