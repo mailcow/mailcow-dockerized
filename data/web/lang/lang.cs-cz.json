@@ -404,9 +404,9 @@
         "iam_client_scopes": "Scopes klienta",
         "iam_default_template": "Výchozí šablona",
         "iam_description": "Nastavení externího poskytovatele ověření<br>Schránky uživatele se vytvoří po prvním přihlášení automaticky, pokud je tedy nastaveno mapování atributů.",
-        "iam_extra_permission": "Aby vše fungovalo, musí mít mailcow klient v Keycloaku nastavený  <code>servisní účet</code> a povolení <code>view-users</code>.",
+        "iam_extra_permission": "Aby vše fungovalo, musí mít mailcow klient v Keycloaku nastavený <code>servisní účet</code> a povolení <code>view-users</code>.",
         "iam_host": "Hostitel",
-        "iam_host_info": "Zadejte jeden či více hostitelů, oddělte čárkou",
+        "iam_host_info": "Zadejte jeden či více hostitelů, oddělte čárkou.",
         "iam_import_users": "Importovat uživatele"
     },
     "danger": {
@@ -1180,7 +1180,7 @@
         "recovery_email_sent": "E-mail k obnovení byl odeslán na adresu %s",
         "custom_login_modified": "Úpravy přihlašování úspěšně uloženy",
         "domain_add_dkim_available": "Klíč DKIM už existoval",
-        "f2b_banlist_refreshed": "Seznam zákazů úspěšně obnoven",
+        "f2b_banlist_refreshed": "Seznam zákazů úspěšně obnoven.",
         "iam_test_connection": "Spojení úspěšně navázano",
         "ip_check_opt_in_modified": "Kontrola IP adresy úspěšně uložena",
         "mailbox_renamed": "Schránka přejmenována z %s na %s",
@@ -1212,7 +1212,7 @@
         "yubi_otp": "Yubico OTP ověření",
         "u2f_deprecated": "Zdá se, že váš klíč byl registrován zastaralou metodou U2F. Dojde k deaktivaci dvoufaktorové autentifikace a smazání klíče.",
         "authenticators": "Autentifikátory",
-        "u2f_deprecated_important": "Registrujte svůj klíč novou metodou WebAuthn ve správě správců"
+        "u2f_deprecated_important": "Registrujte svůj klíč novou metodou WebAuthn ve správě správců."
     },
     "user": {
         "action": "Akce",
