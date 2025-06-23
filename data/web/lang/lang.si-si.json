@@ -964,7 +964,14 @@
         "tls_map_policy": "Politika",
         "tls_policy_maps": "Zemljevidi pravilnikov TLS",
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Napačno uporabniško ime ali geslo",
-        "templates": "Predloge"
+        "templates": "Predloge",
+        "tls_policy_maps_long": "Preglasitve zemljevidov pravilnikov odhodnega TLS",
+        "table_size": "Velikost tabele",
+        "toggle_all": "Preklopi vse",
+        "username": "Uporabniško ime",
+        "waiting": "Čakanje",
+        "yes": "&#10003;",
+        "weekly": "Tedensko"
     },
     "fido2": {
         "known_ids": "Znani ID-ji",
@@ -997,5 +1004,38 @@
         "restart_netfilter": "Znova zaženite omrežni filter",
         "restart_sogo": "Znova zaženite SOGo",
         "user_settings": "Uporabniške nastavitve"
+    },
+    "quarantine": {
+        "learn_spam_delete": "Uči se kot neželena pošta in izbriši",
+        "medium_danger": "Srednje",
+        "notified": "Obveščen",
+        "low_danger": "Nizko",
+        "qinfo": "Sistem karantene bo zavrnjeno pošto shranil v zbirko podatkov (pošiljatelj ne bo imel vtisa, da je bila pošta dostavljena), prav tako pa bo pošto, ki bo dostavljena kot kopija, shranil v mapo »Neželena pošta« v nabiralniku.\n<br>»Uči kot neželeno pošto in izbriši« bo sporočilo prepoznal kot neželeno pošto prek Bayesovega izreka in izračunal tudi mehke zgoščene vrednosti, da bi v prihodnje zavrnil podobna sporočila.\n<br>Upoštevajte, da je učenje več sporočil lahko – odvisno od vašega sistema – zamudno.<br>Elementi na črnem seznamu so izključeni iz karantene.",
+        "junk_folder": "Mapa z neželeno pošto",
+        "action": "Dejanje",
+        "atts": "Priloge",
+        "check_hash": "Iskanje zgoščene vrednosti datoteke @ VT",
+        "confirm": "Potrdi",
+        "confirm_delete": "Potrdite brisanje tega elementa.",
+        "danger": "Nevarnost",
+        "deliver_inbox": "Dostavi v mapo »Prejeto«",
+        "disabled_by_config": "Trenutna konfiguracija sistema onemogoča funkcionalnost karantene. Nastavite »število hranjenj na poštni predal« in »največjo velikost« za elemente karantene.",
+        "download_eml": "Prenesi (.eml)",
+        "empty": "Ni rezultatov",
+        "high_danger": "Visoko",
+        "info": "Informacija",
+        "neutral_danger": "Nevtralno",
+        "qhandler_success": "Zahteva je bila uspešno poslana v sistem. Zdaj lahko zaprete okno.",
+        "qid": "Rspamd QID",
+        "qitem": "Predmet iz karantene"
+    },
+    "oauth2": {
+        "access_denied": "Za odobritev dostopa prek OAuth2 se prijavite kot lastnik poštnega predala.",
+        "authorize_app": "Avtorizacija aplikacije",
+        "deny": "Zavrni",
+        "permit": "Avtorizacija aplikacije",
+        "profile": "Profil",
+        "profile_desc": "Ogled osebnih podatkov: uporabniško ime, polno ime, ustvarjeno, spremenjeno, aktivno",
+        "scope_ask_permission": "Aplikacija je zahtevala naslednja dovoljenja"
     }
 }
