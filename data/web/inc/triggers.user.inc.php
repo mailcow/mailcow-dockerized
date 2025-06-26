@@ -23,7 +23,13 @@ if ($iam_provider){
     // Check given state against previously stored one to mitigate CSRF attack
     // Received access token in $_GET['code']
     // extract info and verify user
-    identity_provider('verify-sso');
+    if (identity_provider('verify-sso')) {
+      $decoded_state = json_decode(base64_decode($_GET['state']));
+      if (isset($decoded_state->next)) {
+        // Restore next parameter for redirection later
+        $_GET['next'] = $decoded_state->next;
+      }
+    }
   }
 }
 
@@ -76,7 +82,11 @@ if (isset($_POST["verify_tfa_login"])) {
 
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-        if (intval($user_details['attributes']['sogo_access']) == 1 &&
+
+        if (isset($_GET['next'])) {
+          header("Location: " . rawurldecode($_GET['next']));
+          die();
+        } else if (intval($user_details['attributes']['sogo_access']) == 1 &&
             intval($user_details['attributes']['force_pw_update']) != 1 &&
             getenv('SKIP_SOGO') != "y" &&
             !$is_dual) {
@@ -142,7 +152,10 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (intval($user_details['attributes']['sogo_access']) == 1 &&
+    if (isset($_GET['next'])) {
+      header("Location: " . rawurldecode($_GET['next']));
+      die();
+    } else if (intval($user_details['attributes']['sogo_access']) == 1 &&
         intval($user_details['attributes']['force_pw_update']) != 1 &&
         getenv('SKIP_SOGO') != "y" &&
         !$is_dual) {
