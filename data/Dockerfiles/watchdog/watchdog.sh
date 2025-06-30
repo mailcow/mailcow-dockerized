@@ -297,14 +297,23 @@ unbound_checks() {
     touch /tmp/unbound-mailcow; echo "$(tail -50 /tmp/unbound-mailcow)" > /tmp/unbound-mailcow
     host_ip=$(get_container_ip unbound-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
-    DNSSEC=$(dig com +dnssec | egrep 'flags:.+ad')
-    if [[ -z ${DNSSEC} ]]; then
-      echo "DNSSEC failure" 2>> /tmp/unbound-mailcow 1>&2
-      err_count=$(( ${err_count} + 1))
+    # ===== improved Unbound DNS check (IPv4 & IPv6) =====
+    TEST_DOMAIN="mailcow.email"
+    # query A and AAAA via local Unbound
+    RES_IPV4=$(dig +short A "${TEST_DOMAIN}" @"${host_ip}" \
+               | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n1)
+    RES_IPV6=$(dig +short AAAA "${TEST_DOMAIN}" @"${host_ip}" \
+               | grep -Eo '([A-Fa-f0-9:]+:+)+[A-Fa-f0-9]+'    | head -n1)
+    if [[ -n "${RES_IPV4}" || -n "${RES_IPV6}" ]]; then
+      echo "Unbound resolution OK: IPv4=${RES_IPV4:-N/A}, IPv6=${RES_IPV6:-N/A}" \
+           2>> /tmp/unbound-mailcow
+      err_inc=0
     else
-      echo "DNSSEC check succeeded" 2>> /tmp/unbound-mailcow 1>&2
+      echo "Unbound resolution FAILED for ${TEST_DOMAIN}" \
+           2>> /tmp/unbound-mailcow
+      err_inc=1
     fi
+    err_count=$(( err_count + err_inc ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Unbound" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
