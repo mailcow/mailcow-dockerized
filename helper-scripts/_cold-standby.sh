@@ -1,300 +1,175 @@
 #!/usr/bin/env bash
 
+#— enforce & export our SSH vars
+: "${REMOTE_SSH_USER:?Need to set REMOTE_SSH_USER}"
+: "${REMOTE_SSH_HOST:?Need to set REMOTE_SSH_HOST}"
+: "${REMOTE_SSH_PORT:=22}"
+: "${REMOTE_SSH_KEY:?Need to set REMOTE_SSH_KEY}"
+export REMOTE_SSH_USER REMOTE_SSH_HOST REMOTE_SSH_PORT REMOTE_SSH_KEY
+
+echo "DEBUG: SSH → ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST}  key=${REMOTE_SSH_KEY}"
+
 PATH=${PATH}:/opt/bin
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
 LOCAL_ARCH=$(uname -m)
 export LC_ALL=C
 
 echo
-echo "If this script is run automatically by cron or a timer AND you are using block-level snapshots on your backup destination, make sure both do not run at the same time."
-echo "The snapshots of your backup destination should run AFTER the cold standby script finished to ensure consistent snapshots."
+echo "If this script is run by cron/timer AND you use block‐level snapshots, ensure snapshots run AFTER this script."
 echo
 
 function preflight_local_checks() {
-  if [[ -z "${REMOTE_SSH_KEY}" ]]; then
-    >&2 echo -e "\e[31mREMOTE_SSH_KEY is not set\e[0m"
-    exit 1
-  fi
-
-  if [[ ! -s "${REMOTE_SSH_KEY}" ]]; then
-    >&2 echo -e "\e[31mKeyfile ${REMOTE_SSH_KEY} is empty\e[0m"
-    exit 1
-  fi
-
-  if [[ $(stat -c "%a" "${REMOTE_SSH_KEY}") -ne 600 ]]; then
-    >&2 echo -e "\e[31mKeyfile ${REMOTE_SSH_KEY} has insecure permissions\e[0m"
-    exit 1
-  fi
-
-  if [[ ! -z "${REMOTE_SSH_PORT}" ]]; then
-    if [[ ${REMOTE_SSH_PORT} != ?(-)+([0-9]) ]] || [[ ${REMOTE_SSH_PORT} -gt 65535 ]]; then
-      >&2 echo -e "\e[31mREMOTE_SSH_PORT is set but not an integer < 65535\e[0m"
-      exit 1
-    fi
-  fi
-
-  if [[ -z "${REMOTE_SSH_HOST}" ]]; then
-    >&2 echo -e "\e[31mREMOTE_SSH_HOST cannot be empty\e[0m"
-    exit 1
-  fi
-
-  for bin in rsync docker grep cut; do
-    if [[ -z $(which ${bin}) ]]; then
-      >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
-      exit 1
-    fi
+  [[ -s "${REMOTE_SSH_KEY}" ]] || { >&2 echo "Keyfile ${REMOTE_SSH_KEY} missing or empty"; exit 1; }
+  [[ $(stat -c "%a" "${REMOTE_SSH_KEY}") -eq 600 ]] || { >&2 echo "Keyfile ${REMOTE_SSH_KEY} must be 600"; exit 1; }
+  [[ "${REMOTE_SSH_PORT}" =~ ^[0-9]+$ ]] && (( REMOTE_SSH_PORT <= 65535 )) || { >&2 echo "REMOTE_SSH_PORT invalid"; exit 1; }
+  for bin in rsync docker grep cut tar scp ssh; do
+    command -v "$bin" &>/dev/null || { >&2 echo "Cannot find $bin in PATH"; exit 1; }
   done
-
-  if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
-    echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
-    exit 1
-  fi
 }
 
 function preflight_remote_checks() {
+  ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+    -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+    "command -v tar scp ssh docker" &>/dev/null \
+    || { >&2 echo "Remote missing required binaries"; exit 1; }
 
-  if ! ssh -o StrictHostKeyChecking=no \
-    -i "${REMOTE_SSH_KEY}" \
-    ${REMOTE_SSH_HOST} \
-    -p ${REMOTE_SSH_PORT} \
-    rsync --version > /dev/null ; then
-      >&2 echo -e "\e[31mCould not verify connection to ${REMOTE_SSH_HOST}\e[0m"
-      >&2 echo -e "\e[31mPlease check the output above (is rsync >= 3.1.0 installed on the remote system?)\e[0m"
-      exit 1
-  fi
-
-  if ssh -o StrictHostKeyChecking=no \
-    -i "${REMOTE_SSH_KEY}" \
-    ${REMOTE_SSH_HOST} \
-    -p ${REMOTE_SSH_PORT} \
-    grep --help 2>&1 | head -n 1 | grep -q -i "busybox" ; then
-      >&2 echo -e "\e[31mBusyBox grep detected on remote system ${REMOTE_SSH_HOST}, please install GNU grep\e[0m"
-      exit 1
-  fi
-
-  for bin in rsync docker; do
-    if ! ssh -o StrictHostKeyChecking=no \
-      -i "${REMOTE_SSH_KEY}" \
-      ${REMOTE_SSH_HOST} \
-      -p ${REMOTE_SSH_PORT} \
-      which ${bin} > /dev/null ; then
-        >&2 echo -e "\e[31mCannot find ${bin} in remote PATH, exiting...\e[0m"
-        exit 1
-    fi
-  done
-
-  ssh -o StrictHostKeyChecking=no \
-      -i "${REMOTE_SSH_KEY}" \
-      ${REMOTE_SSH_HOST} \
-      -p ${REMOTE_SSH_PORT} \
-      "bash -s" << "EOF"
-if docker compose > /dev/null 2>&1; then
-	exit 0
-elif docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-	exit 1
+  COMPOSE_COMMAND=$(
+    ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+      -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} bash -s <<'EOF'
+if command -v docker-compose &>/dev/null; then
+  echo docker-compose
+elif docker compose version &>/dev/null; then
+  echo "docker compose"
 else
-exit 2
-fi
-EOF
-
-if [ $? = 0 ]; then
-  COMPOSE_COMMAND="docker compose"
-  echo "INFO: Using native docker compose on remote"
-
-elif [ $? = 1 ]; then
-  COMPOSE_COMMAND="docker-compose"
-  echo "INFO: Using standalone docker compose on remote"
-
-else
-  echo -e "\e[31mCannot find any Docker Compose on remote, exiting...\e[0m"
   exit 1
 fi
-
- REMOTE_ARCH=$(ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" ${REMOTE_SSH_HOST} -p ${REMOTE_SSH_PORT} "uname -m")
-
+EOF
+  ) || { >&2 echo "Cannot find Docker Compose on remote"; exit 1; }
+  echo "INFO: Using '${COMPOSE_COMMAND}' on remote"
 }
 
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "${SCRIPT_DIR}/../mailcow.conf"
 COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
-CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd 'A-Za-z-_')
+CMPS_PRJ=$(echo "${COMPOSE_PROJECT_NAME}" | tr -cd 'A-Za-z-_')
 SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
 
 preflight_local_checks
 preflight_remote_checks
 
 echo
-echo -e "\033[1mFound compose project name ${CMPS_PRJ} for ${MAILCOW_HOSTNAME}\033[0m"
-echo -e "\033[1mFound SQL ${SQLIMAGE}\033[0m"
+echo "Found compose project name ${CMPS_PRJ} for ${MAILCOW_HOSTNAME}"
+echo "Found SQL image ${SQLIMAGE}"
 echo
 
-# Print Message if Local Arch and Remote Arch is not the same
-if [[ $LOCAL_ARCH != $REMOTE_ARCH ]]; then
-  echo
-  echo -e "\e[1;33m!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
-  echo -e "\e[3;33mDetected Architecture missmatch from source to destination...\e[0m"
-  echo -e "\e[3;33mYour backup is transferred but some volumes might be skipped!\e[0m"
-  echo -e "\e[1;33m!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!\e[0m"
-  echo
-  sleep 2
-fi
+# Ensure remote base dir exists
+echo -n "Preparing remote... "
+ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+  -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  mkdir -p "${SCRIPT_DIR}/../" \
+  && echo OK || { >&2 echo "FAIL"; exit 1; }
 
-# Make sure destination exists, rsync can fail under some circumstances
-echo -e "\033[1mPreparing remote...\033[0m"
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  mkdir -p "${SCRIPT_DIR}/../" ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not prepare remote for mailcow base directory transfer"
-    exit 1
-fi
+# Sync mailcow base directory (configs, docker-compose.yml, etc.)
+echo "Synchronizing mailcow base directory..."
+rsync -aH --delete \
+  -e "ssh -i ${REMOTE_SSH_KEY} -p ${REMOTE_SSH_PORT} -o StrictHostKeyChecking=no" \
+  "${SCRIPT_DIR}/../" \
+  ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST}:"${SCRIPT_DIR}/../" \
+  || { >&2 echo "[ERR] Could not transfer base directory"; exit 1; }
 
-# Syncing the mailcow base directory
-echo -e "\033[1mSynchronizing mailcow base directory...\033[0m"
-rsync --delete -aH -e "ssh -o StrictHostKeyChecking=no \
-  -i \"${REMOTE_SSH_KEY}\" \
-  -p ${REMOTE_SSH_PORT}" \
-  "${SCRIPT_DIR}/../" root@${REMOTE_SSH_HOST}:"${SCRIPT_DIR}/../"
-ec=$?
-if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
-  >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer mailcow base directory to remote"
-  exit 1
-fi
+# Create networks, volumes and containers on remote
+echo "Creating networks, volumes and containers on remote..."
+ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+  -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  ${COMPOSE_COMMAND} -f "${COMPOSE_FILE}" create
 
-# Let the remote side create all network, volumes and containers to prevent need for external:true #
-echo -e "\e[33mCreating networks, volumes and containers on remote...\e[0m"
+# Trigger redis save
+echo -n "Running redis-cli save... "
+REDIS_CTR=$(docker compose -f "${COMPOSE_FILE}" ps -q redis-mailcow)
+docker exec "${REDIS_CTR}" redis-cli -a "${REDISPASS}" --no-auth-warning save \
+  && echo OK || { >&2 echo "FAIL"; exit 1; }
 
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" create 2>&1 ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not create networks, volumes and containers on remote"
-fi
-
-# Trigger a Redis save for a consistent Redis copy
-echo -ne "\033[1mRunning redis-cli save... \033[0m"
-docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
-
-# Syncing volumes related to compose project
-# Same here: make sure destination exists
+# Sync each Docker volume via tar+scp
 for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
+  mountpoint=$(docker inspect "${vol}" | grep Mountpoint | cut -d '"' -f4)
+  archive="/tmp/${vol}.tar.gz"
 
-  mountpoint="$(docker inspect ${vol} | grep Mountpoint | cut -d '"' -f4)"
-
-  echo -e "\033[1mCreating remote mountpoint ${mountpoint} for ${vol}...\033[0m"
-
-  ssh -o StrictHostKeyChecking=no \
-    -i "${REMOTE_SSH_KEY}" \
-    ${REMOTE_SSH_HOST} \
-    -p ${REMOTE_SSH_PORT} \
-    mkdir -p "${mountpoint}"
+  echo
+  echo "Syncing volume: ${vol} → ${mountpoint}"
+  echo " • Ensuring remote mountpoint..."
+  ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+    -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+    sudo mkdir -p "${mountpoint}"
 
   if [[ "${vol}" =~ "mysql-vol-1" ]]; then
-
-    # Make sure a previous backup does not exist
+    # MariaDB backup flow
+    echo " • Preparing MariaDB backup..."
     rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
-
-    echo -e "\033[1mCreating consistent backup of MariaDB volume...\033[0m"
-    if ! docker run --rm \
+    docker run --rm \
       --network $(docker network ls -qf name=${CMPS_PRJ}_) \
       -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
       --entrypoint= \
       -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
-      ${SQLIMAGE} mariabackup --host mysql --user root --password ${DBROOT} --backup --target-dir=/backup 2>/dev/null ; then
-        >&2 echo -e "\e[31m[ERR]\e[0m - Could not create MariaDB backup on source"
-        rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
-        exit 1
-    fi
-
-    if ! docker run --rm \
+      ${SQLIMAGE} mariabackup --host mysql --user root --password ${DBROOT} --backup --target-dir=/backup
+    docker run --rm \
       --network $(docker network ls -qf name=${CMPS_PRJ}_) \
       --entrypoint= \
       -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
-      ${SQLIMAGE} mariabackup --prepare --target-dir=/backup 2> /dev/null ; then
-        >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer MariaDB backup to remote"
-        rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
-        exit 1
-    fi
-
+      ${SQLIMAGE} mariabackup --prepare --target-dir=/backup
     chown -R 999:999 "${SCRIPT_DIR}/../_tmp_mariabackup"
 
-    echo -e "\033[1mSynchronizing MariaDB backup...\033[0m"
-    rsync --delete --info=progress2 -aH -e "ssh -o StrictHostKeyChecking=no \
-      -i \"${REMOTE_SSH_KEY}\" \
-      -p ${REMOTE_SSH_PORT}" \
-      "${SCRIPT_DIR}/../_tmp_mariabackup/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
-    ec=$?
-    if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
-      >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer MariaDB backup to remote"
-      exit 1
-    fi
-
-    # Cleanup
-    rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
+    echo " • Archiving MariaDB backup..."
+    tar -czf "${archive}" -C "${SCRIPT_DIR}/../_tmp_mariabackup" . \
+      || { >&2 echo "[ERR] tar failed"; exit 1; }
 
   elif [[ "${vol}" =~ "rspamd-vol-1" ]]; then
-    # Exclude rspamd-vol-1 if the Architectures are not the same on source and destination due to compatibility issues.
-    if [[ $LOCAL_ARCH == $REMOTE_ARCH ]]; then
-      echo -e "\033[1mSynchronizing ${vol} from local ${mountpoint}...\033[0m"
-      rsync --delete --info=progress2 -aH -e "ssh -o StrictHostKeyChecking=no \
-        -i \"${REMOTE_SSH_KEY}\" \
-        -p ${REMOTE_SSH_PORT}" \
-        "${mountpoint}/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
-    else
-      echo -e "\e[1;31mSkipping ${vol} from local maschine due to incompatiblity between different architecture...\e[0m"
-      sleep 2
+    # Rspamd only if architectures match
+    if [[ $LOCAL_ARCH != $REMOTE_ARCH ]]; then
+      echo "Skipping ${vol} due to architecture mismatch"
       continue
     fi
+    echo " • Archiving rspamd volume..."
+    tar -czf "${archive}" -C "${mountpoint}" . \
+      || { >&2 echo "[ERR] tar failed"; exit 1; }
 
   else
-    echo -e "\033[1mSynchronizing ${vol} from local ${mountpoint}...\033[0m"
-    rsync --delete --info=progress2 -aH -e "ssh -o StrictHostKeyChecking=no \
-      -i \"${REMOTE_SSH_KEY}\" \
-      -p ${REMOTE_SSH_PORT}" \
-      "${mountpoint}/" root@${REMOTE_SSH_HOST}:"${mountpoint}"
-    ec=$?
-    if [ ${ec} -ne 0 ] && [ ${ec} -ne 24 ]; then
-      >&2 echo -e "\e[31m[ERR]\e[0m - Could not transfer ${vol} from local ${mountpoint} to remote"
-      exit 1
-    fi
+    # Generic volume
+    echo " • Archiving volume data..."
+    tar -czf "${archive}" -C "${mountpoint}" . \
+      || { >&2 echo "[ERR] tar failed"; exit 1; }
   fi
 
-  echo -e "\e[32mCompleted\e[0m"
+  echo " • Copying archive to remote..."
+  scp -i "${REMOTE_SSH_KEY}" -P ${REMOTE_SSH_PORT} "${archive}" \
+    ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST}:/tmp/ \
+    || { >&2 echo "[ERR] scp failed"; exit 1; }
 
+  echo " • Extracting on remote..."
+  ssh -i "${REMOTE_SSH_KEY}" -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} bash -s <<EOF
+sudo tar -xzf /tmp/${vol}.tar.gz -C "${mountpoint}"
+sudo rm /tmp/${vol}.tar.gz
+EOF
+
+  echo " • Cleaning up local archive..."
+  rm -f "${archive}"
+  echo -e "\e[32mCompleted ${vol}\e[0m"
 done
 
-# Restart Dockerd on destination
-echo -ne "\033[1mRestarting Docker daemon on remote to detect new volumes... \033[0m"
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  systemctl restart docker ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not restart Docker daemon on remote"
-    exit 1
-fi
-echo "OK"
+# Restart Docker on remote
+echo -n "Restarting Docker daemon on remote... "
+ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+  -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  sudo systemctl restart docker && echo OK || { >&2 echo "FAIL"; exit 1; }
 
-  echo -e "\e[33mPulling images on remote...\e[0m"
-  echo -e "\e[33mProcess is NOT stuck! Please wait...\e[0m"
+# Pull images on remote
+echo "Pulling images on remote..."
+ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+  -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  ${COMPOSE_COMMAND} -f "${COMPOSE_FILE}" pull --quiet
 
-  if ! ssh -o StrictHostKeyChecking=no \
-    -i "${REMOTE_SSH_KEY}" \
-    ${REMOTE_SSH_HOST} \
-    -p ${REMOTE_SSH_PORT} \
-    ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" pull --quiet 2>&1 ; then
-      >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
-  fi
-
-echo -e "\033[1mExecuting update script and forcing garbage cleanup on remote...\033[0m"
-if ! ssh -o StrictHostKeyChecking=no \
-  -i "${REMOTE_SSH_KEY}" \
-  ${REMOTE_SSH_HOST} \
-  -p ${REMOTE_SSH_PORT} \
-  ${SCRIPT_DIR}/../update.sh -f --gc ; then
-    >&2 echo -e "\e[31m[ERR]\e[0m - Could not cleanup old images on remote"
-fi
+echo "Executing update.sh and garbage cleanup on remote as root..."
+ssh -o StrictHostKeyChecking=no -i "${REMOTE_SSH_KEY}" \
+  -p ${REMOTE_SSH_PORT} ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  "sudo bash -lc '\"${SCRIPT_DIR}/../update.sh\" -f --gc'"
 
 echo -e "\e[32mDone\e[0m"
