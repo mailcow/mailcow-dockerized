@@ -8,7 +8,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 import jinja2
-from jinja2 import Template
+from jinja2 import TemplateError
+from jinja2.sandbox import SandboxedEnvironment
 import json
 import redis
 import time
@@ -80,17 +81,22 @@ try:
     if len(meta_query) == 0:
       return
     msg_count = len(meta_query)
+    env = SandboxedEnvironment()
     if r.get('Q_HTML'):
-      try:
-        template = Template(r.get('Q_HTML'))
-      except:
-        print("Error: Cannot parse quarantine template, falling back to default template.")
-        with open('/templates/quarantine.tpl') as file_:
-          template = Template(file_.read())
+        try:
+            template = env.from_string(r.get('Q_HTML'))
+        except Exception:
+            print("Error: Cannot parse quarantine template, falling back to default template.")
+            with open('/templates/quarantine.tpl') as file_:
+                template = env.from_string(file_.read())
     else:
-      with open('/templates/quarantine.tpl') as file_:
-        template = Template(file_.read())
-    html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=mailcow_hostname, quarantine_acl=quarantine_acl)
+        with open('/templates/quarantine.tpl') as file_:
+            template = env.from_string(file_.read())
+    try:
+        html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=mailcow_hostname, quarantine_acl=quarantine_acl)
+    except (jinja2.exceptions.SecurityError, TemplateError) as ex:
+        print(f"SecurityError or TemplateError in template rendering: {ex}")
+        return
     text = html2text.html2text(html)
     count = 0
     while count < 15:
