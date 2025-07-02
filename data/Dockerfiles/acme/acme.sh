@@ -159,18 +159,6 @@ while true; do
   fi
   if [[ ! -f ${ACME_BASE}/acme/account.pem ]]; then
     log_f "Generating missing Lets Encrypt account key..."
-    if [[ ! -z ${ACME_CONTACT} ]]; then
-      if ! verify_email "${ACME_CONTACT}"; then
-        log_f "Invalid email address, will not start registration!"
-        sleep 365d
-        exec $(readlink -f "$0")
-      else
-        ACME_CONTACT_PARAMETER="--contact mailto:${ACME_CONTACT}"
-        log_f "Valid email address, using ${ACME_CONTACT} for registration"
-      fi
-    else
-      ACME_CONTACT_PARAMETER=""
-    fi
     openssl genrsa 4096 > ${ACME_BASE}/acme/account.pem
   else
     log_f "Using existing Lets Encrypt account key ${ACME_BASE}/acme/account.pem"
@@ -299,7 +287,7 @@ while true; do
     VALIDATED_CERTIFICATES+=("${CERT_NAME}")
 
     # obtain server certificate if required
-    ACME_CONTACT_PARAMETER=${ACME_CONTACT_PARAMETER} DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh rsa
+    DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh rsa
     RETURN="$?"
     if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
       CERT_AMOUNT_CHANGED=1

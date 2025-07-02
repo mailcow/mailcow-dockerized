@@ -498,13 +498,6 @@ DOVECOT_MASTER_USER=
 # LEAVE EMPTY IF UNSURE
 DOVECOT_MASTER_PASS=
 
-# Let's Encrypt registration contact information
-# Optional: Leave empty for none
-# This value is only used on first order!
-# Setting it at a later point will require the following steps:
-# https://docs.mailcow.email/troubleshooting/debug-reset_tls/
-ACME_CONTACT=
-
 # WebAuthn device manufacturer verification
 # After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed
 # root certificates can be placed for validation under mailcow-dockerized/data/web/inc/lib/WebAuthn/rootCertificates
