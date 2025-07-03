@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.33
+      image: ghcr.io/mailcow/dovecot:2.34
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
