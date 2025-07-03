@@ -758,6 +758,7 @@ remove_obsolete_options() {
   for option in "${OBSOLETE_OPTIONS[@]}"; do
     if [[ "$option" == "ACME_CONTACT" ]]; then
       sed -i '/^# Lets Encrypt registration contact information/d' mailcow.conf
+      sed -i "/^# Let's Encrypt registration contact information/d" mailcow.conf
       sed -i '/^# Optional: Leave empty for none/d' mailcow.conf
       sed -i '/^# This value is only used on first order!/d' mailcow.conf
       sed -i '/^# Setting it at a later point will require the following steps:/d' mailcow.conf
