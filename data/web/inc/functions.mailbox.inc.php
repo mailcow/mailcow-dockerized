@@ -1223,6 +1223,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(
             ':username' => $username
           ));
+          // save delimiter_action
+          if (isset($_data['tagged_mail_handler'])) {
+            mailbox('edit', 'delimiter_action', array(
+              'username' => $username,
+              'tagged_mail_handler' => $_data['tagged_mail_handler']
+            ));
+          }
+
           // save tags
           foreach($tags as $index => $tag){
             if (empty($tag)) continue;
@@ -1613,6 +1621,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr = array();
           $attr["quota"]                       = isset($_data['quota']) ? intval($_data['quota']) * 1048576 : 0;
           $attr['tags']                        = (isset($_data['tags'])) ? $_data['tags'] : array();
+          $attr["tagged_mail_handler"]         = (!empty($_data['tagged_mail_handler'])) ? $_data['tagged_mail_handler'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['tagged_mail_handler']);
           $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $attr["quarantine_category"]         = (!empty($_data['quarantine_category'])) ? $_data['quarantine_category'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : "s";
@@ -3259,6 +3268,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               return false;
             }
+            // save delimiter_action
+            if (isset($_data['tagged_mail_handler'])) {
+              mailbox('edit', 'delimiter_action', array(
+                'username' => $username,
+                'tagged_mail_handler' => $_data['tagged_mail_handler']
+              ));
+            }
             // save tags
             foreach($tags as $index => $tag){
               if (empty($tag)) continue;
@@ -3604,6 +3620,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr = array();
             $attr["quota"]                       = isset($_data['quota']) ? intval($_data['quota']) * 1048576 : 0;
             $attr['tags']                        = (isset($_data['tags'])) ? $_data['tags'] : $is_now['tags'];
+            $attr["tagged_mail_handler"]         = (!empty($_data['tagged_mail_handler'])) ? $_data['tagged_mail_handler'] : $is_now['tagged_mail_handler'];
             $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : $is_now['quarantine_notification'];
             $attr["quarantine_category"]         = (!empty($_data['quarantine_category'])) ? $_data['quarantine_category'] : $is_now['quarantine_category'];
             $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : $is_now['rl_frame'];
