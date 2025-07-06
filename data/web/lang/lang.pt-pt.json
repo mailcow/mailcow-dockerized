@@ -39,7 +39,8 @@
         "subscribeall": "Subscrever todas as pastas",
         "syncjob": "Adicionar sincronização",
         "validate": "Validar",
-        "validation_success": "Validado com sucesso"
+        "validation_success": "Validado com sucesso",
+        "app_passwd_protocols": "Protocolos permitidos para senha de aplicação"
     },
     "admin": {
         "access": "Acessos",
@@ -106,7 +107,11 @@
         "from": "De",
         "generate": "gerar",
         "html": "HTML",
-        "iam_import_users": "Importar Utilizadores"
+        "iam_import_users": "Importar Utilizadores",
+        "ui_header_announcement_content": "Texto (HTML permitido)",
+        "ui_footer": "Rodapé (HTML permitido)",
+        "activate_send": "Ativar botão de envio",
+        "help_text": "Anular texto de ajuda abaixo da máscara de login (HTML permitido)"
     },
     "danger": {
         "access_denied": "Acesso negado ou dados inválidos",
@@ -145,7 +150,10 @@
         "target_domain_invalid": "O endereço de Domínio Destino é inválido",
         "targetd_not_found": "Domínio de Destino não encontrado",
         "username_invalid": "Nome de utilizador inválido",
-        "validity_missing": "Você deve definir um período de validade"
+        "validity_missing": "Você deve definir um período de validade",
+        "comment_too_long": "Comentário demasiado longo, máximo 160 chars permitidos",
+        "ip_list_empty": "Lista de IPs permitidos não pode estar vazia",
+        "last_key": "A última tecla não pode ser apagada, por favor desactivar a TFA."
     },
     "edit": {
         "active": "Ativo",
@@ -177,7 +185,9 @@
         "target_domain": "Domínio de Destino:",
         "title": "Editar dos Objetos",
         "unchanged_if_empty": "Deixar em branco para não modificar",
-        "username": "Administrador"
+        "username": "Administrador",
+        "app_passwd_protocols": "Protocolos permitidos para palavra-passe de aplicação",
+        "allowed_protocols": "Protocolos permitidos para acesso direto do utilizador (não afeta os protocolos de palavra-passe da aplicação)"
     },
     "footer": {
         "loading": "Aguarde..."
@@ -234,11 +244,15 @@
         "target_domain": "Domínio Destino",
         "tls_enforce_in": "Forçar TLS na entrada",
         "tls_enforce_out": "Forçar TLS na saída",
-        "username": "Utilizador"
+        "username": "Utilizador",
+        "allowed_protocols": "Protocolos permitidos",
+        "activate": "Ativar",
+        "deactivate": "Desativar"
     },
     "quarantine": {
         "action": "Ação",
-        "remove": "Remover"
+        "remove": "Remover",
+        "check_hash": "Pesquisar hash de ficheiro @ VT"
     },
     "queue": {
         "queue_manager": "Queue Manager"
@@ -317,11 +331,31 @@
         "user_settings": "Configurações do utilizador",
         "username": "Administrador",
         "week": "Semana",
-        "weeks": "Semanas"
+        "weeks": "Semanas",
+        "aliases_also_send_as": "Também autorizado a enviar como utilizador",
+        "app_hint": "As senhas de aplicação são senhas alternativas para o seu login IMAP, SMTP, CalDAV, CardDAV e EAS. O nome de utilizador permanece inalterado. O webmail SOGo não está disponível através de passwords de aplicação.",
+        "allowed_protocols": "Protocolos permitidos"
     },
     "acl": {
         "tls_policy": "Política de TLS",
         "quarantine_attachments": "Anexos de quarentena",
-        "filters": "Filtros"
+        "filters": "Filtros",
+        "smtp_ip_access": "Mudar anfitriões permitidos para SMTP"
+    },
+    "warning": {
+        "no_active_admin": "Não é possível desactivar o último administrador activo"
+    },
+    "tfa": {
+        "u2f_deprecated": "Parece que a sua chave foi registada usando o método U2F depreciado. Desactivaremos dois factores-autenticação para si e apagaremos a sua Chave.",
+        "none": "Desativar"
+    },
+    "datatables": {
+        "search": "Procurar:",
+        "info": "A mostrar _START_ a _END_ de _TOTAL_ entradas",
+        "infoEmpty": "A mostrar 0 a 0 de 0 entradas",
+        "aria": {
+            "sortAscending": ": activar para ordenar a coluna ascendente",
+            "sortDescending": ": activar para ordenar a coluna descendente"
+        }
     }
 }
