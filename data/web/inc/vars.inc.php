@@ -83,6 +83,7 @@ $DEFAULT_LANG = 'en-gb';
 // https://en.wikipedia.org/wiki/IETF_language_tag
 $AVAILABLE_LANGUAGES = array(
   // 'ca-es' => 'Català (Catalan)',
+  'bg-bg' => 'Български (Bulgarian)',
   'cs-cz' => 'Čeština (Czech)',
   'da-dk' => 'Danish (Dansk)',
   'de-de' => 'Deutsch (German)',
