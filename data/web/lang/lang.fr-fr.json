@@ -406,7 +406,8 @@
         "iam_extra_permission": "Pour que les paramètres suivants fonctionnent, le client mailcow dans Keycloak a besoin d'un <code>Compte de service</code> et de l'autorisation de <code>voir les utilisateurs</code>.",
         "iam_host": "Hôte",
         "iam_host_info": "Saisissez un ou plusieurs hôtes LDAP, séparés par des virgules.",
-        "iam_import_users": "Importer des utilisateurs"
+        "iam_import_users": "Importer des utilisateurs",
+        "filter": "Filtrer"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
