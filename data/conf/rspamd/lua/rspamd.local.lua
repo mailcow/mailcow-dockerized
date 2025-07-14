@@ -102,7 +102,7 @@ rspamd_config:register_symbol({
       local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
       if #rcpt_split == 2 then
         if rcpt_split[1] == 'postmaster' then
-          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt')
+          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
           return
         end
       end
