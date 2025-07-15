@@ -23,6 +23,47 @@ else {
   $port = substr($_SERVER['HTTP_HOST'], $domain_port+1);
 }
 
+if (isset($_GET['emailaddress'])) {
+  $emailaddress_at = strpos($_GET['emailaddress'], '@');
+  if ($emailaddress_at !== FALSE) {
+    $domain = substr($_GET['emailaddress'], $emailaddress_at + 1);
+  }
+}
+
+function autoconfig_service_enabled($_service_type) {
+  global $autodiscover_config;
+  global $domain;
+  $_disabled = FALSE;
+  switch ($_service_type) {
+    // TODO Check autodiscover_config
+    case 'imap':
+      $_disabled = isset($autodiscover_config['imap']['tlsportDisabled']) && $autodiscover_config['imap']['tlsportDisabled'] === TRUE;
+      break;
+    case 'imaps':
+      $_disabled = isset($autodiscover_config['imap']['portDisabled']) && $autodiscover_config['imap']['portDisabled'] === TRUE;
+      break;
+    case 'pop3':
+      $_disabled = isset($autodiscover_config['pop3']['tlsportDisabled']) && $autodiscover_config['pop3']['tlsportDisabled'] === TRUE;
+      break;
+    case 'pop3s':
+      $_disabled = isset($autodiscover_config['pop3']['portDisabled']) && $autodiscover_config['pop3']['portDisabled'] === TRUE;
+      break;
+    case 'smtps':
+      $_disabled = isset($autodiscover_config['smtp']['portDisabled']) && $autodiscover_config['smtp']['portDisabled'] === TRUE;
+      break;
+    case 'submission':
+      $_disabled = isset($autodiscover_config['smtp']['tlsportDisabled']) && $autodiscover_config['smtp']['tlsportDisabled'] === TRUE;
+      break;
+  }
+  // If the port is disabled in the config, do not even bother to check the DNS records.
+  if ($_disabled === TRUE) {
+    return FALSE;
+  }
+  // Check whether the service is announced as "not provided" via a SRV record.
+  $_records = dns_get_record('_' . $_service_type .'._tcp.' . $domain, DNS_SRV);
+  return $_records === FALSE || count($_records) == 0 || $_records[0]['target'] != '';
+}
+
 header('Content-Type: application/xml');
 ?>
 <?= '<?xml version="1.0"?>'; ?>
@@ -32,6 +73,8 @@ header('Content-Type: application/xml');
       <displayName>A mailcow mail server</displayName>
       <displayShortName>mail server</displayShortName>
 
+<?php
+if (autoconfig_service_enabled('imaps')) { ?>
       <incomingServer type="imap">
          <hostname><?=$autodiscover_config['imap']['server']; ?></hostname>
          <port><?=$autodiscover_config['imap']['port']; ?></port>
@@ -39,6 +82,9 @@ header('Content-Type: application/xml');
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
+<?php } ?>
+<?php
+if (autoconfig_service_enabled('imap')) { ?>
       <incomingServer type="imap">
          <hostname><?=$autodiscover_config['imap']['server']; ?></hostname>
          <port><?=$autodiscover_config['imap']['tlsport']; ?></port>
@@ -46,10 +92,10 @@ header('Content-Type: application/xml');
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </incomingServer>
+<?php } ?>
 
 <?php
-$records = dns_get_record('_pop3s._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
-if (count($records) == 0 || $records[0]['target'] != '') { ?>
+if (autoconfig_service_enabled('pop3s')) { ?>
       <incomingServer type="pop3">
          <hostname><?=$autodiscover_config['pop3']['server']; ?></hostname>
          <port><?=$autodiscover_config['pop3']['port']; ?></port>
@@ -59,8 +105,7 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
       </incomingServer>
 <?php } ?>
 <?php
-$records = dns_get_record('_pop3._tcp.' . $domain, DNS_SRV); // check if POP3 is announced as "not provided" via SRV record
-if (count($records) == 0 || $records[0]['target'] != '') { ?>
+if (autoconfig_service_enabled('pop3')) { ?>
       <incomingServer type="pop3">
          <hostname><?=$autodiscover_config['pop3']['server']; ?></hostname>
          <port><?=$autodiscover_config['pop3']['tlsport']; ?></port>
@@ -70,6 +115,8 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
       </incomingServer>
 <?php } ?>
 
+<?php
+if (autoconfig_service_enabled('smtps')) { ?>
       <outgoingServer type="smtp">
          <hostname><?=$autodiscover_config['smtp']['server']; ?></hostname>
          <port><?=$autodiscover_config['smtp']['port']; ?></port>
@@ -77,6 +124,9 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
+<?php } ?>
+<?php
+if (autoconfig_service_enabled('submission')) { ?>
       <outgoingServer type="smtp">
          <hostname><?=$autodiscover_config['smtp']['server']; ?></hostname>
          <port><?=$autodiscover_config['smtp']['tlsport']; ?></port>
@@ -84,6 +134,7 @@ if (count($records) == 0 || $records[0]['target'] != '') { ?>
          <username>%EMAILADDRESS%</username>
          <authentication>password-cleartext</authentication>
       </outgoingServer>
+<?php } ?>
 
       <enable visiturl="https://<?=$mailcow_hostname; ?><?php if ($port != 443) echo ':'.$port; ?>/admin">
          <instruction>If you didn't change the password given to you by the administrator or if you didn't change it in a long time, please consider doing that now.</instruction>
