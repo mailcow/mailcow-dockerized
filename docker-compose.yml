@@ -24,7 +24,7 @@ services:
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
         - ./data/conf/mysql/:/etc/mysql/conf.d/:ro,Z
       environment:
         - TZ=${TZ}
@@ -134,7 +134,7 @@ services:
         - ./data/web/inc/functions.ratelimit.inc.php:/mailcowauth/functions.ratelimit.inc.php:z
         - ./data/web/inc/functions.acl.inc.php:/mailcowauth/functions.acl.inc.php:z
         - rspamd-vol-1:/var/lib/rspamd
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
         - ./data/conf/sogo/:/etc/sogo/:z
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - ./data/conf/phpfpm/crons:/crons:z
@@ -230,7 +230,7 @@ services:
         - ./data/conf/sogo/custom-fulllogo.png:/usr/lib/GNUstep/SOGo/WebServerResources/img/sogo-logo.png:z
         - ./data/conf/sogo/custom-theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js:z
         - ./data/conf/sogo/custom-sogo.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/custom-sogo.js:z
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web
         - sogo-userdata-backup-vol-1:/sogo_backup
       labels:
@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.33
+      image: ghcr.io/mailcow/dovecot:2.34
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -272,7 +272,7 @@ services:
         - ./data/conf/rspamd/custom/:/etc/rspamd/custom:z
         - ./data/assets/templates:/templates:z
         - rspamd-vol-1:/var/lib/rspamd
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
@@ -351,7 +351,7 @@ services:
         - postfix-vol-1:/var/spool/postfix
         - crypt-vol-1:/var/lib/zeyple
         - rspamd-vol-1:/var/lib/rspamd
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -440,12 +440,11 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.92
+      image: ghcr.io/mailcow/acme:1.93
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
-        - ACME_CONTACT=${ACME_CONTACT:-}
         - ADDITIONAL_SAN=${ADDITIONAL_SAN}
         - AUTODISCOVER_SAN=${AUTODISCOVER_SAN:-y}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
@@ -470,7 +469,7 @@ services:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:z
         - ./data/assets/ssl:/var/lib/acme/:z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
       restart: always
       networks:
         mailcow-network:
@@ -505,7 +504,7 @@ services:
         - /tmp
       volumes:
         - rspamd-vol-1:/var/lib/rspamd
-        - mysql-socket-vol-1:/var/run/mysqld/
+        - mysql-socket-vol-1:/var/run/mysqld/:z
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
