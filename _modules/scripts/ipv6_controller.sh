@@ -141,7 +141,6 @@ configure_ipv6() {
       echo -e "${RED}Please disable or fix your host/Docker IPv6 support, or set ENABLE_IPV6=false.${NC}"
       exit 1
     else
-      echo "Manual ENABLE_IPV6=$MANUAL_SETTING detected and matches system status—no changes applied."
       return
     fi
   fi
