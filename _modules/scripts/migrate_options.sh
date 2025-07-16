@@ -13,6 +13,7 @@ migrate_config_options() {
     SOLR_PORT
     FLATCURVE_EXPERIMENTAL
     DISABLE_IPv6
+    ACME_CONTACT
   )
 
   for key in "${KEYS[@]}"; do
@@ -50,6 +51,16 @@ migrate_config_options() {
           fi
           sed -i '/^DISABLE_IPv6=/d' "mailcow.conf"
           echo "ENABLE_IPV6=$new" >> "mailcow.conf"
+          ;;
+        ACME_CONTACT)
+          echo "Deleting obsoleted ${key} in mailcow.conf"
+          sed -i '/^# Lets Encrypt registration contact information/d' mailcow.conf
+          sed -i '/^# Optional: Leave empty for none/d' mailcow.conf
+          sed -i '/^# This value is only used on first order!/d' mailcow.conf
+          sed -i '/^# Setting it at a later point will require the following steps:/d' mailcow.conf
+          sed -i '/^# https:\/\/docs.mailcow.email\/troubleshooting\/debug-reset_tls\//d' mailcow.conf
+          sed -i '/^ACME_CONTACT=.*/d' mailcow.conf
+          sed -i '/^#ACME_CONTACT=.*/d' mailcow.conf
           ;;
       esac
     fi
