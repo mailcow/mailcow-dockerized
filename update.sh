@@ -63,6 +63,27 @@ detect_major_update() {
   fi
 }
 
+remove_obsolete_options() {
+  OBSOLETE_OPTIONS=(
+    "ACME_CONTACT"
+  )
+
+  for option in "${OBSOLETE_OPTIONS[@]}"; do
+    if [[ "$option" == "ACME_CONTACT" ]]; then
+      sed -i '/^# Lets Encrypt registration contact information/d' mailcow.conf
+      sed -i "/^# Let's Encrypt registration contact information/d" mailcow.conf
+      sed -i '/^# Optional: Leave empty for none/d' mailcow.conf
+      sed -i '/^# This value is only used on first order!/d' mailcow.conf
+      sed -i '/^# Setting it at a later point will require the following steps:/d' mailcow.conf
+      sed -i '/^# https:\/\/docs.mailcow.email\/troubleshooting\/debug-reset_tls\//d' mailcow.conf
+      sed -i '/^ACME_CONTACT=.*/d' mailcow.conf
+      sed -i '/^#ACME_CONTACT=.*/d' mailcow.conf
+    else
+      sed -i "/^${option}=.*/d" mailcow.conf
+      sed -i "/^#${option}=.*/d" mailcow.conf
+    fi
+  done
+}
 ############## End Function Section ##############
 
 # Check permissions
@@ -427,6 +448,7 @@ configure_ipv6
 [[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 migrate_config_options
 adapt_new_options
+remove_obsolete_options
 
 if [ ! "$DEV" ]; then
   DEFAULT_REPO="https://github.com/mailcow/mailcow-dockerized"
