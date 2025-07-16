@@ -138,7 +138,7 @@ def ban(address):
         logdebug("Checking overlap between %s and %s" % (self_network, wl_net))
         if wl_net.overlaps(self_network):
           logger.logInfo(
-            'Address %s is whitelisted by rule %s' % (self_network, wl_net))
+            'Address %s is allowlisted by rule %s' % (self_network, wl_net))
           return
 
   net = ipaddress.ip_network(
@@ -227,10 +227,10 @@ def permBan(net, unban=False):
 
   if is_unbanned:
     r.hdel('F2B_PERM_BANS', '%s' % net)
-    logger.logCrit('Removed host/network %s from blacklist' % net)
+    logger.logCrit('Removed host/network %s from denylist' % net)
   elif is_banned:
     r.hset('F2B_PERM_BANS', '%s' % net, int(round(time.time())))
-    logger.logCrit('Added host/network %s to blacklist' % net)
+    logger.logCrit('Added host/network %s to denylist' % net)
 
 def clear():
   global lock
@@ -398,7 +398,7 @@ def whitelistUpdate():
     with lock:
       if Counter(new_whitelist) != Counter(WHITELIST):
         WHITELIST = new_whitelist
-        logger.logInfo('Whitelist was changed, it has %s entries' % len(WHITELIST))
+        logger.logInfo('Allowlist was changed, it has %s entries' % len(WHITELIST))
     time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def blacklistUpdate():
@@ -414,7 +414,7 @@ def blacklistUpdate():
       addban = set(new_blacklist).difference(BLACKLIST)
       delban = set(BLACKLIST).difference(new_blacklist)
       BLACKLIST = new_blacklist
-      logger.logInfo('Blacklist was changed, it has %s entries' % len(BLACKLIST))
+      logger.logInfo('Denylist was changed, it has %s entries' % len(BLACKLIST))
       if addban:
         for net in addban:
           permBan(net=net)
