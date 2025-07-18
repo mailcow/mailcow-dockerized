@@ -182,7 +182,7 @@ foreach (json_decode($rcpts, true) as $rcpt) {
               error_log("RCPT RESOVLER: http pipe: goto address " . $goto . " is an alias branch for " . $goto_branch . PHP_EOL);
               $goto_branch_array = explode(',', $goto_branch);
             } else {
-              $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain AND `active` AND '1'");
+              $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain AND `active` = '1'");
               $stmt->execute(array(':domain' => $parsed_goto['domain']));
               $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['target_domain'];
               if ($goto_branch) {
@@ -215,6 +215,25 @@ foreach (json_decode($rcpts, true) as $rcpt) {
     error_log("RCPT RESOVLER: " . $e->getMessage() . PHP_EOL);
     http_response_code(502);
     exit;
+  }
+
+  // In case there's no local mailbox (relaying), insert the quarantine on the admin account
+  if (empty($rcpt_final_mailboxes)) {
+    try {
+      $stmt = $pdo->prepare("SELECT `relay_all_recipients` FROM `domain` WHERE `domain` = :domain AND `relay_all_recipients` = '1'");
+      $stmt->execute(array(':domain' => $parsed_rcpt['domain']));
+      $relay_all_recipients = $stmt->fetch(PDO::FETCH_ASSOC)['relay_all_recipients'];
+      if ($relay_all_recipients == '1') {
+        if (!in_array($rcpt, $rcpt_final_mailboxes)) {
+          $rcpt_final_mailboxes[] = $rcpt;
+        }
+      }
+    }
+    catch (PDOException $e) {
+      error_log("DOMAIN CHECK: " . $e->getMessage() . PHP_EOL);
+      http_response_code(502);
+      exit;
+    }
   }
 }
 
