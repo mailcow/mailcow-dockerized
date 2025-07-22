@@ -2307,6 +2307,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if (!array_key_exists('login_provisioning', $settings)) {
         $settings['login_provisioning'] = 1;
       }
+      // set end_session_url default if not exists
+      if (!array_key_exists('end_session_url', $settings)) {
+        $settings['end_session_url'] = '';
+      }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
         $settings["client_scopes"] = "openid profile email mailcow_template";
@@ -2381,6 +2385,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
+          $_data['end_session_url']   = (isset($_data['end_session_url']) && trim($_data['end_session_url']) !== '') ? trim($_data['end_session_url']) : null;
           $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "generic-oidc":
@@ -2388,6 +2393,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
+          $_data['end_session_url']   = (isset($_data['end_session_url']) && trim($_data['end_session_url']) !== '') ? trim($_data['end_session_url']) : null;
           $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "ldap":
@@ -2445,6 +2451,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $stmt->bindParam(':value', $_data['default_template']);
         $stmt->execute();
       }
+
+      // add end_session_url
+      $_data['end_session_url'] = (isset($_data['end_session_url']) && trim($_data['end_session_url']) !== '') ? trim($_data['end_session_url']) : "";
+      $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('end_session_url', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+      $stmt->bindParam(':value', $_data['end_session_url']);
+      $stmt->execute();
 
       // add mappers
       if (isset($_data['mappers']) && isset($_data['templates'])){
@@ -2764,6 +2776,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         set_user_loggedin_session($info['email']);
         $_SESSION['iam_token'] = $plain_token;
         $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
+        $_SESSION['iam_auth_source'] = $iam_settings['authsource'];
+        // Store ID token if available for logout
+        if (isset($token->getValues()['id_token'])) {
+          $_SESSION['iam_id_token'] = $token->getValues()['id_token'];
+        }
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -2840,6 +2857,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       set_user_loggedin_session($info['email']);
       $_SESSION['iam_token'] = $plain_token;
       $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
+      $_SESSION['iam_auth_source'] = $iam_settings['authsource'];
+      // Store ID token if available for logout
+      if (isset($token->getValues()['id_token'])) {
+        $_SESSION['iam_id_token'] = $token->getValues()['id_token'];
+      }
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -2952,6 +2974,37 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         ':value' => $res['access_token']
       ));
       return $res['access_token'];
+    break;
+    case "get-logout-url":
+      // Generate logout URL for OIDC providers
+      if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc') {
+        return false;
+      }
+      
+      // Build the logout URL according to oidc spec
+      // If end_session_url is empty, OIDC logout is disabled
+      if (empty($iam_settings['end_session_url'])) {
+        return false;
+      }
+
+      $post_logout_redirect_uri = (!empty($_data['post_logout_redirect_uri'])) ? $_data['post_logout_redirect_uri'] : null;
+      
+      $params = [];
+      if ($post_logout_redirect_uri) {
+        $params['post_logout_redirect_uri'] = $post_logout_redirect_uri;
+      }
+      
+      // Add id_token_hint if available in session
+      if (isset($_SESSION['iam_id_token'])) {
+        $params['id_token_hint'] = $_SESSION['iam_id_token'];
+      }
+      
+      $logout_url = $iam_settings['end_session_url'];
+      if (!empty($params)) {
+        $logout_url .= '?' . http_build_query($params);
+      }
+      
+      return $logout_url;
     break;
   }
 }
