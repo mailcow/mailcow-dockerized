@@ -7,13 +7,19 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 // logout function
 function mc_logout() {
-    fetch("/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "logout=1"
-    }).then(() => window.location.href = '/');
+    // Create and submit a logout form to trigger the logout process
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/';
+    
+    var logoutInput = document.createElement('input');
+    logoutInput.type = 'hidden';
+    logoutInput.name = 'logout';
+    logoutInput.value = '1';
+    
+    form.appendChild(logoutInput);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Custom SOGo JS
