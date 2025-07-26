@@ -11,6 +11,7 @@
         "directorytree/ldaprecord": "^2.20.5",
         "twig/twig": "^3.0",
         "stevenmaguire/oauth2-keycloak": "^4.0",
-        "league/oauth2-client": "^2.7"
+        "league/oauth2-client": "^2.7",
+        "bacon/bacon-qr-code": "^3.0"
     }
 }
