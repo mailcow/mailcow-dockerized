@@ -26,23 +26,25 @@ if (is_array($alertbox_log_parser)) {
 
 // map tfa details for twig
 $pending_tfa_authmechs = [];
-foreach($_SESSION['pending_tfa_methods'] as $authdata){
-  $pending_tfa_authmechs[$authdata['authmech']] = false;
-}
-if (isset($pending_tfa_authmechs['webauthn'])) {
-  $pending_tfa_authmechs['webauthn'] = true;
-}
-if (!isset($pending_tfa_authmechs['webauthn']) 
-    && isset($pending_tfa_authmechs['yubi_otp'])) {
-  $pending_tfa_authmechs['yubi_otp'] = true;
-}
-if (!isset($pending_tfa_authmechs['webauthn']) 
-    && !isset($pending_tfa_authmechs['yubi_otp'])
-    && isset($pending_tfa_authmechs['totp'])) {
-  $pending_tfa_authmechs['totp'] = true;
-}
-if (isset($pending_tfa_authmechs['u2f'])) {
-  $pending_tfa_authmechs['u2f'] = true;
+if (array_key_exists('pending_tfa_methods', $_SESSION)) {
+  foreach($_SESSION['pending_tfa_methods'] as $authdata){
+    $pending_tfa_authmechs[$authdata['authmech']] = false;
+  }
+  if (isset($pending_tfa_authmechs['webauthn'])) {
+    $pending_tfa_authmechs['webauthn'] = true;
+  }
+  if (!isset($pending_tfa_authmechs['webauthn']) 
+      && isset($pending_tfa_authmechs['yubi_otp'])) {
+    $pending_tfa_authmechs['yubi_otp'] = true;
+  }
+  if (!isset($pending_tfa_authmechs['webauthn']) 
+      && !isset($pending_tfa_authmechs['yubi_otp'])
+      && isset($pending_tfa_authmechs['totp'])) {
+    $pending_tfa_authmechs['totp'] = true;
+  }
+  if (isset($pending_tfa_authmechs['u2f'])) {
+    $pending_tfa_authmechs['u2f'] = true;
+  }
 }
 
 // globals
