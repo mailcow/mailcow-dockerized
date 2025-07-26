@@ -2211,7 +2211,7 @@ function cors($action, $data = null) {
       $cors_settings['allowed_origins'] = $allowed_origins[0];
       if (in_array('*', $allowed_origins)){
         $cors_settings['allowed_origins'] = '*';
-      } else if (in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+      } else if (array_key_exists('HTTP_ORIGIN', $_SERVER) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
         $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
       }
       // always allow OPTIONS for preflight request
