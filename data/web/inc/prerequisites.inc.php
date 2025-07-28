@@ -47,7 +47,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/CSSminifierExtended.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/array_merge_real.php';
 
 // T/HOTP API
-$qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
+$qrprovider = new RobThree\Auth\Providers\Qr\BaconQrCodeProvider();
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // FIDO2
