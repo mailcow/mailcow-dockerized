@@ -283,6 +283,8 @@ function user_login($user, $pass, $extra = null){
               // Reactivate TFA if it was set to "deactivate TFA for next login"
               $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
               $stmt->execute(array(':user' => $user));
+              // Set auth source for logout support
+              $_SESSION['iam_auth_source'] = 'keycloak';
               $_SESSION['return'][] =  array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $user, '*', 'Provider: Keycloak'),
