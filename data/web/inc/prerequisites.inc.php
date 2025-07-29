@@ -105,11 +105,11 @@ http_response_code(500);
 <?php
 exit;
 }
-// Stop when dockerapi is not available
-if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
+// Stop when controller is not available
+if (fsockopen("tcp://controller", 443, $errno, $errstr) === false) {
   http_response_code(500);
 ?>
-<center style='font-family:sans-serif;'>Connection to dockerapi container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
+<center style='font-family:sans-serif;'>Connection to controller container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
 <?php
 exit;
 }
@@ -165,14 +165,6 @@ if(!$DEV_MODE) {
   set_exception_handler('exception_handler');
 }
 
-// TODO: Move function
-function get_remote_ip() {
-  $remote = $_SERVER['REMOTE_ADDR'];
-  if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
-    return '0.0.0.0';
-  }
-  return $remote;
-}
 
 // Load core functions first
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';

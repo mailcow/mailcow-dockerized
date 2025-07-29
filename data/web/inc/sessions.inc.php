@@ -68,7 +68,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     }
     else {
       $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
-      error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+      error_log("mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
       http_response_code(401);
       echo json_encode(array(
         'type' => 'error',
@@ -80,7 +80,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   }
   else {
     $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
-    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    error_log("mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
     http_response_code(401);
     echo json_encode(array(
       'type' => 'error',
@@ -88,6 +88,16 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     ));
     unset($_POST);
     exit();
+  }
+}
+else {
+  $remote = get_remote_ip(false);
+  $docker_ipv4_network = getenv('IPV4_NETWORK');
+  if ($remote == "{$docker_ipv4_network}.246") {
+      $_SESSION['mailcow_cc_username'] = 'Controller';
+      $_SESSION['mailcow_cc_role'] = 'admin';
+      $_SESSION['mailcow_cc_api'] = true;
+      $_SESSION['mailcow_cc_api_access'] = 'rw';
   }
 }
 

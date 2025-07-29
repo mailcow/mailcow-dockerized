@@ -48,11 +48,11 @@ if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
-log_f "Waiting for Docker API..."
-until ping dockerapi -c1 > /dev/null; do
+log_f "Waiting for Controller .."
+until ping controller -c1 > /dev/null; do
   sleep 1
 done
-log_f "Docker API OK"
+log_f "Controller OK"
 
 log_f "Waiting for Postfix..."
 until ping postfix -c1 > /dev/null; do

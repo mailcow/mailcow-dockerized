@@ -5352,9 +5352,9 @@ paths:
                       started_at: "2019-12-22T21:00:01.622856172Z"
                       state: running
                       type: info
-                    dockerapi-mailcow:
-                      container: dockerapi-mailcow
-                      image: "mailcow/dockerapi:1.36"
+                    controller-mailcow:
+                      container: controller-mailcow
+                      image: "mailcow/controller:1.36"
                       started_at: "2019-12-22T20:59:59.984797808Z"
                       state: running
                       type: info

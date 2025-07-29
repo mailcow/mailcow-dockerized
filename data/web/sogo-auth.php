@@ -23,7 +23,16 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
   elseif (preg_match('/^(\/SOGo|)\/Microsoft-Server-ActiveSync.*/', $original_uri) === 1) {
     $is_eas = true;
   }
-  $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
+  if (empty($password)) {
+    $remote = get_remote_ip();
+    $docker_ipv4_network = getenv('IPV4_NETWORK');
+    if ($remote == "{$docker_ipv4_network}.246") {
+      $login_check = 'user';
+      $password = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
+    }
+  } else {
+    $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
+  }
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));
@@ -79,6 +88,7 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
   if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
     include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
   }
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
   // extract email address from "/SOGo/so/user@domain/xy"
