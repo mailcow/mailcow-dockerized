@@ -139,7 +139,7 @@ adapt_new_options() {
         ACL_ANYONE)
             echo '# Set this to "allow" to enable the anyone pseudo user. Disabled by default.' >> mailcow.conf
             echo '# When enabled, ACL can be created, that apply to "All authenticated users"' >> mailcow.conf
-            echo '# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.' >> mailcow.conf
+            echo '# This should probably only be activated on mail hosts, that are used exclusively by one organisation.' >> mailcow.conf
             echo '# Otherwise a user might share data with too many other users.' >> mailcow.conf
             echo 'ACL_ANYONE=disallow' >> mailcow.conf
             ;;
