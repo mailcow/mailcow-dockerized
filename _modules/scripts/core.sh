@@ -124,7 +124,7 @@ prefetch_images() {
 }
 
 docker_garbage() {
-  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
   IMGS_TO_DELETE=()
 
   declare -A IMAGES_INFO

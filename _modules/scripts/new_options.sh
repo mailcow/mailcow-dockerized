@@ -238,14 +238,6 @@ adapt_new_options() {
             echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
             echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
             ;;
-        ACME_CONTACT)
-            echo '# Lets Encrypt registration contact information' >> mailcow.conf
-            echo '# Optional: Leave empty for none' >> mailcow.conf
-            echo '# This value is only used on first order!' >> mailcow.conf
-            echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
-            echo '# https://docs.mailcow.email/troubleshooting/debug-reset_tls/' >> mailcow.conf
-            echo 'ACME_CONTACT=' >> mailcow.conf
-            ;;
         WEBAUTHN_ONLY_TRUSTED_VENDORS)
             echo "# WebAuthn device manufacturer verification" >> mailcow.conf
             echo '# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed' >> mailcow.conf

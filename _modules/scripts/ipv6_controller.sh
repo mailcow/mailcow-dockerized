@@ -105,7 +105,7 @@ EOF
 }
 EOF
       fi
-      echo "${GREEN}Created $DOCKER_DAEMON_CONFIG with IPv6 settings.${NC}"
+      echo -e "${GREEN}Created $DOCKER_DAEMON_CONFIG with IPv6 settings.${NC}"
       echo "Restarting Docker..."
       (command -v systemctl &>/dev/null && systemctl restart docker) || service docker restart
       echo "Docker restarted."
