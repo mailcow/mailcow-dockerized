@@ -394,7 +394,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:nightly-27052025
+      image: ghcr.io/mailcow/nginx:nightly-05082025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
