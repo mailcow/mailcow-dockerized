@@ -10,7 +10,7 @@ def includes_conf(env, template_vars):
   server_name_config = f"server_name {template_vars['MAILCOW_HOSTNAME']} autodiscover.* autoconfig.* {' '.join(template_vars['ADDITIONAL_SERVER_NAMES'])};"
   listen_plain_config = f"listen {template_vars['HTTP_PORT']};"
   listen_ssl_config = f"listen {template_vars['HTTPS_PORT']};"
-  if template_vars['ENABLE_IPV6'] == "false":
+  if not template_vars['ENABLE_IPV6']:
     listen_plain_config += f"\nlisten [::]:{template_vars['HTTP_PORT']};"
     listen_ssl_config += f"\nlisten [::]:{template_vars['HTTPS_PORT']} ssl;"
   listen_ssl_config += "\nhttp2 on;"
@@ -58,7 +58,7 @@ def prepare_template_vars():
     'SOGOHOST': os.getenv("SOGOHOST", ipv4_network + ".248"),
     'RSPAMDHOST': os.getenv("RSPAMDHOST", "rspamd-mailcow"),
     'PHPFPMHOST': os.getenv("PHPFPMHOST", "php-fpm-mailcow"),
-    'ENABLE_IPV6': os.getenv("ENABLE_IPV6", "true").lower() in ("false"),
+    'ENABLE_IPV6': os.getenv("ENABLE_IPV6", "true").lower() != "false",
     'HTTP_REDIRECT': os.getenv("HTTP_REDIRECT", "n").lower() in ("y", "yes"),
   }
 

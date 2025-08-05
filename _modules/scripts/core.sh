@@ -17,7 +17,7 @@ caller="${BASH_SOURCE[1]##*/}"
 
 get_installed_tools(){
     for bin in openssl curl docker git awk sha1sum grep cut jq; do
-        if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+        if [[ -z $(command -v ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
     done
 
     if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\"${NC}"; exit 1; fi
@@ -176,4 +176,48 @@ in_array() {
   shift
   for e; do [[ "$e" == "$match" ]] && return 0; done
   return 1
+}
+
+detect_major_update() {
+  if [ ${BRANCH} == "master" ]; then
+    # Array with major versions
+    # Add major versions here
+    MAJOR_VERSIONS=(
+      "2025-02"
+      "2025-03"
+    )
+
+    current_version=""
+    if [[ -f "${SCRIPT_DIR}/data/web/inc/app_info.inc.php" ]]; then
+      current_version=$(grep 'MAILCOW_GIT_VERSION' ${SCRIPT_DIR}/data/web/inc/app_info.inc.php | sed -E 's/.*MAILCOW_GIT_VERSION="([^"]+)".*/\1/')
+    fi
+    if [[ -z "$current_version" ]]; then
+      return 1
+    fi
+    release_url="https://github.com/mailcow/mailcow-dockerized/releases/tag"
+
+    updates_to_apply=()
+
+    for version in "${MAJOR_VERSIONS[@]}"; do
+      if [[ "$current_version" < "$version" ]]; then
+        updates_to_apply+=("$version")
+      fi
+    done
+
+    if [[ ${#updates_to_apply[@]} -gt 0 ]]; then
+      echo -e "\e[33m\nMAJOR UPDATES to be applied:\e[0m"
+      for update in "${updates_to_apply[@]}"; do
+        echo "$update - $release_url/$update"
+      done
+
+      echo -e "\nPlease read the release notes before proceeding."
+      read -p "Do you want to proceed with the update? [y/n] " response
+      if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        echo "Proceeding with the update..."
+      else
+        echo "Update canceled. Exiting."
+        exit 1
+      fi
+    fi
+  fi
 }

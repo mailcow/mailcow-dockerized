@@ -18,6 +18,7 @@ get_ipv6_support() {
 # 2) Ensure Docker daemon.json has (or create) the required IPv6 settings
 docker_daemon_edit(){
   DOCKER_DAEMON_CONFIG="/etc/docker/daemon.json"
+  DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
   MISSING=()
 
   _has_kv() { grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null; }
@@ -40,7 +41,7 @@ docker_daemon_edit(){
     ! _has_kv ipv6 true       && MISSING+=("ipv6: true")
     ! grep -Eq '"fixed-cidr-v6"\s*:\s*".+"' "$DOCKER_DAEMON_CONFIG" \
                               && MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
-    if [[ -n "$docker_version" && "$docker_version" -ge 27 ]]; then
+    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -ge 27 ]]; then
       _has_kv ipv6 true && ! _has_kv ip6tables true && MISSING+=("ip6tables: true")
       ! _has_kv experimental true                 && MISSING+=("experimental: true")
     fi
@@ -87,7 +88,6 @@ docker_daemon_edit(){
     fi
 
     if [[ $ans =~ ^[Yy]$ ]]; then
-      DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
       if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
         cat > "$DOCKER_DAEMON_CONFIG" <<EOF
 {
@@ -141,7 +141,6 @@ configure_ipv6() {
       echo -e "${RED}Please disable or fix your host/Docker IPv6 support, or set ENABLE_IPV6=false.${NC}"
       exit 1
     else
-      echo "Manual ENABLE_IPV6=$MANUAL_SETTING detected and matches system status—no changes applied."
       return
     fi
   fi

@@ -82,7 +82,7 @@ adapt_new_options() {
             echo "# Switch here between native (compose plugin) and standalone" >> mailcow.conf
             echo "# For more informations take a look at the mailcow docs regarding the configuration options." >> mailcow.conf
             echo "# Normally this should be untouched but if you decided to use either of those you can switch it manually here." >> mailcow.conf
-            echo "# Please be aware that at least one of those variants should be installed on your maschine or mailcow will fail." >> mailcow.conf
+            echo "# Please be aware that at least one of those variants should be installed on your machine or mailcow will fail." >> mailcow.conf
             echo "" >> mailcow.conf
             echo "DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}" >> mailcow.conf
             ;;
@@ -139,7 +139,7 @@ adapt_new_options() {
         ACL_ANYONE)
             echo '# Set this to "allow" to enable the anyone pseudo user. Disabled by default.' >> mailcow.conf
             echo '# When enabled, ACL can be created, that apply to "All authenticated users"' >> mailcow.conf
-            echo '# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.' >> mailcow.conf
+            echo '# This should probably only be activated on mail hosts, that are used exclusively by one organisation.' >> mailcow.conf
             echo '# Otherwise a user might share data with too many other users.' >> mailcow.conf
             echo 'ACL_ANYONE=disallow' >> mailcow.conf
             ;;
@@ -297,7 +297,7 @@ adapt_new_options() {
             ;;
         
         REDISPASS)
-            echo "REDISPASS=\$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
+            echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
             ;;
                   
         *)
