@@ -18,6 +18,7 @@ get_ipv6_support() {
 # 2) Ensure Docker daemon.json has (or create) the required IPv6 settings
 docker_daemon_edit(){
   DOCKER_DAEMON_CONFIG="/etc/docker/daemon.json"
+  DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
   MISSING=()
 
   _has_kv() { grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null; }
@@ -87,7 +88,6 @@ docker_daemon_edit(){
     fi
 
     if [[ $ans =~ ^[Yy]$ ]]; then
-      DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
       if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
         cat > "$DOCKER_DAEMON_CONFIG" <<EOF
 {
