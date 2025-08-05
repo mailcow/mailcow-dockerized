@@ -297,7 +297,7 @@ adapt_new_options() {
             ;;
         
         REDISPASS)
-            echo "REDISPASS=\$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
+            echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
             ;;
                   
         *)
