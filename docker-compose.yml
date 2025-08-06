@@ -394,7 +394,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.03
+      image: ghcr.io/mailcow/nginx:1.04
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -405,7 +405,7 @@ services:
         - TZ=${TZ}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
-        - DISABLE_IPv6=${DISABLE_IPv6:-n}
+        - ENABLE_IPV6=${ENABLE_IPV6:-true}
         - HTTP_REDIRECT=${HTTP_REDIRECT:-n}
         - PHPFPMHOST=${PHPFPMHOST:-}
         - SOGOHOST=${SOGOHOST:-}
@@ -629,41 +629,12 @@ services:
           aliases:
             - ofelia
 
-    ipv6nat-mailcow:
-      depends_on:
-        - unbound-mailcow
-        - mysql-mailcow
-        - redis-mailcow
-        - clamd-mailcow
-        - rspamd-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - dovecot-mailcow
-        - postfix-mailcow
-        - memcached-mailcow
-        - nginx-mailcow
-        - acme-mailcow
-        - netfilter-mailcow
-        - watchdog-mailcow
-        - dockerapi-mailcow
-      environment:
-        - TZ=${TZ}
-      image: robbertkl/ipv6nat
-      security_opt:
-        - label=disable
-      restart: always
-      privileged: true
-      network_mode: "host"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - /lib/modules:/lib/modules:ro
-
 networks:
   mailcow-network:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br-mailcow
-    enable_ipv6: true
+    enable_ipv6: ${ENABLE_IPV6:-true}
     ipam:
       driver: default
       config:
