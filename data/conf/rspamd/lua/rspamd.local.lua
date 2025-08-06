@@ -102,7 +102,7 @@ rspamd_config:register_symbol({
       local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
       if #rcpt_split == 2 then
         if rcpt_split[1] == 'postmaster' then
-          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt')
+          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
           return
         end
       end
@@ -167,7 +167,7 @@ rspamd_config:register_symbol({
         for k,v in pairs(data) do
           if (v and v ~= userdata and v == '1') then
             rspamd_logger.infox(rspamd_config, "found ip in keep_spam map, setting pre-result")
-            task:set_pre_result('accept', 'ip matched with forward hosts')
+            task:set_pre_result('accept', 'ip matched with forward hosts', 'keep_spam')
           end
         end
       end
