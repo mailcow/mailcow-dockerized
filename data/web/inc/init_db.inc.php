@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "21052025_2215";
+    $db_version = "06082025_1611";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -345,7 +345,7 @@ function init_db_schema()
           "notified" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "user" => "VARCHAR(255) NOT NULL DEFAULT 'unknown'",
-          "qhash" => "VARCHAR(255)",
+          "qhash" => "VARCHAR(64)",
         ),
         "keys" => array(
           "primary" => array(
