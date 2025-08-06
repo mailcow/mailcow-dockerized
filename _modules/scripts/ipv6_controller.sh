@@ -41,7 +41,7 @@ docker_daemon_edit(){
     ! _has_kv ipv6 true       && MISSING+=("ipv6: true")
     ! grep -Eq '"fixed-cidr-v6"\s*:\s*".+"' "$DOCKER_DAEMON_CONFIG" \
                               && MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
-    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -ge 27 ]]; then
+    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -le 27 ]]; then
       _has_kv ipv6 true && ! _has_kv ip6tables true && MISSING+=("ip6tables: true")
       ! _has_kv experimental true                 && MISSING+=("experimental: true")
     fi
