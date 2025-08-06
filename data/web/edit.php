@@ -125,6 +125,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'mailbox' => $mailbox,
           'rl' => $rl,
           'pushover_data' => $pushover_data,
+          'get_tagging_options' => mailbox('get', 'delimiter_action', $mailbox),
           'quarantine_notification' => $quarantine_notification,
           'quarantine_category' => $quarantine_category,
           'get_tls_policy' => $get_tls_policy,
