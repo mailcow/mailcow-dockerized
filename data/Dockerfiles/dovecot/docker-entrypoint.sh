@@ -108,7 +108,11 @@ map {
 }
 EOF
 
-echo -n ${ACL_ANYONE} > /etc/dovecot/acl_anyone
+if [[ "${ACL_ANYONE}" == "allow" ]]; then
+  echo -n "yes" > /etc/dovecot/acl_anyone
+else
+  echo -n "no" > /etc/dovecot/acl_anyone
+fi
 
 if [[ "${SKIP_FTS}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 echo -e "\e[33mDetecting SKIP_FTS=y... not enabling Flatcurve (FTS) then...\e[0m"
