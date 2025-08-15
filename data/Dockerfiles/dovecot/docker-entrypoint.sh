@@ -82,7 +82,10 @@ dict_map priv/sieve/name/\$script_name {
   sql_table = sieve_before
   username_field = username
   value_field id {
+    type = uuid
   }
+
+  # The script name field in the table to query
   key_field script_name {
     value = \$script_name
   }
@@ -91,14 +94,12 @@ dict_map priv/sieve/name/\$script_name {
 dict_map priv/sieve/data/\$id {
   sql_table = sieve_before
   username_field = username
-  key_field script_data {
-    value = \$script_data
+  value_field script_data {
   }
-  value_field id {
+  key_field id {
+    value = \$id
   }
 }
-
-
 EOF
 
 cat <<EOF > /etc/dovecot/sql/dovecot-dict-sql-sieve_after.conf
@@ -108,6 +109,7 @@ dict_map priv/sieve/name/\$script_name {
   sql_table = sieve_after
   username_field = username
   value_field id {
+    type = uuid
   }
   key_field script_name {
     value = \$script_name
@@ -117,10 +119,10 @@ dict_map priv/sieve/name/\$script_name {
 dict_map priv/sieve/data/\$id {
   sql_table = sieve_after
   username_field = username
-  key_field script_name {
-    value = \$script_data
+  value_field script_data {
   }
-  value_field id {
+  key_field id {
+    value = \$id
   }
 }
 EOF
