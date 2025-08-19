@@ -155,28 +155,28 @@ class SyncjobModel(BaseModel):
 
     def get(self):
         """
-        Get the mailbox details from the mailcow API.
+        Get the sync job details from the mailcow API.
         :return: Response from the mailcow API.
         """
         return self.mailcow.getSyncjob(self.username)
 
     def delete(self):
         """
-        Get the mailbox details from the mailcow API.
+        Get the sync job details from the mailcow API.
         :return: Response from the mailcow API.
         """
         return self.mailcow.deleteSyncjob(self.id)
 
     def add(self):
         """
-        Get the mailbox details from the mailcow API.
+        Get the sync job details from the mailcow API.
         :return: Response from the mailcow API.
         """
         return self.mailcow.addSyncjob(self.getAdd())
 
     def edit(self):
         """
-        Get the mailbox details from the mailcow API.
+        Get the sync job details from the mailcow API.
         :return: Response from the mailcow API.
         """
         return self.mailcow.editSyncjob(self.id, self.getEdit())
