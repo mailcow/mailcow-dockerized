@@ -488,6 +488,16 @@ function sys_mail($_data) {
     'msg' => 'Mass mail job completed, sent ' . count($rcpts) . ' mails'
   );
 }
+function get_remote_ip($use_x_real_ip = true) {
+    $remote = $_SERVER['REMOTE_ADDR'];
+    if ($use_x_real_ip && !empty($_SERVER['HTTP_X_REAL_IP'])) {
+      $remote = $_SERVER['HTTP_X_REAL_IP'];
+    }
+    if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
+      $remote = '0.0.0.0';
+    }
+    return $remote;
+}
 function logger($_data = false) {
   /*
   logger() will be called as last function

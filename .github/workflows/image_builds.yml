@@ -15,7 +15,7 @@ jobs:
         images:
           - "acme-mailcow"
           - "clamd-mailcow"
-          - "dockerapi-mailcow"
+          - "controller-mailcow"
           - "dovecot-mailcow"
           - "netfilter-mailcow"
           - "olefy-mailcow"

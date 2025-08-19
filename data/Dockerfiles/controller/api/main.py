@@ -254,8 +254,8 @@ if __name__ == '__main__':
     app,
     host="0.0.0.0",
     port=443,
-    ssl_certfile="/app/dockerapi_cert.pem",
-    ssl_keyfile="/app/dockerapi_key.pem",
+    ssl_certfile="/app/controller_cert.pem",
+    ssl_keyfile="/app/controller_key.pem",
     log_level="info",
     loop="none"
   )

@@ -4,12 +4,12 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
   global $redis;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_HTTPHEADER,array('Content-Type: application/json' ));
-  // We are using our mail certificates for dockerapi, the names will not match, the certs are trusted anyway
+  // We are using our mail certificates for controller, the names will not match, the certs are trusted anyway
   curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
   switch($action) {
     case 'get_id':
-      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/json');
+      curl_setopt($curl, CURLOPT_URL, 'https://controller:443/containers/json');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 0);
       curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
@@ -35,7 +35,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       return false;
     break;
     case 'containers':
-      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/json');
+      curl_setopt($curl, CURLOPT_URL, 'https://controller:443/containers/json');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 0);
       curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
@@ -63,7 +63,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
     break;
     case 'info':
       if (empty($service_name)) {
-        curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/json');
+        curl_setopt($curl, CURLOPT_URL, 'https://controller:443/containers/json');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POST, 0);
         curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
@@ -71,7 +71,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       else {
         $container_id = docker('get_id', $service_name);
         if (ctype_xdigit($container_id)) {
-          curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/' . $container_id . '/json');
+          curl_setopt($curl, CURLOPT_URL, 'https://controller:443/containers/' . $container_id . '/json');
         }
         else {
           return false;
@@ -102,7 +102,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
             }
           }
           else {
-            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project']) 
+            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project'])
               && strtolower($decoded_response['Config']['Labels']['com.docker.compose.project']) == strtolower(getenv('COMPOSE_PROJECT_NAME'))) {
               unset($container['Config']['Env']);
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['State'] = $decoded_response['State'];
@@ -123,7 +123,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       if (!empty($attr1)) {
         $container_id = docker('get_id', $service_name);
         if (ctype_xdigit($container_id) && ctype_alnum($attr1)) {
-          curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/' . $container_id . '/' . $attr1);
+          curl_setopt($curl, CURLOPT_URL, 'https://controller:443/containers/' . $container_id . '/' . $attr1);
           curl_setopt($curl, CURLOPT_POST, 1);
           curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
           if (!empty($attr2)) {
@@ -157,7 +157,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       }
 
       $container_id = $service_name;
-      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/container/' . $container_id . '/stats/update');
+      curl_setopt($curl, CURLOPT_URL, 'https://controller:443/container/' . $container_id . '/stats/update');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 1);
       curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
@@ -175,7 +175,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       return false;
     break;
     case 'host_stats':
-      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/host/stats');
+      curl_setopt($curl, CURLOPT_URL, 'https://controller:443/host/stats');
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($curl, CURLOPT_POST, 0);
       curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);

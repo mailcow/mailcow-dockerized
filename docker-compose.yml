@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.93
+      image: ghcr.io/mailcow/phpfpm:nightly-29072025
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.34
+      image: ghcr.io/mailcow/dovecot:nightly-29072025
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -431,6 +431,7 @@ services:
       restart: always
       networks:
         mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.247
           aliases:
             - nginx
 
@@ -440,7 +441,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.93
+      image: ghcr.io/mailcow/acme:nightly-29072025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -497,7 +498,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.08
+      image: ghcr.io/mailcow/watchdog:nightly-29072025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -569,25 +570,33 @@ services:
           aliases:
             - watchdog
 
-    dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.11
+    controller-mailcow:
+      image: ghcr.io/mailcow/controller:nightly-29072025
       security_opt:
         - label=disable
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
-        - DBROOT=${DBROOT}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - HTTPS_PORT=${HTTPS_PORT:-443}
         - TZ=${TZ}
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - DBROOT=${DBROOT}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - ./data/conf/sogo/sieve.creds:/app/sieve.creds:z
       networks:
         mailcow-network:
+          ipv4_address: ${IPV4_NETWORK:-172.22.1}.246
           aliases:
-            - dockerapi
+            - controller
 
     olefy-mailcow:
       image: ghcr.io/mailcow/olefy:1.15

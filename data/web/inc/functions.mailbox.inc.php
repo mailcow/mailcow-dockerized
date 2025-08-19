@@ -468,10 +468,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':delete2duplicates' => $delete2duplicates,
             ':active' => $active,
           ));
+          $id = $pdo->lastInsertId();
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('mailbox_modified', $username)
+            'msg' => array('mailbox_modified', $username, $id)
           );
         break;
         case 'domain':
