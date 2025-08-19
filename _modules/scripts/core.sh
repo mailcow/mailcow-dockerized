@@ -124,7 +124,7 @@ prefetch_images() {
 }
 
 docker_garbage() {
-  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
   IMGS_TO_DELETE=()
 
   declare -A IMAGES_INFO
@@ -185,6 +185,7 @@ detect_major_update() {
     MAJOR_VERSIONS=(
       "2025-02"
       "2025-03"
+      "2025-08"
     )
 
     current_version=""

@@ -49,7 +49,6 @@ adapt_new_options() {
   "DOVECOT_MASTER_PASS"
   "MAILCOW_PASS_SCHEME"
   "ADDITIONAL_SERVER_NAMES"
-  "ACME_CONTACT"
   "WATCHDOG_VERBOSE"
   "WEBAUTHN_ONLY_TRUSTED_VENDORS"
   "SPAMHAUS_DQS_KEY"
@@ -95,7 +94,7 @@ adapt_new_options() {
             echo '# Max log lines per service to keep in Redis logs' >> mailcow.conf
             echo "LOG_LINES=9999" >> mailcow.conf
             ;;
-        
+
         IPV4_NETWORK)
             echo '# Internal IPv4 /24 subnet, format n.n.n. (expands to n.n.n.0/24)' >> mailcow.conf
             echo "IPV4_NETWORK=172.22.1" >> mailcow.conf
@@ -238,14 +237,6 @@ adapt_new_options() {
             echo '# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f' >> mailcow.conf
             echo 'ADDITIONAL_SERVER_NAMES=' >> mailcow.conf
             ;;
-        ACME_CONTACT)
-            echo '# Lets Encrypt registration contact information' >> mailcow.conf
-            echo '# Optional: Leave empty for none' >> mailcow.conf
-            echo '# This value is only used on first order!' >> mailcow.conf
-            echo '# Setting it at a later point will require the following steps:' >> mailcow.conf
-            echo '# https://docs.mailcow.email/troubleshooting/debug-reset_tls/' >> mailcow.conf
-            echo 'ACME_CONTACT=' >> mailcow.conf
-            ;;
         WEBAUTHN_ONLY_TRUSTED_VENDORS)
             echo "# WebAuthn device manufacturer verification" >> mailcow.conf
             echo '# After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed' >> mailcow.conf
@@ -285,7 +276,7 @@ adapt_new_options() {
             echo '# A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.' >> mailcow.conf
             echo ENABLE_IPV6=${IPV6_BOOL} >> mailcow.conf
             ;;
-    
+
         SKIP_CLAMD)
             echo '# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n' >> mailcow.conf
             echo 'SKIP_CLAMD=n' >> mailcow.conf
@@ -295,11 +286,11 @@ adapt_new_options() {
             echo '# Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n' >> mailcow.conf
             echo 'SKIP_OLEFY=n' >> mailcow.conf
             ;;
-        
+
         REDISPASS)
             echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
             ;;
-                  
+
         *)
             echo "${option}=" >> mailcow.conf
             ;;

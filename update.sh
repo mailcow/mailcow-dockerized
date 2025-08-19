@@ -383,7 +383,6 @@ configure_ipv6
 [[ -f data/conf/nginx/ZZZ-ejabberd.conf ]] && rm data/conf/nginx/ZZZ-ejabberd.conf
 migrate_config_options
 adapt_new_options
-remove_obsolete_options
 
 if [ ! "$DEV" ]; then
   DEFAULT_REPO="https://github.com/mailcow/mailcow-dockerized"
@@ -434,7 +433,7 @@ if [ ! "$DEV" ]; then
     echo "Run $COMPOSE_COMMAND up -d to restart your stack without updates or try again after fixing the mentioned errors."
     exit 1
   fi
-elif [ "$DEV" ]; then
+else
   echo -e "\e[33mDEVELOPER MODE: Not creating a git diff and commiting it to prevent development stuff within a backup diff...\e[0m"
 fi
 
