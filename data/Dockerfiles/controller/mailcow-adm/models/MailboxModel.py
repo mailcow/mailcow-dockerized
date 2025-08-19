@@ -57,6 +57,7 @@ class MailboxModel(BaseModel):
             domain=data.get("domain"),
             local_part=data.get("local_part"),
             password=data.get("password"),
+            password2=data.get("password"),
             active=data.get("active", None),
             sogo_access=data.get("sogo_access", None),
             name=data.get("name", None),

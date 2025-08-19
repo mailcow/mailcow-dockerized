@@ -32,6 +32,7 @@ class DomainadminModel(BaseModel):
             username=data.get("username"),
             domains=data.get("domains"),
             password=data.get("password"),
+            password2=data.get("password"),
             active=data.get("active", None),
         )
 
