@@ -82,7 +82,6 @@ dict_map priv/sieve/name/\$script_name {
   sql_table = sieve_before
   username_field = username
   value_field id {
-    type = uuid
   }
 
   # The script name field in the table to query
@@ -109,7 +108,6 @@ dict_map priv/sieve/name/\$script_name {
   sql_table = sieve_after
   username_field = username
   value_field id {
-    type = uuid
   }
   key_field script_name {
     value = \$script_name
