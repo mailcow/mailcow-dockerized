@@ -579,7 +579,7 @@ services:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - API_KEY=${API_KEY:-invalid}
+        - HTTPS_PORT=${HTTPS_PORT:-443}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}

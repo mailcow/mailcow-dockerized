@@ -11,7 +11,7 @@ class Sogo:
         self.davUrl = "/SOGo/dav"
         self.ignore_ssl_errors = True
 
-        self.baseUrl = f"https://{os.getenv('IPv4_NETWORK', '172.22.1')}.247"
+        self.baseUrl = f"https://{os.getenv('IPv4_NETWORK', '172.22.1')}.247:{os.getenv('HTTPS_PORT', '443')}"
         self.host = os.getenv("MAILCOW_HOSTNAME", "")
         if self.ignore_ssl_errors:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
