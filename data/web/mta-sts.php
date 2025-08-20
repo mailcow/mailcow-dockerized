@@ -1,12 +1,12 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
-if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'], '_mta-sts.') !== 0) {
+if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'], 'mta-sts.') !== 0) {
   http_response_code(404);
   exit;
 }
 
-$domain = str_replace('_mta-sts.', '', $_SERVER['HTTP_HOST']);
+$domain = str_replace('mta-sts.', '', $_SERVER['HTTP_HOST']);
 $mta_sts = mailbox('get', 'mta_sts', $domain);
 
 if (count($mta_sts) == 0 ||
