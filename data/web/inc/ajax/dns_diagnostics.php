@@ -142,6 +142,32 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
     state_optional
   );
 
+  $mta_sts = mailbox('get', 'mta_sts', $domain);
+  if (count($mta_sts) > 0 && $mta_sts['active'] == 1) {
+    $mta_sts_record = dns_get_record('_mta-sts.' . $domain, DNS_TXT);
+    $mta_sts_correct = "v={$mta_sts['version']};id={$mta_sts['id']};";
+    $state = state_missing;
+
+    if (!empty($mta_sts_record)) {
+        foreach ($mta_sts_record as $record) {
+            if (isset($record['txt']) && trim($record['txt']) === $mta_sts_correct) {
+                $state = state_good;
+                break;
+            }
+        }
+        if ($state !== state_good) {
+            $state = state_nomatch;
+        }
+    }
+
+    $records[] = array(
+        '_mta-sts.' . $domain,
+        'TXT',
+        $mta_sts_correct,
+        $state
+    );
+  }
+
   if (!empty($dkim = dkim('details', $domain))) {
     $records[] = array(
       $dkim['dkim_selector'] . '._domainkey.' . $domain,

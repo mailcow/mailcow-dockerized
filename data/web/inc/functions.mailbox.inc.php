@@ -1400,6 +1400,80 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           return mailbox('add', 'mailbox', $mailbox_attributes);
         break;
+        case 'mta_sts':
+          $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
+          $version      = strtolower($_data['version']);
+          $mode         = strtolower($_data['mode']);
+          $mx           = explode(",", preg_replace('/\s+/', '', $_data['mx']));
+          $max_age      = intval($_data['max_age']);
+          $active       = (intval($_data['active']) == 1) ? 1 : 0;
+          $id           = time();
+
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          if (empty($version) || !in_array($version, array('stsv1', 'stsv2'))) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+              'msg' => array('version_invalid', htmlspecialchars($domain))
+            );
+            return false;
+          }
+          if (empty($mode) || !in_array($mode, array('enforce', 'testing', 'none'))) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+              'msg' => array('mode_invalid', htmlspecialchars($domain))
+            );
+            return false;
+          }
+          if (empty($max_age) || $max_age < 0) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+              'msg' => array('max_age_invalid', htmlspecialchars($domain))
+            );
+            return false;
+          }
+          foreach ($mx as $index => $mx_domain) {
+            $mx_domain = idn_to_ascii(strtolower(trim($mx_domain)), 0, INTL_IDNA_VARIANT_UTS46);
+            if (!is_valid_domain_name($mx_domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => array('mx_invalid', htmlspecialchars($mx_domain))
+              );
+              return false;
+            }
+          }
+
+          try {
+            $stmt = $pdo->prepare("INSERT INTO `mta_sts` (`id`, `domain`, `version`, `mode`, `mx`, `max_age`, `active`)
+              VALUES (:id, :domain, :version, :mode, :mx, :max_age, :active)");
+            $stmt->execute(array(
+              ':id' => $id,
+              ':domain' => $domain,
+              ':version' => $version,
+              ':mode' => $mode,
+              ':mx' => implode(",", $mx),
+              ':max_age' => $max_age,
+              ':active' => $active
+            ));
+          } catch (PDOException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data),
+              'msg' => $e->getMessage()
+            );
+            return false;
+          }
+        break;
         case 'resource':
           $domain             = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
           $description        = $_data['description'];
@@ -3741,6 +3815,116 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           return true;
         break;
+        case 'mta_sts':
+          if (!is_array($_data['domains'])) {
+            $domains = array();
+            $domains[] = $_data['domains'];
+          }
+          else {
+            $domains = $_data['domains'];
+          }
+
+          foreach ($domains as $domain) {
+            $domain       = idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
+            $id           = time();
+
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+            $is_now = mailbox('get', 'mta_sts', $domain);
+            if (!empty($is_now)) {
+              $version               = (isset($_data['version'])) ? strtolower($_data['version']) : $is_now['version'];
+              $active                = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+              $active                = ($active == 1) ? 1 : 0;
+              $mode                  = (isset($_data['mode'])) ? strtolower($_data['mode']) : $is_now['mode'];
+              $mx                    = (isset($_data['mx'])) ? explode(",", preg_replace('/\s+/', '', $_data['mx'])) : $is_now['mx'];
+              $max_age               = (isset($_data['max_age'])) ? intval($_data['max_age']) : $is_now['max_age'];
+
+            } else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+
+            if (empty($version) || !in_array($version, array('stsv1', 'stsv2'))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => array('version_invalid', htmlspecialchars($version))
+              );
+              continue;
+            }
+            if (empty($mode) || !in_array($mode, array('enforce', 'testing', 'none'))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => array('mode_invalid', htmlspecialchars($domain))
+              );
+              continue;
+            }
+            if (empty($max_age) || $max_age < 0) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => array('max_age_invalid', htmlspecialchars($domain))
+              );
+              continue;
+            }
+            foreach ($mx as $index => $mx_domain) {
+              $mx_domain = idn_to_ascii(strtolower(trim($mx_domain)), 0, INTL_IDNA_VARIANT_UTS46);
+              $invalid_mx = false;
+              if (!is_valid_domain_name($mx_domain)) {
+                $invalid_mx = $mx_domain;
+                break;
+              }
+            }
+            if ($invalid_mx) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+                'msg' => array('mx_invalid', htmlspecialchars($invalid_mx))
+              );
+              continue;
+            }
+
+            try {
+              $stmt = $pdo->prepare("UPDATE `mta_sts` SET `id` = :id, `version` = :version, `mode` = :mode, `mx` = :mx, `max_age` = :max_age, `active` = :active WHERE `domain` = :domain");
+              $stmt->execute(array(
+                ':id' => $id,
+                ':domain' => $domain,
+                ':version' => $version,
+                ':mode' => $mode,
+                ':mx' => implode(",", $mx),
+                ':max_age' => $max_age,
+                ':active' => $active
+              ));
+            } catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data),
+                'msg' => $e->getMessage()
+              );
+              continue;
+            }
+
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
+              'msg' => array('object_modified', $domain)
+            );
+          }
+
+          return true;
+        break;
         case 'resource':
           if (!is_array($_data['name'])) {
             $names = array();
@@ -5029,6 +5213,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return $rows;
           }
         break;
+        case 'mta_sts':
+          $stmt = $pdo->prepare("SELECT * FROM `mta_sts` WHERE `domain` = :domain");
+          $stmt->execute(array(
+            ':domain' => $_data,
+          ));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($row)){
+            return [];
+          }
+          $row['mx'] = explode(',', $row['mx']);
+          $row['version'] = strtoupper(substr($row['version'], 0, 3)) . substr($row['version'], 3);
+
+          return $row;
+        break;
         case 'resource_details':
           $resourcedata = array();
           if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
@@ -5411,6 +5609,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':domain' => $domain,
             ));
             $stmt = $pdo->prepare("DELETE FROM `bcc_maps` WHERE `local_dest` = :domain");
+            $stmt->execute(array(
+              ':domain' => $domain,
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `mta_sts` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,
             ));

@@ -48,12 +48,20 @@ http {
         listen {{ HTTP_PORT }} default_server;
         listen [::]:{{ HTTP_PORT }} default_server;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* _mta-sts.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
 
         if ( $request_uri ~* "%0A|%0D" ) { return 403; }
         location ^~ /.well-known/acme-challenge/ {
             allow all;
             default_type "text/plain";
+        }
+        location ^~ /.well-known/mta-sts.txt {
+            allow all;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass {{ PHPFPMHOST }}:9002;
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root/mta-sts.php;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
         }
         location / {
             return 301 https://$host$uri$is_args$args;
@@ -82,7 +90,7 @@ http {
         ssl_certificate /etc/ssl/mail/cert.pem;
         ssl_certificate_key /etc/ssl/mail/key.pem;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.*;
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* _mta-sts.*;
 
         include /etc/nginx/includes/sites-default.conf;
     }
