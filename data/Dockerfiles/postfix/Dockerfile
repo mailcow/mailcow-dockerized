@@ -34,10 +34,14 @@ RUN groupadd -g 102 postfix \
 	syslog-ng-core \
 	syslog-ng-mod-redis \
   	tzdata \
+	python3-pip \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& touch /etc/default/locale \
   && printf '#!/bin/bash\n/usr/sbin/postconf -c /opt/postfix/conf "$@"' > /usr/local/sbin/postconf \
   && chmod +x /usr/local/sbin/postconf
+
+# New for MTA-STS Resolver Daemon
+RUN python3 -m pip install postfix-mta-sts-resolver[redis] uvloop --break-system-packages
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf

@@ -338,7 +338,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:1.81
       depends_on:
         mysql-mailcow:
           condition: service_started
