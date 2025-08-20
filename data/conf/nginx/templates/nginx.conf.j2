@@ -48,7 +48,7 @@ http {
         listen {{ HTTP_PORT }} default_server;
         listen [::]:{{ HTTP_PORT }} default_server;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* _mta-sts.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* mta-sts.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
 
         if ( $request_uri ~* "%0A|%0D" ) { return 403; }
         location ^~ /.well-known/acme-challenge/ {
@@ -90,7 +90,7 @@ http {
         ssl_certificate /etc/ssl/mail/cert.pem;
         ssl_certificate_key /etc/ssl/mail/key.pem;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* _mta-sts.*;
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* mta-sts.*;
 
         include /etc/nginx/includes/sites-default.conf;
     }
