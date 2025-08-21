@@ -1433,7 +1433,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (empty($max_age) || $max_age < 0) {
+          if (empty($max_age) || $max_age < 0 || $max_age > 31536000) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
@@ -3880,7 +3880,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (empty($max_age) || $max_age < 0) {
+            if (empty($max_age) || $max_age < 0 || $max_age > 31557600) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
