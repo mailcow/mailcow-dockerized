@@ -287,11 +287,16 @@
               </button>
             </div>
             <div id="collapse-tab-mtasts" class="card-body collapse" data-bs-parent="#domain-content">
+                <h4>{{ lang.edit.mta_sts }}</h4>
+                <p>{{ lang.edit.mta_sts_info|raw }}</p>
                 <form data-id="dommtasts" method="post">
                   <input type="hidden" value="0" name="active">
                   <input type="hidden" value="{{ domain }}" name="domain">
                   <div class="row mb-2">
-                    <label class="control-label col-sm-2" for="version">{{ lang.edit.mta_sts_version }}</label>
+                    <label class="control-label col-sm-2" for="version"> 
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_version_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_version }}
+                    </label>
                     <div class="col-sm-10">
                       <select data-style="btn btn-light" class="form-control" name="version" title="" required>
                         <option value="stsv1"{% if mta_sts.version == 'STSv1' %} selected{% endif %}>STSv1</option>
@@ -299,7 +304,10 @@
                     </div>
                   </div>
                   <div class="row mb-2">
-                    <label class="control-label col-sm-2" for="mode">{{ lang.edit.mta_sts_mode }}</label>
+                    <label class="control-label col-sm-2" for="mode">
+                    <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_mode_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_mode }}
+                    </label>
                     <div class="col-sm-10">
                       <select data-style="btn btn-light" class="form-control" name="mode" title="" required>
                         <option value="enforce"{% if mta_sts.mode == 'enforce' %} selected{% endif %}>enforce</option>
@@ -309,16 +317,22 @@
                     </div>
                   </div>
                   <div class="row mb-2">
-                    <label class="control-label col-sm-2" for="max_age">{{ lang.edit.mta_sts_max_age }}</label>
+                    <label class="control-label col-sm-2" for="max_age">
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_max_age_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_max_age }}
+                    </label>
                     <div class="col-sm-10">
                       <input type="number" class="form-control" name="max_age" value="{{ mta_sts.max_age }}">
                     </div>
                   </div>
                   <div class="row mb-2">
-                    <label class="control-label col-sm-2" for="mx">{{ lang.edit.mta_sts_mx }}</label>
+                    <label class="control-label col-sm-2" for="mx">
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_mx_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_mx }}
+                    </label>
                     <div class="col-sm-10">
                       <textarea autocorrect="off" autocapitalize="none" class="form-control" rows="5" name="mx">{{ mta_sts.mx }}</textarea>
-                      <small class="text-muted">{{ lang.edit.mta_sts_mx_info|raw }}</small>
+                      <small class="text-muted">{{ lang.edit.mta_sts_mx_notice|raw }}</small>
                     </div>
                   </div>
                   <div class="row mb-4">
