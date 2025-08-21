@@ -1417,7 +1417,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if (empty($version) || !in_array($version, array('stsv1', 'stsv2'))) {
+          if (empty($version) || !in_array($version, array('stsv1'))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
@@ -3826,7 +3826,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           foreach ($domains as $domain) {
             $domain       = idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
-            $id           = time();
 
             if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
               $_SESSION['return'][] = array(
@@ -3865,7 +3864,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
 
-            if (empty($version) || !in_array($version, array('stsv1', 'stsv2'))) {
+            if (empty($version) || !in_array($version, array('stsv1'))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
