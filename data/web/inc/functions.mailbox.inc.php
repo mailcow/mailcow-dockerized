@@ -1407,7 +1407,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mx           = explode(",", preg_replace('/\s+/', '', $_data['mx']));
           $max_age      = intval($_data['max_age']);
           $active       = (intval($_data['active']) == 1) ? 1 : 0;
-          $id           = time();
+          $id           = date('YmdHis');
 
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
             $_SESSION['return'][] = array(
@@ -3845,6 +3845,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mode                  = (isset($_data['mode'])) ? strtolower($_data['mode']) : $is_now['mode'];
               $mx                    = (isset($_data['mx'])) ? explode(",", preg_replace('/\s+/', '', $_data['mx'])) : $is_now['mx'];
               $max_age               = (isset($_data['max_age'])) ? intval($_data['max_age']) : $is_now['max_age'];
+
+              // Update ID if neccesary
+              if ($version != strtolower($is_now['version']) ||
+                  $mode != strtolower($is_now['mode']) ||
+                  $mx != $is_now['mx'] ||
+                  $max_age != $is_now['max_age']) {
+                $id           = date('YmdHis');
+              } else {
+                $id           = $is_now['id'];
+              }
 
             } else {
               $_SESSION['return'][] = array(
