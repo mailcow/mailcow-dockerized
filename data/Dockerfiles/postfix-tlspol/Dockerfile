@@ -5,9 +5,7 @@ ENV CGO_ENABLED=0 \
     GO111MODULE=on \
     VERSION=1.8.14
 
-RUN wget https://github.com/Zuplu/postfix-tlspol/archive/refs/tags/v${VERSION}.tar.gz -O postfix-tlspol.tar.gz && \
-    mkdir /src/postfix-tlspol && \
-    tar -xzf postfix-tlspol.tar.gz -C /src/postfix-tlspol --strip-components=1 && \
+RUN git clone --branch v${VERSION} https://github.com/Zuplu/postfix-tlspol && \
     cd /src/postfix-tlspol && \
     scripts/build.sh build-only
 
