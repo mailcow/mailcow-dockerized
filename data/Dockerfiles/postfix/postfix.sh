@@ -3,6 +3,7 @@
 trap "postfix stop" EXIT
 
 [[ ! -d /opt/postfix/conf/sql/ ]] && mkdir -p /opt/postfix/conf/sql/
+[[ ! -d /opt/postfix/conf/postfix-tlspol ]] && mkdir -p /opt/postfix/conf/postfix-tlspol
 [[ ! -d /etc/postfix-tlspol ]] && mkdir -p /etc/postfix-tlspol
 [[ ! -d /var/lib/postfix-tlspol ]] && mkdir -p /var/lib/postfix-tlspol
 
