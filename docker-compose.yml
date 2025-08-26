@@ -338,7 +338,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:1.81
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -440,7 +440,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.93
+      image: ghcr.io/mailcow/acme:1.94
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
