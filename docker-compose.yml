@@ -393,6 +393,7 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
+        - DEV_MODE=${DEV_MODE:-n}
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254

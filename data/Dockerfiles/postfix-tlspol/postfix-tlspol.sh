@@ -1,5 +1,13 @@
 #!/bin/bash
 
+LOGLVL=info
+
+if [ ${DEV_MODE} != "n" ]; then
+  echo -e "\e[31mEnabling debug mode\e[0m"
+  set -x
+  LOGLVL=debug
+fi
+
 [[ ! -d /etc/postfix-tlspol ]] && mkdir -p /etc/postfix-tlspol
 [[ ! -d /var/lib/postfix-tlspol ]] && mkdir -p /var/lib/postfix-tlspol
 
@@ -30,7 +38,7 @@ cat <<EOF > /etc/postfix-tlspol/config.yaml
 server:
   address: 0.0.0.0:8642
 
-  log-level: info
+  log-level: ${LOGLVL}
 
   prefetch: true
 
