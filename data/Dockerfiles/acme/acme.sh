@@ -206,7 +206,7 @@ while true; do
 
   if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
   # Fetch certs for autoconfig and autodiscover subdomains
-  ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig')
+  ADDITIONAL_WC_ARR+=('autodiscover' 'autoconfig' 'mta-sts')
   fi
 
   if [[ ${SKIP_IP_CHECK} != "y" ]]; then

@@ -3,6 +3,8 @@
 trap "postfix stop" EXIT
 
 [[ ! -d /opt/postfix/conf/sql/ ]] && mkdir -p /opt/postfix/conf/sql/
+[[ ! -d /etc/postfix-tlspol ]] && mkdir -p /etc/postfix-tlspol
+[[ ! -d /var/lib/postfix-tlspol ]] && mkdir -p /var/lib/postfix-tlspol
 
 # Wait for MySQL to warm-up
 while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
@@ -501,6 +503,26 @@ if [[ ! -f /opt/postfix/conf/custom_postscreen_whitelist.cidr ]]; then
 # 192.168.0.1          permit
 # 192.168.0.0/16       reject
 EOF
+fi
+
+cat <<EOF > /opt/postfix/conf/postfix-tlspol/config.yaml
+server:
+  address: 127.0.0.1:8642
+
+  log-level: info
+
+  prefetch: true
+
+  cache-file: /var/lib/postfix-tlspol/cache.db
+
+dns:
+  # must support DNSSEC
+  address: 127.0.0.11:53
+EOF
+
+# Fixing local command execution of postfix-tlspol with symlink to config
+if [ ! -L /etc/postfix-tlspol/config.yaml ]; then
+  ln -s /opt/postfix/conf/postfix-tlspol/config.yaml /etc/postfix-tlspol/config.yaml
 fi
 
 # Fix Postfix permissions

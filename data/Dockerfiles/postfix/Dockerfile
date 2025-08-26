@@ -1,9 +1,19 @@
+FROM golang:1.25-bookworm AS builder
+WORKDIR /src
+
+ENV CGO_ENABLED=0 \
+    GO111MODULE=on
+
+RUN git clone https://github.com/Zuplu/postfix-tlspol.git && \
+	cd postfix-tlspol && \
+	scripts/build.sh build-only
+
 FROM debian:bookworm-slim
 
-LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV LC_ALL C
+ENV LC_ALL=C
 
 RUN dpkg-divert --local --rename --add /sbin/initctl \
 	&& ln -sf /bin/true /sbin/initctl \
@@ -48,6 +58,7 @@ COPY rspamd-pipe-spam /usr/local/bin/rspamd-pipe-spam
 COPY whitelist_forwardinghosts.sh /usr/local/bin/whitelist_forwardinghosts.sh
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY --from=builder /src/postfix-tlspol/build/postfix-tlspol /usr/local/bin/postfix-tlspol
 
 RUN chmod +x /opt/postfix.sh \
   /usr/local/bin/rspamd-pipe-ham \
