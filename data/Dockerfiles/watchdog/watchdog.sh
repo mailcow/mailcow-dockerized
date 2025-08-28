@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "${DEV_MODE}" != "n" ]; then
+  echo -e "\e[31mEnabled Debug Mode\e[0m"
+  set -x
+fi
+
 trap "exit" INT TERM
 trap "kill 0" EXIT
 

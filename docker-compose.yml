@@ -497,7 +497,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.08
+      image: ghcr.io/mailcow/watchdog:2.09
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -564,6 +564,7 @@ services:
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
+        - DEV_MODE=${DEV_MODE:-n}
       networks:
         mailcow-network:
           aliases:
