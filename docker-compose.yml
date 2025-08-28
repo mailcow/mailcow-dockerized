@@ -378,6 +378,30 @@ services:
           aliases:
             - postfix
 
+    postfix-tlspol-mailcow:
+      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      depends_on:
+        unbound-mailcow:
+          condition: service_healthy
+        postfix-mailcow:
+          condition: service_started
+      volumes:
+        - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
+      environment:
+        - LOG_LINES=${LOG_LINES:-9999}
+        - TZ=${TZ}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
+        - DEV_MODE=${DEV_MODE:-n}
+      restart: always
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
+      networks:
+        mailcow-network:
+          aliases:
+            - postfix-tlspol
+
     memcached-mailcow:
       image: memcached:alpine
       restart: always
@@ -649,6 +673,7 @@ volumes:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
+  postfix-tlspol-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
