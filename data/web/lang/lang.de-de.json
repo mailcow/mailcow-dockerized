@@ -846,7 +846,8 @@
         "password": "Passwort",
         "reset_password": "Passwort zurücksetzen",
         "request_reset_password": "Passwortänderung anfordern",
-        "username": "Benutzername"
+        "username": "Benutzername",
+        "email": "E-Mail-Adresse"
     },
     "mailbox": {
         "action": "Aktion",
