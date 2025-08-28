@@ -344,6 +344,8 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
+        postfix-tlspol-mailcow:
+          condition: service_started
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -383,8 +385,6 @@ services:
       depends_on:
         unbound-mailcow:
           condition: service_healthy
-        postfix-mailcow:
-          condition: service_started
       volumes:
         - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
       environment:
