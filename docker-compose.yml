@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:nightly-29072025
+      image: ghcr.io/mailcow/dovecot:nightly-28082025
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -338,12 +338,14 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:1.81
       depends_on:
         mysql-mailcow:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
+        postfix-tlspol-mailcow:
+          condition: service_started
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -377,6 +379,28 @@ services:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
           aliases:
             - postfix
+
+    postfix-tlspol-mailcow:
+      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      depends_on:
+        unbound-mailcow:
+          condition: service_healthy
+      volumes:
+        - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
+      environment:
+        - LOG_LINES=${LOG_LINES:-9999}
+        - TZ=${TZ}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
+        - DEV_MODE=${DEV_MODE:-n}
+      restart: always
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
+      networks:
+        mailcow-network:
+          aliases:
+            - postfix-tlspol
 
     memcached-mailcow:
       image: memcached:alpine
@@ -441,7 +465,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:nightly-29072025
+      image: ghcr.io/mailcow/acme:nightly-28082025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -658,6 +682,7 @@ volumes:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
+  postfix-tlspol-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
