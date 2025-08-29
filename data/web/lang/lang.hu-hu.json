@@ -9,7 +9,7 @@
         "source": "Forrás",
         "spamfilter": "Spam szűrő",
         "subject": "Tárgy",
-        "sys_mails": "Rendszerüzenetek",
+        "sys_mails": "Rendszer e-mailek",
         "text": "Szöveg",
         "time": "Idő",
         "title": "Cím",
@@ -274,7 +274,6 @@
         "sal_level": "Moo szint",
         "service": "Szolgáltatás",
         "service_id": "Szolgáltatás azonosító",
-        "sys_mails": "Rendszer e-mailek",
         "task": "Feladat",
         "transport_maps": "Szállítási térképek",
         "transport_test_rcpt_info": "&#8226; Használja a null@hosted.mailcow.de címet a külföldi célra történő továbbítás teszteléséhez.",
@@ -295,7 +294,8 @@
         "user_link": "Felhasználói-link",
         "user_quicklink": "Gyorshivatkozás elrejtése a Felhasználói bejelentkezési oldalra",
         "validate_license_now": "GUID érvényesítése a licenszszerverrel szemben",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "success": "Siker"
     },
     "edit": {
         "active": "Aktív",
@@ -646,7 +646,6 @@
         "sogo_visible": "Alias látható a SOGo-ban",
         "sogo_visible_n": "Alias elrejtése a SOGo-ban",
         "sogo_visible_y": "Alias megjelenítése a SOGo-ban",
-        "sender": "Feladó",
         "syncjob_check_log": "Napló ellenőrzése",
         "syncjob_last_run_result": "Utolsó futás eredménye",
         "syncjob_EX_OK": "Siker",
@@ -1000,7 +999,6 @@
         "syncjob_EXIT_OVERQUOTA": "A cél postafiók túllépte a kvótát",
         "syncjob_EXIT_CONNECTION_FAILURE_HOST1": "Nem lehet csatlakozni a távoli szerverhez",
         "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Hibás felhasználónév vagy jelszó",
-        "text": "Szöveg",
         "tfa_info": "A kétlépcsős hitelesítés segít megvédeni a fiókodat. Ha engedélyezed, alkalmazás jelszavakra lesz szükséged, hogy bejelentkezz olyan alkalmazásokba vagy szolgáltatásokba, amelyek nem támogatják a kétlépcsős hitelesítést (pl. levelező kliensek).",
         "tls_policy_warning": "<strong>Figyelem:</strong> Ha titkosított levélátvitelt kényszerítesz ki, elveszíthetsz e-maileket.<br>Azok az üzenetek, amelyek nem felelnek meg a szabályzatnak, kemény hibával visszapattannak a levelezőrendszerből.<br>Ez az opció a fő e-mail címedre (bejelentkezési név), az alias tartományokból származó összes címre, valamint az alias címekre vonatkozik, amelyeknek <b>csak ez az egy postafiók</b> a célja.",
         "value": "Érték",
@@ -1019,8 +1017,7 @@
         "dovecot_restart_failed": "A Dovecot újraindítása sikertelen, kérjük, ellenőrizze a naplókat",
         "fuzzy_learn_error": "Fuzzy hash tanulási hiba: %s",
         "hash_not_found": "A hash nem található vagy már törölve lett",
-        "is_not_primary_alias": "Nem elsődleges alias %s kihagyva",
-        "mailbox_renamed_alias": "A postafiók át lett nevezve, de az alias nem lett automatikusan létrehozva. Kérjük, hozza létre kézzel: %s"
+        "is_not_primary_alias": "Nem elsődleges alias %s kihagyva"
     },
     "acl": {
         "delimiter_action": "Elhatárolás",
@@ -1136,6 +1133,13 @@
         "relay_domain": "Továbbítsa ezt a tartományt",
         "relay_transport_info": "<div class=\"badge fs-6 bg-info\">Információ</div> Definiálhatsz szállítási térképeket ehhez a tartományhoz egyedi célállomásra. Ha nincs beállítva, egy MX lekérdezés történik.",
         "relay_unknown_only": "Csak a nem létező postafiókok továbbítása. A létező postafiókok helyben lesznek kézbesítve.",
-        "relayhost_wrapped_tls_info": "Kérjük, <b>ne</b> használjon TLS-be csomagolt portokat (többnyire a 465-ös porton használatosak).<br>\r\nHasználjon bármilyen nem csomagolt portot és adjon ki STARTTLS-t. A TLS kikényszerítésére egy TLS irányelv hozható létre a \"TLS irányelv térképek\" alatt."
+        "relayhost_wrapped_tls_info": "Kérjük, <b>ne</b> használjon TLS-be csomagolt portokat (többnyire a 465-ös porton használatosak).<br>\r\nHasználjon bármilyen nem csomagolt portot és adjon ki STARTTLS-t. A TLS kikényszerítésére egy TLS irányelv hozható létre a \"TLS irányelv térképek\" alatt.",
+        "select": "Kérjük, válasszon...",
+        "select_domain": "Kérjük, először válasszon egy domaint",
+        "sieve_desc": "Rövid leírás",
+        "sieve_type": "Szűrő típusa",
+        "skipcrossduplicates": "Duplikált üzenetek átugrása mappák között (érkezési sorrendben)",
+        "subscribeall": "Feliratkozás minden mappára",
+        "syncjob": "Szinkronizálási feladat hozzáadása"
     }
 }
