@@ -550,7 +550,11 @@
         "recovery_email_failed": "E-poštnega sporočila za obnovitev ni bilo mogoče poslati. Obrnite se na skrbnika.",
         "required_data_missing": "Manjkajo zahtevani podatki %s",
         "reset_token_limit_exceeded": "Omejitev žetonov za ponastavitev je bila presežena. Poskusite znova pozneje.",
-        "to_invalid": "Polje za prejemnika ne sme biti prazno"
+        "to_invalid": "Polje za prejemnika ne sme biti prazno",
+        "max_age_invalid": "Najvišja starost %s je neveljavna",
+        "mode_invalid": "Način %s ni veljaven",
+        "mx_invalid": "Zapis MX %s je neveljaven",
+        "version_invalid": "Različica %s je neveljavna"
     },
     "debug": {
         "containers_info": "Informacije o vsebniku (containerju)",
@@ -761,7 +765,18 @@
         "mailbox_rename": "Preimenuj poštni predal",
         "mailbox_rename_agree": "Ustvaril/a sem varnostno kopijo.",
         "mailbox_rename_warning": "POMEMBNO! Pred preimenovanjem nabiralnika ustvarite varnostno kopijo.",
-        "sieve_desc": "Kratek opis"
+        "sieve_desc": "Kratek opis",
+        "mta_sts": "MTA-STS",
+        "mta_sts_info": "<a href='https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_MTA_Strict_Transport_Security' target='_blank'>MTA-STS</a> je standard, ki vsiljuje dostavo e-pošte med poštnimi strežniki z uporabo TLS z veljavnimi potrdili. <br>Uporablja se, kadar <a target='_blank' href='https://en.wikipedia.org/wiki/DNS-based_Authentication_of_Named_Entities'>DANE</a> ni mogoč zaradi manjkajočega ali nepodprtega DNSSEC.<br><b>Opomba</b>: Če prejemna domena podpira DANE z DNSSEC, je DANE <b>vedno</b> prednost – MTA-STS deluje le kot rezervna možnost.",
+        "mta_sts_version": "Različica",
+        "mta_sts_version_info": "Določa različico standarda MTA-STS – trenutno je veljavna samo različica <code>STSv1</code>.",
+        "mta_sts_mode": "Način",
+        "mta_sts_mode_info": "Na voljo so trije načini:<ul><li><em>testiranje</em> – pravilnik se samo spremlja, kršitve nimajo vpliva.</li><li><em>uveljavljanje</em> – pravilnik se strogo uveljavlja, povezave brez veljavnega TLS so zavrnjene.</li><li><em>brez</em> – pravilnik je objavljen, vendar se ne uporablja.</li></ul>",
+        "mta_sts_max_age": "Najvišja starost",
+        "mta_sts_max_age_info": "Čas v sekundah, ki ga lahko prejemni poštni strežniki shranijo v predpomnilnik, dokler se ne ponovno naloži.",
+        "mta_sts_mx": "MX strežnik",
+        "mta_sts_mx_info": "Omogoča pošiljanje samo na izrecno navedena imena gostiteljskih strežnikov poštnih strežnikov; pošiljajoči MTA preveri, ali se ime gostitelja DNS MX ujema s seznamom pravilnikov, in dovoljuje dostavo le z veljavnim potrdilom TLS (zaščita pred MITM).",
+        "mta_sts_mx_notice": "Določiti je mogoče več strežnikov MX (ločenih z vejicami)."
     },
     "footer": {
         "restart_container_info": "<b>Pomembno:</b> Ugoden ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
@@ -799,7 +814,8 @@
         "other_logins": "ali se prijavite s/z",
         "reset_password": "Ponastavi geslo",
         "request_reset_password": "Zahteva za spremembo gesla",
-        "username": "Uporabniško ime"
+        "username": "Uporabniško ime",
+        "email": "E-poštni naslov"
     },
     "mailbox": {
         "last_mail_login": "Zadnja prijava v e-pošto",
