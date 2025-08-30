@@ -71,6 +71,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
   // Init records array
   $spf_link = '<a href="http://www.open-spf.org/SPF_Record_Syntax/" target="_blank">SPF Record Syntax</a><br />';
   $dmarc_link = '<a href="https://www.kitterman.com/dmarc/assistant.html" target="_blank">DMARC Assistant</a>';
+  $mtasts_report_link = '<a href="https://mxtoolbox.com/dmarc/smtp-tls/how-to-setup-smtp-tls-reports" target="_blank">TLS Report Record Syntax</a>';
 
   $records = array();
 
@@ -125,6 +126,27 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       'autoconfig.' . $domain,
       'CNAME',
       $mailcow_hostname
+    );
+  }
+
+  $mta_sts = mailbox('get', 'mta_sts', $domain);
+  if (count($mta_sts) > 0 && $mta_sts['active'] == 1) {
+    if (!in_array($domain, $alias_domains)) {
+      $records[] = array(
+        'mta-sts.' . $domain,
+        'CNAME',
+        $mailcow_hostname
+      );
+    }
+    $records[] = array(
+        '_mta-sts.' . $domain,
+        'TXT',
+        "v={$mta_sts['version']};id={$mta_sts['id']};",
+    );
+    $records[] = array(
+        '_smtp._tls.' . $domain,
+        'TXT',
+        $mtasts_report_link,
     );
   }
 
@@ -341,15 +363,25 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         }
 
         foreach ($currents as &$current) {
+          if ($current['type'] == "TXT" &&
+              stripos(strtolower($current['txt']), 'v=sts') === 0) {
+            if (strtolower($current[$data_field[$current['type']]]) == strtolower($record[2])) {
+              $state = state_good;
+            }
+            else {
+              $state = state_nomatch;
+            }
+            $state .= '<br />' . $current[$data_field[$current['type']]];
+          }
           if ($current['type'] == 'TXT' &&
-          stripos($current['txt'], 'v=dmarc') === 0 &&
-          $record[2] == $dmarc_link) {
+              stripos($current['txt'], 'v=dmarc') === 0 &&
+              $record[2] == $dmarc_link) {
             $current['txt'] = str_replace(' ', '', $current['txt']);
             $state = $current[$data_field[$current['type']]] . state_optional;
           }
           elseif ($current['type'] == 'TXT' &&
-          stripos($current['txt'], 'v=spf') === 0 &&
-          $record[2] == $spf_link) {
+                  stripos($current['txt'], 'v=spf') === 0 &&
+                  $record[2] == $spf_link) {
             $state = state_nomatch;
             $rslt = get_spf_allowed_hosts($record[0], true);
             if (in_array($ip, $rslt) && in_array(expand_ipv6($ip6), $rslt)) {
@@ -358,8 +390,8 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             $state .= '<br />' . $current[$data_field[$current['type']]] . state_optional;
           }
           elseif ($current['type'] == 'TXT' &&
-          stripos($current['txt'], 'v=dkim') === 0 &&
-          stripos($record[2], 'v=dkim') === 0) {
+                  stripos($current['txt'], 'v=dkim') === 0 &&
+                  stripos($record[2], 'v=dkim') === 0) {
             preg_match('/v=DKIM1;.*k=rsa;.*p=([^;]*).*/i', $current[$data_field[$current['type']]], $dkim_matches_current);
             preg_match('/v=DKIM1;.*k=rsa;.*p=([^;]*).*/i', $record[2], $dkim_matches_good);
             if ($dkim_matches_current[1] == $dkim_matches_good[1]) {
@@ -367,7 +399,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             }
           }
           elseif ($current['type'] != 'TXT' &&
-          isset($data_field[$current['type']]) && $state != state_good) {
+                  isset($data_field[$current['type']]) && $state != state_good) {
             $state = state_nomatch;
             if ($current[$data_field[$current['type']]] == $record[2]) {
               $state = state_good;

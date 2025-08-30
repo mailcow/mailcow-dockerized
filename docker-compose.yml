@@ -84,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.2
+      image: ghcr.io/mailcow/rspamd:2.3
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.133
+      image: ghcr.io/mailcow/sogo:1.134
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.34
+      image: ghcr.io/mailcow/dovecot:2.35
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -338,12 +338,14 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.80
+      image: ghcr.io/mailcow/postfix:1.81
       depends_on:
         mysql-mailcow:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
+        postfix-tlspol-mailcow:
+          condition: service_started
       volumes:
         - ./data/hooks/postfix:/hooks:Z
         - ./data/conf/postfix:/opt/postfix/conf:z
@@ -378,6 +380,28 @@ services:
           aliases:
             - postfix
 
+    postfix-tlspol-mailcow:
+      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      depends_on:
+        unbound-mailcow:
+          condition: service_healthy
+      volumes:
+        - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
+      environment:
+        - LOG_LINES=${LOG_LINES:-9999}
+        - TZ=${TZ}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
+        - DEV_MODE=${DEV_MODE:-n}
+      restart: always
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
+      networks:
+        mailcow-network:
+          aliases:
+            - postfix-tlspol
+
     memcached-mailcow:
       image: memcached:alpine
       restart: always
@@ -394,7 +418,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.03
+      image: ghcr.io/mailcow/nginx:1.04
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -405,7 +429,7 @@ services:
         - TZ=${TZ}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - SKIP_RSPAMD=${SKIP_RSPAMD:-n}
-        - DISABLE_IPv6=${DISABLE_IPv6:-n}
+        - ENABLE_IPV6=${ENABLE_IPV6:-true}
         - HTTP_REDIRECT=${HTTP_REDIRECT:-n}
         - PHPFPMHOST=${PHPFPMHOST:-}
         - SOGOHOST=${SOGOHOST:-}
@@ -440,7 +464,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.93
+      image: ghcr.io/mailcow/acme:1.94
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -477,7 +501,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.61
+      image: ghcr.io/mailcow/netfilter:1.62
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -497,7 +521,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.08
+      image: ghcr.io/mailcow/watchdog:2.09
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -564,6 +588,7 @@ services:
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
+        - DEV_MODE=${DEV_MODE:-n}
       networks:
         mailcow-network:
           aliases:
@@ -629,41 +654,12 @@ services:
           aliases:
             - ofelia
 
-    ipv6nat-mailcow:
-      depends_on:
-        - unbound-mailcow
-        - mysql-mailcow
-        - redis-mailcow
-        - clamd-mailcow
-        - rspamd-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - dovecot-mailcow
-        - postfix-mailcow
-        - memcached-mailcow
-        - nginx-mailcow
-        - acme-mailcow
-        - netfilter-mailcow
-        - watchdog-mailcow
-        - dockerapi-mailcow
-      environment:
-        - TZ=${TZ}
-      image: robbertkl/ipv6nat
-      security_opt:
-        - label=disable
-      restart: always
-      privileged: true
-      network_mode: "host"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - /lib/modules:/lib/modules:ro
-
 networks:
   mailcow-network:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br-mailcow
-    enable_ipv6: true
+    enable_ipv6: ${ENABLE_IPV6:-true}
     ipam:
       driver: default
       config:
@@ -678,6 +674,7 @@ volumes:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
+  postfix-tlspol-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:

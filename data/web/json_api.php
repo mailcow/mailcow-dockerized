@@ -324,6 +324,9 @@ if (isset($_GET['query'])) {
         case "app-passwd":
           process_add_return(app_passwd('add', $attr));
         break;
+        case "mta-sts":
+          process_add_return(mailbox('add', 'mta_sts', $attr));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -2000,6 +2003,9 @@ if (isset($_GET['query'])) {
         break;
         case "reset-password-notification":
           process_edit_return(reset_password('edit_notification', $attr));
+        break;
+        case "mta-sts":
+          process_edit_return(mailbox('edit', 'mta_sts', array_merge(array('domains' => $items), $attr)));
         break;
         // return no route found if no case is matched
         default:
