@@ -33,6 +33,10 @@ r = None
 pubsub = None
 clear_before_quit = False
 
+# === IPv6 toggle (ported from old) ===
+# If DISABLE_IPV6 is set to yes/y, we skip IPv6-related logic.
+disable_ipv6 = os.getenv('DISABLE_IPV6', 'no').lower() in ('y', 'yes')
+
 
 def refreshF2boptions():
   global f2boptions
@@ -152,7 +156,8 @@ def ban(address):
     if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
       with lock:
         tables.banIPv4(net)
-    elif int(f2boptions['manage_external']) != 1:
+    # Skip IPv6 bans if disabled
+    elif not disable_ipv6 and int(f2boptions['manage_external']) != 1:
       with lock:
         tables.banIPv6(net)
 
@@ -173,6 +178,7 @@ def unban(net):
     with lock:
       tables.unbanIPv4(net)
   else:
+    # Even if IPv6 is "disabled", unban attempts are harmless; keeping parity with old behavior.
     with lock:
       tables.unbanIPv6(net)
 
@@ -201,7 +207,6 @@ def permBan(net, unban=False):
       elif int(f2boptions['manage_external']) != 1:
         is_banned = tables.banIPv6(net)
 
-
   if is_unbanned:
     r.hdel('F2B_PERM_BANS', '%s' % net)
     logger.logCrit('Removed host/network %s from blacklist' % net)
@@ -216,7 +221,9 @@ def clear():
     unban(net)
   with lock:
     tables.clearIPv4Table()
-    tables.clearIPv6Table()
+    # Skip IPv6 table clear if disabled
+    if not disable_ipv6:
+      tables.clearIPv6Table()
     try:
       if r is not None:
         r.delete('F2B_ACTIVE_BANS')
@@ -300,7 +307,9 @@ def mailcowChainOrder():
     with lock:
       quit_now, exit_code = tables.checkIPv4ChainOrder()
       if quit_now: return
-      quit_now, exit_code = tables.checkIPv6ChainOrder()
+      # Skip IPv6 chain checks if disabled
+      if not disable_ipv6:
+        quit_now, exit_code = tables.checkIPv6ChainOrder()
 
 def calcNetBanTime(ban_counter):
   global f2boptions
@@ -419,8 +428,11 @@ if __name__ == '__main__':
   # Is called before threads start, no locking
   logger.logInfo("Initializing mailcow netfilter chain")
   tables.initChainIPv4()
-  tables.initChainIPv6()
+  # Skip IPv6 chain init if disabled
+  if not disable_ipv6:
+    tables.initChainIPv6()
 
+  # Note: this env var access mirrors original behavior; if unset it may raise.
   if os.getenv("DISABLE_NETFILTER_ISOLATION_RULE").lower() in ("y", "yes"):
     logger.logInfo(f"Skipping {chain_name} isolation")
   else:
@@ -469,7 +481,8 @@ if __name__ == '__main__':
     except ValueError:
       print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
-  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') != 'n':
+  # Skip SNAT6 thread if IPv6 is disabled
+  if not disable_ipv6 and os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') != 'n':
     try:
       snat_ip = os.getenv('SNAT6_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
