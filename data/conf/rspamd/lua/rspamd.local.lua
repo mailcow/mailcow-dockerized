@@ -454,8 +454,12 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
+    local envrcpt = task:get_recipients(1) or {}
     local uname = task:get_user()
     if not envfrom or not uname then
+      return false
+    end
+    if #envrcpt == 1 and envrcpt[1].addr == uname then
       return false
     end
     local uname = uname:lower()
