@@ -459,10 +459,12 @@ rspamd_config:register_symbol({
     if not envfrom or not uname then
       return false
     end
-    if #envrcpt == 1 and envrcpt[1].addr == uname then
+
+    local uname = uname:lower()
+
+    if #envrcpt == 1 and envrcpt[1].addr:lower() == uname then
       return false
     end
-    local uname = uname:lower()
 
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
 
