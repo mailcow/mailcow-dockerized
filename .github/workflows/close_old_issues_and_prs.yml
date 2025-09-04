@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Mark/Close Stale Issues and Pull Requests 🗑️
-        uses: actions/stale@v9.1.0
+        uses: actions/stale@v10.0.0
         with:
           repo-token: ${{ secrets.STALE_ACTION_PAT }}
           days-before-stale: 60
