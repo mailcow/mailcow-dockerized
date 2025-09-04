@@ -86,11 +86,6 @@ else
   CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd "[0-9A-Za-z-_]")
 fi
 
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
-  >&2 echo -e "\e[31mBusyBox grep detected on local system, please install GNU grep\e[0m"
-  exit 1
-fi
-
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
