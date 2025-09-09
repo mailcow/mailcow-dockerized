@@ -193,6 +193,7 @@ function user_login($user, $pass, $extra = null){
   global $iam_settings;
 
   $is_internal = $extra['is_internal'];
+  $service = $extra['service'];
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
@@ -235,6 +236,14 @@ function user_login($user, $pass, $extra = null){
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if (!empty($row)) {
+        // check if user has access to service (imap, smtp, pop3, sieve) if service is set
+        $row['attributes'] = json_decode($row['attributes'], true);
+        if (isset($service)) {
+          $key = strtolower($service) . "_access";
+          if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
+            return false;
+          }
+        }
         return true;
       }
     }
@@ -242,7 +251,14 @@ function user_login($user, $pass, $extra = null){
     return false;
   }
 
+  // check if user has access to service (imap, smtp, pop3, sieve) if service is set
   $row['attributes'] = json_decode($row['attributes'], true);
+  if (isset($service)) {
+    $key = strtolower($service) . "_access";
+    if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
+      return false;
+    }
+  }
   switch ($row['authsource']) {
     case 'keycloak':
       // user authsource is keycloak, try using via rest flow
