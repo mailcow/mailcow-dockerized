@@ -293,7 +293,7 @@ function customize($_action, $_item, $_data = null) {
           }
 
           if (empty($app_links)){
-            return false;
+            return [];
           }
 
           // convert from old style
