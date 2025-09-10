@@ -5,14 +5,65 @@
 
 # 1) Check if the host supports IPv6
 get_ipv6_support() {
-  if grep -qs '^1' /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null \
-    || ! ip -6 route show default &>/dev/null; then
+  # ---- helper: probe external IPv6 connectivity without DNS ----
+  _probe_ipv6_connectivity() {
+    # Use literal, always-on IPv6 echo responders (no DNS required)
+    local PROBE_IPS=("2001:4860:4860::8888" "2606:4700:4700::1111")
+    local ip rc=1
+
+    for ip in "${PROBE_IPS[@]}"; do
+      if command -v ping6 &>/dev/null; then
+        ping6 -c1 -W2 "$ip" &>/dev/null || ping6 -c1 -w2 "$ip" &>/dev/null
+        rc=$?
+      elif command -v ping &>/dev/null; then
+        ping -6 -c1 -W2 "$ip" &>/dev/null || ping -6 -c1 -w2 "$ip" &>/dev/null
+        rc=$?
+      else
+        rc=1
+      fi
+      [[ $rc -eq 0 ]] && return 0
+    done
+    return 1
+  }
+
+  if [[ ! -f /proc/net/if_inet6 ]] || grep -qs '^1' /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null; then
     DETECTED_IPV6=false
-    echo -e "${YELLOW}IPv6 not detected on host – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
-  else
-    DETECTED_IPV6=true
-    echo -e "IPv6 detected on host – ${LIGHT_GREEN}leaving IPv6 support enabled${YELLOW}.${NC}"
+    echo -e "${YELLOW}IPv6 not detected on host – ${LIGHT_RED}IPv6 is administratively disabled${YELLOW}.${NC}"
+    return
   fi
+
+  if ip -6 route show default 2>/dev/null | grep -qE '^default'; then
+    echo -e "${YELLOW}Default IPv6 route found – testing external IPv6 connectivity...${NC}"
+    if _probe_ipv6_connectivity; then
+      DETECTED_IPV6=true
+      echo -e "IPv6 detected on host – ${LIGHT_GREEN}leaving IPv6 support enabled${YELLOW}.${NC}"
+    else
+      DETECTED_IPV6=false
+      echo -e "${YELLOW}Default IPv6 route present but external IPv6 connectivity failed – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
+    fi
+    return
+  fi
+
+  if ip -6 addr show scope global 2>/dev/null | grep -q 'inet6'; then
+    DETECTED_IPV6=false
+    echo -e "${YELLOW}Global IPv6 address present but no default route – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
+    return
+  fi
+
+  if ip -6 addr show scope link 2>/dev/null | grep -q 'inet6'; then
+    echo -e "${YELLOW}Only link-local IPv6 addresses found – testing external IPv6 connectivity...${NC}"
+    if _probe_ipv6_connectivity; then
+      DETECTED_IPV6=true
+      echo -e "External IPv6 connectivity available – ${LIGHT_GREEN}leaving IPv6 support enabled${YELLOW}.${NC}"
+    else
+      DETECTED_IPV6=false
+      echo -e "${YELLOW}Only link-local IPv6 present and no external connectivity – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
+    fi
+    return
+  fi
+
+  DETECTED_IPV6=false
+  echo -e "${YELLOW}IPv6 not detected on host – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
 }
 
 # 2) Ensure Docker daemon.json has (or create) the required IPv6 settings
@@ -122,7 +173,7 @@ configure_ipv6() {
   # detect manual override if mailcow.conf is present
   if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]] && grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
     MANUAL_SETTING=$(grep '^ENABLE_IPV6=' "$MAILCOW_CONF" | cut -d= -f2)
-  elif [[ -z "$MAILCOW_CONF" ]] && [[ ! -z "${ENABLE_IPV6:-}" ]]; then
+  elif [[ -z "$MAILCOW_CONF" ]] && [[ -n "${ENABLE_IPV6:-}" ]]; then
     MANUAL_SETTING="$ENABLE_IPV6"
   else
     MANUAL_SETTING=""
@@ -131,38 +182,34 @@ configure_ipv6() {
   get_ipv6_support
 
   # if user manually set it, check for mismatch
-  if [[ -n "$MANUAL_SETTING" ]]; then
-    if [[ "$MANUAL_SETTING" == "false" && "$DETECTED_IPV6" == "true" ]]; then
-      echo -e "${RED}ERROR: You have ENABLE_IPV6=false but your host and Docker support IPv6.${NC}"
-      echo -e "${RED}This can create an open relay. Please set ENABLE_IPV6=true in your mailcow.conf and re-run.${NC}"
-      exit 1
-    elif [[ "$MANUAL_SETTING" == "true" && "$DETECTED_IPV6" == "false" ]]; then
-      echo -e "${RED}ERROR: You have ENABLE_IPV6=true but your host does not support IPv6.${NC}"
-      echo -e "${RED}Please disable or fix your host/Docker IPv6 support, or set ENABLE_IPV6=false.${NC}"
-      exit 1
+  if [[ "$DETECTED_IPV6" != "true" ]]; then
+    if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
+      if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
+        sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=false/' "$MAILCOW_CONF"
+      else
+        echo "ENABLE_IPV6=false" >> "$MAILCOW_CONF"
+      fi
     else
-      return
+      export IPV6_BOOL=false
     fi
-  fi
-
-  # no manual override: proceed to set or export
-  if [[ "$DETECTED_IPV6" == "true" ]]; then
-    docker_daemon_edit
-  else
     echo "Skipping Docker IPv6 configuration because host does not support IPv6."
+    echo "Make sure to check if your docker daemon.json does not include \"enable_ipv6\": true if you do not want IPv6."
+    echo "IPv6 configuration complete: ENABLE_IPV6=false"
+    sleep 2
+    return
   fi
 
-  # now write into mailcow.conf or export
+  docker_daemon_edit
+
   if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
-    LINE="ENABLE_IPV6=$DETECTED_IPV6"
     if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
-      sed -i "s/^ENABLE_IPV6=.*/$LINE/" "$MAILCOW_CONF"
+      sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=true/' "$MAILCOW_CONF"
     else
-      echo "$LINE" >> "$MAILCOW_CONF"
+      echo "ENABLE_IPV6=true" >> "$MAILCOW_CONF"
     fi
   else
-    export IPV6_BOOL="$DETECTED_IPV6"
+    export IPV6_BOOL=true
   fi
 
-  echo "IPv6 configuration complete: ENABLE_IPV6=$DETECTED_IPV6"
+  echo "IPv6 configuration complete: ENABLE_IPV6=true"
 }
