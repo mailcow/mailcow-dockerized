@@ -65,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.70
+      image: ghcr.io/mailcow/clamd:1.71
       restart: always
       depends_on:
         unbound-mailcow:
