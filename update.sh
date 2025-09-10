@@ -3,6 +3,20 @@
 ############## Begin Function Section ##############
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MAILCOW_CONF="${SCRIPT_DIR}/mailcow.conf"
+
+# Ensure the script is run from the directory that contains mailcow.conf
+if [ ! -f "${PWD}/mailcow.conf" ]; then
+  if [ -f "${SCRIPT_DIR}/mailcow.conf" ]; then
+    echo -e "\e[33mPlease run this script directly from the mailcow installation directory:\e[0m"
+    echo -e "  \e[36mcd ${SCRIPT_DIR} && ./update.sh\e[0m"
+    exit 1
+  else
+    echo -e "\e[31mmailcow.conf not found in current directory or script directory (\e[36m${SCRIPT_DIR}\e[31m).\e[0m"
+    echo -e "\e[33mRun this script directly from your mailcow installation directory.\e[0m"
+    exit 1
+  fi
+fi
 BRANCH="$(cd "${SCRIPT_DIR}" && git rev-parse --abbrev-ref HEAD)"
 
 MODULE_DIR="${SCRIPT_DIR}/_modules"
@@ -26,8 +40,6 @@ if [ "$(id -u)" -ne "0" ]; then
   echo "You need to be root"
   exit 1
 fi
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Run pre-update-hook
 if [ -f "${SCRIPT_DIR}/pre_update_hook.sh" ]; then
