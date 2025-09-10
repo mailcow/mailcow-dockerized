@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "${DEV_MODE}" != "n" ]; then
+  echo -e "\e[31mEnabled Debug Mode\e[0m"
+  set -x
+fi
+
 trap "exit" INT TERM
 trap "kill 0" EXIT
 
@@ -297,7 +302,7 @@ unbound_checks() {
     touch /tmp/unbound-mailcow; echo "$(tail -50 /tmp/unbound-mailcow)" > /tmp/unbound-mailcow
     host_ip=$(get_container_ip unbound-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_dns -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/mailcow/check_dns.sh -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     DNSSEC=$(dig com +dnssec | egrep 'flags:.+ad')
     if [[ -z ${DNSSEC} ]]; then
       echo "DNSSEC failure" 2>> /tmp/unbound-mailcow 1>&2
@@ -434,6 +439,31 @@ postfix_checks() {
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Postfix" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    if [[ $? == 10 ]]; then
+      diff_c=0
+      sleep 1
+    else
+      diff_c=0
+      sleep $(( ( RANDOM % 60 ) + 20 ))
+    fi
+  done
+  return 1
+}
+
+postfix-tlspol_checks() {
+  err_count=0
+  diff_c=0
+  THRESHOLD=${POSTFIX_TLSPOL_THRESHOLD}
+  # Reduce error count by 2 after restarting an unhealthy container
+  trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
+  while [ ${err_count} -lt ${THRESHOLD} ]; do
+    touch /tmp/postfix-tlspol-mailcow; echo "$(tail -50 /tmp/postfix-tlspol-mailcow)" > /tmp/postfix-tlspol-mailcow
+    host_ip=$(get_container_ip postfix-tlspol-mailcow)
+    err_c_cur=${err_count}
+    /usr/lib/nagios/plugins/check_tcp -4 -H ${host_ip} -p 8642 2>> /tmp/postfix-tlspol-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
+    [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
+    progress "Postfix TLS Policy companion" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
       sleep 1
@@ -920,6 +950,18 @@ done
 ) &
 PID=$!
 echo "Spawned mailq_checks with PID ${PID}"
+BACKGROUND_TASKS+=(${PID})
+
+(
+while true; do
+  if ! postfix-tlspol_checks; then
+    log_msg "Postfix TLS Policy hit error limit"
+    echo postfix-tlspol-mailcow > /tmp/com_pipe
+  fi
+done
+) &
+PID=$!
+echo "Spawned postfix-tlspol_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
 (
