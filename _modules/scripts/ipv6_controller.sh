@@ -72,7 +72,7 @@ docker_daemon_edit(){
   DOCKER_MAJOR=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d. -f1)
   MISSING=()
 
-  _has_kv() { grep -Eq "\"$1\"\s*:\s*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null; }
+  _has_kv() { grep -Eq "\"$1\"[[:space:]]*:[[:space:]]*$2" "$DOCKER_DAEMON_CONFIG" 2>/dev/null; }
 
   if [[ -f "$DOCKER_DAEMON_CONFIG" ]]; then
 
@@ -89,12 +89,18 @@ docker_daemon_edit(){
     fi
 
     # Gather missing keys
-    ! _has_kv ipv6 true       && MISSING+=("ipv6: true")
-    ! grep -Eq '"fixed-cidr-v6"\s*:\s*".+"' "$DOCKER_DAEMON_CONFIG" \
-                              && MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
-    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -le 27 ]]; then
+    ! _has_kv ipv6 true && MISSING+=("ipv6: true")
+
+    # For Docker < 28, keep requiring fixed-cidr-v6 (default bridge needs it on old engines)
+    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 28 ]]; then
+      ! grep -Eq '"fixed-cidr-v6"[[:space:]]*:[[:space:]]*".+"' "$DOCKER_DAEMON_CONFIG" \
+                                && MISSING+=('fixed-cidr-v6: "fd00:dead:beef:c0::/80"')
+    fi
+
+    # For Docker < 27, ip6tables needed and was tied to experimental in older releases
+    if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
       _has_kv ipv6 true && ! _has_kv ip6tables true && MISSING+=("ip6tables: true")
-      ! _has_kv experimental true                 && MISSING+=("experimental: true")
+      ! _has_kv experimental true && MISSING+=("experimental: true")
     fi
 
     # Fix if needed
@@ -111,9 +117,19 @@ docker_daemon_edit(){
         cp "$DOCKER_DAEMON_CONFIG" "${DOCKER_DAEMON_CONFIG}.bak"
         if command -v jq &>/dev/null; then
           TMP=$(mktemp)
-          JQ_FILTER='.ipv6 = true | .["fixed-cidr-v6"] = "fd00:dead:beef:c0::/80"'
-          [[ "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]] \
-            && JQ_FILTER+=' | .ip6tables = true | .experimental = true'
+          # Base filter: ensure ipv6 = true
+          JQ_FILTER='.ipv6 = true'
+
+          # Add fixed-cidr-v6 only for Docker < 28
+          if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 28 ]]; then
+            JQ_FILTER+=' | .["fixed-cidr-v6"] = (.["fixed-cidr-v6"] // "fd00:dead:beef:c0::/80")'
+          fi
+
+          # Add ip6tables/experimental only for Docker < 27
+          if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
+            JQ_FILTER+=' | .ip6tables = true | .experimental = true'
+          fi
+
           jq "$JQ_FILTER" "$DOCKER_DAEMON_CONFIG" >"$TMP" && mv "$TMP" "$DOCKER_DAEMON_CONFIG"
           echo -e "${LIGHT_GREEN}daemon.json updated. Restarting Docker...${NC}"
           (command -v systemctl &>/dev/null && systemctl restart docker) || service docker restart
@@ -148,11 +164,18 @@ docker_daemon_edit(){
   "experimental": true
 }
 EOF
-      else
+      elif [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 28 ]]; then
         cat > "$DOCKER_DAEMON_CONFIG" <<EOF
 {
   "ipv6": true,
   "fixed-cidr-v6": "fd00:dead:beef:c0::/80"
+}
+EOF
+      else
+        # Docker 28+: ipv6 works without fixed-cidr-v6
+        cat > "$DOCKER_DAEMON_CONFIG" <<EOF
+{
+  "ipv6": true
 }
 EOF
       fi
