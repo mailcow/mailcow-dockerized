@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# Ensure the script is run from the directory that contains a link of .env
+# Resolve the directory this script lives in for consistent behavior when invoked from elsewhere
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" >/dev/null 2>&1 && pwd)"
+
+# Ensure script is executed in the mailcow installation directory by checking for a .env symlink that points to mailcow.conf
+if [ ! -L "${PWD}/.env" ]; then
+  echo -e "\e[33mPlease run this script from the mailcow installation directory.\e[0m"
+  echo -e "  \e[36mcd /path/to/mailcow && ./generate_config.sh\e[0m"
+  exit 1
+fi
+
+# Verify the .env symlink points to a mailcow.conf file
+env_target="$(readlink -f "${PWD}/.env" 2>/dev/null || true)"
+if [ -z "$env_target" ] || [ "$(basename "$env_target")" != "mailcow.conf" ]; then
+  echo -e "\e[31mThe found .env symlink does not point to a mailcow.conf file.\e[0m"
+  echo -e "\e[33mPlease create a symbolic link .env -> mailcow.conf inside the mailcow directory and run this script there.\e[0m"
+  echo -e "\e[33mNote: 'ln -s mailcow.conf .env' will create the symlink even if mailcow.conf does not yet exist.\e[0m"
+  echo -e "  \e[36mcd /path/to/mailcow && ln -s mailcow.conf .env && ./generate_config.sh\e[0m"
+  exit 1
+fi
+
 # Load mailcow Generic Scripts
 source _modules/scripts/core.sh
 source _modules/scripts/ipv6_controller.sh

@@ -777,6 +777,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
           <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="internal">
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="address">{{ lang.add.alias_address }}</label>
             <div class="col-sm-10">
@@ -803,11 +804,15 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="sogo_visible" checked> {{ lang.edit.sogo_visible }}</label>
               </div>
-              <p class="text-muted">{{ lang.edit.sogo_visible_info }}</p>
+              <small class="text-muted d-block mb-2">{{ lang.edit.sogo_visible_info }}</small>
               {% endif %}
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="internal"> {{ lang.add.internal }}</label>
+              </div>
+              <small class="text-muted d-block">{{ lang.edit.internal_info }}</small>
             </div>
           </div>
-          <div class="row mb-2">
+          <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>

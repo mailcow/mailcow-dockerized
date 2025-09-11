@@ -185,7 +185,7 @@ detect_major_update() {
     MAJOR_VERSIONS=(
       "2025-02"
       "2025-03"
-      "2025-08"
+      "2025-09"
     )
 
     current_version=""

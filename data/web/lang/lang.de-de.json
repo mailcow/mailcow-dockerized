@@ -71,6 +71,8 @@
         "goto_spam": "Nachrichten als <span class=\"text-danger\"><b>Spam</b></span> lernen",
         "hostname": "Host",
         "inactive": "Inaktiv",
+        "internal": "Intern",
+        "internal_info": "Interne Aliasse sind nur von der eigenen Domäne oder Alias-Domänen erreichbar.",
         "kind": "Art",
         "mailbox_quota_def": "Standard-Quota einer Mailbox",
         "mailbox_quota_m": "Max. Speicherplatz pro Mailbox (MiB)",
@@ -408,7 +410,8 @@
         "allowed_origins": "Access-Control-Allow-Origin",
         "logo_dark_label": "Invertiert für den Darkmode",
         "logo_normal_label": "Normal",
-        "user_link": "Nutzer-Link"
+        "user_link": "Nutzer-Link",
+        "filter": "Filter"
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -689,6 +692,8 @@
         "grant_types": "Grant-types",
         "hostname": "Servername",
         "inactive": "Inaktiv",
+        "internal": "Intern",
+        "internal_info": "Interne Aliasse sind nur von der eigenen Domäne oder Alias-Domänen erreichbar.",
         "kind": "Art",
         "last_modified": "Zuletzt geändert",
         "lookup_mx": "Ziel mit MX vergleichen (Regex, etwa <code>.*\\.google\\.com</code>, um alle Ziele mit MX *google.com zu routen)",
@@ -846,7 +851,8 @@
         "password": "Passwort",
         "reset_password": "Passwort zurücksetzen",
         "request_reset_password": "Passwortänderung anfordern",
-        "username": "Benutzername"
+        "username": "Benutzername",
+        "email": "E-Mail-Adresse"
     },
     "mailbox": {
         "action": "Aktion",
@@ -921,6 +927,7 @@
         "in_use": "Prozentualer Gebrauch",
         "inactive": "Inaktiv",
         "insert_preset": "Beispiel \"%s\" laden",
+        "internal": "Intern",
         "kind": "Art",
         "last_mail_login": "Letzter Mail-Login",
         "last_modified": "Zuletzt geändert",

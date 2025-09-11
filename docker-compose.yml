@@ -65,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.70
+      image: ghcr.io/mailcow/clamd:1.71
       restart: always
       depends_on:
         unbound-mailcow:
@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:nightly-29072025
+      image: ghcr.io/mailcow/phpfpm:nightly-11092025
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -251,7 +251,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:nightly-28082025
+      image: ghcr.io/mailcow/dovecot:nightly-11092025
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -418,7 +418,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:nightly-05082025
+      image: ghcr.io/mailcow/nginx:nightly-11092025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -465,7 +465,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:nightly-28082025
+      image: ghcr.io/mailcow/acme:nightly-11092025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -522,7 +522,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:nightly-29072025
+      image: ghcr.io/mailcow/watchdog:nightly-11092025
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -578,6 +578,7 @@ services:
         - MYSQL_REPLICATION_THRESHOLD=${MYSQL_REPLICATION_THRESHOLD:-1}
         - SOGO_THRESHOLD=${SOGO_THRESHOLD:-3}
         - POSTFIX_THRESHOLD=${POSTFIX_THRESHOLD:-8}
+        - POSTFIX_TLSPOL_THRESHOLD=${POSTFIX_TLSPOL_THRESHOLD:-8}
         - CLAMD_THRESHOLD=${CLAMD_THRESHOLD:-15}
         - DOVECOT_THRESHOLD=${DOVECOT_THRESHOLD:-12}
         - DOVECOT_REPL_THRESHOLD=${DOVECOT_REPL_THRESHOLD:-20}
@@ -589,6 +590,7 @@ services:
         - OLEFY_THRESHOLD=${OLEFY_THRESHOLD:-5}
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
+        - DEV_MODE=${DEV_MODE:-n}
       networks:
         mailcow-network:
           aliases:
