@@ -1950,11 +1950,6 @@ jQuery(function($){
           responsivePriority: 5,
         },
         {
-          title: lang.bcc_destinations,
-          data: 'bcc_dest',
-          defaultContent: ''
-        },
-        {
           title: lang.sogo_visible,
           data: 'sogo_visible',
           defaultContent: '',
