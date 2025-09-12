@@ -78,7 +78,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
@@ -105,7 +105,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
@@ -126,7 +126,7 @@ http {
     # rspamd dynmaps:
     server {
         listen 8081;
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         listen [::]:8081;
         {%endif%}
         index index.php index.html;
@@ -199,7 +199,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
