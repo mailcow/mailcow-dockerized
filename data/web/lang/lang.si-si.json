@@ -109,7 +109,9 @@
         "relay_transport_info": "<div class=\"badge fs-6 bg-info\">Info</div> Definirate lahko preslikave transportov za cilj po meri za to domeno. Če ni nastavljena, se ustvari MX poizvedba.",
         "syncjob_hint": "Pozor! Gesla se morajo shraniti v golo besedilo!",
         "timeout2": "Časovna omejitev za povezavo do lokalnega gostitelja",
-        "dry": "Simuliraj sinhronizacijo"
+        "dry": "Simuliraj sinhronizacijo",
+        "internal": "Notranje",
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
     },
     "admin": {
         "access": "Dostop",
@@ -776,7 +778,9 @@
         "mta_sts_max_age_info": "Čas v sekundah, ki ga lahko prejemni poštni strežniki shranijo v predpomnilnik, dokler se ne ponovno naloži.",
         "mta_sts_mx": "MX strežnik",
         "mta_sts_mx_info": "Omogoča pošiljanje samo na izrecno navedena imena gostiteljskih strežnikov poštnih strežnikov; pošiljajoči MTA preveri, ali se ime gostitelja DNS MX ujema s seznamom pravilnikov, in dovoljuje dostavo le z veljavnim potrdilom TLS (zaščita pred MITM).",
-        "mta_sts_mx_notice": "Določiti je mogoče več strežnikov MX (ločenih z vejicami)."
+        "mta_sts_mx_notice": "Določiti je mogoče več strežnikov MX (ločenih z vejicami).",
+        "internal": "Notranje",
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
     },
     "footer": {
         "restart_container_info": "<b>Pomembno:</b> Ugoden ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
@@ -991,7 +995,8 @@
         "yes": "&#10003;",
         "weekly": "Tedensko",
         "sieve_info": "Na uporabnika lahko shranite več filtrov, vendar je lahko hkrati aktiven le en predfilter in en postfilter.<br>\nVsak filter bo obdelan v opisanem vrstnem redu. Niti neuspešen skript niti izdan ukaz »keep;« ne bosta ustavila obdelave nadaljnjih skript. Spremembe globalnih skriptov sita bodo sprožile ponovni zagon Dovecota.<br><br>Globalni predfilter sita &#8226; Predfilter &#8226; Uporabniški skripti &#8226; Postfilter &#8226; Globalni postfilter sita",
-        "tls_policy_maps_info": "Ta preslikava pravilnikov preglasi pravila odhodnega prenosa TLS neodvisno od uporabnikovih nastavitev pravilnikov TLS.<br>\n  Za več informacij preverite <a href=\"http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps\" target=\"_blank\">dokumentacijo »smtp_tls_policy_maps«</a>."
+        "tls_policy_maps_info": "Ta preslikava pravilnikov preglasi pravila odhodnega prenosa TLS neodvisno od uporabnikovih nastavitev pravilnikov TLS.<br>\n  Za več informacij preverite <a href=\"http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps\" target=\"_blank\">dokumentacijo »smtp_tls_policy_maps«</a>.",
+        "internal": "Notranje"
     },
     "fido2": {
         "known_ids": "Znani ID-ji",
@@ -1362,7 +1367,7 @@
         "spamfilter_default_score": "Privzete vrednosti",
         "spamfilter_green": "Zelena: to sporočilo ni neželena pošta",
         "spamfilter_hint": "Prva vrednost opisuje »nizko oceno neželene pošte«, druga pa »visoko oceno neželene pošte«.",
-        "spamfilter_red": "Rdeča: To sporočilo je neželena pošta in ga bo strežnik zavrnil.",
+        "spamfilter_red": "Rdeča: To sporočilo je neželena pošta in ga bo strežnik zavrnil",
         "spamfilter_table_action": "Dejanje",
         "spamfilter_table_add": "Dodaj element",
         "spamfilter_table_domain_policy": "ni na voljo (pravilnik domene)",
@@ -1407,7 +1412,7 @@
     "warning": {
         "cannot_delete_self": "Prijavljenega uporabnika ni mogoče izbrisati",
         "domain_added_sogo_failed": "Domena je bila dodana, vendar ponovni zagon SOGo ni uspel. Preverite dnevnike strežnika.",
-        "dovecot_restart_failed": "Dovecota ni uspelo znova zagnati, preverite dnevnike.",
+        "dovecot_restart_failed": "Dovecota ni uspelo znova zagnati, preverite dnevnike",
         "fuzzy_learn_error": "Napaka učenja mehkega zgoščevanja: %s",
         "hash_not_found": "Zgoščena vrednost ni bila najdena ali je bila že izbrisana",
         "ip_invalid": "Preskočen neveljaven IP: %s",
