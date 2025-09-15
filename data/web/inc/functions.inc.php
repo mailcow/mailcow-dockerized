@@ -251,6 +251,37 @@ function password_check($password1, $password2) {
 
   return true;
 }
+function valid_redirect($uri) {
+  if (false !== ($i = strpos($uri, '\\')) && $i < strcspn($uri, '?#')) {
+    // Backslash may not precede URI query/fragment
+    return false;
+  } else if (strlen($uri) !== strcspn($uri, "\r\n\t")) {
+    // Carriage return, new line and tab are all invalid
+    return false;
+  } else if ('' !== $uri && (ord($uri[0]) <= 32 || ord($uri[-1]) <= 32)) {
+    // Ensure string starts/ends with non-control characters/space
+    return false;
+  } else if (0 === strcspn($uri, "/:;<>\"'")) {
+    // A valid redirect probably isn't going to start with these commonly abused characters
+    return false;
+  } else if (str_starts_with($uri, "http:") || str_starts_with($uri, "https:") || str_starts_with($uri, "javascript:")) {
+    // Probably shouldn't start with these either
+    return false;
+  }
+  return true;
+}
+/**
+ * Constructs a redirect URI or null, if invalid
+ */
+function construct_redirect($uri) {
+  if (valid_redirect($uri)) {
+    $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === 0 ? 'https' : 'http';
+    return $protocol . '://' . $_SERVER['HTTP_HOST'] . '/' . $uri;
+  } else {
+    // If redirect seems weird, just fail
+    return null;
+  }
+}
 function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   global $pdo;
   global $redis;
@@ -2907,6 +2938,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($iam_settings['authsource'] != 'keycloak' && $iam_settings['authsource'] != 'generic-oidc')
         return false;
       $options = [];
+      // Check if redirect is of a reasonable length to ensure it doesn't break the OAuth state
+      if (isset($_GET['next']) && strlen($_GET['next']) <= 128 && valid_redirect($_GET['next'])) {
+        // Store next redirect URL to state for persistence
+        // It is preferable to store it with the OAuth state, because that must be cleared
+        // by mailcow and the OAuth provider. This helps prevent accidental redirects
+        // from stale session data and makes the behavior more intuitive.
+
+        // State must be less than approximately 2000 characters
+        $options['state'] = base64_encode(json_encode(array(
+          'random' => bin2hex(random_bytes(32 /* String length = 32 */ / 2)), // Add some random data to make state less predictable
+          'next' => $_GET['next'],
+        )));
+      }
       if (isset($iam_settings['redirect_url_extra'])) {
         // check if the current domain is used in an extra redirect URL
         $targetDomain = strtolower($_SERVER['HTTP_HOST']);

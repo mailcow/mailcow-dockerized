@@ -69,7 +69,8 @@ elseif (isset($_GET['login'])) {
       }
     }
   }
-  header("Location: /");
+  // Save current URL so the user can be redirected back after login
+  header('Location: /?next=' . rawurlencode(ltrim($_SERVER['REQUEST_URI'], '/')));
   exit;
 }
 // only check for admin-login on sogo GUI requests

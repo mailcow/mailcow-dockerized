@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var loginForm = document.forms.namedItem("loginForm");
     if (loginForm) {
-        window.location.href = '/user';
+        window.location.href = '/user?sogo';
     }
 });
 // logout function
@@ -13,7 +13,8 @@ function mc_logout() {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         body: "logout=1"
-    }).then(() => window.location.href = '/');
+        // Force set next redirect back to SOGo to prevent race condition where sometimes it is set, other times it isn't
+    }).then(() => window.location.href = '/?next=user%3Fsogo');
 }
 
 // Custom SOGo JS
