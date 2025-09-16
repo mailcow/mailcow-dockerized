@@ -24,7 +24,7 @@
         "sogo_access": "Správa přístupu do SOGo",
         "sogo_profile_reset": "Resetování profilu SOGo",
         "spam_alias": "Dočasné aliasy",
-        "spam_policy": "Blacklist/Whitelist",
+        "spam_policy": "Denylist/Allowlist",
         "spam_score": "Skóre spamu",
         "syncjobs": "Synchronizační úlohy",
         "tls_policy": "Pravidla TLS",
@@ -109,7 +109,9 @@
         "validate": "Ověřit",
         "validation_success": "Úspěšně ověřeno",
         "tags": "Štítky",
-        "dry": "Simulovat synchronizaci"
+        "dry": "Simulovat synchronizaci",
+        "internal": "Interní",
+        "internal_info": "Interní aliasy jsou přístupné jen z vlastních domén nebo jejich aliasů."
     },
     "admin": {
         "access": "Přístupy",
@@ -303,7 +305,7 @@
         "rspamd_global_filters": "Mapa globálních filtrů",
         "rspamd_global_filters_agree": "Budu opatrný!",
         "rspamd_global_filters_info": "Mapa globálních filtrů obsahuje jiné globální black- a whitelisty.",
-        "rspamd_global_filters_regex": "Názvy jsou dostatečným vysvětlením. Musí obsahovat jen platné regulární výrazy ve formátu \"/vyraz/parametry\" (e.g. <code>/.+@domena\\.tld/i</code>).<br>\r\n  Každý výraz bude podroben základní kontrole, přesto je možné Rspamd 'rozbít', nebude-li syntax zcela korektní.<br>\r\n  Rspamd se pokusí načíst mapu po každé změně. V případě potíží, <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">restartujte Rspamd</a>, aby se konfigurace načetla explicitně.",
+        "rspamd_global_filters_regex": "Názvy stačí k vysvětlení. Položky musejí obsahovat jen platné regulární výrazy ve tvaru \"/vyraz/parametry\" (e.g. <code>/.+@domena\\.tld/i</code>).<br>\n  Každý výraz bude podroben základní kontrole, přesto je možné Rspamd 'rozbít', nebude-li syntax zcela korektní.<br>\n  Rspamd se pokusí po každé změně načíst mapu znovu. V případě potíží <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">restartujte Rspamd</a>, aby se konfigurace načetla explicitně.",
         "rspamd_settings_map": "Nastavení Rspamd",
         "sal_level": "Úroveň 'Moo'",
         "save": "Uložit změny",
@@ -407,7 +409,9 @@
         "iam_extra_permission": "Aby vše fungovalo, musí mít mailcow klient v Keycloaku nastavený <code>servisní účet</code> a povolení <code>view-users</code>.",
         "iam_host": "Hostitel",
         "iam_host_info": "Zadejte jeden či více hostitelů, oddělte čárkou.",
-        "iam_import_users": "Importovat uživatele"
+        "iam_import_users": "Importovat uživatele",
+        "iam_auth_flow": "Proces autentizace",
+        "needs_restart": "potřebuje restart"
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
@@ -548,7 +552,11 @@
         "img_size_exceeded": "Obrázek má větší než povolenou velikost souboru",
         "invalid_reset_token": "Neplatný resetovací token",
         "required_data_missing": "Chybí potřebný údaj %s",
-        "reset_token_limit_exceeded": "Byl překročen limit na reset tokeny. Zkuste to později."
+        "reset_token_limit_exceeded": "Byl překročen limit na reset tokeny. Zkuste to později.",
+        "max_age_invalid": "Maximální životnost %s není platná",
+        "mode_invalid": "Mód %s není platný",
+        "mx_invalid": "Záznam MX %s není platný",
+        "version_invalid": "Verze %s není platná"
     },
     "datatables": {
         "emptyTable": "Tabulka neobsahuje žádná data",
@@ -759,7 +767,20 @@
         "mailbox_rename_warning": "DŮLEŽITÉ! Vytvořte si zálohu schránky, než ji přejmenujete.",
         "mailbox_rename_alias": "Automaticky vytvořit alias",
         "mailbox_rename_title": "Nový název zdejší schránky",
-        "pushover": "Pushover"
+        "pushover": "Pushover",
+        "internal": "Interní",
+        "internal_info": "Interní aliasy jsou přístupné jen z vlastních domén nebo jejich aliasů.",
+        "mta_sts": "MTA-STS",
+        "mta_sts_info": "<a href='https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_MTA_Strict_Transport_Security' target='_blank'>MTA-STS</a> je standard, jenž říká poštovním serverům, aby komunikovaly pomocí TLS s platnými certifikáty. <br>Používá se, pokud není k dispozici <a target='_blank' href='https://en.wikipedia.org/wiki/DNS-based_Authentication_of_Named_Entities'>DANE</a>, např. chybí-li či není podporováno DNSSEC.<br><b>Pozn.</b>: Podporuje-li přijímající doména DANE a DNSSEC, bude <b>vždy</b> použito DANE; MTA-STS zůstane jako plán B.",
+        "mta_sts_version": "Verze",
+        "mta_sts_version_info": "Určuje verzi standardu MTA-STS – zatím je podporována jen <code>STSv1</code>.",
+        "mta_sts_mode": "Mód",
+        "mta_sts_mode_info": "K dispozici jsou tři módy:<ul><li><em>testing</em> – pravidlo se jen sleduje, porušení je bez následků.</li><li><em>enforce</em> – pravidlo je důsledně dodržováno, spojení bez platného TLS jsou odmítána.</li><li><em>none</em> – pravidlo je zveřejněno, ale neuplatňuje se.</li></ul>",
+        "mta_sts_max_age": "Maximální životnost",
+        "mta_sts_max_age_info": "Doba v sekundách, po niž poštovní servery mohou toho pravidlo držet v mezipaměti bez nutnosti obnovení.",
+        "mta_sts_mx": "Server MX",
+        "mta_sts_mx_info": "Dovoluje odesílání jen výslovně vypsaným poštovním serverům; odesílající server kontroluje, že server MX určený v DNS odpovídá pravidlu, a povolí doručení jen s platným certifikátem TLS (chrání přes útokem typu MITM).",
+        "mta_sts_mx_notice": "Lze zadat více serverů MX (oddělte čárkou)."
     },
     "fido2": {
         "confirm": "Potvrdit",
@@ -829,7 +850,8 @@
         "login_admintext": "Přihlášení správce",
         "login_user": "Přihlášení uživatele",
         "login_dadmin": "Přihlášení správce domény",
-        "login_admin": "Přihlášení správce"
+        "login_admin": "Přihlášení správce",
+        "email": "Mailová adresa"
     },
     "mailbox": {
         "action": "Akce",
@@ -861,7 +883,7 @@
         "bcc": "BCC",
         "bcc_destination": "Cíl kopie",
         "bcc_destinations": "Cíl kopií",
-        "bcc_info": "Skrytá kopie (mapa BCC) se používá pro tiché předávání kopií všech zpráv na jinou adresu. Mapa příjemců se použije, funguje-li je místní cíl jako adresát zprávy. Totéž platí pro mapy odesílatelů.\nMístní cíl se nedozví, selže-li doručení na cíl BCC.",
+        "bcc_info": "<br/>Skrytá kopie (mapa BCC) se používá pro tiché předávání kopií všech zpráv na jinou adresu. Mapa příjemců se použije, funguje-li je místní cíl jako adresát zprávy. Totéž platí pro mapy odesílatelů.<br/>\n  Místní cíl se nedozví, selže-li doručení na cíl BCC.",
         "bcc_local_dest": "Týká se",
         "bcc_map": "Skrytá kopie",
         "bcc_map_type": "Typ skryté kopie",
@@ -1005,7 +1027,8 @@
         "weekly": "Každý týden",
         "yes": "&#10003;",
         "relay_unknown": "Předávání neexistujících schránek",
-        "iam": "Poskytovatel identity"
+        "iam": "Poskytovatel identity",
+        "internal": "Interní"
     },
     "oauth2": {
         "access_denied": "K udělení přístupu se přihlašte jako vlastník mailové schránky.",
@@ -1082,7 +1105,8 @@
         "hold_mail_legend": "Podrží vybrané e-maily. (Zabrání dalším pokusům o doručení)",
         "show_message": "Zobrazit zprávu",
         "unhold_mail": "Uvolnit",
-        "unhold_mail_legend": "Uvolnit vybrané e-maily k doručení. (Pouze v případě předchozího podržení)"
+        "unhold_mail_legend": "Uvolnit vybrané e-maily k doručení. (Pouze v případě předchozího podržení)",
+        "unban": "odblokovat"
     },
     "ratelimit": {
         "disabled": "Vypnuto",
