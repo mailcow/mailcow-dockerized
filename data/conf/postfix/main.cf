@@ -152,15 +152,12 @@ smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
 smtp_sasl_security_options =
 smtp_sasl_mechanism_filter = plain, login
-smtp_tls_policy_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+smtp_tls_policy_maps = hash:/opt/postfix/conf/custom_tls_policy
 smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
 # local_transport map catches local destinations and prevents routing local dests when the next map would route "*"
 # Use custom_transport.pcre for custom transports
-transport_maps = pcre:/opt/postfix/conf/custom_transport.pcre,
-  pcre:/opt/postfix/conf/local_transport,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_relay_ne.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
+transport_maps = hash:/opt/postfix/conf/custom_transport
 smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = chunking, silent-discard, smtputf8, dsn
 smtpd_discard_ehlo_keywords = chunking, silent-discard, smtputf8
@@ -174,3 +171,27 @@ lmtp_destination_recipient_limit=1
 
 # DO NOT EDIT ANYTHING BELOW #
 # Overrides #
+
+postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
+  hostkarma.junkemailfilter.com=127.0.0.1*-2
+  list.dnswl.org=127.0.[0..255].0*-2
+  list.dnswl.org=127.0.[0..255].1*-4
+  list.dnswl.org=127.0.[0..255].2*-6
+  list.dnswl.org=127.0.[0..255].3*-8
+  bl.spamcop.net*2
+  bl.suomispam.net*2
+  hostkarma.junkemailfilter.com=127.0.0.2*3
+  hostkarma.junkemailfilter.com=127.0.0.4*2
+  hostkarma.junkemailfilter.com=127.0.1.2*1
+  backscatter.spameatingmonkey.net*2
+  bl.ipv6.spameatingmonkey.net*2
+  bl.spameatingmonkey.net*2
+  b.barracudacentral.org=127.0.0.2*7
+  bl.mailspike.net=127.0.0.2*5
+  bl.mailspike.net=127.0.0.[10;11;12]*4
+
+
+# User Overrides
+myhostname = mailc.math.cuhk.edu.hk
+smtpd_client_restrictions = permit_mynetworks, reject
+mynetworks = 127.0.0.0/8, 137.189.49.2, 137.189.49.3, 172.22.1.0/24
