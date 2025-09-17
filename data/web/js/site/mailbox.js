@@ -269,6 +269,24 @@ $(document).ready(function() {
   function setMailboxTemplateData(template){
     $("#addInputQuota").val(template.quota / 1048576);
 
+    if (template.tagged_mail_handler === "subfolder"){
+      $('#tagged_mail_handler_subfolder').prop('checked', true);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', false);
+    } else if(template.tagged_mail_handler === "subject"){
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', true);
+      $('#tagged_mail_handler_none').prop('checked', false);
+    } else if(template.tagged_mail_handler === "none"){
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', true);
+    } else {
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', true);
+    }
+
     if (template.quarantine_notification === "never"){
       $('#quarantine_notification_never').prop('checked', true);
       $('#quarantine_notification_hourly').prop('checked', false);
@@ -1932,11 +1950,6 @@ jQuery(function($){
           responsivePriority: 5,
         },
         {
-          title: lang.bcc_destinations,
-          data: 'bcc_dest',
-          defaultContent: ''
-        },
-        {
           title: lang.sogo_visible,
           data: 'sogo_visible',
           defaultContent: '',
@@ -1953,6 +1966,15 @@ jQuery(function($){
           title: lang.private_comment,
           data: 'private_comment',
           defaultContent: ''
+        },
+        {
+          title: lang.internal,
+          data: 'internal',
+          defaultContent: '',
+          responsivePriority: 6,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
         },
         {
           title: lang.active,

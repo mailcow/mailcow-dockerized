@@ -1,0 +1,199 @@
+# --------------------------------------------------------------------------
+# Please create a file "extra.cf" for persistent overrides to main.cf
+# --------------------------------------------------------------------------
+biff = no
+append_dot_mydomain = no
+smtpd_tls_cert_file = /etc/ssl/mail/cert.pem
+smtpd_tls_key_file = /etc/ssl/mail/key.pem
+tls_server_sni_maps = hash:/opt/postfix/conf/sni.map
+smtpd_tls_received_header = yes
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtpd_relay_restrictions = permit_mynetworks,
+  permit_sasl_authenticated,
+  defer_unauth_destination
+smtpd_forbid_bare_newline = yes
+# alias maps are auto-generated in postfix.sh on startup
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+relayhost =
+mynetworks_style = subnet
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+bounce_queue_lifetime = 1d
+broken_sasl_auth_clients = yes
+disable_vrfy_command = yes
+maximal_backoff_time = 1800s
+maximal_queue_lifetime = 5d
+delay_warning_time = 4h
+message_size_limit = 104857600
+milter_default_action = tempfail
+milter_protocol = 6
+minimal_backoff_time = 300s
+plaintext_reject_code = 550
+postscreen_access_list = permit_mynetworks,
+  cidr:/opt/postfix/conf/custom_postscreen_whitelist.cidr,
+  cidr:/opt/postfix/conf/postscreen_access.cidr,
+  tcp:127.0.0.1:10027
+postscreen_bare_newline_enable = no
+postscreen_blacklist_action = drop
+postscreen_cache_cleanup_interval = 24h
+postscreen_cache_map = proxy:btree:$data_directory/postscreen_cache
+postscreen_dnsbl_action = enforce
+postscreen_dnsbl_threshold = 6
+postscreen_dnsbl_ttl = 5m
+postscreen_greet_action = enforce
+postscreen_greet_banner = $smtpd_banner
+postscreen_greet_ttl = 2d
+postscreen_greet_wait = 3s
+postscreen_non_smtp_command_enable = no
+postscreen_pipelining_enable = no
+proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
+  $sender_dependent_default_transport_maps,
+  $smtp_tls_policy_maps,
+  $local_recipient_maps,
+  $mydestination,
+  $virtual_alias_maps,
+  $virtual_alias_domains,
+  $virtual_mailbox_maps,
+  $virtual_mailbox_domains,
+  $relay_recipient_maps,
+  $relay_domains,
+  $canonical_maps,
+  $sender_canonical_maps,
+  $sender_bcc_maps,
+  $recipient_bcc_maps,
+  $recipient_canonical_maps,
+  $relocated_maps,
+  $transport_maps,
+  $mynetworks,
+  $smtpd_sender_login_maps,
+  $smtp_sasl_password_maps
+queue_run_delay = 300s
+relay_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_relay_domain_maps.cf
+relay_recipient_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_relay_recipient_maps.cf
+sender_dependent_default_transport_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_dependent_default_transport_maps.cf
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+smtp_tls_cert_file = /etc/ssl/mail/cert.pem
+smtp_tls_key_file = /etc/ssl/mail/key.pem
+smtp_tls_loglevel = 1
+smtp_dns_support_level = dnssec
+smtp_tls_security_level = dane
+smtpd_data_restrictions = reject_unauth_pipelining, permit
+smtpd_delay_reject = yes
+smtpd_error_sleep_time = 10s
+smtpd_forbid_bare_newline = yes
+smtpd_hard_error_limit = ${stress?1}${stress:5}
+smtpd_helo_required = yes
+smtpd_proxy_timeout = 600s
+smtpd_recipient_restrictions = check_recipient_mx_access proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
+  permit_sasl_authenticated,
+  permit_mynetworks,
+  check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
+  reject_invalid_helo_hostname,
+  reject_unauth_destination
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_authenticated_header = yes
+smtpd_sasl_path = inet:dovecot:10001
+smtpd_sasl_type = dovecot
+smtpd_sender_login_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf
+smtpd_sender_restrictions = reject_authenticated_sender_login_mismatch,
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  reject_unlisted_sender,
+  reject_unknown_sender_domain
+smtpd_soft_error_limit = 3
+smtpd_tls_auth_only = yes
+smtpd_tls_dh1024_param_file = /etc/ssl/mail/dhparams.pem
+smtpd_tls_eecdh_grade = auto
+smtpd_tls_exclude_ciphers = ECDHE-RSA-RC4-SHA, RC4, aNULL, DES-CBC3-SHA, ECDHE-RSA-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA
+smtpd_tls_loglevel = 1
+
+# Mandatory protocols and ciphers are used when a connections is enforced to use TLS
+# Does _not_ apply to enforced incoming TLS settings per mailbox
+smtp_tls_mandatory_protocols = >=TLSv1.2
+lmtp_tls_mandatory_protocols = >=TLSv1.2
+smtpd_tls_mandatory_protocols = >=TLSv1.2
+smtpd_tls_mandatory_ciphers = high
+
+smtp_tls_protocols = >=TLSv1.2
+lmtp_tls_protocols = >=TLSv1.2
+smtpd_tls_protocols = >=TLSv1.2
+
+smtpd_tls_security_level = may
+tls_preempt_cipherlist = yes
+tls_ssl_options = NO_COMPRESSION, NO_RENEGOTIATION
+virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
+virtual_gid_maps = static:5000
+virtual_mailbox_base = /var/vmail/
+virtual_mailbox_domains = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_domains_maps.cf
+# -- moved to rspamd on 2021-06-01
+#recipient_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_bcc_maps.cf
+#sender_bcc_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sender_bcc_maps.cf
+recipient_canonical_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_recipient_canonical_maps.cf
+recipient_canonical_classes = envelope_recipient
+virtual_mailbox_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_mailbox_maps.cf
+virtual_minimum_uid = 104
+virtual_transport = lmtp:inet:dovecot:24
+virtual_uid_maps = static:5000
+smtpd_milters = inet:rspamd:9900
+non_smtpd_milters = inet:rspamd:9900
+milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+mydestination = localhost.localdomain, localhost
+smtp_address_preference = any
+smtp_sender_dependent_authentication = yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
+smtp_sasl_security_options =
+smtp_sasl_mechanism_filter = plain, login
+smtp_tls_policy_maps = hash:/opt/postfix/conf/custom_tls_policy
+smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
+mail_name = Postcow
+# local_transport map catches local destinations and prevents routing local dests when the next map would route "*"
+# Use custom_transport.pcre for custom transports
+transport_maps = hash:/opt/postfix/conf/custom_transport
+smtp_sasl_auth_soft_bounce = no
+postscreen_discard_ehlo_keywords = chunking, silent-discard, smtputf8, dsn
+smtpd_discard_ehlo_keywords = chunking, silent-discard, smtputf8
+compatibility_level = 3.7
+# Define protocols for SMTPS and submission service
+submission_smtpd_tls_mandatory_protocols = >=TLSv1.2
+smtps_smtpd_tls_mandatory_protocols = >=TLSv1.2
+parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks,qmqpd_authorized_clients
+# This Option is added to correctly set the X-Original-To Header when mails are send to lmtp (dovecot)
+lmtp_destination_recipient_limit=1
+
+# DO NOT EDIT ANYTHING BELOW #
+# Overrides #
+
+postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
+  hostkarma.junkemailfilter.com=127.0.0.1*-2
+  list.dnswl.org=127.0.[0..255].0*-2
+  list.dnswl.org=127.0.[0..255].1*-4
+  list.dnswl.org=127.0.[0..255].2*-6
+  list.dnswl.org=127.0.[0..255].3*-8
+  bl.spamcop.net*2
+  bl.suomispam.net*2
+  hostkarma.junkemailfilter.com=127.0.0.2*3
+  hostkarma.junkemailfilter.com=127.0.0.4*2
+  hostkarma.junkemailfilter.com=127.0.1.2*1
+  backscatter.spameatingmonkey.net*2
+  bl.ipv6.spameatingmonkey.net*2
+  bl.spameatingmonkey.net*2
+  b.barracudacentral.org=127.0.0.2*7
+  bl.mailspike.net=127.0.0.2*5
+  bl.mailspike.net=127.0.0.[10;11;12]*4
+  zen.spamhaus.org=127.0.0.[10;11]*8
+  zen.spamhaus.org=127.0.0.[4..7]*6
+  zen.spamhaus.org=127.0.0.3*4
+  zen.spamhaus.org=127.0.0.2*3
+
+# User Overrides
+myhostname = mailc.math.cuhk.edu.hk
+
