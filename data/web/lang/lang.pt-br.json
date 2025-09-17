@@ -359,12 +359,7 @@
         "username": "Nome de usuário",
         "validate_license_now": "Valide o GUID em relação ao servidor de licenças",
         "verify": "Verificar",
-        "yes": "✓",
-        "iam_client_id": "ID de cliente",
-        "iam_client_secret": "Senha de cliente",
-        "iam_auth_flow": "Fluxo de autenticação",
-        "iam_client_scopes": "Escopo do cliente",
-        "iam_default_template": "Template Padrão"
+        "yes": "✓"
     },
     "danger": {
         "access_denied": "Acesso negado ou dados de formulário inválidos",
@@ -513,7 +508,7 @@
         "infoFiltered": "(filtrado do total de entradas _MAX_)",
         "infoPostFix": "",
         "thousands": ",",
-        "lengthMenu": "Mostrar _MENU_ entradas",
+        "lengthMenu": "Mostrar _ MENU_ entradas",
         "loadingRecords": "Carregando...",
         "processing": "Por favor, aguarde...",
         "search": "Pesquisa:",

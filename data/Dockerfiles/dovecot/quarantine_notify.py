@@ -8,8 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 import jinja2
-from jinja2 import TemplateError
-from jinja2.sandbox import SandboxedEnvironment
+from jinja2 import Template
 import json
 import redis
 import time
@@ -76,27 +75,22 @@ try:
 
   def notify_rcpt(rcpt, msg_count, quarantine_acl, category):
     if category == "add_header": category = "add header"
-    meta_query = query_mysql('SELECT `qhash`, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f AND (action = "%s" OR "all" = "%s")' % (rcpt, max_score, category, category))
+    meta_query = query_mysql('SELECT SHA2(CONCAT(id, qid), 256) AS qhash, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f AND (action = "%s" OR "all" = "%s")' % (rcpt, max_score, category, category))
     print("%s: %d of %d messages qualify for notification" % (rcpt, len(meta_query), msg_count))
     if len(meta_query) == 0:
       return
     msg_count = len(meta_query)
-    env = SandboxedEnvironment()
     if r.get('Q_HTML'):
-        try:
-            template = env.from_string(r.get('Q_HTML'))
-        except Exception:
-            print("Error: Cannot parse quarantine template, falling back to default template.")
-            with open('/templates/quarantine.tpl') as file_:
-                template = env.from_string(file_.read())
-    else:
+      try:
+        template = Template(r.get('Q_HTML'))
+      except:
+        print("Error: Cannot parse quarantine template, falling back to default template.")
         with open('/templates/quarantine.tpl') as file_:
-            template = env.from_string(file_.read())
-    try:
-        html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=mailcow_hostname, quarantine_acl=quarantine_acl)
-    except (jinja2.exceptions.SecurityError, TemplateError) as ex:
-        print(f"SecurityError or TemplateError in template rendering: {ex}")
-        return
+          template = Template(file_.read())
+    else:
+      with open('/templates/quarantine.tpl') as file_:
+        template = Template(file_.read())
+    html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=mailcow_hostname, quarantine_acl=quarantine_acl)
     text = html2text.html2text(html)
     count = 0
     while count < 15:

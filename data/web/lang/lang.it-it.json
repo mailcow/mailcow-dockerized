@@ -353,30 +353,7 @@
         "password_settings": "Impostazioni della password",
         "queue_unban": "sblocca",
         "restore_template": "Lasciare vuoto per ripristinare il modello predefinito.",
-        "logo_normal_label": "Normale",
-        "app_hide": "Nascondi per il login",
-        "ip_check_disabled": "Il controllo IP è disabilitato. Puoi abilitarlo sotto <br><strong>Sistema > Configurazione > Opzioni > Personalizza </strong>",
-        "ip_check_opt_in": "Attiva l'utilizzo dei servizi di terze parti <strong>ipv4.mailcow.email</strong> e <strong> ipv6.mailcow.email</strong> per risolvere gli indirizzi IP esterni",
-        "iam_login_provisioning": "Creazione automatica di utenti al login",
-        "iam_port": "Porta",
-        "iam_redirect_url": "URL di reindirizzamento",
-        "iam_server_url": "URL server",
-        "iam_sso": "Single Sign-On",
-        "iam_test_connection": "Test connessione",
-        "iam_use_ssl": "Usa SSL",
-        "iam_use_tls": "Usa StartTLS",
-        "iam_version": "Versione",
-        "ignore_ssl_error": "Ignorare gli errori SSL",
-        "task": "Attività",
-        "login_page": "Pagina di accesso",
-        "filter": "Filtro",
-        "iam_attribute_field": "Campo attributo",
-        "iam_authorize_url": "Endpoint di autorizzazione",
-        "iam_auth_flow": "Flusso di autenticazione",
-        "iam_client_id": "ID cliente",
-        "iam_default_template": "Template predefinito",
-        "iam_host": "Host",
-        "iam_import_users": "Importa utenti"
+        "logo_normal_label": "Normale"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -507,11 +484,7 @@
         "password_reset_invalid_user": "La casella di posta elettronica non è stata trovata o non è stata impostata un'e-mail di recupero",
         "password_reset_na": "Il recupero della password non è attualmente disponibile. Contattare l'amministratore.",
         "recovery_email_failed": "Impossibile inviare un'e-mail di recupero. Contattare l'amministratore.",
-        "to_invalid": "Il destinatario non deve essere vuoto",
-        "iam_test_connection": "Connessione non riuscita",
-        "webauthn_authenticator_failed": "L'autenticator selezionato non è stato trovato",
-        "webauthn_username_failed": "L'authenticator selezionato appartiene ad un altro account",
-        "webauthn_publickey_failed": "Nessuna chiave pubblica è stata salvata per l'authenticator selezionato"
+        "to_invalid": "Il destinatario non deve essere vuoto"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -682,10 +655,7 @@
         "domain_footer_html": "Piè di pagina HTML",
         "domain_footer_plain": "Piè di pagina PLAIN",
         "footer_exclude": "Escludi dal piè di pagina",
-        "password_recovery_email": "E-mail di recupero password",
-        "mailbox_rename": "Rinominare la casella mail",
-        "mailbox_rename_agree": "Ho creato un backup.",
-        "mailbox_rename_alias": "Creare alias automaticamente"
+        "password_recovery_email": "E-mail di recupero password"
     },
     "fido2": {
         "confirm": "Conferma",
@@ -747,11 +717,7 @@
         "forgot_password": "> Password dimenticata?",
         "new_password": "Nuova password",
         "new_password_confirm": "Conferma la nuova password",
-        "reset_password": "Ripristino della password",
-        "login_linkstext": "Non è il login corretto?",
-        "login_usertext": "Accedere come utente",
-        "login_domainadmintext": "Accedere come domain admin",
-        "login_admintext": "Accedere come admin"
+        "reset_password": "Ripristino della password"
     },
     "mailbox": {
         "action": "Azione",

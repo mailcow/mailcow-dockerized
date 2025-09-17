@@ -16,6 +16,7 @@ RUN apk add --update \
   fcgi \
   openssl \
   nagios-plugins-mysql \
+  nagios-plugins-dns \
   nagios-plugins-disk \
   bind-tools \
   redis \
@@ -31,11 +32,9 @@ RUN apk add --update \
   tzdata \
   whois \
   && curl https://raw.githubusercontent.com/mludvig/smtp-cli/v3.10/smtp-cli -o /smtp-cli \
-  && chmod +x smtp-cli \
-  && mkdir /usr/lib/mailcow
+  && chmod +x smtp-cli
 
 COPY watchdog.sh /watchdog.sh
 COPY check_mysql_slavestatus.sh /usr/lib/nagios/plugins/check_mysql_slavestatus.sh
-COPY check_dns.sh /usr/lib/mailcow/check_dns.sh
 
 CMD ["/watchdog.sh"]

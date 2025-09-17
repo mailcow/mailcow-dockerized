@@ -56,7 +56,7 @@ function normalize_email($email) {
     $email = explode('@', $email);
     $email[0] = str_replace('.', '', $email[0]);
     $email = implode('@', $email);
-  }
+  } 
   $gm_alt = "@googlemail.com";
   if (substr_compare($email, $gm_alt, -strlen($gm_alt)) == 0) {
     $email = explode('@', $email);
@@ -114,7 +114,7 @@ function ucl_rcpts($object, $type) {
       $rcpt[] = str_replace('/', '\/', $row['address']);
     }
     // Aliases by alias domains
-    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox`
+    $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias` FROM `mailbox` 
       LEFT OUTER JOIN `alias_domain` ON `mailbox`.`domain` = `alias_domain`.`target_domain`
       WHERE `mailbox`.`username` = :object");
     $stmt->execute(array(
@@ -184,7 +184,7 @@ while ($row = array_shift($rows)) {
     rcpt = <?=json_encode($rcpt, JSON_UNESCAPED_SLASHES);?>;
 <?php
   }
-  $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf`
+  $stmt = $pdo->prepare("SELECT `option`, `value` FROM `filterconf` 
     WHERE (`option` = 'highspamlevel' OR `option` = 'lowspamlevel')
       AND `object`= :object");
   $stmt->execute(array(':object' => $row['object']));
@@ -468,36 +468,4 @@ while ($row = array_shift($rows)) {
 <?php
 }
 ?>
-
-<?php
-// Start internal aliases
-
-$stmt = $pdo->query("SELECT `id`, `address`, `domain` FROM `alias` WHERE `active` = '1' AND `internal` = '1'");
-$aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-while ($alias = array_shift($aliases)) {
-  // build allowed_domains regex and add target domain and alias domains
-  $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `active` = '1' AND `target_domain` = :target_domain");
-  $stmt->execute(array(':target_domain' => $alias['domain']));
-  $allowed_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  $allowed_domains = array_map(function($item) {
-    return str_replace('.', '\.', $item['alias_domain']);
-  }, $allowed_domains);
-  $allowed_domains[] = str_replace('.', '\.', $alias['domain']);
-  $allowed_domains = implode('|', $allowed_domains);
-?>
-  internal_alias_<?=$alias['id'];?> {
-    priority = 10;
-    rcpt = "<?=$alias['address'];?>";
-    from = "/^((?!.*@(<?=$allowed_domains;?>)).)*$/";
-    apply "default" {
-      MAILCOW_INTERNAL_ALIAS = 9999.0;
-    }
-    symbols [
-      "MAILCOW_INTERNAL_ALIAS"
-    ]
-  }
-<?php
-}
-?>
-
 }

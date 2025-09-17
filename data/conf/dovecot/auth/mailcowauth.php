@@ -86,7 +86,7 @@ if ($result === false){
     'remote_addr' => $post['real_rip']
   ));
   if ($result) {
-    error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
+    error_log('MAILCOWAUTH: App auth for user ' . $post['username']);
     set_sasl_log($post['username'], $post['real_rip'], $post['service']);
   }
 }
@@ -94,9 +94,9 @@ if ($result === false){
   // Init Identity Provider
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');
-  $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']));
+  $result = user_login($post['username'], $post['password'], array('is_internal' => true));
   if ($result) {
-    error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
+    error_log('MAILCOWAUTH: User auth for user ' . $post['username']);
     set_sasl_log($post['username'], $post['real_rip'], $post['service']);
   }
 }
@@ -105,7 +105,7 @@ if ($result) {
   http_response_code(200); // OK
   $return['success'] = true;
 } else {
-  error_log("MAILCOWAUTH: Login failed for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
+  error_log("MAILCOWAUTH: Login failed for user " . $post['username']);
   http_response_code(401); // Unauthorized
 }
 

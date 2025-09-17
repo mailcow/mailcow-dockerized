@@ -166,7 +166,6 @@
   var lang_danger = {{ lang_danger|raw }};
   var docker_timeout = {{ docker_timeout|raw }} * 1000;
   var mailcow_cc_role = '{{ mailcow_cc_role }}';
-  {% if mailcow_cc_username %}
   var mailcow_info = {
     version_tag: '{{ mailcow_info.version_tag }}',
     last_version_tag: '{{ mailcow_info.last_version_tag }}',
@@ -176,17 +175,6 @@
     project_repo: '{{ mailcow_info.git_repo }}',
     branch: '{{ mailcow_info.mailcow_branch }}'
   };
-  {% else %}
-  var mailcow_info = {
-    version_tag: '',
-    last_version_tag: '',
-    updatedAt: '',
-    project_url: '',
-    project_owner: '',
-    project_repo: '',
-    branch: ''
-  };
-  {% endif %}
 
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();

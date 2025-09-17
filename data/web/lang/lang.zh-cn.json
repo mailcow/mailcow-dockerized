@@ -390,22 +390,12 @@
         "iam_username_field": "Username 域",
         "iam_binddn": "Bind DN",
         "iam_use_ssl": "使用 SSL",
-        "iam_use_tls": "使用  StartTLS",
+        "iam_use_tls": "使用 TLS",
         "iam_version": "版本",
         "ignore_ssl_error": "忽略 SSL 错误",
         "iam_auth_flow_info": "除了在单点登录（SSO）中使用的 Authorization Code 流程（在 Keycloak 中是标准流程）之外，mailcow 还支持使用 Credentials 的身份认证流程。Mailpassword 流程尝试通过 Keycloak 的 Admin REST API 验证用户凭据，mailcow 会从 Keycloak 中的 <code>mailcow_password</code> 属性中获取哈希后的密码。",
         "filter": "过滤",
-        "iam_extra_permission": "要使以下设置生效，Keycloak 中的 mailcow 客户端需要一个 <code>服务账户（Service account）</code> 以及 <code>查看用户（view-users）</code> 的权限。",
-        "domainadmin_quicklink": "隐藏指向域管理员登陆页面的快捷链接",
-        "force_sso_text": "如果配置了外部的 OIDC 认证，这个选项隐藏默认的 mailcow 登陆界面，只显示单点登录（SSO）的按钮",
-        "iam_login_provisioning": "登录时自动创建用户",
-        "login_page": "登陆页面",
-        "iam_use_ssl_info": "如果使用了 SSL，且端口被设置为 389，该端口将自动被覆盖为 636。",
-        "quicklink_text": "显示或隐藏登陆表单下面指向其他登陆页面的快捷链接",
-        "user_quicklink": "隐藏指向用户登陆页面的快捷链接",
-        "admin_quicklink": "隐藏指向管理员登陆页面的快捷链接",
-        "force_sso": "强制要求单点登录（SSO）",
-        "user_link": "自定义链接"
+        "iam_extra_permission": "要使以下设置生效，Keycloak 中的 mailcow 客户端需要一个 <code>服务账户（Service account）</code> 以及 <code>查看用户（view-users）</code> 的权限。"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -691,7 +681,7 @@
         "sieve_desc": "简短描述",
         "sieve_type": "过滤器类型",
         "skipcrossduplicates": "跳过其他文件夹中已存在的邮件(保留已经存在的邮件)",
-        "sogo_access": "直接转到 SOGo",
+        "sogo_access": "直接转发给 SOGo",
         "sogo_access_info": "登录后，用户会自动跳转到 SOGo。",
         "sogo_visible": "SOGo 显示的别名",
         "sogo_visible_info": "此设置只影响 SOGo 上可显示的对象 (指向本地邮箱的共享或非共享别名地址)。如果设置为隐藏，则别名地址不会作为可选发件人的下拉项显示。",
@@ -798,11 +788,7 @@
         "invalid_pass_reset_token": "密码重置 token 无效或已过期。<br> 请重新获取新的密码重置链接。",
         "login_user": "用户登录",
         "login_dadmin": "域管理员登录",
-        "login_admin": "管理员登录",
-        "login_linkstext": "不是正确的登陆页面？",
-        "login_usertext": "以用户身份登陆",
-        "login_domainadmintext": "以域管理员身份登陆",
-        "login_admintext": "以管理员身份登陆"
+        "login_admin": "管理员登录"
     },
     "mailbox": {
         "action": "操作",
@@ -906,7 +892,7 @@
         "recipient_map": "收件人映射",
         "recipient_map_info": "收件人映射用于在邮件被发送前替换收件人的地址。",
         "recipient_map_new": "新收件人",
-        "recipient_map_new_info": "收件人映射的目标必须为合法的邮件地址或域名。",
+        "recipient_map_new_info": "新收件人必须为合法的邮箱地址。",
         "recipient_map_old": "原收件人",
         "recipient_map_old_info": "原收件人必须为合法的邮箱地址。",
         "recipient_maps": "收件人映射",
@@ -1157,8 +1143,7 @@
         "template_added": "新增了模板 %s",
         "template_modified": "模板 %s 的修改已保存",
         "template_removed": "模板 ID %s 已删除",
-        "iam_test_connection": "连接成功",
-        "custom_login_modified": "登陆选项保存成功"
+        "iam_test_connection": "连接成功"
     },
     "tfa": {
         "api_register": "%s 使用了 Yubico Cloud API，请<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">在此</a>为你的密钥获取 API 密钥",

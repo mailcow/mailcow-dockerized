@@ -117,7 +117,7 @@
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
-                      <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
+                      <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control mb-4">
                         {% for rlyhost in rlyhosts %}
                           <option
                             style="{% if rlyhost.active != '1' %}background: #ff4136; color: #fff{% endif %}"
@@ -131,34 +131,7 @@
                         </option>
                       </select>
                       <p class="d-block d-sm-none" style="margin: 0;padding: 0">&nbsp;</p>
-                      <small class="text-muted d-block mb-4">{{ lang.edit.mailbox_relayhost_info }}</small>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <label class="control-label col-sm-2">{{ lang.user.tag_handling }}</label>
-                    <div class="col-sm-10">
-                      <div class="btn-group" data-acl="{{ acl.delimiter_action }}">
-                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'subfolder' %} btn-dark{% else %} btn-light{% endif %}"
-                        data-action="edit_selected"
-                        data-item="{{ mailbox }}"
-                        data-id="delimiter_action"
-                        data-api-url='edit/delimiter_action'
-                        data-api-attr='{"tagged_mail_handler":"subfolder"}'>{{ lang.user.tag_in_subfolder }}</button>
-                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'subject' %} btn-dark{% else %} btn-light{% endif %}"
-                        data-action="edit_selected"
-                        data-item="{{ mailbox }}"
-                        data-id="delimiter_action"
-                        data-api-url='edit/delimiter_action'
-                        data-api-attr='{"tagged_mail_handler":"subject"}'>{{ lang.user.tag_in_subject }}</button>
-                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'none' %} btn-dark{% else %} btn-light{% endif %}"
-                        data-action="edit_selected"
-                        data-item="{{ mailbox }}"
-                        data-id="delimiter_action"
-                        data-api-url='edit/delimiter_action'
-                        data-api-attr='{"tagged_mail_handler":"none"}'>{{ lang.user.tag_in_none }}</button>
-                      </div>
-                      <p class="text-muted"><small>{{ lang.user.tag_help_explain|raw }}</small></p>
-                      <p class="text-muted"><small>{{ lang.user.tag_help_example|raw }}</small></p>
+                      <small class="text-muted d-block">{{ lang.edit.mailbox_relayhost_info }}</small>
                     </div>
                   </div>
                   <div class="row mb-2">

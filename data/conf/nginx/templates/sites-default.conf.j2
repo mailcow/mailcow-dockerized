@@ -76,14 +76,6 @@ location ^~ /.well-known/acme-challenge/ {
     allow all;
     default_type "text/plain";
 }
-location ^~ /.well-known/mta-sts.txt {
-    allow all;
-    fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_pass {{ PHPFPMHOST }}:9002;
-    include /etc/nginx/fastcgi_params;
-    fastcgi_param SCRIPT_FILENAME $document_root/mta-sts.php;
-    fastcgi_param PATH_INFO $fastcgi_path_info;
-}
 
 rewrite ^/.well-known/caldav$ /SOGo/dav/ permanent;
 rewrite ^/.well-known/carddav$ /SOGo/dav/ permanent;

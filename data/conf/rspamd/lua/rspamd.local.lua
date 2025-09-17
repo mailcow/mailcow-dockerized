@@ -102,7 +102,7 @@ rspamd_config:register_symbol({
       local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
       if #rcpt_split == 2 then
         if rcpt_split[1] == 'postmaster' then
-          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
+          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt')
           return
         end
       end
@@ -167,7 +167,7 @@ rspamd_config:register_symbol({
         for k,v in pairs(data) do
           if (v and v ~= userdata and v == '1') then
             rspamd_logger.infox(rspamd_config, "found ip in keep_spam map, setting pre-result")
-            task:set_pre_result('accept', 'ip matched with forward hosts', 'keep_spam')
+            task:set_pre_result('accept', 'ip matched with forward hosts')
           end
         end
       end
@@ -454,17 +454,11 @@ rspamd_config:register_symbol({
     local redis_params = rspamd_parse_redis_server('dyn_rl')
     local rspamd_logger = require "rspamd_logger"
     local envfrom = task:get_from(1)
-    local envrcpt = task:get_recipients(1) or {}
     local uname = task:get_user()
     if not envfrom or not uname then
       return false
     end
-
     local uname = uname:lower()
-
-    if #envrcpt == 1 and envrcpt[1].addr:lower() == uname then
-      return false
-    end
 
     local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
 
@@ -550,13 +544,13 @@ rspamd_config:register_symbol({
     -- determine newline type
     local function newline(task)
       local t = task:get_newlines_type()
-
+    
       if t == 'cr' then
         return '\r'
       elseif t == 'lf' then
         return '\n'
       end
-
+    
       return '\r\n'
     end
     -- retrieve footer
@@ -564,7 +558,7 @@ rspamd_config:register_symbol({
       if err or type(data) ~= 'string' then
         rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
       else
-
+        
         -- parse json string
         local footer = cjson.decode(data)
         if not footer then
@@ -613,30 +607,26 @@ rspamd_config:register_symbol({
             if footer.plain and footer.plain ~= "" then
               footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
             end
-
+  
             -- add footer
             local out = {}
             local rewrite = lua_mime.add_text_footer(task, footer.html, footer.plain) or {}
-
+        
             local seen_cte
             local newline_s = newline(task)
-
+        
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
                 if name:lower() == 'content-type' then
-                  -- include boundary if present
-                  local boundary_part = rewrite.new_ct.boundary and
-                    string.format('; boundary="%s"', rewrite.new_ct.boundary) or ''
-                  local nct = string.format('%s: %s/%s; charset=utf-8%s',
-                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)
+                  local nct = string.format('%s: %s/%s; charset=utf-8',
+                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype)
                   out[#out + 1] = nct
-                  -- update Content-Type header (include boundary if present)
+                  -- update Content-Type header
                   task:set_milter_reply({
                     remove_headers = {['Content-Type'] = 0},
                   })
                   task:set_milter_reply({
-                    add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8%s',
-                      rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)}
+                    add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8', rewrite.new_ct.type, rewrite.new_ct.subtype)}
                   })
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
@@ -655,16 +645,16 @@ rspamd_config:register_symbol({
               end
               out[#out + 1] = hdr.raw:gsub('\r?\n?$', '')
             end
-
+        
             task:headers_foreach(rewrite_ct_cb, {full = true})
-
+        
             if not seen_cte and rewrite.need_rewrite_ct then
               out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
             end
-
+        
             -- End of headers
             out[#out + 1] = newline_s
-
+        
             if rewrite.out then
               for _,o in ipairs(rewrite.out) do
                 out[#out + 1] = o

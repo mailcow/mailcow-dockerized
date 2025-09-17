@@ -22,7 +22,7 @@ function quarantine($_action, $_data = null) {
         return false;
       }
       $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
-        WHERE `qhash` = :hash
+        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
           AND user_acl.quarantine = 1
           AND rcpt IN (SELECT username FROM mailbox)');
       $stmt->execute(array(':hash' => $hash));
@@ -65,7 +65,7 @@ function quarantine($_action, $_data = null) {
         return false;
       }
       $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
-        WHERE `qhash` = :hash
+        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
           AND `user_acl`.`quarantine` = 1
           AND `username` IN (SELECT `username` FROM `mailbox`)');
       $stmt->execute(array(':hash' => $hash));
@@ -833,7 +833,7 @@ function quarantine($_action, $_data = null) {
         )));
         return false;
       }
-      $stmt = $pdo->prepare('SELECT * FROM `quarantine` WHERE `qhash` = :hash');
+      $stmt = $pdo->prepare('SELECT * FROM `quarantine` WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash');
       $stmt->execute(array(':hash' => $hash));
       return $stmt->fetch(PDO::FETCH_ASSOC);
     break;

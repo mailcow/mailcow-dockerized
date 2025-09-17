@@ -8,7 +8,7 @@ fi
 
 # Cleaning up garbage
 echo "Cleaning up tmp files..."
-rm -rf /var/lib/clamav/tmp.*
+rm -rf /var/lib/clamav/clamav-*.tmp
 
 # Prepare whitelist
 

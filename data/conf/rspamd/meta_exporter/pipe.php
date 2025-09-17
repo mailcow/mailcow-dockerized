@@ -236,9 +236,6 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       ':action' => $action,
       ':fuzzy_hashes' => $fuzzy
     ));
-    $lastId = $pdo->lastInsertId();
-    $stmt_update = $pdo->prepare("UPDATE `quarantine` SET `qhash` = SHA2(CONCAT(`id`, `qid`), 256) WHERE `id` = :id");
-    $stmt_update->execute(array(':id' => $lastId));
     $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
       SELECT `id`
       FROM (

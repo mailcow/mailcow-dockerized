@@ -86,8 +86,7 @@ if [[ "${SKIP_OLEFY}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     rm /etc/rspamd/local.d/external_services.conf
   fi
 else
-  if [[ ! -f /etc/rspamd/local.d/external_services.conf ]]; then
-    cat <<EOF > /etc/rspamd/local.d/external_services.conf
+  cat <<EOF > /etc/rspamd/local.d/external_services.conf
 oletools {
   # default olefy settings
   servers = "olefy:10055";
@@ -101,7 +100,6 @@ oletools {
   retransmits = 1;
 }
 EOF
-  fi
 fi
 
 # Provide additional lua modules

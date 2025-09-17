@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 import jinja2
-from jinja2.sandbox import SandboxedEnvironment
+from jinja2 import Template
 import redis
 import time
 import json
@@ -33,24 +33,16 @@ while True:
 
 if r.get('QW_HTML'):
   try:
-    env = SandboxedEnvironment()
-    template = env.from_string(r.get('QW_HTML'))
-  except Exception:
-    print("Error: Cannot parse quota template, falling back to default template.")
+    template = Template(r.get('QW_HTML'))
+  except:
+    print("Error: Cannot parse quarantine template, falling back to default template.")
     with open('/templates/quota.tpl') as file_:
-      env = SandboxedEnvironment()
-      template = env.from_string(file_.read())
+      template = Template(file_.read())
 else:
   with open('/templates/quota.tpl') as file_:
-    env = SandboxedEnvironment()
-    template = env.from_string(file_.read())
+    template = Template(file_.read())
 
-try:
-  html = template.render(username=username, percent=percent)
-except (jinja2.exceptions.SecurityError, jinja2.TemplateError) as ex:
-  print(f"SecurityError or TemplateError in template rendering: {ex}")
-  sys.exit(1)
-
+html = template.render(username=username, percent=percent)
 text = html2text.html2text(html)
 
 try:

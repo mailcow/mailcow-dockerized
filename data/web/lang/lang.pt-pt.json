@@ -1,7 +1,7 @@
 {
     "add": {
         "active": "Ativo",
-        "add": "Guardar",
+        "add": "Salvar",
         "alias_address": "Apelidos:",
         "alias_address_info": "<small>Endereço de email completo ou @example.com, para uma conta coringa -catch all. (separado por vírgula). <b>apenas domínios cadastrados</b>.</small>",
         "alias_domain": "Encaminhamento de Domínio",
@@ -17,7 +17,7 @@
         "max_mailboxes": "Máximo de contas:",
         "password": "Senha:",
         "password_repeat": "Confirmar a senha (repetir):",
-        "port": "Porta",
+        "port": "Port",
         "quota_mb": "Espaço (MiB):",
         "relay_all": "Relay para todas as contas",
         "relay_all_info": "<small>Se <b>não</b> selecionar para retransmitir todas as contas, você deve adicionar uma (\"blind\") para cada conta que será direcionada.</small>",
@@ -27,26 +27,13 @@
         "target_address": "Encaminhar para:",
         "target_address_info": "<small>Endereço de email completo (separado por vírgulas).</small>",
         "target_domain": "Domínio de Destino:",
-        "username": "Nome de utilizador",
-        "app_name": "Nome da App",
-        "destination": "Destino",
-        "generate": "gerar",
-        "private_comment": "Comentário privado",
-        "inactive": "Inativo",
-        "public_comment": "Comentário público",
-        "sieve_desc": "Breve descrição",
-        "sieve_type": "Tipo de filtro",
-        "subscribeall": "Subscrever todas as pastas",
-        "syncjob": "Adicionar sincronização",
-        "validate": "Validar",
-        "validation_success": "Validado com sucesso",
-        "app_passwd_protocols": "Protocolos permitidos para senha de aplicação"
+        "username": "Administrador"
     },
     "admin": {
         "access": "Acessos",
         "action": "Ação",
         "active": "Ativo",
-        "add": "Adicionar",
+        "add": "Salvar",
         "add_domain_admin": "Adicionar administrador de domínio(s)",
         "admin": "Administrador",
         "admin_details": "Editar informações do administrator",
@@ -71,47 +58,7 @@
         "search_domain_da": "Selecione o(s) domínio(s)",
         "spamfilter": "Filtro de Spam",
         "unchanged_if_empty": "Deixar em branco para não alterar",
-        "username": "Administrador",
-        "add_row": "Adicionar linha",
-        "add_transport": "Adicionar transporte",
-        "change_logo": "Alterar logo",
-        "filter": "Filtro",
-        "iam_port": "Porta",
-        "iam_use_ssl": "Usar SSL",
-        "iam_version": "Versão",
-        "import": "Importar",
-        "import_private_key": "Importar chave privada",
-        "message": "Mensagem",
-        "dkim_private_key": "Chave privada",
-        "customize": "Personalizar",
-        "destination": "Destino",
-        "dkim_from": "De",
-        "activate_api": "Ativar API",
-        "add_admin": "Adicionar administrador",
-        "admins": "Administradores",
-        "advanced_settings": "Configurações avançadas",
-        "api_key": "Chave API",
-        "api_read_only": "Acesso leitura",
-        "api_read_write": "Acesso leitura e escrita",
-        "login_page": "Página de login",
-        "dkim_key_missing": "Chave em falta",
-        "dkim_key_valid": "Chave válida",
-        "dkim_to": "Para",
-        "domain_admin": "Administrador de dominio",
-        "domain_s": "Dominio(s)",
-        "duplicate": "Duplicar",
-        "duplicate_dkim": "Duplicar registo DKIM",
-        "empty": "Sem resultados",
-        "excludes": "Excluir estes recipientes",
-        "f2b_filter": "Filtros de regex",
-        "from": "De",
-        "generate": "gerar",
-        "html": "HTML",
-        "iam_import_users": "Importar Utilizadores",
-        "ui_header_announcement_content": "Texto (HTML permitido)",
-        "ui_footer": "Rodapé (HTML permitido)",
-        "activate_send": "Ativar botão de envio",
-        "help_text": "Anular texto de ajuda abaixo da máscara de login (HTML permitido)"
+        "username": "Administrador"
     },
     "danger": {
         "access_denied": "Acesso negado ou dados inválidos",
@@ -150,10 +97,7 @@
         "target_domain_invalid": "O endereço de Domínio Destino é inválido",
         "targetd_not_found": "Domínio de Destino não encontrado",
         "username_invalid": "Nome de utilizador inválido",
-        "validity_missing": "Você deve definir um período de validade",
-        "comment_too_long": "Comentário demasiado longo, máximo 160 chars permitidos",
-        "ip_list_empty": "Lista de IPs permitidos não pode estar vazia",
-        "last_key": "A última tecla não pode ser apagada, por favor desactivar a TFA."
+        "validity_missing": "Você deve definir um período de validade"
     },
     "edit": {
         "active": "Ativo",
@@ -185,9 +129,7 @@
         "target_domain": "Domínio de Destino:",
         "title": "Editar dos Objetos",
         "unchanged_if_empty": "Deixar em branco para não modificar",
-        "username": "Administrador",
-        "app_passwd_protocols": "Protocolos permitidos para palavra-passe de aplicação",
-        "allowed_protocols": "Protocolos permitidos para acesso direto do utilizador (não afeta os protocolos de palavra-passe da aplicação)"
+        "username": "Administrador"
     },
     "footer": {
         "loading": "Aguarde..."
@@ -244,15 +186,11 @@
         "target_domain": "Domínio Destino",
         "tls_enforce_in": "Forçar TLS na entrada",
         "tls_enforce_out": "Forçar TLS na saída",
-        "username": "Utilizador",
-        "allowed_protocols": "Protocolos permitidos",
-        "activate": "Ativar",
-        "deactivate": "Desativar"
+        "username": "Utilizador"
     },
     "quarantine": {
         "action": "Ação",
-        "remove": "Remover",
-        "check_hash": "Pesquisar hash de ficheiro @ VT"
+        "remove": "Remover"
     },
     "queue": {
         "queue_manager": "Queue Manager"
@@ -331,31 +269,6 @@
         "user_settings": "Configurações do utilizador",
         "username": "Administrador",
         "week": "Semana",
-        "weeks": "Semanas",
-        "aliases_also_send_as": "Também autorizado a enviar como utilizador",
-        "app_hint": "As senhas de aplicação são senhas alternativas para o seu login IMAP, SMTP, CalDAV, CardDAV e EAS. O nome de utilizador permanece inalterado. O webmail SOGo não está disponível através de passwords de aplicação.",
-        "allowed_protocols": "Protocolos permitidos"
-    },
-    "acl": {
-        "tls_policy": "Política de TLS",
-        "quarantine_attachments": "Anexos de quarentena",
-        "filters": "Filtros",
-        "smtp_ip_access": "Mudar anfitriões permitidos para SMTP"
-    },
-    "warning": {
-        "no_active_admin": "Não é possível desactivar o último administrador activo"
-    },
-    "tfa": {
-        "u2f_deprecated": "Parece que a sua chave foi registada usando o método U2F depreciado. Desactivaremos dois factores-autenticação para si e apagaremos a sua Chave.",
-        "none": "Desativar"
-    },
-    "datatables": {
-        "search": "Procurar:",
-        "info": "A mostrar _START_ a _END_ de _TOTAL_ entradas",
-        "infoEmpty": "A mostrar 0 a 0 de 0 entradas",
-        "aria": {
-            "sortAscending": ": activar para ordenar a coluna ascendente",
-            "sortDescending": ": activar para ordenar a coluna descendente"
-        }
+        "weeks": "Semanas"
     }
 }

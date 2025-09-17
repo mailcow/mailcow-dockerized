@@ -48,12 +48,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           $rl = ratelimit('get', 'domain', $domain);
           $rlyhosts = relayhost('get');
           $domain_footer = mailbox('get', 'domain_wide_footer', $domain);
-          $mta_sts = mailbox('get', 'mta_sts', $domain);
-          if (count($mta_sts) == 0) {
-            $mta_sts = false;
-          } elseif (isset($mta_sts['mx'])) {
-            $mta_sts['mx'] = implode(',', $mta_sts['mx']);
-          }
           $template = 'edit/domain.twig';
           $template_data = [
             'acl' => $_SESSION['acl'],
@@ -64,7 +58,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'dkim' => dkim('details', $domain),
             'domain_details' => $result,
             'domain_footer' => $domain_footer,
-            'mta_sts' => $mta_sts,
             'mailboxes' => mailbox('get', 'mailboxes', $_GET["domain"]),
             'aliases' => mailbox('get', 'aliases', $_GET["domain"], 'address'),
             'alias_domains' => mailbox('get', 'alias_domains', $_GET["domain"])
@@ -132,7 +125,6 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'mailbox' => $mailbox,
           'rl' => $rl,
           'pushover_data' => $pushover_data,
-          'get_tagging_options' => mailbox('get', 'delimiter_action', $mailbox),
           'quarantine_notification' => $quarantine_notification,
           'quarantine_category' => $quarantine_category,
           'get_tls_policy' => $get_tls_policy,

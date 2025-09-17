@@ -2,8 +2,7 @@
     "acl": {
         "sogo_profile_reset": "Usuń profil SOGo (webmail)",
         "syncjobs": "Polecenie synchronizacji",
-        "alias_domains": "Dodaj aliasy domen",
-        "delimiter_action": "Akcja oparta na separatorze"
+        "alias_domains": "Dodaj aliasy domen"
     },
     "add": {
         "active": "Aktywny",
