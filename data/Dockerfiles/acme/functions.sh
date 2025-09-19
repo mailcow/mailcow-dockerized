@@ -84,7 +84,8 @@ check_domain(){
     if [[ ! -z ${AAAA_DOMAIN} ]] && [[ -z $(echo ${AAAA_DOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
       AAAA_DOMAIN=
     fi
-    if [[ ! -z ${AAAA_DOMAIN} ]]; then
+    # Check for AAAA record first if we have IPv6, but ignore if the IP for v6 did not work properly (=0000:0000:0000:0000:0000:0000:0000:0000)
+    if [[ ! -z ${AAAA_DOMAIN} ]] && [[ ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"} != "0000:0000:0000:0000:0000:0000:0000:0000" ]]; then
       log_f "Found AAAA record for ${DOMAIN}: ${AAAA_DOMAIN} - skipping A record check"
       if [[ $(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"}) == $(expand ${AAAA_DOMAIN}) ]] || [[ ${SKIP_IP_CHECK} == "y" ]] || [[ ${SNAT6_TO_SOURCE} != "n" ]]; then
         if verify_challenge_path "${DOMAIN}" 6; then
