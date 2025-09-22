@@ -436,6 +436,10 @@ MAILDIR_SUB=Maildir
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
 
+# SOGo URL encryption key (exactly 16 characters, limited to A–Z, a–z, 0–9)
+# This key is used to encrypt email addresses within SOGo URLs
+SOGO_URL_ENCRYPTION_KEY=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 16)
+
 # DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
 # Empty by default to auto-generate master user and password on start.
 # User expands to DOVECOT_MASTER_USER@mailcow.local
