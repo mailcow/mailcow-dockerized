@@ -17,7 +17,12 @@ caller="${BASH_SOURCE[1]##*/}"
 
 get_installed_tools(){
     for bin in openssl curl docker git awk sha1sum grep cut jq; do
-        if [[ -z $(command -v ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
+        if [[ -z $(command -v ${bin}) ]]; then
+          echo "Error: Cannot find command '${bin}'. Cannot proceed."
+          echo "Solution: Please install accordingly and re-run the script."
+          echo "Exiting..."
+          exit 1
+        fi
     done
 
     if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\"${NC}"; exit 1; fi
