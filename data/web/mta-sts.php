@@ -6,7 +6,8 @@ if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'], 'mta-sts.') !
   exit;
 }
 
-$domain = str_replace('mta-sts.', '', $_SERVER['HTTP_HOST']);
+$host = preg_replace('/:[0-9]+$/', '', $_SERVER['HTTP_HOST']);
+$domain = str_replace('mta-sts.', '', $host);
 $mta_sts = mailbox('get', 'mta_sts', $domain);
 
 if (count($mta_sts) == 0 ||
