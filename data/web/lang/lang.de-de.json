@@ -1020,7 +1020,7 @@
         "legend": "Funktionen der Mailqueue Aktionen:",
         "ays": "Soll die derzeitige Queue wirklich komplett bereinigt werden?",
         "deliver_mail": "Ausliefern",
-        "deliver_mail_legend": "Versucht eine erneute Zustellung der ausgwählten Mails.",
+        "deliver_mail_legend": "Versucht eine erneute Zustellung der ausgewählten Mails.",
         "hold_mail": "Zurückhalten",
         "hold_mail_legend": "Hält die ausgewählten Mails zurück. (Verhindert weitere Zustellversuche)",
         "queue_manager": "Queue Manager",
