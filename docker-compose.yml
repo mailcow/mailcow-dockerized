@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.135
+      image: ghcr.io/mailcow/sogo:1.136
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
