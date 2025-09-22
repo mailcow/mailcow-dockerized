@@ -1446,7 +1446,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           foreach ($mx as $index => $mx_domain) {
             $mx_domain = idn_to_ascii(strtolower(trim($mx_domain)), 0, INTL_IDNA_VARIANT_UTS46);
-            if (!is_valid_domain_name($mx_domain)) {
+            if (!is_valid_domain_name($mx_domain, array('allow_wildcard' => true))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data, $_attr),
@@ -3897,7 +3897,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             foreach ($mx as $index => $mx_domain) {
               $mx_domain = idn_to_ascii(strtolower(trim($mx_domain)), 0, INTL_IDNA_VARIANT_UTS46);
               $invalid_mx = false;
-              if (!is_valid_domain_name($mx_domain)) {
+              if (!is_valid_domain_name($mx_domain, array('allow_wildcard' => true))) {
                 $invalid_mx = $mx_domain;
                 break;
               }
