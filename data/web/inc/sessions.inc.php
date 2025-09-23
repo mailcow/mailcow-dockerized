@@ -1,6 +1,7 @@
 <?php
 // Start session
 if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_name('MCSESSID');
   ini_set("session.cookie_httponly", 1);
   ini_set("session.cookie_samesite", "Lax");
   ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
