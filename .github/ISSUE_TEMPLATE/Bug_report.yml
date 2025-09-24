@@ -14,18 +14,18 @@ body:
       label: Checklist prior issue creation
       description: Prior to creating the issue...
       options:
-        - label: I understand that failure to follow below instructions may cause this issue to be closed.
-          required: true
-        - label: I understand that vague, incomplete or inaccurate information may cause this issue to be closed.
-          required: true
-        - label: I understand that this form is intended solely for reporting software bugs and not for support-related inquiries.
-          required: true
-        - label: I understand that all responses are voluntary and community-driven, and do not constitute commercial support.
-          required: true
-        - label: I confirm that I have reviewed previous [issues](https://github.com/mailcow/mailcow-dockerized/issues) to ensure this matter has not already been addressed.
-          required: true
-        - label: I confirm that my environment meets all [prerequisite requirements](https://docs.mailcow.email/getstarted/prerequisite-system/) as specified in the official documentation.
-          required: true
+      - label: I understand that failure to follow below instructions may cause this issue to be closed.
+        required: true
+      - label: I understand that vague, incomplete or inaccurate information may cause this issue to be closed.
+        required: true
+      - label: I understand that this form is intended solely for reporting software bugs and not for support-related inquiries.
+        required: true
+      - label: I understand that all responses are voluntary and community-driven, and do not constitute commercial support.
+        required: true
+      - label: I confirm that I have reviewed previous [issues](https://github.com/mailcow/mailcow-dockerized/issues) to ensure this matter has not already been addressed.
+        required: true
+      - label: I confirm that my environment meets all [prerequisite requirements](https://docs.mailcow.email/getstarted/prerequisite-system/) as specified in the official documentation.
+        required: true
   - type: textarea
     attributes:
       label: Description
