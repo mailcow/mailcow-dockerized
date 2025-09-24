@@ -19,7 +19,8 @@ get_installed_tools(){
     for bin in openssl curl docker git awk sha1sum grep cut jq; do
         if [[ -z $(command -v ${bin}) ]]; then
           echo "Error: Cannot find command '${bin}'. Cannot proceed."
-          echo "Solution: Please install accordingly and re-run the script."
+          echo "Solution: Please review system requirements and install requirements. Then, re-run the script."
+          echo "See System Requirements: https://docs.mailcow.email/getstarted/install/"
           echo "Exiting..."
           exit 1
         fi
