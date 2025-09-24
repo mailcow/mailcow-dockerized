@@ -11,22 +11,35 @@ body:
         required: true
   - type: checkboxes
     attributes:
-      label: I've found a bug and checked that ...
-      description: Prior to placing the issue, please check following:** *(fill out each checkbox with an `X` once done)*
+      label: Checklist prior issue creation
+      description: Prior to creating the issue...
       options:
-      - label: ... I understand that not following the below instructions will result in immediate closure and/or deletion of my issue.
-        required: true
-      - label: ... I have understood that this bug report is dedicated for bugs, and not for support-related inquiries.
-        required: true
-      - label: ... I have understood that answers are voluntary and community-driven, and not commercial support.
-        required: true
-      - label: ... I have verified that my issue has not been already answered in the past. I also checked previous [issues](https://github.com/mailcow/mailcow-dockerized/issues).
-        required: true
+        - label: I understand that failure to follow below instructions may cause this issue to be closed.
+          required: true
+        - label: I understand that vague, incomplete or inaccurate information may cause this issue to be closed.
+          required: true
+        - label: I understand that this form is intended solely for reporting software bugs and not for support-related inquiries.
+          required: true
+        - label: I understand that all responses are voluntary and community-driven, and do not constitute commercial support.
+          required: true
+        - label: I confirm that I have reviewed previous [issues](https://github.com/mailcow/mailcow-dockerized/issues) to ensure this matter has not already been addressed.
+          required: true
+        - label: I confirm that my environment meets all [prerequisite requirements](https://docs.mailcow.email/getstarted/prerequisite-system/) as specified in the official documentation.
+          required: true
   - type: textarea
     attributes:
       label: Description
-      description: Please provide a brief description of the bug in 1-2 sentences. If applicable, add screenshots to help explain your problem. Very useful for bugs in mailcow UI.
-      render: plain text
+      description: Please provide a brief description of the bug. If applicable, add screenshots to help explain your problem. (Very useful for bugs in mailcow UI.)
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Steps to reproduce:"
+      description: "Please describe the steps to reproduce the bug. Screenshots can be added, if helpful."
+      placeholder: |-
+        1. ...
+        2. ...
+        3. ...
     validations:
       required: true
   - type: textarea
@@ -36,45 +49,36 @@ body:
       render: plain text
     validations:
       required: true
-  - type: textarea
-    attributes:
-      label: "Steps to reproduce:"
-      description: "Please describe the steps to reproduce the bug. Screenshots can be added, if helpful."
-      render: plain text
-      placeholder: |-
-        1. ...
-        2. ...
-        3. ...
-    validations:
-      required: true
   - type: markdown
     attributes:
       value: |
         ## System information
-        ### In this stage we would kindly ask you to attach general system information about your setup.
+        In this stage we would kindly ask you to attach general system information about your setup.
   - type: dropdown
     attributes:
       label: "Which branch are you using?"
-      description: "#### `git rev-parse --abbrev-ref HEAD`"
+      description: "#### Run: `git rev-parse --abbrev-ref HEAD`"
       multiple: false
       options:
-        - master
+        - master (stable)
+        - staging
         - nightly
     validations:
       required: true
   - type: dropdown
     attributes:
       label: "Which architecture are you using?"
-      description: "#### `uname -m`"
+      description: "#### Run: `uname -m`"
       multiple: false
       options:
-        - x86
+        - x86_64
         - ARM64 (aarch64)
     validations:
       required: true
   - type: input
     attributes:
       label: "Operating System:"
+      description: "#### Run: `lsb_release -ds`"
       placeholder: "e.g. Ubuntu 22.04 LTS"
     validations:
       required: true
@@ -93,43 +97,44 @@ body:
   - type: input
     attributes:
       label: "Virtualization technology:"
-      placeholder: "KVM, VMware, Xen, etc - **LXC and OpenVZ are not supported**"
+      description: "LXC and OpenVZ are not supported!"
+      placeholder: "KVM, VMware ESXi, Xen, etc"
     validations:
       required: true
   - type: input
     attributes:
       label: "Docker version:"
-      description: "#### `docker version`"
+      description: "#### Run: `docker version`"
       placeholder: "20.10.21"
     validations:
       required: true
   - type: input
     attributes:
       label: "docker-compose version or docker compose version:"
-      description: "#### `docker-compose version` or `docker compose version`"
+      description: "#### Run: `docker-compose version` or `docker compose version`"
       placeholder: "v2.12.2"
     validations:
       required: true
   - type: input
     attributes:
       label: "mailcow version:"
-      description: "#### ```git describe --tags `git rev-list --tags --max-count=1` ```"
-      placeholder: "2022-08"
+      description: "#### Run: ```git describe --tags `git rev-list --tags --max-count=1` ```"
+      placeholder: "2022-08x"
     validations:
       required: true
   - type: input
     attributes:
       label: "Reverse proxy:"
-      placeholder: "e.g. Nginx/Traefik"
+      placeholder: "e.g. nginx/Traefik, or none"
     validations:
       required: true
   - type: textarea
     attributes:
       label: "Logs of git diff:"
-      description: "#### Output of `git diff origin/master`, any other changes to the code? If so, **please post them**:"
+      description: "#### Output of `git diff origin/master`, any other changes to the code? Sanitize if needed. If so, **please post them**:"
       render: plain text
     validations:
-      required: true
+      required: false
   - type: textarea
     attributes:
       label: "Logs of iptables -L -vn:"
