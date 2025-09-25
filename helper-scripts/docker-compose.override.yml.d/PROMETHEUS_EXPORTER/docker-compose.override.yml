@@ -7,7 +7,7 @@ services:
       environment:
         MAILCOW_EXPORTER_HOST: "<your-mail-domain>" # Replace with your Mailcow hostname
         MAILCOW_EXPORTER_API_KEY: "<your-API-Key>" # Replace with your API key
-        MAILCOW_EXPORTER_TOKEN: "<your-secure-token>" # Replace with your secure key
+        MAILCOW_EXPORTER_SECURITY_TOKEN: "<your-secure-token>" # Replace with your secure key
         # MAILCOW_EXPORTER_TOKEN_DISABLE: "true" # Uncomment only if it is safe to disable token authentication (e.g., internal network only)
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
