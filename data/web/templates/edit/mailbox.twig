@@ -325,7 +325,7 @@
                   <div class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified|default(lang.user.never) }}</small>
                     </div>
                   </div>
                 </form>
