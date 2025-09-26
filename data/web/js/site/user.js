@@ -169,7 +169,6 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/time_limited_aliases",
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (acl_data.spam_alias === 1) {
               item.action = '<div class="btn-group">' +
@@ -262,7 +261,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
@@ -418,7 +416,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/app-passwd/all',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             item.name = escapeHtml(item.name)
             item.protocols = []
@@ -514,7 +511,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/policy_wl_mailbox',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
@@ -585,7 +581,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/policy_bl_mailbox',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';
