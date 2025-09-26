@@ -48,7 +48,11 @@ $(document).ready(function() {
     })
   }
   $(".rot-enc").html(function(){
-    return str_rot13($(this).text())
+    footer_html = $(this).html();
+    footer_html = footer_html.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                             .replace(/&amp;/g, '&').replace(/&nzc;/g, '&')
+                             .replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
+    return str_rot13(footer_html)
   });
   // https://stackoverflow.com/questions/4399005/implementing-jquerys-shake-effect-with-animate
   function shake(div,interval,distance,times) {
