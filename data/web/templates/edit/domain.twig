@@ -39,7 +39,7 @@
                   <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
                     <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" name="description" value="{{ result.description }}">
+                      <input type="text" class="form-control" name="description" value="{{ result.description }}"{% if acl.domain_desc == '0' %} readonly{% endif %}>
                     </div>
                   </div>
                   <div class="row mb-4">
