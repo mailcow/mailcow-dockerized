@@ -58,6 +58,7 @@
                       </div>
                     </div>
                   </div>
+                  {% if acl.domain_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
@@ -76,6 +77,7 @@
                       </select>
                     </div>
                   </div>
+                  {% endif %}
                   {% if mailcow_cc_role == 'admin' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
