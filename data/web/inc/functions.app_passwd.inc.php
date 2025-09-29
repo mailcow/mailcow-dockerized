@@ -95,8 +95,8 @@ function app_passwd($_action, $_data = null) {
         $is_now = app_passwd('details', $id);
         if (!empty($is_now)) {
           $app_name = (!empty($_data['app_name'])) ? $_data['app_name'] : $is_now['name'];
-          $password = (!empty($_data['password'])) ? $_data['password'] : null;
-          $password2 = (!empty($_data['password2'])) ? $_data['password2'] : null;
+          $password = (!empty($_data['app_passwd'])) ? $_data['app_passwd'] : null;
+          $password2 = (!empty($_data['app_passwd2'])) ? $_data['app_passwd2'] : null;
           if (isset($_data['protocols'])) {
             $protocols = (array)$_data['protocols'];
             $imap_access = (in_array('imap_access', $protocols)) ? 1 : 0;
