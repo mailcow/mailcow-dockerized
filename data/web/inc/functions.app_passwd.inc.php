@@ -1,7 +1,7 @@
 <?php
 function app_passwd($_action, $_data = null) {
-	global $pdo;
-	global $lang;
+  global $pdo;
+  global $lang;
   $_data_log = $_data;
   !isset($_data_log['app_passwd']) ?: $_data_log['app_passwd'] = '*';
   !isset($_data_log['app_passwd2']) ?: $_data_log['app_passwd2'] = '*';
@@ -43,20 +43,7 @@ function app_passwd($_action, $_data = null) {
         );
         return false;
       }
-      if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'password_complexity'
-        );
-        return false;
-      }
-      if ($password != $password2) {
-        $_SESSION['return'][] = array(
-          'type' => 'danger',
-          'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'password_mismatch'
-        );
+      if (password_check($password, $password2) !== true) {
         return false;
       }
       $password_hashed = hash_password($password);
@@ -88,7 +75,7 @@ function app_passwd($_action, $_data = null) {
         'log' => array(__FUNCTION__, $_action, $_data_log),
         'msg' => 'app_passwd_added'
       );
-    break;
+      break;
     case 'edit':
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
@@ -126,20 +113,7 @@ function app_passwd($_action, $_data = null) {
         }
         $app_name = htmlspecialchars(trim($app_name));
         if (!empty($password) && !empty($password2)) {
-          if (!preg_match('/' . $GLOBALS['PASSWD_REGEP'] . '/', $password)) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'password_complexity'
-            );
-            continue;
-          }
-          if ($password != $password2) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'password_mismatch'
-            );
+          if (password_check($password, $password2) !== true) {
             continue;
           }
           $password_hashed = hash_password($password);
@@ -182,7 +156,7 @@ function app_passwd($_action, $_data = null) {
           'msg' => array('object_modified', htmlspecialchars(implode(', ', $ids)))
         );
       }
-    break;
+      break;
     case 'delete':
       $ids = (array)$_data['id'];
       foreach ($ids as $id) {
@@ -213,19 +187,17 @@ function app_passwd($_action, $_data = null) {
           'msg' => array('app_passwd_removed', htmlspecialchars($id))
         );
       }
-    break;
+      break;
     case 'get':
       $app_passwds = array();
       $stmt = $pdo->prepare("SELECT `id`, `name` FROM `app_passwd` WHERE `mailbox` = :username");
       $stmt->execute(array(':username' => $username));
       $app_passwds = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $app_passwds;
-    break;
+      break;
     case 'details':
       $app_passwd_data = array();
-      $stmt = $pdo->prepare("SELECT *
-          FROM `app_passwd`
-            WHERE `id` = :id");
+      $stmt = $pdo->prepare("SELECT * FROM `app_passwd` WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));
       $app_passwd_data = $stmt->fetch(PDO::FETCH_ASSOC);
       if (empty($app_passwd_data)) {
@@ -237,6 +209,6 @@ function app_passwd($_action, $_data = null) {
       }
       $app_passwd_data['name'] = htmlspecialchars(trim($app_passwd_data['name']));
       return $app_passwd_data;
-    break;
+      break;
   }
 }
