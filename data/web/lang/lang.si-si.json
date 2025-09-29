@@ -749,7 +749,7 @@
         "sogo_access": "Neposredno posredovanje na SOGo",
         "sogo_access_info": "Po prijavi je uporabnik samodejno preusmerjen na SOGo.",
         "sogo_visible": "Vzdevek je viden v SOGo",
-        "sogo_visible_info": "Ta možnost vpliva samo na objekte, ki jih je mogoče prikazati v SOGo (naslovi aliasov v skupni rabi ali brez nje, ki kažejo na vsaj en lokalni poštni predal). Če je skrita, vzdevek ne bo prikazan kot izbirni pošiljatelj v SOGo.",
+        "sogo_visible_info": "Ta možnost vpliva samo na objekte, ki jih je mogoče prikazati v SOGo (naslovi vzdevkov v skupni rabi ali brez nje, ki kažejo na vsaj en lokalni poštni predal). Če je skrita, vzdevek ne bo prikazan kot izbirni pošiljatelj v SOGo.",
         "spam_alias": "Ustvarjanje ali spreminjanje časovno omejenih vzdevkovnih naslovov",
         "spam_filter": "Filter neželene pošte",
         "spam_policy": "Dodajanje ali odstranjevanje elementov na seznam dovoljenih/zavrnjenih",
@@ -783,7 +783,7 @@
         "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
     },
     "footer": {
-        "restart_container_info": "<b>Pomembno:</b> Ugoden ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
+        "restart_container_info": "<b>Pomembno:</b> Eleganten ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
         "delete_these_items": "Prosimo, potrdite spremembe naslednjega ID-ja objekta",
         "confirm_delete": "Potrdi brisanje",
         "delete_now": "Izbriši zdaj",
