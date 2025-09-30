@@ -7,6 +7,8 @@ if(file_exists('inc/vars.local.inc.php')) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.auth.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
