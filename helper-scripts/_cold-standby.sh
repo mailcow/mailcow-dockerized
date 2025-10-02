@@ -117,7 +117,7 @@ fi
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${SCRIPT_DIR}/../mailcow.conf"
 COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
-CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd 'A-Za-z-_')
+CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd '0-9A-Za-z-_')
 SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
 
 preflight_local_checks
@@ -169,7 +169,7 @@ if ! ssh -o StrictHostKeyChecking=no \
   -i "${REMOTE_SSH_KEY}" \
   ${REMOTE_SSH_HOST} \
   -p ${REMOTE_SSH_PORT} \
-  ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" create 2>&1 ; then
+  "cd \"${SCRIPT_DIR}/../\" && ${COMPOSE_COMMAND} create 2>&1" ; then
     >&2 echo -e "\e[31m[ERR]\e[0m - Could not create networks, volumes and containers on remote"
 fi
 
@@ -284,7 +284,7 @@ echo "OK"
     -i "${REMOTE_SSH_KEY}" \
     ${REMOTE_SSH_HOST} \
     -p ${REMOTE_SSH_PORT} \
-    ${COMPOSE_COMMAND} -f "${SCRIPT_DIR}/../docker-compose.yml" pull --quiet 2>&1 ; then
+    "cd \"${SCRIPT_DIR}/../\" && ${COMPOSE_COMMAND} pull --quiet 2>&1" ; then
       >&2 echo -e "\e[31m[ERR]\e[0m - Could not pull images on remote"
   fi
 
