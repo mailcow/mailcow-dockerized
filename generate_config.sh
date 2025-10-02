@@ -243,14 +243,14 @@ COMPOSE_PROJECT_NAME=mailcowdockerized
 
 # Used Docker Compose version
 # Switch here between native (compose plugin) and standalone
-# For more informations take a look at the mailcow docs regarding the configuration options.
+# For more information take a look at the mailcow docs regarding the configuration options.
 # Normally this should be untouched but if you decided to use either of those you can switch it manually here.
 # Please be aware that at least one of those variants should be installed on your machine or mailcow will fail.
 DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
-# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+# This should probably only be activated on mail hosts, that are used exclusively by one organisation.
 # Otherwise a user might share data with too many other users.
 ACL_ANYONE=disallow
 
@@ -293,7 +293,7 @@ ADDITIONAL_SERVER_NAMES=
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
 
-# Create seperate certificates for all domains - y/n
+# Create separate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
 # see https://doc.dovecot.org/admin_manual/ssl/sni_support
 ENABLE_SSL_SNI=n
@@ -327,7 +327,7 @@ FTS_HEAP=128
 
 # Controls how many processes the Dovecot indexing process can spawn at max.
 # Too many indexing processes can use a lot of CPU and Disk I/O.
-# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
+# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more information
 FTS_PROCS=1
 
 # Allow admins to log into SOGo as email user (without any password)
