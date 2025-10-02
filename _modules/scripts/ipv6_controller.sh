@@ -155,6 +155,7 @@ docker_daemon_edit(){
     fi
 
     if [[ $ans =~ ^[Yy]$ ]]; then
+      mkdir -p "$(dirname "$DOCKER_DAEMON_CONFIG")"
       if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
         cat > "$DOCKER_DAEMON_CONFIG" <<EOF
 {
