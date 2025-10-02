@@ -114,6 +114,7 @@
                       <small class="text-muted d-block">{{ lang.edit.sender_acl_info|raw }}</small>
                     </div>
                   </div>
+                  {% if acl.mailbox_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
@@ -134,6 +135,7 @@
                       <small class="text-muted d-block mb-4">{{ lang.edit.mailbox_relayhost_info }}</small>
                     </div>
                   </div>
+                  {% endif %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.user.tag_handling }}</label>
                     <div class="col-sm-10">
@@ -325,7 +327,7 @@
                   <div class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified|default(lang.user.never) }}</small>
                     </div>
                   </div>
                 </form>
