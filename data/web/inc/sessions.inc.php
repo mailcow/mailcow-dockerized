@@ -1,7 +1,9 @@
 <?php
 // Start session
 if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_name($SESSION_NAME);
   ini_set("session.cookie_httponly", 1);
+  ini_set("session.cookie_samesite", $SESSION_SAMESITE_POLICY);
   ini_set('session.gc_maxlifetime', $SESSION_LIFETIME);
 }
 

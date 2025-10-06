@@ -109,7 +109,9 @@
         "username": "用户名",
         "validate": "验证",
         "validation_success": "验证成功",
-        "dry": "模拟同步（Dry run）"
+        "dry": "模拟同步（Dry run）",
+        "internal_info": "内部的别名只能在域内部或者别名域内部访问。",
+        "internal": "内部的"
     },
     "admin": {
         "access": "权限管理",
@@ -405,7 +407,9 @@
         "user_quicklink": "隐藏指向用户登陆页面的快捷链接",
         "admin_quicklink": "隐藏指向管理员登陆页面的快捷链接",
         "force_sso": "强制要求单点登录（SSO）",
-        "user_link": "自定义链接"
+        "user_link": "自定义链接",
+        "app_hide": "在登入界面隐藏",
+        "needs_restart": "需要重启"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
@@ -546,7 +550,11 @@
         "generic_server_error": "服务器错误。请联系您的管理员。",
         "authsource_in_use": "由于当前有一个或多个用户正在使用该身份提供者（IDP），因此无法更改或删除。",
         "iam_test_connection": "连接失败",
-        "required_data_missing": "缺少需要的 %s 数据"
+        "required_data_missing": "缺少需要的 %s 数据",
+        "max_age_invalid": "最大有效时间 %s 无效",
+        "mode_invalid": "模式 %s 无效",
+        "mx_invalid": "MX 记录 %s 无效",
+        "version_invalid": "版本 %s 无效"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -732,7 +740,11 @@
         "domain_footer_skip_replies": "在回信中忽略 footer",
         "footer_exclude": "从 footer 中排除",
         "last_modified": "上次修改时间",
-        "pushover_sound": "声音"
+        "pushover_sound": "声音",
+        "internal": "内部的",
+        "internal_info": "内部的别名只能在域内部或者别名域内部访问。",
+        "mta_sts": "邮件传输代理严格传输安全协议（MTA-STS）",
+        "mta_sts_version": "版本"
     },
     "fido2": {
         "confirm": "确认",
@@ -978,7 +990,8 @@
         "relay_unknown": "转发未知信箱",
         "templates": "模板",
         "template": "模板",
-        "iam": "身份提供者（IDP）"
+        "iam": "身份提供者（IDP）",
+        "internal": "内部的"
     },
     "oauth2": {
         "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权。",

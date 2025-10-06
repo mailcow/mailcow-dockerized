@@ -153,6 +153,13 @@ $LOG_PAGINATION_SIZE = 50;
 // Session lifetime in seconds
 $SESSION_LIFETIME = 10800;
 
+// Session SameSite Policy
+// Use "None", "Lax" or "Strict"
+$SESSION_SAMESITE_POLICY = "Lax";
+
+// Name of the session cookie
+$SESSION_NAME = "MCSESSID";
+
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 

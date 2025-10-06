@@ -73,7 +73,7 @@ elseif (isset($_GET['login'])) {
           ':remote_addr' => ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'])
         ));
         // redirect to sogo (sogo will get the correct credentials via nginx auth_request
-        header("Location: /SOGo/so/{$login}");
+        header("Location: /SOGo/so/");
         exit;
       }
     }
@@ -91,10 +91,7 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
-  // extract email address from "/SOGo/so/user@domain/xy"
-  $url_parts = explode("/", $_SERVER['HTTP_X_ORIGINAL_URI']);
   $email_list = array(
-      $url_parts[3],                                // Requested mailbox
       ($_SESSION['mailcow_cc_username'] ?? ''),     // Current user
       ($_SESSION["dual-login"]["username"] ?? ''),  // Dual login user
   );

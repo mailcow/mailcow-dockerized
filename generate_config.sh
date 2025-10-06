@@ -172,7 +172,6 @@ cat << EOF > mailcow.conf
 # example.org is _not_ a valid hostname, use a fqdn here.
 # Default admin user is "admin"
 # Default password is "moohoo"
-
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
@@ -183,19 +182,16 @@ MAILCOW_PASS_SCHEME=BLF-CRYPT
 # ------------------------------
 # SQL database configuration
 # ------------------------------
-
 DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-
 DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
 # ------------------------------
 # REDIS configuration
 # ------------------------------
-
 REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
 # ------------------------------
@@ -210,7 +206,6 @@ REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # Example: HTTP_BIND=1.2.3.4
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
-
 HTTP_PORT=80
 HTTP_BIND=
 
@@ -218,14 +213,13 @@ HTTPS_PORT=443
 HTTPS_BIND=
 
 # Redirect HTTP connections to HTTPS - y/n
-HTTP_REDIRECT=n
+HTTP_REDIRECT=y
 
 # ------------------------------
 # Other bindings
 # ------------------------------
 # You should leave that alone
 # Format: 11.22.33.44:25 or 12.34.56.78:465 etc.
-
 SMTP_PORT=25
 SMTPS_PORT=465
 SUBMISSION_PORT=587
@@ -241,25 +235,22 @@ REDIS_PORT=127.0.0.1:7654
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
 # Use the column named 'TZ identifier' + pay attention for the column named 'Notes'
-
 TZ=${MAILCOW_TZ}
 
 # Fixed project name
 # Please use lowercase letters only
-
 COMPOSE_PROJECT_NAME=mailcowdockerized
 
 # Used Docker Compose version
 # Switch here between native (compose plugin) and standalone
-# For more informations take a look at the mailcow docs regarding the configuration options.
+# For more information take a look at the mailcow docs regarding the configuration options.
 # Normally this should be untouched but if you decided to use either of those you can switch it manually here.
 # Please be aware that at least one of those variants should be installed on your machine or mailcow will fail.
-
 DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
-# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+# This should probably only be activated on mail hosts, that are used exclusively by one organisation.
 # Otherwise a user might share data with too many other users.
 ACL_ANYONE=disallow
 
@@ -267,7 +258,6 @@ ACL_ANYONE=disallow
 # Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring
 # How long should objects remain in the garbage until they are being deleted? (value in minutes)
 # Check interval is hourly
-
 MAILDIR_GC_TIME=7200
 
 # Additional SAN for the certificate
@@ -282,8 +272,6 @@ MAILDIR_GC_TIME=7200
 #ADDITIONAL_SAN=srv1.example.net
 # ...or combine wildcard and static names:
 #ADDITIONAL_SAN=imap.*,srv1.example.com
-#
-
 ADDITIONAL_SAN=
 
 # Obtain certificates for autodiscover.* and autoconfig.* domains.
@@ -300,65 +288,52 @@ AUTODISCOVER_SAN=y
 # If the server name does not match a known site, Nginx decides by best-guess and may redirect users to the wrong web root.
 # You can understand this as server_name directive in Nginx.
 # Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f
-
 ADDITIONAL_SERVER_NAMES=
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
-
 SKIP_LETS_ENCRYPT=n
 
-# Create seperate certificates for all domains - y/n
+# Create separate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
 # see https://doc.dovecot.org/admin_manual/ssl/sni_support
 ENABLE_SSL_SNI=n
 
 # Skip IPv4 check in ACME container - y/n
-
 SKIP_IP_CHECK=n
 
 # Skip HTTP verification in ACME container - y/n
-
 SKIP_HTTP_VERIFICATION=n
 
 # Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n
-
 SKIP_UNBOUND_HEALTHCHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
-
 SKIP_CLAMD=${SKIP_CLAMD}
 
 # Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n
-
 SKIP_OLEFY=n
 
 # Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
-
 SKIP_SOGO=n
 
 # Skip FTS (Fulltext Search) for Dovecot on low-memory, low-threaded systems or if you simply want to disable it.
 # Dovecot inside mailcow use Flatcurve as FTS Backend.
-
 SKIP_FTS=n
 
 # Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.
 # Flatcurve (Xapian backend) is used as the FTS Indexer. It is supposed to be efficient in CPU and RAM consumption.
 # However: Please always monitor your Resource consumption!
-
 FTS_HEAP=128
 
 # Controls how many processes the Dovecot indexing process can spawn at max.
 # Too many indexing processes can use a lot of CPU and Disk I/O.
-# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
-
+# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more information
 FTS_PROCS=1
 
 # Allow admins to log into SOGo as email user (without any password)
-
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers
-
 USE_WATCHDOG=y
 
 # Send watchdog notifications by mail (sent from watchdog@MAILCOW_HOSTNAME)
@@ -367,7 +342,6 @@ USE_WATCHDOG=y
 # 2. Mails are sent unsigned (no DKIM)
 # 3. If you use DMARC, create a separate DMARC policy ("v=DMARC1; p=none;" in _dmarc.MAILCOW_HOSTNAME)
 # Multiple rcpts allowed, NO quotation marks, NO spaces
-
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
 
@@ -398,25 +372,20 @@ WATCHDOG_EXTERNAL_CHECKS=n
 WATCHDOG_VERBOSE=n
 
 # Max log lines per service to keep in Redis logs
-
 LOG_LINES=9999
 
 # Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
 # Use private IPv4 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv4_addresses
-
 IPV4_NETWORK=172.22.1
 
 # Internal IPv6 subnet in fc00::/7
 # Use private IPv6 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv6_addresses
-
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 # Use this IPv4 for outgoing connections (SNAT)
-
 #SNAT_TO_SOURCE=
 
 # Use this IPv6 for outgoing connections (SNAT)
-
 #SNAT6_TO_SOURCE=
 
 # Create or override an API key for the web UI
@@ -435,6 +404,10 @@ MAILDIR_SUB=Maildir
 
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
+
+# SOGo URL encryption key (exactly 16 characters, limited to A–Z, a–z, 0–9)
+# This key is used to encrypt email addresses within SOGo URLs
+SOGO_URL_ENCRYPTION_KEY=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 16)
 
 # DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
 # Empty by default to auto-generate master user and password on start.

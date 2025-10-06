@@ -43,6 +43,7 @@ adapt_new_options() {
   "ALLOW_ADMIN_EMAIL_LOGIN"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
+  "SOGO_URL_ENCRYPTION_KEY"
   "REDIS_PORT"
   "REDISPASS"
   "DOVECOT_MASTER_USER"
@@ -94,7 +95,6 @@ adapt_new_options() {
             echo '# Max log lines per service to keep in Redis logs' >> mailcow.conf
             echo "LOG_LINES=9999" >> mailcow.conf
             ;;
-
         IPV4_NETWORK)
             echo '# Internal IPv4 /24 subnet, format n.n.n. (expands to n.n.n.0/24)' >> mailcow.conf
             echo "IPV4_NETWORK=172.22.1" >> mailcow.conf
@@ -276,21 +276,22 @@ adapt_new_options() {
             echo '# A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.' >> mailcow.conf
             echo ENABLE_IPV6=${IPV6_BOOL} >> mailcow.conf
             ;;
-
         SKIP_CLAMD)
             echo '# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n' >> mailcow.conf
             echo 'SKIP_CLAMD=n' >> mailcow.conf
             ;;
-
         SKIP_OLEFY)
             echo '# Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n' >> mailcow.conf
             echo 'SKIP_OLEFY=n' >> mailcow.conf
             ;;
-
         REDISPASS)
             echo "REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 28)" >> mailcow.conf
             ;;
-
+        SOGO_URL_ENCRYPTION_KEY)
+            echo '# SOGo URL encryption key (exactly 16 characters, limited to A–Z, a–z, 0–9)' >> mailcow.conf
+            echo '# This key is used to encrypt email addresses within SOGo URLs' >> mailcow.conf
+            echo "SOGO_URL_ENCRYPTION_KEY=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 16)" >> mailcow.conf
+            ;;
         *)
             echo "${option}=" >> mailcow.conf
             ;;
