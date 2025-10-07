@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19082025_1436";
+    $db_version = "07102025_1015";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1335,6 +1335,14 @@ function init_db_schema()
     foreach ($views as $view => $create) {
       $pdo->query("DROP VIEW IF EXISTS `" . $view . "`;");
       $pdo->query($create);
+    }
+
+    // Clear old app_passwd log entries
+    if ($db_version == "07102025_1015") {
+      $pdo->query("DELETE FROM logs
+        WHERE JSON_EXTRACT(`call`, '$[0]') = 'app_passwd'
+          AND JSON_EXTRACT(`call`, '$[1]') = 'edit'
+          AND role != 'unauthenticated';");
     }
 
     // Mitigate imapsync argument injection issue
