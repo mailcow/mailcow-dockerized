@@ -715,7 +715,6 @@ jQuery(function($){
     $('.app_hide').off('change');
     $('.app_hide').on('change', function (e) {
       var value = $(this).is(':checked') ? '1' : '0';
-      console.log(value)
       $(this).parent().children(':first-child').val(value);
     })
   }

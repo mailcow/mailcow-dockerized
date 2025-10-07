@@ -1107,11 +1107,21 @@ function user_get_alias_details($username) {
   }
   return $data;
 }
-function is_valid_domain_name($domain_name) {
+function is_valid_domain_name($domain_name, $options = array()) {
   if (empty($domain_name)) {
     return false;
   }
+
+  // Convert domain name to ASCII for validation
   $domain_name = idn_to_ascii($domain_name, 0, INTL_IDNA_VARIANT_UTS46);
+
+  if (isset($options['allow_wildcard']) && $options['allow_wildcard'] == true) {
+    // Remove '*.' if wildcard subdomains are allowed
+    if (strpos($domain_name, '*.') === 0) {
+      $domain_name = substr($domain_name, 2);
+    }
+  }
+
   return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain_name)
        && preg_match("/^.{1,253}$/", $domain_name)
        && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));

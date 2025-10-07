@@ -39,7 +39,7 @@
                   <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
                     <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" name="description" value="{{ result.description }}">
+                      <input type="text" class="form-control" name="description" value="{{ result.description }}"{% if acl.domain_desc == '0' %} readonly{% endif %}>
                     </div>
                   </div>
                   <div class="row mb-4">
@@ -58,6 +58,7 @@
                       </div>
                     </div>
                   </div>
+                  {% if acl.domain_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
@@ -76,6 +77,7 @@
                       </select>
                     </div>
                   </div>
+                  {% endif %}
                   {% if mailcow_cc_role == 'admin' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
@@ -147,7 +149,7 @@
                   <div class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified|default(lang.user.never) }}</small>
                     </div>
                   </div>
                 </form>
@@ -293,7 +295,7 @@
                   <input type="hidden" value="0" name="active">
                   <input type="hidden" value="{{ domain }}" name="domain">
                   <div class="row mb-2">
-                    <label class="control-label col-sm-2" for="version"> 
+                    <label class="control-label col-sm-2" for="version">
                       <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_version_info|raw }}"></i>
                       {{ lang.edit.mta_sts_version }}
                     </label>
