@@ -1345,6 +1345,7 @@ function update_stats(timeout=5){
 
   window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
     return response.json();
+  }).then(function(data) {
     if (data){
       // display table data
       $("#host_date").text(data.system_time);
