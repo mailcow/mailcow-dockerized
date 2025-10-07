@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.135
+      image: ghcr.io/mailcow/sogo:1.136
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -213,6 +213,7 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - SOGO_EXPIRE_SESSION=${SOGO_EXPIRE_SESSION:-480}
+        - SOGO_URL_ENCRYPTION_KEY=${SOGO_URL_ENCRYPTION_KEY:-SOGoSuperSecret0}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - MASTER=${MASTER:-y}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
@@ -418,7 +419,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.04
+      image: ghcr.io/mailcow/nginx:1.05
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

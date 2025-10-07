@@ -10,7 +10,7 @@ def includes_conf(env, template_vars):
   server_name_config = f"server_name {template_vars['MAILCOW_HOSTNAME']} autodiscover.* autoconfig.* {' '.join(template_vars['ADDITIONAL_SERVER_NAMES'])};"
   listen_plain_config = f"listen {template_vars['HTTP_PORT']};"
   listen_ssl_config = f"listen {template_vars['HTTPS_PORT']};"
-  if not template_vars['ENABLE_IPV6']:
+  if template_vars['ENABLE_IPV6']:
     listen_plain_config += f"\nlisten [::]:{template_vars['HTTP_PORT']};"
     listen_ssl_config += f"\nlisten [::]:{template_vars['HTTPS_PORT']} ssl;"
   listen_ssl_config += "\nhttp2 on;"
