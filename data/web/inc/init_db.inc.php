@@ -1338,12 +1338,12 @@ function init_db_schema()
     }
 
     // Clear old app_passwd log entries
-    if ($db_version == "07102025_1015") {
-      $pdo->query("DELETE FROM logs
-        WHERE JSON_EXTRACT(`call`, '$[0]') = 'app_passwd'
-          AND JSON_EXTRACT(`call`, '$[1]') = 'edit'
-          AND role != 'unauthenticated';");
-    }
+    $pdo->exec("DELETE FROM logs
+      WHERE role != 'unauthenticated'
+        AND JSON_EXTRACT(`call`, '$[0]') = 'app_passwd'
+        AND JSON_EXTRACT(`call`, '$[1]') = 'edit'
+        AND (JSON_CONTAINS_PATH(`call`, 'one', '$[2].password')
+          OR JSON_CONTAINS_PATH(`call`, 'one', '$[2].password2'));");
 
     // Mitigate imapsync argument injection issue
     $pdo->query("UPDATE `imapsync` SET `custom_params` = ''
