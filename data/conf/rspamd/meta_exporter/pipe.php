@@ -216,6 +216,25 @@ foreach (json_decode($rcpts, true) as $rcpt) {
     http_response_code(502);
     exit;
   }
+
+  // In case there's no final recipient, see if we can insert it into the admin quarantine for review (relayed domains mostly)
+  if (empty($rcpt_final_mailboxes)) {
+    try {
+      $stmt = $pdo->prepare("SELECT `relay_all_recipients` FROM `domain` WHERE `domain` = :domain AND `relay_all_recipients` = '1'");
+      $stmt->execute(array(':domain' => $parsed_rcpt['domain']));
+      $relay_all_recipients = $stmt->fetch(PDO::FETCH_ASSOC)['relay_all_recipients'];
+      if ($relay_all_recipients == '1') {
+        if (!in_array($rcpt, $rcpt_final_mailboxes)) {
+          $rcpt_final_mailboxes[] = $rcpt;
+        }
+      }
+    }
+    catch (PDOException $e) {
+      error_log("DOMAIN CHECK: " . $e->getMessage() . PHP_EOL);
+      http_response_code(502);
+      exit;
+    }
+  }
 }
 
 foreach ($rcpt_final_mailboxes as $rcpt_final) {

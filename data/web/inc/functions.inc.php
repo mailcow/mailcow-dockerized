@@ -621,13 +621,18 @@ function hasMailboxObjectAccess($username, $role, $object) {
     return false;
   }
   if ($username == $object) {
-    return true;
+    return true; 
   }
   $stmt = $pdo->prepare("SELECT `domain` FROM `mailbox` WHERE `username` = :object");
   $stmt->execute(array(':object' => $object));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
   if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
     return true;
+  } else {
+    $domain = substr(strrchr($object, "@"), 1);
+    if ( hasDomainAccess( $username, $role, $domain )) {
+      return true;
+    }
   }
   return false;
 }
