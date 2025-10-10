@@ -1,9 +1,9 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.16
+ARG GOSU_VERSION=1.17
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -34,9 +34,13 @@ RUN addgroup -g 5000 vmail \
   lua5.3-sql-mysql \
   icu-data-full \
   mariadb-connector-c \
+  lua-sec \
+  mariadb-dev \
+  glib-dev \
   gcompat \
   mariadb-client \
   perl \
+  perl-dev \
   perl-ntlm \
   perl-cgi \
   perl-crypt-openssl-rsa \
@@ -65,7 +69,7 @@ RUN addgroup -g 5000 vmail \
   perl-par-packer \
   perl-parse-recdescent \
   perl-lockfile-simple \
-  libproc \
+  libproc2 \
   perl-readonly \
   perl-regexp-common \
   perl-sys-meminfo \

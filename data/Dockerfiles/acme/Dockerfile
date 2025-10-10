@@ -1,7 +1,6 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
-
 
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
@@ -15,7 +14,7 @@ RUN apk upgrade --no-cache \
   tini \
   tzdata \
   python3 \
-  acme-tiny --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
+  acme-tiny
 
 COPY acme.sh /srv/acme.sh
 COPY functions.sh /srv/functions.sh

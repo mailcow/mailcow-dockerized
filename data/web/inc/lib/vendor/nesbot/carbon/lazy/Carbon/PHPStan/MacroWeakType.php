@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Carbon\PHPStan;
 
 if (!class_exists(LazyMacro::class, false)) {
-    abstract class LazyMacro extends AbstractMacro
+    abstract class LazyMacro extends AbstractReflectionMacro
     {
         /**
          * {@inheritdoc}
@@ -23,7 +23,9 @@ if (!class_exists(LazyMacro::class, false)) {
          */
         public function getFileName()
         {
-            return $this->reflectionFunction->getFileName();
+            $file = $this->reflectionFunction->getFileName();
+
+            return (($file ? realpath($file) : null) ?: $file) ?: null;
         }
 
         /**

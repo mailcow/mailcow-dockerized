@@ -618,7 +618,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Logga in",
         "mobileconfig_info": "Logga in som en användare av brevlåda för att ladda ner den begärda Apple-anslutningsprofilen.",
-        "other_logins": "Loggain med nyckel",
+        "other_logins": "eller logga in med",
         "password": "Lösenord",
         "username": "Användarnamn"
     },
@@ -841,9 +841,7 @@
     },
     "start": {
         "help": "Visa/dölj hjälppanel",
-        "imap_smtp_server_auth_info": "Använd din fullständiga e-postadress och PLAIN-autentiseringsmekanism.<br>\r\nInloggningsuppgifterna överförs krypterat eftersom obligatorisk kryptering sker till servern.",
-        "mailcow_apps_detail": "Använd Mailcow-applikationen för att läsa e-postmeddelanden, kalender, kontakter och mer.",
-        "mailcow_panel_detail": "<b>Domänadministratörer</b> skapar, ändrar eller kan ta bort postlådor eller aliasadresser. Dom administrerar och felsöker sina tilldelade domäner.<br>\r\n<b>Användare av påstlådor</b> kan skapa tidsbegränsade aliasadresser (skräppostalias), ändra sitt lösenord och hantera spamfilterinställningar."
+        "imap_smtp_server_auth_info": "Använd din fullständiga e-postadress och PLAIN-autentiseringsmekanism.<br>\r\nInloggningsuppgifterna överförs krypterat eftersom obligatorisk kryptering sker till servern."
     },
     "success": {
         "acl_saved": "Åtkomstlistan för objektet %s har sparats",

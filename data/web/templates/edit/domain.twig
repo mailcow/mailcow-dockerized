@@ -8,6 +8,7 @@
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dratelimit">{{ lang.edit.ratelimit }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dspamfilter">{{ lang.edit.spam_filter }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dmtasts">{{ lang.edit.mta_sts }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dfooter">{{ lang.edit.domain_footer }}</button></li>
     </ul>
     <hr class="d-none d-md-block">
@@ -38,7 +39,7 @@
                   <div class="row mb-2" data-acl="{{ acl.domain_desc }}">
                     <label class="control-label col-sm-2" for="description">{{ lang.edit.description }}</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" name="description" value="{{ result.description }}">
+                      <input type="text" class="form-control" name="description" value="{{ result.description }}"{% if acl.domain_desc == '0' %} readonly{% endif %}>
                     </div>
                   </div>
                   <div class="row mb-4">
@@ -57,6 +58,7 @@
                       </div>
                     </div>
                   </div>
+                  {% if acl.domain_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
@@ -75,6 +77,7 @@
                       </select>
                     </div>
                   </div>
+                  {% endif %}
                   {% if mailcow_cc_role == 'admin' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="aliases">{{ lang.edit.max_aliases }}</label>
@@ -146,7 +149,7 @@
                   <div class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified|default(lang.user.never) }}</small>
                     </div>
                   </div>
                 </form>
@@ -275,6 +278,82 @@
                     </form>
                   </div>
                 </div>
+            </div>
+        </div>
+      </div>
+      <div id="dmtasts" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-mtasts">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-mtasts" data-bs-toggle="collapse" aria-controls="collapse-tab-mtasts">
+                {{ lang.edit.mta_sts }} <span class="badge bg-info table-lines"></span>
+              </button>
+            </div>
+            <div id="collapse-tab-mtasts" class="card-body collapse" data-bs-parent="#domain-content">
+                <h4>{{ lang.edit.mta_sts }}</h4>
+                <p>{{ lang.edit.mta_sts_info|raw }}</p>
+                <form data-id="dommtasts" method="post">
+                  <input type="hidden" value="0" name="active">
+                  <input type="hidden" value="{{ domain }}" name="domain">
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="version">
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_version_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_version }}
+                    </label>
+                    <div class="col-sm-10">
+                      <select data-style="btn btn-light" class="form-control" name="version" title="" required>
+                        <option value="stsv1"{% if mta_sts.version == 'STSv1' %} selected{% endif %}>STSv1</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="mode">
+                    <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_mode_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_mode }}
+                    </label>
+                    <div class="col-sm-10">
+                      <select data-style="btn btn-light" class="form-control" name="mode" title="" required>
+                        <option value="enforce"{% if mta_sts.mode == 'enforce' %} selected{% endif %}>enforce</option>
+                        <option value="testing"{% if mta_sts.mode == 'testing' %} selected{% endif %}>testing</option>
+                        <option value="none"{% if mta_sts.mode == 'none' %} selected{% endif %}>none</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="max_age">
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_max_age_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_max_age }}
+                    </label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="max_age" value="{{ mta_sts.max_age }}">
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2" for="mx">
+                      <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_mx_info|raw }}"></i>
+                      {{ lang.edit.mta_sts_mx }}
+                    </label>
+                    <div class="col-sm-10">
+                      <textarea autocorrect="off" autocapitalize="none" class="form-control" rows="5" name="mx">{{ mta_sts.mx }}</textarea>
+                      <small class="text-muted">{{ lang.edit.mta_sts_mx_notice|raw }}</small>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if mta_sts.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      {% if mta_sts == false %}
+                      <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="add_item" data-id="dommtasts" data-item="{{ domain }}" data-api-url='add/mta-sts' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+                      {% else %}
+                      <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="dommtasts" data-item="{{ domain }}" data-api-url='edit/mta-sts' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+                      {% endif %}
+                    </div>
+                  </div>
+                </form>
             </div>
         </div>
       </div>

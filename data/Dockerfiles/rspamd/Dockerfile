@@ -2,11 +2,11 @@ FROM debian:bookworm-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.11.0-2~90a175b45
+ARG RSPAMD_VER=rspamd_3.12.1-1~6dbfca2fa
 ARG CODENAME=bookworm
 ENV LC_ALL=C
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   ca-certificates \
   gnupg2 \

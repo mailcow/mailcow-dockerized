@@ -269,6 +269,24 @@ $(document).ready(function() {
   function setMailboxTemplateData(template){
     $("#addInputQuota").val(template.quota / 1048576);
 
+    if (template.tagged_mail_handler === "subfolder"){
+      $('#tagged_mail_handler_subfolder').prop('checked', true);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', false);
+    } else if(template.tagged_mail_handler === "subject"){
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', true);
+      $('#tagged_mail_handler_none').prop('checked', false);
+    } else if(template.tagged_mail_handler === "none"){
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', true);
+    } else {
+      $('#tagged_mail_handler_subfolder').prop('checked', false);
+      $('#tagged_mail_handler_subject').prop('checked', false);
+      $('#tagged_mail_handler_none').prop('checked', true);
+    }
+
     if (template.quarantine_notification === "never"){
       $('#quarantine_notification_never').prop('checked', true);
       $('#quarantine_notification_hourly').prop('checked', false);
@@ -389,7 +407,6 @@ $(document).ready(function() {
       $('#rl_frame').selectpicker('val', template.rl_frame);
     }
 
-    console.log(template.active)
     if (template.active){
       $('#mbox_active').selectpicker('val', template.active.toString());
     } else {
@@ -939,7 +956,7 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-mailbox" data-api-url="delete/mailbox" data-item="' + encodeURIComponent(item.username) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '<a href="/index.php?duallogin=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-lg btn-xs-half btn-success"><i class="bi bi-person-fill"></i> Login</a>';
               if (ALLOW_ADMIN_EMAIL_LOGIN) {
-                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-lg btn-xs-half btn-primary" target="_blank"><i class="bi bi-envelope-fill"></i> SOGo</a>';
+                item.action += '<a href="/sogo-auth.php?login=' + encodeURIComponent(item.username) + '" class="login_as btn btn-sm btn-xs-lg btn-xs-half btn-primary"><i class="bi bi-envelope-fill"></i> SOGo</a>';
               }
               item.action += '</div>';
             }
@@ -1032,7 +1049,16 @@ jQuery(function($){
           title: lang.domain,
           data: 'domain',
           defaultContent: '',
-          className: 'none'
+          className: 'none',
+        },
+        {
+          title: lang.iam,
+          data: 'authsource',
+          defaultContent: '',
+          className: 'none',
+          render: function (data, type) {
+            return '<span class="badge bg-primary">' + data + '<i class="ms-2 bi bi-person-circle"></i></i></span>';
+          }
         },
         {
           title: lang.tls_enforce_in,
@@ -1924,11 +1950,6 @@ jQuery(function($){
           responsivePriority: 5,
         },
         {
-          title: lang.bcc_destinations,
-          data: 'bcc_dest',
-          defaultContent: ''
-        },
-        {
           title: lang.sogo_visible,
           data: 'sogo_visible',
           defaultContent: '',
@@ -1945,6 +1966,15 @@ jQuery(function($){
           title: lang.private_comment,
           data: 'private_comment',
           defaultContent: ''
+        },
+        {
+          title: lang.internal,
+          data: 'internal',
+          defaultContent: '',
+          responsivePriority: 6,
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
         },
         {
           title: lang.active,

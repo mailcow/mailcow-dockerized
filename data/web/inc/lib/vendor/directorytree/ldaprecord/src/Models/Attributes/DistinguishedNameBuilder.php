@@ -26,7 +26,7 @@ class DistinguishedNameBuilder
     /**
      * Constructor.
      *
-     * @param string|null $value
+     * @param  string|null  $value
      */
     public function __construct($dn = null)
     {
@@ -38,9 +38,8 @@ class DistinguishedNameBuilder
     /**
      * Forward missing method calls onto the Distinguished Name object.
      *
-     * @param string $method
-     * @param array  $args
-     *
+     * @param  string  $method
+     * @param  array  $args
      * @return mixed
      */
     public function __call($method, $args)
@@ -61,9 +60,8 @@ class DistinguishedNameBuilder
     /**
      * Prepend an RDN onto the DN.
      *
-     * @param string|array $attribute
-     * @param string|null  $value
-     *
+     * @param  string|array  $attribute
+     * @param  string|null  $value
      * @return $this
      */
     public function prepend($attribute, $value = null)
@@ -79,9 +77,8 @@ class DistinguishedNameBuilder
     /**
      * Append an RDN onto the DN.
      *
-     * @param string|array $attribute
-     * @param string|null  $value
-     *
+     * @param  string|array  $attribute
+     * @param  string|null  $value
      * @return $this
      */
     public function append($attribute, $value = null)
@@ -97,9 +94,8 @@ class DistinguishedNameBuilder
     /**
      * Componentize the attribute and value.
      *
-     * @param string|array $attribute
-     * @param string|null  $value
-     *
+     * @param  string|array  $attribute
+     * @param  string|null  $value
      * @return array
      */
     protected function componentize($attribute, $value = null)
@@ -125,8 +121,7 @@ class DistinguishedNameBuilder
     /**
      * Make a componentized array by exploding the value if it's a string.
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return array
      */
     protected function makeComponentizedArray($value)
@@ -137,9 +132,8 @@ class DistinguishedNameBuilder
     /**
      * Make an appendable component array from the attribute and value.
      *
-     * @param string|array $attribute
-     * @param string|null  $value
-     *
+     * @param  string|array  $attribute
+     * @param  string|null  $value
      * @return array
      */
     protected function makeAppendableComponent($attribute, $value = null)
@@ -150,9 +144,8 @@ class DistinguishedNameBuilder
     /**
      * Pop an RDN off of the end of the DN.
      *
-     * @param int   $amount
-     * @param array $removed
-     *
+     * @param  int  $amount
+     * @param  array  $removed
      * @return $this
      */
     public function pop($amount = 1, &$removed = [])
@@ -167,9 +160,8 @@ class DistinguishedNameBuilder
     /**
      * Shift an RDN off of the beginning of the DN.
      *
-     * @param int   $amount
-     * @param array $removed
-     *
+     * @param  int  $amount
+     * @param  array  $removed
      * @return $this
      */
     public function shift($amount = 1, &$removed = [])
@@ -196,8 +188,7 @@ class DistinguishedNameBuilder
     /**
      * Get the components of the DN.
      *
-     * @param null|string $type
-     *
+     * @param  null|string  $type
      * @return array
      */
     public function components($type = null)
@@ -210,8 +201,7 @@ class DistinguishedNameBuilder
     /**
      * Get the components of a particular type.
      *
-     * @param string $type
-     *
+     * @param  string  $type
      * @return array
      */
     protected function componentsOfType($type)

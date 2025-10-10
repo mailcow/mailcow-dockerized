@@ -81,6 +81,29 @@ EOF
   redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning SLAVEOF NO ONE
 fi
 
+if [[ "${SKIP_OLEFY}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  if [[ -f /etc/rspamd/local.d/external_services.conf ]]; then
+    rm /etc/rspamd/local.d/external_services.conf
+  fi
+else
+  if [[ ! -f /etc/rspamd/local.d/external_services.conf ]]; then
+    cat <<EOF > /etc/rspamd/local.d/external_services.conf
+oletools {
+  # default olefy settings
+  servers = "olefy:10055";
+  # needs to be set explicitly for Rspamd < 1.9.5
+  scan_mime_parts = true;
+  # mime-part regex matching in content-type or filename
+  # block all macros
+  extended = true;
+  max_size = 3145728;
+  timeout = 20.0;
+  retransmits = 1;
+}
+EOF
+  fi
+fi
+
 # Provide additional lua modules
 ln -s /usr/lib/$(uname -m)-linux-gnu/liblua5.1-cjson.so.0.0.0 /usr/lib/rspamd/cjson.so
 

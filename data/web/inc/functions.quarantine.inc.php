@@ -22,7 +22,7 @@ function quarantine($_action, $_data = null) {
         return false;
       }
       $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
-        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
+        WHERE `qhash` = :hash
           AND user_acl.quarantine = 1
           AND rcpt IN (SELECT username FROM mailbox)');
       $stmt->execute(array(':hash' => $hash));
@@ -65,7 +65,7 @@ function quarantine($_action, $_data = null) {
         return false;
       }
       $stmt = $pdo->prepare('SELECT `id` FROM `quarantine` LEFT OUTER JOIN `user_acl` ON `user_acl`.`username` = `rcpt`
-        WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash
+        WHERE `qhash` = :hash
           AND `user_acl`.`quarantine` = 1
           AND `username` IN (SELECT `username` FROM `mailbox`)');
       $stmt->execute(array(':hash' => $hash));
@@ -169,7 +169,7 @@ function quarantine($_action, $_data = null) {
           }
         }
         elseif ($release_format == 'raw') {
-          $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/', 'X-Pre-Release-Spam-Flag $1', $detail_row['msg']);
+          $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $detail_row['msg']);
           $postfix_talk = array(
             array('220', 'HELO quarantine' . chr(10)),
             array('250', 'MAIL FROM: ' . $sender . chr(10)),
@@ -464,7 +464,7 @@ function quarantine($_action, $_data = null) {
             }
           }
           elseif ($release_format == 'raw') {
-            $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/', 'X-Pre-Release-Spam-Flag $1', $row['msg']);
+            $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $row['msg']);
             $postfix_talk = array(
               array('220', 'HELO quarantine' . chr(10)),
               array('250', 'MAIL FROM: ' . $sender . chr(10)),
@@ -833,7 +833,7 @@ function quarantine($_action, $_data = null) {
         )));
         return false;
       }
-      $stmt = $pdo->prepare('SELECT * FROM `quarantine` WHERE SHA2(CONCAT(`id`, `qid`), 256) = :hash');
+      $stmt = $pdo->prepare('SELECT * FROM `quarantine` WHERE `qhash` = :hash');
       $stmt->execute(array(':hash' => $hash));
       return $stmt->fetch(PDO::FETCH_ASSOC);
     break;

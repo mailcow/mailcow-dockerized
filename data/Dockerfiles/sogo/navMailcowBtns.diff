@@ -1,0 +1,15 @@
+60,65d58
+<                var:ng-click="navButtonClick"
+<                ng-href="/user">
+<       <md-icon>build</md-icon>
+<       <md-tooltip>mailcow <var:string label:value="Preferences"/></md-tooltip>
+<     </md-button>
+<     <md-button class="md-icon-button"
+83c76
+<                onclick="mc_logout();"
+---
+>                ng-show="::activeUser.path.logoff.length"
+85c78
+<                ng-href="#">
+---
+>                ng-href="{{::activeUser.path.logoff}}">

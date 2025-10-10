@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEBIAN_DOCKER_IMAGE="mailcow/backup:latest"
+DEBIAN_DOCKER_IMAGE="ghcr.io/mailcow/backup:latest"
 
 if [[ ! -z ${MAILCOW_BACKUP_LOCATION} ]]; then
   BACKUP_LOCATION="${MAILCOW_BACKUP_LOCATION}"
@@ -236,7 +236,7 @@ function restore() {
       if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
         echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
         sleep 2
-        echo -e "Continuing anyhow. If rspamd is crashing opon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
+        echo -e "Continuing anyhow. If rspamd is crashing upon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
         sleep 2
         docker stop $(docker ps -qf name=rspamd-mailcow)
         docker run -i --name mailcow-backup --rm \

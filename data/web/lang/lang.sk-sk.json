@@ -622,8 +622,8 @@
         "sieve_desc": "Krátky popis",
         "sieve_type": "Typ filtru",
         "skipcrossduplicates": "Preskočiť duplikované správy naprieč priečinkami (akceptuje sa prvý nález)",
-        "sogo_access": "Prideliť priame prihlásenie do SOGo",
-        "sogo_access_info": "Jednotné prihlásenie z používateľského mail rozhrania zostáva funkčné. Toto nastavenie nemá vplyv na prístup k ostatným službám, ani neodstraňuje alebo nemení existujúci profil používateľa SOGo.",
+        "sogo_access": "Priame presmerovanie na SOGo",
+        "sogo_access_info": "Po prihlásení je používateľ automaticky presmerovaný na službu SOGo.",
         "sogo_visible": "Alias je viditeľný v SOGo",
         "sogo_visible_info": "Táto voľba ovplyvňuje len objekty, ktoré dokážu byť zobrazené v SOGo (zdieľané alebo nezdieľané alias adresy ukazujúc na minimálne jednu lokálnu mailovú schránku). Ak je skrytý, alias nebude prezentovaný ako voliteľný odosielateľ v SOGo.",
         "spam_alias": "Vytvoriť alebo zmeniť časovo limitované alias adresy",
@@ -704,7 +704,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Prihlásenie",
         "mobileconfig_info": "Prosím, prihláste sa ako mailový používateľ pre stiahnutie požadovaného Apple profilu.",
-        "other_logins": "Prihlásenie kľúčom",
+        "other_logins": "alebo prihlásiť sa s",
         "password": "Heslo",
         "username": "Používateľské meno alebo email"
     },
@@ -968,9 +968,7 @@
     },
     "start": {
         "help": "Zobraziť/Skryť panel nápoveď",
-        "imap_smtp_server_auth_info": "Prosím použite celú vašu emailovú adresu a metódu overenia PLAIN.<br>\r\n Vaše prihlasovacie údaje budú zašifrované na strane servera.",
-        "mailcow_apps_detail": "Použite mailcow aplikácie pre prístup k vašej mailovej schránke, kalendáru, kontaktom a viac.",
-        "mailcow_panel_detail": "<b>Administrátori domény</b> môžu vytvárať, modifikovať alebo mazať schránky a aliasy, meniť domény a zobraziť informácie o priradených doménach.<br>\r\n<b>Bežný používatelia</b> majú možnosť vytvoriť časovo obmedzené aliasy (spam aliasy), meniť heslá a nastavenia spam filtra."
+        "imap_smtp_server_auth_info": "Prosím použite celú vašu emailovú adresu a metódu overenia PLAIN.<br>\r\n Vaše prihlasovacie údaje budú zašifrované na strane servera."
     },
     "success": {
         "acl_saved": "ACL pre objekt %s uložený",
@@ -1117,7 +1115,7 @@
         "delete_ays": "Potvrďte zmazanie.",
         "direct_aliases": "Priame alias adresy",
         "direct_aliases_desc": "Priame aliasy sú ovplyvnené spam filtrom a nastavením TLS pravidiel.",
-        "direct_protocol_access": "Tento používateľ mailovej schránky má <b>priamy, externý prístup</b> k nasledujúcim protokolom a aplikáciám. Toto nastavenie kontroluje administrátor. Na udelenie prístupu k jednotlivým protokolom a aplikáciám je možné vytvoriť heslá aplikácií.<br>Tlačidlo \"Prihlásenie do webmailu\" poskytuje jednotné prihlásenie do systému SOGo a je vždy k dispozícii.",
+        "direct_protocol_access": "Tento používateľ mailovej schránky má <b>priamy, externý prístup</b> k nasledujúcim protokolom a aplikáciám. Toto nastavenie kontroluje administrátor. Na udelenie prístupu k jednotlivým protokolom a aplikáciám je možné vytvoriť heslá aplikácií.<br>Tlačidlo \"Webmailu\" poskytuje jednotné prihlásenie do systému SOGo a je vždy k dispozícii.",
         "eas_reset": "Resetovať medzipamäť u ActiveSync zariadení",
         "eas_reset_help": "Vo väčšine prípadov, reset medzipamäte ActiveSync pomôže opravit nefunkčný profil.<br><b>Pozor:</b> Všetky potrebné dáta budú opäť stiahnuté!",
         "eas_reset_now": "Reset ActiveSync",
@@ -1158,7 +1156,7 @@
         "no_last_login": "Žiadny záznam o prihlásení cez web",
         "no_record": "Žiaden záznam",
         "open_logs": "Otvoriť záznam",
-        "open_webmail_sso": "Prihláste sa do webmailu",
+        "open_webmail_sso": "Webmailu",
         "password": "Heslo",
         "password_now": "Aktuálne heslo (potvrdiť zmeny)",
         "password_repeat": "Heslo (opakovať)",

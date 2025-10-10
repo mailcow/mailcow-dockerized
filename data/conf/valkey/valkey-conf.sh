@@ -9,4 +9,4 @@ if [ -n "$VALKEYMASTERPASS" ]; then
   echo "masterauth $VALKEYMASTERPASS" >> /valkey.conf
 fi
 
-exec valkey-server /valkey.conf
+exec "$@"

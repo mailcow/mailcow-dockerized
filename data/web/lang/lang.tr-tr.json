@@ -482,7 +482,7 @@
         "sender_acl_disabled": "<span class=\\\"label label-danger\\\">Gönderen denetimi devre dışı</span>",
         "allow_from_smtp": "Yalnızca bu IP'lerin <b>SMTP</b> kullanmasına izin verin",
         "allow_from_smtp_info": "Tüm gönderenlere izin vermek için boş bırakın.<br>IPv4/IPv6 adresleri ve ağları.",
-        "allowed_protocols": "İzin verilen protokoller",
+        "allowed_protocols": "Doğrudan kullanıcı erişimi için izin verilen protokoller (uygulama parola protokollerini etkilemez)",
         "app_name": "Uygulama adı",
         "app_passwd": "Uygulama şifresi",
         "app_passwd_protocols": "Uygulama şifresi için izin verilen protokoller",
@@ -782,7 +782,7 @@
         "aliases": "Takma Adlar",
         "all_domains": "Tüm Alan Adları",
         "allow_from_smtp": "Yalnızca bu IP'lerin <b>SMTP</b> kullanmasına izin verin",
-        "allowed_protocols": "Doğrudan kullanıcı erişimi için izin verilen protokoller (uygulama parola protokollerini etkilemez)",
+        "allowed_protocols": "İzin verilen protokoller",
         "backup_mx": "Geçiş alanı",
         "bcc": "BCC",
         "bcc_destination": "Gizli hedef",
@@ -892,7 +892,7 @@
         "login": "Giriş",
         "password": "Şifre",
         "username": "Kullanıcı Adı",
-        "other_logins": "Anahtar girişi"
+        "other_logins": "veya ile giriş yap"
     },
     "success": {
         "bcc_saved": "BCC harita girişi kaydedildi",
@@ -1062,9 +1062,7 @@
         "tfa": "Çift faktörlü doğrulama"
     },
     "start": {
-        "mailcow_panel_detail": "<b>Etki alanı yöneticileri</b> posta kutuları ve takma adlar oluşturur, değiştirir veya siler, alan adlarını değiştirir ve atanan alan adları hakkında daha fazla bilgi okur.<br>\\r\\n<b>Posta kutusu kullanıcıları</b> zaman oluşturabilir -sınırlı takma adlar (spam takma adları), şifrelerini ve spam filtresi ayarlarını değiştirin.",
         "imap_smtp_server_auth_info": "Lütfen tam e-posta adresinizi ve PLAIN kimlik doğrulama mekanizmasını kullanın.<br>\\r\\nGiriş verileriniz, sunucu tarafı zorunlu şifreleme ile şifrelenecektir.",
-        "mailcow_apps_detail": "Postalarınıza, takviminize, kişilerinize ve daha fazlasına erişmek için bir mailcow uygulaması kullanın.",
         "help": "Yardım panelini göster/gizle"
     },
     "queue": {

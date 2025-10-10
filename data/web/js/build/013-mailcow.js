@@ -22,8 +22,8 @@ $(document).ready(function() {
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
 
-  $(".generate_password").click(async function( event ) {   
-    try { 
+  $(".generate_password").click(async function( event ) {
+    try {
       var password_policy = await window.fetch("/api/v1/get/passwordpolicy", { method:'GET', cache:'no-cache' });
       var password_policy = await password_policy.json();
       random_passwd_length = password_policy.length;
@@ -48,7 +48,11 @@ $(document).ready(function() {
     })
   }
   $(".rot-enc").html(function(){
-    return str_rot13($(this).html())
+    footer_html = $(this).html();
+    footer_html = footer_html.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                             .replace(/&amp;/g, '&').replace(/&nzc;/g, '&')
+                             .replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
+    return str_rot13(footer_html)
   });
   // https://stackoverflow.com/questions/4399005/implementing-jquerys-shake-effect-with-animate
   function shake(div,interval,distance,times) {
@@ -125,7 +129,7 @@ $(document).ready(function() {
         }
       });
   })();
-  
+
   // responsive tabs, scroll to opened tab
   $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
 	  var target = $(e.target);
@@ -352,6 +356,17 @@ $(document).ready(function() {
       localStorage.setItem('theme', 'dark');
     }
   }
+
+  // Reveal Password Input
+  $(".reveal-password-input").on('click', '.toggle-password', function() {
+    $(this).parent().find('.toggle-password').children().toggleClass("bi-eye bi-eye-slash");
+    var input = $(this).parent().find('.password-field')
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
 });
 
 

@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 

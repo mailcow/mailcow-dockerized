@@ -51,20 +51,63 @@
           </div></p>
         </form>
       </div>
-      <legend>{{ lang.admin.app_links }}</legend><hr />
+      <legend style="padding-top:20px" unselectable="on">{{ lang.admin.login_page }}</legend><hr />
+      <div>
+        <form class="form" data-id="custom_login" role="form" method="post">
+          <p class="text-muted">{{ lang.admin.quicklink_text }}</p>
+          <div class="ms-2 mb-1">
+            <input class="form-check-input" type="checkbox" value="1" name="hide_user_quicklink" id="hide_user_quicklink" {% if custom_login.hide_user_quicklink == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="hide_user_quicklink">
+              {{ lang.admin.user_quicklink|raw }}
+            </label>
+          </div>
+          <div class="ms-2 mb-1">
+            <input class="form-check-input" type="checkbox" value="1" name="hide_domainadmin_quicklink" id="hide_domainadmin_quicklink" {% if custom_login.hide_domainadmin_quicklink == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="hide_domainadmin_quicklink">
+              {{ lang.admin.domainadmin_quicklink|raw }}
+            </label>
+          </div>
+          <div class="ms-2 mb-4">
+            <input class="form-check-input" type="checkbox" value="1" name="hide_admin_quicklink" id="hide_admin_quicklink" {% if custom_login.hide_admin_quicklink == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="hide_admin_quicklink">
+              {{ lang.admin.admin_quicklink|raw }}
+            </label>
+          </div>
+          <p class="text-muted">{{ lang.admin.force_sso_text|raw }}</p>
+          <div class="ms-2 mb-4">
+            <input class="form-check-input" type="checkbox" value="1" name="force_sso" id="force_sso" {% if custom_login.force_sso == 1 %}checked{% endif %}>
+            <label class="form-check-label" for="force_sso">
+              {{ lang.admin.force_sso|raw }}
+            </label>
+          </div>
+          <p><div class="btn-group">
+            <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="admin" data-id="custom_login" data-reload="no" data-api-url='edit/custom_login' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+          </div></p>
+        </form>
+      </div>
+      <legend style="padding-top:20px">{{ lang.admin.app_links }}</legend><hr />
       <p class="text-muted">{{ lang.admin.merged_vars_hint|raw }}</p>
       <form class="form-inline" data-id="app_links" role="form" method="post">
         <table class="table table-condensed" style="white-space: nowrap;" id="app_link_table">
           <tr>
             <th>{{ lang.admin.app_name }}</th>
             <th>{{ lang.admin.link }}</th>
+            <th>{{ lang.admin.user_link }}</th>
+            <th style="width:125px;">{{ lang.admin.app_hide }}</th>
             <th style="width:100px;">&nbsp;</th>
           </tr>
           {% for row in app_links %}
             {% for key, val in row %}
               <tr>
                 <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="app" required value="{{ key }}"></td>
-                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="href" required value="{{ val.link }}"></td>
+                <td><input class="input-sm input-xs-lg form-control" data-id="app_links" type="text" name="user_href" required value="{{ val.user_link }}"></td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
+                    <input data-id="app_links" type="hidden" name="hide" {% if val.hide %}value="1"{% else %}value="0"{% endif %}>
+                    <input class="form-check-input app_hide" type="checkbox" value="1" {% if val.hide %}checked{% endif %}>
+                  </div>
+                </td>
                 <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">{{ lang.admin.remove_row }}</a></td>
               </tr>
             {% endfor %}
@@ -73,6 +116,12 @@
             <tr>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.name }}" disabled></td>
               <td><input class="input-sm input-xs-lg form-control" value="{{ app.link }}" disabled></td>
+              <td><input class="input-sm input-xs-lg form-control" value="{{ app.user_link }}" disabled></td>
+              <td>
+                <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
+                  <input class="form-check-input" data-id="app_links" type="checkbox" name="hide" value="1" disabled {% if app.hide %}checked{% endif %}>
+                </div>
+              </td>
               <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100 disabled" type="button">{{ lang.admin.remove_row }}</a></td>
             </tr>
           {% endfor %}

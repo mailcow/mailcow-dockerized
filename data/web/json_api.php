@@ -324,6 +324,9 @@ if (isset($_GET['query'])) {
         case "app-passwd":
           process_add_return(app_passwd('add', $attr));
         break;
+        case "mta-sts":
+          process_add_return(mailbox('add', 'mta_sts', $attr));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -332,81 +335,6 @@ if (isset($_GET['query'])) {
             'msg' => 'route not found'
           ));
           exit();
-      }
-    break;
-    case "process":
-      // only allow POST requests to process API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
-      switch ($category) {
-        case "fido2-args":
-          header('Content-Type: application/json');
-          $post = trim(file_get_contents('php://input'));
-          if ($post) {
-            $post = json_decode($post);
-          }
-          $clientDataJSON = base64_decode($post->clientDataJSON);
-          $authenticatorData = base64_decode($post->authenticatorData);
-          $signature = base64_decode($post->signature);
-          $id = base64_decode($post->id);
-          $challenge = $_SESSION['challenge'];
-          $process_fido2 = fido2(array("action" => "get_by_b64cid", "cid" => $post->id));
-          if ($process_fido2['pub_key'] === false) {
-            $return = new stdClass();
-            $return->success = false;
-            echo json_encode($return);
-            exit;
-          }
-          try {
-            $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_fido2['pub_key'], $challenge, null, $GLOBALS['FIDO2_UV_FLAG_LOGIN'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
-          }
-          catch (Throwable $ex) {
-            unset($process_fido2);
-            $return = new stdClass();
-            $return->success = false;
-            echo json_encode($return);
-            exit;
-          }
-          $return = new stdClass();
-          $return->success = true;
-          $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
-          $stmt->execute(array(':username' => $process_fido2['username']));
-          $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
-          if ($obj_props['superadmin'] === 1) {
-            $_SESSION["mailcow_cc_role"] = "admin";
-          }
-          elseif ($obj_props['superadmin'] === 0) {
-            $_SESSION["mailcow_cc_role"] = "domainadmin";
-          }
-          else {
-            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
-            $stmt->execute(array(':username' => $process_fido2['username']));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row['username'] == $process_fido2['username']) {
-              $_SESSION["mailcow_cc_role"] = "user";
-            }
-          }
-          if (empty($_SESSION["mailcow_cc_role"])) {
-            session_unset();
-            session_destroy();
-            exit;
-          }
-          $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
-          $_SESSION["fido2_cid"] = $process_fido2['cid'];
-          unset($_SESSION["challenge"]);
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
-            'log' => array("fido2_login"),
-            'msg' => array('logged_in_as', $process_fido2['username'])
-          );
-          echo json_encode($return);
-        break;
       }
     break;
     case "get":
@@ -943,6 +871,17 @@ if (isset($_GET['query'])) {
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
+              case "cron":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('cron-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('cron-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
               case "postfix":
                 // 0 is first record, so empty is fine
                 if (isset($extra)) {
@@ -1068,7 +1007,7 @@ if (isset($_GET['query'])) {
                   ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
                   ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
                   ['db' => 'name', 'dt' => 7],
-                  ['db' => 'messages', 'dt' => 17, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
+                  ['db' => 'messages', 'dt' => 18, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
                   ['db' => 'tags', 'dt' => 20, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
                   ['db' => 'active', 'dt' => 21],
                 ];
@@ -1667,6 +1606,13 @@ if (isset($_GET['query'])) {
               $score = array("score" => preg_replace("/\s+/", "", $score));
             process_get_return($score);
           break;
+          case "identity-provider":
+            if($_SESSION['mailcow_cc_role'] === 'admin') {
+              process_get_return($iam_settings);
+            } else {
+              process_get_return(null);
+            }
+          break;
         break;
         // return no route found if no case is matched
         default:
@@ -1819,6 +1765,9 @@ if (isset($_GET['query'])) {
         break;
         case "rlhash":
           echo ratelimit('delete', null, implode($items));
+        break;
+        case "identity-provider":
+          process_delete_return(identity_provider('delete'));
         break;
         // return no route found if no case is matched
         default:
@@ -2030,6 +1979,9 @@ if (isset($_GET['query'])) {
         case "ip_check":
           process_edit_return(customize('edit', 'ip_check', $attr));
         break;
+        case "custom_login":
+          process_edit_return(customize('edit', 'custom_login', $attr));
+        break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
             process_edit_return(domain_admin('edit', $attr));
@@ -2040,9 +1992,20 @@ if (isset($_GET['query'])) {
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
+        case "identity-provider":
+          process_edit_return(identity_provider('edit', $attr));
+        break;
+        case "identity-provider-test":
+          process_edit_return(identity_provider('test', $attr));
+        break;
+        case "cors":
+          process_edit_return(cors('edit', $attr));
         break;
         case "reset-password-notification":
           process_edit_return(reset_password('edit_notification', $attr));
+        break;
+        case "mta-sts":
+          process_edit_return(mailbox('edit', 'mta_sts', array_merge(array('domains' => $items), $attr)));
         break;
         // return no route found if no case is matched
         default:

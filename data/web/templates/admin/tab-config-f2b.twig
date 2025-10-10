@@ -110,7 +110,7 @@
         <p>
           <span class="badge fs-7 bg-info d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ active_ban.ip }}" target="_blank">
+            <a href="https://bgp.tools/prefix/{{ active_ban.ip }}" target="_blank">
               {{ active_ban.network }}
             </a>
             ({{ active_ban.banned_until }})
@@ -118,8 +118,8 @@
           <span class="d-none d-sm-inline"> - </span>
             {% if active_ban.queued_for_unban == 0 %}
             <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[whitelist]</a>
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[blacklist (<b>needs restart</b>)]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[allowlist]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[denylist (<b>{{ lang.admin.needs_restart }}</b>)]</a>
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}
@@ -130,7 +130,7 @@
         <p>
           <span class="badge fs-7 bg-danger d-block d-sm-inline-block">
             <i class="bi bi-funnel-fill"></i>
-            <a href="https://bgp.he.net/ip/{{ perm_ban.ip }}" target="_blank">
+            <a href="https://bgp.tools/prefix/{{ perm_ban.ip }}" target="_blank">
               {{ perm_ban.network }}
             </a>
           </span>

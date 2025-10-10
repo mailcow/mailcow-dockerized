@@ -353,7 +353,30 @@
         "password_settings": "Impostazioni della password",
         "queue_unban": "sblocca",
         "restore_template": "Lasciare vuoto per ripristinare il modello predefinito.",
-        "logo_normal_label": "Normale"
+        "logo_normal_label": "Normale",
+        "app_hide": "Nascondi per il login",
+        "ip_check_disabled": "Il controllo IP è disabilitato. Puoi abilitarlo sotto <br><strong>Sistema > Configurazione > Opzioni > Personalizza </strong>",
+        "ip_check_opt_in": "Attiva l'utilizzo dei servizi di terze parti <strong>ipv4.mailcow.email</strong> e <strong> ipv6.mailcow.email</strong> per risolvere gli indirizzi IP esterni",
+        "iam_login_provisioning": "Creazione automatica di utenti al login",
+        "iam_port": "Porta",
+        "iam_redirect_url": "URL di reindirizzamento",
+        "iam_server_url": "URL server",
+        "iam_sso": "Single Sign-On",
+        "iam_test_connection": "Test connessione",
+        "iam_use_ssl": "Usa SSL",
+        "iam_use_tls": "Usa StartTLS",
+        "iam_version": "Versione",
+        "ignore_ssl_error": "Ignorare gli errori SSL",
+        "task": "Attività",
+        "login_page": "Pagina di accesso",
+        "filter": "Filtro",
+        "iam_attribute_field": "Campo attributo",
+        "iam_authorize_url": "Endpoint di autorizzazione",
+        "iam_auth_flow": "Flusso di autenticazione",
+        "iam_client_id": "ID cliente",
+        "iam_default_template": "Template predefinito",
+        "iam_host": "Host",
+        "iam_import_users": "Importa utenti"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",
@@ -484,7 +507,11 @@
         "password_reset_invalid_user": "La casella di posta elettronica non è stata trovata o non è stata impostata un'e-mail di recupero",
         "password_reset_na": "Il recupero della password non è attualmente disponibile. Contattare l'amministratore.",
         "recovery_email_failed": "Impossibile inviare un'e-mail di recupero. Contattare l'amministratore.",
-        "to_invalid": "Il destinatario non deve essere vuoto"
+        "to_invalid": "Il destinatario non deve essere vuoto",
+        "iam_test_connection": "Connessione non riuscita",
+        "webauthn_authenticator_failed": "L'autenticator selezionato non è stato trovato",
+        "webauthn_username_failed": "L'authenticator selezionato appartiene ad un altro account",
+        "webauthn_publickey_failed": "Nessuna chiave pubblica è stata salvata per l'authenticator selezionato"
     },
     "debug": {
         "chart_this_server": "Grafico (questo server)",
@@ -643,9 +670,9 @@
         "username": "Nome utente",
         "validate_save": "Convalida e salva",
         "pushover": "Pushover",
-        "sogo_access_info": "Il single-sign-on dall'interno dell'interfaccia di posta rimane funzionante. Questa impostazione non influisce sull'accesso a tutti gli altri servizi né cancella o modifica il profilo SOGo esistente dell'utente.",
         "none_inherit": "Nessuno / Eredita",
-        "sogo_access": "Concedere l'accesso diretto a SOGo",
+        "sogo_access": "Inoltro diretto a SOGo",
+        "sogo_access_info": "Dopo aver effettuato il login, l'utente viene automaticamente reindirizzato a SOGo.",
         "acl": "ACL (autorizzazione)",
         "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
         "last_modified": "Ultima modifica",
@@ -655,7 +682,10 @@
         "domain_footer_html": "Piè di pagina HTML",
         "domain_footer_plain": "Piè di pagina PLAIN",
         "footer_exclude": "Escludi dal piè di pagina",
-        "password_recovery_email": "E-mail di recupero password"
+        "password_recovery_email": "E-mail di recupero password",
+        "mailbox_rename": "Rinominare la casella mail",
+        "mailbox_rename_agree": "Ho creato un backup.",
+        "mailbox_rename_alias": "Creare alias automaticamente"
     },
     "fido2": {
         "confirm": "Conferma",
@@ -709,7 +739,7 @@
         "fido2_webauthn": "FIDO2/WebAuthn Login",
         "login": "Login",
         "mobileconfig_info": "Please login as mailbox user to download the requested Apple connection profile.",
-        "other_logins": "Key login",
+        "other_logins": "o accedi con",
         "password": "Password",
         "username": "Nome utente",
         "request_reset_password": "Richiesta di modifica della password",
@@ -717,7 +747,11 @@
         "forgot_password": "> Password dimenticata?",
         "new_password": "Nuova password",
         "new_password_confirm": "Conferma la nuova password",
-        "reset_password": "Ripristino della password"
+        "reset_password": "Ripristino della password",
+        "login_linkstext": "Non è il login corretto?",
+        "login_usertext": "Accedere come utente",
+        "login_domainadmintext": "Accedere come domain admin",
+        "login_admintext": "Accedere come admin"
     },
     "mailbox": {
         "action": "Azione",
@@ -974,9 +1008,7 @@
     },
     "start": {
         "help": "Mostra/Nascondi pannello di aiuto",
-        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br />\r\nYour login data will be encrypted by the server-side mandatory encryption.",
-        "mailcow_apps_detail": "Usa l'app mailcow per accedere alla posta, calendari, contatti ed altro.",
-        "mailcow_panel_detail": "<b>Amministratori di dominio</b> crea, modifica od elimina caselle ed alias, cambia i domini e informazioni relative ai domini associati.<br />\r\n\t<b>Utenti di caselle</b> possono creare degli alias temporanei (spam aliases), cambiare la loro password e le impostazioni relative ai filtri spam."
+        "imap_smtp_server_auth_info": "Please use your full email address and the PLAIN authentication mechanism.<br />\r\nYour login data will be encrypted by the server-side mandatory encryption."
     },
     "success": {
         "acl_saved": "ACL for object %s saved",
@@ -1166,7 +1198,7 @@
         "no_active_filter": "No active filter available",
         "no_last_login": "No last UI login information",
         "no_record": "Nessun elemento",
-        "open_webmail_sso": "Accedi alla webmail",
+        "open_webmail_sso": "Webmail",
         "password": "Password",
         "password_now": "Password attuale (conferma modifiche)",
         "password_repeat": "Conferma password (riscrivi)",

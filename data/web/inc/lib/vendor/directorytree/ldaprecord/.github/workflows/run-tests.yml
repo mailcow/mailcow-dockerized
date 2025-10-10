@@ -9,20 +9,20 @@ on:
 jobs:
   run-tests:
     runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} - P${{ matrix.php }}
+
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         php: [8.1, 8.0, 7.4, 7.3]
 
-    name: ${{ matrix.os }} - P${{ matrix.php }}
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
@@ -38,41 +38,4 @@ jobs:
         run: composer update --prefer-dist --no-interaction
 
       - name: Execute tests
-        run: vendor/bin/phpunit
-
-  run-analysis:
-    runs-on: ${{ matrix.os }}
-    name: Static code analysis (PHP ${{ matrix.php }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        php: [8.0]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ldap, json
-          coverage: none
-          tools: psalm
-
-      - name: Validate composer.json
-        run: composer validate
-
-      - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction
-
-      - name: Run Psalm
-        run: psalm
+        run: vendor/bin/phpunit --testsuite Unit

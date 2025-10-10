@@ -1,12 +1,13 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.user.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
-  header('Location: /debug');
+  header('Location: /admin/dashboard');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-  header('Location: /mailbox');
+  header('Location: /domainadmin/mailbox');
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {

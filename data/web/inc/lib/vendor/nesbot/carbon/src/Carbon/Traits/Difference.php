@@ -83,9 +83,9 @@ trait Difference
      *
      * @return CarbonInterval
      */
-    protected static function fixDiffInterval(DateInterval $diff, $absolute)
+    protected static function fixDiffInterval(DateInterval $diff, $absolute, array $skip = [])
     {
-        $diff = CarbonInterval::instance($diff);
+        $diff = CarbonInterval::instance($diff, $skip);
 
         // Work-around for https://bugs.php.net/bug.php?id=77145
         // @codeCoverageIgnoreStart
@@ -148,9 +148,9 @@ trait Difference
      *
      * @return CarbonInterval
      */
-    public function diffAsCarbonInterval($date = null, $absolute = true)
+    public function diffAsCarbonInterval($date = null, $absolute = true, array $skip = [])
     {
-        return static::fixDiffInterval($this->diff($this->resolveCarbon($date), $absolute), $absolute);
+        return static::fixDiffInterval($this->diff($this->resolveCarbon($date), $absolute), $absolute, $skip);
     }
 
     /**
@@ -189,9 +189,21 @@ trait Difference
      */
     public function diffInMonths($date = null, $absolute = true)
     {
-        $date = $this->resolveCarbon($date);
+        $date = $this->resolveCarbon($date)->avoidMutation()->tz($this->tz);
 
-        return $this->diffInYears($date, $absolute) * static::MONTHS_PER_YEAR + (int) $this->diff($date, $absolute)->format('%r%m');
+        [$yearStart, $monthStart, $dayStart] = explode('-', $this->format('Y-m-dHisu'));
+        [$yearEnd, $monthEnd, $dayEnd] = explode('-', $date->format('Y-m-dHisu'));
+
+        $diff = (((int) $yearEnd) - ((int) $yearStart)) * static::MONTHS_PER_YEAR +
+            ((int) $monthEnd) - ((int) $monthStart);
+
+        if ($diff > 0) {
+            $diff -= ($dayStart > $dayEnd ? 1 : 0);
+        } elseif ($diff < 0) {
+            $diff += ($dayStart < $dayEnd ? 1 : 0);
+        }
+
+        return $absolute ? abs($diff) : $diff;
     }
 
     /**
@@ -286,9 +298,9 @@ trait Difference
      */
     public function diffInWeekdays($date = null, $absolute = true)
     {
-        return $this->diffInDaysFiltered(function (CarbonInterface $date) {
+        return $this->diffInDaysFiltered(static function (CarbonInterface $date) {
             return $date->isWeekday();
-        }, $date, $absolute);
+        }, $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')), $absolute);
     }
 
     /**
@@ -301,9 +313,9 @@ trait Difference
      */
     public function diffInWeekendDays($date = null, $absolute = true)
     {
-        return $this->diffInDaysFiltered(function (CarbonInterface $date) {
+        return $this->diffInDaysFiltered(static function (CarbonInterface $date) {
             return $date->isWeekend();
-        }, $date, $absolute);
+        }, $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')), $absolute);
     }
 
     /**
@@ -472,7 +484,7 @@ trait Difference
      */
     public function floatDiffInSeconds($date = null, $absolute = true)
     {
-        return $this->diffInMicroseconds($date, $absolute) / static::MICROSECONDS_PER_SECOND;
+        return (float) ($this->diffInMicroseconds($date, $absolute) / static::MICROSECONDS_PER_SECOND);
     }
 
     /**
@@ -830,8 +842,9 @@ trait Difference
         $intSyntax = $intSyntax === static::DIFF_RELATIVE_AUTO && $other === null ? static::DIFF_RELATIVE_TO_NOW : $intSyntax;
 
         $parts = min(7, max(1, (int) $parts));
+        $skip = \is_array($syntax) ? ($syntax['skip'] ?? []) : [];
 
-        return $this->diffAsCarbonInterval($other, false)
+        return $this->diffAsCarbonInterval($other, false, (array) $skip)
             ->setLocalTranslator($this->getLocalTranslator())
             ->forHumans($syntax, (bool) $short, $parts, $options ?? $this->localHumanDiffOptions ?? static::getHumanDiffOptions());
     }
@@ -1161,7 +1174,7 @@ trait Difference
             version_compare(PHP_VERSION, '8.1.0-dev', '<') &&
             abs($interval->d - $daysDiff) === 1
         ) {
-            $daysDiff = abs($interval->d);
+            $daysDiff = abs($interval->d); // @codeCoverageIgnore
         }
 
         return $daysDiff * $sign;

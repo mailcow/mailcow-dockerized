@@ -2,7 +2,8 @@
     "acl": {
         "sogo_profile_reset": "Usuń profil SOGo (webmail)",
         "syncjobs": "Polecenie synchronizacji",
-        "alias_domains": "Dodaj aliasy domen"
+        "alias_domains": "Dodaj aliasy domen",
+        "delimiter_action": "Akcja oparta na separatorze"
     },
     "add": {
         "active": "Aktywny",
@@ -290,9 +291,7 @@
     },
     "start": {
         "help": "Pokaż/Ukryj panel pomocy",
-        "imap_smtp_server_auth_info": "Proszę korzystać z pełnego adresu email i mechanizmu uwierzytelniania PLAIN.<br>\r\nTwoje dane logowania zostaną zaszyfrowane przez obowiązkowe szyfrowanie po stronie serwera.",
-        "mailcow_apps_detail": "Użyj aplikacji mailcow, aby mieć dostęp do wiadomości, kalendarza, kontaktów i innych.",
-        "mailcow_panel_detail": "<b>Administratorzy domeny</b> tworzą, modyfikują lub usuwają skrzynki i aliasy, zmieniają domeny i czytają dalsze informacje o przypisanych im domenach.<br>\r\n\t<b>Użytkownicy skrzynek</b> mogą tworzyć ograniczone czasowo aliasy (aliasy spam), zmieniać swoje hasła i ustawienia filtru spam."
+        "imap_smtp_server_auth_info": "Proszę korzystać z pełnego adresu email i mechanizmu uwierzytelniania PLAIN.<br>\r\nTwoje dane logowania zostaną zaszyfrowane przez obowiązkowe szyfrowanie po stronie serwera."
     },
     "success": {
         "admin_modified": "Zapisano zmiany w administratorze",

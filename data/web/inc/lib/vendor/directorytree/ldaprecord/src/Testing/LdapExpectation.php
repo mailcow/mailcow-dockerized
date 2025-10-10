@@ -2,7 +2,9 @@
 
 namespace LdapRecord\Testing;
 
+use Closure;
 use LdapRecord\LdapRecordException;
+use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use UnexpectedValueException;
@@ -82,7 +84,7 @@ class LdapExpectation
     /**
      * Constructor.
      *
-     * @param string $method
+     * @param  string  $method
      */
     public function __construct($method)
     {
@@ -92,21 +94,22 @@ class LdapExpectation
     /**
      * Set the arguments that the operation should receive.
      *
-     * @param mixed $args
-     *
+     * @param  mixed  $args
      * @return $this
      */
     public function with($args)
     {
-        $args = is_array($args) ? $args : func_get_args();
-
-        foreach ($args as $key => $arg) {
-            if (! $arg instanceof Constraint) {
-                $args[$key] = new IsEqual($arg);
+        $this->args = array_map(function ($arg) {
+            if ($arg instanceof Closure) {
+                return new Callback($arg);
             }
-        }
 
-        $this->args = $args;
+            if (! $arg instanceof Constraint) {
+                return new IsEqual($arg);
+            }
+
+            return $arg;
+        }, is_array($args) ? $args : func_get_args());
 
         return $this;
     }
@@ -114,8 +117,7 @@ class LdapExpectation
     /**
      * Set the expected value to return.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return $this
      */
     public function andReturn($value)
@@ -128,10 +130,9 @@ class LdapExpectation
     /**
      * The error message to return from the expectation.
      *
-     * @param int    $code
-     * @param string $error
-     * @param string $diagnosticMessage
-     *
+     * @param  int  $code
+     * @param  string  $error
+     * @param  string  $diagnosticMessage
      * @return $this
      */
     public function andReturnError($code = 1, $error = '', $diagnosticMessage = '')
@@ -148,8 +149,7 @@ class LdapExpectation
     /**
      * Set the expected exception to throw.
      *
-     * @param string|\Exception|LdapRecordException $exception
-     *
+     * @param  string|\Exception|LdapRecordException  $exception
      * @return $this
      */
     public function andThrow($exception)
@@ -186,8 +186,7 @@ class LdapExpectation
     /**
      * Set the expectation to be called the given number of times.
      *
-     * @param int $count
-     *
+     * @param  int  $count
      * @return $this
      */
     public function times($count = 1)

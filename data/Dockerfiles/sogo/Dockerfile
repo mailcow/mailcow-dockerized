@@ -47,6 +47,7 @@ COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng-valkey_slave.conf
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY acl.diff /acl.diff
+COPY navMailcowBtns.diff /navMailcowBtns.diff
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY docker-entrypoint.sh /
 

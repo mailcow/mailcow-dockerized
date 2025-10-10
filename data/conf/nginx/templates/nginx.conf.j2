@@ -48,12 +48,20 @@ http {
         listen {{ HTTP_PORT }} default_server;
         listen [::]:{{ HTTP_PORT }} default_server;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* mta-sts.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
 
         if ( $request_uri ~* "%0A|%0D" ) { return 403; }
         location ^~ /.well-known/acme-challenge/ {
             allow all;
             default_type "text/plain";
+        }
+        location ^~ /.well-known/mta-sts.txt {
+            allow all;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass {{ PHPFPMHOST }}:9002;
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root/mta-sts.php;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
         }
         location / {
             return 301 https://$host$uri$is_args$args;
@@ -70,7 +78,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
@@ -82,7 +90,7 @@ http {
         ssl_certificate /etc/ssl/mail/cert.pem;
         ssl_certificate_key /etc/ssl/mail/key.pem;
 
-        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.*;
+        server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* mta-sts.*;
 
         include /etc/nginx/includes/sites-default.conf;
     }
@@ -97,7 +105,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
@@ -118,7 +126,7 @@ http {
     # rspamd dynmaps:
     server {
         listen 8081;
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         listen [::]:8081;
         {%endif%}
         index index.php index.html;
@@ -159,6 +167,31 @@ http {
         }
     }
 
+    server {
+        listen 9082 ssl http2;
+
+        ssl_certificate /etc/ssl/mail/cert.pem;
+        ssl_certificate_key /etc/ssl/mail/key.pem;
+
+        index mailcowauth.php;
+        server_name _;
+        error_log  /var/log/nginx/error.log;
+        access_log /var/log/nginx/access.log;
+        root /mailcowauth;
+        client_max_body_size 10M;
+        location ~ \.php$ {
+            client_max_body_size 10M;
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass phpfpm:9001;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+
+    include /etc/nginx/conf.d/*.conf;
+
     {% for cert in valid_cert_dirs %}
     server {
         {% if not HTTP_REDIRECT %}
@@ -166,7 +199,7 @@ http {
         {%endif%}
         listen {{ HTTPS_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%} ssl;
 
-        {% if not DISABLE_IPv6 %}
+        {% if ENABLE_IPV6 %}
         {% if not HTTP_REDIRECT %}
         listen [::]:{{ HTTP_PORT }}{% if NGINX_USE_PROXY_PROTOCOL %} proxy_protocol{%endif%};
         {%endif%}
@@ -183,6 +216,4 @@ http {
         include /etc/nginx/includes/sites-default.conf;
     }
     {% endfor %}
-
-    include /etc/nginx/conf.d/*.conf;
 }

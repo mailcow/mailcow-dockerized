@@ -414,9 +414,7 @@
         "queue_manager": "Queue Manager"
     },
     "start": {
-        "help": "Mostrar/Ocultar panell d'ajuda",
-        "mailcow_apps_detail": "Tria una aplicació (de moment només SOGo) per a accedir als teus correus, calendari, contactes i més.",
-        "mailcow_panel_detail": "Els <b>administradors del domini</b> poden crear, modificar o esborrar bústies i àlies, configurar i obtenir informació detallada sobre els seus dominis<br>\r\n\tEls <b>usuaris d'e-mail</b> poden crear àlies temporals (spam àlies), canviar la seva contrasenya i la configuració del seu filtre anti-spam."
+        "help": "Mostrar/Ocultar panell d'ajuda"
     },
     "success": {
         "admin_modified": "Els canvis fets a l'administrador s'han desat",

@@ -27,6 +27,25 @@
                   <input type="hidden" value="0" name="sogo_access">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
+                    <div class="col-sm-10">
+                      <select
+                        data-style="btn btn-secondary"
+                        name="authsource" class="full-width-select form-control" required>
+                          <option value="mailcow" {% if result.authsource == "mailcow" %}selected{% endif %}>mailcow</option>
+                          {% if iam_settings.authsource == 'keycloak' %}
+                          <option value="keycloak" {% if result.authsource == "keycloak" %}selected{% endif %}>Keycloak</option>
+                          {% endif %}
+                          {% if iam_settings.authsource == 'generic-oidc' %}
+                          <option value="generic-oidc" {% if result.authsource == "generic-oidc" %}selected{% endif %}>Generic-OIDC</option>
+                          {% endif %}
+                          {% if iam_settings.authsource == 'ldap' %}
+                          <option value="ldap" {% if result.authsource == "ldap" %}selected{% endif %}>LDAP</option>
+                          {% endif %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
                     <label class="control-label col-sm-2" for="name">{{ lang.edit.full_name }}</label>
                     <div class="col-sm-10">
                       <input type="text" class="form-control" name="name" value="{{ result.name }}">
@@ -95,10 +114,11 @@
                       <small class="text-muted d-block">{{ lang.edit.sender_acl_info|raw }}</small>
                     </div>
                   </div>
+                  {% if acl.mailbox_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
                     <div class="col-sm-10">
-                      <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control mb-4">
+                      <select data-acl="{{ acl.mailbox_relayhost }}" data-live-search="true" id="relayhost" name="relayhost" class="form-control">
                         {% for rlyhost in rlyhosts %}
                           <option
                             style="{% if rlyhost.active != '1' %}background: #ff4136; color: #fff{% endif %}"
@@ -112,7 +132,35 @@
                         </option>
                       </select>
                       <p class="d-block d-sm-none" style="margin: 0;padding: 0">&nbsp;</p>
-                      <small class="text-muted d-block">{{ lang.edit.mailbox_relayhost_info }}</small>
+                      <small class="text-muted d-block mb-4">{{ lang.edit.mailbox_relayhost_info }}</small>
+                    </div>
+                  </div>
+                  {% endif %}
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.user.tag_handling }}</label>
+                    <div class="col-sm-10">
+                      <div class="btn-group" data-acl="{{ acl.delimiter_action }}">
+                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'subfolder' %} btn-dark{% else %} btn-light{% endif %}"
+                        data-action="edit_selected"
+                        data-item="{{ mailbox }}"
+                        data-id="delimiter_action"
+                        data-api-url='edit/delimiter_action'
+                        data-api-attr='{"tagged_mail_handler":"subfolder"}'>{{ lang.user.tag_in_subfolder }}</button>
+                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'subject' %} btn-dark{% else %} btn-light{% endif %}"
+                        data-action="edit_selected"
+                        data-item="{{ mailbox }}"
+                        data-id="delimiter_action"
+                        data-api-url='edit/delimiter_action'
+                        data-api-attr='{"tagged_mail_handler":"subject"}'>{{ lang.user.tag_in_subject }}</button>
+                        <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'none' %} btn-dark{% else %} btn-light{% endif %}"
+                        data-action="edit_selected"
+                        data-item="{{ mailbox }}"
+                        data-id="delimiter_action"
+                        data-api-url='edit/delimiter_action'
+                        data-api-attr='{"tagged_mail_handler":"none"}'>{{ lang.user.tag_in_none }}</button>
+                      </div>
+                      <p class="text-muted"><small>{{ lang.user.tag_help_explain|raw }}</small></p>
+                      <p class="text-muted"><small>{{ lang.user.tag_help_example|raw }}</small></p>
                     </div>
                   </div>
                   <div class="row mb-2">
@@ -192,6 +240,7 @@
                       </div>
                     </div>
                   </div>
+                  {% if not result.authsource or result.authsource == 'mailcow' %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>
                     <div class="col-sm-10">
@@ -223,6 +272,7 @@
                       {% endif %}
                     </div>
                   </div>
+                  {% endif %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="protocol_access">{{ lang.edit.allowed_protocols }}</label>
                     <div class="col-sm-10">
@@ -277,7 +327,7 @@
                   <div class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <small class="fst-italic d-block">{{ lang.edit.created_on }}: {{ result.created }}</small>
-                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified }}</small>
+                      <small class="fst-italic d-block">{{ lang.edit.last_modified }}: {{ result.modified|default(lang.user.never) }}</small>
                     </div>
                   </div>
                 </form>
@@ -521,7 +571,7 @@
                     </div>
                     <div class="row mb-2">
                       <div class="col-sm-12 offset-md-2 col-md-10 col-xl-8">
-                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/mailbox" href="#">{{ lang.edit.save }}</button>
+                        <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="mboxrename" data-item="{{ mailbox }}" data-api-url='edit/rename-mbox' data-api-attr='{}' data-api-reload-location="/{{mailcow_cc_role}}/mailbox" href="#">{{ lang.edit.save }}</button>
                       </div>
                     </div>
                   </form>

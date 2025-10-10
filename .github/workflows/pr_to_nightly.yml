@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Run the Action
-        uses: devops-infra/action-pull-request@v0.6.0
+        uses: devops-infra/action-pull-request@v0.6.1
         with:
           github_token: ${{ secrets.PRTONIGHTLY_ACTION_PAT }}
           title: Automatic PR to nightly from ${{ github.event.repository.updated_at}}

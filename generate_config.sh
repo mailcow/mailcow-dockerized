@@ -1,32 +1,34 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+# Ensure the script is run from the directory that contains a link of .env
+# Resolve the directory this script lives in for consistent behavior when invoked from elsewhere
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" >/dev/null 2>&1 && pwd)"
 
-if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
-  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-  echo "Please update to 5.x or use another distribution."
+# Ensure script is executed in the mailcow installation directory by checking for a .env symlink that points to mailcow.conf
+if [ ! -L "${PWD}/.env" ]; then
+  echo -e "\e[33mPlease run this script from the mailcow installation directory.\e[0m"
+  echo -e "  \e[36mcd /path/to/mailcow && ./generate_config.sh\e[0m"
   exit 1
 fi
 
-if [[ "$(uname -r)" =~ ^4\.4\. ]]; then
-  if grep -q Ubuntu <<< "$(uname -a)"; then
-    echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
-    echo "Please update to linux-generic-hwe-16.04 by running \"apt-get install --install-recommends linux-generic-hwe-16.04\""
-    exit 1
-  fi
+# Verify the .env symlink points to a mailcow.conf file
+env_target="$(readlink -f "${PWD}/.env" 2>/dev/null || true)"
+if [ -z "$env_target" ] || [ "$(basename "$env_target")" != "mailcow.conf" ]; then
+  echo -e "\e[31mThe found .env symlink does not point to a mailcow.conf file.\e[0m"
+  echo -e "\e[33mPlease create a symbolic link .env -> mailcow.conf inside the mailcow directory and run this script there.\e[0m"
+  echo -e "\e[33mNote: 'ln -s mailcow.conf .env' will create the symlink even if mailcow.conf does not yet exist.\e[0m"
+  echo -e "  \e[36mcd /path/to/mailcow && ln -s mailcow.conf .env && ./generate_config.sh\e[0m"
+  exit 1
 fi
 
-if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""; exit 1; fi
-# This will also cover sort
-if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\""; exit 1; fi
-if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo "BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\""; exit 1; fi
+# Load mailcow Generic Scripts
+source _modules/scripts/core.sh
+source _modules/scripts/ipv6_controller.sh
 
-for bin in openssl curl docker git awk sha1sum grep cut; do
-  if [[ -z $(which ${bin}) ]]; then echo "Cannot find ${bin}, exiting..."; exit 1; fi
-done
+set -o pipefail
 
-# Check Docker Version (need at least 24.X)
-docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
+get_installed_tools
+get_docker_version
 
 if [[ $docker_version -lt 24 ]]; then
   echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
@@ -35,65 +37,7 @@ if [[ $docker_version -lt 24 ]]; then
   exit 1
 fi
 
-if docker compose > /dev/null 2>&1; then
-    if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
-      COMPOSE_VERSION=native
-      echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
-      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
-      sleep 2
-      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
-    else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-      exit 1
-    fi
-elif docker-compose > /dev/null 2>&1; then
-  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-    if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-      COMPOSE_VERSION=standalone
-      echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
-      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-      sleep 2
-      echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
-    else
-      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-      exit 1
-    fi
-  fi
-
-else
-  echo -e "\e[31mCannot find Docker Compose.\e[0m"
-  echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-  exit 1
-fi
-
-detect_bad_asn() {
-  echo -e "\e[33mDetecting if your IP is listed on Spamhaus Bad ASN List...\e[0m"
-  response=$(curl --connect-timeout 15 --max-time 30 -s -o /dev/null -w "%{http_code}" "https://asn-check.mailcow.email")
-  if [ "$response" -eq 503 ]; then
-    if [ -z "$SPAMHAUS_DQS_KEY" ]; then
-      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
-      echo -e "\e[33mmailcow did not detected a value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf!\e[0m"
-      sleep 2
-      echo ""
-      echo -e "\e[33mTo use the Spamhaus DNS Blocklists again, you will need to create a FREE account for their Data Query Service (DQS) at: https://www.spamhaus.com/free-trial/sign-up-for-a-free-data-query-service-account\e[0m"
-      echo -e "\e[33mOnce done, enter your DQS API key in mailcow.conf and mailcow will do the rest for you!\e[0m"
-      echo ""
-      sleep 2
-
-    else
-      echo -e "\e[33mYour server's public IP uses an AS that is blocked by Spamhaus to use their DNS public blocklists for Postfix.\e[0m"
-      echo -e "\e[32mmailcow detected a Value for the variable SPAMHAUS_DQS_KEY inside mailcow.conf. Postfix will use DQS with the given API key...\e[0m"
-    fi
-  elif [ "$response" -eq 200 ]; then
-    echo -e "\e[33mCheck completed! Your IP is \e[32mclean\e[0m"
-  elif [ "$response" -eq 429 ]; then
-    echo -e "\e[33mCheck completed! \e[31mYour IP seems to be rate limited on the ASN Check service... please try again later!\e[0m"
-  else
-    echo -e "\e[31mCheck failed! \e[0mMaybe a DNS or Network problem?\e[0m"
-  fi
-}
+detect_bad_asn
 
 ### If generate_config.sh is started with --dev or -d it will not check out nightly or master branch and will keep on the current branch
 if [[ ${1} == "--dev" || ${1} == "-d" ]]; then
@@ -181,11 +125,15 @@ if [[ ${SKIP_BRANCH} != y ]]; then
   echo "Available Branches:"
   echo "- master branch (stable updates) | default, recommended [1]"
   echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+  echo "- legacy branch (supported until February 2026) | deprecated, security updates only [3]"
   sleep 1
 
   while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it's number [1/2] " branch
+    read -r -p  "Choose the Branch with it's number [1/2/3] " branch
     case $branch in
+      [3])
+        MAILCOW_BRANCH="legacy"
+        ;;
       [2])
         MAILCOW_BRANCH="nightly"
         ;;
@@ -213,6 +161,8 @@ if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
 
+configure_ipv6
+
 [ ! -f ./data/conf/rspamd/override.d/worker-controller-password.inc ] && echo '# Placeholder' > ./data/conf/rspamd/override.d/worker-controller-password.inc
 
 cat << EOF > mailcow.conf
@@ -222,7 +172,6 @@ cat << EOF > mailcow.conf
 # example.org is _not_ a valid hostname, use a fqdn here.
 # Default admin user is "admin"
 # Default password is "moohoo"
-
 MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
 
 # Password hash algorithm
@@ -233,12 +182,10 @@ MAILCOW_PASS_SCHEME=BLF-CRYPT
 # ------------------------------
 # SQL database configuration
 # ------------------------------
-
 DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-
 DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
@@ -256,11 +203,10 @@ VALKEYPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # Might be important: This will also change the binding within the container.
 # If you use a proxy within Docker, point it to the ports you set below.
 # Do _not_ use IP:PORT in HTTP(S)_BIND or HTTP(S)_PORT
-# IMPORTANT: Do not use port 8081, 9081 or 65510!
+# IMPORTANT: Do not use port 8081, 9081, 9082 or 65510!
 # Example: HTTP_BIND=1.2.3.4
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
-
 HTTP_PORT=80
 HTTP_BIND=
 
@@ -268,14 +214,13 @@ HTTPS_PORT=443
 HTTPS_BIND=
 
 # Redirect HTTP connections to HTTPS - y/n
-HTTP_REDIRECT=n
+HTTP_REDIRECT=y
 
 # ------------------------------
 # Other bindings
 # ------------------------------
 # You should leave that alone
 # Format: 11.22.33.44:25 or 12.34.56.78:465 etc.
-
 SMTP_PORT=25
 SMTPS_PORT=465
 SUBMISSION_PORT=587
@@ -291,25 +236,22 @@ VALKEY_PORT=127.0.0.1:7654
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
 # Use the column named 'TZ identifier' + pay attention for the column named 'Notes'
-
 TZ=${MAILCOW_TZ}
 
 # Fixed project name
 # Please use lowercase letters only
-
 COMPOSE_PROJECT_NAME=mailcowdockerized
 
 # Used Docker Compose version
 # Switch here between native (compose plugin) and standalone
-# For more informations take a look at the mailcow docs regarding the configuration options.
+# For more information take a look at the mailcow docs regarding the configuration options.
 # Normally this should be untouched but if you decided to use either of those you can switch it manually here.
 # Please be aware that at least one of those variants should be installed on your machine or mailcow will fail.
-
 DOCKER_COMPOSE_VERSION=${COMPOSE_VERSION}
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
 # When enabled, ACL can be created, that apply to "All authenticated users"
-# This should probably only be activated on mail hosts, that are used exclusivly by one organisation.
+# This should probably only be activated on mail hosts, that are used exclusively by one organisation.
 # Otherwise a user might share data with too many other users.
 ACL_ANYONE=disallow
 
@@ -317,7 +259,6 @@ ACL_ANYONE=disallow
 # Deleted domains and mailboxes are moved to /var/vmail/_garbage/timestamp_sanitizedstring
 # How long should objects remain in the garbage until they are being deleted? (value in minutes)
 # Check interval is hourly
-
 MAILDIR_GC_TIME=7200
 
 # Additional SAN for the certificate
@@ -332,8 +273,6 @@ MAILDIR_GC_TIME=7200
 #ADDITIONAL_SAN=srv1.example.net
 # ...or combine wildcard and static names:
 #ADDITIONAL_SAN=imap.*,srv1.example.com
-#
-
 ADDITIONAL_SAN=
 
 # Obtain certificates for autodiscover.* and autoconfig.* domains.
@@ -350,61 +289,52 @@ AUTODISCOVER_SAN=y
 # If the server name does not match a known site, Nginx decides by best-guess and may redirect users to the wrong web root.
 # You can understand this as server_name directive in Nginx.
 # Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f
-
 ADDITIONAL_SERVER_NAMES=
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
-
 SKIP_LETS_ENCRYPT=n
 
-# Create seperate certificates for all domains - y/n
+# Create separate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
 # see https://doc.dovecot.org/admin_manual/ssl/sni_support
 ENABLE_SSL_SNI=n
 
 # Skip IPv4 check in ACME container - y/n
-
 SKIP_IP_CHECK=n
 
 # Skip HTTP verification in ACME container - y/n
-
 SKIP_HTTP_VERIFICATION=n
 
 # Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n
-
 SKIP_UNBOUND_HEALTHCHECK=n
 
 # Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
-
 SKIP_CLAMD=${SKIP_CLAMD}
 
-# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
+# Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n
+SKIP_OLEFY=n
 
+# Skip SOGo: Will disable SOGo integration and therefore webmail, DAV protocols and ActiveSync support (experimental, unsupported, not fully implemented) - y/n
 SKIP_SOGO=n
 
 # Skip FTS (Fulltext Search) for Dovecot on low-memory, low-threaded systems or if you simply want to disable it.
 # Dovecot inside mailcow use Flatcurve as FTS Backend.
-
 SKIP_FTS=n
 
 # Dovecot Indexing (FTS) Process maximum heap size in MB, there is no recommendation, please see Dovecot docs.
 # Flatcurve (Xapian backend) is used as the FTS Indexer. It is supposed to be efficient in CPU and RAM consumption.
 # However: Please always monitor your Resource consumption!
-
 FTS_HEAP=128
 
 # Controls how many processes the Dovecot indexing process can spawn at max.
 # Too many indexing processes can use a lot of CPU and Disk I/O.
-# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more informations
-
+# Please visit: https://doc.dovecot.org/configuration_manual/service_configuration/#indexer-worker for more information
 FTS_PROCS=1
 
 # Allow admins to log into SOGo as email user (without any password)
-
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers
-
 USE_WATCHDOG=y
 
 # Send watchdog notifications by mail (sent from watchdog@MAILCOW_HOSTNAME)
@@ -413,7 +343,6 @@ USE_WATCHDOG=y
 # 2. Mails are sent unsigned (no DKIM)
 # 3. If you use DMARC, create a separate DMARC policy ("v=DMARC1; p=none;" in _dmarc.MAILCOW_HOSTNAME)
 # Multiple rcpts allowed, NO quotation marks, NO spaces
-
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
 
@@ -449,20 +378,16 @@ LOG_LINES=9999
 
 # Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)
 # Use private IPv4 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv4_addresses
-
 IPV4_NETWORK=172.22.1
 
 # Internal IPv6 subnet in fc00::/7
 # Use private IPv6 addresses only, see https://en.wikipedia.org/wiki/Private_network#Private_IPv6_addresses
-
 IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 # Use this IPv4 for outgoing connections (SNAT)
-
 #SNAT_TO_SOURCE=
 
 # Use this IPv6 for outgoing connections (SNAT)
-
 #SNAT6_TO_SOURCE=
 
 # Create or override an API key for the web UI
@@ -482,6 +407,10 @@ MAILDIR_SUB=Maildir
 # SOGo session timeout in minutes
 SOGO_EXPIRE_SESSION=480
 
+# SOGo URL encryption key (exactly 16 characters, limited to A–Z, a–z, 0–9)
+# This key is used to encrypt email addresses within SOGo URLs
+SOGO_URL_ENCRYPTION_KEY=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 16)
+
 # DOVECOT_MASTER_USER and DOVECOT_MASTER_PASS must both be provided. No special chars.
 # Empty by default to auto-generate master user and password on start.
 # User expands to DOVECOT_MASTER_USER@mailcow.local
@@ -489,13 +418,6 @@ SOGO_EXPIRE_SESSION=480
 DOVECOT_MASTER_USER=
 # LEAVE EMPTY IF UNSURE
 DOVECOT_MASTER_PASS=
-
-# Let's Encrypt registration contact information
-# Optional: Leave empty for none
-# This value is only used on first order!
-# Setting it at a later point will require the following steps:
-# https://docs.mailcow.email/troubleshooting/debug-reset_tls/
-ACME_CONTACT=
 
 # WebAuthn device manufacturer verification
 # After setting WEBAUTHN_ONLY_TRUSTED_VENDORS=y only devices from trusted manufacturers are allowed
@@ -508,6 +430,13 @@ WEBAUTHN_ONLY_TRUSTED_VENDORS=n
 # If empty, it will completely disable Spamhaus blocklists if it detects that you are running on a server using a blocked AS.
 # Otherwise it will work normally.
 SPAMHAUS_DQS_KEY=
+
+# IPv6 Controller Section
+# This variable controls the usage of IPv6 within mailcow.
+# Can either be true or false | Defaults to true
+# WARNING: MAKE SURE TO PROPERLY CONFIGURE IPv6 ON YOUR HOST FIRST BEFORE ENABLING THIS AS FAULTY CONFIGURATIONS CAN LEAD TO OPEN RELAYS!
+# A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.
+ENABLE_IPV6=${IPV6_BOOL}
 
 # Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
 # CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
@@ -531,6 +460,10 @@ case ${git_branch} in
     mailcow_git_version=$(git describe --tags `git rev-list --tags --max-count=1`)
     ;;
   nightly)
+    mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
+    mailcow_last_git_version=""
+    ;;
+  legacy)
     mailcow_git_version=$(git rev-parse --short $(git rev-parse @{upstream}))
     mailcow_last_git_version=""
     ;;
@@ -584,5 +517,3 @@ else
   echo '?>' >> data/web/inc/app_info.inc.php
   echo -e "\e[33mCannot determine current git repository version...\e[0m"
 fi
-
-detect_bad_asn
