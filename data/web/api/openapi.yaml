@@ -5412,9 +5412,9 @@ paths:
                       started_at: "2019-12-22T21:00:07.186717617Z"
                       state: running
                       type: info
-                    redis-mailcow:
-                      container: redis-mailcow
-                      image: "redis:5-alpine"
+                    valkey-mailcow:
+                      container: valkey-mailcow
+                      image: "valkey:7.2.8-alpine"
                       started_at: "2019-12-22T20:59:56.827166834Z"
                       state: running
                       type: info

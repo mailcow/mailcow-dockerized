@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 error_reporting(0);
 
 function api_log($_data) {
-  global $redis;
+  global $valkey;
   $data_var = array();
   foreach ($_data as $data => &$value) {
     if ($data == 'csrf_token') {
@@ -36,12 +36,12 @@ function api_log($_data) {
       'remote' => get_remote_ip(),
       'data' => implode(', ', $data_var)
     );
-    $redis->lPush('API_LOG', json_encode($log_line));
+    $valkey->lPush('API_LOG', json_encode($log_line));
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
       'type' => 'danger',
-      'msg' => 'Redis: '.$e
+      'msg' => 'Valkey: '.$e
     );
     return false;
   }

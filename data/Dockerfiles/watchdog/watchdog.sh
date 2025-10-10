@@ -44,18 +44,18 @@ while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u
 done
 
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  VALKEY_CMDLINE="redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning"
 else
-  REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  VALKEY_CMDLINE="redis-cli -h valkey-mailcow -p 6379 -a ${VALKEYPASS} --no-auth-warning"
 fi
 
-until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
+until [[ $(${VALKEY_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Valkey..."
   sleep 2
 done
 
-${REDIS_CMDLINE} DEL F2B_RES > /dev/null
+${VALKEY_CMDLINE} DEL F2B_RES > /dev/null
 
 # Common functions
 get_ipv6(){
@@ -90,15 +90,15 @@ progress() {
   [[ ${CURRENT} -gt ${TOTAL} ]] && return
   [[ ${CURRENT} -lt 0 ]] && CURRENT=0
   PERCENT=$(( 200 * ${CURRENT} / ${TOTAL} % 2 + 100 * ${CURRENT} / ${TOTAL} ))
-  ${REDIS_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"service\":\"${SERVICE}\",\"lvl\":\"${PERCENT}\",\"hpnow\":\"${CURRENT}\",\"hptotal\":\"${TOTAL}\",\"hpdiff\":\"${DIFF}\"}" > /dev/null
-  log_msg "${SERVICE} health level: ${PERCENT}% (${CURRENT}/${TOTAL}), health trend: ${DIFF}" no_redis
+  ${VALKEY_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"service\":\"${SERVICE}\",\"lvl\":\"${PERCENT}\",\"hpnow\":\"${CURRENT}\",\"hptotal\":\"${TOTAL}\",\"hpdiff\":\"${DIFF}\"}" > /dev/null
+  log_msg "${SERVICE} health level: ${PERCENT}% (${CURRENT}/${TOTAL}), health trend: ${DIFF}" no_valkey
   # Return 10 to indicate a dead service
   [ ${CURRENT} -le 0 ] && return 10
 }
 
 log_msg() {
-  if [[ ${2} != "no_redis" ]]; then
-    ${REDIS_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
+  if [[ ${2} != "no_valkey" ]]; then
+    ${VALKEY_CMDLINE} LPUSH WATCHDOG_LOG "{\"time\":\"$(date +%s)\",\"message\":\"$(printf '%s' "${1}" | \
       tr '\r\n%&;$"_[]{}-' ' ')\"}" > /dev/null
   fi
   echo $(date) $(printf '%s\n' "${1}")
@@ -114,10 +114,10 @@ function notify_error() {
   # If exists, mail will be throttled by argument in seconds
   [[ ! -z ${3} ]] && THROTTLE=${3}
   if [[ ! -z ${THROTTLE} ]]; then
-    TTL_LEFT="$(${REDIS_CMDLINE} TTL THROTTLE_${1} 2> /dev/null)"
+    TTL_LEFT="$(${VALKEY_CMDLINE} TTL THROTTLE_${1} 2> /dev/null)"
     if [[ "${TTL_LEFT}" == "-2" ]]; then
       # Delay key not found, setting a delay key now
-      ${REDIS_CMDLINE} SET THROTTLE_${1} 1 EX ${THROTTLE}
+      ${VALKEY_CMDLINE} SET THROTTLE_${1} 1 EX ${THROTTLE}
     else
       log_msg "Not sending notification email now, blocked for ${TTL_LEFT} seconds..."
       return 1
@@ -324,21 +324,21 @@ unbound_checks() {
   return 1
 }
 
-redis_checks() {
-  # A check for the local redis container
+valkey_checks() {
+  # A check for the local valkey container
   err_count=0
   diff_c=0
-  THRESHOLD=${REDIS_THRESHOLD}
+  THRESHOLD=${VALKEY_THRESHOLD}
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
-    touch /tmp/redis-mailcow; echo "$(tail -50 /tmp/redis-mailcow)" > /tmp/redis-mailcow
-    host_ip=$(get_container_ip redis-mailcow)
+    touch /tmp/valkey-mailcow; echo "$(tail -50 /tmp/valkey-mailcow)" > /tmp/valkey-mailcow
+    host_ip=$(get_container_ip valkey-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/nagios/plugins/check_tcp -4 -H redis-mailcow -p 6379 -E -s "AUTH ${REDISPASS}\nPING\n" -q "QUIT" -e "PONG" 2>> /tmp/redis-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
+    /usr/lib/nagios/plugins/check_tcp -4 -H valkey-mailcow -p 6379 -E -s "AUTH ${VALKEYPASS}\nPING\n" -q "QUIT" -e "PONG" 2>> /tmp/valkey-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
-    progress "Redis" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
+    progress "Valkey" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
     if [[ $? == 10 ]]; then
       diff_c=0
       sleep 1
@@ -533,12 +533,12 @@ dovecot_repl_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${DOVECOT_REPL_THRESHOLD}
-  D_REPL_STATUS=$(redis-cli -h redis -a ${REDISPASS} --no-auth-warning -r GET DOVECOT_REPL_HEALTH)
+  D_REPL_STATUS=$(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning -r GET DOVECOT_REPL_HEALTH)
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
-    D_REPL_STATUS=$(redis-cli --raw -h redis -a ${REDISPASS} --no-auth-warning GET DOVECOT_REPL_HEALTH)
+    D_REPL_STATUS=$(redis-cli --raw -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning GET DOVECOT_REPL_HEALTH)
     if [[ "${D_REPL_STATUS}" != "1" ]]; then
       err_count=$(( ${err_count} + 1 ))
     fi
@@ -608,19 +608,19 @@ ratelimit_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${RATELIMIT_THRESHOLD}
-  RL_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} --no-auth-warning LRANGE RL_LOG 0 0 | jq .qid)
+  RL_LOG_STATUS=$(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning LRANGE RL_LOG 0 0 | jq .qid)
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     RL_LOG_STATUS_PREV=${RL_LOG_STATUS}
-    RL_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} --no-auth-warning LRANGE RL_LOG 0 0 | jq .qid)
+    RL_LOG_STATUS=$(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning LRANGE RL_LOG 0 0 | jq .qid)
     if [[ ${RL_LOG_STATUS_PREV} != ${RL_LOG_STATUS} ]]; then
       err_count=$(( ${err_count} + 1 ))
       echo 'Last 10 applied ratelimits (may overlap with previous reports).' > /tmp/ratelimit
       echo 'Full ratelimit buckets can be emptied by deleting the ratelimit hash from within mailcow UI (see /debug -> Protocols -> Ratelimit):' >> /tmp/ratelimit
       echo >> /tmp/ratelimit
-      redis-cli --raw -h redis -a ${REDISPASS} --no-auth-warning LRANGE RL_LOG 0 10 | jq . >> /tmp/ratelimit
+      redis-cli --raw -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning LRANGE RL_LOG 0 10 | jq . >> /tmp/ratelimit
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
@@ -669,20 +669,20 @@ fail2ban_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${FAIL2BAN_THRESHOLD}
-  F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
+  F2B_LOG_STATUS=($(${VALKEY_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
   F2B_RES=
   # Reduce error count by 2 after restarting an unhealthy container
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     err_c_cur=${err_count}
     F2B_LOG_STATUS_PREV=(${F2B_LOG_STATUS[@]})
-    F2B_LOG_STATUS=($(${REDIS_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
+    F2B_LOG_STATUS=($(${VALKEY_CMDLINE} --raw HKEYS F2B_ACTIVE_BANS))
     array_diff F2B_RES F2B_LOG_STATUS F2B_LOG_STATUS_PREV
     if [[ ! -z "${F2B_RES}" ]]; then
       err_count=$(( ${err_count} + 1 ))
-      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s ${REDIS_CMDLINE} -x SET F2B_RES > /dev/null
+      echo -n "${F2B_RES[@]}" | tr -cd "[a-fA-F0-9.:/] " | timeout 3s ${VALKEY_CMDLINE} -x SET F2B_RES > /dev/null
       if [ $? -ne 0 ]; then
-         ${REDIS_CMDLINE} -x DEL F2B_RES
+         ${VALKEY_CMDLINE} -x DEL F2B_RES
       fi
     fi
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
@@ -703,9 +703,9 @@ acme_checks() {
   err_count=0
   diff_c=0
   THRESHOLD=${ACME_THRESHOLD}
-  ACME_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} --no-auth-warning GET ACME_FAIL_TIME)
+  ACME_LOG_STATUS=$(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning GET ACME_FAIL_TIME)
   if [[ -z "${ACME_LOG_STATUS}" ]]; then
-    ${REDIS_CMDLINE} SET ACME_FAIL_TIME 0
+    ${VALKEY_CMDLINE} SET ACME_FAIL_TIME 0
     ACME_LOG_STATUS=0
   fi
   # Reduce error count by 2 after restarting an unhealthy container
@@ -715,7 +715,7 @@ acme_checks() {
     ACME_LOG_STATUS_PREV=${ACME_LOG_STATUS}
     ACME_LC=0
     until [[ ! -z ${ACME_LOG_STATUS} ]] || [ ${ACME_LC} -ge 3 ]; do
-      ACME_LOG_STATUS=$(redis-cli -h redis -a ${REDISPASS} --no-auth-warning GET ACME_FAIL_TIME 2> /dev/null)
+      ACME_LOG_STATUS=$(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning GET ACME_FAIL_TIME 2> /dev/null)
       sleep 3
       ACME_LC=$((ACME_LC+1))
     done
@@ -864,14 +864,14 @@ BACKGROUND_TASKS+=(${PID})
 
 (
 while true; do
-  if ! redis_checks; then
-    log_msg "Local Redis hit error limit"
-    echo redis-mailcow > /tmp/com_pipe
+  if ! valkey_checks; then
+    log_msg "Local Valkey hit error limit"
+    echo valkey-mailcow > /tmp/com_pipe
   fi
 done
 ) &
 PID=$!
-echo "Spawned redis_checks with PID ${PID}"
+echo "Spawned valkey_checks with PID ${PID}"
 BACKGROUND_TASKS+=(${PID})
 
 (
@@ -1129,9 +1129,9 @@ while true; do
     # Define $2 to override message text, else print service was restarted at ...
     notify_error "${com_pipe_answer}" "Please check acme-mailcow for further information."
   elif [[ ${com_pipe_answer} == "fail2ban" ]]; then
-    F2B_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET F2B_RES 2> /dev/null))
+    F2B_RES=($(timeout 4s ${VALKEY_CMDLINE} --raw GET F2B_RES 2> /dev/null))
     if [[ ! -z "${F2B_RES}" ]]; then
-      ${REDIS_CMDLINE} DEL F2B_RES > /dev/null
+      ${VALKEY_CMDLINE} DEL F2B_RES > /dev/null
       host=
       for host in "${F2B_RES[@]}"; do
         log_msg "Banned ${host}"

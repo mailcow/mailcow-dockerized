@@ -1,7 +1,7 @@
 <?php
 function fwdhost($_action, $_data = null) {
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
-  global $redis;
+  global $valkey;
   global $lang;
   $_data_log = $_data;
   switch ($_action) {
@@ -37,19 +37,19 @@ function fwdhost($_action, $_data = null) {
       }
       foreach ($hosts as $host) {
         try {
-          $redis->hSet('WHITELISTED_FWD_HOST', $host, $source);
+          $valkey->hSet('WHITELISTED_FWD_HOST', $host, $source);
           if ($filter_spam == 0) {
-            $redis->hSet('KEEP_SPAM', $host, 1);
+            $valkey->hSet('KEEP_SPAM', $host, 1);
           }
-          elseif ($redis->hGet('KEEP_SPAM', $host)) {
-            $redis->hDel('KEEP_SPAM', $host);
+          elseif ($valkey->hGet('KEEP_SPAM', $host)) {
+            $valkey->hDel('KEEP_SPAM', $host);
           }
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           return false;
         }
@@ -86,17 +86,17 @@ function fwdhost($_action, $_data = null) {
         }
         try {
           if ($keep_spam == 1) {
-            $redis->hSet('KEEP_SPAM', $fwdhost, 1);
+            $valkey->hSet('KEEP_SPAM', $fwdhost, 1);
           }
           else {
-            $redis->hDel('KEEP_SPAM', $fwdhost);
+            $valkey->hDel('KEEP_SPAM', $fwdhost);
           }
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           continue;
         }
@@ -111,14 +111,14 @@ function fwdhost($_action, $_data = null) {
       $hosts = (array)$_data['forwardinghost'];
       foreach ($hosts as $host) {
         try {
-          $redis->hDel('WHITELISTED_FWD_HOST', $host);
-          $redis->hDel('KEEP_SPAM', $host);
+          $valkey->hDel('WHITELISTED_FWD_HOST', $host);
+          $valkey->hDel('KEEP_SPAM', $host);
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('redis_error', $e)
+            'msg' => array('valkey_error', $e)
           );
           continue;
         }
@@ -135,10 +135,10 @@ function fwdhost($_action, $_data = null) {
       }
       $fwdhostsdata = array();
       try {
-        $fwd_hosts = $redis->hGetAll('WHITELISTED_FWD_HOST');
+        $fwd_hosts = $valkey->hGetAll('WHITELISTED_FWD_HOST');
         if (!empty($fwd_hosts)) {
         foreach ($fwd_hosts as $fwd_host => $source) {
-          $keep_spam = ($redis->hGet('KEEP_SPAM', $fwd_host)) ? "yes" : "no";
+          $keep_spam = ($valkey->hGet('KEEP_SPAM', $fwd_host)) ? "yes" : "no";
           $fwdhostsdata[] = array(
             'host' => $fwd_host,
             'source' => $source,
@@ -151,7 +151,7 @@ function fwdhost($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -163,17 +163,17 @@ function fwdhost($_action, $_data = null) {
         return false;
       }
       try {
-        if ($source = $redis->hGet('WHITELISTED_FWD_HOST', $_data)) {
+        if ($source = $valkey->hGet('WHITELISTED_FWD_HOST', $_data)) {
           $fwdhostdetails['host'] = $_data;
           $fwdhostdetails['source'] = $source;
-          $fwdhostdetails['keep_spam'] = ($redis->hGet('KEEP_SPAM', $_data)) ? "yes" : "no";
+          $fwdhostdetails['keep_spam'] = ($valkey->hGet('KEEP_SPAM', $_data)) ? "yes" : "no";
         }
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }

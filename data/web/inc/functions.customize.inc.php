@@ -1,6 +1,6 @@
 <?php
 function customize($_action, $_item, $_data = null) {
-	global $redis;
+	global $valkey;
 	global $lang;
   global $LOGO_LIMITS;
 
@@ -82,13 +82,13 @@ function customize($_action, $_item, $_data = null) {
             return false;
           }
           try {
-            $redis->Set(strtoupper($_item), 'data:' . $_data[$_item]['type'] . ';base64,' . base64_encode(file_get_contents($_data[$_item]['tmp_name'])));
+            $valkey->Set(strtoupper($_item), 'data:' . $_data[$_item]['type'] . ';base64,' . base64_encode(file_get_contents($_data[$_item]['tmp_name'])));
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -134,13 +134,13 @@ function customize($_action, $_item, $_data = null) {
               ));
             }
             try {
-              $redis->set('APP_LINKS', json_encode($out));
+              $valkey->set('APP_LINKS', json_encode($out));
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_item, $_data),
-                'msg' => array('redis_error', $e)
+                'msg' => array('valkey_error', $e)
               );
               return false;
             }
@@ -162,20 +162,20 @@ function customize($_action, $_item, $_data = null) {
           $ui_announcement_active = (!empty($_data['ui_announcement_active']) ? 1 : 0);
 
           try {
-            $redis->set('TITLE_NAME', htmlspecialchars($title_name));
-            $redis->set('MAIN_NAME', htmlspecialchars($main_name));
-            $redis->set('APPS_NAME', htmlspecialchars($apps_name));
-            $redis->set('HELP_TEXT', $help_text);
-            $redis->set('UI_FOOTER', $ui_footer);
-            $redis->set('UI_ANNOUNCEMENT_TEXT', $ui_announcement_text);
-            $redis->set('UI_ANNOUNCEMENT_TYPE', $ui_announcement_type);
-            $redis->set('UI_ANNOUNCEMENT_ACTIVE', $ui_announcement_active);
+            $valkey->set('TITLE_NAME', htmlspecialchars($title_name));
+            $valkey->set('MAIN_NAME', htmlspecialchars($main_name));
+            $valkey->set('APPS_NAME', htmlspecialchars($apps_name));
+            $valkey->set('HELP_TEXT', $help_text);
+            $valkey->set('UI_FOOTER', $ui_footer);
+            $valkey->set('UI_ANNOUNCEMENT_TEXT', $ui_announcement_text);
+            $valkey->set('UI_ANNOUNCEMENT_TYPE', $ui_announcement_type);
+            $valkey->set('UI_ANNOUNCEMENT_ACTIVE', $ui_announcement_active);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -188,13 +188,13 @@ function customize($_action, $_item, $_data = null) {
         case 'ip_check':
           $ip_check = ($_data['ip_check_opt_in'] == "1") ? 1 : 0;
           try {
-            $redis->set('IP_CHECK', $ip_check);
+            $valkey->set('IP_CHECK', $ip_check);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -217,7 +217,7 @@ function customize($_action, $_item, $_data = null) {
             "force_sso" => $force_sso,
           );
           try {
-            $redis->set('CUSTOM_LOGIN', json_encode($custom_login));
+            $valkey->set('CUSTOM_LOGIN', json_encode($custom_login));
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
@@ -257,7 +257,7 @@ function customize($_action, $_item, $_data = null) {
         case 'main_logo':
         case 'main_logo_dark':
           try {
-            if ($redis->del(strtoupper($_item))) {
+            if ($valkey->del(strtoupper($_item))) {
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_item, $_data),
@@ -270,7 +270,7 @@ function customize($_action, $_item, $_data = null) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -281,13 +281,13 @@ function customize($_action, $_item, $_data = null) {
       switch ($_item) {
         case 'app_links':
           try {
-            $app_links = json_decode($redis->get('APP_LINKS'), true);
+            $app_links = json_decode($valkey->get('APP_LINKS'), true);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -312,13 +312,13 @@ function customize($_action, $_item, $_data = null) {
         case 'main_logo':
         case 'main_logo_dark':
           try {
-            return $redis->get(strtoupper($_item));
+            return $valkey->get(strtoupper($_item));
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -327,25 +327,25 @@ function customize($_action, $_item, $_data = null) {
           try {
             $mailcow_hostname = strtolower(getenv("MAILCOW_HOSTNAME"));
 
-            $data['title_name'] = ($title_name = $redis->get('TITLE_NAME')) ? $title_name : "$mailcow_hostname - mail UI";
-            $data['main_name'] = ($main_name = $redis->get('MAIN_NAME')) ? $main_name : "$mailcow_hostname - mail UI";
-            $data['apps_name'] = ($apps_name = $redis->get('APPS_NAME')) ? $apps_name : $lang['header']['apps'];
-            $data['help_text'] = ($help_text = $redis->get('HELP_TEXT')) ? $help_text : false;
-            if (!empty($redis->get('UI_IMPRESS'))) {
-              $redis->set('UI_FOOTER', $redis->get('UI_IMPRESS'));
-              $redis->del('UI_IMPRESS');
+            $data['title_name'] = ($title_name = $valkey->get('TITLE_NAME')) ? $title_name : "$mailcow_hostname - mail UI";
+            $data['main_name'] = ($main_name = $valkey->get('MAIN_NAME')) ? $main_name : "$mailcow_hostname - mail UI";
+            $data['apps_name'] = ($apps_name = $valkey->get('APPS_NAME')) ? $apps_name : $lang['header']['apps'];
+            $data['help_text'] = ($help_text = $valkey->get('HELP_TEXT')) ? $help_text : false;
+            if (!empty($valkey->get('UI_IMPRESS'))) {
+              $valkey->set('UI_FOOTER', $valkey->get('UI_IMPRESS'));
+              $valkey->del('UI_IMPRESS');
             }
-            $data['ui_footer'] = ($ui_footer = $redis->get('UI_FOOTER')) ? $ui_footer : false;
-            $data['ui_announcement_text'] = ($ui_announcement_text = $redis->get('UI_ANNOUNCEMENT_TEXT')) ? $ui_announcement_text : false;
-            $data['ui_announcement_type'] = ($ui_announcement_type = $redis->get('UI_ANNOUNCEMENT_TYPE')) ? $ui_announcement_type : false;
-            $data['ui_announcement_active'] = ($redis->get('UI_ANNOUNCEMENT_ACTIVE') == 1) ? 1 : 0;
+            $data['ui_footer'] = ($ui_footer = $valkey->get('UI_FOOTER')) ? $ui_footer : false;
+            $data['ui_announcement_text'] = ($ui_announcement_text = $valkey->get('UI_ANNOUNCEMENT_TEXT')) ? $ui_announcement_text : false;
+            $data['ui_announcement_type'] = ($ui_announcement_type = $valkey->get('UI_ANNOUNCEMENT_TYPE')) ? $ui_announcement_type : false;
+            $data['ui_announcement_active'] = ($valkey->get('UI_ANNOUNCEMENT_ACTIVE') == 1) ? 1 : 0;
             return $data;
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
@@ -376,21 +376,21 @@ function customize($_action, $_item, $_data = null) {
         break;
         case 'ip_check':
           try {
-            $ip_check = ($ip_check = $redis->get('IP_CHECK')) ? $ip_check : 0;
+            $ip_check = ($ip_check = $valkey->get('IP_CHECK')) ? $ip_check : 0;
             return $ip_check;
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_item, $_data),
-              'msg' => array('redis_error', $e)
+              'msg' => array('valkey_error', $e)
             );
             return false;
           }
         break;
         case 'custom_login':
           try {
-            $custom_login = $redis->get('CUSTOM_LOGIN');
+            $custom_login = $valkey->get('CUSTOM_LOGIN');
             return $custom_login ? json_decode($custom_login, true) : array();
           }
           catch (RedisException $e) {

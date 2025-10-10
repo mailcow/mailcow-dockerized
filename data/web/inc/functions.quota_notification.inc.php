@@ -1,6 +1,6 @@
 <?php
 function quota_notification($_action, $_data = null) {
-	global $redis;
+	global $valkey;
 	$_data_log = $_data;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
@@ -26,15 +26,15 @@ function quota_notification($_action, $_data = null) {
       }
       $html = $_data['html_tmpl'];
       try {
-        $redis->Set('QW_SENDER', $sender);
-        $redis->Set('QW_SUBJ', $subject);
-        $redis->Set('QW_HTML', $html);
+        $valkey->Set('QW_SENDER', $sender);
+        $valkey->Set('QW_SUBJ', $subject);
+        $valkey->Set('QW_HTML', $html);
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -46,9 +46,9 @@ function quota_notification($_action, $_data = null) {
     break;
     case 'get':
       try {
-        $settings['subject'] = $redis->Get('QW_SUBJ');
-        $settings['sender'] = $redis->Get('QW_SENDER');
-        $settings['html_tmpl'] = htmlspecialchars($redis->Get('QW_HTML'));
+        $settings['subject'] = $valkey->Get('QW_SUBJ');
+        $settings['sender'] = $valkey->Get('QW_SENDER');
+        $settings['html_tmpl'] = htmlspecialchars($valkey->Get('QW_HTML'));
         if (empty($settings['html_tmpl'])) {
           $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quota.tpl"));
         }
@@ -57,7 +57,7 @@ function quota_notification($_action, $_data = null) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -66,7 +66,7 @@ function quota_notification($_action, $_data = null) {
   }
 }
 function quota_notification_bcc($_action, $_data = null) {
-	global $redis;
+	global $valkey;
 	$_data_log = $_data;
   if ($_SESSION['mailcow_cc_role'] != "admin" && $_SESSION['mailcow_cc_role'] != "domainadmin") {
     $_SESSION['return'][] = array(
@@ -105,16 +105,16 @@ function quota_notification_bcc($_action, $_data = null) {
       $bcc_rcpts = array_filter($bcc_rcpts);
       if (empty($bcc_rcpts)) {
         $active = 0;
-        
+
       }
       try {
-        $redis->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpts' => $bcc_rcpts, 'active' => $active)));
+        $valkey->hSet('QW_BCC', $domain, json_encode(array('bcc_rcpts' => $bcc_rcpts, 'active' => $active)));
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }
@@ -135,13 +135,13 @@ function quota_notification_bcc($_action, $_data = null) {
         return false;
       }
       try {
-        return json_decode($redis->hGet('QW_BCC', $domain), true);
+        return json_decode($valkey->hGet('QW_BCC', $domain), true);
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('redis_error', $e)
+          'msg' => array('valkey_error', $e)
         );
         return false;
       }

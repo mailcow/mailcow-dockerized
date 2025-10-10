@@ -423,7 +423,7 @@
         "pushover_token": "Formaat van Pushover-token is ongeldig",
         "quota_not_0_not_numeric": "Quota dient numeriek en groter dan 0 te zijn",
         "recipient_map_entry_exists": "Ontvanger-map met \"%s\" bestaat reeds",
-        "redis_error": "Redis-error: %s",
+        "valkey_error": "Valkey-error: %s",
         "relayhost_invalid": "Invoer %s is ongeldig",
         "release_send_failed": "Het volgende bericht kon niet worden vrijgegeven: %s",
         "reset_f2b_regex": "Regex-filters konden niet worden hersteld, probeer het opnieuw of herlaad de pagina over enkele seconden.",

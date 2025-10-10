@@ -1,7 +1,7 @@
 <?php
 function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
   global $pdo;
-  global $redis;
+  global $valkey;
 
   $is_internal = $extra['is_internal'];
   $role = $extra['role'];
@@ -62,12 +62,12 @@ function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
 
   if (!isset($_SESSION['ldelay'])) {
     $_SESSION['ldelay'] = "0";
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $valkey->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
   elseif (!isset($_SESSION['mailcow_cc_username'])) {
     $_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    $valkey->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
   }
   $_SESSION['return'][] =  array(

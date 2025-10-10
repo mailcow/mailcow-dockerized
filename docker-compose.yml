@@ -41,28 +41,29 @@ services:
           aliases:
             - mysql
 
-    redis-mailcow:
-      image: redis:7.4.2-alpine
-      entrypoint: ["/bin/sh","/redis-conf.sh"]
+    valkey-mailcow:
+      image: valkey/valkey:7.2.8-alpine
+      entrypoint: ["/bin/sh","/valkey-conf.sh"]
+      command: ["valkey-server", "/valkey.conf"]
       volumes:
-        - redis-vol-1:/data/
-        - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
+        - valkey-vol-1:/data/
+        - ./data/conf/valkey/valkey-conf.sh:/valkey-conf.sh:z
       restart: always
       depends_on:
         - netfilter-mailcow
       ports:
-        - "${REDIS_PORT:-127.0.0.1:7654}:6379"
+        - "${VALKEY_PORT:-127.0.0.1:7654}:6379"
       environment:
         - TZ=${TZ}
-        - REDISPASS=${REDISPASS}
-        - REDISMASTERPASS=${REDISMASTERPASS:-}
+        - VALKEYPASS=${VALKEYPASS}
+        - VALKEYMASTERPASS=${VALKEYMASTERPASS:-}
       sysctls:
         - net.core.somaxconn=4096
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
           aliases:
-            - redis
+            - valkey
 
     clamd-mailcow:
       image: ghcr.io/mailcow/clamd:1.71
@@ -84,7 +85,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.3
+      image: ghcr.io/mailcow/rspamd:2.4
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -93,9 +94,9 @@ services:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       volumes:
         - ./data/hooks/rspamd:/hooks:Z
@@ -117,10 +118,10 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.93
+      image: ghcr.io/mailcow/phpfpm:1.94
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
-        - redis-mailcow
+        - valkey-mailcow
       volumes:
         - ./data/hooks/phpfpm:/hooks:Z
         - ./data/web:/web:z
@@ -150,9 +151,9 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
@@ -200,7 +201,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.136
+      image: ghcr.io/mailcow/sogo:1.137
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -216,9 +217,9 @@ services:
         - SOGO_URL_ENCRYPTION_KEY=${SOGO_URL_ENCRYPTION_KEY:-SOGoSuperSecret0}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - MASTER=${MASTER:-y}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
@@ -252,11 +253,11 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.35
+      image: ghcr.io/mailcow/dovecot:2.36
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
-        - redis-mailcow
+        - valkey-mailcow
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
@@ -295,9 +296,9 @@ services:
         - FTS_PROCS=${FTS_PROCS:-3}
         - MAILDIR_SUB=${MAILDIR_SUB:-}
         - MASTER=${MASTER:-y}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
       ports:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
@@ -339,7 +340,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.81
+      image: ghcr.io/mailcow/postfix:1.82
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -361,9 +362,9 @@ services:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
       cap_add:
@@ -382,7 +383,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      image: ghcr.io/mailcow/postfix-tlspol:1.1
       depends_on:
         unbound-mailcow:
           condition: service_healthy
@@ -391,9 +392,9 @@ services:
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - DEV_MODE=${DEV_MODE:-n}
       restart: always
       dns:
@@ -415,7 +416,7 @@ services:
 
     nginx-mailcow:
       depends_on:
-        - redis-mailcow
+        - valkey-mailcow
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
@@ -435,7 +436,7 @@ services:
         - PHPFPMHOST=${PHPFPMHOST:-}
         - SOGOHOST=${SOGOHOST:-}
         - RSPAMDHOST=${RSPAMDHOST:-}
-        - REDISHOST=${REDISHOST:-}
+        - VALKEYHOST=${VALKEYHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
@@ -465,7 +466,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.94
+      image: ghcr.io/mailcow/acme:1.95
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -485,9 +486,9 @@ services:
         - ONLY_MAILCOW_HOSTNAME=${ONLY_MAILCOW_HOSTNAME:-n}
         - LE_STAGING=${LE_STAGING:-n}
         - TZ=${TZ}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
@@ -502,7 +503,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.63
+      image: ghcr.io/mailcow/netfilter:1.64
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -512,9 +513,9 @@ services:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
         - DISABLE_NETFILTER_ISOLATION_RULE=${DISABLE_NETFILTER_ISOLATION_RULE:-n}
       network_mode: "host"
@@ -538,7 +539,7 @@ services:
         - dovecot-mailcow
         - mysql-mailcow
         - acme-mailcow
-        - redis-mailcow
+        - valkey-mailcow
       environment:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
@@ -567,13 +568,13 @@ services:
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_SOGO=${SKIP_SOGO:-n}
         - HTTPS_PORT=${HTTPS_PORT:-443}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
         - EXTERNAL_CHECKS_THRESHOLD=${EXTERNAL_CHECKS_THRESHOLD:-1}
         - NGINX_THRESHOLD=${NGINX_THRESHOLD:-5}
         - UNBOUND_THRESHOLD=${UNBOUND_THRESHOLD:-5}
-        - REDIS_THRESHOLD=${REDIS_THRESHOLD:-5}
+        - VALKEY_THRESHOLD=${VALKEY_THRESHOLD:-5}
         - MYSQL_THRESHOLD=${MYSQL_THRESHOLD:-5}
         - MYSQL_REPLICATION_THRESHOLD=${MYSQL_REPLICATION_THRESHOLD:-1}
         - SOGO_THRESHOLD=${SOGO_THRESHOLD:-3}
@@ -597,7 +598,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.11
+      image: ghcr.io/mailcow/dockerapi:2.12
       security_opt:
         - label=disable
       restart: always
@@ -606,11 +607,12 @@ services:
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - REDISPASS=${REDISPASS}
+        - VALKEY_SLAVEOF_IP=${VALKEY_SLAVEOF_IP:-}
+        - VALKEY_SLAVEOF_PORT=${VALKEY_SLAVEOF_PORT:-}
+        - VALKEYPASS=${VALKEYPASS}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - redis-vol-1:/redis-data/
       networks:
         mailcow-network:
           aliases:
@@ -674,6 +676,7 @@ volumes:
   mysql-vol-1:
   mysql-socket-vol-1:
   redis-vol-1:
+  valkey-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
   postfix-tlspol-vol-1:

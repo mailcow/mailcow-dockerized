@@ -23,16 +23,16 @@ if (file_exists('../../../web/inc/vars.local.inc.php')) {
 require_once '../../../web/inc/lib/vendor/autoload.php';
 
 
-// Init Redis
-$redis = new Redis();
+// Init Valkey
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
   error_log("MAILCOWAUTH: " . $e . PHP_EOL);

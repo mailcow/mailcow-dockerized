@@ -57,22 +57,22 @@ $WebAuthn = new lbuchs\WebAuthn\WebAuthn('WebAuthn Library', $server_name, $form
 // only include root ca's when needed
 if (getenv('WEBAUTHN_ONLY_TRUSTED_VENDORS') == 'y') $WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates');
 
-// Redis
-$redis = new Redis();
+// Valkey
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
-// Stop when redis is not available
+// Stop when valkey is not available
 http_response_code(500);
 ?>
-<center style='font-family:sans-serif;'>Connection to Redis failed.<br /><br />The following error was reported:<br/><?=$e->getMessage();?></center>
+<center style='font-family:sans-serif;'>Connection to Valkey failed.<br /><br />The following error was reported:<br/><?=$e->getMessage();?></center>
 <?php
 exit;
 }

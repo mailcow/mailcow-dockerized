@@ -52,33 +52,33 @@ if [[ ! -z ${RSPAMD_V6} ]]; then
   echo ${RSPAMD_V6}/128 >> /etc/rspamd/custom/rspamd_trusted.map
 fi
 
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
   cat <<EOF > /etc/rspamd/local.d/redis.conf
-read_servers = "redis:6379";
-write_servers = "${REDIS_SLAVEOF_IP}:${REDIS_SLAVEOF_PORT}";
-password = "${REDISPASS}";
+read_servers = "valkey-mailcow:6379";
+write_servers = "${VALKEY_SLAVEOF_IP}:${VALKEY_SLAVEOF_PORT}";
+password = "${VALKEYPASS}";
 timeout = 10;
 EOF
-  until [[ $(redis-cli -h redis-mailcow -a ${REDISPASS} --no-auth-warning PING) == "PONG" ]]; do
-    echo "Waiting for Redis @redis-mailcow..."
+  until [[ $(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning PING) == "PONG" ]]; do
+    echo "Waiting for Valkey @valkey-mailcow..."
     sleep 2
   done
-  until [[ $(redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning PING) == "PONG" ]]; do
-    echo "Waiting for Redis @${REDIS_SLAVEOF_IP}..."
+  until [[ $(redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning PING) == "PONG" ]]; do
+    echo "Waiting for Valkey @${VALKEY_SLAVEOF_IP}..."
     sleep 2
   done
-  redis-cli -h redis-mailcow -a ${REDISPASS} --no-auth-warning SLAVEOF ${REDIS_SLAVEOF_IP} ${REDIS_SLAVEOF_PORT}
+  redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning SLAVEOF ${VALKEY_SLAVEOF_IP} ${VALKEY_SLAVEOF_PORT}
 else
   cat <<EOF > /etc/rspamd/local.d/redis.conf
-servers = "redis:6379";
-password = "${REDISPASS}";
+servers = "valkey-mailcow:6379";
+password = "${VALKEYPASS}";
 timeout = 10;
 EOF
-  until [[ $(redis-cli -h redis-mailcow -a ${REDISPASS} --no-auth-warning PING) == "PONG" ]]; do
-    echo "Waiting for Redis slave..."
+  until [[ $(redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning PING) == "PONG" ]]; do
+    echo "Waiting for Valkey slave..."
     sleep 2
   done
-  redis-cli -h redis-mailcow -a ${REDISPASS} --no-auth-warning SLAVEOF NO ONE
+  redis-cli -h valkey-mailcow -a ${VALKEYPASS} --no-auth-warning SLAVEOF NO ONE
 fi
 
 if [[ "${SKIP_OLEFY}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then

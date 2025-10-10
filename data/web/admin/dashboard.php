@@ -21,7 +21,7 @@ $clamd_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_CLAMD"])) ? 
 $olefy_status = (preg_match("/^([yY][eE][sS]|[yY])+$/", $_ENV["SKIP_OLEFY"])) ? false : true;
 
 
-if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CACHE')) {
+if (!isset($_SESSION['gal']) && $license_cache = $valkey->Get('LICENSE_STATUS_CACHE')) {
   $_SESSION['gal'] = json_decode($license_cache, true);
 }
 

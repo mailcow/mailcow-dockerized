@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY syslog-ng-valkey_slave.conf /etc/syslog-ng/syslog-ng-valkey_slave.conf
 COPY postfix-tlspol.sh /opt/postfix-tlspol.sh
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh

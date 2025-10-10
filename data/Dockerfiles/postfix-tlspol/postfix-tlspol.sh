@@ -17,14 +17,14 @@ until dig +short mailcow.email > /dev/null; do
 done
 
 # Do not attempt to write to slave
-if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+if [[ ! -z ${VALKEY_SLAVEOF_IP} ]]; then
+  export VALKEY_CMDLINE="redis-cli -h ${VALKEY_SLAVEOF_IP} -p ${VALKEY_SLAVEOF_PORT} -a ${VALKEYPASS} --no-auth-warning"
 else
-  export REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  export VALKEY_CMDLINE="redis-cli -h valkey -p 6379 -a ${VALKEYPASS} --no-auth-warning"
 fi
 
-until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
-  echo "Waiting for Redis..."
+until [[ $(${VALKEY_CMDLINE} PING) == "PONG" ]]; do
+  echo "Waiting for Valkey..."
   sleep 2
 done
 

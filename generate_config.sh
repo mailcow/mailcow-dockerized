@@ -190,9 +190,10 @@ DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
 # ------------------------------
-# REDIS configuration
+# VALKEY configuration
 # ------------------------------
-REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
+
+VALKEYPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 
 # ------------------------------
 # HTTP/S Bindings
@@ -230,7 +231,7 @@ POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
-REDIS_PORT=127.0.0.1:7654
+VALKEY_PORT=127.0.0.1:7654
 
 # Your timezone
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones
@@ -371,7 +372,8 @@ WATCHDOG_EXTERNAL_CHECKS=n
 # Enable watchdog verbose logging
 WATCHDOG_VERBOSE=n
 
-# Max log lines per service to keep in Redis logs
+# Max log lines per service to keep in Valkey logs
+
 LOG_LINES=9999
 
 # Internal IPv4 /24 subnet, format n.n.n (expands to n.n.n.0/24)

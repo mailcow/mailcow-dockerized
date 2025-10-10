@@ -23,16 +23,16 @@ catch (PDOException $e) {
   exit;
 }
 
-// Init Redis
-$redis = new Redis();
+// Init Valkey
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
   echo "Exiting: " . $e->getMessage();
@@ -41,7 +41,7 @@ catch (Exception $e) {
 }
 
 function logMsg($priority, $message, $task = "LDAP Sync") {
-  global $redis;
+  global $valkey;
 
   $finalMsg = array(
     "time" => time(),
@@ -49,7 +49,7 @@ function logMsg($priority, $message, $task = "LDAP Sync") {
     "task" => $task,
     "message" => $message
   );
-  $redis->lPush('CRON_LOG', json_encode($finalMsg));
+  $valkey->lPush('CRON_LOG', json_encode($finalMsg));
 }
 
 // Load core functions first

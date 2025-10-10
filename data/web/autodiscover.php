@@ -10,16 +10,16 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
-// Redis
-$redis = new Redis();
+// Valkey
+$valkey = new Redis();
 try {
-  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
-    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  if (!empty(getenv('VALKEY_SLAVEOF_IP'))) {
+    $valkey->connect(getenv('VALKEY_SLAVEOF_IP'), getenv('VALKEY_SLAVEOF_PORT'));
   }
   else {
-    $redis->connect('redis-mailcow', 6379);
+    $valkey->connect('valkey-mailcow', 6379);
   }
-  $redis->auth(getenv("REDISPASS"));
+  $valkey->auth(getenv("VALKEYPASS"));
 }
 catch (Exception $e) {
   exit;
@@ -71,7 +71,7 @@ if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
       "service" => "Error: must be authenticated"
     )
   );
-  $redis->lPush('AUTODISCOVER_LOG', $json);
+  $valkey->lPush('AUTODISCOVER_LOG', $json);
   header('WWW-Authenticate: Basic realm="' . $_SERVER['HTTP_HOST'] . '"');
   header('HTTP/1.0 401 Unauthorized');
   exit(0);
@@ -96,13 +96,13 @@ if ($login_role === "user") {
           "service" => "Error: invalid or missing request data"
         )
       );
-      $redis->lPush('AUTODISCOVER_LOG', $json);
-      $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+      $valkey->lPush('AUTODISCOVER_LOG', $json);
+      $valkey->lTrim('AUTODISCOVER_LOG', 0, 100);
     }
     catch (RedisException $e) {
       $_SESSION['return'][] = array(
         'type' => 'danger',
-        'msg' => 'Redis: '.$e
+        'msg' => 'Valkey: '.$e
       );
       return false;
     }
@@ -151,13 +151,13 @@ if ($login_role === "user") {
         "service" => $autodiscover_config['autodiscoverType']
       )
     );
-    $redis->lPush('AUTODISCOVER_LOG', $json);
-    $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+    $valkey->lPush('AUTODISCOVER_LOG', $json);
+    $valkey->lTrim('AUTODISCOVER_LOG', 0, 100);
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
       'type' => 'danger',
-      'msg' => 'Redis: '.$e
+      'msg' => 'Valkey: '.$e
     );
     return false;
   }
