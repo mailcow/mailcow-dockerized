@@ -1016,11 +1016,26 @@ function edit_user_account($_data) {
     update_sogo_static_view();
   }
   // edit password recovery email
-  elseif (isset($pw_recovery_email)) {
+  elseif (!empty($password_old) && isset($pw_recovery_email)) {
     if (!isset($_SESSION['acl']['pw_reset']) || $_SESSION['acl']['pw_reset'] != "1" ) {
       $_SESSION['return'][] = array(
         'type' => 'danger',
         'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+
+    $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `username` = :user AND authsource = 'mailcow'");
+    $stmt->execute(array(':user' => $username));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!verify_hash($row['password'], $password_old)) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
         'msg' => 'access_denied'
       );
       return false;

@@ -42,7 +42,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.2-alpine
+      image: redis:7.4.6-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
@@ -84,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:2.3
+      image: ghcr.io/mailcow/rspamd:2.4
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:nightly-11092025
+      image: ghcr.io/mailcow/phpfpm:nightly-15102025
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -503,7 +503,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.62
+      image: ghcr.io/mailcow/netfilter:1.63
       stop_grace_period: 30s
       restart: always
       privileged: true
