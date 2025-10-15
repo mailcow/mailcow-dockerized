@@ -36,6 +36,8 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Ddeboer\\Imap\\' => array($vendorDir . '/ddeboer/imap/src'),
+    'DASPRiD\\Enum\\' => array($vendorDir . '/dasprid/enum/src'),
     'Carbon\\Doctrine\\' => array($vendorDir . '/carbonphp/carbon-doctrine-types/src/Carbon/Doctrine'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
+    'BaconQrCode\\' => array($vendorDir . '/bacon/bacon-qr-code/src'),
 );
