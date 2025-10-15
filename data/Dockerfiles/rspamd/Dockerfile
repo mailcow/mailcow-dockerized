@@ -2,7 +2,7 @@ FROM debian:bookworm-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.12.1-1~6dbfca2fa
+ARG RSPAMD_VER=rspamd_3.13.2-1~8bf602278
 ARG CODENAME=bookworm
 ENV LC_ALL=C
 
@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   netcat-traditional \
   wget \
-  redis-tools \ 
-  procps \ 
+  redis-tools \
+  procps \
   nano \
   lua-cjson \
   && arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) \
