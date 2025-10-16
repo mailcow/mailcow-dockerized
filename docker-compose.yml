@@ -10,6 +10,8 @@ services:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
       restart: always
       tty: true
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
@@ -36,6 +38,8 @@ services:
       restart: always
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -58,6 +62,8 @@ services:
         - REDISMASTERPASS=${REDISMASTERPASS:-}
       sysctls:
         - net.core.somaxconn=4096
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
@@ -78,6 +84,8 @@ services:
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
         - clamd-db-vol-1:/var/lib/clamav
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -111,6 +119,8 @@ services:
       hostname: rspamd
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -194,6 +204,8 @@ services:
         ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -245,6 +257,8 @@ services:
         ofelia.job-exec.sogo_backup.schedule: "@every 24h"
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       restart: always
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
@@ -332,6 +346,8 @@ services:
         nofile:
           soft: 20000
           hard: 40000
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.250
@@ -375,6 +391,8 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.253
@@ -398,6 +416,8 @@ services:
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -408,6 +428,8 @@ services:
       restart: always
       environment:
         - TZ=${TZ}
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -454,6 +476,8 @@ services:
         - "${HTTPS_BIND:-}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -496,6 +520,8 @@ services:
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
       restart: always
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -520,6 +546,8 @@ services:
       network_mode: "host"
       volumes:
         - /lib/modules:/lib/modules:ro
+      security_opt:
+        - no-new-privileges:true
 
     watchdog-mailcow:
       image: ghcr.io/mailcow/watchdog:2.09
@@ -591,6 +619,8 @@ services:
         - MAILQ_THRESHOLD=${MAILQ_THRESHOLD:-20}
         - MAILQ_CRIT=${MAILQ_CRIT:-30}
         - DEV_MODE=${DEV_MODE:-n}
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -611,6 +641,8 @@ services:
         - REDISPASS=${REDISPASS}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -630,6 +662,8 @@ services:
         - OLEFY_MINLENGTH=500
         - OLEFY_DEL_TMP=1
         - SKIP_OLEFY=${SKIP_OLEFY:-n}
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -651,6 +685,8 @@ services:
         - label=disable
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
+      security_opt:
+        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
