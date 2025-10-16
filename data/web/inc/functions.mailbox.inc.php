@@ -1073,7 +1073,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
           $tls_enforce_in = (isset($_data['tls_enforce_in'])) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
           $tls_enforce_out = (isset($_data['tls_enforce_out'])) ? intval($_data['tls_enforce_out']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out']);
-          $sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access']);
+          $sogo_redirection = (isset($_data['sogo_redirection'])) ? intval($_data['sogo_redirection']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_redirection']);
           $imap_access = (isset($_data['imap_access'])) ? intval($_data['imap_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['imap_access']);
           $pop3_access = (isset($_data['pop3_access'])) ? intval($_data['pop3_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['pop3_access']);
           $smtp_access = (isset($_data['smtp_access'])) ? intval($_data['smtp_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['smtp_access']);
@@ -1091,7 +1091,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'force_pw_update' => strval($force_pw_update),
               'tls_enforce_in' => strval($tls_enforce_in),
               'tls_enforce_out' => strval($tls_enforce_out),
-              'sogo_access' => strval($sogo_access),
+              'sogo_redirection' => strval($sogo_redirection),
               'imap_access' => strval($imap_access),
               'pop3_access' => strval($pop3_access),
               'smtp_access' => strval($smtp_access),
@@ -1280,6 +1280,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['syncjobs'] = (in_array('syncjobs', $_data['acl'])) ? 1 : 0;
             $_data['eas_reset'] = (in_array('eas_reset', $_data['acl'])) ? 1 : 0;
             $_data['sogo_profile_reset'] = (in_array('sogo_profile_reset', $_data['acl'])) ? 1 : 0;
+            $_data['sogo_access'] = (in_array('sogo_access', $_data['acl'])) ? 1 : 0;
             $_data['pushover'] = (in_array('pushover', $_data['acl'])) ? 1 : 0;
             $_data['quarantine'] = (in_array('quarantine', $_data['acl'])) ? 1 : 0;
             $_data['quarantine_attachments'] = (in_array('quarantine_attachments', $_data['acl'])) ? 1 : 0;
@@ -1296,6 +1297,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['syncjobs'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_syncjobs']);
             $_data['eas_reset'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_eas_reset']);
             $_data['sogo_profile_reset'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_sogo_profile_reset']);
+            $_data['sogo_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_sogo_access']);
             $_data['pushover'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_pushover']);
             $_data['quarantine'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine']);
             $_data['quarantine_attachments'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_attachments']);
@@ -1704,7 +1706,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : "s";
           $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
           $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
-          $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access']);
+          $attr["sogo_redirection"]            = isset($_data['sogo_redirection']) ? intval($_data['sogo_redirection']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_redirection']);
           $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
           $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out']);
@@ -1731,6 +1733,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_syncjobs'] = (in_array('syncjobs', $_data['acl'])) ? 1 : 0;
             $attr['acl_eas_reset'] = (in_array('eas_reset', $_data['acl'])) ? 1 : 0;
             $attr['acl_sogo_profile_reset'] = (in_array('sogo_profile_reset', $_data['acl'])) ? 1 : 0;
+            $attr['acl_sogo_access'] = (in_array('sogo_access', $_data['acl'])) ? 1 : 0;
             $attr['acl_pushover'] = (in_array('pushover', $_data['acl'])) ? 1 : 0;
             $attr['acl_quarantine'] = (in_array('quarantine', $_data['acl'])) ? 1 : 0;
             $attr['acl_quarantine_attachments'] = (in_array('quarantine_attachments', $_data['acl'])) ? 1 : 0;
@@ -1748,6 +1751,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_syncjobs'] = 0;
             $attr['acl_eas_reset'] = 0;
             $attr['acl_sogo_profile_reset'] = 0;
+            $attr['acl_sogo_access'] = 0;
             $attr['acl_pushover'] = 0;
             $attr['acl_quarantine'] = 0;
             $attr['acl_quarantine_attachments'] = 0;
@@ -3030,23 +3034,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
             }
             if (!empty($is_now)) {
-              $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
-              (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
-              (int)$sogo_access     = (isset($_data['sogo_access']) && hasACLAccess("sogo_access")) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
-              (int)$imap_access     = (isset($_data['imap_access']) && hasACLAccess("protocol_access")) ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
-              (int)$pop3_access     = (isset($_data['pop3_access']) && hasACLAccess("protocol_access")) ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
-              (int)$smtp_access     = (isset($_data['smtp_access']) && hasACLAccess("protocol_access")) ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
-              (int)$sieve_access    = (isset($_data['sieve_access']) && hasACLAccess("protocol_access")) ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
-              (int)$relayhost       = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
-              (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
-              $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
-              $domain               = $is_now['domain'];
-              $quota_b              = $quota_m * 1048576;
-              $password             = (!empty($_data['password'])) ? $_data['password'] : null;
-              $password2            = (!empty($_data['password2'])) ? $_data['password2'] : null;
-              $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
-              $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
-              $authsource           = $is_now['authsource'];
+              $active                = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+              (int)$force_pw_update  = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
+              (int)$sogo_redirection = (isset($_data['sogo_redirection'])) ? intval($_data['sogo_redirection']) : intval($is_now['attributes']['sogo_redirection']);
+              (int)$imap_access      = (isset($_data['imap_access']) && hasACLAccess("protocol_access")) ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
+              (int)$pop3_access      = (isset($_data['pop3_access']) && hasACLAccess("protocol_access")) ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
+              (int)$smtp_access      = (isset($_data['smtp_access']) && hasACLAccess("protocol_access")) ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
+              (int)$sieve_access     = (isset($_data['sieve_access']) && hasACLAccess("protocol_access")) ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
+              (int)$relayhost        = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              (int)$quota_m          = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
+              $name                  = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
+              $domain                = $is_now['domain'];
+              $quota_b               = $quota_m * 1048576;
+              $password              = (!empty($_data['password'])) ? $_data['password'] : null;
+              $password2             = (!empty($_data['password2'])) ? $_data['password2'] : null;
+              $tags                  = (is_array($_data['tags']) ? $_data['tags'] : array());
+              $attribute_hash        = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
+              $authsource            = $is_now['authsource'];
               if ($_data['authsource'] == "mailcow" ||
                   in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
                 $authsource = $_data['authsource'];
@@ -3314,7 +3318,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `quota` = :quota_b,
                   `authsource` = :authsource,
                   `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
-                  `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
+                  `attributes` = JSON_SET(`attributes`, '$.sogo_redirection', :sogo_redirection),
                   `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
                   `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
                   `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
@@ -3329,7 +3333,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':quota_b' => $quota_b,
                 ':attribute_hash' => $attribute_hash,
                 ':force_pw_update' => $force_pw_update,
-                ':sogo_access' => $sogo_access,
+                ':sogo_redirection' => $sogo_redirection,
                 ':imap_access' => $imap_access,
                 ':pop3_access' => $pop3_access,
                 ':sieve_access' => $sieve_access,
@@ -3706,7 +3710,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : $is_now['rl_frame'];
             $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : $is_now['rl_value'];
             $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : $is_now['force_pw_update'];
-            $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : $is_now['sogo_access'];
+            $attr["sogo_redirection"]            = isset($_data['sogo_redirection']) ? intval($_data['sogo_redirection']) : $is_now['sogo_redirection'];
             $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : $is_now['active'];
             $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
             $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : $is_now['tls_enforce_out'];
@@ -3732,6 +3736,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attr['acl_syncjobs'] = (in_array('syncjobs', $_data['acl'])) ? 1 : 0;
               $attr['acl_eas_reset'] = (in_array('eas_reset', $_data['acl'])) ? 1 : 0;
               $attr['acl_sogo_profile_reset'] = (in_array('sogo_profile_reset', $_data['acl'])) ? 1 : 0;
+              $attr["acl_sogo_access"] = (in_array('sogo_access', $_data['acl'])) ? 1 : 0;
               $attr['acl_pushover'] = (in_array('pushover', $_data['acl'])) ? 1 : 0;
               $attr['acl_quarantine'] = (in_array('quarantine', $_data['acl'])) ? 1 : 0;
               $attr['acl_quarantine_attachments'] = (in_array('quarantine_attachments', $_data['acl'])) ? 1 : 0;

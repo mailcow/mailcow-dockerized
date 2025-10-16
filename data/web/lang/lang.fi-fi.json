@@ -13,7 +13,7 @@
         "quarantine_notification": "Muuta karanteeni-ilmoituksia",
         "ratelimit": "Määrä raja",
         "recipient_maps": "Vastaanottajakartat",
-        "sogo_access": "Salli SOGo-pääsyn hallintaan",
+        "sogo_redirection": "Salli SOGo-pääsyn hallintaan",
         "sogo_profile_reset": "Nollaa SOGo-profiili",
         "spam_alias": "Väliaikaiset aliakset",
         "spam_policy": "Musta lista / sallitut lista",

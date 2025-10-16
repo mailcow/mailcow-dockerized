@@ -379,6 +379,9 @@ $(document).ready(function() {
     if (template.acl_sogo_profile_reset == 1){
       acl.push("sogo_profile_reset");
     }
+    if (template.acl_sogo_access == 1){
+      acl.push("sogo_access");
+    }
     if (template.acl_pushover == 1){
       acl.push("pushover");
     }
@@ -418,10 +421,10 @@ $(document).ready(function() {
     } else {
       $('#force_pw_update').prop('checked', false);
     }
-    if (template.sogo_access == 1){
-      $('#sogo_access').prop('checked', true);
+    if (template.sogo_redirection == 1){
+      $('#sogo_redirection').prop('checked', true);
     } else {
-      $('#sogo_access').prop('checked', false);
+      $('#sogo_redirection').prop('checked', false);
     }
 
     // load tags
@@ -1209,7 +1212,7 @@ jQuery(function($){
             item.attributes.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.imap_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.smtp_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sieve_access == 1 ? '1' : '0') + '</span></i>';
-            item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.sogo_redirection = '<i class="text-' + (item.attributes.sogo_redirection == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_redirection == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_redirection == 1 ? '1' : '0') + '</span></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.attributes.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -1318,8 +1321,8 @@ jQuery(function($){
           defaultContent: '',
         },
         {
-          title: 'SOGO',
-          data: 'attributes.sogo_access',
+          title: 'SOGO redirection',
+          data: 'attributes.sogo_redirection',
           defaultContent: '',
         },
         {

@@ -8,7 +8,7 @@
 
     <input type="hidden" value="default" name="sender_acl">
     <input type="hidden" value="0" name="force_pw_update">
-    <input type="hidden" value="0" name="sogo_access">
+    <input type="hidden" value="0" name="sogo_redirection">
     <input type="hidden" value="0" name="protocol_access">
 
     <div class="row mb-4">
@@ -123,6 +123,7 @@
           <option value="syncjobs" {% if template.attributes.acl_syncjobs == '1' %} selected{% endif %}>{{ lang.acl["syncjobs"] }}</option>
           <option value="eas_reset" {% if template.attributes.acl_eas_reset == '1' %} selected{% endif %}>{{ lang.acl["eas_reset"] }}</option>
           <option value="sogo_profile_reset" {% if template.attributes.acl_sogo_profile_reset == '1' %} selected{% endif %}>{{ lang.acl["sogo_profile_reset"] }}</option>
+          <option value="sogo_access" {% if template.attributes.acl_sogo_access == '1' %} selected{% endif %}>{{ lang.acl["sogo_access"] }}</option>
           <option value="pushover" {% if template.attributes.acl_pushover == '1' %} selected{% endif %}>{{ lang.acl["pushover"] }}</option>
           <option value="quarantine" {% if template.attributes.acl_quarantine == '1' %} selected{% endif %}>{{ lang.acl["quarantine"] }}</option>
           <option value="quarantine_attachments" {% if template.attributes.acl_quarantine_attachments == '1' %} selected{% endif %}>{{ lang.acl["quarantine_attachments"] }}</option>
@@ -167,8 +168,8 @@
     <div class="row">
       <div class="offset-sm-2 col-sm-10">
         <div class="form-check">
-          <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"{% if template.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
-          <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+          <label><input type="checkbox" class="form-check-input" value="1" name="sogo_redirection"{% if template.attributes.sogo_redirection == '1' %} checked{% endif %}> {{ lang.edit.sogo_redirection }}</label>
+          <small class="text-muted">{{ lang.edit.sogo_redirection_info }}</small>
         </div>
       </div>
     </div>

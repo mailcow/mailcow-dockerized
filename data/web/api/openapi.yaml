@@ -754,7 +754,7 @@ paths:
                             - syncjobs
                             - quarantine
                             - login_as
-                            - sogo_access
+                            - sogo_redirection
                             - app_passwds
                             - bcc_maps
                             - pushover
@@ -807,7 +807,7 @@ paths:
                     - syncjobs
                     - quarantine
                     - login_as
-                    - sogo_access
+                    - sogo_redirection
                     - app_passwds
                     - bcc_maps
                     - pushover
@@ -3339,7 +3339,7 @@ paths:
                             - info@domain2.tld
                             - domain3.tld
                             - "*"
-                          sogo_access: "1"
+                          sogo_redirection: "1"
                           username:
                             - info@domain.tld
                           tags: ["tag3", "tag4"]
@@ -3390,7 +3390,7 @@ paths:
                     - info@domain2.tld
                     - domain3.tld
                     - "*"
-                  sogo_access: "1"
+                  sogo_redirection: "1"
                   tags: ["tag3", "tag4"]
                 items:
                   - info@domain.tld
@@ -3422,8 +3422,8 @@ paths:
                     sender_acl:
                       description: list of allowed send from addresses
                       type: object
-                    sogo_access:
-                      description: is access to SOGo webmail active or not
+                    sogo_redirection:
+                      description: is redirection to SOGo webmail active or not
                       type: boolean
                   type: object
                 items:
@@ -4799,7 +4799,7 @@ paths:
                         force_pw_update: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
-                        sogo_access: "1"
+                        sogo_redirection: "1"
                         tls_enforce_in: "0"
                         tls_enforce_out: "0"
                       domain: doman3.tld
@@ -5723,7 +5723,7 @@ paths:
                         force_pw_update: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
-                        sogo_access: "1"
+                        sogo_redirection: "1"
                         tls_enforce_in: "0"
                         tls_enforce_out: "0"
                       custom_attributes: {}

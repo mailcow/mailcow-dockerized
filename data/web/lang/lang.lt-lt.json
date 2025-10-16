@@ -13,7 +13,7 @@
         "ratelimit": "Prieigos limitas",
         "recipient_maps": "Gavėjų sąsajos",
         "smtp_ip_access": "Pakeisti prieinamuosius SMTP serverius",
-        "sogo_access": "Leisti SOGo prieigos valdymą",
+        "sogo_redirection": "Leisti SOGo prieigos valdymą",
         "spam_policy": "Juodasis/Baltasis sąrašas",
         "spam_score": "Šlamsto balas",
         "tls_policy": "TLS politika",

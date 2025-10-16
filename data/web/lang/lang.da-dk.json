@@ -17,7 +17,7 @@
         "ratelimit": "Satsgrænse",
         "recipient_maps": "Modtagerkort",
         "smtp_ip_access": "Skift tilladte værter til SMTP",
-        "sogo_access": "Tillad styring af SOGo-adgang",
+        "sogo_redirection": "Tillad styring af SOGo-adgang",
         "sogo_profile_reset": "Nulstil SOGo-profil",
         "spam_alias": "Midlertidige aliasser",
         "spam_policy": "Sortliste/hvidliste",
