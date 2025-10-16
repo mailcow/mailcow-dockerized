@@ -17,7 +17,7 @@
         "ratelimit": "요청 제한",
         "recipient_maps": "수신자 맵",
         "smtp_ip_access": "SMTP에 허용된 호스트 변경",
-        "sogo_access": "SOGo 접근 관리 허용",
+        "sogo_redirection": "SOGo 접근 관리 허용",
         "sogo_profile_reset": "SOGo 프로필 초기화",
         "spam_alias": "일임시 별칭",
         "spam_policy": "블랙리스트/화이트리스트",

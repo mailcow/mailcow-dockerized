@@ -24,7 +24,7 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
     $is_eas = true;
   }
   $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
-  if ($login_check === 'user') {
+  if ($login_check === 'user' && hasACLAccess('sogo_access')) {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));
     header("X-Auth-Type: Basic");
@@ -44,6 +44,7 @@ elseif (isset($_GET['login'])) {
   // check permissions (if dual_login is active, deny sso when acl is not given)
   $login = html_entity_decode(rawurldecode($_GET["login"]));
   if (isset($_SESSION['mailcow_cc_role']) &&
+     hasACLAccess('sogo_access') &&
     (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (user_get_alias_details($login) !== false) {

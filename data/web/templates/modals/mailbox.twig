@@ -9,7 +9,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form" autocomplete="off">
           <input type="hidden" value="0" name="force_pw_update">
-          <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="sogo_redirection">
           <input type="hidden" value="0" name="protocol_access">
           <input type="hidden" value="mailcow" name="authsource">
 
@@ -163,6 +163,7 @@
                   <option value="syncjobs">{{ lang.acl["syncjobs"] }}</option>
                   <option value="eas_reset" selected>{{ lang.acl["eas_reset"] }}</option>
                   <option value="sogo_profile_reset">{{ lang.acl["sogo_profile_reset"] }}</option>
+                  <option value="sogo_access">{{ lang.acl["sogo_access"] }}</option>
                   <option value="pushover" selected>{{ lang.acl["pushover"] }}</option>
                   <option value="quarantine" selected>{{ lang.acl["quarantine"] }}</option>
                   <option value="quarantine_attachments" selected>{{ lang.acl["quarantine_attachments"] }}</option>
@@ -206,8 +207,8 @@
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access" id="sogo_access"> {{ lang.edit.sogo_access }}</label>
-                <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_redirection" id="sogo_redirection"> {{ lang.edit.sogo_redirection }}</label>
+                <small class="text-muted">{{ lang.edit.sogo_redirection_info }}</small>
               </div>
             </div>
           </div>
@@ -235,7 +236,7 @@
         <form class="form-horizontal" data-id="addmailbox_template" role="form" method="post">
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="force_pw_update">
-          <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="sogo_redirection">
           <input type="hidden" value="0" name="protocol_access">
 
           <div class="row mb-4">
@@ -350,6 +351,7 @@
                 <option value="syncjobs">{{ lang.acl["syncjobs"] }}</option>
                 <option value="eas_reset" selected>{{ lang.acl["eas_reset"] }}</option>
                 <option value="sogo_profile_reset">{{ lang.acl["sogo_profile_reset"] }}</option>
+                <option value="sogo_access">{{ lang.acl["sogo_access"] }}</option>
                 <option value="pushover" selected>{{ lang.acl["pushover"] }}</option>
                 <option value="quarantine" selected>{{ lang.acl["quarantine"] }}</option>
                 <option value="quarantine_attachments" selected>{{ lang.acl["quarantine_attachments"] }}</option>
@@ -394,8 +396,8 @@
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"> {{ lang.edit.sogo_access }}</label>
-                <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_redirection"> {{ lang.edit.sogo_redirection }}</label>
+                <small class="text-muted">{{ lang.edit.sogo_redirection_info }}</small>
               </div>
             </div>
           </div>

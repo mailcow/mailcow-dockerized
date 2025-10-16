@@ -18,7 +18,7 @@
         "ratelimit": "Ratelimit",
         "recipient_maps": "Ontvanger-maps",
         "smtp_ip_access": "Wijzig toegestane hosts voor SMTP",
-        "sogo_access": "Sta beheer van SOGo-toegang toe",
+        "sogo_redirection": "Sta beheer van SOGo-toegang toe",
         "sogo_profile_reset": "Verwijder SOGo-profiel",
         "spam_alias": "Tijdelijke aliassen",
         "spam_policy": "Blacklist/Whitelist",
