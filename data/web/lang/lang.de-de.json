@@ -243,6 +243,8 @@
         "iam_test_connection": "Verbindung Testen",
         "iam_token_url": "Token Endpunkt",
         "iam_userinfo_url": "User info Endpunkt",
+        "iam_end_session_url": "End-Session-Endpunkt",
+        "iam_end_session_url_info": "URL für RP-Initiated Logout nach OpenID Connect Spezifikation. Leer lassen, um OIDC-Logout zu deaktivieren.",
         "iam_username_field": "Username Feld",
         "iam_binddn": "Bind DN",
         "iam_use_ssl": "Benutze SSL",
