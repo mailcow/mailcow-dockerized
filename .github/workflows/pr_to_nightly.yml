@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run the Action
-        uses: devops-infra/action-pull-request@v0.6.1
+        uses: devops-infra/action-pull-request@v1.0.0
         with:
           github_token: ${{ secrets.PRTONIGHTLY_ACTION_PAT }}
           title: Automatic PR to nightly from ${{ github.event.repository.updated_at}}
