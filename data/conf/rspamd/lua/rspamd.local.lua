@@ -1,10 +1,251 @@
+-- PATCHED lua_mime.add_text_footer that fixes boundary ordering with attachments
+-- This must be at the TOP of the file, before any rspamd_config symbols
+
+local function newline(task)
+  local t = task:get_newlines_type()
+  if t == 'cr' then
+    return '\r'
+  elseif t == 'lf' then
+    return '\n'
+  end
+  return '\r\n'
+end
+
+local function do_append_footer(task, part, footer, is_multipart, out, state)
+  local rspamd_util = require "rspamd_util"
+  local rspamd_text = require "rspamd_text"
+  local tp = part:get_text()
+  local ct = 'text/plain'
+  local cte = 'quoted-printable'
+  local newline_s = state.newline_s
+  
+  if tp:is_html() then
+    ct = 'text/html'
+  end
+  
+  local encode_func = function(input)
+    return rspamd_util.encode_qp(input, 80, task:get_newlines_type())
+  end
+  
+  if part:get_cte() == '7bit' then
+    cte = '7bit'
+    encode_func = function(input)
+      if type(input) == 'userdata' then
+        return input
+      else
+        return rspamd_text.fromstring(input)
+      end
+    end
+  end
+  
+  if is_multipart then
+    out[#out + 1] = string.format('Content-Type: %s; charset=utf-8%s' ..
+        'Content-Transfer-Encoding: %s',
+        ct, newline_s, cte)
+    out[#out + 1] = ''
+  else
+    state.new_cte = cte
+  end
+  
+  local content = tp:get_content('raw_utf') or ''
+  local double_nline = newline_s .. newline_s
+  local nlen = #double_nline
+  
+  if content:sub(-(nlen), nlen + 1) == double_nline then
+    content = content:sub(0, -(#newline_s + 1)) .. footer
+    out[#out + 1] = { encode_func(content), true }
+    out[#out + 1] = ''
+  else
+    content = content .. footer
+    out[#out + 1] = { encode_func(content), true }
+    out[#out + 1] = ''
+  end
+end
+
+local function add_text_footer_fixed(task, html_footer, text_footer)
+  local rspamd_util = require "rspamd_util"
+  local newline_s = newline(task)
+  local state = {
+    newline_s = newline_s
+  }
+  local out = {}
+  local text_parts = task:get_text_parts()
+
+  if not (html_footer or text_footer) or not (text_parts and #text_parts > 0) then
+    return false
+  end
+
+  if html_footer or text_footer then
+    local ct = task:get_header('Content-Type')
+    if ct then
+      ct = rspamd_util.parse_content_type(ct, task:get_mempool())
+    end
+
+    if ct then
+      if ct.type and ct.type == 'text' then
+        if ct.subtype then
+          if html_footer and (ct.subtype == 'html' or ct.subtype == 'htm') then
+            state.need_rewrite_ct = true
+          elseif text_footer and ct.subtype == 'plain' then
+            state.need_rewrite_ct = true
+          end
+        else
+          if text_footer then
+            state.need_rewrite_ct = true
+          end
+        end
+        state.new_ct = ct
+      end
+    else
+      if text_parts then
+        if #text_parts == 1 then
+          state.need_rewrite_ct = true
+          state.new_ct = {
+            type = 'text',
+            subtype = 'plain'
+          }
+        elseif #text_parts > 1 then
+          state.new_ct = {
+            type = 'multipart',
+            subtype = 'mixed'
+          }
+        end
+      end
+    end
+  end
+
+  local boundaries = {}
+  local cur_boundary
+  local parts = task:get_parts()
+  
+  local part_types = {}
+  for i, part in ipairs(parts) do
+    part_types[i] = {
+      is_text = part:is_text(),
+      is_attachment = part:is_attachment(),
+      is_multipart = part:is_multipart(),
+      is_message = part:is_message()
+    }
+  end
+  
+  for i, part in ipairs(parts) do
+    local boundary = part:get_boundary()
+    local part_ct = part:get_header('Content-Type')
+    if part_ct then
+      part_ct = rspamd_util.parse_content_type(part_ct, task:get_mempool())
+    end
+    
+    if part:is_multipart() then
+      if cur_boundary then
+        out[#out + 1] = string.format('--%s', boundaries[#boundaries].boundary)
+      end
+
+      boundaries[#boundaries + 1] = {
+        boundary = boundary or '--XXX',
+        ct_type = part_ct.type or '',
+        ct_subtype = part_ct.subtype or '',
+      }
+      cur_boundary = boundary
+
+      local rh = part:get_raw_headers()
+      if #rh > 0 then
+        out[#out + 1] = { rh, true }
+      end
+      
+    elseif part:is_message() then
+      if boundary then
+        if cur_boundary and boundary ~= cur_boundary then
+          out[#out + 1] = string.format('--%s--%s', boundaries[#boundaries].boundary, newline_s)
+          table.remove(boundaries)
+          cur_boundary = nil
+        end
+        out[#out + 1] = string.format('--%s', boundary)
+      end
+      out[#out + 1] = { part:get_raw_headers(), true }
+      
+    else
+      local append_footer = false
+      local skip_footer = part:is_attachment()
+
+      local parent = part:get_parent()
+      if parent then
+        local t, st = parent:get_type()
+        if t == 'multipart' and st == 'signed' then
+          skip_footer = true
+        end
+      end
+      
+      if text_footer and part:is_text() then
+        local tp = part:get_text()
+        if not tp:is_html() then
+          append_footer = text_footer
+        end
+      end
+
+      if html_footer and part:is_text() then
+        local tp = part:get_text()
+        if tp:is_html() then
+          append_footer = html_footer
+        end
+      end
+
+      if boundary then
+        if cur_boundary and boundary ~= cur_boundary then
+          local has_more_parts = false
+          for j = i + 1, #parts do
+            if not parts[j]:is_multipart() and not parts[j]:is_message() then
+              has_more_parts = true
+              break
+            end
+          end
+          
+          if #boundaries > 1 or (#boundaries == 1 and not has_more_parts) then
+            out[#out + 1] = string.format('--%s--%s', boundaries[#boundaries].boundary, newline_s)
+            
+            if #boundaries > 1 and boundaries[#boundaries].ct_type == "multipart" and 
+               boundaries[#boundaries].ct_subtype == "related" then
+              out[#out + 1] = string.format('--%s--%s', boundaries[#boundaries - 1].boundary, newline_s)
+              table.remove(boundaries)
+            end
+            table.remove(boundaries)
+          end
+          cur_boundary = boundary
+        end
+        out[#out + 1] = string.format('--%s', boundary)
+      end
+
+      if append_footer and not skip_footer then
+        do_append_footer(task, part, append_footer, parent and parent:is_multipart(), out, state)
+      else
+        out[#out + 1] = { part:get_raw_headers(), true }
+        out[#out + 1] = { part:get_raw_content(), false }
+      end
+    end
+  end
+
+  local b = table.remove(boundaries)
+  while b do
+    out[#out + 1] = string.format('--%s--', b.boundary)
+    if #boundaries > 0 then
+      out[#out + 1] = ''
+    end
+    b = table.remove(boundaries)
+  end
+
+  state.out = out
+  return state
+end
+
+local lua_mime = require "lua_mime"
+lua_mime.add_text_footer = add_text_footer_fixed
+
 rspamd_config.MAILCOW_AUTH = {
-	callback = function(task)
-		local uname = task:get_user()
-		if uname then
-			return 1
-		end
-	end
+        callback = function(task)
+                local uname = task:get_user()
+                if uname then
+                        return 1
+                end
+        end
 }
 
 local monitoring_hosts = rspamd_config:add_map{
@@ -73,12 +314,12 @@ rspamd_config:register_symbol({
     end
     table.insert(smtp_access_table, 1, hash_key)
     local redis_ret_user = rspamd_redis_make_request(task,
-      redis_params, -- connect params
-      hash_key, -- hash key
-      false, -- is write
-      smtp_access_cb, --callback
-      'HMGET', -- command
-      smtp_access_table -- arguments
+      redis_params,
+      hash_key,
+      false,
+      smtp_access_cb,
+      'HMGET',
+      smtp_access_table
     )
     if not redis_ret_user then
       rspamd_logger.infox(rspamd_config, "cannot check smtp_access redis map")
@@ -96,7 +337,6 @@ rspamd_config:register_symbol({
   local lua_util = require "lua_util"
   local from = task:get_from(1)
 
-  -- not applying to mails with more than one rcpt to avoid bypassing filters by addressing postmaster
   if rcpts and #rcpts == 1 then
     for _,rcpt in ipairs(rcpts) do
       local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
@@ -114,7 +354,6 @@ rspamd_config:register_symbol({
       local fr_split = rspamd_str_split(fr['addr'], '@')
       if #fr_split == 2 then
         if fr_split[1] == 'postmaster' and task:get_user() then
-          -- no whitelist, keep signatures
           task:insert_result(true, 'POSTMASTER_FROM', -2500.0)
           return
         end
@@ -174,12 +413,12 @@ rspamd_config:register_symbol({
     end
     table.insert(ip_check_table, 1, 'KEEP_SPAM')
     local redis_ret_user = rspamd_redis_make_request(task,
-      redis_params, -- connect params
-      'KEEP_SPAM', -- hash key
-      false, -- is write
-      keep_spam_cb, --callback
-      'HMGET', -- command
-      ip_check_table -- arguments
+      redis_params,
+      'KEEP_SPAM',
+      false,
+      keep_spam_cb,
+      'HMGET',
+      ip_check_table
     )
     if not redis_ret_user then
       rspamd_logger.infox(rspamd_config, "cannot check keep_spam redis map")
@@ -264,12 +503,12 @@ rspamd_config:register_symbol({
               end
 
               local redis_ret_subfolder = rspamd_redis_make_request(task,
-                redis_params, -- connect params
-                body, -- hash key
-                false, -- is write
-                tag_callback_subfolder, --callback
-                'HGET', -- command
-                {'RCPT_WANTS_SUBFOLDER_TAG', body} -- arguments
+                redis_params,
+                body,
+                false,
+                tag_callback_subfolder,
+                'HGET',
+                {'RCPT_WANTS_SUBFOLDER_TAG', body}
               )
               if not redis_ret_subfolder then
                 rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
@@ -291,12 +530,12 @@ rspamd_config:register_symbol({
           end
 
           local redis_ret_subject = rspamd_redis_make_request(task,
-            redis_params, -- connect params
-            body, -- hash key
-            false, -- is write
-            tag_callback_subject, --callback
-            'HGET', -- command
-            {'RCPT_WANTS_SUBJECT_TAG', body} -- arguments
+            redis_params,
+            body,
+            false,
+            tag_callback_subject,
+            'HGET',
+            {'RCPT_WANTS_SUBJECT_TAG', body}
           )
           if not redis_ret_subject then
             rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
@@ -344,7 +583,7 @@ rspamd_config:register_symbol({
     local rcpt_table = {}
 
     if task:has_symbol('ENCRYPTED_CHAT') then
-      return -- stop
+      return
     end
 
     local send_mail = function(task, bcc_dest)
@@ -357,12 +596,10 @@ rspamd_config:register_symbol({
         end
       end
       if not bcc_dest then
-        return -- stop
+        return
       end
-      -- dot stuff content before sending
       local email_content = tostring(task:get_content())
       email_content = string.gsub(email_content, "\r\n%.", "\r\n..")
-      -- send mail
       lua_smtp.sendmail({
         task = task,
         host = os.getenv("IPV4_NETWORK") .. '.253',
@@ -374,26 +611,24 @@ rspamd_config:register_symbol({
       }, email_content, sendmail_cb)
     end
 
-    -- determine from
     local from = task:get_from('smtp')
     if from then
       for _, a in ipairs(from) do
-        table.insert(from_table, a['addr']) -- add this rcpt to table
-        table.insert(from_table, '@' .. a['domain']) -- add this rcpts domain to table
+        table.insert(from_table, a['addr'])
+        table.insert(from_table, '@' .. a['domain'])
       end
     else
-      return -- stop
+      return
     end
 
-    -- determine rcpts
     local rcpts = task:get_recipients('smtp')
     if rcpts then
       for _, a in ipairs(rcpts) do
-        table.insert(rcpt_table, a['addr']) -- add this rcpt to table
-        table.insert(rcpt_table, '@' .. a['domain']) -- add this rcpts domain to table
+        table.insert(rcpt_table, a['addr'])
+        table.insert(rcpt_table, '@' .. a['domain'])
       end
     else
-      return -- stop
+      return
     end
 
     local action = task:get_metric_action('default')
@@ -466,7 +701,7 @@ rspamd_config:register_symbol({
       return false
     end
 
-    local env_from_domain = envfrom[1].domain:lower() -- get smtp from domain in lower case
+    local env_from_domain = envfrom[1].domain:lower()
 
     local function redis_cb_user(err, data)
 
@@ -483,12 +718,12 @@ rspamd_config:register_symbol({
         end
 
         local redis_ret_domain = rspamd_redis_make_request(task,
-          redis_params, -- connect params
-          env_from_domain, -- hash key
-          false, -- is write
-          redis_key_cb_domain, --callback
-          'HGET', -- command
-          {'RL_VALUE', env_from_domain} -- arguments
+          redis_params,
+          env_from_domain,
+          false,
+          redis_key_cb_domain,
+          'HGET',
+          {'RL_VALUE', env_from_domain}
         )
         if not redis_ret_domain then
           rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for domain")
@@ -501,12 +736,12 @@ rspamd_config:register_symbol({
     end
 
     local redis_ret_user = rspamd_redis_make_request(task,
-      redis_params, -- connect params
-      uname, -- hash key
-      false, -- is write
-      redis_cb_user, --callback
-      'HGET', -- command
-      {'RL_VALUE', uname} -- arguments
+      redis_params,
+      uname,
+      false,
+      redis_cb_user,
+      'HGET',
+      {'RL_VALUE', uname}
     )
     if not redis_ret_user then
       rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for user")
@@ -547,7 +782,6 @@ rspamd_config:register_symbol({
     local env_from_domain = envfrom[1].domain:lower()
     local env_from_addr = envfrom[1].addr:lower()
 
-    -- determine newline type
     local function newline(task)
       local t = task:get_newlines_type()
 
@@ -559,13 +793,12 @@ rspamd_config:register_symbol({
 
       return '\r\n'
     end
-    -- retrieve footer
+
     local function footer_cb(err_message, code, data, headers)
       if err or type(data) ~= 'string' then
         rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
       else
 
-        -- parse json string
         local footer = cjson.decode(data)
         if not footer then
           rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
@@ -589,7 +822,6 @@ rspamd_config:register_symbol({
               from_name = envfrom[1].name
             end
 
-            -- default replacements
             local replacements = {
               auth_user = uname,
               from_user = envfrom[1].user,
@@ -597,7 +829,7 @@ rspamd_config:register_symbol({
               from_addr = envfrom[1].addr,
               from_domain = envfrom[1].domain:lower()
             }
-            -- add custom mailbox attributes
+
             if footer.vars and type(footer.vars) == "string" then
               local footer_vars = cjson.decode(footer.vars)
 
@@ -607,6 +839,7 @@ rspamd_config:register_symbol({
                 end
               end
             end
+
             if footer.html and footer.html ~= "" then
               footer.html = lua_util.jinja_template(footer.html, replacements, true)
             end
@@ -614,7 +847,6 @@ rspamd_config:register_symbol({
               footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
             end
 
-            -- add footer
             local out = {}
             local rewrite = lua_mime.add_text_footer(task, footer.html, footer.plain) or {}
 
@@ -624,13 +856,11 @@ rspamd_config:register_symbol({
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
                 if name:lower() == 'content-type' then
-                  -- include boundary if present
                   local boundary_part = rewrite.new_ct.boundary and
                     string.format('; boundary="%s"', rewrite.new_ct.boundary) or ''
                   local nct = string.format('%s: %s/%s; charset=utf-8%s',
                       'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)
                   out[#out + 1] = nct
-                  -- update Content-Type header (include boundary if present)
                   task:set_milter_reply({
                     remove_headers = {['Content-Type'] = 0},
                   })
@@ -642,7 +872,6 @@ rspamd_config:register_symbol({
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
                       'Content-Transfer-Encoding', 'quoted-printable')
-                  -- update Content-Transfer-Encoding header
                   task:set_milter_reply({
                     remove_headers = {['Content-Transfer-Encoding'] = 0},
                   })
@@ -662,7 +891,6 @@ rspamd_config:register_symbol({
               out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
             end
 
-            -- End of headers
             out[#out + 1] = newline_s
 
             if rewrite.out then
@@ -672,6 +900,7 @@ rspamd_config:register_symbol({
             else
               out[#out + 1] = task:get_rawbody()
             end
+
             local out_parts = {}
             for _,o in ipairs(out) do
               if type(o) ~= 'table' then
@@ -696,7 +925,6 @@ rspamd_config:register_symbol({
       end
     end
 
-    -- fetch footer
     rspamd_http.request({
       task=task,
       url='http://nginx:8081/footer.php',
