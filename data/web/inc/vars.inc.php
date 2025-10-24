@@ -110,6 +110,7 @@ $AVAILABLE_LANGUAGES = array(
   'sv-se' => 'Svenska (Swedish)',
   'tr-tr' => 'Türkçe (Turkish)',
   'uk-ua' => 'Українська (Ukrainian)',
+  'vi-vn' => 'Tiếng Việt (Vietnamese)',
   'zh-cn' => '简体中文 (Simplified Chinese)',
   'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
