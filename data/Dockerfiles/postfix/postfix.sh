@@ -487,6 +487,21 @@ sed -i '/\$myhostname/! { /myhostname/d }' /opt/postfix/conf/extra.cf
 echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > /opt/postfix/conf/extra.cf
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 
+# Check IPv6 SMTP sending eligibility
+source /usr/local/bin/ipv6_smtp_controller.sh
+check_ipv6_smtp_sending_eligibility
+
+# Reset master.cf to base configuration
+sed -i '/Overrides/q' /opt/postfix/conf/master.cf
+echo >> /opt/postfix/conf/master.cf
+
+# Append IPv6 SMTP override if needed
+if [[ "${DISABLE_IPV6_SMTP_SENDING}" == "true" ]]; then
+  echo -e "\n# IPv6 SMTP Override" >> /opt/postfix/conf/master.cf
+  echo "smtp       unix  -       -       n       -       -       smtp" >> /opt/postfix/conf/master.cf
+  echo "  -o inet_protocols=ipv4" >> /opt/postfix/conf/master.cf
+fi
+
 if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
   echo "Creating dummy custom_transport.pcre"
   touch /opt/postfix/conf/custom_transport.pcre
