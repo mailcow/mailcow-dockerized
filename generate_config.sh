@@ -436,6 +436,12 @@ SPAMHAUS_DQS_KEY=
 # A COMPLETE DOCKER STACK REBUILD (compose down && compose up -d) IS NEEDED TO APPLY THIS.
 ENABLE_IPV6=${IPV6_BOOL}
 
+# Disable IPv6 for outgoing SMTP connections - y/n
+# When set to 'y', forces Postfix to use IPv4 only for outgoing mail delivery
+# This can help prevent delivery issues when IPv6 configuration is problematic
+# Defaults to 'n' (IPv6 enabled for SMTP sending)
+DISABLE_IPV6_SMTP_SENDING=n
+
 # Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
 # CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
 DISABLE_NETFILTER_ISOLATION_RULE=n
