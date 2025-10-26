@@ -691,6 +691,7 @@
         "internal": "Nội bộ",
         "internal_info": "Bí danh nội bộ chỉ có thể truy cập từ tên miền sở hữu hoặc tên miền bí danh.",
         "kind": "Loại",
-        "last_modified": "Sửa đổi lần cuối"
+        "last_modified": "Sửa đổi lần cuối",
+        "lookup_mx": "Đích là một biểu thức chính quy để khớp với tên MX (<code>.*.google.com</code> để định tuyến tất cả thư nhắm đến MX kết thúc bằng google.com qua bước nhảy này)"
     }
 }
