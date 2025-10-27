@@ -185,11 +185,12 @@
         "protocol_access": "Endre protokolltilgang",
         "pushover": "Pushover",
         "quarantine": "Karantenehandlinger",
-        "quarantine_attachments": "Sett vedlegg i karantene",
+        "quarantine_attachments": "Se vedlegg i karantene",
         "quarantine_category": "Endre varslingskategori for karantene",
         "quarantine_notification": "Endre karantenevarslinger",
         "domain_desc": "Endre domenebeskrivelse",
-        "extend_sender_acl": "Tillat utvidelse av sender-ACL fra eksterne adresser"
+        "extend_sender_acl": "Tillat utvidelse av sender-ACL fra eksterne adresser",
+        "pw_reset": "Tillat endring av brukerpassord"
     },
     "add": {
         "app_passwd_protocols": "Tillatte protokoller for app-passord",
