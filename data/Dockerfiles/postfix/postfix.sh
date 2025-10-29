@@ -498,7 +498,7 @@ echo >> /opt/postfix/conf/master.cf
 # Append IPv6 SMTP override if needed
 if [[ "${DISABLE_IPV6_SMTP_SENDING}" == "true" ]]; then
   echo -e "\n# IPv6 SMTP Override" >> /opt/postfix/conf/master.cf
-  echo "smtp       unix  -       -       n       -       -       smtp" >> /opt/postfix/conf/master.cf
+  echo "smtp       inet  n       -       n       -       1       postscreen" >> /opt/postfix/conf/master.cf
   echo "  -o inet_protocols=ipv4" >> /opt/postfix/conf/master.cf
 fi
 
