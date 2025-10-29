@@ -1,5 +1,7 @@
 # inter-mx with postscreen on 25/tcp
 smtp       inet  n       -       n       -       1       postscreen
+# Override: IPv4 Only #
+
 10025      inet  n       -       n       -       1       postscreen
   -o postscreen_upstream_proxy_protocol=haproxy
   -o syslog_name=haproxy
@@ -77,11 +79,13 @@ smtp_enforced_tls      unix  -       -       n       -       -       smtp
   -o smtp_tls_security_level=encrypt
   -o syslog_name=enforced-tls-smtp
   -o smtp_delivery_status_filter=pcre:/opt/postfix/conf/smtp_dsn_filter
+# Override: IPv4 Only #
 
 # smtp connector used, when a transport map matched
 # this helps to have different sasl maps than we have with sender dependent transport maps
 smtp_via_transport_maps      unix  -       -       n       -       -       smtp
   -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
+# Override: IPv4 Only #
 
 tlsproxy   unix  -       -       n       -       0       tlsproxy
 dnsblog    unix  -       -       n       -       0       dnsblog
