@@ -195,8 +195,6 @@ check_spamhaus_listing() {
   local expanded_ipv6
   if command -v python3 >/dev/null 2>&1; then
     expanded_ipv6=$(python3 -c "import ipaddress; print(ipaddress.IPv6Address('$ipv6_address').exploded)" 2>/dev/null)
-  elif command -v python >/dev/null 2>&1; then
-    expanded_ipv6=$(python -c "import ipaddress; print(ipaddress.IPv6Address('$ipv6_address').exploded)" 2>/dev/null)
   else
     log_warning "Python not available for IPv6 address expansion, skipping Spamhaus check"
     return 0  # Treat as not listed if we can't check
