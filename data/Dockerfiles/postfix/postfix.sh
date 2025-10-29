@@ -491,15 +491,13 @@ cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 source /usr/local/bin/ipv6_smtp_controller.sh
 check_ipv6_smtp_sending_eligibility
 
-# Reset master.cf to base configuration
-sed -i '/Overrides/q' /opt/postfix/conf/master.cf
-echo >> /opt/postfix/conf/master.cf
-
-# Append IPv6 SMTP override if needed
+# Process tags in master.cf based on IPv6 eligibility
 if [[ "${DISABLE_IPV6_SMTP_SENDING}" == "true" ]]; then
-  echo -e "\n# IPv6 SMTP Override" >> /opt/postfix/conf/master.cf
-  echo "smtp       inet  n       -       n       -       1       postscreen" >> /opt/postfix/conf/master.cf
-  echo "  -o inet_protocols=ipv4" >> /opt/postfix/conf/master.cf
+  # Convert magic tags to actual IPv4-only configuration
+  sed -i 's/# Override: IPv4 Only #/  -o inet_protocols=ipv4/' /opt/postfix/conf/master.cf
+else
+  # Remove magic tags to allow IPv6
+  sed -i '/# Override: IPv4 Only #/d' /opt/postfix/conf/master.cf
 fi
 
 if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
