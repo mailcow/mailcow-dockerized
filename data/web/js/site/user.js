@@ -175,6 +175,10 @@ jQuery(function($){
                 '</div>';
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
               item.address = escapeHtml(item.address);
+              item.validity = {
+                value: item.validity,
+                permanent: item.permanent
+              };
             }
             else {
               item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
@@ -218,9 +222,21 @@ jQuery(function($){
           title: lang.alias_valid_until,
           data: 'validity',
           defaultContent: '',
-          createdCell: function(td, cellData) {
-            createSortableDate(td, cellData)
-          }
+          render: function (data, type) {
+            var date = new Date(data.value ? data.value * 1000 : 0);
+            switch (type) {
+              case "sort":
+                if (data.permanent) {
+                  return 0;
+                }
+                return date.getTime();
+              default:
+                if (data.permanent) {
+                  return lang.forever;
+                }
+                return date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
+            }
+          },
         },
         {
           title: lang.created_on,
