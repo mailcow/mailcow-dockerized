@@ -93,47 +93,65 @@ fi
 
 
 function backup() {
+  set -eE
+  
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-  mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
-  chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
-  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
-  touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
-  for bin in docker; do
-  if [[ -z $(which ${bin}) ]]; then
-    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+  BACKUP_DIR="${BACKUP_LOCATION}/mailcow-${DATE}"
+  
+  cleanup_on_error() {
+    local exit_code=$?
+    >&2 echo -e "\e[31mBackup failed at line ${BASH_LINENO[0]} with exit code ${exit_code}! Cleaning up ${BACKUP_DIR}...\e[0m"
+    rm -rf "${BACKUP_DIR}"
     exit 1
+  }
+  
+  trap cleanup_on_error ERR
+
+  if [[ ! -d "${BACKUP_DIR}" ]]; then
+    mkdir -p "${BACKUP_DIR}"
   fi
+  
+  chmod 755 "${BACKUP_DIR}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_DIR}"
+  touch "${BACKUP_DIR}/.$ARCH"
+  
+  for bin in docker; do
+    if [[ -z $(which ${bin}) ]]; then
+      >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+      exit 1
+    fi
   done
+  
   while (( "$#" )); do
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
@@ -150,11 +168,11 @@ function backup() {
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
-          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
-          mariabackup --prepare --target-dir=/backup_mariadb ; \
-          chown -R 999:999 /backup_mariadb ; \
-          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
+          -v ${BACKUP_DIR}:/backup:z \
+          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb && \
+          mariabackup --prepare --target-dir=/backup_mariadb && \
+          chown -R 999:999 /backup_mariadb && \
+          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb"
       fi
       ;;&
     --delete-days)
@@ -168,6 +186,8 @@ function backup() {
     esac
     shift
   done
+  
+  trap - ERR
 }
 
 function restore() {
