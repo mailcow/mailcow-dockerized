@@ -11,8 +11,8 @@ if [[ ! ${1} =~ (backup|restore) ]]; then
   exit 1
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
-  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
+if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days|--delete-oldest) ]]; then
+  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all', '--delete-days' or '--delete-oldest'"
   exit 1
 fi
 
@@ -181,6 +181,23 @@ function backup() {
         find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -mmin +$((${1}*60*24)) -exec rm -rvf {} \;
       else
         echo "Parameter of --delete-days is not a number."
+      fi
+      ;;
+    --delete-oldest)
+      shift
+      if [[ "${1}" =~ ^[0-9]+$ ]]; then
+        TOTAL=$(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -type d 2>/dev/null | wc -l)
+        if [[ ${TOTAL} -eq 0 ]]; then
+          echo "No backups found to delete."
+        elif [[ ${TOTAL} -eq 1 ]]; then
+          echo "Only 1 backup exists, keeping it (minimum 1 backup required)."
+        else
+          TO_DELETE=$((${1} < ${TOTAL} ? ${1} : ${TOTAL} - 1))
+          echo "Found ${TOTAL} backups, deleting ${TO_DELETE} oldest (keeping at least 1)."
+          find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -type d -printf '%T+ %p\n' | sort | head -n ${TO_DELETE} | cut -d' ' -f2- | xargs -r rm -rvf
+        fi
+      else
+        echo "Parameter of --delete-oldest is not a number."
       fi
       ;;
     esac
