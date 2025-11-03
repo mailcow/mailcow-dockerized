@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (!isset($_SESSION['mailcow_cc_role'])) {
   $_SESSION['oauth2_request'] = $_SERVER['REQUEST_URI'];
   header('Location: /?oauth');
+  exit;
 }
 
 $request = OAuth2\Request::createFromGlobals();
@@ -14,7 +15,10 @@ if (!$oauth2_server->validateAuthorizeRequest($request, $response)) {
   exit;
 }
 
-if (!isset($_POST['authorized'])) {
+$client_id = $request->query('client_id', $request->request('client_id'));
+$trusted_client = oauth2trusted($client_id);
+
+if ($trusted_client == 0 && !isset($_POST['authorized'])) {
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 
   $template = 'oauth/authorize.twig';
@@ -25,7 +29,7 @@ if (!isset($_POST['authorized'])) {
 }
 
 // print the authorization code if the user has authorized your client
-$is_authorized = ($_POST['authorized'] == '1');
+$is_authorized = ($trusted_client == 1 || $_POST['authorized'] == '1');
 $oauth2_server->handleAuthorizeRequest($request, $response, $is_authorized, $_SESSION['mailcow_cc_username']);
 if ($is_authorized) {
   unset($_SESSION['oauth2_request']);
