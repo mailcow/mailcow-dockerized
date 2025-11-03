@@ -42,7 +42,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.6-alpine
+      image: redis:7.4.7-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
