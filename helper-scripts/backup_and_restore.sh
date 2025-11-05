@@ -110,32 +110,32 @@ function backup() {
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_vmail.tar.zst /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_crypt.tar.zst /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_redis.tar.zst /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_rspamd.tar.zst /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_postfix.tar.zst /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -154,7 +154,7 @@ function backup() {
           ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
           mariabackup --prepare --target-dir=/backup_mariadb ; \
           chown -R 999:999 /backup_mariadb ; \
-          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
+          /bin/tar --warning='no-file-ignored' --use-compress-program='zstd --rsyncable' -Pcvpf /backup/backup_mariadb.tar.zst /backup_mariadb ;"
       fi
       ;;&
     --delete-days)
@@ -168,6 +168,19 @@ function backup() {
     esac
     shift
   done
+}
+
+function get_archive_info() {
+  local backup_name="$1"
+  local location="$2"
+
+  if [[ -f "${location}/${backup_name}.tar.zst" ]]; then
+    echo "${backup_name}.tar.zst|zstd -d -T${THREADS}"
+  elif [[ -f "${location}/${backup_name}.tar.gz" ]]; then
+    echo "${backup_name}.tar.gz|pigz -d -p ${THREADS}"
+  else
+    echo ""
+  fi
 }
 
 function restore() {
@@ -199,10 +212,17 @@ function restore() {
     case "$1" in
     vmail)
       docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_vmail.tar.gz
+      ARCHIVE_INFO=$(get_archive_info "backup_vmail" "${RESTORE_LOCATION}")
+      if [[ -z "${ARCHIVE_INFO}" ]]; then
+        echo -e "\e[31mError: No backup file found for vmail (searched for .tar.zst and .tar.gz)\e[0m"
+      else
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
+        docker run -i --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
+      fi
       docker start $(docker ps -aqf name=dovecot-mailcow)
       echo
       echo "In most cases it is not required to run a full resync, you can run the command printed below at any time after testing wether the restore process broke a mailbox:"
@@ -218,31 +238,50 @@ function restore() {
       ;;
     redis)
       docker stop $(docker ps -qf name=redis-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_redis.tar.gz
+      ARCHIVE_INFO=$(get_archive_info "backup_redis" "${RESTORE_LOCATION}")
+      if [[ -z "${ARCHIVE_INFO}" ]]; then
+        echo -e "\e[31mError: No backup file found for redis (searched for .tar.zst and .tar.gz)\e[0m"
+      else
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
+        docker run -i --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
+      fi
       docker start $(docker ps -aqf name=redis-mailcow)
       ;;
     crypt)
       docker stop $(docker ps -qf name=dovecot-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_crypt.tar.gz
+      ARCHIVE_INFO=$(get_archive_info "backup_crypt" "${RESTORE_LOCATION}")
+      if [[ -z "${ARCHIVE_INFO}" ]]; then
+        echo -e "\e[31mError: No backup file found for crypt (searched for .tar.zst and .tar.gz)\e[0m"
+      else
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
+        docker run -i --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
+      fi
       docker start $(docker ps -aqf name=dovecot-mailcow)
       ;;
     rspamd)
-      if [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
+      ARCHIVE_INFO=$(get_archive_info "backup_rspamd" "${RESTORE_LOCATION}")
+      if [[ -z "${ARCHIVE_INFO}" ]]; then
+        echo -e "\e[31mError: No backup file found for rspamd (searched for .tar.zst and .tar.gz)\e[0m"
+      elif [[ $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') == "" ]]; then
         echo -e "\e[33mCould not find a architecture signature of the loaded backup... Maybe the backup was done before the multiarch update?"
         sleep 2
         echo -e "Continuing anyhow. If rspamd is crashing upon boot try remove the rspamd volume with docker volume rm ${CMPS_PRJ}_rspamd-vol-1 after you've stopped the stack.\e[0m"
         sleep 2
         docker stop $(docker ps -qf name=rspamd-mailcow)
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
         docker run -i --name mailcow-backup --rm \
           -v ${RESTORE_LOCATION}:/backup:z \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
         docker start $(docker ps -aqf name=rspamd-mailcow)
       elif [[ $ARCH != $(find "${RESTORE_LOCATION}" \( -name '*x86*' -o -name '*aarch*' \) -exec basename {} \; | sed 's/^\.//' | sed 's/^\.//') ]]; then
         echo -e "\e[31mThe Architecture of the backed up mailcow OS is different then your restoring mailcow OS..."
@@ -250,19 +289,28 @@ function restore() {
         echo -e "Skipping rspamd due to compatibility issues!\e[0m"
       else
         docker stop $(docker ps -qf name=rspamd-mailcow)
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
         docker run -i --name mailcow-backup --rm \
           -v ${RESTORE_LOCATION}:/backup:z \
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:z \
-          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_rspamd.tar.gz
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
         docker start $(docker ps -aqf name=rspamd-mailcow)
       fi
       ;;
     postfix)
       docker stop $(docker ps -qf name=postfix-mailcow)
-      docker run -i --name mailcow-backup --rm \
-        -v ${RESTORE_LOCATION}:/backup:z \
-        -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="pigz -d -p ${THREADS}" -Pxvf /backup/backup_postfix.tar.gz
+      ARCHIVE_INFO=$(get_archive_info "backup_postfix" "${RESTORE_LOCATION}")
+      if [[ -z "${ARCHIVE_INFO}" ]]; then
+        echo -e "\e[31mError: No backup file found for postfix (searched for .tar.zst and .tar.gz)\e[0m"
+      else
+        ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+        DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
+        docker run -i --name mailcow-backup --rm \
+          -v ${RESTORE_LOCATION}:/backup:z \
+          -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:z \
+          ${DEBIAN_DOCKER_IMAGE} /bin/tar --use-compress-program="${DECOMPRESS_PROG}" -Pxvf /backup/${ARCHIVE_FILE}
+      fi
       docker start $(docker ps -aqf name=postfix-mailcow)
       ;;
     mysql|mariadb)
@@ -305,14 +353,19 @@ function restore() {
           echo Restoring... && \
           gunzip < backup/backup_mysql.gz | mysql -uroot && \
           mysql -uroot -e SHUTDOWN;"
-        elif [[ -f "${RESTORE_LOCATION}/backup_mariadb.tar.gz" ]]; then
-        docker run --name mailcow-backup --rm \
-          -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/backup_mariadb/:rw,z \
-          --entrypoint= \
-          -v ${RESTORE_LOCATION}:/backup:z \
-          ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
-            /bin/rm -rf /backup_mariadb/* ; \
-            /bin/tar -Pxvzf /backup/backup_mariadb.tar.gz"
+        else
+          ARCHIVE_INFO=$(get_archive_info "backup_mariadb" "${RESTORE_LOCATION}")
+          if [[ -n "${ARCHIVE_INFO}" ]]; then
+            ARCHIVE_FILE=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f1)
+            DECOMPRESS_PROG=$(echo "${ARCHIVE_INFO}" | cut -d'|' -f2)
+            docker run --name mailcow-backup --rm \
+              -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/backup_mariadb/:rw,z \
+              --entrypoint= \
+              -v ${RESTORE_LOCATION}:/backup:z \
+              ${SQLIMAGE} /bin/bash -c "shopt -s dotglob ; \
+                /bin/rm -rf /backup_mariadb/* ; \
+                /bin/tar --use-compress-program='${DECOMPRESS_PROG}' -Pxvf /backup/${ARCHIVE_FILE}"
+          fi
         fi
         echo "Modifying mailcow.conf..."
         source ${RESTORE_LOCATION}/mailcow.conf
@@ -363,8 +416,8 @@ elif [[ ${1} == "restore" ]]; then
   fi
 
   echo "[ 0 ] - all"
-  # find all files in folder with *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .gz
-  FILE_SELECTION[0]=$(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//')
+  # find all files in folder with *.zst or *.gz extension, print their base names, remove backup_, remove .tar (if present), remove .zst/.gz
+  FILE_SELECTION[0]=$(find "${FOLDER_SELECTION[${input_sel}]}" -maxdepth 1 \( -type d -o -type f \) \( -name '*.zst' -o -name '*.gz' -o -name 'mysql' \) -printf '%f\n' | sed 's/backup_*//' | sed 's/\.[^.]*$//' | sed 's/\.[^.]*$//' | sort -u)
   for file in $(ls -f "${FOLDER_SELECTION[${input_sel}]}"); do
     if [[ ${file} =~ vmail ]]; then
       echo "[ ${i} ] - Mail directory (/var/vmail)"
