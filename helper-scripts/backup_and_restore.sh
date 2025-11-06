@@ -11,8 +11,8 @@ if [[ ! ${1} =~ (backup|restore) ]]; then
   exit 1
 fi
 
-if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days) ]]; then
-  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all' or '--delete-days'"
+if [[ ${1} == "backup" && ! ${2} =~ (crypt|vmail|redis|rspamd|postfix|mysql|all|--delete-days|--delete-oldest) ]]; then
+  echo "Second parameter needs to be 'vmail', 'crypt', 'redis', 'rspamd', 'postfix', 'mysql', 'all', '--delete-days' or '--delete-oldest'"
   exit 1
 fi
 
@@ -93,49 +93,67 @@ fi
 
 
 function backup() {
+  set -eE
+  
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
-  mkdir -p "${BACKUP_LOCATION}/mailcow-${DATE}"
-  chmod 755 "${BACKUP_LOCATION}/mailcow-${DATE}"
-  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_LOCATION}/mailcow-${DATE}"
-  touch "${BACKUP_LOCATION}/mailcow-${DATE}/.$ARCH"
-  for bin in docker; do
-  if [[ -z $(which ${bin}) ]]; then
-    >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+  BACKUP_DIR="${BACKUP_LOCATION}/mailcow-${DATE}"
+  
+  cleanup_on_error() {
+    local exit_code=$?
+    >&2 echo -e "\e[31mBackup failed at line ${BASH_LINENO[0]} with exit code ${exit_code}! Cleaning up ${BACKUP_DIR}...\e[0m"
+    rm -rf "${BACKUP_DIR}"
     exit 1
+  }
+  
+  trap cleanup_on_error ERR
+
+  if [[ ! -d "${BACKUP_DIR}" ]]; then
+    mkdir -p "${BACKUP_DIR}"
   fi
+  
+  chmod 755 "${BACKUP_DIR}"
+  cp "${SCRIPT_DIR}/../mailcow.conf" "${BACKUP_DIR}"
+  touch "${BACKUP_DIR}/.$ARCH"
+  
+  for bin in docker; do
+    if [[ -z $(which ${bin}) ]]; then
+      >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
+      exit 1
+    fi
   done
+  
   while (( "$#" )); do
     case "$1" in
     vmail|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-changed' --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_vmail.tar.gz /vmail
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-changed' --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_crypt.tar.gz /crypt
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-changed' --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_redis.tar.gz /redis
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-changed' --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_rspamd.tar.gz /rspamd
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
-        -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
+        -v ${BACKUP_DIR}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
-        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
+        ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-changed' --warning='no-file-ignored' --use-compress-program="pigz --rsyncable -p ${THREADS}" -Pcvpf /backup/backup_postfix.tar.gz /postfix
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -150,11 +168,11 @@ function backup() {
           -v $(docker volume ls -qf name=^${CMPS_PRJ}_mysql-vol-1$):/var/lib/mysql/:ro,z \
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
-          -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
-          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
-          mariabackup --prepare --target-dir=/backup_mariadb ; \
-          chown -R 999:999 /backup_mariadb ; \
-          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb ;"
+          -v ${BACKUP_DIR}:/backup:z \
+          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb && \
+          mariabackup --prepare --target-dir=/backup_mariadb && \
+          chown -R 999:999 /backup_mariadb && \
+          /bin/tar --warning='no-file-ignored' --use-compress-program='gzip --rsyncable' -Pcvpf /backup/backup_mariadb.tar.gz /backup_mariadb"
       fi
       ;;&
     --delete-days)
@@ -165,9 +183,28 @@ function backup() {
         echo "Parameter of --delete-days is not a number."
       fi
       ;;
+    --delete-oldest)
+      shift
+      if [[ "${1}" =~ ^[0-9]+$ ]]; then
+        TOTAL=$(find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -type d 2>/dev/null | wc -l)
+        if [[ ${TOTAL} -eq 0 ]]; then
+          echo "No backups found to delete."
+        elif [[ ${TOTAL} -eq 1 ]]; then
+          echo "Only 1 backup exists, keeping it (minimum 1 backup required)."
+        else
+          TO_DELETE=$((${1} < ${TOTAL} ? ${1} : ${TOTAL} - 1))
+          echo "Found ${TOTAL} backups, deleting ${TO_DELETE} oldest (keeping at least 1)."
+          find ${BACKUP_LOCATION}/mailcow-* -maxdepth 0 -type d -printf '%T+ %p\n' | sort | head -n ${TO_DELETE} | cut -d' ' -f2- | xargs -r rm -rvf
+        fi
+      else
+        echo "Parameter of --delete-oldest is not a number."
+      fi
+      ;;
     esac
     shift
   done
+  
+  trap - ERR
 }
 
 function restore() {
