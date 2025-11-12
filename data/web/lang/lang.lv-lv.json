@@ -24,7 +24,7 @@
         "quarantine_category": "Mainīt karantīnas paziņojumu kategoriju",
         "quarantine_notification": "Mainīt karantīnas paziņojumus",
         "smtp_ip_access": "Mainīt SMTP atļautos saimniekdatorus",
-        "sogo_access": "Atļaut SOGo piekļuves pārvaldību",
+        "sogo_redirection": "Atļaut SOGo piekļuves pārvaldību",
         "sogo_profile_reset": "Atiestatīt SOGo profilu"
     },
     "add": {
@@ -319,7 +319,7 @@
         "sogo_visible": "Aizstājvārds ir redzams SOGo",
         "sogo_visible_info": "Šī iespēja ietekmē tikai tos objektus, kurus var parādīt SOGo (koplietojamās vai nekoplietojamās aizstājadreses, kas norāda uz vismaz vienu vietējo pastkasti). Ja paslēpts, netiks parādīts SOGo kā atlasāms sūtītājs.",
         "mbox_rl_info": "Šis pieprasījumu ierobežojums tiek piemērots SASL pieteikšanās vārdam, tas atbilst jebkurai \"from\" adresei, ko izmanto lietotājs, kurš ir pieteicies. Pastkastes pieprasījumu ierobežojums pārraksta domēna mēroga pieprasījumu ierobežojumu.",
-        "sogo_access": "Tieša pārvirzīšana uz SOGo",
+        "sogo_redirection": "Tieša pārvirzīšana uz SOGo",
         "disable_login": "Neļaut pieteikšanos (ienākošais pasts joprojām tiks pieņemts)",
         "app_passwd_protocols": "Atļautie lietotnes paroles protokoli",
         "allowed_protocols": "Atļautie protokoli tiešai lietotāja piekļuvei (neietekmē lietotnes paroles protokolus)",

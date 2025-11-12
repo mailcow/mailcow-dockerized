@@ -191,8 +191,8 @@ $MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
-// Enable SOGo access - Users will be redirected to SOGo after login (set to false to disable redirect by default)
-$MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
+// Enable SOGo redirection - Users will be redirected to SOGo after login (set to false to disable redirect by default)
+$MAILBOX_DEFAULT_ATTRIBUTES['sogo_redirection'] = true;
 
 // How to handle tagged emails
 // none      - No special handling

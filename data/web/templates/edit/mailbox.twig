@@ -24,7 +24,7 @@
                 <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
                   <input type="hidden" value="default" name="sender_acl">
                   <input type="hidden" value="0" name="force_pw_update">
-                  <input type="hidden" value="0" name="sogo_access">
+                  <input type="hidden" value="0" name="sogo_redirection">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
@@ -310,11 +310,11 @@
                     </div>
                   </div>
                   {% if not skip_sogo %}
-                  <div data-acl="{{ acl.sogo_access }}" class="row">
+                  <div data-acl="{{ acl.sogo_redirection }}" class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <div class="form-check">
-                        <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
-                        <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="sogo_redirection"{% if result.attributes.sogo_redirection == '1' %} checked{% endif %}> {{ lang.edit.sogo_redirection }}</label>
+                        <small class="text-muted">{{ lang.edit.sogo_redirection_info }}</small>
                       </div>
                     </div>
                   </div>
@@ -485,9 +485,22 @@
                     </div>
                     <div class="col-sm-10">
                       <select id="user_acl" name="user_acl" size="10" multiple>
-                        {% for acl, val in user_acls %}
-                          <option value="{{ acl }}"{% if val == 1 %} selected{% endif %}>{{ lang.acl[acl] }}</option>
-                        {% endfor %}
+                        <option value="spam_alias" {% if user_acls.spam_alias == '1' %} selected{% endif %}>{{ lang.acl["spam_alias"] }}</option>
+                        <option value="tls_policy" {% if user_acls.tls_policy == '1' %} selected{% endif %}>{{ lang.acl["tls_policy"] }}</option>
+                        <option value="spam_score" {% if user_acls.spam_score == '1' %} selected{% endif %}>{{ lang.acl["spam_score"] }}</option>
+                        <option value="spam_policy" {% if user_acls.spam_policy == '1' %} selected{% endif %}>{{ lang.acl["spam_policy"] }}</option>
+                        <option value="delimiter_action" {% if user_acls.delimiter_action == '1' %} selected{% endif %}>{{ lang.acl["delimiter_action"] }}</option>
+                        <option value="syncjobs" {% if user_acls.syncjobs == '1' %} selected{% endif %}>{{ lang.acl["syncjobs"] }}</option>
+                        <option value="eas_reset" {% if user_acls.eas_reset == '1' %} selected{% endif %}>{{ lang.acl["eas_reset"] }}</option>
+                        <option value="sogo_profile_reset" {% if user_acls.sogo_profile_reset == '1' %} selected{% endif %}>{{ lang.acl["sogo_profile_reset"] }}</option>
+                        <option value="sogo_access" {% if user_acls.sogo_access == '1' %} selected{% endif %}>{{ lang.acl["sogo_access"] }}</option>
+                        <option value="pushover" {% if user_acls.pushover == '1' %} selected{% endif %}>{{ lang.acl["pushover"] }}</option>
+                        <option value="quarantine" {% if user_acls.quarantine == '1' %} selected{% endif %}>{{ lang.acl["quarantine"] }}</option>
+                        <option value="quarantine_attachments" {% if user_acls.quarantine_attachments == '1' %} selected{% endif %}>{{ lang.acl["quarantine_attachments"] }}</option>
+                        <option value="quarantine_notification" {% if user_acls.quarantine_notification == '1' %} selected{% endif %}>{{ lang.acl["quarantine_notification"] }}</option>
+                        <option value="quarantine_category" {% if user_acls.quarantine_category == '1' %} selected{% endif %}>{{ lang.acl["quarantine_category"] }}</option>
+                        <option value="app_passwds" {% if user_acls.app_passwds == '1' %} selected{% endif %}>{{ lang.acl["app_passwds"] }}</option>
+                        <option value="pw_reset" {% if user_acls.pw_reset == '1' %} selected{% endif %}>{{ lang.acl["pw_reset"] }}</option>
                       </select>
                       <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="useracl" data-item="{{ mailbox }}" data-api-url='edit/user-acl' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
                     </div>

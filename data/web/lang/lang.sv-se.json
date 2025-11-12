@@ -18,7 +18,7 @@
         "ratelimit": "Hastighetsgräns",
         "recipient_maps": "Kartor över mottagare",
         "smtp_ip_access": "Ändra tillåtna värdar för SMTP",
-        "sogo_access": "Tillåt hantering av SOGo-åtkomst",
+        "sogo_redirection": "Tillåt hantering av SOGo-åtkomst",
         "sogo_profile_reset": "Återställ SOGo-profil",
         "spam_alias": "Tillfälliga e-postalias",
         "spam_policy": "Svartlista/Vitlista",

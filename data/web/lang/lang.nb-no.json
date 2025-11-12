@@ -168,7 +168,7 @@
         "spam_alias": "Midlertidige alias",
         "spam_policy": "Svarteliste/Hvitliste",
         "unlimited_quota": "Ubegrenset kvote for postkasser",
-        "sogo_access": "Tillat administrasjon av SOGo-tilgang",
+        "sogo_redirection": "Tillat administrasjon av SOGo-tilgang",
         "syncjobs": "Synkroniser jobber",
         "spam_score": "Spam-resultat",
         "recipient_maps": "Mottakerkart",

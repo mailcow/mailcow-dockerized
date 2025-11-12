@@ -415,8 +415,8 @@
         "sieve_desc": "Rövid leírás",
         "sieve_type": "Szűrő típusa",
         "skipcrossduplicates": "Átugrani a duplikált üzeneteket a mappák között (aki előbb jön, előbb kapja)",
-        "sogo_access": "Közvetlen továbbítás a SOGo-ra",
-        "sogo_access_info": "A bejelentkezés után a felhasználó automatikusan átirányításra kerül a SOGo-ra.",
+        "sogo_redirection": "Közvetlen továbbítás a SOGo-ra",
+        "sogo_redirection_info": "A bejelentkezés után a felhasználó automatikusan átirányításra kerül a SOGo-ra.",
         "sogo_visible": "Alias látható a SOGo-ban",
         "sogo_visible_info": "Ez az opció csak azokra az objektumokra vonatkozik, amelyek megjeleníthetők a SOGo-ban (megosztott vagy nem megosztott alias címek, amelyek legalább egy helyi postafiókra mutatnak). Ha el van rejtve, egy alias nem jelenik meg választható feladóként a SOGo-ban.",
         "spam_alias": "Időkorlátos alias címek létrehozása vagy módosítása",
@@ -1048,7 +1048,7 @@
         "syncjobs": "Szinkronizálási feladatok",
         "tls_policy": "TLS szabályzat",
         "unlimited_quota": "Korlátlan kvóta a postafiókok számára",
-        "sogo_access": "A SOGo-hozzáférés kezelésének lehetővé tétele",
+        "sogo_redirection": "A SOGo-hozzáférés kezelésének lehetővé tétele",
         "pw_reset": "Lehetővé teszi a mailcow felhasználói jelszavak visszaállítását"
     },
     "diagnostics": {
