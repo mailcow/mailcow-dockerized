@@ -1,11 +1,11 @@
 # Contribution Guidelines
-**_Last modified on 15th August 2024_**
+**_Last modified on 12th November 2025_**
 
 First of all, thank you for wanting to provide a bugfix or a new feature for the mailcow community, it's because of your help that the project can continue to grow!
 
 As we want to keep mailcow's development structured we setup these Guidelines which helps you to create your issue/pull request accordingly.
 
-**PLEASE NOTE, THAT WE MIGHT CLOSE ISSUES/PULL REQUESTS IF THEY DON'T FULLFIL OUR WRITTEN GUIDELINES WRITTEN INSIDE THIS DOCUMENT**. So please check this guidelines before you propose a Issue/Pull Request.
+**PLEASE NOTE, THAT WE WILL CLOSE ISSUES/PULL REQUESTS IF THEY DON'T FULLFIL OUR WRITTEN GUIDELINES WRITTEN INSIDE THIS DOCUMENT**. So please check this guidelines before you propose a Issue/Pull Request.
 
 ## Topics
 
@@ -27,13 +27,17 @@ However, please note the following regarding pull requests:
 6. Please **ALWAYS** create the actual pull request against the staging branch and **NEVER** directly against the master branch. *If you forget to do this, our moobot will remind you to switch the branch to staging.*
 7. Wait for a merge commit: It may happen that we do not accept your pull request immediately or sometimes not at all for various reasons. Please do not be disappointed if this is the case. We always endeavor to incorporate any meaningful changes from the community into the mailcow project.
 8. If you are planning larger and therefore more complex pull requests, it would be advisable to first announce this in a separate issue and then start implementing it after the idea has been accepted in order to avoid unnecessary frustration and effort!
+9. If your PR requires a Docker image rebuild (changes to Dockerfiles or files in data/Dockerfiles/), update the image tag in docker-compose.yml. Use the base-image versioning (e.g. ghcr.io/mailcow/sogo:5.12.4 → :5.12.5 for version bumps; append a letter for patch fixes, e.g. :5.12.4a). Follow this scheme.
 
 ---
 
 ## Issue Reporting
-**_Last modified on 15th August 2024_**
+**_Last modified on 12th November 2025_**
 
 If you plan to report a issue within mailcow please read and understand the following rules:
+
+### Security disclosures / Security-related fixes
+- Security vulnerabilities and security fixes must always be reported confidentially first to the contact address specified in SECURITY.md before they are integrated, published, or publicly disclosed in issues/PRs. Please wait for a response from the specified contact to ensure coordinated and responsible disclosure.
 
 ### Issue Reporting Guidelines
 

@@ -85,7 +85,7 @@ $AVAILABLE_LANGUAGES = array(
   // 'ca-es' => 'Català (Catalan)',
   'bg-bg' => 'Български (Bulgarian)',
   'cs-cz' => 'Čeština (Czech)',
-  'da-dk' => 'Danish (Dansk)',
+  'da-dk' => 'Dansk (Danish)',
   'de-de' => 'Deutsch (German)',
   'en-gb' => 'English',
   'es-es' => 'Español (Spanish)',
@@ -110,6 +110,7 @@ $AVAILABLE_LANGUAGES = array(
   'sv-se' => 'Svenska (Swedish)',
   'tr-tr' => 'Türkçe (Turkish)',
   'uk-ua' => 'Українська (Ukrainian)',
+  'vi-vn' => 'Tiếng Việt (Vietnamese)',
   'zh-cn' => '简体中文 (Simplified Chinese)',
   'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
