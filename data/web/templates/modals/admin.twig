@@ -142,6 +142,13 @@
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="trusted"> {{ lang.admin.oauth2_trusted_client }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_oauth2_client" data-api-url='add/oauth2-client' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
             </div>
           </div>
