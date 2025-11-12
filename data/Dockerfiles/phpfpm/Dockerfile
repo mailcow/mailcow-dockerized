@@ -1,6 +1,6 @@
-FROM php:8.2-fpm-alpine3.21
+FROM php:8.4-fpm-alpine3.22
 
-LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
+LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-tags depName=krakjoe/apcu versioning=semver-coerced extractVersion=^v(?<version>.*)$
 ARG APCU_PECL_VERSION=5.1.27
@@ -14,8 +14,12 @@ ARG MEMCACHED_PECL_VERSION=3.3.0
 ARG REDIS_PECL_VERSION=6.2.0
 # renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG COMPOSER_VERSION=2.8.6
+# renovate: datasource=github-tags depName=php/pecl-text-pspell versioning=semver-coerced extractVersion=^v(?<version>.*)$
+ARG PSPELL_PECL_VERSION=1.0.1
+# renovate: datasource=github-tags depName=php/pecl-mail-imap versioning=semver-coerced extractVersion=^v(?<version>.*)$
+ARG IMAP_PECL_VERSION=1.0.3
 
-RUN apk add -U --no-cache autoconf \
+RUN apk update && apk add -U --no-cache autoconf \
   aspell-dev \
   aspell-libs \
   bash \
@@ -68,18 +72,18 @@ RUN apk add -U --no-cache autoconf \
   && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
   && pecl install memcached-${MEMCACHED_PECL_VERSION} \
   && pecl install redis-${REDIS_PECL_VERSION} \
-  && docker-php-ext-enable apcu imagick memcached mailparse redis \
+  && pecl install pspell-${PSPELL_PECL_VERSION} \
+  && pecl install --configureoptions='with-kerberos="no" with-imap="yes" with-imap-ssl="yes"' imap-${IMAP_PECL_VERSION} \
+  && docker-php-ext-enable apcu imagick memcached mailparse redis pspell imap \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
-  && docker-php-ext-configure imap --with-imap --with-imap-ssl \
-  && docker-php-ext-install -j 4 imap \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
