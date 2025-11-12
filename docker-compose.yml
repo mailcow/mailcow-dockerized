@@ -681,4 +681,3 @@ volumes:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
   clamd-db-vol-1:
-  mlmmj-vol-1:
