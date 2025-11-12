@@ -118,7 +118,7 @@ services:
 
     php-fpm-mailcow:
       image: ghcr.io/mailcow/phpfpm:1.94
-      command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
+      command: "php-fpm -d date.timezone=${TZ}"
       depends_on:
         - redis-mailcow
       volumes:
@@ -142,6 +142,7 @@ services:
         - ./data/conf/phpfpm/php-fpm.d/pools.conf:/usr/local/etc/php-fpm.d/z-pools.conf:Z
         - ./data/conf/phpfpm/php-conf.d/opcache-recommended.ini:/usr/local/etc/php/conf.d/opcache-recommended.ini:Z
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini:Z
+        - ./data/conf/phpfpm/php-conf.d/security.ini:/usr/local/etc/php/conf.d/security.ini:Z
         - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini:Z
         - ./data/conf/dovecot/global_sieve_before:/global_sieve/before:z
         - ./data/conf/dovecot/global_sieve_after:/global_sieve/after:z
