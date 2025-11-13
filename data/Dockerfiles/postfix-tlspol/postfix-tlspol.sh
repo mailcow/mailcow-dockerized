@@ -18,10 +18,14 @@ done
 
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
-  export REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"
+  export REDIS_SERVER="${REDIS_SLAVEOF_IP}"
+  export REDIS_PORT="${REDIS_SLAVEOF_PORT}"
 else
-  export REDIS_CMDLINE="redis-cli -h redis -p 6379 -a ${REDISPASS} --no-auth-warning"
+  export REDIS_SERVER="redis"
+  export REDIS_PORT="6379"
 fi
+
+export REDIS_CMDLINE="redis-cli -h ${REDIS_SERVER} -p ${REDIS_PORT} -a ${REDISPASS} --no-auth-warning"
 
 until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
   echo "Waiting for Redis..."
@@ -37,16 +41,13 @@ echo "Postfix OK"
 cat <<EOF > /etc/postfix-tlspol/config.yaml
 server:
   address: 0.0.0.0:8642
-
   log-level: ${LOGLVL}
-
   prefetch: true
-
-  cache-file: /var/lib/postfix-tlspol/cache.db
-
 dns:
-  # must support DNSSEC
   address: 127.0.0.11:53
+redis:
+  address: ${REDIS_SERVER}:${REDIS_PORT}
+  db: 2
 EOF
 
 /usr/local/bin/postfix-tlspol -config /etc/postfix-tlspol/config.yaml
