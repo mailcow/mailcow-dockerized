@@ -49,6 +49,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             // Default to 1 yr
             $_data["validity"] = 8760;
           }
+          if (isset($_data["permanent"]) && filter_var($_data["permanent"], FILTER_VALIDATE_BOOL)) {
+            $permanent = 1;
+          }
+          else {
+            $permanent = 0;
+          }
           $domain = $_data['domain'];
           $description = $_data['description'];
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
@@ -65,13 +71,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $validity = strtotime("+" . $_data["validity"] . " hour");
-          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`) VALUES
-            (:address, :description, :goto, :validity)");
+          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`, `permanent`) VALUES
+            (:address, :description, :goto, :validity, :permanent)");
           $stmt->execute(array(
             ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
             ':description' => $description,
             ':goto' => $username,
-            ':validity' => $validity
+            ':validity' => $validity,
+            ':permanent' => $permanent
           ));
           $_SESSION['return'][] = array(
             'type' => 'success',
@@ -2103,15 +2110,23 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            if (empty($_data['validity'])) {
+            if (empty($_data['validity']) && empty($_data['permanent'])) {
               continue;
             }
-            $validity = round((int)time() + ($_data['validity'] * 3600));
-            $stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = :validity WHERE
+            if (isset($_data['permanent']) && filter_var($_data['permanent'], FILTER_VALIDATE_BOOL)) {
+              $permanent = 1;
+              $validity = 0;
+            }
+            else if (isset($_data['validity'])) {
+              $permanent = 0;
+              $validity = round((int)time() + ($_data['validity'] * 3600));
+            }
+            $stmt = $pdo->prepare("UPDATE `spamalias` SET `validity` = :validity, `permanent` = :permanent WHERE
               `address` = :address");
             $stmt->execute(array(
               ':address' => $address,
-              ':validity' => $validity
+              ':validity' => $validity,
+              ':permanent' => $permanent
             ));
             $_SESSION['return'][] = array(
               'type' => 'success',
@@ -4584,10 +4599,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `description`,
             `validity`,
             `created`,
-            `modified`
+            `modified`,
+            `permanent`
               FROM `spamalias`
                 WHERE `goto` = :username
-                  AND `validity` >= :unixnow");
+                  AND (`validity` >= :unixnow
+                    OR `permanent` != 0)");
           $stmt->execute(array(':username' => $_data, ':unixnow' => time()));
           $tladata = $stmt->fetchAll(PDO::FETCH_ASSOC);
           return $tladata;
@@ -5162,7 +5179,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt = $pdo->prepare("SELECT COALESCE(SUM(`quota`), 0) as `in_use` FROM `mailbox` WHERE (`kind` = '' OR `kind` = NULL) AND `domain` = :domain AND `username` != :username");
             $stmt->execute(array(':domain' => $row['domain'], ':username' => $_data));
             $MailboxUsage = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `goto` = :address AND `validity` >= :unixnow");
+            $stmt = $pdo->prepare("SELECT IFNULL(COUNT(`address`), 0) AS `sa_count` FROM `spamalias` WHERE `goto` = :address AND (`validity` >= :unixnow OR `permanent` != 0)");
             $stmt->execute(array(':address' => $_data, ':unixnow' => time()));
             $SpamaliasUsage = $stmt->fetch(PDO::FETCH_ASSOC);
             $mailboxdata['max_new_quota'] = ($DomainQuota['quota'] * 1048576) - $MailboxUsage['in_use'];
