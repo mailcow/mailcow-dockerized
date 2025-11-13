@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.94
+      image: ghcr.io/mailcow/phpfpm:8.2.29
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.81
+      image: ghcr.io/mailcow/postfix:3.7.11
       depends_on:
         mysql-mailcow:
           condition: service_started
