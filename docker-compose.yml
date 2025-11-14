@@ -498,6 +498,7 @@ services:
         - ./data/assets/ssl:/var/lib/acme/:z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
+        - ./data/conf/acme:/etc/acme/:z
       restart: always
       networks:
         mailcow-network:

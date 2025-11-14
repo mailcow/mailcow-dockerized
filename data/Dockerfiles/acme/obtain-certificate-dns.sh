@@ -12,6 +12,14 @@ CERT_DOMAINS=(${DOMAINS[@]})
 CERT_DOMAIN=${CERT_DOMAINS[0]}
 ACME_BASE=/var/lib/acme
 
+# Load optional DNS provider secrets from /etc/acme/dns-101.conf
+if [[ -f /srv/load-dns-config.sh ]]; then
+  source /srv/load-dns-config.sh
+  if declare -F log_f >/dev/null; then
+    log_f "ACME_DNS_CHALLENGE is enabled, DNS provider secrets loaded"
+  fi
+fi
+
 TYPE=${1}
 PREFIX=""
 # only support rsa certificates for now
@@ -129,6 +137,13 @@ for domain in "${CERT_DOMAINS[@]}"; do
 done
 
 log_f "Using command ${ACME_CMD[*]}"
+if [[ -n "${ACME_DNS_PROVIDER}" ]]; then
+  log_f "DNS provider: ${ACME_DNS_PROVIDER}"
+fi
+if compgen -A variable | grep -Eq "^DNS_|^ACME_"; then
+  LOG_KEYS=$(env | grep -E "^(DNS_|ACME_)" | cut -d= -f1 | tr '\n' ' ')
+  log_f "Available DNS/ACME env keys: ${LOG_KEYS}" redis_only
+fi
 ACME_RESPONSE=$("${ACME_CMD[@]}" 2>&1 | tee /dev/fd/5; exit ${PIPESTATUS[0]})
 SUCCESS="$?"
 ACME_RESPONSE_B64=$(echo "${ACME_RESPONSE}" | openssl enc -e -A -base64)
