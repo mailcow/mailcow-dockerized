@@ -387,7 +387,7 @@ function user_login($user, $pass, $extra = null){
             'msg' => array('logged_in_as', $user)
           );
           return "pending";
-        } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
+        } else {
           // no authenticators found, login successfull
           if (!$is_internal){
             unset($_SESSION['ldelay']);
