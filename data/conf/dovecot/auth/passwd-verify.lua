@@ -8,10 +8,16 @@ function auth_password_verify(request, password)
   local https = require "ssl.https"
   https.TIMEOUT = 30
 
+  -- Provide default value for real_rip if not set
+  local real_rip = request.real_rip
+  if real_rip == nil or real_rip == "" then
+    real_rip = "127.0.0.1"
+  end
+
   local req = {
     username = request.user,
     password = password,
-    real_rip = request.real_rip,
+    real_rip = real_rip,
     service = request.service
   }
   local req_json = json.encode(req)
