@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG DEBIAN_VERSION=bookworm
 ARG SOGO_DEBIAN_REPOSITORY=https://packagingv2.sogo.nu/sogo-nightly-debian/
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.17
+ARG GOSU_VERSION=1.19
 ENV LC_ALL=C
 
 # Prerequisites
