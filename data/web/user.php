@@ -4,6 +4,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.user.inc.php';
 
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
 
+  // SOGo will set ?sogo if user is logged out, so that they can be redirected
+  if (isset($_GET['sogo'])) {
+    header("Location: /SOGo/so/");
+    exit();
+  }
+
   /*
   / USER
   */
@@ -83,7 +89,8 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   exit();
 }
 else {
-  header('Location: /');
+  // Save current URL so the user can be redirected back after login
+  header('Location: /?next=' . rawurlencode(ltrim($_SERVER['REQUEST_URI'], '/')));
   exit();
 }
 
