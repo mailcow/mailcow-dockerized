@@ -109,7 +109,9 @@
         "bcc_dest_format": "La destination Cci doit être une seule adresse de courriel valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
         "tags": "Etiquettes",
         "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application",
-        "dry": "Simuler la synchronisation"
+        "dry": "Simuler la synchronisation",
+        "internal": "Interne",
+        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine."
     },
     "admin": {
         "access": "Accès",
@@ -407,7 +409,8 @@
         "iam_host": "Hôte",
         "iam_host_info": "Saisissez un ou plusieurs hôtes LDAP, séparés par des virgules.",
         "iam_import_users": "Importer des utilisateurs",
-        "filter": "Filtrer"
+        "filter": "Filtrer",
+        "needs_restart": "nécessite un redémarrage"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -548,7 +551,11 @@
         "generic_server_error": "Une erreur de serveur inattendue s'est produite. Veuillez contacter votre administrateur.",
         "authsource_in_use": "Le fournisseur d'identité ne peut pas être modifié ou supprimé car il est actuellement utilisé par un ou plusieurs utilisateurs.",
         "iam_test_connection": "Échec de la connexion",
-        "required_data_missing": "La donnée requise %s est manquante"
+        "required_data_missing": "La donnée requise %s est manquante",
+        "max_age_invalid": "L'âge maximum %s est invalide",
+        "mode_invalid": "Le mode %s est invalide",
+        "mx_invalid": "L'enregistrement MX %s est invalide",
+        "version_invalid": "La version %s est invalide"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -734,7 +741,16 @@
         "mailbox_rename_alias": "Créer un alias automatiquement",
         "sogo_access": "Redirection directe vers SOGo",
         "pushover": "Pushover",
-        "pushover_sound": "Son"
+        "pushover_sound": "Son",
+        "internal": "Interne",
+        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine.",
+        "mta_sts": "MTA-STS",
+        "mta_sts_version": "Version",
+        "mta_sts_version_info": "Défini la version du standard MTA-STS – actuellement seul <code>STSv1</code> est valide.",
+        "mta_sts_mode": "Mode",
+        "mta_sts_max_age": "Âge maximum",
+        "mta_sts_mx": "Serveur MX",
+        "mta_sts_mx_notice": "Plusieurs serveurs MX peuvent être spécifiés (séparés par des virgules)."
     },
     "footer": {
         "cancel": "Annuler",
@@ -789,7 +805,8 @@
         "login_linkstext": "L'identifiant n'est pas correct ?",
         "login_usertext": "Se connecter en tant qu'utilisateur",
         "login_domainadmintext": "Se connecter en tant qu'administrateur du domaine",
-        "login_admintext": "Se connecter en tant qu'administrateur"
+        "login_admintext": "Se connecter en tant qu'administrateur",
+        "email": "Adresse de courriel"
     },
     "mailbox": {
         "action": "Action",
@@ -965,7 +982,8 @@
         "syncjob_check_log": "Vérifier le journal",
         "recipient": "Destinataire",
         "open_logs": "Afficher les journaux",
-        "iam": "Fournisseur d'identité"
+        "iam": "Fournisseur d'identité",
+        "internal": "Interne"
     },
     "oauth2": {
         "access_denied": "Veuillez vous connecter en tant que propriétaire de la boîte de réception pour accorder l’accès via Oauth2.",
