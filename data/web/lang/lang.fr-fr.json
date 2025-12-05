@@ -410,7 +410,8 @@
         "iam_host_info": "Saisissez un ou plusieurs hôtes LDAP, séparés par des virgules.",
         "iam_import_users": "Importer des utilisateurs",
         "filter": "Filtrer",
-        "needs_restart": "nécessite un redémarrage"
+        "needs_restart": "nécessite un redémarrage",
+        "iam": "Fournisseur d'identité"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -1375,7 +1376,9 @@
         "overview": "Vue d'ensemble",
         "expire_never": "Ne jamais expirer",
         "forever": "Pour toujours",
-        "spam_aliases_info": "Un alias de spam est une adresse de courriel temporaire qui peut être utilisée pour protéger les véritables adresses de courriel. <br> De manière optionnelle, une durée d'expiration peut être définie afin que l'alias soit automatiquement désactivé après la période définie, éliminant ainsi les adresses étant abusées ou ayant fuité."
+        "spam_aliases_info": "Un alias de spam est une adresse de courriel temporaire qui peut être utilisée pour protéger les véritables adresses de courriel. <br> De manière optionnelle, une durée d'expiration peut être définie afin que l'alias soit automatiquement désactivé après la période définie, éliminant ainsi les adresses étant abusées ou ayant fuité.",
+        "authentication": "Authentification",
+        "protocols": "Protocoles"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
