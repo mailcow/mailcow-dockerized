@@ -293,6 +293,21 @@ ADDITIONAL_SERVER_NAMES=
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 SKIP_LETS_ENCRYPT=n
 
+# Enable DNS-01 challenge for ACME (acme-mailcow) - y/n
+# This requires you to set ACME_DNS_PROVIDER and ACME_ACCOUNT_EMAIL below
+ACME_DNS_CHALLENGE=n
+ACME_DNS_PROVIDER=dns_xxx
+ACME_ACCOUNT_EMAIL=me@example.com
+# You will need to pass provider-specific environment variables to the acme-mailcow container.
+# See the dns-101 provider documentation for more information.
+# for example for Azure DNS:
+#AZUREDNS_SUBSCRIPTIONID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#AZUREDNS_TENANTID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#AZUREDNS_APPID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#AZUREDNS_CLIENTSECRET=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#AZUREDNS_RESOURCEGROUP="your-resource-group"
+#AZUREDNS_ZONE="your-zone-name"
+
 # Create separate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
 # see https://doc.dovecot.org/admin_manual/ssl/sni_support
