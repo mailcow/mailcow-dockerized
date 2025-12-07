@@ -11,7 +11,10 @@ if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
   $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-  if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
+  if (isset($_GET['next'])) {
+    // If redirect is null, fail to default to be safe
+    header("Location: " . (construct_redirect(rawurldecode($_GET['next'])) ?? "/user"));
+  } else if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
     header("Location: /SOGo/so/");
   } else {
     header("Location: /user");
@@ -44,6 +47,7 @@ $template_data = [
   'is_mobileconfig' => str_contains($_SESSION['index_query_string'], 'mobileconfig'),
   'login_delay' => @$_SESSION['ldelay'],
   'has_iam_sso' => $has_iam_sso,
+  'next_redirect' => @$_GET['next'],
   'custom_login' => $custom_login,
 ];
 

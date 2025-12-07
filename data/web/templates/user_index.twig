@@ -69,7 +69,7 @@
         {% endif %}
         <div class="d-flex flex-column align-items-center">
           {% if has_iam_sso %}
-          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="/?iam_sso=1"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a>
+          <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="/?iam_sso=1{{ next_redirect is not null ? "&next=" ~ next_redirect : "" }}"><i class="bi bi-cloud-arrow-up-fill"></i> {{ lang.admin.iam_sso }}</a>
           {% endif %}
           {% if custom_login.force_sso != 1 %}
           <a class="btn btn-xs-lg btn-secondary w-100 mt-2" style="max-width: 400px;" href="#" id="fido2-login"><i class="bi bi-shield-fill-check"></i> {{ lang.login.fido2_webauthn }}</a>
