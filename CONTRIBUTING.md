@@ -5,7 +5,7 @@ First of all, thank you for wanting to provide a bugfix or a new feature for the
 
 As we want to keep mailcow's development structured we setup these Guidelines which helps you to create your issue/pull request accordingly.
 
-**PLEASE NOTE, THAT WE WILL CLOSE ISSUES/PULL REQUESTS IF THEY DON'T FULLFIL OUR WRITTEN GUIDELINES WRITTEN INSIDE THIS DOCUMENT**. So please check this guidelines before you propose a Issue/Pull Request.
+**PLEASE NOTE, THAT WE WILL CLOSE ISSUES/PULL REQUESTS IF THEY DON'T FULFILL OUR WRITTEN GUIDELINES WRITTEN INSIDE THIS DOCUMENT**. So please check this guidelines before you propose a Issue/Pull Request.
 
 ## Topics
 
