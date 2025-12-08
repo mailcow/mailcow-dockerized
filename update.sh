@@ -177,7 +177,7 @@ remove_obsolete_nginx_ports() {
 detect_docker_compose_command(){
 if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
   if docker compose > /dev/null 2>&1; then
-      if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
+      if docker compose version --short | grep -e "^[2-9]\." -e "^v[2-9]\." -e "^[1-9][0-9]\." -e "^v[1-9][0-9]\." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=native
         COMPOSE_COMMAND="docker compose"
         echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
@@ -187,12 +187,12 @@ if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
         echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
       else
         echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-        echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
+        echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
         exit 1
       fi
   elif docker-compose > /dev/null 2>&1; then
     if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-      if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
+      if docker-compose version --short | grep -e "^[2-9]\." -e "^[1-9][0-9]\." > /dev/null 2>&1; then
         DOCKER_COMPOSE_VERSION=standalone
         COMPOSE_COMMAND="docker-compose"
         echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
@@ -202,7 +202,7 @@ if ! [[ "${DOCKER_COMPOSE_VERSION}" =~ ^(native|standalone)$ ]]; then
         echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
       else
         echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-        echo -e "\e[31mPlease update/install regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
+        echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
         exit 1
       fi
     fi
