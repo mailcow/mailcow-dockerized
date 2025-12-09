@@ -834,7 +834,7 @@ function verify_hash($hash, $password) {
         if ($salt_bin === false || $hash_bin === false) return false;
         // Get length of hash in bytes
         $hash_len = strlen($hash_bin);
-        if ($hash_len <= 0) return false;
+        if ($hash_len === 0) return false;
 
         // Calculate PBKDF2-SHA512 hash for provided password
         $test_hash = hash_pbkdf2('sha512', $password, $salt_bin, $iterations, $hash_len, true);
