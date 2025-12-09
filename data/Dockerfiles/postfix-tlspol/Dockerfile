@@ -4,7 +4,7 @@ WORKDIR /src
 ENV CGO_ENABLED=0 \
     GO111MODULE=on \
 		NOOPT=1 \
-    VERSION=1.8.14
+    VERSION=1.8.22
 
 RUN git clone --branch v${VERSION} https://github.com/Zuplu/postfix-tlspol && \
     cd /src/postfix-tlspol && \

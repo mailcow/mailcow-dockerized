@@ -382,7 +382,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      image: ghcr.io/mailcow/postfix-tlspol:1.8.22
       depends_on:
         unbound-mailcow:
           condition: service_healthy
