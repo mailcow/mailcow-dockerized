@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:1.94
+      image: ghcr.io/mailcow/phpfpm:8.2.29
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -188,10 +188,10 @@ services:
       restart: always
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
-        ofelia.job-exec.phpfpm_ldap_sync.schedule: "@every 1m"
+        ofelia.job-exec.phpfpm_ldap_sync.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
       networks:
@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:1.136
+      image: ghcr.io/mailcow/sogo:5.12.4
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -236,13 +236,13 @@ services:
         - sogo-userdata-backup-vol-1:/sogo_backup
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.sogo_sessions.schedule: "@every 1m"
+        ofelia.job-exec.sogo_sessions.schedule: "0 * * * * *"
         ofelia.job-exec.sogo_sessions.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool -v expire-sessions $${SOGO_EXPIRE_SESSION} || exit 0\""
-        ofelia.job-exec.sogo_ealarms.schedule: "@every 1m"
+        ofelia.job-exec.sogo_ealarms.schedule: "0 * * * * *"
         ofelia.job-exec.sogo_ealarms.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-ealarms-notify -p /etc/sogo/cron.creds || exit 0\""
-        ofelia.job-exec.sogo_eautoreply.schedule: "@every 5m"
-        ofelia.job-exec.sogo_eautoreply.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/cron.creds || exit 0\""
-        ofelia.job-exec.sogo_backup.schedule: "@every 24h"
+        ofelia.job-exec.sogo_eautoreply.schedule: "0 */5 * * * *"
+        ofelia.job-exec.sogo_eautoreply.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool update-autoreply -p /etc/sogo/sieve.creds || exit 0\""
+        ofelia.job-exec.sogo_backup.schedule: "0 0 0 * * *"
         ofelia.job-exec.sogo_backup.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu sogo /usr/sbin/sogo-tool backup /sogo_backup ALL || exit 0\""
       restart: always
       networks:
@@ -252,7 +252,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.35
+      image: ghcr.io/mailcow/dovecot:2.3.21.1
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -310,22 +310,22 @@ services:
       tty: true
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.dovecot_imapsync_runner.schedule: "@every 1m"
+        ofelia.job-exec.dovecot_imapsync_runner.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_imapsync_runner.no-overlap: "true"
         ofelia.job-exec.dovecot_imapsync_runner.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu nobody /usr/local/bin/imapsync_runner.pl || exit 0\""
-        ofelia.job-exec.dovecot_trim_logs.schedule: "@every 1m"
+        ofelia.job-exec.dovecot_trim_logs.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_trim_logs.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0\""
-        ofelia.job-exec.dovecot_quarantine.schedule: "@every 20m"
+        ofelia.job-exec.dovecot_quarantine.schedule: "0 */20 * * * *"
         ofelia.job-exec.dovecot_quarantine.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/quarantine_notify.py || exit 0\""
-        ofelia.job-exec.dovecot_clean_q_aged.schedule: "@every 24h"
+        ofelia.job-exec.dovecot_clean_q_aged.schedule: "0 0 0 * * *"
         ofelia.job-exec.dovecot_clean_q_aged.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/clean_q_aged.sh || exit 0\""
-        ofelia.job-exec.dovecot_maildir_gc.schedule: "@every 30m"
+        ofelia.job-exec.dovecot_maildir_gc.schedule: "0 */30 * * * *"
         ofelia.job-exec.dovecot_maildir_gc.command: "/bin/bash -c \"source /source_env.sh ; /usr/local/bin/gosu vmail /usr/local/bin/maildir_gc.sh\""
-        ofelia.job-exec.dovecot_sarules.schedule: "@every 24h"
+        ofelia.job-exec.dovecot_sarules.schedule: "0 0 0 * * *"
         ofelia.job-exec.dovecot_sarules.command: "/bin/bash -c \"/usr/local/bin/sa-rules.sh\""
-        ofelia.job-exec.dovecot_fts.schedule: "@every 24h"
+        ofelia.job-exec.dovecot_fts.schedule: "0 0 0 * * *"
         ofelia.job-exec.dovecot_fts.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/optimize-fts.sh\""
-        ofelia.job-exec.dovecot_repl_health.schedule: "@every 5m"
+        ofelia.job-exec.dovecot_repl_health.schedule: "0 */5 * * * *"
         ofelia.job-exec.dovecot_repl_health.command: "/bin/bash -c \"/usr/local/bin/gosu vmail /usr/local/bin/repl_health.sh\""
       ulimits:
         nproc: 65535
@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:1.81
+      image: ghcr.io/mailcow/postfix:3.7.11
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -382,7 +382,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.0
+      image: ghcr.io/mailcow/postfix-tlspol:1.8.22
       depends_on:
         unbound-mailcow:
           condition: service_healthy

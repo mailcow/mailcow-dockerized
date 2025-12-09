@@ -16,7 +16,7 @@
         "quarantine_notification": "Modifier la notification de quarantaine",
         "quarantine_category": "Modifier la catégorie de la notification de quarantaine",
         "ratelimit": "Limite d'envoi",
-        "recipient_maps": "Cartes destinataire",
+        "recipient_maps": "Cartes des destinataires",
         "smtp_ip_access": "Changer les hôtes autorisés pour SMTP",
         "sogo_access": "Autoriser la gestion des accès à SOGo",
         "sogo_profile_reset": "Réinitialiser le profil SOGo",
@@ -109,7 +109,9 @@
         "bcc_dest_format": "La destination Cci doit être une seule adresse de courriel valide.<br>Si vous avez besoin d'envoyer une copie à plusieurs adresses, créez un alias et utilisez-le ici.",
         "tags": "Etiquettes",
         "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application",
-        "dry": "Simuler la synchronisation"
+        "dry": "Simuler la synchronisation",
+        "internal": "Interne",
+        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine."
     },
     "admin": {
         "access": "Accès",
@@ -407,7 +409,9 @@
         "iam_host": "Hôte",
         "iam_host_info": "Saisissez un ou plusieurs hôtes LDAP, séparés par des virgules.",
         "iam_import_users": "Importer des utilisateurs",
-        "filter": "Filtrer"
+        "filter": "Filtrer",
+        "needs_restart": "nécessite un redémarrage",
+        "iam": "Fournisseur d'identité"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",
@@ -441,7 +445,7 @@
         "global_filter_write_error": "Impossible d’écrire le fichier de filtre : %s",
         "global_map_invalid": "ID de carte globale %s non valide",
         "global_map_write_error": "Impossible d’écrire l’ID de la carte globale %s : %s",
-        "goto_empty": "Une adresse alias doit contenir au moins une adresse 'goto'valide",
+        "goto_empty": "Une adresse alias doit contenir au moins une adresse 'goto' valide",
         "goto_invalid": "Adresse Goto %s non valide",
         "ham_learn_error": "Erreur d'apprentissage Ham : %s",
         "imagick_exception": "Erreur : Exception Imagick lors de la lecture de l’image",
@@ -548,7 +552,11 @@
         "generic_server_error": "Une erreur de serveur inattendue s'est produite. Veuillez contacter votre administrateur.",
         "authsource_in_use": "Le fournisseur d'identité ne peut pas être modifié ou supprimé car il est actuellement utilisé par un ou plusieurs utilisateurs.",
         "iam_test_connection": "Échec de la connexion",
-        "required_data_missing": "La donnée requise %s est manquante"
+        "required_data_missing": "La donnée requise %s est manquante",
+        "max_age_invalid": "L'âge maximum %s est invalide",
+        "mode_invalid": "Le mode %s est invalide",
+        "mx_invalid": "L'enregistrement MX %s est invalide",
+        "version_invalid": "La version %s est invalide"
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -693,7 +701,7 @@
         "spam_score": "Définir un score spam personnalisé",
         "subfolder2": "Synchronisation dans le sous-dossier sur la destination<br><small>(vide = ne pas utiliser de sous-dossier)</small>",
         "syncjob": "Modifier la tâche de synchronisation",
-        "target_address": "Adresse(s) Goto<small>(séparé(s) par des virgules)</small>",
+        "target_address": "Adresse(s) Goto <small>(séparé(s) par des virgules)</small>",
         "target_domain": "Domaine cible",
         "timeout1": "Délai de connexion à l’hôte distant",
         "timeout2": "Délai de connexion à l’hôte local",
@@ -734,7 +742,20 @@
         "mailbox_rename_alias": "Créer un alias automatiquement",
         "sogo_access": "Redirection directe vers SOGo",
         "pushover": "Pushover",
-        "pushover_sound": "Son"
+        "pushover_sound": "Son",
+        "internal": "Interne",
+        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine.",
+        "mta_sts": "MTA-STS",
+        "mta_sts_version": "Version",
+        "mta_sts_version_info": "Défini la version du standard MTA-STS – actuellement seul <code>STSv1</code> est valide.",
+        "mta_sts_mode": "Mode",
+        "mta_sts_max_age": "Âge maximum",
+        "mta_sts_mx": "Serveur MX",
+        "mta_sts_mx_notice": "Plusieurs serveurs MX peuvent être spécifiés (séparés par des virgules).",
+        "mta_sts_info": "<a href='https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_MTA_Strict_Transport_Security' target='_blank'>MTA-STS</a> est un standard qui oblige la délivrance des courriels entre les serveurs de courriels à utiliser TLS avec des certificats valides. <br>Il est utilisé quand <a target='_blank' href='https://en.wikipedia.org/wiki/DNS-based_Authentication_of_Named_Entities'>DANE</a> n'est pas possible à cause d'un manque ou d'un non support de DNSSEC.<br><b>Note</b> : Si le domaine du destinataire supporte DANE avec DNSSEC, DANE est <b>toujours</b> préféré – MTA-STS sert seulement en secours.",
+        "mta_sts_mode_info": "Il y a trois modes parmi lesquels choisir :<ul><li><em>testing</em> – la politique est seulement surveillée, les violations n'ont pas d'impact.</li><li><em>enforce</em> – la politique est appliquée strictement, les connexions sans TLS valide sont rejetées.</li><li><em>none</em> – la politique est publiée mais non appliquée.</li></ul>",
+        "mta_sts_max_age_info": "Durée en secondes pendant laquelle les serveurs de courriel peuvent mettre en cache cette politique avant de revérifier.",
+        "mta_sts_mx_info": "Autoriser l'envoi uniquement aux noms d'hôtes des serveurs de courriels indiqués explicitement ; le MTA émetteur vérifie si le nom d'hôte DNS du MX correspond à la liste de la politique, et autorise la délivrance seulement avec un certificat TLS valide (protège contre le MITM)."
     },
     "footer": {
         "cancel": "Annuler",
@@ -789,7 +810,8 @@
         "login_linkstext": "L'identifiant n'est pas correct ?",
         "login_usertext": "Se connecter en tant qu'utilisateur",
         "login_domainadmintext": "Se connecter en tant qu'administrateur du domaine",
-        "login_admintext": "Se connecter en tant qu'administrateur"
+        "login_admintext": "Se connecter en tant qu'administrateur",
+        "email": "Adresse de courriel"
     },
     "mailbox": {
         "action": "Action",
@@ -896,7 +918,7 @@
         "recipient_map_new_info": "La destination de la carte du destinataire doit être une adresse de courriel valide ou un nom de domaine.",
         "recipient_map_old": "Destinataire original",
         "recipient_map_old_info": "La destination originale des cartes des destinataires doit être une adresse de courriel valide ou un nom de domaine.",
-        "recipient_maps": "Cartes des bénéficiaires",
+        "recipient_maps": "Cartes des destinataires",
         "relay_all": "Relayer tous les destinataires",
         "remove": "Supprimer",
         "resources": "Ressources",
@@ -965,7 +987,8 @@
         "syncjob_check_log": "Vérifier le journal",
         "recipient": "Destinataire",
         "open_logs": "Afficher les journaux",
-        "iam": "Fournisseur d'identité"
+        "iam": "Fournisseur d'identité",
+        "internal": "Interne"
     },
     "oauth2": {
         "access_denied": "Veuillez vous connecter en tant que propriétaire de la boîte de réception pour accorder l’accès via Oauth2.",
@@ -1222,7 +1245,7 @@
         "email_and_dav": "Courriel, calendriers et contacts",
         "encryption": "Chiffrement",
         "excludes": "Exclus",
-        "expire_in": "Expire dans",
+        "expire_in": "Expirer dans",
         "force_pw_update": "Vous <b>devez</b> définir un nouveau mot de passe pour pouvoir accéder aux services liés aux logiciels de groupe.",
         "generate": "générer",
         "hour": "heure",
@@ -1350,7 +1373,12 @@
         "mailbox_general": "Général",
         "mailbox_settings": "Paramètres",
         "tfa_info": "L'authentification à deux facteurs permet de protéger votre compte. Si vous l'activez, vous aurez besoin de mots de passe d'application pour vous connecter à des applications ou des services qui ne prennent pas en charge l'authentification à deux facteurs (par exemple les clients e-mails).",
-        "overview": "Vue d'ensemble"
+        "overview": "Vue d'ensemble",
+        "expire_never": "Ne jamais expirer",
+        "forever": "Pour toujours",
+        "spam_aliases_info": "Un alias de spam est une adresse de courriel temporaire qui peut être utilisée pour protéger les véritables adresses de courriel. <br> De manière optionnelle, une durée d'expiration peut être définie afin que l'alias soit automatiquement désactivé après la période définie, éliminant ainsi les adresses étant abusées ou ayant fuité.",
+        "authentication": "Authentification",
+        "protocols": "Protocoles"
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",
