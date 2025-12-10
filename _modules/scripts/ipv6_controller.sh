@@ -141,6 +141,10 @@ docker_daemon_edit(){
       else
         echo -e "${YELLOW}User declined Docker update – skipping Docker daemon configuration.${NC}"
         echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+        echo ""
+        echo -e "${YELLOW}If you change your mind later, please insert these changes manually to $DOCKER_DAEMON_CONFIG:${NC}"
+        echo "${MISSING[*]}"
+        echo ""
         return 1
       fi
     fi
@@ -187,6 +191,20 @@ EOF
     else
       echo -e "${YELLOW}User declined to create daemon.json – skipping Docker daemon configuration.${NC}"
       echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+      echo ""
+      echo -e "${YELLOW}If you change your mind later, please create $DOCKER_DAEMON_CONFIG with these settings:${NC}"
+      if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
+        echo '  "ipv6": true,'
+        echo '  "fixed-cidr-v6": "fd00:dead:beef:c0::/80",'
+        echo '  "ip6tables": true,'
+        echo '  "experimental": true'
+      elif [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 28 ]]; then
+        echo '  "ipv6": true,'
+        echo '  "fixed-cidr-v6": "fd00:dead:beef:c0::/80"'
+      else
+        echo '  "ipv6": true'
+      fi
+      echo ""
       return 1
     fi
   fi
