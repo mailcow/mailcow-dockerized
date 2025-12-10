@@ -3,7 +3,7 @@ FROM alpine:3.21
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.17
+ARG GOSU_VERSION=1.19
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
