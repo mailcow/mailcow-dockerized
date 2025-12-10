@@ -139,9 +139,9 @@ docker_daemon_edit(){
           exit 1
         fi
       else
-        echo -e "${YELLOW}User declined Docker update – please insert these changes manually:${NC}"
-        echo "${MISSING[*]}"
-        exit 1
+        echo -e "${YELLOW}User declined Docker update – skipping Docker daemon configuration.${NC}"
+        echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+        return 1
       fi
     fi
 
@@ -185,9 +185,9 @@ EOF
       (command -v systemctl &>/dev/null && systemctl restart docker) || service docker restart
       echo "Docker restarted."
     else
-      echo "User declined to create daemon.json – please manually merge the docker daemon with these configs:"
-      echo "${MISSING[*]}"
-      exit 1
+      echo -e "${YELLOW}User declined to create daemon.json – skipping Docker daemon configuration.${NC}"
+      echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+      return 1
     fi
   fi
 }
@@ -223,7 +223,20 @@ configure_ipv6() {
     return
   fi
 
-  docker_daemon_edit
+  if ! docker_daemon_edit; then
+    # User declined Docker daemon configuration
+    if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
+      if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
+        sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=false/' "$MAILCOW_CONF"
+      else
+        echo "ENABLE_IPV6=false" >> "$MAILCOW_CONF"
+      fi
+    else
+      export IPV6_BOOL=false
+    fi
+    echo "IPv6 configuration complete: ENABLE_IPV6=false"
+    return 0
+  fi
 
   if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
     if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
