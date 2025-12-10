@@ -225,6 +225,8 @@ configure_ipv6() {
 
   if ! docker_daemon_edit; then
     # User declined Docker daemon configuration
+    # When called from update.sh, MAILCOW_CONF is set and we modify the existing file
+    # When called from generate_config.sh, MAILCOW_CONF is not set and we export IPV6_BOOL
     if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
       if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
         sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=false/' "$MAILCOW_CONF"
