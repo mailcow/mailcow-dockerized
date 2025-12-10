@@ -91,6 +91,44 @@ if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then
   exit 1
 fi
 
+# Add image prefetch function
+function prefetch_image() {
+  echo "Checking Docker image: ${DEBIAN_DOCKER_IMAGE}"
+  
+  # Get local image digest if it exists
+  local local_digest=$(docker image inspect ${DEBIAN_DOCKER_IMAGE} --format='{{index .RepoDigests 0}}' 2>/dev/null | cut -d'@' -f2)
+  
+  # Get remote image digest without pulling
+  local remote_digest=$(docker manifest inspect ${DEBIAN_DOCKER_IMAGE} 2>/dev/null | grep -oP '"digest":\s*"\K[^"]+' | head -1)
+  
+  if [[ -z "${remote_digest}" ]]; then
+    echo "Warning: Unable to check remote image"
+    if [[ -n "${local_digest}" ]]; then
+      echo "Using cached version"
+      echo
+      return 0
+    else
+      echo "Error: Image ${DEBIAN_DOCKER_IMAGE} not found locally or remotely"
+      exit 1
+    fi
+  fi
+  
+  if [[ "${local_digest}" != "${remote_digest}" ]]; then
+    echo "Image update available, pulling ${DEBIAN_DOCKER_IMAGE}"
+    if docker pull ${DEBIAN_DOCKER_IMAGE} 2>/dev/null; then
+      echo "Successfully pulled ${DEBIAN_DOCKER_IMAGE}"
+    else
+      echo "Error: Failed to pull ${DEBIAN_DOCKER_IMAGE}"
+      exit 1
+    fi
+  else
+    echo "Image is up to date (${remote_digest:0:12}...)"
+  fi
+  echo
+}
+
+# Prefetch the image early in the script
+prefetch_image
 
 function backup() {
   DATE=$(date +"%Y-%m-%d-%H-%M-%S")
