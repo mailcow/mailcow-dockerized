@@ -75,6 +75,7 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - CLAMD_STARTUP_TIMEOUT=${CLAMD_STARTUP_TIMEOUT:-600}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
         - clamd-db-vol-1:/var/lib/clamav
