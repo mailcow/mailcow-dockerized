@@ -98,9 +98,26 @@ BACKGROUND_TASKS+=($CLAMD_PID)
 
 # Give clamd time to start up, especially with limited resources
 # This grace period allows clamd to initialize fully before health checks begin
-STARTUP_GRACE_PERIOD=600  # 10 minutes in seconds
-echo "Waiting ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
-sleep ${STARTUP_GRACE_PERIOD}
+# Can be configured via CLAMD_STARTUP_TIMEOUT environment variable
+STARTUP_GRACE_PERIOD=${CLAMD_STARTUP_TIMEOUT:-600}  # Default: 10 minutes in seconds
+echo "Waiting up to ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
+
+# Wait for clamd to be ready or until timeout
+ELAPSED=0
+POLL_INTERVAL=10
+while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
+  # Check if clamd is responsive by attempting to connect
+  if echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"; then
+    echo "clamd is ready after ${ELAPSED} seconds"
+    break
+  fi
+  sleep ${POLL_INTERVAL}
+  ELAPSED=$((ELAPSED + POLL_INTERVAL))
+done
+
+if [ ${ELAPSED} -ge ${STARTUP_GRACE_PERIOD} ]; then
+  echo "Warning: clamd startup grace period of ${STARTUP_GRACE_PERIOD} seconds elapsed"
+fi
 
 while true; do
   for bg_task in ${BACKGROUND_TASKS[*]}; do
