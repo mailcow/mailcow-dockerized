@@ -1,9 +1,9 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_3.13.2-1~8bf602278
-ARG CODENAME=bookworm
+ARG RSPAMD_VER=rspamd_3.14.1-1~46a758617
+ARG CODENAME=trixie
 ENV LC_ALL=C
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
