@@ -109,11 +109,14 @@ clamd_is_ready() {
 # Wait for clamd to be ready or until timeout
 ELAPSED=0
 POLL_INTERVAL=10
+CLAMD_READY=0
+
 while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
   # Check if clamd is responsive by attempting to connect on localhost
   # clamd listens on 0.0.0.0:3310 (configured in Dockerfile)
   if clamd_is_ready; then
     echo "clamd is ready after ${ELAPSED} seconds"
+    CLAMD_READY=1
     break
   fi
   
@@ -121,12 +124,12 @@ while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
   ELAPSED=$((ELAPSED + POLL_INTERVAL))
 done
 
-if [ ${ELAPSED} -ge ${STARTUP_GRACE_PERIOD} ]; then
-  # Check one more time if clamd is actually running
-  if ! clamd_is_ready; then
-    echo "Warning: clamd did not respond to PING within ${STARTUP_GRACE_PERIOD} seconds - it may still be starting up"
+# Report final status
+if [ ${CLAMD_READY} -eq 0 ]; then
+  if clamd_is_ready; then
+    echo "clamd is now ready (started during final check)"
   else
-    echo "clamd is now ready"
+    echo "Warning: clamd did not respond to PING within ${STARTUP_GRACE_PERIOD} seconds - it may still be starting up"
   fi
 fi
 
