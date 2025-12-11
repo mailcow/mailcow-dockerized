@@ -106,17 +106,24 @@ echo "Waiting up to ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
 ELAPSED=0
 POLL_INTERVAL=10
 while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
-  # Check if clamd is responsive by attempting to connect
+  sleep ${POLL_INTERVAL}
+  ELAPSED=$((ELAPSED + POLL_INTERVAL))
+  
+  # Check if clamd is responsive by attempting to connect on localhost
+  # clamd listens on 0.0.0.0:3310 (configured in Dockerfile)
   if echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"; then
     echo "clamd is ready after ${ELAPSED} seconds"
     break
   fi
-  sleep ${POLL_INTERVAL}
-  ELAPSED=$((ELAPSED + POLL_INTERVAL))
 done
 
 if [ ${ELAPSED} -ge ${STARTUP_GRACE_PERIOD} ]; then
-  echo "Warning: clamd startup grace period of ${STARTUP_GRACE_PERIOD} seconds elapsed"
+  # Check one more time if clamd is actually running
+  if ! echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"; then
+    echo "Warning: clamd did not respond to PING within ${STARTUP_GRACE_PERIOD} seconds - it may still be starting up"
+  else
+    echo "clamd is now ready"
+  fi
 fi
 
 while true; do
