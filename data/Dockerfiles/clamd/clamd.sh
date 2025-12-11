@@ -93,8 +93,7 @@ BACKGROUND_TASKS+=($!)
 
 echo "$(clamd -V) is starting... please wait a moment."
 nice -n10 clamd &
-CLAMD_PID=$!
-BACKGROUND_TASKS+=($CLAMD_PID)
+BACKGROUND_TASKS+=($!)
 
 # Give clamd time to start up, especially with limited resources
 # This grace period allows clamd to initialize fully before health checks begin
@@ -102,24 +101,29 @@ BACKGROUND_TASKS+=($CLAMD_PID)
 STARTUP_GRACE_PERIOD=${CLAMD_STARTUP_TIMEOUT:-600}  # Default: 10 minutes in seconds
 echo "Waiting up to ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
 
+# Helper function to check if clamd is ready
+clamd_is_ready() {
+  echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"
+}
+
 # Wait for clamd to be ready or until timeout
 ELAPSED=0
 POLL_INTERVAL=10
 while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
-  sleep ${POLL_INTERVAL}
-  ELAPSED=$((ELAPSED + POLL_INTERVAL))
-  
   # Check if clamd is responsive by attempting to connect on localhost
   # clamd listens on 0.0.0.0:3310 (configured in Dockerfile)
-  if echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"; then
+  if clamd_is_ready; then
     echo "clamd is ready after ${ELAPSED} seconds"
     break
   fi
+  
+  sleep ${POLL_INTERVAL}
+  ELAPSED=$((ELAPSED + POLL_INTERVAL))
 done
 
 if [ ${ELAPSED} -ge ${STARTUP_GRACE_PERIOD} ]; then
   # Check one more time if clamd is actually running
-  if ! echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"; then
+  if ! clamd_is_ready; then
     echo "Warning: clamd did not respond to PING within ${STARTUP_GRACE_PERIOD} seconds - it may still be starting up"
   else
     echo "clamd is now ready"
