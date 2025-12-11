@@ -107,11 +107,14 @@ clamd_is_ready() {
 }
 
 # Wait for clamd to be ready or until timeout
-ELAPSED=0
+START_TIME=$(date +%s)
 POLL_INTERVAL=10
 CLAMD_READY=0
 
-while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
+while true; do
+  CURRENT_TIME=$(date +%s)
+  ELAPSED=$((CURRENT_TIME - START_TIME))
+  
   # Check if clamd is responsive by attempting to connect on localhost
   # clamd listens on 0.0.0.0:3310 (configured in Dockerfile)
   if clamd_is_ready; then
@@ -120,7 +123,11 @@ while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
     break
   fi
   
-  ELAPSED=$((ELAPSED + POLL_INTERVAL))
+  # Check if we've exceeded the timeout
+  if [ ${ELAPSED} -ge ${STARTUP_GRACE_PERIOD} ]; then
+    break
+  fi
+  
   sleep ${POLL_INTERVAL}
 done
 
