@@ -103,7 +103,7 @@ echo "Waiting up to ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
 
 # Helper function to check if clamd is ready
 clamd_is_ready() {
-  echo "PING" | nc -w 1 127.0.0.1 3310 2>/dev/null | grep -q "PONG"
+  [ "$(echo "PING" | nc -w 1 localhost 3310 2>/dev/null)" = "PONG" ]
 }
 
 # Wait for clamd to be ready or until timeout
@@ -120,11 +120,11 @@ while [ ${ELAPSED} -lt ${STARTUP_GRACE_PERIOD} ]; do
     break
   fi
   
-  sleep ${POLL_INTERVAL}
   ELAPSED=$((ELAPSED + POLL_INTERVAL))
+  sleep ${POLL_INTERVAL}
 done
 
-# Report final status
+# Report final status only if not already reported as ready
 if [ ${CLAMD_READY} -eq 0 ]; then
   if clamd_is_ready; then
     echo "clamd is now ready (started during final check)"
