@@ -93,7 +93,14 @@ BACKGROUND_TASKS+=($!)
 
 echo "$(clamd -V) is starting... please wait a moment."
 nice -n10 clamd &
-BACKGROUND_TASKS+=($!)
+CLAMD_PID=$!
+BACKGROUND_TASKS+=($CLAMD_PID)
+
+# Give clamd time to start up, especially with limited resources
+# This grace period allows clamd to initialize fully before health checks begin
+STARTUP_GRACE_PERIOD=600  # 10 minutes in seconds
+echo "Waiting ${STARTUP_GRACE_PERIOD} seconds for clamd to start up..."
+sleep ${STARTUP_GRACE_PERIOD}
 
 while true; do
   for bg_task in ${BACKGROUND_TASKS[*]}; do
