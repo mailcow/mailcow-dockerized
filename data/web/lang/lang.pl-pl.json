@@ -240,7 +240,7 @@
         "generate": "Generuj",
         "guid": "GUID - unikalny identyfikator instancji",
         "guid_and_license": "GUID & licencja",
-        "hash_remove_info": "Usunięcie hasha z limitem współczynnika (jeśli nadal istnieje) spowoduje całkowite zresetowanie jego licznika.<br>\n\n\n\n    Każdy hash jest oznaczony indywidualnym kolorem.",
+        "hash_remove_info": "Usunięcie hasha z limitem współczynnika (jeśli nadal istnieje) spowoduje całkowite zresetowanie jego licznika.<br> Każdy hash jest oznaczony indywidualnym kolorem.",
         "help_text": "Zastąp tekst pomocy poniżej maski logowania (dozwolone HTML)",
         "html": "HTML",
         "iam": "Dostawca tożsamości",
@@ -683,7 +683,11 @@
         "mailbox_rename_agree": "Stworzyłem kopię zapasową.",
         "mailbox_rename_warning": "WAŻNE! Utwórz kopię zapasową przed zmianą nazwy skrzynki pocztowej.",
         "mailbox_rename_alias": "Tworzenie aliasów automatycznie",
-        "mailbox_rename_title": "Nowa nazwa lokalnej skrzynki pocztowej"
+        "mailbox_rename_title": "Nowa nazwa lokalnej skrzynki pocztowej",
+        "mbox_rl_info": "Ten limit szybkości dotyczy nazwy logowania SASL i odpowiada dowolnemu adresowi „from” używanemu przez zalogowanego użytkownika. Limit szybkości dla skrzynki pocztowej nadpisuje limit szybkości dla całej domeny.",
+        "nexthop": "Następny hop",
+        "private_comment": "Prywatny komentarz",
+        "public_comment": "Komentarz publiczny"
     },
     "footer": {
         "cancel": "Anuluj",
@@ -1075,7 +1079,7 @@
         "spamfilter_table_remove": "Usuń",
         "spamfilter_table_rule": "Zasada",
         "spamfilter_wl": "Biała lista",
-        "spamfilter_wl_desc": "Adresy e-mail znajdujące się na liście dozwolonych (allowlist) są zaprogramowane tak, aby <b> nigdy nie </b> były klasyfikowane jako spam.\nMożna używać symboli wieloznacznych (wildcardów).\nFiltr jest stosowany wyłącznie do bezpośrednich aliasów (aliasów wskazujących na jedną skrzynkę pocztową), z wyłączeniem aliasów typu „catch-all” oraz samej skrzynki pocztowej",
+        "spamfilter_wl_desc": "Adresy e-mail znajdujące się na liście dozwolonych (allowlist) są zaprogramowane tak, aby <b> nigdy nie </b> były klasyfikowane jako spam. Można używać symboli wieloznacznych (wildcardów).Filtr jest stosowany wyłącznie do bezpośrednich aliasów (aliasów wskazujących na jedną skrzynkę pocztową), z wyłączeniem aliasów typu „catch-all” oraz samej skrzynki pocztowej",
         "spamfilter_yellow": "Żółty: ta wiadomość może być spamem, zostanie oznaczona jako spam i przeniesiona do folderu spam",
         "sync_jobs": "Zadania synchronizacji",
         "tag_handling": "Ustaw obsługę znaczników pocztowych",
