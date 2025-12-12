@@ -274,12 +274,12 @@ function generate_app_passwd($length = 32) {
   // Add one required digit
   $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
   
-  // Add lowercase letter if chars required
+  // Add alphabetic character if required
   if ($password_complexity['chars'] == 1) {
     $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
   }
   
-  // Add uppercase letters if lowerupper required
+  // Add both uppercase and lowercase letters if lowerupper required
   if ($password_complexity['lowerupper'] == 1) {
     $pool .= $uppercase;
     $required_chars .= $uppercase[random_int(0, strlen($uppercase) - 1)];
@@ -292,8 +292,11 @@ function generate_app_passwd($length = 32) {
     $required_chars .= $special[random_int(0, strlen($special) - 1)];
   }
   
+  // Ensure the password is at least as long as the required characters
+  $final_length = max($required_length, strlen($required_chars));
+  
   // Generate remaining characters
-  $remaining_length = $required_length - strlen($required_chars);
+  $remaining_length = $final_length - strlen($required_chars);
   $password = $required_chars;
   
   for ($i = 0; $i < $remaining_length; $i++) {
