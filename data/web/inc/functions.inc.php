@@ -251,6 +251,60 @@ function password_check($password1, $password2) {
 
   return true;
 }
+function generate_app_passwd($length = 32) {
+  // Get password complexity requirements
+  $password_complexity = password_complexity('get');
+  
+  // Determine the actual length to use
+  $required_length = max($length, intval($password_complexity['length']));
+  
+  // Define character sets
+  $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+  $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $digits = '0123456789';
+  $special = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+  
+  // Build the character pool based on requirements
+  $pool = '';
+  $required_chars = '';
+  
+  // Always include digits and lowercase (basic requirement for hex compatibility)
+  $pool .= $digits . $lowercase;
+  
+  // Add one required digit
+  $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
+  
+  // Add lowercase letter if chars required
+  if ($password_complexity['chars'] == 1) {
+    $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+  }
+  
+  // Add uppercase letters if lowerupper required
+  if ($password_complexity['lowerupper'] == 1) {
+    $pool .= $uppercase;
+    $required_chars .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+    $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+  }
+  
+  // Add special characters if required
+  if ($password_complexity['special_chars'] == 1) {
+    $pool .= $special;
+    $required_chars .= $special[random_int(0, strlen($special) - 1)];
+  }
+  
+  // Generate remaining characters
+  $remaining_length = $required_length - strlen($required_chars);
+  $password = $required_chars;
+  
+  for ($i = 0; $i < $remaining_length; $i++) {
+    $password .= $pool[random_int(0, strlen($pool) - 1)];
+  }
+  
+  // Shuffle the password to mix required chars with random ones
+  $password = str_shuffle($password);
+  
+  return $password;
+}
 function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   global $pdo;
   global $redis;

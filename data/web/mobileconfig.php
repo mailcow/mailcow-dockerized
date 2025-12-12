@@ -52,7 +52,7 @@ if (isset($_GET['app_password'])) {
   else
       $platform = $_SERVER['HTTP_USER_AGENT'];
   
-  $password = bin2hex(openssl_random_pseudo_bytes(16));
+  $password = generate_app_passwd();
   $attr = array(
       'app_name' => $platform,
       'app_passwd' => $password,
