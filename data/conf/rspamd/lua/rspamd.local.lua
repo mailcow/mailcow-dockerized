@@ -1,10 +1,10 @@
 rspamd_config.MAILCOW_AUTH = {
-	callback = function(task)
-		local uname = task:get_user()
-		if uname then
-			return 1
-		end
-	end
+  callback = function(task)
+    local uname = task:get_user()
+    if uname then
+      return 1
+    end
+  end
 }
 
 local monitoring_hosts = rspamd_config:add_map{
@@ -91,36 +91,36 @@ rspamd_config:register_symbol({
   name = 'POSTMASTER_HANDLER',
   type = 'prefilter',
   callback = function(task)
-  local rcpts = task:get_recipients('smtp')
-  local rspamd_logger = require "rspamd_logger"
-  local lua_util = require "lua_util"
-  local from = task:get_from(1)
+    local rcpts = task:get_recipients('smtp')
+    local rspamd_logger = require "rspamd_logger"
+    local lua_util = require "lua_util"
+    local from = task:get_from(1)
 
-  -- not applying to mails with more than one rcpt to avoid bypassing filters by addressing postmaster
-  if rcpts and #rcpts == 1 then
-    for _,rcpt in ipairs(rcpts) do
-      local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
-      if #rcpt_split == 2 then
-        if rcpt_split[1] == 'postmaster' then
-          task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
-          return
+    -- not applying to mails with more than one rcpt to avoid bypassing filters by addressing postmaster
+    if rcpts and #rcpts == 1 then
+      for _,rcpt in ipairs(rcpts) do
+        local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
+        if #rcpt_split == 2 then
+          if rcpt_split[1] == 'postmaster' then
+            task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
+            return
+          end
         end
       end
     end
-  end
 
-  if from then
-    for _,fr in ipairs(from) do
-      local fr_split = rspamd_str_split(fr['addr'], '@')
-      if #fr_split == 2 then
-        if fr_split[1] == 'postmaster' and task:get_user() then
-          -- no whitelist, keep signatures
-          task:insert_result(true, 'POSTMASTER_FROM', -2500.0)
-          return
+    if from then
+      for _,fr in ipairs(from) do
+        local fr_split = rspamd_str_split(fr['addr'], '@')
+        if #fr_split == 2 then
+          if fr_split[1] == 'postmaster' and task:get_user() then
+            -- no whitelist, keep signatures
+            task:insert_result(true, 'POSTMASTER_FROM', -2500.0)
+            return
+          end
         end
       end
     end
-  end
 
   end,
   priority = 10
@@ -798,14 +798,14 @@ rspamd_config:register_symbol({
     end
     -- retrieve footer
     local function footer_cb(err_message, code, data, headers)
-      if err or type(data) ~= 'string' then
-        rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+      if err_message or type(data) ~= 'string' then
+        rspamd_logger.infox(rspamd_config, "domain wide footer request for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err_message)
       else
 
         -- parse json string
         local footer = cjson.decode(data)
         if not footer then
-          rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err)
+          rspamd_logger.infox(rspamd_config, "parsing domain wide footer for user %s returned invalid or empty data (\"%s\") or error (\"%s\")", uname, data, err_message)
         else
           if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s, vars=%s", uname, footer.html, footer.plain, footer.vars)
@@ -858,35 +858,76 @@ rspamd_config:register_symbol({
             local seen_cte
             local newline_s = newline(task)
 
+            -- Check if this is a multipart message
+            local ct = task:get_header('Content-Type', false)
+            local is_multipart = ct and ct:lower():match('^multipart/')
+
+            -- Check if footer contains non-ASCII characters (like German umlauts)
+            local function has_non_ascii(text)
+              if not text or text == "" then
+                return false
+              end
+              -- Check if string contains bytes > 127 (non-ASCII)
+              return text:match('[\128-\255]') ~= nil
+            end
+
+            local footer_needs_utf8 = has_non_ascii(footer.html) or has_non_ascii(footer.plain)
+
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
                 if name:lower() == 'content-type' then
                   -- include boundary if present
                   local boundary_part = rewrite.new_ct.boundary and
                     string.format('; boundary="%s"', rewrite.new_ct.boundary) or ''
-                  local nct = string.format('%s: %s/%s; charset=utf-8%s',
-                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)
+
+                  -- Preserve original charset for Outlook compatibility, but force UTF-8 if footer has special chars
+                  local charset_part = ''
+                  if not is_multipart then
+                    -- Force UTF-8 if footer contains non-ASCII characters (e.g., German umlauts)
+                    if footer_needs_utf8 then
+                      charset_part = '; charset=utf-8'
+                      rspamd_logger.infox(rspamd_config, "footer contains non-ASCII characters, forcing UTF-8 charset")
+                    else
+                      -- Extract original charset or use UTF-8 as fallback
+                      local orig_charset = hdr.raw:match('[Cc][Hh][Aa][Rr][Ss][Ee][Tt]%s*=%s*"?([^;%s"]+)')
+                      if orig_charset then
+                        -- Keep original charset as-is (or fall back to UTF-8 if needed)
+                        charset_part = string.format('; charset=%s', orig_charset)
+                      else
+                        charset_part = '; charset=utf-8'
+                      end
+                    end
+                  end
+
+                  local nct = string.format('%s: %s/%s%s%s',
+                      'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype, charset_part, boundary_part)
                   out[#out + 1] = nct
                   -- update Content-Type header (include boundary if present)
                   task:set_milter_reply({
                     remove_headers = {['Content-Type'] = 0},
                   })
                   task:set_milter_reply({
-                    add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8%s',
-                      rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)}
+                    add_headers = {['Content-Type'] = string.format('%s/%s%s%s',
+                      rewrite.new_ct.type, rewrite.new_ct.subtype, charset_part, boundary_part)}
                   })
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
-                  out[#out + 1] = string.format('%s: %s',
-                      'Content-Transfer-Encoding', 'quoted-printable')
-                  -- update Content-Transfer-Encoding header
-                  task:set_milter_reply({
-                    remove_headers = {['Content-Transfer-Encoding'] = 0},
-                  })
-                  task:set_milter_reply({
-                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
-                  })
-                  seen_cte = true
+                  -- Only rewrite encoding for non-multipart messages
+                  if not is_multipart then
+                    out[#out + 1] = string.format('%s: %s',
+                        'Content-Transfer-Encoding', 'quoted-printable')
+                    -- update Content-Transfer-Encoding header
+                    task:set_milter_reply({
+                      remove_headers = {['Content-Transfer-Encoding'] = 0},
+                    })
+                    task:set_milter_reply({
+                      add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                    })
+                    seen_cte = true
+                  else
+                    -- Preserve original encoding for multipart messages
+                    out[#out + 1] = hdr.raw:gsub('\r?\n?$', '')
+                  end
                   return
                 end
               end
@@ -895,7 +936,7 @@ rspamd_config:register_symbol({
 
             task:headers_foreach(rewrite_ct_cb, {full = true})
 
-            if not seen_cte and rewrite.need_rewrite_ct then
+            if not seen_cte and rewrite.need_rewrite_ct and not is_multipart then
               out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
             end
 
@@ -909,17 +950,26 @@ rspamd_config:register_symbol({
             else
               out[#out + 1] = task:get_rawbody()
             end
+
             local out_parts = {}
             for _,o in ipairs(out) do
               if type(o) ~= 'table' then
                 out_parts[#out_parts + 1] = o
                 out_parts[#out_parts + 1] = newline_s
               else
-                local removePrefix = "--\x0D\x0AContent-Type"
-                if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
-                  o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
+                -- Properly handle multipart boundaries without corrupting them
+                local part_content = tostring(o[1])
+                -- Don't strip boundary markers from multipart messages
+                if is_multipart then
+                  out_parts[#out_parts + 1] = part_content
+                else
+                  -- Only apply prefix removal for non-multipart messages
+                  local removePrefix = "--\r\nContent-Type"
+                  if string.lower(string.sub(part_content, 1, string.len(removePrefix))) == string.lower(removePrefix) then
+                    part_content = string.sub(part_content, string.len("--\r\n") + 1)
+                  end
+                  out_parts[#out_parts + 1] = part_content
                 end
-                out_parts[#out_parts + 1] = o[1]
                 if o[2] then
                   out_parts[#out_parts + 1] = newline_s
                 end
