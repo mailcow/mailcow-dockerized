@@ -133,15 +133,13 @@ if (isset($_POST["logout"])) {
 
 // Check session
 function session_check() {
-  global $DEV_MODE;
-  
   if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
     return true;
   }
   if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
     // In development mode, allow User-Agent changes (e.g., for responsive testing in dev tools)
     // Validate UA is not empty and has reasonable length (most UAs are under 200 chars, 500 is safe upper limit)
-    if ($DEV_MODE && isset($_SESSION['SESS_REMOTE_UA']) && !empty($_SERVER['HTTP_USER_AGENT']) && strlen($_SERVER['HTTP_USER_AGENT']) < 500) {
+    if ($GLOBALS['DEV_MODE'] && isset($_SESSION['SESS_REMOTE_UA']) && !empty($_SERVER['HTTP_USER_AGENT']) && strlen($_SERVER['HTTP_USER_AGENT']) < 500) {
       $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
       return true;
     }
