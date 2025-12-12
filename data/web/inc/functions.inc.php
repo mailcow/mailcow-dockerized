@@ -3397,6 +3397,8 @@ function set_user_loggedin_session($user) {
   session_regenerate_id(true);
   $_SESSION['mailcow_cc_username'] = $user;
   $_SESSION['mailcow_cc_role'] = 'user';
+  // Update User-Agent after session regeneration to prevent validation errors
+  $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
   $_SESSION['sogo-sso-user-allowed'][] = $user;
   $_SESSION['sogo-sso-pass'] = $sogo_sso_pass;
