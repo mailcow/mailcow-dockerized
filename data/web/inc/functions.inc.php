@@ -264,24 +264,28 @@ function generate_app_passwd($length = 32) {
   $digits = '0123456789';
   $special = '!@#$%^&*()-_=+[]{}|;:,.<>?';
   
-  // Build the character pool based on requirements
+  // Build the character pool and required chars based on policy
   $pool = '';
   $required_chars = '';
   
-  // Always include digits and lowercase (basic requirement for hex compatibility)
-  $pool .= $digits . $lowercase;
+  // Add digits to pool and ensure at least one if required
+  if ($password_complexity['numbers'] == 1) {
+    $pool .= $digits;
+    $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
+  }
   
-  // Add one required digit
-  $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
-  
-  // Add alphabetic character if required
+  // Add alphabetic characters if required
   if ($password_complexity['chars'] == 1) {
-    $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+    $pool .= $lowercase;
+    // Only add required char if not already added by lowerupper requirement
+    if ($password_complexity['lowerupper'] != 1) {
+      $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+    }
   }
   
   // Add both uppercase and lowercase letters if lowerupper required
   if ($password_complexity['lowerupper'] == 1) {
-    $pool .= $uppercase;
+    $pool .= $lowercase . $uppercase;
     $required_chars .= $uppercase[random_int(0, strlen($uppercase) - 1)];
     $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
   }
@@ -292,10 +296,16 @@ function generate_app_passwd($length = 32) {
     $required_chars .= $special[random_int(0, strlen($special) - 1)];
   }
   
+  // If no requirements specified, use alphanumeric as default
+  if (empty($pool)) {
+    $pool = $lowercase . $uppercase . $digits;
+    $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
+  }
+  
   // Ensure the password is at least as long as the required characters
   $final_length = max($required_length, strlen($required_chars));
   
-  // Generate remaining characters
+  // Generate remaining characters from the pool
   $remaining_length = $final_length - strlen($required_chars);
   $password = $required_chars;
   
