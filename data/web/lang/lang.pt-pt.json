@@ -340,7 +340,8 @@
         "tls_policy": "Política de TLS",
         "quarantine_attachments": "Anexos de quarentena",
         "filters": "Filtros",
-        "smtp_ip_access": "Mudar anfitriões permitidos para SMTP"
+        "smtp_ip_access": "Mudar anfitriões permitidos para SMTP",
+        "app_passwds": "Gerenciar senhas de aplicativos"
     },
     "warning": {
         "no_active_admin": "Não é possível desactivar o último administrador activo"

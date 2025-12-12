@@ -1266,7 +1266,7 @@
         "no_last_login": "Aucune dernière information de connexion à l'interface",
         "no_record": "Pas d'enregistrement",
         "password": "Mot de passe",
-        "password_now": "Mot de passe courant (confirmer les changements)",
+        "password_now": "Mot de passe actuel (confirmer les changements)",
         "password_repeat": "Mot de passe (répéter)",
         "pushover_evaluate_x_prio": "Acheminement du courrier hautement prioritaire [<code>X-Priority: 1</code>]",
         "pushover_info": "Les paramètres de notification push s’appliqueront à tout le courrier propre (non spam) livré à <b>%s</b> y compris les alias (partagés, non partagés, étiquetés).",
