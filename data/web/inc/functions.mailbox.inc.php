@@ -2732,7 +2732,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags_raw             = isset($_data['tags']) ? $_data['tags'] : array();
+                $tags                 = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
+                if (!is_array($tags)) {
+                  $tags = array();
+                }
               }
               else {
                 $_SESSION['return'][] = array(
@@ -2769,6 +2773,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':tag_name' => $tag,
                 ));
               }
+              $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $domain));
 
               $_SESSION['return'][] = array(
                 'type' => 'success',
@@ -2791,7 +2797,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags_raw             = isset($_data['tags']) ? $_data['tags'] : array();
+                $tags                 = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
+                if (!is_array($tags)) {
+                  $tags = array();
+                }
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -2937,6 +2947,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':tag_name' => $tag,
                 ));
               }
+              $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $domain));
 
               $_SESSION['return'][] = array(
                 'type' => 'success',
@@ -6108,10 +6120,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $domains = $_data['domain'];
           }
-          $tags = $_data['tags'];
+          $tags_raw = isset($_data['tags']) ? $_data['tags'] : array();
+          $tags = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
           if (!is_array($tags)) $tags = array();
 
-
+          $modifiedDomains = array();
           $wasModified = false;
           foreach ($domains as $domain) {
             if (!is_valid_domain_name($domain)) {
@@ -6131,8 +6144,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
 
+            $domainModified = false;
             foreach($tags as $tag){
               // delete tag
+              $domainModified = true;
               $wasModified = true;
               $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
               $stmt->execute(array(
@@ -6140,13 +6155,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':tag_name' => $tag,
               ));
             }
+            if ($domainModified) {
+              $modifiedDomains[] = $domain;
+            }
           }
 
           if (!$wasModified) return false;
+          if (!empty($modifiedDomains)) {
+            $placeholders = array();
+            $params = array();
+            foreach ($modifiedDomains as $idx => $modifiedDomain) {
+              $placeholders[] = ":domain".$idx;
+              $params[":domain".$idx] = $modifiedDomain;
+            }
+            $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` IN (".implode(',', $placeholders).")");
+            $stmt->execute($params);
+            $modifiedDomains = array_map('htmlspecialchars', $modifiedDomains);
+          }
+          $modifiedDomains = (empty($modifiedDomains)) ? array('-') : $modifiedDomains;
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('domain_modified', $domain)
+            'msg' => array('domain_modified', implode(', ', $modifiedDomains))
           );
         break;
         case 'tags_mailbox':
