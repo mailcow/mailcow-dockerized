@@ -144,7 +144,7 @@
 
 <form action="/" method="post" id="logout"><input type="hidden" name="logout"></form>
 
-{% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active and not is_root_uri %}
+{% if ui_texts.ui_announcement_text and ui_texts.ui_announcement_active and not is_root_uri and mailcow_cc_username %}
 <div class="container mt-4">
   <div class="alert alert-{{ ui_texts.ui_announcement_type }}">{{ ui_texts.ui_announcement_text }}</div>
 </div>
