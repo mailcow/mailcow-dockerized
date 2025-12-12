@@ -251,6 +251,73 @@ function password_check($password1, $password2) {
 
   return true;
 }
+function generate_app_passwd($length = 32) {
+  // Get password complexity requirements
+  $password_complexity = password_complexity('get');
+  
+  // Determine the actual length to use
+  $required_length = max($length, intval($password_complexity['length']));
+  
+  // Define character sets
+  $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+  $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $digits = '0123456789';
+  $special = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+  
+  // Build the character pool and required chars based on policy
+  $pool = '';
+  $required_chars = '';
+  
+  // Add digits to pool and ensure at least one if required
+  if ($password_complexity['numbers'] == 1) {
+    $pool .= $digits;
+    $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
+  }
+  
+  // Add alphabetic characters if required
+  if ($password_complexity['chars'] == 1) {
+    $pool .= $lowercase;
+    // Only add required char if not already added by lowerupper requirement
+    if ($password_complexity['lowerupper'] != 1) {
+      $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+    }
+  }
+  
+  // Add both uppercase and lowercase letters if lowerupper required
+  if ($password_complexity['lowerupper'] == 1) {
+    $pool .= $lowercase . $uppercase;
+    $required_chars .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+    $required_chars .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+  }
+  
+  // Add special characters if required
+  if ($password_complexity['special_chars'] == 1) {
+    $pool .= $special;
+    $required_chars .= $special[random_int(0, strlen($special) - 1)];
+  }
+  
+  // If no requirements specified, use alphanumeric as default
+  if (empty($pool)) {
+    $pool = $lowercase . $uppercase . $digits;
+    $required_chars .= $digits[random_int(0, strlen($digits) - 1)];
+  }
+  
+  // Ensure the password is at least as long as the required characters
+  $final_length = max($required_length, strlen($required_chars));
+  
+  // Generate remaining characters from the pool
+  $remaining_length = $final_length - strlen($required_chars);
+  $password = $required_chars;
+  
+  for ($i = 0; $i < $remaining_length; $i++) {
+    $password .= $pool[random_int(0, strlen($pool) - 1)];
+  }
+  
+  // Shuffle the password to mix required chars with random ones
+  $password = str_shuffle($password);
+  
+  return $password;
+}
 function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
   global $pdo;
   global $redis;
