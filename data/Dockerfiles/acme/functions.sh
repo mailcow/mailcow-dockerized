@@ -80,6 +80,11 @@ check_domain(){
         return 1
       fi
     fi
+
+    if [[ ${ACME_DNS_CHALLENGE} == "y" ]]; then
+      log_f "ACME_DNS_CHALLENGE=y - skipping IP and HTTP validation for ${DOMAIN}"
+      return 0
+    fi
     # Check if CNAME without v6 enabled target
     if [[ ! -z ${AAAA_DOMAIN} ]] && [[ -z $(echo ${AAAA_DOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
       AAAA_DOMAIN=

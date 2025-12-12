@@ -465,7 +465,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.94
+      image: ghcr.io/mailcow/acme:1.95
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -490,11 +490,15 @@ services:
         - REDISPASS=${REDISPASS}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
+        - ACME_DNS_CHALLENGE=${ACME_DNS_CHALLENGE:-n}
+        - ACME_DNS_PROVIDER=${ACME_DNS_PROVIDER:-dns_xxx}
+        - ACME_ACCOUNT_EMAIL=${ACME_ACCOUNT_EMAIL:-me@example.com}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:z
         - ./data/assets/ssl:/var/lib/acme/:z
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
         - mysql-socket-vol-1:/var/run/mysqld/:z
+        - ./data/conf/acme:/etc/acme/:z
       restart: always
       networks:
         mailcow-network:
