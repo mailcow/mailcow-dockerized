@@ -43,6 +43,7 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $SESSION_LIFETIME)) {
   session_unset();
   session_destroy();
+  session_start();
   // After destroying session, we need to reset the User-Agent for the new session
   $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
