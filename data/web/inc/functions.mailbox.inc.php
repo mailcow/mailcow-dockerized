@@ -2732,7 +2732,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags_raw             = isset($_data['tags']) ? $_data['tags'] : array();
+                $tags                 = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
+                if (!is_array($tags)) {
+                  $tags = array();
+                }
               }
               else {
                 $_SESSION['return'][] = array(
@@ -2793,7 +2797,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $maxquota             = (!empty($_data['maxquota'])) ? $_data['maxquota'] : ($is_now['max_quota_for_mbox'] / 1048576);
                 $quota                = (!empty($_data['quota'])) ? $_data['quota'] : ($is_now['max_quota_for_domain'] / 1048576);
                 $description          = (!empty($_data['description'])) ? $_data['description'] : $is_now['description'];
-                $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
+                $tags_raw             = isset($_data['tags']) ? $_data['tags'] : array();
+                $tags                 = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
+                if (!is_array($tags)) {
+                  $tags = array();
+                }
                 if ($relay_all_recipients == '1') {
                   $backupmx = '1';
                 }
@@ -6112,7 +6120,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $domains = $_data['domain'];
           }
-          $tags = $_data['tags'];
+          $tags_raw = isset($_data['tags']) ? $_data['tags'] : array();
+          $tags = is_array($tags_raw) ? $tags_raw : json_decode($tags_raw, true);
           if (!is_array($tags)) $tags = array();
 
           $modifiedDomains = array();
