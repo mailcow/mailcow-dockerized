@@ -2769,6 +2769,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':tag_name' => $tag,
                 ));
               }
+              $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $domain));
 
               $_SESSION['return'][] = array(
                 'type' => 'success',
@@ -2937,6 +2939,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':tag_name' => $tag,
                 ));
               }
+              $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $domain));
 
               $_SESSION['return'][] = array(
                 'type' => 'success',
@@ -6111,7 +6115,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $tags = $_data['tags'];
           if (!is_array($tags)) $tags = array();
 
-
+          $modifiedDomains = array();
           $wasModified = false;
           foreach ($domains as $domain) {
             if (!is_valid_domain_name($domain)) {
@@ -6131,8 +6135,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
 
+            $domainModified = false;
             foreach($tags as $tag){
               // delete tag
+              $domainModified = true;
               $wasModified = true;
               $stmt = $pdo->prepare("DELETE FROM `tags_domain` WHERE `domain` = :domain AND `tag_name` = :tag_name");
               $stmt->execute(array(
@@ -6140,13 +6146,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':tag_name' => $tag,
               ));
             }
+            if ($domainModified) {
+              $modifiedDomains[] = $domain;
+            }
           }
 
           if (!$wasModified) return false;
+          if (!empty($modifiedDomains)) {
+            $placeholders = array();
+            $params = array();
+            foreach ($modifiedDomains as $idx => $modifiedDomain) {
+              $placeholders[] = ":domain".$idx;
+              $params[":domain".$idx] = $modifiedDomain;
+            }
+            $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` IN (".implode(',', $placeholders).")");
+            $stmt->execute($params);
+            $modifiedDomains = array_map('htmlspecialchars', $modifiedDomains);
+          }
+          $modifiedDomains = (empty($modifiedDomains)) ? array('-') : $modifiedDomains;
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-            'msg' => array('domain_modified', $domain)
+            'msg' => array('domain_modified', implode(', ', $modifiedDomains))
           );
         break;
         case 'tags_mailbox':
