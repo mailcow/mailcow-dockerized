@@ -93,6 +93,7 @@ def refreshF2bregex():
     f2bregex[7] = r'\w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): unknown user \(SHA1 of given password: [a-f0-9]+\)'
     f2bregex[8] = r'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
     f2bregex[9] = r'([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
+    f2bregex[10] = r'pop3-login.+auth failed.+rip=([0-9a-f\.:]+)'
     r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
   else:
     try:
