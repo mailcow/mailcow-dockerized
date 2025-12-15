@@ -297,7 +297,7 @@
         "forwarding_hosts_add_hint": "Lahko vpišete IPv4/IPv6 naslove, mreže v CIDR obliki, imena gostiteljev (kateri se prevedejo v IP naslove) ali imena domen (katera se prevedejo v IP naslove glede na poizvedbo po SPF zapisih, v primeru manjkajočih zapisov pa MX zapisih).",
         "forwarding_hosts_hint": "Dohodna sporočila so brezpogojno sprejeta od katerih koli gostiteljev v tem seznamu. Ti gostitelji se ne bodo preverjali po DNSBL seznamih in ne bodo dodani v listo sivih. Prejeta neželena pošta s teh gostiteljev ni nikoli zavrnjena, opcijsko pa se lahko premakne v mapo neželene pošte. Najpogostejša uporaba za to je navedba poštnih strežnikov, iz katerih ste nastavili pravilo za posredovanje pošte na vaš mailcow strežnik.",
         "license_info": "Licenca ni zahtevana, a pomaga pri nadaljnjem razvoju. <br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"Naročilo SAL\">Registrirajte svoj GUID tukaj</a> ali <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Naročilo podpore\">Kupite podporo za svojo namestitev Mailcow.</a>",
-        "lookup_mx": "Cilj je regularni izraz, ki se ujema z imenom MX (<code>.*\\.google\\.com</code> za usmerjanje vse pošte, usmerjene na MX, ki se konča na google.com, prek tega skoka).",
+        "lookup_mx": "Cilj je regularni izraz, ki se ujema z imenom MX (<code>.*\\.google\\.com</code> za usmerjanje vse pošte, usmerjene na MX, ki se konča na google.com, prek tega skoka)",
         "main_name": "Naziv \"mailcow UI\"",
         "merged_vars_hint": "Sive vrstice so združene iz <code>vars.(local.)inc.php</code> in jih ni mogoče spremeniti.",
         "oauth2_info": "Implementacija OAuth2 podpira vrsto odobritve »Avtorizacijska koda« in izda osvežilne žetone.<br>\nStrežnik samodejno izda tudi nove osvežilne žetone, ko je žeton za osvežitev uporabljen.<br><br>\n&#8226; Privzeti obseg je <i>profile</i>. Prek OAuth2 je mogoče overiti samo uporabnike poštnega predala. Če parameter obsega izpustite, se vrne na <i>profile</i>.<br>\n&#8226; Parameter <i>state</i> mora odjemalec poslati kot del zahteve za avtorizacijo.<br><br>\nPoti za zahteve do API-ja OAuth2: <br>\n<ul>\n<li>Končna točka avtorizacije: <code>/oauth/authorize</code></li>\n<li>Končna točka žetona: <code>/oauth/token</code></li>\n<li>Stran z viri: <code>/oauth/profile</code></li>\n</ul>\nPonovno ustvarjanje skrivnosti odjemalca ne bo poteklo obstoječih kod za avtorizacijo, vendar ne bo obnovilo žetona.<br><br>\nPreklic žetonov odjemalca bo povzročil takojšnjo prekinitev vseh aktivnih sej. Vse stranke se morajo ponovno overiti.",
@@ -414,7 +414,7 @@
         "needs_restart": "potreben je ponovni zagon"
     },
     "danger": {
-        "alias_goto_identical": "Vzdevek in ciljni naslov se ne smeta ujemati.",
+        "alias_goto_identical": "Vzdevek in ciljni naslov se ne smeta ujemati",
         "aliasd_targetd_identical": "Vzdevek domene ne sme biti enak ciljni domeni: %s",
         "bcc_exists": "Za tip %s obstaja BCC preslikava %s",
         "dkim_domain_or_sel_exists": "DKIM ključ za \"%s\" obstaja in ne bo prepisan",
@@ -651,7 +651,7 @@
         "pushover_title": "Naslov obvestila",
         "domains": "Domene",
         "extended_sender_acl_info": "Uvoziti je treba ključ domene DKIM, če je na voljo.<br>\n  Ne pozabite dodati tega strežnika v ustrezni zapis SPF TXT.<br>\n  Kadar koli je temu strežniku dodana domena ali vzdevek domene, ki se prekriva z zunanjim naslovom, se zunanji naslov odstrani.<br>\n  Uporabite @domain.tld, da omogočite pošiljanje kot *@domain.tld.",
-        "lookup_mx": "Cilj je regularni izraz, ki se ujema z imenom MX (<code>.*\\.google\\.com</code> za usmerjanje vse pošte, usmerjene na MX, ki se konča na google.com, prek tega skoka).",
+        "lookup_mx": "Cilj je regularni izraz, ki se ujema z imenom MX (<code>.*\\.google\\.com</code> za usmerjanje vse pošte, usmerjene na MX, ki se konča na google.com, prek tega skoka)",
         "maxbytespersecond": "Največ bajtov na sekundo <br><small>(0 = neomejeno)</small>",
         "pushover_sender_array": "Upoštevaj samo sledeče e-poštne naslove pošiljateljev <small>(ločeni z vejico)</small>",
         "mbox_rl_info": "Ta omejitev se uporabi za prijavno ime SASL in se ujema z naslovom \"od\", ki ga uporablja prijavljeni uporabnik. Omejitev poštnega nabiralnika preglasi omejitev za celotno domeno.",
@@ -1359,7 +1359,7 @@
         "sogo_profile_reset": "Ponastavi profil SOGo",
         "sogo_profile_reset_help": "S tem boste uničili uporabnikov profil SOGo in <b>nepovratno izbrisali vse stike in podatke koledarja</b>.",
         "sogo_profile_reset_now": "Ponastavi profil zdaj",
-        "spam_aliases": "Začasni vzdevki e-pošte",
+        "spam_aliases": "Vzdevki neželene e-pošte",
         "spam_score_reset": "Ponastavi na privzete nastavitve strežnika",
         "spamfilter": "Filter neželene pošte",
         "spamfilter_behavior": "Ocena",
@@ -1407,7 +1407,10 @@
         "years": "leta",
         "waiting": "Čakanje",
         "q_all": "Vse kategorije",
-        "syncjob_EX_OK": "Uspeh"
+        "syncjob_EX_OK": "Uspeh",
+        "expire_never": "Nikoli ne poteče",
+        "forever": "Za vedno",
+        "spam_aliases_info": "Vzdevek za neželeno pošto je začasni e-poštni naslov, ki ga je mogoče uporabiti za zaščito pravih e-poštnih naslovov. <br>Po želji je mogoče nastaviti čas poteka veljavnosti, tako da se vzdevek po določenem obdobju samodejno deaktivira, s čimer se učinkovito znebite zlorabljenih ali razkritih naslovov."
     },
     "warning": {
         "cannot_delete_self": "Prijavljenega uporabnika ni mogoče izbrisati",

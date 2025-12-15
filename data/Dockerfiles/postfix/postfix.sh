@@ -390,7 +390,7 @@ hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM spamalias
   WHERE address='%s'
-    AND validity >= UNIX_TIMESTAMP()
+    AND (validity >= UNIX_TIMESTAMP() OR permanent != 0)
 EOF
 
 if [ ! -f /opt/postfix/conf/dns_blocklists.cf ]; then

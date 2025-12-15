@@ -1992,6 +1992,7 @@ if (isset($_GET['query'])) {
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));
+        break;
         case "identity-provider":
           process_edit_return(identity_provider('edit', $attr));
         break;

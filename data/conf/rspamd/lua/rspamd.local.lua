@@ -146,8 +146,171 @@ rspamd_config:register_symbol({
       return false
     end
 
+    -- Helper function to parse IPv6 into 8 segments
+    local function ipv6_to_segments(ip_str)
+      -- Remove zone identifier if present (e.g., %eth0)
+      ip_str = ip_str:gsub("%%.*$", "")
+      
+      local segments = {}
+      
+      -- Handle :: compression
+      if ip_str:find('::') then
+        local before, after = ip_str:match('^(.*)::(.*)$')
+        before = before or ''
+        after = after or ''
+        
+        local before_parts = {}
+        local after_parts = {}
+        
+        if before ~= '' then
+          for seg in before:gmatch('[^:]+') do
+            table.insert(before_parts, tonumber(seg, 16) or 0)
+          end
+        end
+        
+        if after ~= '' then
+          for seg in after:gmatch('[^:]+') do
+            table.insert(after_parts, tonumber(seg, 16) or 0)
+          end
+        end
+        
+        -- Add before segments
+        for _, seg in ipairs(before_parts) do
+          table.insert(segments, seg)
+        end
+        
+        -- Add compressed zeros
+        local zeros_needed = 8 - #before_parts - #after_parts
+        for i = 1, zeros_needed do
+          table.insert(segments, 0)
+        end
+        
+        -- Add after segments
+        for _, seg in ipairs(after_parts) do
+          table.insert(segments, seg)
+        end
+      else
+        -- No compression
+        for seg in ip_str:gmatch('[^:]+') do
+          table.insert(segments, tonumber(seg, 16) or 0)
+        end
+      end
+      
+      -- Ensure we have exactly 8 segments
+      while #segments < 8 do
+        table.insert(segments, 0)
+      end
+      
+      return segments
+    end
+
+    -- Generate all common IPv6 notations
+    local function get_ipv6_variants(ip_str)
+      local variants = {}
+      local seen = {}
+      
+      local function add_variant(v)
+        if v and not seen[v] then
+          table.insert(variants, v)
+          seen[v] = true
+        end
+      end
+      
+      -- For IPv4, just return the original
+      if not ip_str:find(':') then
+        add_variant(ip_str)
+        return variants
+      end
+      
+      local segments = ipv6_to_segments(ip_str)
+      
+      -- 1. Fully expanded form (all zeros shown as 0000)
+      local expanded_parts = {}
+      for _, seg in ipairs(segments) do
+        table.insert(expanded_parts, string.format('%04x', seg))
+      end
+      add_variant(table.concat(expanded_parts, ':'))
+      
+      -- 2. Standard form (no leading zeros, but all segments present)
+      local standard_parts = {}
+      for _, seg in ipairs(segments) do
+        table.insert(standard_parts, string.format('%x', seg))
+      end
+      add_variant(table.concat(standard_parts, ':'))
+      
+      -- 3. Find all possible :: compressions
+      -- RFC 5952: compress the longest run of consecutive zeros
+      -- But we need to check all possibilities since Redis might have any form
+      
+      -- Find all zero runs
+      local zero_runs = {}
+      local in_run = false
+      local run_start = 0
+      local run_length = 0
+      
+      for i = 1, 8 do
+        if segments[i] == 0 then
+          if not in_run then
+            in_run = true
+            run_start = i
+            run_length = 1
+          else
+            run_length = run_length + 1
+          end
+        else
+          if in_run then
+            if run_length >= 1 then  -- Allow single zero compression too
+              table.insert(zero_runs, {start = run_start, length = run_length})
+            end
+            in_run = false
+          end
+        end
+      end
+      
+      -- Don't forget the last run
+      if in_run and run_length >= 1 then
+        table.insert(zero_runs, {start = run_start, length = run_length})
+      end
+      
+      -- Generate variant for each zero run compression
+      for _, run in ipairs(zero_runs) do
+        local parts = {}
+        
+        -- Before compression
+        for i = 1, run.start - 1 do
+          table.insert(parts, string.format('%x', segments[i]))
+        end
+        
+        -- The compression
+        if run.start == 1 then
+          table.insert(parts, '')
+          table.insert(parts, '')
+        elseif run.start + run.length - 1 == 8 then
+          table.insert(parts, '')
+          table.insert(parts, '')
+        else
+          table.insert(parts, '')
+        end
+        
+        -- After compression
+        for i = run.start + run.length, 8 do
+          table.insert(parts, string.format('%x', segments[i]))
+        end
+        
+        local compressed = table.concat(parts, ':'):gsub('::+', '::')
+        add_variant(compressed)
+      end
+      
+      return variants
+    end
+
     local from_ip_string = tostring(ip)
-    ip_check_table = {from_ip_string}
+    local ip_check_table = {}
+    
+    -- Add all variants of the exact IP
+    for _, variant in ipairs(get_ipv6_variants(from_ip_string)) do
+      table.insert(ip_check_table, variant)
+    end
 
     local maxbits = 128
     local minbits = 32
@@ -155,10 +318,18 @@ rspamd_config:register_symbol({
         maxbits = 32
         minbits = 8
     end
+    
+    -- Add all CIDR notations with variants
     for i=maxbits,minbits,-1 do
-      local nip = ip:apply_mask(i):to_string() .. "/" .. i
-      table.insert(ip_check_table, nip)
+      local masked_ip = ip:apply_mask(i)
+      local cidr_base = masked_ip:to_string()
+      
+      for _, variant in ipairs(get_ipv6_variants(cidr_base)) do
+        local cidr = variant .. "/" .. i
+        table.insert(ip_check_table, cidr)
+      end
     end
+    
     local function keep_spam_cb(err, data)
       if err then
         rspamd_logger.infox(rspamd_config, "keep_spam query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
@@ -166,12 +337,15 @@ rspamd_config:register_symbol({
       else
         for k,v in pairs(data) do
           if (v and v ~= userdata and v == '1') then
-            rspamd_logger.infox(rspamd_config, "found ip in keep_spam map, setting pre-result")
+            rspamd_logger.infox(rspamd_config, "found ip %s (checked as: %s) in keep_spam map, setting pre-result accept", from_ip_string, ip_check_table[k])
             task:set_pre_result('accept', 'ip matched with forward hosts', 'keep_spam')
+            task:set_flag('no_stat')
+            return
           end
         end
       end
     end
+    
     table.insert(ip_check_table, 1, 'KEEP_SPAM')
     local redis_ret_user = rspamd_redis_make_request(task,
       redis_params, -- connect params
@@ -210,6 +384,7 @@ rspamd_config:register_symbol({
 rspamd_config:register_symbol({
   name = 'TAG_MOO',
   type = 'postfilter',
+  flags = 'ignore_passthrough',
   callback = function(task)
     local util = require("rspamd_util")
     local rspamd_logger = require "rspamd_logger"
@@ -217,9 +392,6 @@ rspamd_config:register_symbol({
     local rspamd_http = require "rspamd_http"
     local rcpts = task:get_recipients('smtp')
     local lua_util = require "lua_util"
-
-    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
-    local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
 
     local function remove_moo_tag()
       local moo_tag_header = task:get_header('X-Moo-Tag', false)
@@ -231,101 +403,149 @@ rspamd_config:register_symbol({
       return true
     end
 
-    if tagged_rcpt and tagged_rcpt[1].options and mailcow_domain then
-      local tag = tagged_rcpt[1].options[1]
-      rspamd_logger.infox("found tag: %s", tag)
-      local action = task:get_metric_action('default')
-      rspamd_logger.infox("metric action now: %s", action)
+    -- Check if we have exactly one recipient
+    if not (rcpts and #rcpts == 1) then
+      rspamd_logger.infox("TAG_MOO: not exactly one rcpt (%s), removing moo tag", rcpts and #rcpts or 0)
+      remove_moo_tag()
+      return
+    end
 
-      if action ~= 'no action' and action ~= 'greylist' then
-        rspamd_logger.infox("skipping tag handler for action: %s", action)
-        remove_moo_tag()
-        return true
+    local rcpt_addr = rcpts[1]['addr']
+    local rcpt_user = rcpts[1]['user']
+    local rcpt_domain = rcpts[1]['domain']
+
+    -- Check if recipient has a tag (contains '+')
+    local tag = nil
+    if rcpt_user:find('%+') then
+      local base_user, tag_part = rcpt_user:match('^(.-)%+(.+)$')
+      if base_user and tag_part then
+        tag = tag_part
+        rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
       end
+    end
 
-      local function http_callback(err_message, code, body, headers)
-        if body ~= nil and body ~= "" then
-          rspamd_logger.infox(rspamd_config, "expanding rcpt to \"%s\"", body)
+    if not tag then
+      rspamd_logger.infox("TAG_MOO: no tag found in recipient %s, removing moo tag", rcpt_addr)
+      remove_moo_tag()
+      return
+    end
 
-          local function tag_callback_subject(err, data)
-            if err or type(data) ~= 'string' then
-              rspamd_logger.infox(rspamd_config, "subject tag handler rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying subfolder tag handler...", body, data, err)
+    -- Optional: Check if domain is a mailcow domain
+    -- When KEEP_SPAM is active, RCPT_MAILCOW_DOMAIN might not be set
+    -- If the mail is being delivered, we can assume it's valid
+    local mailcow_domain = task:get_symbol("RCPT_MAILCOW_DOMAIN")
+    if not mailcow_domain then
+      rspamd_logger.infox("TAG_MOO: RCPT_MAILCOW_DOMAIN not set (possibly due to pre-result), proceeding anyway for domain %s", rcpt_domain)
+    end
 
-              local function tag_callback_subfolder(err, data)
-                if err or type(data) ~= 'string' then
-                  rspamd_logger.infox(rspamd_config, "subfolder tag handler for rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\")", body, data, err)
-                  remove_moo_tag()
-                else
-                  rspamd_logger.infox("Add X-Moo-Tag header")
-                  task:set_milter_reply({
-                    add_headers = {['X-Moo-Tag'] = 'YES'}
-                  })
-                end
-              end
+    local action = task:get_metric_action('default')
+    rspamd_logger.infox("TAG_MOO: metric action: %s", action)
 
-              local redis_ret_subfolder = rspamd_redis_make_request(task,
-                redis_params, -- connect params
-                body, -- hash key
-                false, -- is write
-                tag_callback_subfolder, --callback
-                'HGET', -- command
-                {'RCPT_WANTS_SUBFOLDER_TAG', body} -- arguments
-              )
-              if not redis_ret_subfolder then
-                rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
+    -- Check if we have a pre-result (e.g., from KEEP_SPAM or POSTMASTER_HANDLER)
+    local allow_processing = false
+    
+    if task.has_pre_result then
+      local has_pre, pre_action = task:has_pre_result()
+      if has_pre then
+        rspamd_logger.infox("TAG_MOO: pre-result detected: %s", tostring(pre_action))
+        if pre_action == 'accept' then
+          allow_processing = true
+          rspamd_logger.infox("TAG_MOO: pre-result is accept, will process")
+        end
+      end
+    end
+
+    -- Allow processing for mild actions or when we have pre-result accept
+    if not allow_processing and action ~= 'no action' and action ~= 'greylist' then
+      rspamd_logger.infox("TAG_MOO: skipping tag handler for action: %s", action)
+      remove_moo_tag()
+      return true
+    end
+
+    rspamd_logger.infox("TAG_MOO: processing allowed")
+
+    local function http_callback(err_message, code, body, headers)
+      if body ~= nil and body ~= "" then
+        rspamd_logger.infox(rspamd_config, "TAG_MOO: expanding rcpt to \"%s\"", body)
+
+        local function tag_callback_subject(err, data)
+          if err or type(data) ~= 'string' or data == '' then
+            rspamd_logger.infox(rspamd_config, "TAG_MOO: subject tag handler rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\") - trying subfolder tag handler...", body, data, err)
+
+            local function tag_callback_subfolder(err, data)
+              if err or type(data) ~= 'string' or data == '' then
+                rspamd_logger.infox(rspamd_config, "TAG_MOO: subfolder tag handler for rcpt %s returned invalid or empty data (\"%s\") or error (\"%s\")", body, data, err)
                 remove_moo_tag()
+              else
+                rspamd_logger.infox("TAG_MOO: User wants subfolder tag, adding X-Moo-Tag header")
+                task:set_milter_reply({
+                  add_headers = {['X-Moo-Tag'] = 'YES'}
+                })
               end
-
-            else
-              rspamd_logger.infox("user wants subject modified for tagged mail")
-              local sbj = task:get_header('Subject')
-              new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
-              task:set_milter_reply({
-                remove_headers = {
-                  ['Subject'] = 1,
-                  ['X-Moo-Tag'] = 0
-                },
-                add_headers = {['Subject'] = new_sbj}
-              })
             end
-          end
 
-          local redis_ret_subject = rspamd_redis_make_request(task,
-            redis_params, -- connect params
-            body, -- hash key
-            false, -- is write
-            tag_callback_subject, --callback
-            'HGET', -- command
-            {'RCPT_WANTS_SUBJECT_TAG', body} -- arguments
-          )
-          if not redis_ret_subject then
-            rspamd_logger.infox(rspamd_config, "cannot make request to load tag handler for rcpt")
-            remove_moo_tag()
-          end
-
-        end
-      end
-
-      if rcpts and #rcpts == 1 then
-        for _,rcpt in ipairs(rcpts) do
-          local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
-          if #rcpt_split == 2 then
-            if rcpt_split[1] == 'postmaster' then
-              rspamd_logger.infox(rspamd_config, "not expanding postmaster alias")
+            local redis_ret_subfolder = rspamd_redis_make_request(task,
+              redis_params, -- connect params
+              body, -- hash key
+              false, -- is write
+              tag_callback_subfolder, --callback
+              'HGET', -- command
+              {'RCPT_WANTS_SUBFOLDER_TAG', body} -- arguments
+            )
+            if not redis_ret_subfolder then
+              rspamd_logger.infox(rspamd_config, "TAG_MOO: cannot make request to load tag handler for rcpt")
               remove_moo_tag()
-            else
-              rspamd_http.request({
-                task=task,
-                url='http://nginx:8081/aliasexp.php',
-                body='',
-                callback=http_callback,
-                headers={Rcpt=rcpt['addr']},
-              })
             end
+
+          else
+            rspamd_logger.infox("TAG_MOO: user wants subject modified for tagged mail")
+            local sbj = task:get_header('Subject') or ''
+            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
+            task:set_milter_reply({
+              remove_headers = {
+                ['Subject'] = 1,
+                ['X-Moo-Tag'] = 0
+              },
+              add_headers = {['Subject'] = new_sbj}
+            })
           end
         end
+
+        local redis_ret_subject = rspamd_redis_make_request(task,
+          redis_params, -- connect params
+          body, -- hash key
+          false, -- is write
+          tag_callback_subject, --callback
+          'HGET', -- command
+          {'RCPT_WANTS_SUBJECT_TAG', body} -- arguments
+        )
+        if not redis_ret_subject then
+          rspamd_logger.infox(rspamd_config, "TAG_MOO: cannot make request to load tag handler for rcpt")
+          remove_moo_tag()
+        end
+      else
+        rspamd_logger.infox("TAG_MOO: alias expansion returned empty body")
+        remove_moo_tag()
+      end
+    end
+
+    local rcpt_split = rspamd_str_split(rcpt_addr, '@')
+    if #rcpt_split == 2 then
+      if rcpt_split[1]:match('^postmaster') then
+        rspamd_logger.infox(rspamd_config, "TAG_MOO: not expanding postmaster alias")
+        remove_moo_tag()
+      else
+        rspamd_logger.infox("TAG_MOO: requesting alias expansion for %s", rcpt_addr)
+        rspamd_http.request({
+          task=task,
+          url='http://nginx:8081/aliasexp.php',
+          body='',
+          callback=http_callback,
+          headers={Rcpt=rcpt_addr},
+        })
       end
     else
+      rspamd_logger.infox("TAG_MOO: invalid rcpt format")
       remove_moo_tag()
     end
   end,
@@ -335,6 +555,7 @@ rspamd_config:register_symbol({
 rspamd_config:register_symbol({
   name = 'BCC',
   type = 'postfilter',
+  flags = 'ignore_passthrough',
   callback = function(task)
     local util = require("rspamd_util")
     local rspamd_http = require "rspamd_http"
@@ -363,11 +584,13 @@ rspamd_config:register_symbol({
       local email_content = tostring(task:get_content())
       email_content = string.gsub(email_content, "\r\n%.", "\r\n..")
       -- send mail
+      local from_smtp = task:get_from('smtp')
+      local from_addr = (from_smtp and from_smtp[1] and from_smtp[1].addr) or 'mailer-daemon@localhost'
       lua_smtp.sendmail({
         task = task,
         host = os.getenv("IPV4_NETWORK") .. '.253',
         port = 591,
-        from = task:get_from(stp)[1].addr,
+        from = from_addr,
         recipients = bcc_dest,
         helo = 'bcc',
         timeout = 20,
@@ -397,27 +620,41 @@ rspamd_config:register_symbol({
     end
 
     local action = task:get_metric_action('default')
-    rspamd_logger.infox("metric action now: %s", action)
+    rspamd_logger.infox("BCC: metric action: %s", action)
+
+    -- Check for pre-result accept (e.g., from KEEP_SPAM)
+    local allow_bcc = false
+    if task.has_pre_result then
+      local has_pre, pre_action = task:has_pre_result()
+      if has_pre and pre_action == 'accept' then
+        allow_bcc = true
+        rspamd_logger.infox("BCC: pre-result accept detected, will send BCC")
+      end
+    end
+
+    -- Allow BCC for mild actions or when we have pre-result accept
+    if not allow_bcc and action ~= 'no action' and action ~= 'add header' and action ~= 'rewrite subject' then
+      rspamd_logger.infox("BCC: skipping for action: %s", action)
+      return
+    end
 
     local function rcpt_callback(err_message, code, body, headers)
       if err_message == nil and code == 201 and body ~= nil then
-        if action == 'no action' or action == 'add header' or action == 'rewrite subject' then
-          send_mail(task, body)
-        end
+        rspamd_logger.infox("BCC: sending BCC to %s for rcpt match", body)
+        send_mail(task, body)
       end
     end
 
     local function from_callback(err_message, code, body, headers)
       if err_message == nil and code == 201 and body ~= nil then
-        if action == 'no action' or action == 'add header' or action == 'rewrite subject' then
-          send_mail(task, body)
-        end
+        rspamd_logger.infox("BCC: sending BCC to %s for from match", body)
+        send_mail(task, body)
       end
     end
 
     if rcpt_table then
       for _,e in ipairs(rcpt_table) do
-        rspamd_logger.infox(rspamd_config, "checking bcc for rcpt address %s", e)
+        rspamd_logger.infox(rspamd_config, "BCC: checking bcc for rcpt address %s", e)
         rspamd_http.request({
           task=task,
           url='http://nginx:8081/bcc.php',
@@ -430,7 +667,7 @@ rspamd_config:register_symbol({
 
     if from_table then
       for _,e in ipairs(from_table) do
-        rspamd_logger.infox(rspamd_config, "checking bcc for from address %s", e)
+        rspamd_logger.infox(rspamd_config, "BCC: checking bcc for from address %s", e)
         rspamd_http.request({
           task=task,
           url='http://nginx:8081/bcc.php',
@@ -441,7 +678,7 @@ rspamd_config:register_symbol({
       end
     end
 
-    return true
+    -- Don't return true to avoid symbol being logged
   end,
   priority = 20
 })
