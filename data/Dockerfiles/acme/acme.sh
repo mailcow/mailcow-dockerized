@@ -246,6 +246,25 @@ while true; do
     done
     VALIDATED_CONFIG_DOMAINS+=("${VALIDATED_CONFIG_DOMAINS_SUBDOMAINS[*]}")
   done
+
+  # Fetch alias domains where target domain has MTA-STS enabled
+  if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
+    SQL_ALIAS_DOMAINS=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT ad.alias_domain FROM alias_domain ad INNER JOIN mta_sts m ON ad.target_domain = m.domain WHERE ad.active = 1 AND m.active = 1" -Bs)
+    if [[ $? -eq 0 ]]; then
+      while read alias_domain; do
+        if [[ -z "${alias_domain}" ]]; then
+          # ignore empty lines
+          continue
+        fi
+        # Only add mta-sts subdomain for alias domains
+        if [[ "mta-sts.${alias_domain}" != "${MAILCOW_HOSTNAME}" ]]; then
+          if check_domain "mta-sts.${alias_domain}"; then
+            VALIDATED_CONFIG_DOMAINS+=("mta-sts.${alias_domain}")
+          fi
+        fi
+      done <<< "${SQL_ALIAS_DOMAINS}"
+    fi
+  fi
   fi
 
   if check_domain ${MAILCOW_HOSTNAME}; then

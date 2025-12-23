@@ -129,7 +129,16 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
     );
   }
 
-  $mta_sts = mailbox('get', 'mta_sts', $domain);
+  // Check if domain is an alias domain and get target domain's MTA-STS
+  $alias_domain_details = mailbox('get', 'alias_domain_details', $domain);
+  $mta_sts_domain = $domain;
+  
+  if ($alias_domain_details !== false && !empty($alias_domain_details['target_domain'])) {
+    // This is an alias domain, check target domain for MTA-STS
+    $mta_sts_domain = $alias_domain_details['target_domain'];
+  }
+  
+  $mta_sts = mailbox('get', 'mta_sts', $mta_sts_domain);
   if (count($mta_sts) > 0 && $mta_sts['active'] == 1) {
     if (!in_array($domain, $alias_domains)) {
       $records[] = array(

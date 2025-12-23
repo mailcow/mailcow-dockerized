@@ -814,6 +814,32 @@ function verify_hash($hash, $password) {
         $hash = $components[4];
         return hash_equals(hash_pbkdf2('sha1', $password, $salt, $rounds), $hash);
 
+      case "PBKDF2-SHA512":
+        // Handle FreeIPA-style hash: {PBKDF2-SHA512}10000$<base64_salt>$<base64_hash>
+        $components = explode('$', $hash);
+        if (count($components) !== 3) return false;
+
+        // 1st part: iteration count (integer)
+        $iterations = intval($components[0]);
+        if ($iterations <= 0) return false;
+
+        // 2nd part: salt (base64-encoded)
+        $salt = $components[1];
+        // 3rd part: hash (base64-encoded)
+        $stored_hash_b64 = $components[2];
+
+        // Decode salt and hash from base64
+        $salt_bin = base64_decode($salt, true);
+        $hash_bin = base64_decode($stored_hash_b64, true);
+        if ($salt_bin === false || $hash_bin === false) return false;
+        // Get length of hash in bytes
+        $hash_len = strlen($hash_bin);
+        if ($hash_len === 0) return false;
+
+        // Calculate PBKDF2-SHA512 hash for provided password
+        $test_hash = hash_pbkdf2('sha512', $password, $salt_bin, $iterations, $hash_len, true);
+        return hash_equals($hash_bin, $test_hash);
+
       case "PLAIN-MD4":
         return hash_equals(hash('md4', $password), $hash);
 
