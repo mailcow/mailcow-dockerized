@@ -167,12 +167,18 @@ def ban(address):
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
     if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
       with lock:
-        logdebug("Calling tables.banIPv4(%s)" % net)
-        tables.banIPv4(net)
+        if not tables.isIPv4Banned(net):
+            logdebug("Calling tables.banIPv4(%s)" % net)
+            tables.banIPv4(net)
+        else:
+            logdebug("IPv4 %s is already banned." % net)
     elif int(f2boptions['manage_external']) != 1:
       with lock:
-        logdebug("Calling tables.banIPv6(%s)" % net)
-        tables.banIPv6(net)
+        if not tables.isIPv6Banned(net):
+          logdebug("Calling tables.banIPv6(%s)" % net)
+          tables.banIPv6(net)
+        else:
+            logdebug("IPv6 %s is already banned." % net)
 
     logdebug("Updating F2B_ACTIVE_BANS[%s]=%d" %
               (net, cur_time + NET_BAN_TIME))

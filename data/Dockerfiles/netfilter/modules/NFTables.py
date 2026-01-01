@@ -15,6 +15,46 @@ class NFTables:
 
     self.search_current_chains()
 
+  def get_list_dict(self, family):
+    base_dict = self.get_base_dict()
+    chain_dict = {'chain': {'family': family, 'table': 'filter', 'name': self.chain_name,}}
+    list_dict = {'list': chain_dict}
+    base_dict['nftables'].append(list_dict)
+    return base_dict
+
+  def isIPBanned(self, net, family):
+    list_dict = self.get_list_dict(family)
+    rules = self.nft_exec_dict(list_dict)
+    if '/' in net:
+      prefix, length = net.split('/')
+    else:
+      prefix = net
+      length = '32' if family == 'ip' else '128'
+    if not 'nftables' in rules:
+      return False
+    for rule in rules['nftables']:
+      if not 'rule' in rule:
+        continue #Skip anything that is not a rule
+      for expression in rule['rule']['expr']:
+        if not 'match' in expression:
+          continue #Skip anything that is not a match statement
+        right = expression['match']['right']
+        try:
+          if isinstance(right, str):
+            if right == prefix:
+              return True
+          elif right['prefix']['addr'] == prefix and str(right['prefix']['len']) == length:
+            return True
+        except (KeyError,TypeError):
+          pass
+    return False
+
+  def isIPv4Banned(self,net):
+    return self.isIPBanned(net, 'ip')
+
+  def isIPv6Banned(self,net):
+    return self.isIPBanned(net, 'ip6')
+
   def initChainIPv4(self):
     self.insert_mailcow_chains("ip")
 
