@@ -3622,18 +3622,14 @@ function smtp_api($action, $data) {
         $mail->CharSet = 'UTF-8';
         $mail->XMailer = 'mailcow SMTP API';
 
-        // Enable authentication if password is provided
-        if (!empty($smtp_pass)) {
-          $mail->SMTPAuth = true;
-          $mail->Username = $smtp_user;
-          $mail->Password = $smtp_pass;
-          if ($smtp_port == 465) {
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-          } elseif ($smtp_port == 587) {
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-          }
-        } else {
-          $mail->SMTPAuth = false;
+        // Authentication is required
+        $mail->SMTPAuth = true;
+        $mail->Username = $smtp_user;
+        $mail->Password = $smtp_pass;
+        if ($smtp_port == 465) {
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } elseif ($smtp_port == 587) {
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         }
 
         // Set sender
