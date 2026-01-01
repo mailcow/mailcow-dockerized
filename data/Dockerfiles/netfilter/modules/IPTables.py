@@ -7,6 +7,15 @@ class IPTables:
     self.chain_name = chain_name
     self.logger = logger
 
+  def isIPBanned(self, net, family):
+    return False
+
+  def isIPv4Banned(self,net):
+    return False 
+
+  def isIPv6Banned(self,net):
+    return False 
+
   def initChainIPv4(self):
     if not iptc.Chain(iptc.Table(iptc.Table.FILTER), self.chain_name) in iptc.Table(iptc.Table.FILTER).chains:
       iptc.Table(iptc.Table.FILTER).create_chain(self.chain_name)
