@@ -2037,7 +2037,6 @@ if (isset($_GET['query'])) {
           'msg' => 'Email sent successfully'
         ));
         if ($return === false) {
-          http_response_code(400);
           echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
         }
         else {

@@ -6058,36 +6058,37 @@ paths:
               examples:
                 response:
                   value:
-                    - type: success
+                    - log:
+                        - smtp_api
+                        - send
+                        - from: sender@domain.tld
+                          to:
+                            - recipient@domain.tld
+                          subject: Test Subject
+                          body: "***"
+                          password: "*"
                       msg:
                         - smtp_mail_sent
                         - sender@domain.tld
                         - recipient@domain.tld
+                      type: success
               schema:
                 properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
                   type:
                     enum:
                       - success
+                      - danger
                       - error
                     type: string
-                  msg:
-                    items: {}
-                    type: array
                 type: object
           description: OK
-        "400":
-          content:
-            application/json:
-              schema:
-                properties:
-                  type:
-                    type: string
-                    example: error
-                  msg:
-                    type: array
-                    items: {}
-                type: object
-          description: Bad Request - Validation error or SMTP failure
       tags:
         - SMTP
       description: >-
@@ -6099,9 +6100,8 @@ paths:
         **Authentication**: Requires a read-write API key.
 
 
-        **Note**: When using authenticated SMTP (port 587 with STARTTLS or port 465 with SSL),
-        provide the password field. For unauthenticated internal sending (port 25),
-        the password can be omitted.
+        **Note**: SMTP authentication with mailbox credentials is required.
+        Use port 587 for STARTTLS or port 465 for SSL/TLS.
       operationId: Send email
       requestBody:
         content:
