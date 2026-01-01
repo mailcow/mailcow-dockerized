@@ -6047,6 +6047,152 @@ paths:
                     ignore_ssl_error: true
       summary: Edit external Identity Provider
 
+  /api/v1/send/email:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - smtp_mail_sent
+                        - sender@domain.tld
+                        - recipient@domain.tld
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - error
+                    type: string
+                  msg:
+                    items: {}
+                    type: array
+                type: object
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  msg:
+                    type: array
+                    items: {}
+                type: object
+          description: Bad Request - Validation error or SMTP failure
+      tags:
+        - SMTP
+      description: >-
+        Send an email via SMTP using the mailcow SMTP API. This endpoint allows
+        you to send emails programmatically with support for HTML content,
+        attachments, CC, BCC, and custom SMTP settings.
+
+
+        **Authentication**: Requires a read-write API key.
+
+
+        **Note**: When using authenticated SMTP (port 587 with STARTTLS or port 465 with SSL),
+        provide the password field. For unauthenticated internal sending (port 25),
+        the password can be omitted.
+      operationId: Send email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                from: sender@domain.tld
+                to:
+                  - recipient@domain.tld
+                subject: Test Subject
+                body: This is the plain text body
+                html_body: "<html><body><h1>Hello</h1><p>This is HTML content</p></body></html>"
+                cc:
+                  - cc@domain.tld
+                bcc:
+                  - bcc@domain.tld
+                reply_to: reply@domain.tld
+                attachments:
+                  - filename: document.pdf
+                    content: base64encodedcontent
+                    content_type: application/pdf
+                smtp_host: postfix-mailcow
+                smtp_port: 25
+                smtp_user: sender@domain.tld
+                password: yourpassword
+              properties:
+                from:
+                  description: Sender email address
+                  type: string
+                to:
+                  description: Array of recipient email addresses
+                  type: array
+                  items:
+                    type: string
+                subject:
+                  description: Email subject
+                  type: string
+                body:
+                  description: Plain text email body
+                  type: string
+                html_body:
+                  description: HTML email body (optional)
+                  type: string
+                cc:
+                  description: Array of CC email addresses (optional)
+                  type: array
+                  items:
+                    type: string
+                bcc:
+                  description: Array of BCC email addresses (optional)
+                  type: array
+                  items:
+                    type: string
+                reply_to:
+                  description: Reply-to email address (optional)
+                  type: string
+                attachments:
+                  description: Array of attachments with base64 encoded content (optional)
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: Attachment filename
+                      content:
+                        type: string
+                        description: Base64 encoded file content
+                      content_type:
+                        type: string
+                        description: MIME content type
+                smtp_host:
+                  description: SMTP server host (default postfix-mailcow)
+                  type: string
+                smtp_port:
+                  description: SMTP server port (default 25 for internal, use 587 for authenticated)
+                  type: integer
+                smtp_user:
+                  description: SMTP username (default same as from)
+                  type: string
+                password:
+                  description: SMTP password for authentication
+                  type: string
+              required:
+                - from
+                - to
+                - subject
+                - body
+              type: object
+      summary: Send email via SMTP
+
 tags:
   - name: Domains
     description: You can create antispam whitelist and blacklist policies
@@ -6094,3 +6240,5 @@ tags:
     description: Manage Cross-Origin Resource Sharing (CORS) settings
   - name: Identity Provider
     description: Manage external Identity Provider settings
+  - name: SMTP
+    description: Send emails programmatically via SMTP

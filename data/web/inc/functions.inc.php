@@ -3387,6 +3387,326 @@ function reset_password($action, $data = null) {
     break;
   }
 }
+function smtp_api($action, $data) {
+  global $pdo;
+  $_data_log = $data;
+  // Mask password in logs
+  if (isset($_data_log['password'])) {
+    $_data_log['password'] = '*';
+  }
+
+  switch ($action) {
+    case 'send':
+      // Validate required fields
+      $from = isset($data['from']) ? $data['from'] : '';
+      $to = isset($data['to']) ? $data['to'] : array();
+      $subject = isset($data['subject']) ? $data['subject'] : '';
+      $body = isset($data['body']) ? $data['body'] : '';
+
+      // Optional fields
+      $html_body = isset($data['html_body']) ? $data['html_body'] : null;
+      $cc = isset($data['cc']) ? $data['cc'] : array();
+      $bcc = isset($data['bcc']) ? $data['bcc'] : array();
+      $reply_to = isset($data['reply_to']) ? $data['reply_to'] : null;
+      $attachments = isset($data['attachments']) ? $data['attachments'] : array();
+
+      // SMTP settings - default to port 25 for unauthenticated internal sending
+      $smtp_host = isset($data['smtp_host']) ? $data['smtp_host'] : 'postfix-mailcow';
+      $smtp_port = isset($data['smtp_port']) ? intval($data['smtp_port']) : 25;
+      $smtp_user = isset($data['smtp_user']) ? $data['smtp_user'] : $from;
+      $smtp_pass = isset($data['password']) ? $data['password'] : '';
+
+      // Validate from address
+      if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'smtp_invalid_from'
+        );
+        return false;
+      }
+
+      // Check sender authorization (admins can bypass, others must be authorized)
+      if ($_SESSION['mailcow_cc_role'] != 'admin') {
+        $username = $_SESSION['mailcow_cc_username'];
+        $sender_authorized = false;
+        
+        // Check if from address is the user's own mailbox
+        if (strtolower($from) == strtolower($username)) {
+          $sender_authorized = true;
+        }
+        
+        if (!$sender_authorized) {
+          // Check if from address is in user's aliases (goto contains the username)
+          $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` = :from_address");
+          $stmt->execute(array(
+            ':goto' => '(^|,)' . preg_quote($username, '/') . '($|,)',
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for specific address
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :from_address");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for domain wildcard (@domain.tld)
+          $from_domain = substr(strrchr($from, '@'), 1);
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :domain_wildcard");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':domain_wildcard' => '@' . $from_domain
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for global wildcard (*)
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = '*'");
+          $stmt->execute(array(':username' => $username));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          // Check external sender aliases
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '1' AND `send_as` = :from_address");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          $_SESSION['return'][] = array(
+            'type' => 'error',
+            'log' => array(__FUNCTION__, $action, $_data_log),
+            'msg' => array('smtp_unauthorized_sender', htmlspecialchars($from))
+          );
+          return false;
+        }
+      }
+
+      // Validate to addresses
+      if (empty($to)) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'smtp_missing_recipients'
+        );
+        return false;
+      }
+
+      // Ensure to is an array
+      if (!is_array($to)) {
+        $to = array($to);
+      }
+
+      foreach ($to as $recipient) {
+        if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+          $_SESSION['return'][] = array(
+            'type' => 'error',
+            'log' => array(__FUNCTION__, $action, $_data_log),
+            'msg' => array('smtp_invalid_recipient', htmlspecialchars($recipient))
+          );
+          return false;
+        }
+      }
+
+      // Validate subject
+      if (empty($subject)) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'smtp_empty_subject'
+        );
+        return false;
+      }
+
+      // Validate body
+      if (empty($body) && empty($html_body)) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'smtp_empty_body'
+        );
+        return false;
+      }
+
+      // Validate CC addresses if provided
+      if (!empty($cc)) {
+        if (!is_array($cc)) {
+          $cc = array($cc);
+        }
+        foreach ($cc as $cc_addr) {
+          if (!filter_var($cc_addr, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['return'][] = array(
+              'type' => 'error',
+              'log' => array(__FUNCTION__, $action, $_data_log),
+              'msg' => array('smtp_invalid_cc', htmlspecialchars($cc_addr))
+            );
+            return false;
+          }
+        }
+      }
+
+      // Validate BCC addresses if provided
+      if (!empty($bcc)) {
+        if (!is_array($bcc)) {
+          $bcc = array($bcc);
+        }
+        foreach ($bcc as $bcc_addr) {
+          if (!filter_var($bcc_addr, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['return'][] = array(
+              'type' => 'error',
+              'log' => array(__FUNCTION__, $action, $_data_log),
+              'msg' => array('smtp_invalid_bcc', htmlspecialchars($bcc_addr))
+            );
+            return false;
+          }
+        }
+      }
+
+      // Validate reply-to if provided
+      if (!empty($reply_to) && !filter_var($reply_to, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => 'smtp_invalid_reply_to'
+        );
+        return false;
+      }
+
+      try {
+        ini_set('max_execution_time', 0);
+        ini_set('max_input_time', 0);
+
+        $mail = new PHPMailer(true);
+        $mail->Timeout = 30;
+        $mail->SMTPOptions = array(
+          'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+          )
+        );
+        $mail->isSMTP();
+        $mail->Host = $smtp_host;
+        $mail->Port = $smtp_port;
+        $mail->CharSet = 'UTF-8';
+        $mail->XMailer = 'mailcow SMTP API';
+
+        // Enable authentication if password is provided
+        if (!empty($smtp_pass)) {
+          $mail->SMTPAuth = true;
+          $mail->Username = $smtp_user;
+          $mail->Password = $smtp_pass;
+          if ($smtp_port == 465) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+          } elseif ($smtp_port == 587) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+          }
+        } else {
+          $mail->SMTPAuth = false;
+        }
+
+        // Set sender
+        $mail->setFrom($from);
+
+        // Add recipients
+        foreach ($to as $recipient) {
+          $mail->addAddress($recipient);
+        }
+
+        // Add CC
+        if (!empty($cc)) {
+          foreach ($cc as $cc_addr) {
+            $mail->addCC($cc_addr);
+          }
+        }
+
+        // Add BCC
+        if (!empty($bcc)) {
+          foreach ($bcc as $bcc_addr) {
+            $mail->addBCC($bcc_addr);
+          }
+        }
+
+        // Set reply-to
+        if (!empty($reply_to)) {
+          $mail->addReplyTo($reply_to);
+        }
+
+        // Set subject
+        $mail->Subject = $subject;
+
+        // Set body
+        if (!empty($html_body)) {
+          $mail->isHTML(true);
+          $mail->Body = $html_body;
+          $mail->AltBody = $body;
+        } else {
+          $mail->Body = $body;
+        }
+
+        // Add attachments
+        if (!empty($attachments) && is_array($attachments)) {
+          foreach ($attachments as $attachment) {
+            if (isset($attachment['content']) && isset($attachment['filename'])) {
+              $content = base64_decode($attachment['content']);
+              if ($content === false) {
+                $_SESSION['return'][] = array(
+                  'type' => 'error',
+                  'log' => array(__FUNCTION__, $action, $_data_log),
+                  'msg' => array('smtp_invalid_attachment', htmlspecialchars($attachment['filename']))
+                );
+                return false;
+              }
+              $content_type = isset($attachment['content_type']) ? $attachment['content_type'] : 'application/octet-stream';
+              $mail->addStringAttachment($content, $attachment['filename'], 'base64', $content_type);
+            }
+          }
+        }
+
+        // Send
+        $mail->send();
+
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => array('smtp_mail_sent', htmlspecialchars($from), implode(', ', $to))
+        );
+        return true;
+
+      } catch (Exception $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'error',
+          'log' => array(__FUNCTION__, $action, $_data_log),
+          'msg' => array('smtp_error', htmlspecialchars($mail->ErrorInfo))
+        );
+        return false;
+      }
+    break;
+  }
+  return false;
+}
 function clear_session(){
   session_regenerate_id(true);
   session_unset();
