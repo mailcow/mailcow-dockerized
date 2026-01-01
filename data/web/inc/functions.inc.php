@@ -3410,11 +3410,11 @@ function smtp_api($action, $data) {
       $reply_to = isset($data['reply_to']) ? $data['reply_to'] : null;
       $attachments = isset($data['attachments']) ? $data['attachments'] : array();
 
-      // SMTP settings - mailbox-level auth; default to 587 (STARTTLS)
+      // SMTP settings - default to port 25 for unauthenticated internal sending
       $smtp_host = isset($data['smtp_host']) ? $data['smtp_host'] : 'postfix-mailcow';
-      $smtp_user = isset($data['smtp_user']) ? $data['smtp_user'] : '';
+      $smtp_port = isset($data['smtp_port']) ? intval($data['smtp_port']) : 25;
+      $smtp_user = isset($data['smtp_user']) ? $data['smtp_user'] : $from;
       $smtp_pass = isset($data['password']) ? $data['password'] : '';
-      $smtp_port = isset($data['smtp_port']) ? intval($data['smtp_port']) : 587;
 
       // Validate from address
       if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
@@ -3426,91 +3426,82 @@ function smtp_api($action, $data) {
         return false;
       }
 
-      // Require SMTP auth with mailbox credentials
-      if (empty($smtp_user) || empty($smtp_pass)) {
-        $_SESSION['return'][] = array(
-          'type' => 'error',
-          'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => 'smtp_auth_required'
-        );
-        return false;
-      }
-
-      // Check sender authorization (mailbox-level)
-      $username = strtolower(trim($smtp_user));
-      $from_l = strtolower(trim($from));
-      $sender_authorized = false;
-
-      // 1) Sender matches mailbox user
-      if ($from_l === $username) {
-        $sender_authorized = true;
-      }
-
-      // 2) Alias points to this mailbox
-      if (!$sender_authorized) {
-        $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` = :from_address");
-        $stmt->execute(array(
-          ':goto' => '(^|,)' . preg_quote($username, '/') . '($|,)',
-          ':from_address' => $from
-        ));
-        if ($stmt->rowCount() > 0) {
+      // Check sender authorization (admins can bypass, others must be authorized)
+      if ($_SESSION['mailcow_cc_role'] != 'admin') {
+        $username = $_SESSION['mailcow_cc_username'];
+        $sender_authorized = false;
+        
+        // Check if from address is the user's own mailbox
+        if (strtolower($from) == strtolower($username)) {
           $sender_authorized = true;
         }
-      }
-
-      // 3) sender_acl specific address
-      if (!$sender_authorized) {
-        $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :from_address");
-        $stmt->execute(array(
-          ':username' => $username,
-          ':from_address' => $from
-        ));
-        if ($stmt->rowCount() > 0) {
-          $sender_authorized = true;
+        
+        if (!$sender_authorized) {
+          // Check if from address is in user's aliases (goto contains the username)
+          $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` = :from_address");
+          $stmt->execute(array(
+            ':goto' => '(^|,)' . preg_quote($username, '/') . '($|,)',
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
         }
-      }
-
-      // 4) sender_acl domain wildcard
-      if (!$sender_authorized) {
-        $from_domain = substr(strrchr($from, '@'), 1);
-        $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :domain_wildcard");
-        $stmt->execute(array(
-          ':username' => $username,
-          ':domain_wildcard' => '@' . $from_domain
-        ));
-        if ($stmt->rowCount() > 0) {
-          $sender_authorized = true;
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for specific address
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :from_address");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
         }
-      }
-
-      // 5) sender_acl global wildcard
-      if (!$sender_authorized) {
-        $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = '*'");
-        $stmt->execute(array(':username' => $username));
-        if ($stmt->rowCount() > 0) {
-          $sender_authorized = true;
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for domain wildcard (@domain.tld)
+          $from_domain = substr(strrchr($from, '@'), 1);
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = :domain_wildcard");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':domain_wildcard' => '@' . $from_domain
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
         }
-      }
-
-      // 6) External sender aliases
-      if (!$sender_authorized) {
-        $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '1' AND `send_as` = :from_address");
-        $stmt->execute(array(
-          ':username' => $username,
-          ':from_address' => $from
-        ));
-        if ($stmt->rowCount() > 0) {
-          $sender_authorized = true;
+        
+        if (!$sender_authorized) {
+          // Check sender_acl for global wildcard (*)
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `send_as` = '*'");
+          $stmt->execute(array(':username' => $username));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
         }
-      }
-
-      if (!$sender_authorized) {
-        $_SESSION['return'][] = array(
-          'type' => 'error',
-          'log' => array(__FUNCTION__, $action, $_data_log),
-          'msg' => array('smtp_unauthorized_sender', htmlspecialchars($from))
-        );
-        return false;
+        
+        if (!$sender_authorized) {
+          // Check external sender aliases
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '1' AND `send_as` = :from_address");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':from_address' => $from
+          ));
+          if ($stmt->rowCount() > 0) {
+            $sender_authorized = true;
+          }
+        }
+        
+        if (!$sender_authorized) {
+          $_SESSION['return'][] = array(
+            'type' => 'error',
+            'log' => array(__FUNCTION__, $action, $_data_log),
+            'msg' => array('smtp_unauthorized_sender', htmlspecialchars($from))
+          );
+          return false;
+        }
       }
 
       // Validate to addresses

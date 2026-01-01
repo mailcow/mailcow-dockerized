@@ -6124,7 +6124,7 @@ paths:
                     content: base64encodedcontent
                     content_type: application/pdf
                 smtp_host: postfix-mailcow
-                smtp_port: 587
+                smtp_port: 25
                 smtp_user: sender@domain.tld
                 password: yourpassword
               properties:
@@ -6177,21 +6177,19 @@ paths:
                   description: SMTP server host (default postfix-mailcow)
                   type: string
                 smtp_port:
-                  description: SMTP server port (default 587 for authenticated; set explicitly if different)
+                  description: SMTP server port (default 25 for internal, use 587 for authenticated)
                   type: integer
                 smtp_user:
-                  description: SMTP username (mailbox login; required)
+                  description: SMTP username (default same as from)
                   type: string
                 password:
-                  description: SMTP password (mailbox login; required)
+                  description: SMTP password for authentication
                   type: string
               required:
                 - from
                 - to
                 - subject
                 - body
-                - smtp_user
-                - password
               type: object
       summary: Send email via SMTP
 

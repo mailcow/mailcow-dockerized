@@ -543,7 +543,6 @@
         "tls_policy_map_entry_exists": "A TLS policy map entry \"%s\" exists",
         "tls_policy_map_parameter_invalid": "Policy parameter is invalid",
         "smtp_invalid_from": "Invalid sender email address",
-        "smtp_auth_required": "SMTP username and password are required",
         "smtp_unauthorized_sender": "You are not authorized to send as %s",
         "smtp_missing_recipients": "At least one recipient is required",
         "smtp_invalid_recipient": "Invalid recipient email address: %s",
