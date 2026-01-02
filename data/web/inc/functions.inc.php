@@ -3413,7 +3413,7 @@ function smtp_api($action, $data) {
       // SMTP settings - mailbox-level auth; default to 587 (STARTTLS)
       $smtp_host = isset($data['smtp_host']) ? $data['smtp_host'] : 'postfix-mailcow';
       $smtp_user = isset($data['smtp_user']) ? $data['smtp_user'] : '';
-      $smtp_pass = isset($data['password']) ? $data['password'] : '';
+      $smtp_pass = $data['app_password'] ?? $data['password'] ?? '';     
       $smtp_port = isset($data['smtp_port']) ? intval($data['smtp_port']) : 587;
 
       // Validate from address

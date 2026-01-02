@@ -6183,8 +6183,18 @@ paths:
                   description: SMTP username (mailbox login; required)
                   type: string
                 password:
-                  description: SMTP password (mailbox login; required)
+                  description: >
+                    SMTP password (mailbox password or mailbox app password; required).
+                    App passwords are recommended for API usage.
                   type: string
+                  example: "app-password-or-mailbox-password"
+                app_password:
+                  description: >
+                    Alias for `password`.
+                    SMTP password (mailbox password or mailbox app password; required).
+                    App passwords are recommended for API usage.
+                  type: string
+                  example: "app-password-or-mailbox-password"
               required:
                 - from
                 - to
