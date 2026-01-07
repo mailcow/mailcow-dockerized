@@ -6047,6 +6047,164 @@ paths:
                     ignore_ssl_error: true
       summary: Edit external Identity Provider
 
+  /api/v1/send/email:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - smtp_api
+                        - send
+                        - from: sender@domain.tld
+                          to:
+                            - recipient@domain.tld
+                          subject: Test Subject
+                          body: "***"
+                          password: "*"
+                      msg:
+                        - smtp_mail_sent
+                        - sender@domain.tld
+                        - recipient@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - SMTP
+      description: >-
+        Send an email via SMTP using the mailcow SMTP API. This endpoint allows
+        you to send emails programmatically with support for HTML content,
+        attachments, CC, BCC, and custom SMTP settings.
+
+
+        **Authentication**: Requires a read-write API key.
+
+
+        **Note**: SMTP authentication with mailbox credentials is required.
+        Use port 587 for STARTTLS or port 465 for SSL/TLS.
+      operationId: Send email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                from: sender@domain.tld
+                to:
+                  - recipient@domain.tld
+                subject: Test Subject
+                body: This is the plain text body
+                html_body: "<html><body><h1>Hello</h1><p>This is HTML content</p></body></html>"
+                cc:
+                  - cc@domain.tld
+                bcc:
+                  - bcc@domain.tld
+                reply_to: reply@domain.tld
+                attachments:
+                  - filename: document.pdf
+                    content: base64encodedcontent
+                    content_type: application/pdf
+                smtp_host: postfix-mailcow
+                smtp_port: 587
+                smtp_user: sender@domain.tld
+                password: yourpassword
+              properties:
+                from:
+                  description: Sender email address
+                  type: string
+                to:
+                  description: Array of recipient email addresses
+                  type: array
+                  items:
+                    type: string
+                subject:
+                  description: Email subject
+                  type: string
+                body:
+                  description: Plain text email body
+                  type: string
+                html_body:
+                  description: HTML email body (optional)
+                  type: string
+                cc:
+                  description: Array of CC email addresses (optional)
+                  type: array
+                  items:
+                    type: string
+                bcc:
+                  description: Array of BCC email addresses (optional)
+                  type: array
+                  items:
+                    type: string
+                reply_to:
+                  description: Reply-to email address (optional)
+                  type: string
+                attachments:
+                  description: Array of attachments with base64 encoded content (optional)
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        description: Attachment filename
+                      content:
+                        type: string
+                        description: Base64 encoded file content
+                      content_type:
+                        type: string
+                        description: MIME content type
+                smtp_host:
+                  description: SMTP server host (default postfix-mailcow)
+                  type: string
+                smtp_port:
+                  description: SMTP server port (default 587 for authenticated; set explicitly if different)
+                  type: integer
+                smtp_user:
+                  description: SMTP username (mailbox login; required)
+                  type: string
+                password:
+                  description: >
+                    SMTP password (mailbox password or mailbox app password; required).
+                    App passwords are recommended for API usage.
+                  type: string
+                  example: "app-password-or-mailbox-password"
+                app_password:
+                  description: >
+                    Alias for `password`.
+                    SMTP password (mailbox password or mailbox app password; required).
+                    App passwords are recommended for API usage.
+                  type: string
+                  example: "app-password-or-mailbox-password"
+              required:
+                - from
+                - to
+                - subject
+                - body
+                - smtp_user
+                - password
+              type: object
+      summary: Send email via SMTP
+
 tags:
   - name: Domains
     description: You can create antispam whitelist and blacklist policies
@@ -6094,3 +6252,5 @@ tags:
     description: Manage Cross-Origin Resource Sharing (CORS) settings
   - name: Identity Provider
     description: Manage external Identity Provider settings
+  - name: SMTP
+    description: Send emails programmatically via SMTP

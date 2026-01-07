@@ -2018,6 +2018,61 @@ if (isset($_GET['query'])) {
           exit();
       }
     break;
+    case "send":
+      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
+        http_response_code(403);
+        echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'API read/write access denied'
+        ));
+        exit();
+      }
+      function process_send_return($return) {
+        $generic_failure = json_encode(array(
+          'type' => 'error',
+          'msg' => 'Failed to send email'
+        ));
+        $generic_success = json_encode(array(
+          'type' => 'success',
+          'msg' => 'Email sent successfully'
+        ));
+        if ($return === false) {
+          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_failure;
+        }
+        else {
+          echo isset($_SESSION['return']) ? json_encode($_SESSION['return']) : $generic_success;
+        }
+      }
+      if (!isset($_POST['attr'])) {
+        echo $request_incomplete;
+        exit;
+      }
+      else {
+        $attr = (array)json_decode($_POST['attr'], true);
+        unset($attr['csrf_token']);
+      }
+      // only allow POST requests
+      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        http_response_code(405);
+        echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'only POST method is allowed'
+        ));
+        exit();
+      }
+      switch ($category) {
+        case "email":
+          process_send_return(smtp_api('send', $attr));
+        break;
+        default:
+          http_response_code(404);
+          echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'route not found'
+          ));
+          exit();
+      }
+    break;
     // return no route found if no case is matched
     default:
       http_response_code(404);
