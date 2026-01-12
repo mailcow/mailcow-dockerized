@@ -51,7 +51,7 @@ Telegram desktop clients are available for [multiple platforms](https://desktop.
 
 ## Misc
 
-**Important**: mailcow makes use of various open-source software. Please assure you agree with their license before using mailcow.
+**Important**: mailcow makes use of various open-source software. Please ensure you agree with their license before using mailcow.
 Any part of mailcow itself is released under **GNU General Public License, Version 3**.
 
 mailcow is a registered word mark of The Infrastructure Company GmbH, Parkstr. 42, 47877 Willich, Germany.
