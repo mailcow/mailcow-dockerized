@@ -162,7 +162,7 @@ services:
         - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
         - IMAP_PORT=${IMAP_PORT:-143}
         - IMAPS_PORT=${IMAPS_PORT:-993}
-        - POP_PORT=${POP_PORT:-110}
+        - POP_PORT=${POP_PORT:-111}
         - POPS_PORT=${POPS_PORT:-995}
         - SIEVE_PORT=${SIEVE_PORT:-4190}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -303,7 +303,7 @@ services:
         - "${DOVEADM_PORT:-127.0.0.1:19991}:12345"
         - "${IMAP_PORT:-143}:143"
         - "${IMAPS_PORT:-993}:993"
-        - "${POP_PORT:-110}:110"
+        - "${POP_PORT:-111}:111"
         - "${POPS_PORT:-995}:995"
         - "${SIEVE_PORT:-4190}:4190"
       restart: always
