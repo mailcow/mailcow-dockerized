@@ -148,6 +148,8 @@
                 <option value="pop3">POP3</option>
                 <option value="smtp">SMTP</option>
                 <option value="sieve">Sieve</option>
+                <option value="eas">ActiveSync</option>
+                <option value="dav">CalDAV/CardDAV</option>
               </select>
             </div>
           </div>
@@ -335,6 +337,8 @@
                 <option value="pop3" selected>POP3</option>
                 <option value="smtp" selected>SMTP</option>
                 <option value="sieve" selected>Sieve</option>
+                <option value="activesync" selected>ActiveSync</option>
+                <option value="dav" selected>CalDAV/CardDAV</option>
               </select>
             </div>
           </div>
@@ -778,6 +782,7 @@
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="internal">
+          <input type="hidden" value="0" name="sender_allowed">
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="address">{{ lang.add.alias_address }}</label>
             <div class="col-sm-10">
@@ -809,7 +814,11 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="internal"> {{ lang.add.internal }}</label>
               </div>
-              <small class="text-muted d-block">{{ lang.edit.internal_info }}</small>
+              <small class="text-muted d-block mb-2">{{ lang.edit.internal_info }}</small>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sender_allowed" checked> {{ lang.add.sender_allowed }}</label>
+              </div>
+              <small class="text-muted d-block">{{ lang.edit.sender_allowed_info }}</small>
             </div>
           </div>
           <div class="row mb-4">

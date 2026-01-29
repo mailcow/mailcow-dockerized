@@ -12,18 +12,21 @@ $session_var_pass = 'sogo-sso-pass';
 if (isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
+
   $username = $_SERVER['PHP_AUTH_USER'];
   $password = $_SERVER['PHP_AUTH_PW'];
-  $is_eas = false;
-  $is_dav = false;
+
+  // Determine service type for protocol access check
+  $service = 'NONE';
   $original_uri = isset($_SERVER['HTTP_X_ORIGINAL_URI']) ? $_SERVER['HTTP_X_ORIGINAL_URI'] : '';
   if (preg_match('/^(\/SOGo|)\/dav.*/', $original_uri) === 1) {
-    $is_dav = true;
+    $service = 'DAV';
   }
   elseif (preg_match('/^(\/SOGo|)\/Microsoft-Server-ActiveSync.*/', $original_uri) === 1) {
-    $is_eas = true;
+    $service = 'EAS';
   }
-  $login_check = check_login($username, $password, array('dav' => $is_dav, 'eas' => $is_eas));
+
+  $login_check = check_login($username, $password, array('service' => $service));
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));
@@ -57,7 +60,6 @@ elseif (isset($_GET['login'])) {
           $_SESSION['mailcow_cc_role']        = "user";
         }
         // update sasl logs
-        $service = ($app_passwd_data['eas'] === true) ? 'EAS' : 'DAV';
         $stmt = $pdo->prepare("REPLACE INTO sasl_log (`service`, `app_password`, `username`, `real_rip`) VALUES ('SSO', 0, :username, :remote_addr)");
         $stmt->execute(array(
           ':username' => $login,

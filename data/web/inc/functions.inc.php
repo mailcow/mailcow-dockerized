@@ -205,6 +205,42 @@ function password_complexity($_action, $_data = null) {
     break;
   }
 }
+
+function password_generate(){
+  $password_complexity = password_complexity('get');
+  $min_length = max(16, intval($password_complexity['length']));
+
+  $lowercase = range('a', 'z');
+  $uppercase = range('A', 'Z');
+  $digits = range(0, 9);
+  $special_chars = str_split('!@#$%^&*()?=');
+
+  $password = [
+    $lowercase[random_int(0, count($lowercase) - 1)],
+    $uppercase[random_int(0, count($uppercase) - 1)],
+    $digits[random_int(0, count($digits) - 1)],
+    $special_chars[random_int(0, count($special_chars) - 1)],
+  ];
+
+  $all = array_merge($lowercase, $uppercase, $digits, $special_chars);
+
+  while (count($password) < $min_length) {
+    $password[] = $all[random_int(0, count($all) - 1)];
+  }
+
+  // Cryptographically secure shuffle using Fisher-Yates algorithm
+  $count = count($password);
+  for ($i = $count - 1; $i > 0; $i--) {
+    $j = random_int(0, $i);
+    $temp = $password[$i];
+    $password[$i] = $password[$j];
+    $password[$j] = $temp;
+  }
+
+  return implode('', $password);
+
+}
+
 function password_check($password1, $password2) {
   $password_complexity = password_complexity('get');
 

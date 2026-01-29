@@ -695,6 +695,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $gotos           = array_map('trim', preg_split( "/( |,|;|\n)/", $_data['goto']));
           $internal        = intval($_data['internal']);
           $active          = intval($_data['active']);
+          $sender_allowed  = intval($_data['sender_allowed']);
           $sogo_visible    = intval($_data['sogo_visible']);
           $goto_null       = intval($_data['goto_null']);
           $goto_spam       = intval($_data['goto_spam']);
@@ -850,8 +851,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `internal`, `active`)
-              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :internal, :active)");
+            $stmt = $pdo->prepare("INSERT INTO `alias` (`address`, `public_comment`, `private_comment`, `goto`, `domain`, `sogo_visible`, `internal`, `sender_allowed`, `active`)
+              VALUES (:address, :public_comment, :private_comment, :goto, :domain, :sogo_visible, :internal, :sender_allowed, :active)");
             if (!filter_var($address, FILTER_VALIDATE_EMAIL) === true) {
               $stmt->execute(array(
                 ':address' => '@'.$domain,
@@ -862,6 +863,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain,
                 ':sogo_visible' => $sogo_visible,
                 ':internal' => $internal,
+                ':sender_allowed' => $sender_allowed,
                 ':active' => $active
               ));
             }
@@ -874,6 +876,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain,
                 ':sogo_visible' => $sogo_visible,
                 ':internal' => $internal,
+                ':sender_allowed' => $sender_allowed,
                 ':active' => $active
               ));
             }
@@ -1075,6 +1078,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['pop3_access'] = (in_array('pop3', $_data['protocol_access'])) ? 1 : 0;
             $_data['smtp_access'] = (in_array('smtp', $_data['protocol_access'])) ? 1 : 0;
             $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
+            $_data['eas_access'] = (in_array('eas', $_data['protocol_access'])) ? 1 : 0;
+            $_data['dav_access'] = (in_array('dav', $_data['protocol_access'])) ? 1 : 0;
           }
           $active = (isset($_data['active'])) ? intval($_data['active']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['active']);
           $force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
@@ -1085,6 +1090,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $pop3_access = (isset($_data['pop3_access'])) ? intval($_data['pop3_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['pop3_access']);
           $smtp_access = (isset($_data['smtp_access'])) ? intval($_data['smtp_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['smtp_access']);
           $sieve_access = (isset($_data['sieve_access'])) ? intval($_data['sieve_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sieve_access']);
+          $eas_access = (isset($_data['eas_access'])) ? intval($_data['eas_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
+          $dav_access = (isset($_data['dav_access'])) ? intval($_data['dav_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
@@ -1103,6 +1110,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'pop3_access' => strval($pop3_access),
               'smtp_access' => strval($smtp_access),
               'sieve_access' => strval($sieve_access),
+              'eas_access' => strval($eas_access),
+              'dav_access' => strval($dav_access),
               'relayhost' => strval($relayhost),
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
@@ -1721,12 +1730,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['pop3_access'] = (in_array('pop3', $_data['protocol_access'])) ? 1 : 0;
             $attr['smtp_access'] = (in_array('smtp', $_data['protocol_access'])) ? 1 : 0;
             $attr['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
+            $attr['eas_access'] = (in_array('eas', $_data['protocol_access'])) ? 1 : 0;
+            $attr['dav_access'] = (in_array('dav', $_data['protocol_access'])) ? 1 : 0;
           }
           else {
             $attr['imap_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['imap_access']);
             $attr['pop3_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['pop3_access']);
             $attr['smtp_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['smtp_access']);
             $attr['sieve_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['sieve_access']);
+            $attr['eas_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
+            $attr['dav_access'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
           }
           if (isset($_data['acl'])) {
             $_data['acl'] = (array)$_data['acl'];
@@ -2501,6 +2514,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($is_now)) {
               $internal = (isset($_data['internal'])) ? intval($_data['internal']) : $is_now['internal'];
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+              $sender_allowed = (isset($_data['sender_allowed'])) ? intval($_data['sender_allowed']) : $is_now['sender_allowed'];
               $sogo_visible = (isset($_data['sogo_visible'])) ? intval($_data['sogo_visible']) : $is_now['sogo_visible'];
               $goto_null = (isset($_data['goto_null'])) ? intval($_data['goto_null']) : 0;
               $goto_spam = (isset($_data['goto_spam'])) ? intval($_data['goto_spam']) : 0;
@@ -2686,6 +2700,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 `goto` = :goto,
                 `sogo_visible`= :sogo_visible,
                 `internal`= :internal,
+                `sender_allowed`= :sender_allowed,
                 `active`= :active
                   WHERE `id` = :id");
               $stmt->execute(array(
@@ -2696,6 +2711,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':goto' => $goto,
                 ':sogo_visible' => $sogo_visible,
                 ':internal' => $internal,
+                ':sender_allowed' => $sender_allowed,
                 ':active' => $active,
                 ':id' => $is_now['id']
               ));
@@ -3043,6 +3059,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $_data['pop3_access'] = (in_array('pop3', $_data['protocol_access'])) ? 1 : 0;
               $_data['smtp_access'] = (in_array('smtp', $_data['protocol_access'])) ? 1 : 0;
               $_data['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
+              $_data['eas_access'] = (in_array('eas', $_data['protocol_access'])) ? 1 : 0;
+              $_data['dav_access'] = (in_array('dav', $_data['protocol_access'])) ? 1 : 0;
             }
             if (!empty($is_now)) {
               $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
@@ -3052,6 +3070,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$pop3_access     = (isset($_data['pop3_access']) && hasACLAccess("protocol_access")) ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
               (int)$smtp_access     = (isset($_data['smtp_access']) && hasACLAccess("protocol_access")) ? intval($_data['smtp_access']) : intval($is_now['attributes']['smtp_access']);
               (int)$sieve_access    = (isset($_data['sieve_access']) && hasACLAccess("protocol_access")) ? intval($_data['sieve_access']) : intval($is_now['attributes']['sieve_access']);
+              (int)$eas_access     = (isset($_data['eas_access']) && hasACLAccess("protocol_access")) ? intval($_data['eas_access']) : intval($is_now['attributes']['eas_access']);
+              (int)$dav_access    = (isset($_data['dav_access']) && hasACLAccess("protocol_access")) ? intval($_data['dav_access']) : intval($is_now['attributes']['dav_access']);
               (int)$relayhost       = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
               (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
@@ -3185,9 +3205,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             if (isset($_data['sender_acl'])) {
               // Get sender_acl items set by admin
+              $current_sender_acls = mailbox('get', 'sender_acl_handles', $username);
               $sender_acl_admin = array_merge(
-                mailbox('get', 'sender_acl_handles', $username)['sender_acl_domains']['ro'],
-                mailbox('get', 'sender_acl_handles', $username)['sender_acl_addresses']['ro']
+                $current_sender_acls['sender_acl_domains']['ro'],
+                $current_sender_acls['sender_acl_addresses']['ro']
               );
               // Get sender_acl items from POST array
               // Set sender_acl_domain_admin to empty array if sender_acl contains "default" to trigger a reset
@@ -3275,16 +3296,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':username' => $username
                 ));
-                $fixed_sender_aliases = mailbox('get', 'sender_acl_handles', $username)['fixed_sender_aliases'];
+                $sender_acl_handles = mailbox('get', 'sender_acl_handles', $username);
+                $fixed_sender_aliases_allowed = $sender_acl_handles['fixed_sender_aliases_allowed'];
+                $fixed_sender_aliases_blocked = $sender_acl_handles['fixed_sender_aliases_blocked'];
+
                 foreach ($sender_acl_merged as $sender_acl) {
                   $domain = ltrim($sender_acl, '@');
                   if (is_valid_domain_name($domain)) {
                     $sender_acl = '@' . $domain;
                   }
-                  // Don't add if allowed by alias
-                  if (in_array($sender_acl, $fixed_sender_aliases)) {
+
+                  // Always add to sender_acl table to create explicit permission
+                  // Skip only if it's in allowed list (would be redundant)
+                  // But DO add if it's in blocked list (creates override)
+                  if (in_array($sender_acl, $fixed_sender_aliases_allowed)) {
+                    // Skip: already allowed by sender_allowed=1, no need for sender_acl entry
                     continue;
                   }
+
+                  // Add to sender_acl (either override for blocked aliases, or grant for selectable ones)
                   $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`)
                     VALUES (:sender_acl, :username)");
                   $stmt->execute(array(
@@ -3335,6 +3365,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
                   `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
                   `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
+                  `attributes` = JSON_SET(`attributes`, '$.eas_access', :eas_access),
+                  `attributes` = JSON_SET(`attributes`, '$.dav_access', :dav_access),
                   `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email),
                   `attributes` = JSON_SET(`attributes`, '$.attribute_hash', :attribute_hash)
                     WHERE `username` = :username");
@@ -3349,6 +3381,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':pop3_access' => $pop3_access,
                 ':sieve_access' => $sieve_access,
                 ':smtp_access' => $smtp_access,
+                ':eas_access' => $eas_access,
+                ':dav_access' => $dav_access,
                 ':recovery_email' => $pw_recovery_email,
                 ':relayhost' => $relayhost,
                 ':username' => $username,
@@ -3731,6 +3765,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attr['pop3_access'] = (in_array('pop3', $_data['protocol_access'])) ? 1 : 0;
               $attr['smtp_access'] = (in_array('smtp', $_data['protocol_access'])) ? 1 : 0;
               $attr['sieve_access'] = (in_array('sieve', $_data['protocol_access'])) ? 1 : 0;
+              $attr['eas_access'] = (in_array('eas', $_data['protocol_access'])) ? 1 : 0;
+              $attr['dav_access'] = (in_array('dav', $_data['protocol_access'])) ? 1 : 0;
             }
             else {
               foreach ($is_now as $key => $value){
@@ -4160,13 +4196,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $data['sender_acl_addresses']['rw']             = array();
           $data['sender_acl_addresses']['selectable']     = array();
           $data['fixed_sender_aliases']                   = array();
+          $data['fixed_sender_aliases_allowed']           = array();
+          $data['fixed_sender_aliases_blocked']           = array();
           $data['external_sender_aliases']                = array();
-          // Fixed addresses
-          $stmt = $pdo->prepare("SELECT `address` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
+          // Fixed addresses - split by sender_allowed status
+          $stmt = $pdo->prepare("SELECT `address`, `sender_allowed` FROM `alias` WHERE `goto` REGEXP :goto AND `address` NOT LIKE '@%'");
           $stmt->execute(array(':goto' => '(^|,)'.preg_quote($_data, '/').'($|,)'));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows)) {
+            // Keep old array for backward compatibility
             $data['fixed_sender_aliases'][] = $row['address'];
+            // Split into allowed/blocked for proper display
+            if ($row['sender_allowed'] == '1') {
+              $data['fixed_sender_aliases_allowed'][] = $row['address'];
+            } else {
+              $data['fixed_sender_aliases_blocked'][] = $row['address'];
+            }
           }
           $stmt = $pdo->prepare("SELECT CONCAT(`local_part`, '@', `alias_domain`.`alias_domain`) AS `alias_domain_alias` FROM `mailbox`, `alias_domain`
             WHERE `alias_domain`.`target_domain` = `mailbox`.`domain`
@@ -4726,6 +4771,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `internal`,
             `active`,
             `sogo_visible`,
+            `sender_allowed`,
             `created`,
             `modified`
               FROM `alias`
@@ -4759,6 +4805,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['active_int'] = $row['active'];
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
           $aliasdata['sogo_visible_int'] = $row['sogo_visible'];
+          $aliasdata['sender_allowed'] = $row['sender_allowed'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {

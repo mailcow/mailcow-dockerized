@@ -80,14 +80,21 @@ if ($isSOGoRequest) {
 }
 if ($result === false){
   // If it's a SOGo Request, don't check for protocol access
-  $service = ($isSOGoRequest) ? false : array($post['service'] => true);
-  $result = apppass_login($post['username'], $post['password'], $service, array(
+  if ($isSOGoRequest) {
+    $service = 'SOGO';
+    $post['service'] = 'NONE';
+  } else {
+    $service = $post['service'];
+  }
+
+  $result = apppass_login($post['username'], $post['password'], array(
+    'service' => $post['service'],
     'is_internal' => true,
     'remote_addr' => $post['real_rip']
   ));
   if ($result) {
-    error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
-    set_sasl_log($post['username'], $post['real_rip'], $post['service']);
+    error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $service . " from IP " . $post['real_rip']);
+    set_sasl_log($post['username'], $post['real_rip'], $service);
   }
 }
 if ($result === false){

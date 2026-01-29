@@ -352,6 +352,12 @@ $(document).ready(function() {
     if (template.sieve_access == 1){
       protocol_access.push("sieve");
     }
+    if (template.eas_access == 1){
+      protocol_access.push("eas");
+    }
+    if (template.dav_access == 1){
+      protocol_access.push("dav");
+    }
     $('#protocol_access').selectpicker('val', protocol_access);
 
     var acl = [];
@@ -933,6 +939,8 @@ jQuery(function($){
             item.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             item.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             item.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.eas_access = '<i class="text-' + (item.attributes.eas_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.eas_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
+            item.dav_access = '<i class="text-' + (item.attributes.dav_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.dav_access == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -1097,6 +1105,18 @@ jQuery(function($){
           className: 'none'
         },
         {
+          title: 'EAS',
+          data: 'eas_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
+          title: 'DAV',
+          data: 'dav_access',
+          defaultContent: '',
+          className: 'none'
+        },
+        {
           title: lang.quarantine_notification,
           data: 'quarantine_notification',
           defaultContent: '',
@@ -1209,6 +1229,8 @@ jQuery(function($){
             item.attributes.imap_access = '<i class="text-' + (item.attributes.imap_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.imap_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.imap_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.smtp_access = '<i class="text-' + (item.attributes.smtp_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.smtp_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.smtp_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.sieve_access = '<i class="text-' + (item.attributes.sieve_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sieve_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sieve_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.eas_access = '<i class="text-' + (item.attributes.eas_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.eas_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.eas_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.dav_access = '<i class="text-' + (item.attributes.dav_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.dav_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.dav_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_access == 1 ? '1' : '0') + '</span></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.attributes.quarantine_notification = lang.never;
@@ -1315,6 +1337,16 @@ jQuery(function($){
         {
           title: 'SIEVE',
           data: 'attributes.sieve_access',
+          defaultContent: '',
+        },
+        {
+          title: 'EAS',
+          data: 'attributes.eas_access',
+          defaultContent: '',
+        },
+        {
+          title: 'DAV',
+          data: 'attributes.dav_access',
           defaultContent: '',
         },
         {

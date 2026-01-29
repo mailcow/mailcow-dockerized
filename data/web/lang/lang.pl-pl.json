@@ -675,7 +675,7 @@
         "timeout1": "Limit czasu połączenia z serwerem zdalnym",
         "timeout2": "Limit czasu połączenia z serwerem lokalnym",
         "validate_save": "Zatwierdź i zapisz",
-        "pushover_info": "Ustawienia powiadomień push będą miały zastosowanie do wszystkich czystych (niespamowych) wiadomości dostarczanych do <b>%s</b>, w tym aliasów (współdzielonych, niewspółdzielonych, oznaczonych)",
+        "pushover_info": "Ustawienia powiadomień push będą miały zastosowanie do wszystkich czystych (niespamowych) wiadomości dostarczanych do <b>%s</b> w tym aliasów (współdzielonych, niewspółdzielonych, oznaczonych).",
         "mailbox_quota_def": "Domyślny limit skrzynki pocztowej",
         "mailbox_relayhost_info": "Dotyczy wyłącznie skrzynki pocztowej i bezpośrednich aliasów, nadpisuje ustawienie serwera pośredniczącego (relayhost) dla domeny.",
         "maxbytespersecond": "Max. Ilość bajtów na sekundę <br><small>(0 = unlimited)</small>",
@@ -687,7 +687,26 @@
         "mbox_rl_info": "Ten limit szybkości dotyczy nazwy logowania SASL i odpowiada dowolnemu adresowi „from” używanemu przez zalogowanego użytkownika. Limit szybkości dla skrzynki pocztowej nadpisuje limit szybkości dla całej domeny.",
         "nexthop": "Następny hop",
         "private_comment": "Prywatny komentarz",
-        "public_comment": "Komentarz publiczny"
+        "public_comment": "Komentarz publiczny",
+        "mta_sts": "Konfiguruj MTA-STS",
+        "mta_sts_info": "<a\n\nhref='https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_MTA_Strict_Transport_Security' target='_blank'>MTA-STS</a> to standard wymuszający dostarczanie poczty elektronicznej pomiędzy serwerami pocztowymi z użyciem TLS oraz ważnych certyfikatów.\n\nJest stosowany wtedy, gdy użycie DANE nie jest możliwe z powodu braku lub nieobsługiwanego DNSSEC.\n\n<br><b>Uwaga</b>: Jeżeli domena odbiorcza obsługuje DANE z DNSSEC, DANE jest <b>zawsze</b> preferowane — MTA-STS działa wyłącznie jako mechanizm zapasowy.",
+        "mta_sts_version": "Wersja.",
+        "mta_sts_version_info": "Określa wersję standardu MTA-STS — obecnie jedyną prawidłową wartością jest <code>STSv1</code>..",
+        "mta_sts_mode": "Tryb.",
+        "mta_sts_mode_info": "Dostępne są trzy tryby do wyboru:\n<ul> <li><em>testing</em> – polityka jest wyłącznie monitorowana, a naruszenia nie mają wpływu na dostarczanie poczty.</li> <li><em>enforce</em> – polityka jest ściśle egzekwowana; połączenia bez ważnego TLS są odrzucane.</li> <li><em>none</em> – polityka jest publikowana, lecz nie jest stosowana.</li> </ul>.",
+        "mta_sts_max_age": "Maksymalny czas obowiązywania.",
+        "mta_sts_max_age_info": "Czas (w sekundach) przechowywania polityki w cache przez serwery odbierające..",
+        "mta_sts_mx": "serwer MX.",
+        "mta_sts_mx_info": "Umożliwia wysyłanie poczty wyłącznie do jawnie wymienionych nazw hostów serwerów pocztowych; wysyłający MTA sprawdza, czy nazwa hosta MX w DNS odpowiada liście z polityki, i zezwala na dostarczenie tylko przy użyciu ważnego certyfikatu TLS (ochrona przed atakami MITM)..",
+        "mta_sts_mx_notice": "Dopuszcza się podanie wielu serwerów MX, rozdzielonych przecinkami..",
+        "none_inherit": "Brak /Dziedzicz",
+        "password_recovery_email": "Email do odzyskiwania hasła",
+        "pushover": "Pushover",
+        "pushover_evaluate_x_prio": "Eskaluj wiadomości o wysokim priorytecie [<code>X-Priority: 1</code>]",
+        "pushover_only_x_prio": "Uwzględniaj wyłącznie wiadomości o wysokim priorytecie [<code>X-Priority: 1</code>]",
+        "pushover_sender_array": "Uwzględniaj wyłącznie następujące adresy e-mail nadawców <small>(oddzielone przecinkami)</small>",
+        "pushover_sender_regex": "Bierz pod uwagę następujący regex nadawcy",
+        "pushover_text": "Tekst powiadomienia"
     },
     "footer": {
         "cancel": "Anuluj",
@@ -844,7 +863,14 @@
         "template": "Szablon",
         "tls_map_dest": "Miejsce docelowe",
         "tls_map_dest_info": "Przykłady: example.org, .example.org, [mail.example.org]:25",
-        "tls_map_parameters": "Parametry"
+        "tls_map_parameters": "Parametry",
+        "add_recipient_map_entry": "Dodaj mapę odbiorców",
+        "add_template": "Dodaj szablon",
+        "add_tls_policy_map": "Dodaj mapę polityk TLS",
+        "address_rewriting": "Przepisywanie adresów",
+        "alias_domain_alias_hint": "Aliasy <b>nie</b> są automatycznie stosowane do aliasów domen. Adres aliasu <code>my-alias@domain</code> <b>nie</b> obejmuje adresu <code>my-alias@alias-domain</code> (gdzie „alias-domain” jest przykładową domeną aliasową dla „domain”).\n<br> Aby przekierować pocztę do zewnętrznej skrzynki, użyj filtra Sieve (zob. kartę „Filtry” lub SOGo → Przekazywanie). Skorzystaj z opcji „Rozszerz alias na domeny aliasowe”, aby automatycznie dodać brakujące aliasy.",
+        "alias_domain_backupmx": "Domena aliasowa nieaktywna dla domeny przekaźnikowej",
+        "all_domains": "Wszystkie domeny"
     },
     "quarantine": {
         "action": "Działanie",
@@ -1179,7 +1205,8 @@
         "waiting": "Oczekuje",
         "with_app_password": "z hasłem aplikacji",
         "year": "rok",
-        "years": "lata"
+        "years": "lata",
+        "spam_aliases_info": "Alias antyspamowy to tymczasowy adres e-mail, który może być używany do ochrony właściwych adresów pocztowych. <br>Opcjonalnie można ustawić czas wygaśnięcia, po którym alias zostanie automatycznie dezaktywowany, co pozwala skutecznie pozbyć się nadużywanych lub ujawnionych adresów."
     },
     "warning": {
         "session_ua": "Nieprawidłowy token formularza: Błąd walidacji User-Agent",

@@ -27,6 +27,12 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   exit();
 }
 
+$host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+if (str_starts_with($host, 'autodiscover.') || str_starts_with($host, 'autoconfig.')) {
+  http_response_code(404);
+  exit();
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];

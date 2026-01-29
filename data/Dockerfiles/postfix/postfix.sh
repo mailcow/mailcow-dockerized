@@ -329,14 +329,17 @@ query = SELECT goto FROM alias
           SELECT id FROM alias
             WHERE address='%s'
             AND (active='1' OR active='2')
+            AND sender_allowed='1'
         ), (
           SELECT id FROM alias
             WHERE address='@%d'
             AND (active='1' OR active='2')
+            AND sender_allowed='1'
         )
       )
     )
     AND active='1'
+    AND sender_allowed='1'
     AND (domain IN
       (SELECT domain FROM domain
         WHERE domain='%d'

@@ -34,15 +34,15 @@ catch(PDOException $e) {
 
 if (isset($_GET['only_email'])) {
   $onlyEmailAccount = true;
-  $description = 'IMAP';  
+  $description = 'IMAP';
 } else {
   $onlyEmailAccount = false;
-  $description = 'IMAP, CalDAV, CardDAV'; 
+  $description = 'IMAP, CalDAV, CardDAV';
 }
 if (isset($_GET['app_password'])) {
   $app_password = true;
   $description .= ' with application password';
-  
+
   if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPad') !== FALSE)
       $platform = 'iPad';
   elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone') !== FALSE)
@@ -51,8 +51,9 @@ if (isset($_GET['app_password'])) {
       $platform = 'Mac';
   else
       $platform = $_SERVER['HTTP_USER_AGENT'];
-  
-  $password = bin2hex(openssl_random_pseudo_bytes(16));
+
+  $password = password_generate();
+
   $attr = array(
       'app_name' => $platform,
       'app_passwd' => $password,

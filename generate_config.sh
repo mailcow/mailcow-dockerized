@@ -186,13 +186,13 @@ DBNAME=mailcow
 DBUSER=mailcow
 
 # Please use long, random alphanumeric strings (A-Za-z0-9)
-DBPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
-DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
+DBPASS=${MAILCOW_DBPASS:-$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)}
+DBROOT=${MAILCOW_DBROOT:-$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)}
 
 # ------------------------------
 # REDIS configuration
 # ------------------------------
-REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
+REDISPASS=${MAILCOW_REDISPASS:-$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)}
 
 # ------------------------------
 # HTTP/S Bindings

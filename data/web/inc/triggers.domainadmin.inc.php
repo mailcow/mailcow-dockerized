@@ -55,7 +55,7 @@ if (isset($_GET["cancel_tfa_login"])) {
 
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   $login_user = strtolower(trim($_POST["login_user"]));
-  $as = check_login($login_user, $_POST["pass_user"], false, array("role" => "domain_admin"));
+  $as = check_login($login_user, $_POST["pass_user"], array("role" => "domain_admin", "service" => "MAILCOWUI"));
 
   if ($as == "domainadmin") {
     session_regenerate_id(true);

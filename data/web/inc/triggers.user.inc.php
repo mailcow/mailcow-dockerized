@@ -119,7 +119,7 @@ if (isset($_GET["cancel_tfa_login"])) {
 
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   $login_user = strtolower(trim($_POST["login_user"]));
-  $as = check_login($login_user, $_POST["pass_user"], false, array("role" => "user"));
+  $as = check_login($login_user, $_POST["pass_user"], array("role" => "user", "service" => "MAILCOWUI"));
 
   if ($as == "user") {
     set_user_loggedin_session($login_user);

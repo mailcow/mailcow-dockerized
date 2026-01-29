@@ -1,10 +1,11 @@
 <?php
-function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
+function check_login($user, $pass, $extra = null) {
   global $pdo;
   global $redis;
 
   $is_internal = $extra['is_internal'];
   $role = $extra['role'];
+  $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
 
   // Try validate admin
   if (!isset($role) || $role == "admin") {
@@ -25,34 +26,20 @@ function check_login($user, $pass, $app_passwd_data = false, $extra = null) {
 
   // Try validate app password
   if (!isset($role) || $role == "app") {
-    $result = apppass_login($user, $pass, $app_passwd_data);
+    $result = apppass_login($user, $pass, $extra);
     if ($result !== false) {
-      if ($app_passwd_data['eas'] === true) {
-        $service = 'EAS';
-      } elseif ($app_passwd_data['dav'] === true) {
-        $service = 'DAV';
-      } else {
-        $service = 'NONE';
-      }
       $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
-      set_sasl_log($user, $real_rip, $service, $pass);
+      set_sasl_log($user, $real_rip, $extra['service'], $pass);
       return $result;
     }
   }
 
   // Try validate user
   if (!isset($role) || $role == "user") {
-    $result = user_login($user, $pass);
+    $result = user_login($user, $pass, $extra);
     if ($result !== false) {
-      if ($app_passwd_data['eas'] === true) {
-        $service = 'EAS';
-      } elseif ($app_passwd_data['dav'] === true) {
-        $service = 'DAV';
-      } else {
-        $service = 'MAILCOWUI';
-      }
       $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
-      set_sasl_log($user, $real_rip, $service);
+      set_sasl_log($user, $real_rip, $extra['service']);
       return $result;
     }
   }
@@ -193,7 +180,7 @@ function user_login($user, $pass, $extra = null){
   global $iam_settings;
 
   $is_internal = $extra['is_internal'];
-  $service = $extra['service'];
+  $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
@@ -236,10 +223,10 @@ function user_login($user, $pass, $extra = null){
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if (!empty($row)) {
-        // check if user has access to service (imap, smtp, pop3, sieve) if service is set
+        // check if user has access to service (imap, smtp, pop3, sieve, dav, eas) if service is set
         $row['attributes'] = json_decode($row['attributes'], true);
-        if (isset($service)) {
-          $key = strtolower($service) . "_access";
+        if ($extra['service'] != 'NONE') {
+          $key = strtolower($extra['service']) . "_access";
           if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
             return false;
           }
@@ -253,8 +240,8 @@ function user_login($user, $pass, $extra = null){
 
   // check if user has access to service (imap, smtp, pop3, sieve) if service is set
   $row['attributes'] = json_decode($row['attributes'], true);
-  if (isset($service)) {
-    $key = strtolower($service) . "_access";
+  if ($extra['service'] != 'NONE') {
+    $key = strtolower($extra['service']) . "_access";
     if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
       return false;
     }
@@ -408,7 +395,7 @@ function user_login($user, $pass, $extra = null){
 
   return false;
 }
-function apppass_login($user, $pass, $app_passwd_data, $extra = null){
+function apppass_login($user, $pass, $extra = null){
   global $pdo;
 
   $is_internal = $extra['is_internal'];
@@ -424,20 +411,8 @@ function apppass_login($user, $pass, $app_passwd_data, $extra = null){
     return false;
   }
 
-  $protocol = false;
-  if ($app_passwd_data['eas']){
-    $protocol = 'eas';
-  } else if ($app_passwd_data['dav']){
-    $protocol = 'dav';
-  } else if ($app_passwd_data['smtp']){
-    $protocol = 'smtp';
-  } else if ($app_passwd_data['imap']){
-    $protocol = 'imap';
-  } else if ($app_passwd_data['sieve']){
-    $protocol = 'sieve';
-  } else if ($app_passwd_data['pop3']){
-    $protocol = 'pop3';
-  } else if (!$is_internal) {
+  $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
+  if (!$is_internal && $extra['service'] == 'NONE') {
     return false;
   }
 
@@ -458,7 +433,7 @@ function apppass_login($user, $pass, $app_passwd_data, $extra = null){
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   foreach ($rows as $row) {
-    if ($protocol && $row[$protocol . '_access'] != '1'){
+    if ($extra['service'] != 'NONE' && $row[strtolower($extra['service']) . '_access'] != '1'){
       continue;
     }
 

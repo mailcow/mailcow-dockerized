@@ -85,14 +85,6 @@
                             {{ lang.edit.dont_check_sender_acl|format(domain) }}
                           </option>
                         {% endfor %}
-                        {% for alias in sender_acl_handles.sender_acl_addresses.ro %}
-                          <option data-subtext="Admin" disabled selected>
-                            {{ alias }}
-                          </option>
-                        {% endfor %}
-                        {% for alias in sender_acl_handles.fixed_sender_aliases %}
-                          <option data-subtext="Alias" disabled selected>{{ alias }}</option>
-                        {% endfor %}
                         {% for domain in sender_acl_handles.sender_acl_domains.rw %}
                           <option value="{{ domain }}" selected>
                             {{ lang.edit.dont_check_sender_acl|format(domain) }}
@@ -104,10 +96,24 @@
                           </option>
                         {% endfor %}
                         {% for address in sender_acl_handles.sender_acl_addresses.rw %}
-                          <option selected>{{ address }}</option>
+                          {% if address in sender_acl_handles.fixed_sender_aliases_allowed or address in sender_acl_handles.fixed_sender_aliases_blocked %}
+                            <option data-subtext="Alias" selected>{{ address }}</option>
+                          {% else %}
+                            <option selected>{{ address }}</option>
+                          {% endif %}
                         {% endfor %}
                         {% for address in sender_acl_handles.sender_acl_addresses.selectable %}
                           <option>{{ address }}</option>
+                        {% endfor %}
+                        {% for alias in sender_acl_handles.fixed_sender_aliases_allowed %}
+                          {% if alias not in sender_acl_handles.sender_acl_addresses.rw %}
+                            <option data-subtext="Alias (allowed)" value="{{ alias }}" selected>{{ alias }}</option>
+                          {% endif %}
+                        {% endfor %}
+                        {% for alias in sender_acl_handles.fixed_sender_aliases_blocked %}
+                          {% if alias not in sender_acl_handles.sender_acl_addresses.rw %}
+                            <option data-subtext="Alias (blocked)" value="{{ alias }}">{{ alias }}</option>
+                          {% endif %}
                         {% endfor %}
                       </select>
                       <div id="sender_acl_disabled"><i class="bi bi-shield-exclamation"></i> {{ lang.edit.sender_acl_disabled|raw }}</div>
@@ -281,6 +287,8 @@
                         <option value="pop3"{% if result.attributes.pop3_access == '1' %} selected{% endif %}>POP3</option>
                         <option value="smtp"{% if result.attributes.smtp_access == '1' %} selected{% endif %}>SMTP</option>
                         <option value="sieve"{% if result.attributes.sieve_access == '1' %} selected{% endif %}>Sieve</option>
+                        <option value="eas"{% if result.attributes.eas_access == '1' %} selected{% endif %}>ActiveSync</option>
+                        <option value="dav"{% if result.attributes.dav_access == '1' %} selected{% endif %}>CalDAV/CardDAV</option>
                       </select>
                     </div>
                   </div>

@@ -79,7 +79,7 @@ if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
   exit(0);
 }
 
-$login_role = check_login($login_user, $login_pass, array('eas' => TRUE));
+$login_role = check_login($login_user, $login_pass, array('service' => 'EAS'));
 
 if ($login_role === "user") {
   header("Content-Type: application/xml");

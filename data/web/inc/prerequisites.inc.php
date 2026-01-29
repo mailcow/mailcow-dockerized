@@ -121,7 +121,7 @@ class mailcowPdo extends OAuth2\Storage\Pdo {
     $this->config['user_table'] = 'mailbox';
   }
   public function checkUserCredentials($username, $password) {
-    if (check_login($username, $password) == 'user') {
+    if (check_login($username, $password, array("role" => "user", "service" => "NONE")) == 'user') {
       return true;
     }
     return false;
