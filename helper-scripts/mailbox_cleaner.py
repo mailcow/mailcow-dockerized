@@ -96,7 +96,7 @@ def main() -> None:
         logging.info(f"Processing user: '{user}'.")
         doveadm_output = _run_doveadm_command(args.mailcow_directory, user, ["mailbox", "list"])
         # get all user mailboxes, sorted in reverse order
-        mailboxes = sorted([line.strip() for line in doveadm_output.splitlines() if line.strip()], reverse=True)
+        mailboxes = sorted([line.rstrip('\n\r') for line in doveadm_output.splitlines() if line.rstrip('\n\r')], reverse=True)
         logging.info(f"User '{user}' has {len(mailboxes)} mailboxes.")
         logging.debug(f"Mailboxes for user '{user}': {', '.join(mailboxes)}")
         for mailbox in mailboxes:
@@ -106,34 +106,37 @@ def main() -> None:
             if not any(re.match(rf"{re.escape(tmb)}(/|$)", mailbox, re.IGNORECASE) for tmb in args.mailboxes):
                 logging.debug(f"Skipping mailbox '{mailbox}' for user '{user}' as it is not a target mailbox.")
                 continue
-            # Expunge old messages from the mailbox
-            logging.info(
-                f"Expunging messages older than {args.days_back} days from mailbox '{mailbox}' for user '{user}'.")
-            if args.dry_run:
-                logging.info(f"[DRY-RUN] Skipping expunge command for mailbox '{mailbox}' of user '{user}'.")
-            else:
-                # Run the expunge command
-                _run_doveadm_command(args.mailcow_directory, user,
-                                     ["expunge", "mailbox", mailbox, "savedbefore", f"{args.days_back}d"])
-            # Check if the mailbox is a sub-mailbox
-            if "/" not in mailbox:
-                logging.debug(
-                    f"Skipping deletion check for top-level mailbox '{mailbox}' to preserve standard folders.")
-                continue
-            # Check if the mailbox is empty
-            doveadm_output = _run_doveadm_command(args.mailcow_directory, user, ["mailbox", "status", "messages", mailbox])
-            messages_count = int(doveadm_output.split("=")[1])
-            logging.debug(f"Mailbox '{mailbox}' for user '{user}' contains {messages_count} messages.")
-            if messages_count > 0:
-                logging.info(f"Skipping deletion of mailbox '{mailbox}' for user '{user}' as it is not empty.")
-                continue
-            # Delete the mailbox if it's empty
-            logging.info(f"Deleting mailbox '{mailbox}' for user '{user}' (only if empty).")
-            if args.dry_run:
-                logging.info(f"[DRY-RUN] Skipping delete command for mailbox '{mailbox}' of user '{user}'.")
-            else:
-                # As a safeguard, -e flag prevents mailbox deletion in case it's not empty
-                _run_doveadm_command(args.mailcow_directory, user, ["mailbox", "delete", "-e", "-s", mailbox])
+            try:
+                # Expunge old messages from the mailbox
+                logging.info(
+                    f"Expunging messages older than {args.days_back} days from mailbox '{mailbox}' for user '{user}'.")
+                if args.dry_run:
+                    logging.info(f"[DRY-RUN] Skipping expunge command for mailbox '{mailbox}' of user '{user}'.")
+                else:
+                    # Run the expunge command
+                    _run_doveadm_command(args.mailcow_directory, user,
+                                         ["expunge", "mailbox", mailbox, "savedbefore", f"{args.days_back}d"])
+                # Check if the mailbox is a sub-mailbox
+                if "/" not in mailbox:
+                    logging.debug(
+                        f"Skipping deletion check for top-level mailbox '{mailbox}' to preserve standard folders.")
+                    continue
+                # Check if the mailbox is empty
+                doveadm_output = _run_doveadm_command(args.mailcow_directory, user, ["mailbox", "status", "messages", mailbox])
+                messages_count = int(doveadm_output.split("=")[1])
+                logging.debug(f"Mailbox '{mailbox}' for user '{user}' contains {messages_count} messages.")
+                if messages_count > 0:
+                    logging.info(f"Skipping deletion of mailbox '{mailbox}' for user '{user}' as it is not empty.")
+                    continue
+                # Delete the mailbox if it's empty
+                logging.info(f"Deleting mailbox '{mailbox}' for user '{user}' (only if empty).")
+                if args.dry_run:
+                    logging.info(f"[DRY-RUN] Skipping delete command for mailbox '{mailbox}' of user '{user}'.")
+                else:
+                    # As a safeguard, -e flag prevents mailbox deletion in case it's not empty
+                    _run_doveadm_command(args.mailcow_directory, user, ["mailbox", "delete", "-e", "-s", mailbox])
+            except subprocess.CalledProcessError:
+                logging.warning(f"Skipping mailbox '{mailbox}' for user '{user}' due to doveadm error (may contain special characters).")
 
 
 if __name__ == "__main__":
