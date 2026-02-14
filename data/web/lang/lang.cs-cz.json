@@ -111,7 +111,8 @@
         "tags": "Štítky",
         "dry": "Simulovat synchronizaci",
         "internal": "Interní",
-        "internal_info": "Interní aliasy jsou přístupné jen z vlastních domén nebo jejich aliasů."
+        "internal_info": "Interní aliasy jsou přístupné jen z vlastních domén nebo jejich aliasů.",
+        "sender_allowed": "Povolit jako alias pro odesílání"
     },
     "admin": {
         "access": "Přístupy",
@@ -304,7 +305,7 @@
         "rspamd_com_settings": "Název nastavení se vygeneruje automaticky, viz ukázky nastavení níže. Více informací viz <a href=\"https://rspamd.com/doc/configuration/settings.html#settings-structure\" target=\"_blank\">Rspamd dokumentace</a>",
         "rspamd_global_filters": "Mapa globálních filtrů",
         "rspamd_global_filters_agree": "Budu opatrný!",
-        "rspamd_global_filters_info": "Mapa globálních filtrů obsahuje různé seznamy povolených a zakázaných serverů",
+        "rspamd_global_filters_info": "Mapa globálních filtrů obsahuje různé seznamy povolených a zakázaných serverů.",
         "rspamd_global_filters_regex": "Názvy stačí k vysvětlení. Položky musejí obsahovat jen platné regulární výrazy ve tvaru \"/vyraz/parametry\" (e.g. <code>/.+@domena\\.tld/i</code>).<br>\n  Každý výraz bude podroben základní kontrole, přesto je možné Rspamd 'rozbít', nebude-li syntax zcela korektní.<br>\n  Rspamd se pokusí po každé změně načíst mapu znovu. V případě potíží <a href=\"\" data-toggle=\"modal\" data-container=\"rspamd-mailcow\" data-target=\"#RestartContainer\">restartujte Rspamd</a>, aby se konfigurace načetla explicitně.",
         "rspamd_settings_map": "Nastavení Rspamd",
         "sal_level": "Úroveň 'Moo'",
@@ -780,7 +781,9 @@
         "mta_sts_max_age_info": "Doba v sekundách, po niž poštovní servery mohou toho pravidlo držet v mezipaměti bez nutnosti obnovení.",
         "mta_sts_mx": "Server MX",
         "mta_sts_mx_info": "Dovoluje odesílání jen výslovně vypsaným poštovním serverům; odesílající server kontroluje, že server MX určený v DNS odpovídá pravidlu, a povolí doručení jen s platným certifikátem TLS (chrání přes útokem typu MITM).",
-        "mta_sts_mx_notice": "Lze zadat více serverů MX (oddělte čárkou)."
+        "mta_sts_mx_notice": "Lze zadat více serverů MX (oddělte čárkou).",
+        "sender_allowed": "Povolit jako alias pro odesílání",
+        "sender_allowed_info": "Není-li povoleno, lze alias použít jen pro příjem pošty. Lze také obejít v Sender ACL a nastavit konkrétní schránky, jež tento alias mohou používat"
     },
     "fido2": {
         "confirm": "Potvrdit",

@@ -111,7 +111,8 @@
         "timeout2": "Časovna omejitev za povezavo do lokalnega gostitelja",
         "dry": "Simuliraj sinhronizacijo",
         "internal": "Notranje",
-        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen.",
+        "sender_allowed": "Dovoli pošiljanje kot ta vzdevek"
     },
     "admin": {
         "access": "Dostop",
@@ -780,7 +781,9 @@
         "mta_sts_mx_info": "Omogoča pošiljanje samo na izrecno navedena imena gostiteljskih strežnikov poštnih strežnikov; pošiljajoči MTA preveri, ali se ime gostitelja DNS MX ujema s seznamom pravilnikov, in dovoljuje dostavo le z veljavnim potrdilom TLS (zaščita pred MITM).",
         "mta_sts_mx_notice": "Določiti je mogoče več strežnikov MX (ločenih z vejicami).",
         "internal": "Notranje",
-        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen.",
+        "sender_allowed": "Dovoli pošiljanje kot ta vzdevek",
+        "sender_allowed_info": "Če je onemogočeno, lahko ta vzdevek samo prejema pošto. Za preglasitev in dodelitev dovoljenja za pošiljanje določenim poštnim predalom uporabite seznam za nadzor dostopa pošiljatelja."
     },
     "footer": {
         "restart_container_info": "<b>Pomembno:</b> Eleganten ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
