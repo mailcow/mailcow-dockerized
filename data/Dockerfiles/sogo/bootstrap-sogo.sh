@@ -47,7 +47,7 @@ cat <<EOF > /var/lib/sogo/GNUstep/Defaults/sogod.plist
     <key>SOGoSMTPServer</key>
     <string>smtp://${IPV4_NETWORK}.253:588/?TLS=YES&amp;tlsVerifyMode=none</string>
     <key>SOGoTrustProxyAuthentication</key>
-    <string>YES</string>
+    <string>NO</string>
     <key>SOGoEncryptionKey</key>
     <string>${RAND_PASS}</string>
     <key>OCSAdminURL</key>
