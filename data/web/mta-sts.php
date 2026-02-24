@@ -1,12 +1,23 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
-if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'], 'mta-sts.') !== 0) {
+function get_requested_host(): string|false {
+  if(!isset($_SERVER['HTTP_X_FORWARDED_HOST']) && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+    $xfh = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'])[0];
+    return trim($xfh);
+  }
+
+  return $_SERVER['HTTP_HOST'] ?? false;
+}
+
+$server_host = get_requested_host();
+
+if ($server_host === false || strpos($server_host, 'mta-sts.') !== 0) {
   http_response_code(404);
   exit;
 }
 
-$host = preg_replace('/:[0-9]+$/', '', $_SERVER['HTTP_HOST']);
+$host = preg_replace('/:[0-9]+$/', '', $server_host);
 $domain = idn_to_ascii(strtolower(str_replace('mta-sts.', '', $host)), 0, INTL_IDNA_VARIANT_UTS46);
 
 // Validate domain or return 404 on error
