@@ -3691,6 +3691,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
 
+          // Override active status if explicitly provided (IDP sync takes priority over template)
+          if (isset($_data['active'])) {
+            $mailbox_attributes['active'] = $_data['active'];
+          }
+
           $mailbox_attributes['quota'] = intval($mailbox_attributes['quota'] / 1048576);
           $result = mailbox('edit', 'mailbox', $mailbox_attributes);
           if ($result === false) return $result;

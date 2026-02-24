@@ -241,6 +241,8 @@
         "iam_mapping": "Attribute Mapping",
         "iam_bindpass": "Bind Password",
         "iam_periodic_full_sync": "Periodic Full Sync",
+        "iam_sync_disabled_users": "Sync user disabled status",
+        "iam_sync_disabled_users_info": "Automatically disable mailcow users when they are disabled in LDAP/Keycloak, and re-enable them when they are re-enabled. Supports Active Directory (userAccountControl), OpenLDAP, 389 Directory Server, and FreeIPA (pwdAccountLockedTime).",
         "iam_port": "Port",
         "iam_realm": "Realm",
         "iam_redirect_url": "Redirect Url",
