@@ -311,6 +311,135 @@
   </div>
 </div>
 {% endif %}
+{% if pending_tfa_setup %}
+<div class="modal fade" id="SetupTFAModal" tabindex="-1" role="dialog" aria-labelledby="SetupTFAModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.tfa.setup_title }}</h3>
+        <form method="post" class="d-inline">
+          <button type="submit" name="logout" value="1" class="btn-close" aria-label="Close"></button>
+        </form>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <i class="bi bi-shield-exclamation"></i> {{ lang.tfa.setup_required }}
+        </div>
+        <ul class="nav nav-tabs mb-3" id="setupTFATabNav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#setup_tab_totp" data-bs-toggle="tab"><i class="bi bi-clock-history"></i> Time-based OTP</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#setup_tab_webauthn" data-bs-toggle="tab"><i class="bi bi-fingerprint"></i> WebAuthn</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#setup_tab_yubi" data-bs-toggle="tab"><i class="bi bi-usb-drive"></i> Yubi OTP</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="setup_tab_totp">
+            <form role="form" method="post" id="setup_totp_form">
+              <div class="mb-2">
+                <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id_totp }}" autocomplete="off" required>
+              </div>
+              <hr>
+              <input type="hidden" value="{{ totp_secret }}" name="totp_secret">
+              <input type="hidden" name="tfa_method" value="totp">
+              <ol class="mb-4">
+                <li>
+                  <p>{{ lang.tfa.scan_qr_code }}</p>
+                  <img id="setup-tfa-qr-img" data-totp-secret="{{ totp_secret }}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+                  <p class="text-muted">{{ lang.tfa.enter_qr_code }}:<br />
+                    <code>{{ totp_secret }}</code>
+                  </p>
+                </li>
+                <li>
+                  <p>{{ lang.tfa.confirm_totp_token }}:</p>
+                  <p><input type="number" style="width:33%" class="form-control" name="totp_confirm_token" autocomplete="off" required></p>
+                  <p><button class="btn btn-sm d-block d-sm-inline btn-success" type="submit" name="set_tfa">{{ lang.tfa.confirm }}</button></p>
+                </li>
+              </ol>
+            </form>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="setup_tab_webauthn">
+            <form class="d-flex flex-column" role="form" method="post" id="setup_webauthn_reg_form">
+              <div class="mb-2">
+                <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
+              </div>
+              <hr>
+              <div class="text-center">
+                <div style="cursor:pointer" id="start_setup_webauthn_register">
+                  <i class="bi bi-fingerprint" style="font-size:4rem"></i>
+                  <p>{{ lang.tfa.start_webauthn_validation }}</p>
+                </div>
+              </div>
+              <hr>
+              <p id="setup_webauthn_status_reg"></p>
+              <div class="alert alert-danger" style="display:none" id="setup_webauthn_return_code"></div>
+              <input type="hidden" name="token" id="setup_webauthn_register_data"/>
+              <input type="hidden" name="tfa_method" value="webauthn">
+              <input type="hidden" name="set_tfa"/><br/>
+            </form>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="setup_tab_yubi">
+            <form role="form" method="post">
+              <div class="mb-4">
+                <input type="text" class="form-control" name="key_id" placeholder="{{ lang.tfa.key_id }}" autocomplete="off" required>
+              </div>
+              <hr>
+              <p class="text-muted">{{ lang.tfa.api_register|format(ui_texts.main_name)|raw }}</p>
+              <div class="mb-2">
+                <input type="text" class="form-control" name="yubico_id" placeholder="Yubico API ID" autocomplete="off" required>
+              </div>
+              <div class="mb-4">
+                <input type="text" class="form-control" name="yubico_key" placeholder="Yubico API Key" autocomplete="off" required>
+              </div>
+              <hr>
+              <div class="mb-4">
+                <div class="input-group">
+                  <span class="input-group-text" id="yubi-setup-addon"><img alt="Yubicon Icon" src="/img/yubi.ico"></span>
+                  <input type="text" name="otp_token" class="form-control" placeholder="Touch Yubikey" aria-describedby="yubi-setup-addon">
+                  <input type="hidden" name="tfa_method" value="yubi_otp">
+                </div>
+              </div>
+              <button class="btn btn-sm d-block d-sm-inline btn-success" type="submit" name="set_tfa">{{ lang.user.save_changes }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% if pending_pw_update_modal and not pending_tfa_methods %}
+<div class="modal fade" id="ChangePWModal" tabindex="-1" role="dialog" aria-labelledby="ChangePWModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.user.change_password }}</h3>
+        <form method="post" class="d-inline">
+          <button type="submit" name="logout" value="1" class="btn-close" aria-label="Close"></button>
+        </form>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <i class="bi bi-key"></i> {{ lang.user.pw_update_required }}
+        </div>
+        <form role="form" id="changePWModalForm">
+          <div class="mb-3">
+            <input type="password" class="form-control" id="changePWNew" placeholder="{{ lang.user.new_password }}" autocomplete="new-password" required>
+          </div>
+          <div class="mb-4">
+            <input type="password" class="form-control" id="changePWNew2" placeholder="{{ lang.user.new_password_repeat }}" autocomplete="new-password" required>
+          </div>
+          <div id="changePWAlert" class="alert alert-danger" style="display:none"></div>
+          <button class="btn btn-sm btn-success" type="submit">{{ lang.user.save_changes }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% if mailcow_cc_role == 'admin' %}
 <div id="RestartContainer" class="modal fade" role="dialog">
   <div class="modal-dialog">

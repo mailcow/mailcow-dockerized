@@ -169,6 +169,8 @@ if (isset($_GET['query'])) {
               exit;
             }
             fido2(array("action" => "register", "registration" => $data));
+            // Release pending_tfa_setup session hold
+            unset($_SESSION['pending_tfa_setup']);
             $return = new stdClass();
             $return->success = true;
             echo json_encode($return);
