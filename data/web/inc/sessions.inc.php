@@ -43,6 +43,9 @@ if (!isset($_SESSION['SESS_REMOTE_UA'])) {
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $SESSION_LIFETIME)) {
   session_unset();
   session_destroy();
+  session_start();
+  // After destroying session, we need to reset the User-Agent for the new session
+  $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 }
 $_SESSION['LAST_ACTIVITY'] = time();
 
@@ -134,6 +137,12 @@ function session_check() {
     return true;
   }
   if (!isset($_SESSION['SESS_REMOTE_UA']) || ($_SESSION['SESS_REMOTE_UA'] != $_SERVER['HTTP_USER_AGENT'])) {
+    // In development mode, allow User-Agent changes (e.g., for responsive testing in dev tools)
+    // Validate UA is not empty and has reasonable length (most UAs are under 200 chars, 500 is safe upper limit)
+    if (isset($GLOBALS['DEV_MODE']) && $GLOBALS['DEV_MODE'] && !empty($_SERVER['HTTP_USER_AGENT']) && strlen($_SERVER['HTTP_USER_AGENT']) < 500) {
+      $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
+      return true;
+    }
     $_SESSION['return'][] = array(
       'type' => 'warning',
       'msg' => 'session_ua'

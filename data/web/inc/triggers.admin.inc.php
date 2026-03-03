@@ -50,6 +50,8 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "admin";
+		// Update User-Agent after session regeneration to prevent validation errors
+		$_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 		header("Location: /admin/dashboard");
     die();
 	}

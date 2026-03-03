@@ -7,6 +7,8 @@ if (!empty($_GET['sso_token'])) {
     session_regenerate_id(true);
     $_SESSION['mailcow_cc_username'] = $username;
     $_SESSION['mailcow_cc_role'] = 'domainadmin';
+    // Update User-Agent after session regeneration to prevent validation errors
+    $_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
     header('Location: /domainadmin/mailbox');
   }
 }
@@ -61,6 +63,8 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
+		// Update User-Agent after session regeneration to prevent validation errors
+		$_SESSION['SESS_REMOTE_UA'] = $_SERVER['HTTP_USER_AGENT'];
 		header("Location: /domainadmin/mailbox");
     die();
 	}
