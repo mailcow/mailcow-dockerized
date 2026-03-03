@@ -20,7 +20,7 @@ ARG SOGO_SECURITY_PATCHES="16ab99e7cf8db2c30b211f0d5e338d7f9e3a9efb"
 ARG GOSU_VERSION=1.19
 ENV LC_ALL=C
 
-# Install all dependencies (build + runtime)
+# Install dependencies, build SOPE and SOGo, then clean up (all in one layer to minimize image size)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Build dependencies
     git \
@@ -68,28 +68,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 \
     libzip4 \
     libytnef0 \
+  # Download gosu
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
-  && mkdir -p /usr/share/doc/sogo \
-  && touch /usr/share/doc/sogo/empty.sh \
-  && apt-get autoclean \
-  && rm -rf /var/lib/apt/lists/* \
-  && touch /etc/default/locale
-
-# Build SOPE (SOGo's framework dependency)
-RUN git clone --depth 1 --branch ${SOPE_VERSION} https://github.com/Alinto/sope.git /tmp/sope \
+  # Build SOPE
+  && git clone --depth 1 --branch ${SOPE_VERSION} https://github.com/Alinto/sope.git /tmp/sope \
   && cd /tmp/sope \
+  && rm -rf .git \
   && . /usr/share/GNUstep/Makefiles/GNUstep.sh \
-  && ./configure --prefix=/usr --enable-debug \
+  && ./configure --prefix=/usr --disable-debug --disable-strip \
   && make -j$(nproc) \
   && make install \
   && cd / \
-  && rm -rf /tmp/sope
-
-# Build SOGo with security patches
-RUN git clone --depth 1 --branch ${SOGO_VERSION} https://github.com/Alinto/sogo.git /tmp/sogo \
+  && rm -rf /tmp/sope \
+  # Build SOGo with security patches
+  && git clone --depth 1 --branch ${SOGO_VERSION} https://github.com/Alinto/sogo.git /tmp/sogo \
   && cd /tmp/sogo \
   && git config user.email "builder@mailcow.local" \
   && git config user.name "SOGo Builder" \
@@ -97,12 +92,50 @@ RUN git clone --depth 1 --branch ${SOGO_VERSION} https://github.com/Alinto/sogo.
        echo "Applying security patch: ${patch}"; \
        git fetch origin ${patch} && git cherry-pick ${patch}; \
      done \
+  && rm -rf .git \
   && . /usr/share/GNUstep/Makefiles/GNUstep.sh \
-  && ./configure --enable-debug \
-  && make \
+  && ./configure --disable-debug --disable-strip \
+  && make -j$(nproc) \
   && make install \
   && cd / \
-  && rm -rf /tmp/sogo
+  && rm -rf /tmp/sogo \
+  # Strip binaries
+  && strip --strip-unneeded /usr/local/sbin/sogod 2>/dev/null || true \
+  && strip --strip-unneeded /usr/local/sbin/sogo-tool 2>/dev/null || true \
+  && strip --strip-unneeded /usr/local/sbin/sogo-ealarms-notify 2>/dev/null || true \
+  && strip --strip-unneeded /usr/local/sbin/sogo-slapd-sockd 2>/dev/null || true \
+  # Remove build dependencies and clean up
+  && apt-get purge -y --auto-remove \
+    git \
+    build-essential \
+    gobjc \
+    gnustep-make \
+    libgnustep-base-dev \
+    libxml2-dev \
+    libldap2-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libpq-dev \
+    libmariadb-dev-compat \
+    libmemcached-dev \
+    libsodium-dev \
+    libcurl4-openssl-dev \
+    libzip-dev \
+    libytnef0-dev \
+    curl \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /usr/share/doc/* \
+  && rm -rf /usr/share/man/* \
+  && rm -rf /var/cache/debconf/* \
+  && rm -rf /tmp/* \
+  && rm -rf /root/.cache \
+  && find /usr/local/lib -name '*.a' -delete \
+  && find /usr/lib -name '*.a' -delete \
+  && mkdir -p /usr/share/doc/sogo \
+  && touch /usr/share/doc/sogo/empty.sh \
+  && touch /etc/default/locale
 
 # Configure library paths
 RUN echo "/usr/lib64" > /etc/ld.so.conf.d/sogo.conf \
