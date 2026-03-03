@@ -597,7 +597,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.11
+      image: ghcr.io/mailcow/dockerapi:2.11a
       security_opt:
         - label=disable
       restart: always
