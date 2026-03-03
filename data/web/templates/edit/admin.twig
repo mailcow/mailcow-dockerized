@@ -39,6 +39,24 @@
       </div>
     </div>
   </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <input type="hidden" value="0" name="force_tfa">
+        <label><input type="checkbox" class="form-check-input" value="1" name="force_tfa"{% if result.attributes.force_tfa == '1' %} checked{% endif %}> {{ lang.tfa.force_tfa }}</label>
+        <small class="text-muted d-block">{{ lang.tfa.force_tfa_info }}</small>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <input type="hidden" value="0" name="force_pw_update">
+        <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
+        <small class="text-muted d-block">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="offset-sm-2 col-sm-10">
       <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-api-reload-location="/admin" data-id="editadmin" data-item="{{ admin }}" data-api-url='edit/admin' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>

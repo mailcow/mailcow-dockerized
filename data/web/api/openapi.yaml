@@ -2454,6 +2454,90 @@ paths:
                   type: object
               type: object
       summary: Delete mails in Quarantine
+  /api/v1/edit/qitem:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                release:
+                  value:
+                    - log:
+                        - quarantine
+                        - edit
+                        - id:
+                            - "33"
+                          action: release
+                      msg:
+                        - item_released
+                        - "33"
+                      type: success
+                learnham:
+                  value:
+                    - log:
+                        - quarantine
+                        - edit
+                        - id:
+                            - "34"
+                          action: learnham
+                      msg:
+                        - item_learned
+                        - "34"
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Quarantine
+      description: >-
+        Using this endpoint you can perform actions on quarantine items. It is possible to release
+        emails from quarantine into to the inbox, or learn them as ham to improve Rspamd filtering.
+        You must provide the quarantine item IDs. You can get the IDs using the GET method.      
+      operationId: Edit mails in Quarantine
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "33"
+                  - "34"
+                attr:
+                  action: release
+              properties:
+                items:
+                  description: contains list of quarantine item IDs to release or learn as ham
+                  type: object
+                attr:
+                  description: attributes for the action
+                  type: object
+                  properties:
+                    action:
+                      type: string
+                      enum:
+                        - release
+                        - learnham
+                      description: "release - return email to inbox; learnham - learn as ham to improve filtering"
+              type: object
+      summary: Edit mails in Quarantine
   /api/v1/delete/recipient_map:
     post:
       responses:

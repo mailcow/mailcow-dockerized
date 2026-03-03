@@ -11,10 +11,8 @@ class Collection extends QueryCollection
 {
     /**
      * Get a collection of the model's distinguished names.
-     *
-     * @return static
      */
-    public function modelDns()
+    public function modelDns(): static
     {
         return $this->map(function (Model $model) {
             return $model->getDn();
@@ -22,12 +20,11 @@ class Collection extends QueryCollection
     }
 
     /**
-     * Determine if the collection contains all of the given models, or any models.
+     * Determine if the collection contains all the given models, or any models.
      *
-     * @param  mixed  $models
-     * @return bool
+     * @param  QueryCollection|Model|array|string|null  $models
      */
-    public function exists($models = null)
+    public function exists(mixed $models = null): bool
     {
         $models = $this->getArrayableModels($models);
 
@@ -57,19 +54,11 @@ class Collection extends QueryCollection
 
     /**
      * Determine if any of the given models are contained in the collection.
-     *
-     * @param  mixed  $key
-     * @param  mixed  $operator
-     * @param  mixed  $value
-     * @return bool
      */
-    public function contains($key, $operator = null, $value = null)
+    public function contains($key, $operator = null, $value = null): bool
     {
         if (func_num_args() > 1 || $key instanceof Closure) {
-            // If we are supplied with more than one argument, or
-            // we were passed a closure, we will utilize the
-            // parents contains method, for compatibility.
-            return parent::contains($key, $operator, $value);
+            return parent::contains(...func_get_args());
         }
 
         foreach ($this->getArrayableModels($key) as $model) {
@@ -87,25 +76,20 @@ class Collection extends QueryCollection
 
     /**
      * Get the provided models as an array.
-     *
-     * @param  mixed  $models
-     * @return array
      */
-    protected function getArrayableModels($models = null)
+    protected function getArrayableModels(mixed $models = null): array
     {
-        return $models instanceof QueryCollection
-            ? $models->toArray()
-            : Arr::wrap($models);
+        if ($models instanceof QueryCollection) {
+            return $models->all();
+        }
+
+        return Arr::wrap($models);
     }
 
     /**
      * Compare the related model with the given.
-     *
-     * @param  Model|string  $model
-     * @param  Model  $related
-     * @return bool
      */
-    protected function compareModelWithRelated($model, $related)
+    protected function compareModelWithRelated(Model|string $model, Model $related): bool
     {
         if (is_string($model)) {
             return $this->isValidDn($model)
@@ -118,11 +102,8 @@ class Collection extends QueryCollection
 
     /**
      * Determine if the given string is a valid distinguished name.
-     *
-     * @param  string  $dn
-     * @return bool
      */
-    protected function isValidDn($dn)
+    protected function isValidDn(string $dn): bool
     {
         return ! empty((new DistinguishedName($dn))->components());
     }

@@ -5,66 +5,34 @@ namespace LdapRecord;
 class DetailedError
 {
     /**
-     * The error code from ldap_errno.
-     *
-     * @var int|null
-     */
-    protected $errorCode;
-
-    /**
-     * The error message from ldap_error.
-     *
-     * @var string|null
-     */
-    protected $errorMessage;
-
-    /**
-     * The diagnostic message when retrieved after an ldap_error.
-     *
-     * @var string|null
-     */
-    protected $diagnosticMessage;
-
-    /**
      * Constructor.
-     *
-     * @param  int  $errorCode
-     * @param  string  $errorMessage
-     * @param  string  $diagnosticMessage
      */
-    public function __construct($errorCode, $errorMessage, $diagnosticMessage)
-    {
-        $this->errorCode = $errorCode;
-        $this->errorMessage = $errorMessage;
-        $this->diagnosticMessage = $diagnosticMessage;
-    }
+    public function __construct(
+        protected int $errorCode,
+        protected string $errorMessage,
+        protected ?string $diagnosticMessage
+    ) {}
 
     /**
-     * Returns the LDAP error code.
-     *
-     * @return int
+     * Get the LDAP error code.
      */
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->errorCode;
     }
 
     /**
-     * Returns the LDAP error message.
-     *
-     * @return string
+     * Get the LDAP error message.
      */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return $this->errorMessage;
     }
 
     /**
-     * Returns the LDAP diagnostic message.
-     *
-     * @return string
+     * Get the LDAP diagnostic message.
      */
-    public function getDiagnosticMessage()
+    public function getDiagnosticMessage(): ?string
     {
         return $this->diagnosticMessage;
     }
