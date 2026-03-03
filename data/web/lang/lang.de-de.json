@@ -686,8 +686,6 @@
         "extended_sender_acl_info": "Der DKIM-Domainkey der externen Absenderdomain sollte in diesen Server importiert werden, falls vorhanden.<br>\r\n  Wird SPF verwendet, muss diesem Server der Versand gestattet werden.<br>\r\n  Wird eine Domain oder Alias-Domain zu diesem Server hinzugefügt, die sich mit der externen Absenderadresse überschneidet, wird der externe Absender hier entfernt.<br>\r\n  Ein Eintrag @domain.tld erlaubt den Versand als *@domain.tld",
         "force_pw_update": "Erzwinge Passwortänderung bei nächstem Login",
         "force_pw_update_info": "Dem Benutzer wird lediglich der Zugang zur %s ermöglicht, App Passwörter funktionieren weiterhin.",
-        "force_tfa": "Zwei-Faktor-Authentifizierung beim Login erzwingen",
-        "force_tfa_info": "Der Benutzer muss Zwei-Faktor-Authentifizierung einrichten, bevor er auf den Bereich zugreifen kann.",
         "footer_exclude": "von Fußzeile ausschließen",
         "full_name": "Voller Name",
         "gal": "Globales Adressbuch",
@@ -1241,8 +1239,7 @@
         "force_tfa_info": "Der Benutzer muss Zwei-Faktor-Authentifizierung einrichten, bevor er auf den Bereich zugreifen kann.",
         "setup_title": "Zwei-Faktor-Authentifizierung erforderlich",
         "setup_required": "Ihr Konto erfordert Zwei-Faktor-Authentifizierung. Bitte richten Sie eine 2FA-Methode ein, um fortzufahren.",
-        "cancel_setup": "Abbrechen und abmelden",
-        "disable_tfa_blocked": "Die Zwei-Faktor-Authentifizierung kann nicht deaktiviert werden, da sie für dieses Konto erforderlich ist."
+        "cancel_setup": "Abbrechen und abmelden"
     },
     "user": {
         "action": "Aktion",
