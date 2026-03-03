@@ -1083,6 +1083,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $active = (isset($_data['active'])) ? intval($_data['active']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['active']);
           $force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
+          $force_tfa = (isset($_data['force_tfa'])) ? intval($_data['force_tfa']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_tfa']);
           $tls_enforce_in = (isset($_data['tls_enforce_in'])) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
           $tls_enforce_out = (isset($_data['tls_enforce_out'])) ? intval($_data['tls_enforce_out']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out']);
           $sogo_access = (isset($_data['sogo_access'])) ? intval($_data['sogo_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access']);
@@ -1099,10 +1100,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
           if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
             $force_pw_update = 0;
+            $force_tfa = 0;
           }
           $mailbox_attrs = json_encode(
             array(
               'force_pw_update' => strval($force_pw_update),
+              'force_tfa' => strval($force_tfa),
               'tls_enforce_in' => strval($tls_enforce_in),
               'tls_enforce_out' => strval($tls_enforce_out),
               'sogo_access' => strval($sogo_access),
@@ -1720,6 +1723,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : "s";
           $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
           $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
+          $attr["force_tfa"]                   = isset($_data['force_tfa']) ? intval($_data['force_tfa']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_tfa']);
           $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access']);
           $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
@@ -3065,6 +3069,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             if (!empty($is_now)) {
               $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               (int)$force_pw_update = (isset($_data['force_pw_update'])) ? intval($_data['force_pw_update']) : intval($is_now['attributes']['force_pw_update']);
+              (int)$force_tfa       = (isset($_data['force_tfa'])) ? intval($_data['force_tfa']) : intval($is_now['attributes']['force_tfa']);
               (int)$sogo_access     = (isset($_data['sogo_access']) && hasACLAccess("sogo_access")) ? intval($_data['sogo_access']) : intval($is_now['attributes']['sogo_access']);
               (int)$imap_access     = (isset($_data['imap_access']) && hasACLAccess("protocol_access")) ? intval($_data['imap_access']) : intval($is_now['attributes']['imap_access']);
               (int)$pop3_access     = (isset($_data['pop3_access']) && hasACLAccess("protocol_access")) ? intval($_data['pop3_access']) : intval($is_now['attributes']['pop3_access']);
@@ -3088,6 +3093,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               }
               if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
                 $force_pw_update = 0;
+                $force_tfa = 0;
               }
               $pw_recovery_email    = (isset($_data['pw_recovery_email']) && $authsource == 'mailcow') ? $_data['pw_recovery_email'] : $is_now['attributes']['recovery_email'];
             }
@@ -3359,6 +3365,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `quota` = :quota_b,
                   `authsource` = :authsource,
                   `attributes` = JSON_SET(`attributes`, '$.force_pw_update', :force_pw_update),
+                  `attributes` = JSON_SET(`attributes`, '$.force_tfa', :force_tfa),
                   `attributes` = JSON_SET(`attributes`, '$.sogo_access', :sogo_access),
                   `attributes` = JSON_SET(`attributes`, '$.imap_access', :imap_access),
                   `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
@@ -3376,6 +3383,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':quota_b' => $quota_b,
                 ':attribute_hash' => $attribute_hash,
                 ':force_pw_update' => $force_pw_update,
+                ':force_tfa' => $force_tfa,
                 ':sogo_access' => $sogo_access,
                 ':imap_access' => $imap_access,
                 ':pop3_access' => $pop3_access,

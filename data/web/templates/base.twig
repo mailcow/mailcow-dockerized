@@ -377,6 +377,112 @@ function recursiveBase64StrToArrayBuffer(obj) {
     });
   {% endif %}
 
+  {% if pending_tfa_setup %}
+    var setupTFAModal = new bootstrap.Modal(document.getElementById("SetupTFAModal"), {
+      backdrop: 'static',
+      keyboard: false
+    });
+    setupTFAModal.show();
+
+    // Load QR code for TOTP setup in SetupTFAModal
+    var setupTotpSecret = $('#setup-tfa-qr-img').data('totp-secret');
+    if (setupTotpSecret) {
+      $.ajax({
+        type: "GET",
+        url: "/inc/ajax/qr_gen.php?token=" + encodeURIComponent(setupTotpSecret),
+        success: function(data) {
+          $('#setup-tfa-qr-img').attr('src', data);
+        }
+      });
+    }
+
+    // WebAuthn registration for SetupTFAModal
+    $('#start_setup_webauthn_register').click(function() {
+      if (!window.fetch || !navigator.credentials || !navigator.credentials.create) {
+        window.alert('Browser not supported.');
+        return;
+      }
+      var keyId = $('#setup_webauthn_reg_form input[name=key_id]').val();
+      if (!keyId) {
+        $('#setup_webauthn_return_code').show().text('Please fill in the key ID first.');
+        return;
+      }
+      window.fetch('/api/v1/get/webauthn-tfa-registration', {method: 'GET', cache: 'no-cache'}).then(function(response) {
+        return response.json();
+      }).then(function(json) {
+        if (json.success === false) throw new Error(json.error || 'Registration failed');
+        recursiveBase64StrToArrayBuffer(json);
+        return navigator.credentials.create(json);
+      }).then(function(cred) {
+        return {
+          id: cred.id,
+          rawId: arrayBufferToBase64(cred.rawId),
+          response: {
+            attestationObject: arrayBufferToBase64(cred.response.attestationObject),
+            clientDataJSON: arrayBufferToBase64(cred.response.clientDataJSON)
+          },
+          type: cred.type
+        };
+      }).then(function(credData) {
+        $('#setup_webauthn_register_data').val(JSON.stringify(credData));
+        $('#setup_webauthn_reg_form input[name=set_tfa]').val('1');
+        $('#setup_webauthn_reg_form').submit();
+      }).catch(function(err) {
+        $('#setup_webauthn_return_code').show().text(err.message || 'Registration failed');
+      });
+    });
+  {% endif %}
+
+  {% if pending_pw_update_modal and not pending_tfa_setup and not pending_tfa_methods %}
+    var changePWModal = new bootstrap.Modal(document.getElementById("ChangePWModal"), {
+      backdrop: 'static',
+      keyboard: false
+    });
+    changePWModal.show();
+
+    $('#changePWModalForm').on('submit', function(e) {
+      e.preventDefault();
+      var newPw = $('#changePWNew').val();
+      var newPw2 = $('#changePWNew2').val();
+      var role = '{{ mailcow_cc_role }}';
+      var username = '{{ mailcow_cc_username }}';
+
+      var url, attrPayload, itemsPayload;
+      if (role === 'admin') {
+        url = '/api/v1/edit/admin';
+        attrPayload = {password: newPw, password2: newPw2};
+        itemsPayload = [username];
+      } else {
+        url = '/api/v1/edit/self';
+        attrPayload = {user_new_pass: newPw, user_new_pass2: newPw2};
+        itemsPayload = null;
+      }
+
+      $('#changePWAlert').hide();
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          attr: JSON.stringify(attrPayload),
+          items: JSON.stringify(itemsPayload),
+          csrf_token: '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function(data) {
+          if (data && data[0] && data[0].type === 'success') {
+            window.location.reload();
+          } else {
+            var msg = (data && data[0] && data[0].msg) ? data[0].msg : 'Password change failed.';
+            $('#changePWAlert').show().text(msg);
+          }
+        },
+        error: function() {
+          $('#changePWAlert').show().text('Request failed. Please try again.');
+        }
+      });
+    });
+  {% endif %}
+
 
     // Validate FIDO2
   $("#fido2-login").click(function(){

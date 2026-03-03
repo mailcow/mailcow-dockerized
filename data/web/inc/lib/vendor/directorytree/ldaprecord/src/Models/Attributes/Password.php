@@ -9,192 +9,135 @@ use ReflectionMethod;
 class Password
 {
     public const CRYPT_SALT_TYPE_MD5 = 1;
+
     public const CRYPT_SALT_TYPE_SHA256 = 5;
+
     public const CRYPT_SALT_TYPE_SHA512 = 6;
 
     /**
      * Make an encoded password for transmission over LDAP.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function encode($password)
+    public static function encode(string $password): string
     {
         return iconv('UTF-8', 'UTF-16LE', '"'.$password.'"');
     }
 
     /**
      * Make a salted md5 password.
-     *
-     * @param  string  $password
-     * @param  null|string  $salt
-     * @return string
      */
-    public static function smd5($password, $salt = null)
+    public static function smd5(string $password, ?string $salt = null): string
     {
         return '{SMD5}'.static::makeHash($password, 'md5', null, $salt ?? random_bytes(4));
     }
 
     /**
      * Make a salted SHA password.
-     *
-     * @param  string  $password
-     * @param  null|string  $salt
-     * @return string
      */
-    public static function ssha($password, $salt = null)
+    public static function ssha(string $password, ?string $salt = null): string
     {
         return '{SSHA}'.static::makeHash($password, 'sha1', null, $salt ?? random_bytes(4));
     }
 
     /**
      * Make a salted SSHA256 password.
-     *
-     * @param  string  $password
-     * @param  null|string  $salt
-     * @return string
      */
-    public static function ssha256($password, $salt = null)
+    public static function ssha256(string $password, ?string $salt = null): string
     {
         return '{SSHA256}'.static::makeHash($password, 'hash', 'sha256', $salt ?? random_bytes(4));
     }
 
     /**
      * Make a salted SSHA384 password.
-     *
-     * @param  string  $password
-     * @param  null|string  $salt
-     * @return string
      */
-    public static function ssha384($password, $salt = null)
+    public static function ssha384(string $password, ?string $salt = null): string
     {
         return '{SSHA384}'.static::makeHash($password, 'hash', 'sha384', $salt ?? random_bytes(4));
     }
 
     /**
      * Make a salted SSHA512 password.
-     *
-     * @param  string  $password
-     * @param  null|string  $salt
-     * @return string
      */
-    public static function ssha512($password, $salt = null)
+    public static function ssha512(string $password, ?string $salt = null): string
     {
         return '{SSHA512}'.static::makeHash($password, 'hash', 'sha512', $salt ?? random_bytes(4));
     }
 
     /**
      * Make a non-salted SHA password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function sha($password)
+    public static function sha(string $password): string
     {
         return '{SHA}'.static::makeHash($password, 'sha1');
     }
 
     /**
      * Make a non-salted SHA256 password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function sha256($password)
+    public static function sha256(string $password): string
     {
         return '{SHA256}'.static::makeHash($password, 'hash', 'sha256');
     }
 
     /**
      * Make a non-salted SHA384 password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function sha384($password)
+    public static function sha384(string $password): string
     {
         return '{SHA384}'.static::makeHash($password, 'hash', 'sha384');
     }
 
     /**
      * Make a non-salted SHA512 password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function sha512($password)
+    public static function sha512(string $password): string
     {
         return '{SHA512}'.static::makeHash($password, 'hash', 'sha512');
     }
 
     /**
      * Make a non-salted md5 password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function md5($password)
+    public static function md5(string $password): string
     {
         return '{MD5}'.static::makeHash($password, 'md5');
     }
 
     /**
      * Make a non-salted NThash password.
-     *
-     * @param  string  $password
-     * @return string
      */
-    public static function nthash($password)
+    public static function nthash(string $password): string
     {
         return '{NTHASH}'.strtoupper(hash('md4', iconv('UTF-8', 'UTF-16LE', $password)));
     }
 
     /**
      * Crypt password with an MD5 salt.
-     *
-     * @param  string  $password
-     * @param  string  $salt
-     * @return string
      */
-    public static function md5Crypt($password, $salt = null)
+    public static function md5Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_MD5, $salt);
     }
 
     /**
      * Crypt password with a SHA256 salt.
-     *
-     * @param  string  $password
-     * @param  string  $salt
-     * @return string
      */
-    public static function sha256Crypt($password, $salt = null)
+    public static function sha256Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_SHA256, $salt);
     }
 
     /**
      * Crypt a password with a SHA512 salt.
-     *
-     * @param  string  $password
-     * @param  string  $salt
-     * @return string
      */
-    public static function sha512Crypt($password, $salt = null)
+    public static function sha512Crypt(string $password, ?string $salt = null): string
     {
         return '{CRYPT}'.static::makeCrypt($password, static::CRYPT_SALT_TYPE_SHA512, $salt);
     }
 
     /**
      * Make a new password hash.
-     *
-     * @param  string  $password  The password to make a hash of.
-     * @param  string  $method  The hash function to use.
-     * @param  string|null  $algo  The algorithm to use for hashing.
-     * @param  string|null  $salt  The salt to append onto the hash.
-     * @return string
      */
-    protected static function makeHash($password, $method, $algo = null, $salt = null)
+    protected static function makeHash(string $password, string $method, ?string $algo = null, ?string $salt = null): string
     {
         $params = $algo ? [$algo, $password.$salt] : [$password.$salt];
 
@@ -203,24 +146,16 @@ class Password
 
     /**
      * Make a hashed password.
-     *
-     * @param  string  $password
-     * @param  int  $type
-     * @param  null|string  $salt
-     * @return string
      */
-    protected static function makeCrypt($password, $type, $salt = null)
+    protected static function makeCrypt(string $password, int $type, ?string $salt = null): string
     {
         return crypt($password, $salt ?? static::makeCryptSalt($type));
     }
 
     /**
      * Make a salt for the crypt() method using the given type.
-     *
-     * @param  int  $type
-     * @return string
      */
-    protected static function makeCryptSalt($type)
+    protected static function makeCryptSalt(int $type): string
     {
         [$prefix, $length] = static::makeCryptPrefixAndLength($type);
 
@@ -236,35 +171,26 @@ class Password
     /**
      * Determine the crypt prefix and length.
      *
-     * @param  int  $type
-     * @return array
      *
      * @throws InvalidArgumentException
      */
-    protected static function makeCryptPrefixAndLength($type)
+    protected static function makeCryptPrefixAndLength(int $type): array
     {
-        switch ($type) {
-            case static::CRYPT_SALT_TYPE_MD5:
-                return ['$1$', 12];
-            case static::CRYPT_SALT_TYPE_SHA256:
-                return ['$5$', 16];
-            case static::CRYPT_SALT_TYPE_SHA512:
-                return ['$6$', 16];
-            default:
-                throw new InvalidArgumentException("Invalid crypt type [$type].");
-        }
+        return match ((int) $type) {
+            static::CRYPT_SALT_TYPE_MD5 => ['$1$', 12],
+            static::CRYPT_SALT_TYPE_SHA256 => ['$5$', 16],
+            static::CRYPT_SALT_TYPE_SHA512 => ['$6$', 16],
+            default => throw new InvalidArgumentException("Invalid crypt type [$type]."),
+        };
     }
 
     /**
      * Attempt to retrieve the hash method used for the password.
-     *
-     * @param  string  $password
-     * @return string|void
      */
-    public static function getHashMethod($password)
+    public static function getHashMethod(string $password): ?string
     {
         if (! preg_match('/^\{(\w+)\}/', $password, $matches)) {
-            return;
+            return null;
         }
 
         return $matches[1];
@@ -272,14 +198,11 @@ class Password
 
     /**
      * Attempt to retrieve the hash method and algorithm used for the password.
-     *
-     * @param  string  $password
-     * @return array|void
      */
-    public static function getHashMethodAndAlgo($password)
+    public static function getHashMethodAndAlgo(string $password): ?array
     {
         if (! preg_match('/^\{(\w+)\}\$([0-9a-z]{1})\$/', $password, $matches)) {
-            return;
+            return null;
         }
 
         return [$matches[1], $matches[2]];
@@ -288,11 +211,9 @@ class Password
     /**
      * Attempt to retrieve a salt from the encrypted password.
      *
-     * @return string
-     *
      * @throws LdapRecordException
      */
-    public static function getSalt($encryptedPassword)
+    public static function getSalt(string $encryptedPassword): string
     {
         // crypt() methods.
         if (preg_match('/^\{(\w+)\}(\$.*\$).*$/', $encryptedPassword, $matches)) {
@@ -310,12 +231,9 @@ class Password
     /**
      * Determine if the hash method requires a salt to be given.
      *
-     * @param  string  $method
-     * @return bool
-     *
      * @throws \ReflectionException
      */
-    public static function hashMethodRequiresSalt($method): bool
+    public static function hashMethodRequiresSalt(string $method): bool
     {
         $parameters = (new ReflectionMethod(static::class, $method))->getParameters();
 

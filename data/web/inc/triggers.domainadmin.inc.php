@@ -20,6 +20,11 @@ if (isset($_POST["verify_tfa_login"])) {
       unset($_SESSION['pending_mailcow_cc_role']);
       unset($_SESSION['pending_tfa_methods']);
 
+      // If pending actions exist, redirect to /domainadmin to show modal
+      if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+        header("Location: /domainadmin");
+        die();
+      }
 		  header("Location: /domainadmin/mailbox");
       die();
     }
@@ -53,6 +58,15 @@ if (isset($_GET["cancel_tfa_login"])) {
   header("Location: /domainadmin");
 }
 
+if (isset($_GET["cancel_tfa_setup"])) {
+  session_regenerate_id(true);
+  session_unset();
+  session_destroy();
+  session_write_close();
+  header("Location: /domainadmin");
+  exit();
+}
+
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   $login_user = strtolower(trim($_POST["login_user"]));
   $as = check_login($login_user, $_POST["pass_user"], array("role" => "domain_admin", "service" => "MAILCOWUI"));
@@ -61,6 +75,11 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
     session_regenerate_id(true);
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "domainadmin";
+    // If pending actions exist, redirect to /domainadmin to show modal
+    if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+      header("Location: /domainadmin");
+      die();
+    }
 		header("Location: /domainadmin/mailbox");
     die();
 	}
