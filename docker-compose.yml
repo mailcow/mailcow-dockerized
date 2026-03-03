@@ -522,7 +522,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.09
+      image: ghcr.io/mailcow/watchdog:2.10
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
