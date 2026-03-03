@@ -83,6 +83,8 @@ if(!$data) {
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
     $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+    $redis->publish("F2B_CHANNEL", "Autodiscover: Invalid request by " . $_SERVER['REMOTE_ADDR']);
+    error_log("Autodiscover: Invalid request by " . $_SERVER['REMOTE_ADDR']);
   }
   catch (RedisException $e) {
     $_SESSION['return'][] = array(
@@ -121,6 +123,8 @@ try {
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
     $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+    $redis->publish("F2B_CHANNEL", "Autodiscover: Malformed XML by " . $_SERVER['REMOTE_ADDR']);
+    error_log("Autodiscover: Malformed XML by " . $_SERVER['REMOTE_ADDR']);
   }
   catch (RedisException $e) {
     // Silently fail
@@ -179,6 +183,8 @@ if (empty($MailboxData)) {
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
     $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+    $redis->publish("F2B_CHANNEL", "Autodiscover: Invalid mailbox attempt by " . $_SERVER['REMOTE_ADDR']);
+    error_log("Autodiscover: Invalid mailbox attempt by " . $_SERVER['REMOTE_ADDR']);
   }
   catch (RedisException $e) {
     // Silently fail
