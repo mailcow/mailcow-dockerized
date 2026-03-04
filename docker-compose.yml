@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.24
+      image: ghcr.io/mailcow/unbound:1.25
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:3.7.11-1
+      image: ghcr.io/mailcow/postfix:3.7.11-2
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -382,7 +382,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.8.22
+      image: ghcr.io/mailcow/postfix-tlspol:1.8.23
       depends_on:
         unbound-mailcow:
           condition: service_healthy
@@ -419,7 +419,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.05
+      image: ghcr.io/mailcow/nginx:1.06
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
