@@ -471,8 +471,13 @@ jQuery(function($){
         hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
       },
       ajax: {
-        type: "GET",
-        url: "/api/v1/get/domain/datatables",
+        type: "POST",
+        url: "/api/v1/search/domain",
+        contentType: "application/json",
+        processData: false,
+        data: function(d) {
+          return JSON.stringify(d);
+        },
         dataSrc: function(json){
           $.each(json.data, function(i, item) {
             item.domain_name = escapeHtml(item.domain_name);
@@ -898,8 +903,13 @@ jQuery(function($){
         hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
       },
       ajax: {
-        type: "GET",
-        url: "/api/v1/get/mailbox/datatables",
+        type: "POST",
+        url: "/api/v1/search/mailbox",
+        contentType: "application/json",
+        processData: false,
+        data: function(d) {
+          return JSON.stringify(d);
+        },
         dataSrc: function(json){
           $.each(json.data, function (i, item) {
             item.quota = {

@@ -9,8 +9,6 @@ class Entry extends Model implements DirectoryServer
 {
     /**
      * The attribute key that contains the models object GUID.
-     *
-     * @var string
      */
-    protected $guidKey = 'gidNumber';
+    protected string $guidKey = 'gidNumber';
 }

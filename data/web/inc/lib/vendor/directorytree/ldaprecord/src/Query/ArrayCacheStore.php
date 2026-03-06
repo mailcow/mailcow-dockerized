@@ -10,15 +10,13 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * An array of stored values.
-     *
-     * @var array
      */
-    protected $storage = [];
+    protected array $storage = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get($key, $default = null): mixed
     {
         if (! isset($this->storage[$key])) {
             return $default;
@@ -38,9 +36,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
         $this->storage[$key] = [
             'value' => $value,
@@ -52,30 +50,24 @@ class ArrayCacheStore implements CacheInterface
 
     /**
      * Get the expiration time of the key.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function calculateExpiration($seconds)
+    protected function calculateExpiration($seconds = null): int
     {
         return $this->toTimestamp($seconds);
     }
 
     /**
      * Get the UNIX timestamp for the given number of seconds.
-     *
-     * @param  int  $seconds
-     * @return int
      */
-    protected function toTimestamp($seconds)
+    protected function toTimestamp($seconds = null): int
     {
         return $seconds > 0 ? $this->availableAt($seconds) : 0;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         unset($this->storage[$key]);
 
@@ -83,9 +75,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): bool
     {
         $this->storage = [];
 
@@ -93,9 +85,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getMultiple($keys, $default = null)
+    public function getMultiple($keys, $default = null): iterable
     {
         $values = [];
 
@@ -107,9 +99,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);
@@ -119,9 +111,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple($keys): bool
     {
         foreach ($keys as $key) {
             $this->delete($key);
@@ -131,9 +123,9 @@ class ArrayCacheStore implements CacheInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function has($key)
+    public function has($key): bool
     {
         return isset($this->storage[$key]);
     }

@@ -111,7 +111,8 @@
         "timeout2": "Časovna omejitev za povezavo do lokalnega gostitelja",
         "dry": "Simuliraj sinhronizacijo",
         "internal": "Notranje",
-        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen.",
+        "sender_allowed": "Dovoli pošiljanje kot ta vzdevek"
     },
     "admin": {
         "access": "Dostop",
@@ -556,7 +557,8 @@
         "max_age_invalid": "Najvišja starost %s je neveljavna",
         "mode_invalid": "Način %s ni veljaven",
         "mx_invalid": "Zapis MX %s je neveljaven",
-        "version_invalid": "Različica %s je neveljavna"
+        "version_invalid": "Različica %s je neveljavna",
+        "tfa_removal_blocked": "Dvofaktorske avtentikacije ni mogoče odstraniti, ker je obvezna za vaš račun."
     },
     "debug": {
         "containers_info": "Informacije o zabojniku",
@@ -780,7 +782,9 @@
         "mta_sts_mx_info": "Omogoča pošiljanje samo na izrecno navedena imena gostiteljskih strežnikov poštnih strežnikov; pošiljajoči MTA preveri, ali se ime gostitelja DNS MX ujema s seznamom pravilnikov, in dovoljuje dostavo le z veljavnim potrdilom TLS (zaščita pred MITM).",
         "mta_sts_mx_notice": "Določiti je mogoče več strežnikov MX (ločenih z vejicami).",
         "internal": "Notranje",
-        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen."
+        "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen.",
+        "sender_allowed": "Dovoli pošiljanje kot ta vzdevek",
+        "sender_allowed_info": "Če je onemogočeno, lahko ta vzdevek samo prejema pošto. Za preglasitev in dodelitev dovoljenja za pošiljanje določenim poštnim predalom uporabite seznam za nadzor dostopa pošiljatelja."
     },
     "footer": {
         "restart_container_info": "<b>Pomembno:</b> Eleganten ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
@@ -1229,7 +1233,12 @@
         "u2f_deprecated_important": "Prosimo, registrirajte svoj ključ v skrbniški plošči z novo metodo WebAuthn.",
         "waiting_usb_auth": "<i>Čakanje na napravo USB ...</i><br><br>Zdaj se dotaknite gumba na napravi USB.",
         "waiting_usb_register": "<i>Čakanje na napravo USB ...</i><br><br>Vnesite svoje geslo zgoraj in potrdite registracijo tako, da tapnete gumb na napravi USB.",
-        "yubi_otp": "Avtentikacija z enkratnim geslom Yubico"
+        "yubi_otp": "Avtentikacija z enkratnim geslom Yubico",
+        "force_tfa": "Vsiljena registracija 2FA ob prijavi",
+        "force_tfa_info": "Uporabnik bo moral pred dostopom do nadzorne plošče nastaviti dvofaktorsko overjanje.",
+        "setup_title": "Zahtevana je dvofaktorska avtentikacija",
+        "setup_required": "Vaš račun zahteva dvofaktorsko overjanje. Za nadaljevanje nastavite metodo dvofaktorske overitve.",
+        "cancel_setup": "Prekliči in se odjavi"
     },
     "ratelimit": {
         "disabled": "Onemogočeno",
@@ -1410,7 +1419,8 @@
         "syncjob_EX_OK": "Uspeh",
         "expire_never": "Nikoli ne poteče",
         "forever": "Za vedno",
-        "spam_aliases_info": "Vzdevek za neželeno pošto je začasni e-poštni naslov, ki ga je mogoče uporabiti za zaščito pravih e-poštnih naslovov. <br>Po želji je mogoče nastaviti čas poteka veljavnosti, tako da se vzdevek po določenem obdobju samodejno deaktivira, s čimer se učinkovito znebite zlorabljenih ali razkritih naslovov."
+        "spam_aliases_info": "Vzdevek za neželeno pošto je začasni e-poštni naslov, ki ga je mogoče uporabiti za zaščito pravih e-poštnih naslovov. <br>Po želji je mogoče nastaviti čas poteka veljavnosti, tako da se vzdevek po določenem obdobju samodejno deaktivira, s čimer se učinkovito znebite zlorabljenih ali razkritih naslovov.",
+        "pw_update_required": "Za vaš račun je potrebna sprememba gesla. Za nadaljevanje nastavite novo geslo."
     },
     "warning": {
         "cannot_delete_self": "Prijavljenega uporabnika ni mogoče izbrisati",

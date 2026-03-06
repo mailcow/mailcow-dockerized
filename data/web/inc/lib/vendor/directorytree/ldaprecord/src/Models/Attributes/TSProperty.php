@@ -29,10 +29,8 @@ class TSProperty
      * cannot find any information on them in Microsoft documentation. However, their values appear to stay in sync with
      * their non 'W' counterparts. But not doing so when manipulating the data manually does not seem to affect anything.
      * This probably needs more investigation.
-     *
-     * @var array
      */
-    protected $propTypes = [
+    protected array $propTypes = [
         'string' => [
             'CtxWFHomeDir',
             'CtxWFHomeDirW',
@@ -63,31 +61,23 @@ class TSProperty
 
     /**
      * The property name.
-     *
-     * @var string
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
      * The property value.
-     *
-     * @var string|int
      */
-    protected $value;
+    protected string|int|null $value = null;
 
     /**
      * The property value type.
-     *
-     * @var int
      */
-    protected $valueType = 1;
+    protected int $valueType = 1;
 
     /**
      * Pass binary TSProperty data to construct its object representation.
-     *
-     * @param  string|null  $value
      */
-    public function __construct($value = null)
+    public function __construct(string|int|null $value = null)
     {
         if ($value) {
             $this->decode(bin2hex($value));
@@ -96,11 +86,8 @@ class TSProperty
 
     /**
      * Set the name for the TSProperty.
-     *
-     * @param  string  $name
-     * @return TSProperty
      */
-    public function setName($name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -109,21 +96,16 @@ class TSProperty
 
     /**
      * Get the name for the TSProperty.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
      * Set the value for the TSProperty.
-     *
-     * @param  string|int  $value
-     * @return TSProperty
      */
-    public function setValue($value)
+    public function setValue(string|int $value): static
     {
         $this->value = $value;
 
@@ -132,10 +114,8 @@ class TSProperty
 
     /**
      * Get the value for the TSProperty.
-     *
-     * @return string|int
      */
-    public function getValue()
+    public function getValue(): string|int|null
     {
         return $this->value;
     }
@@ -143,10 +123,8 @@ class TSProperty
     /**
      * Convert the TSProperty name/value back to its binary
      * representation for the userParameters blob.
-     *
-     * @return string
      */
-    public function toBinary()
+    public function toBinary(): string
     {
         $name = bin2hex($this->name);
 
@@ -166,10 +144,8 @@ class TSProperty
 
     /**
      * Given a TSProperty blob, decode the name/value/type/etc.
-     *
-     * @param  string  $tsProperty
      */
-    protected function decode($tsProperty)
+    protected function decode(string $tsProperty): void
     {
         $nameLength = hexdec(substr($tsProperty, 0, 2));
 
@@ -183,12 +159,8 @@ class TSProperty
 
     /**
      * Based on the property name/value in question, get its encoded form.
-     *
-     * @param  string  $propName
-     * @param  string|int  $propValue
-     * @return string
      */
-    protected function getEncodedValueForProp($propName, $propValue)
+    protected function getEncodedValueForProp(string $propName, string|int $propValue): string
     {
         if (in_array($propName, $this->propTypes['string'])) {
             // Simple strings are null terminated. Unsure if this is
@@ -206,12 +178,8 @@ class TSProperty
 
     /**
      * Based on the property name in question, get its actual value from the binary blob value.
-     *
-     * @param  string  $propName
-     * @param  string  $propValue
-     * @return string|int
      */
-    protected function getDecodedValueForProp($propName, $propValue)
+    protected function getDecodedValueForProp(string $propName, string $propValue): string|int
     {
         if (in_array($propName, $this->propTypes['string'])) {
             // Strip away null terminators. I think this should
@@ -234,11 +202,9 @@ class TSProperty
      * Decode the property by inspecting the nibbles of each blob, checking
      * the control, and adding up the results into a final value.
      *
-     * @param  string  $hex
-     * @param  bool  $string  Whether or not this is simple string data.
-     * @return string
+     * @param  bool  $string  Whether this is simple string data.
      */
-    protected function decodePropValue($hex, $string = false)
+    protected function decodePropValue(string $hex, bool $string = false): string
     {
         $decodePropValue = '';
 
@@ -266,12 +232,8 @@ class TSProperty
 
     /**
      * Get the encoded property value as a binary blob.
-     *
-     * @param  string  $value
-     * @param  bool  $string
-     * @return string
      */
-    protected function encodePropValue($value, $string = false)
+    protected function encodePropValue(string $value, bool $string = false): string
     {
         // An int must be properly padded. (then split and reversed).
         // For a string, we just split the chars. This seems
@@ -307,12 +269,8 @@ class TSProperty
      * PHP's pack() function has no 'b' or 'B' template. This is
      * a workaround that turns a literal bit-string into a
      * packed byte-string with 8 bits per byte.
-     *
-     * @param  string  $bits
-     * @param  bool  $len
-     * @return string
      */
-    protected function packBitString($bits, $len)
+    protected function packBitString(string $bits, int $len): string
     {
         $bits = substr($bits, 0, $len);
         // Pad input with zeros to next multiple of 4 above $len
@@ -329,12 +287,8 @@ class TSProperty
 
     /**
      * Based on the control, adjust the nibble accordingly.
-     *
-     * @param  string  $nibble
-     * @param  string  $control
-     * @return string
      */
-    protected function nibbleControl($nibble, $control)
+    protected function nibbleControl(string $nibble, string $control): string
     {
         // This control stays constant for the low/high nibbles,
         // so it doesn't matter which we compare to
@@ -355,10 +309,8 @@ class TSProperty
      * must be subtracted by 9 before the final value is constructed.
      *
      * @param  string  $nibbleType  Either X or Y
-     * @param  string  $nibble
-     * @return string
      */
-    protected function getNibbleWithControl($nibbleType, $nibble)
+    protected function getNibbleWithControl(string $nibbleType, string $nibble): string
     {
         $dec = bindec($nibble);
 
@@ -375,11 +327,9 @@ class TSProperty
     /**
      * Need to make sure hex values are always an even length, so pad as needed.
      *
-     * @param  int  $int
      * @param  int  $padLength  The hex string must be padded to this length (with zeros).
-     * @return string
      */
-    protected function dec2hex($int, $padLength = 2)
+    protected function dec2hex(int $int, int $padLength = 2): string
     {
         return str_pad(dechex($int), $padLength, 0, STR_PAD_LEFT);
     }

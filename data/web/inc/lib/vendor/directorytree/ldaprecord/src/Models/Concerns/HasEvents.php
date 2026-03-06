@@ -13,18 +13,15 @@ trait HasEvents
 {
     /**
      * Execute the callback without raising any events.
-     *
-     * @param  Closure  $callback
-     * @return mixed
      */
-    protected static function withoutEvents(Closure $callback)
+    protected static function withoutEvents(Closure $callback): mixed
     {
         $container = static::getConnectionContainer();
 
-        $dispatcher = $container->getEventDispatcher();
+        $dispatcher = $container->getDispatcher();
 
         if ($dispatcher) {
-            $container->setEventDispatcher(
+            $container->setDispatcher(
                 new NullDispatcher($dispatcher)
             );
         }
@@ -33,19 +30,15 @@ trait HasEvents
             return $callback();
         } finally {
             if ($dispatcher) {
-                $container->setEventDispatcher($dispatcher);
+                $container->setDispatcher($dispatcher);
             }
         }
     }
 
     /**
      * Dispatch the given model events.
-     *
-     * @param  string|array  $events
-     * @param  array  $args
-     * @return void
      */
-    protected function dispatch($events, array $args = [])
+    protected function dispatch(array|string $events, array $args = []): void
     {
         foreach (Arr::wrap($events) as $name) {
             $this->fireCustomModelEvent($name, $args);
@@ -54,38 +47,27 @@ trait HasEvents
 
     /**
      * Fire a custom model event.
-     *
-     * @param  string  $name
-     * @param  array  $args
-     * @return mixed
      */
-    protected function fireCustomModelEvent($name, array $args = [])
+    protected function fireCustomModelEvent(string $name, array $args = []): void
     {
         $event = implode('\\', [Events::class, ucfirst($name)]);
 
-        return $this->fireModelEvent(new $event($this, ...$args));
+        $this->fireModelEvent(new $event($this, ...$args));
     }
 
     /**
      * Fire a model event.
-     *
-     * @param  Event  $event
-     * @return mixed
      */
-    protected function fireModelEvent(Event $event)
+    protected function fireModelEvent(Event $event): void
     {
-        return static::getConnectionContainer()->getEventDispatcher()->fire($event);
+        static::getConnectionContainer()->getDispatcher()->fire($event);
     }
 
     /**
      * Listen to a model event.
-     *
-     * @param  string  $event
-     * @param  Closure  $listener
-     * @return mixed
      */
-    protected function listenForModelEvent($event, Closure $listener)
+    protected function listenForModelEvent(string $event, Closure $listener): void
     {
-        return static::getConnectionContainer()->getEventDispatcher()->listen($event, $listener);
+        static::getConnectionContainer()->getDispatcher()->listen($event, $listener);
     }
 }

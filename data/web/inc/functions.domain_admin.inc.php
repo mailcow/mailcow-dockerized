@@ -195,17 +195,23 @@ function domain_admin($_action, $_data = null) {
               ));
             }
           }
+          $force_tfa = intval($_data['force_tfa'] ?? 0) ? 1 : 0;
+          $force_pw_update = intval($_data['force_pw_update'] ?? 0) ? 1 : 0;
           if (!empty($password)) {
             if (password_check($password, $password2) !== true) {
               return false;
             }
             $password_hashed = hash_password($password);
-            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed,
+              `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_tfa', :force_tfa, '$.force_pw_update', :force_pw_update)
+              WHERE `username` = :username");
             $stmt->execute(array(
               ':password_hashed' => $password_hashed,
               ':username_new' => $username_new,
               ':username' => $username,
-              ':active' => $active
+              ':active' => $active,
+              ':force_tfa' => strval($force_tfa),
+              ':force_pw_update' => strval($force_pw_update)
             ));
             if (isset($_data['disable_tfa'])) {
               $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
@@ -217,11 +223,15 @@ function domain_admin($_action, $_data = null) {
             }
           }
           else {
-            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active WHERE `username` = :username");
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active,
+              `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_tfa', :force_tfa, '$.force_pw_update', :force_pw_update)
+              WHERE `username` = :username");
             $stmt->execute(array(
               ':username_new' => $username_new,
               ':username' => $username,
-              ':active' => $active
+              ':active' => $active,
+              ':force_tfa' => strval($force_tfa),
+              ':force_pw_update' => strval($force_pw_update)
             ));
             if (isset($_data['disable_tfa'])) {
               $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
@@ -244,31 +254,37 @@ function domain_admin($_action, $_data = null) {
       // Can only edit itself
       elseif ($_SESSION['mailcow_cc_role'] == "domainadmin") {
         $username = $_SESSION['mailcow_cc_username'];
-        $password_old		= $_data['user_old_pass'];
+        $password_old		= $_data['user_old_pass'] ?? '';
         $password_new	= $_data['user_new_pass'];
         $password_new2	= $_data['user_new_pass2'];
 
-        $stmt = $pdo->prepare("SELECT `password` FROM `admin`
-            WHERE `username` = :user");
-        $stmt->execute(array(':user' => $username));
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!verify_hash($row['password'], $password_old)) {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => 'access_denied'
-          );
-          return false;
+        // Only verify old password if this is NOT a forced password update
+        if (empty($_SESSION['pending_pw_update'])) {
+          $stmt = $pdo->prepare("SELECT `password` FROM `admin`
+              WHERE `username` = :user");
+          $stmt->execute(array(':user' => $username));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (!verify_hash($row['password'], $password_old)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
         }
         if (password_check($password_new, $password_new2) !== true) {
           return false;
         }
         $password_hashed = hash_password($password_new);
-        $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed WHERE `username` = :username");
+        $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed,
+          `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_pw_update', '0')
+          WHERE `username` = :username");
         $stmt->execute(array(
           ':password_hashed' => $password_hashed,
           ':username' => $username
         ));
+        unset($_SESSION['pending_pw_update']);
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -360,9 +376,11 @@ function domain_admin($_action, $_data = null) {
         `tfa`.`active` AS `tfa_active`,
         `domain_admins`.`username`,
         `domain_admins`.`created`,
-        `domain_admins`.`active` AS `active`
+        `domain_admins`.`active` AS `active`,
+        `admin`.`attributes` AS `attributes`
           FROM `domain_admins`
           LEFT OUTER JOIN `tfa` ON `tfa`.`username`=`domain_admins`.`username`
+          LEFT OUTER JOIN `admin` ON `admin`.`username`=`domain_admins`.`username`
             WHERE `domain_admins`.`username`= :domain_admin");
       $stmt->execute(array(
         ':domain_admin' => $_data
@@ -377,6 +395,7 @@ function domain_admin($_action, $_data = null) {
       $domainadmindata['active'] = $row['active'];
       $domainadmindata['active_int'] = $row['active'];
       $domainadmindata['created'] = $row['created'];
+      $domainadmindata['attributes'] = json_decode($row['attributes'], true) ?? array('force_tfa' => '0', 'force_pw_update' => '0');
       // GET SELECTED
       $stmt = $pdo->prepare("SELECT `domain` FROM `domain`
         WHERE `domain` IN (
