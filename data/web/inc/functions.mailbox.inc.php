@@ -9,6 +9,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   $_data_log = $_data;
   !isset($_data_log['password']) ?: $_data_log['password'] = '*';
   !isset($_data_log['password2']) ?: $_data_log['password2'] = '*';
+
+  // Track mailboxes affected by alias operations for incremental SOGo updates
+  $update_sogo_mailboxes = array();
+
   switch ($_action) {
     case 'add':
       switch ($_type) {
@@ -886,6 +890,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('alias_added', $address, $id)
             );
+
+            // Track affected mailboxes for SOGo update
+            if (!empty($goto)) {
+              $gotos = array_map('trim', explode(',', $goto));
+              foreach ($gotos as $g) {
+                if (filter_var($g, FILTER_VALIDATE_EMAIL) &&
+                    !in_array($g, array('null@localhost', 'spam@localhost', 'ham@localhost'))) {
+                  $update_sogo_mailboxes[] = $g;
+                }
+              }
+            }
           }
         break;
         case 'alias_domain':
@@ -1368,15 +1383,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ), $_extra);
           }
 
-          try {
-            update_sogo_static_view($username);
-          } catch (PDOException $e) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => $e->getMessage()
-            );
-          }
+          // Track affected mailboxes for SOGo update
+          $update_sogo_mailboxes[] = $username;
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1607,6 +1615,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
             'msg' => array('resource_added', htmlspecialchars($name))
           );
+
+          // Track affected mailboxes for SOGo update
+          $update_sogo_mailboxes[] = $name;
         break;
         case 'domain_templates':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -2725,6 +2736,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('alias_modified', htmlspecialchars($address))
             );
+
+            // Track affected mailboxes for SOGo update (both old and new goto addresses)
+            // Old goto: to remove alias from their view
+            if (!empty($is_now['goto'])) {
+              $old_gotos = array_map('trim', explode(',', $is_now['goto']));
+              foreach ($old_gotos as $g) {
+                if (filter_var($g, FILTER_VALIDATE_EMAIL) &&
+                    !in_array($g, array('null@localhost', 'spam@localhost', 'ham@localhost'))) {
+                  $update_sogo_mailboxes[] = $g;
+                }
+              }
+            }
+            // New goto: to add alias to their view
+            if (!empty($goto)) {
+              $new_gotos = array_map('trim', explode(',', $goto));
+              foreach ($new_gotos as $g) {
+                if (filter_var($g, FILTER_VALIDATE_EMAIL) &&
+                    !in_array($g, array('null@localhost', 'spam@localhost', 'ham@localhost'))) {
+                  $update_sogo_mailboxes[] = $g;
+                }
+              }
+            }
           }
         break;
         case 'domain':
@@ -3439,15 +3472,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => array('mailbox_modified', $username)
             );
 
-            try {
-              update_sogo_static_view($username);
-            } catch (PDOException $e) {
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => $e->getMessage()
-              );
-            }
+            // Track affected mailboxes for SOGo update
+            $update_sogo_mailboxes[] = $username;
           }
           return true;
         break;
@@ -4076,6 +4102,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('resource_modified', htmlspecialchars($name))
             );
+
+            // Track affected mailboxes for SOGo update
+            $update_sogo_mailboxes[] = $name;
           }
         break;
         case 'domain_wide_footer':
@@ -5780,6 +5809,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+
+            // Track affected mailboxes for SOGo update (capture before deletion)
+            if (!empty($alias_data['goto'])) {
+              $gotos = array_map('trim', explode(',', $alias_data['goto']));
+              foreach ($gotos as $g) {
+                if (filter_var($g, FILTER_VALIDATE_EMAIL) &&
+                    !in_array($g, array('null@localhost', 'spam@localhost', 'ham@localhost'))) {
+                  $update_sogo_mailboxes[] = $g;
+                }
+              }
+            }
+
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `id` = :id");
             $stmt->execute(array(
               ':id' => $alias_data['id']
@@ -6038,20 +6079,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               continue;
             }
 
-            try {
-              update_sogo_static_view($username);
-            }catch (PDOException $e) {
-              $_SESSION['return'][] = array(
-                'type' => 'success',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => $e->getMessage()
-              );
-            }
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('mailbox_removed', htmlspecialchars($username))
             );
+
+            // Track affected mailboxes for SOGo update
+            $update_sogo_mailboxes[] = $username;
           }
           return true;
         break;
@@ -6153,6 +6188,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
               'msg' => array('resource_removed', htmlspecialchars($name))
             );
+
+            // Track affected mailboxes for SOGo update
+            $update_sogo_mailboxes[] = $name;
           }
         break;
         case 'tags_domain':
@@ -6259,9 +6297,21 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
       }
     break;
   }
-  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource')) && getenv('SKIP_SOGO') != "y") {
+  if ($_action != 'get' && in_array($_type, array('domain', 'alias', 'alias_domain', 'resource', 'mailbox')) && getenv('SKIP_SOGO') != "y") {
     try {
-      update_sogo_static_view();
+      if (($_type == 'alias' || $_type == 'resource' || $_type == 'mailbox') && !empty($update_sogo_mailboxes)) {
+        // INCREMENTAL UPDATE: Update only affected mailboxes/resources
+        $update_sogo_mailboxes = array_unique($update_sogo_mailboxes);
+        foreach ($update_sogo_mailboxes as $mailbox) {
+          update_sogo_static_view($mailbox);
+        }
+      }
+      else {
+        // FULL REBUILD: For domain and alias_domain operations or if no tracked mailboxes
+        // Domain operations affect all mailboxes
+        // Alias_domain operations affect entire target domain
+        update_sogo_static_view();
+      }
     }catch (PDOException $e) {
       $_SESSION['return'][] = array(
         'type' => 'success',
