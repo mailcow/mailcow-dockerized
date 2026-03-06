@@ -3,7 +3,7 @@
 # Version: SOGo-5.12.4
 #
 # Applied security patches:
-# - 16ab99e7cf8db2c30b211f0d5e338d7f9e3a9efb: XSS vulnerability in theme parameter
+# -
 #
 # To add new patches, modify SOGO_SECURITY_PATCHES ARG below with space-separated commit hashes
 
@@ -12,10 +12,10 @@ FROM debian:bookworm
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG SOGO_VERSION=SOGo-5.12.4
-ARG SOPE_VERSION=SOPE-5.12.4
+ARG SOGO_VERSION=SOGo-5.12.5
+ARG SOPE_VERSION=SOPE-5.12.5
 # Security patches to apply (space-separated commit hashes)
-ARG SOGO_SECURITY_PATCHES="16ab99e7cf8db2c30b211f0d5e338d7f9e3a9efb"
+ARG SOGO_SECURITY_PATCHES=""
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.19
 ENV LC_ALL=C
