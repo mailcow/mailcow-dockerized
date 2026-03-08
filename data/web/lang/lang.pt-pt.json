@@ -131,7 +131,6 @@
         "goto_invalid": "O endereço digitado como Encaminhar para é inválido",
         "is_alias": "o endereço %s já é um Apelido",
         "is_alias_or_mailbox": "o endereço %s já é uma Conta ou Apelido",
-        "is_spam_alias": "%s foi registrado como Apelido para Spam",
         "login_failed": "Login falhou",
         "mailbox_invalid": "Conta inválida",
         "mailbox_quota_exceeded": "Espaço excede o limite do domínio (max. %d MiB)",
@@ -150,7 +149,7 @@
         "target_domain_invalid": "O endereço de Domínio Destino é inválido",
         "targetd_not_found": "Domínio de Destino não encontrado",
         "username_invalid": "Nome de utilizador inválido",
-        "validity_missing": "Você deve definir um período de validade",
+        "invalid_validity": "Você deve definir um período de validade",
         "comment_too_long": "Comentário demasiado longo, máximo 160 chars permitidos",
         "ip_list_empty": "Lista de IPs permitidos não pode estar vazia",
         "last_key": "A última tecla não pode ser apagada, por favor desactivar a TFA."

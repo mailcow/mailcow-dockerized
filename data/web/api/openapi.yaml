@@ -126,8 +126,18 @@ paths:
                 goto_spam:
                   description: learn as spam
                   type: boolean
+                private_comment:
+                  type: string
+                public_comment:
+                  type: string
+                sender_allowed:
+                  description: If enabled alias can be used to send mails. If disabled the alias can only receive mails
+                  type: boolean
                 sogo_visible:
                   description: toggle visibility as selectable sender in SOGo
+                  type: boolean
+                internal:
+                  description: If true aliases are only accessible from the own domain or alias domains
                   type: boolean
               type: object
       summary: Create alias
@@ -176,23 +186,49 @@ paths:
       description: >-
         You may create a time limited alias using this action. It takes a JSON
         object containing a domain and mailbox informations.
-        Mailcow will generate a random alias.
+        Mailcow will generate a random alias that expires after one year.
+        Additional informations can be provided to further customize the alias
+        including the validity period.
       operationId: Create time limited alias
       requestBody:
         content:
           application/json:
             schema:
               example:
-                username: info@domain.tld
+                username: username.random_part.known_part@domain.tld
                 domain: domain.tld
               properties:
                 username:
-                  description: 'the mailbox an alias should be created for'
+                  description: the mailbox an alias should be created for
                   type: string
                 domain:
-                  description: "the domain"
+                  description: the domain
                   type: string
+                description:
+                  description: description of the alias
+                  type: string
+                validity:
+                  description: the validity period of the alias after which the alias is deleted (hours from now on; max 10 years)
+                  type: number
+                permanent:
+                  description: flag the alias as permanent. Permanent aliases are not automatically removed
+                  type: boolean
+                username_prefix:
+                  description: flag that instructs Mailcow to add the local part of the username at the start of the local part of the alias separated by a dot
+                  type: boolean
+                random_part:
+                  description: flag that instructs Mailcow to generate a random part in the alias. Implicitly enabled if not explicitly provided. If disabled then known_part text must be provided
+                  type: boolean
+                known_part:
+                  description: additional text for the username part of the alias. If random prefix is enabled the contents will be put after the random part separated by a dot
+                  type: string
+                sogo_visible:
+                  description: toggle visibility as selectable sender in SOGo
+                  type: boolean
               type: object
+            required:
+              - username
+              - domain
       summary: Create time limited alias
   /api/v1/add/app-passwd:
     post:
@@ -1810,6 +1846,72 @@ paths:
                 type: string
               type: array
       summary: Delete alias
+  /api/v1/delete/time_limited_alias:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - delete
+                        - time_limited_alias
+                        - id:
+                            - "6"
+                            - "9"
+                        - null
+                      msg:
+                        - mailbox_modified
+                        - alias@domain.tld
+                      type: success
+                    - log:
+                        - mailbox
+                        - delete
+                        - time_limited_alias
+                        - id:
+                            - "6"
+                            - "9"
+                        - null
+                      msg:
+                        - mailbox_modified
+                        - alias2@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: You can delete one or more time limited aliases.
+      operationId: Delete time limited alias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                example: "6"
+                type: string
+              type: array
+      summary: Delete time limited alias
   /api/v1/delete/app-passwd:
     post:
       responses:
@@ -2510,7 +2612,7 @@ paths:
       description: >-
         Using this endpoint you can perform actions on quarantine items. It is possible to release
         emails from quarantine into to the inbox, or learn them as ham to improve Rspamd filtering.
-        You must provide the quarantine item IDs. You can get the IDs using the GET method.      
+        You must provide the quarantine item IDs. You can get the IDs using the GET method.
       operationId: Edit mails in Quarantine
       requestBody:
         content:
@@ -3100,8 +3202,14 @@ paths:
                       type: string
                     public_comment:
                       type: string
+                    sender_allowed:
+                      description: If enabled alias can be used to send mails. If disabled the alias can only receive mails
+                      type: boolean
                     sogo_visible:
                       description: toggle visibility as selectable sender in SOGo
+                      type: boolean
+                    internal:
+                      description: If true aliases are only accessible from the own domain or alias domains
                       type: boolean
                   type: object
                 items:
@@ -3109,6 +3217,86 @@ paths:
                   type: object
               type: object
       summary: Update alias
+  /api/v1/edit/time_limited_alias:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox
+                        - edit
+                        - time_limited_alias
+                        - address: info@domain.tld
+                          validity: "0"
+                          permanent: "1"
+                          sogo_visible: "1"
+                        - null
+                      msg:
+                        - alias_modified
+                        - alias@domain.tld
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: >-
+        You can update one or more time limited aliases per request. You can also send just
+        attributes you want to change
+      operationId: Update time limited alias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  address: alias@domain.tld
+                  validity: "0"
+                  permanent: "1"
+                  sogo_visible: "1"
+                items: ["2"]
+              properties:
+                attr:
+                  properties:
+                    address:
+                      description: alias address
+                      type: string
+                    validity:
+                      description: validity period of the alias (hours from now on max 10 years)
+                      type: number
+                    permanent:
+                      description: flag alias as permanent (removes validity)
+                      type: boolean
+                    sogo_visible:
+                      description: toggle visibility as selectable sender in SOGo
+                      type: boolean
+                  type: object
+                items:
+                  description: contains list of time limited aliases you want update
+                  type: object
+              type: object
+      summary: Update time limited alias
   /api/v1/edit/domain:
     post:
       responses:
@@ -4113,6 +4301,9 @@ paths:
                       validity: 1668251246
                       created: "2021-11-12 12:07:26"
                       modified: null
+                      sogo_visible: 1
+                      internal: 0
+                      user_created: 1
           description: OK
           headers: {}
       tags:
@@ -4317,6 +4508,7 @@ paths:
                   value:
                     - active: "1"
                       aliases_in_domain: 0
+                      user_aliases_in_fomain: 0
                       aliases_left: 400
                       backupmx: "0"
                       bytes_total: "5076666944"
@@ -4339,8 +4531,9 @@ paths:
                       rl: false
                       tags: ["tag1", "tag2"]
                     - active: "1"
-                      aliases_in_domain: 0
-                      aliases_left: 400
+                      aliases_in_domain: 10
+                      user_aliases_in_domain: 12
+                      aliases_left: 390
                       backupmx: "1"
                       bytes_total: "5076666944"
                       def_new_mailbox_quota: 3221225472

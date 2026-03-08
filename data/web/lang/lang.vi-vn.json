@@ -474,7 +474,6 @@
         "ip_list_empty": "Danh sách IP được phép không được để trống",
         "is_alias": "%s đã được biết đến như một địa chỉ bí danh",
         "is_alias_or_mailbox": "%s đã được biết đến như một bí danh, một hộp thư hoặc một địa chỉ bí danh được mở rộng từ một tên miền bí danh.",
-        "is_spam_alias": "%s đã được biết đến như một địa chỉ bí danh tạm thời (địa chỉ bí danh thư rác)",
         "last_key": "Không thể xóa khóa cuối cùng, vui lòng vô hiệu hóa TFA thay thế.",
         "login_failed": "Đăng nhập không thành công",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Hạn ngạch mặc định vượt quá giới hạn hạn ngạch tối đa",
@@ -553,7 +552,7 @@
         "unknown_tfa_method": "Phương thức xác thực hai yếu tố không xác định",
         "unlimited_quota_acl": "Hạn ngạch không giới hạn bị cấm bởi ACL",
         "username_invalid": "Tên người dùng %s không thể sử dụng được",
-        "validity_missing": "Vui lòng gán thời hạn hiệu lực",
+        "invalid_validity": "Vui lòng gán thời hạn hiệu lực",
         "value_missing": "Vui lòng cung cấp tất cả các giá trị",
         "version_invalid": "Phiên bản %s không hợp lệ",
         "yotp_verification_failed": "Xác thực Yubico OTP thất bại: %s"

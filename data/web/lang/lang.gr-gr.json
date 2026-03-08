@@ -89,7 +89,7 @@
         "unknown_tfa_method": "Άγνωστη μέθοδος TFA",
         "unlimited_quota_acl": "Το απεριόριστο όριο απαγορεύεται από την ACL",
         "username_invalid": "Το όνομα χρήστη %s δεν μπορεί να χρησιμοποιηθεί",
-        "validity_missing": "Παρακαλώ ορίστε μία περίοδο εγκυρότητας",
+        "invalid_validity": "Παρακαλώ ορίστε μία περίοδο εγκυρότητας",
         "value_missing": "Παρακαλώ συμπληρώστε όλα τα δεδομένα",
         "version_invalid": "Η έκδοση %s δεν είναι έγκυρη",
         "yotp_verification_failed": "Η επαλήθευση μέσω Yubico OTP απέτυχε: %s"

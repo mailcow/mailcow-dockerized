@@ -347,21 +347,94 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">{{ lang.user.alias_create_random }}</h3>
+        <h3 class="modal-title">{{ lang.user.alias_create }}</h3>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form class="form-horizontal" data-cached-form="false" data-id="tempaliascreate" role="form" method="post" autocomplete="off">
+        <form class="form-horizontal needs-validation" data-cached-form="TRUE" data-id="tempaliascreate" role="form" method="post" autocomplete="off">
           <div class="row mb-4">
             <label class="control-label col-sm-3" for="description">{{ lang.user.description }}</label>
             <div class="col-sm-5">
-              <input type="hidden" id="temp_alias_domain" name="domain">
               <input type="description" id="temp_alias_description" class="form-control" name="description" autocomplete="off">
             </div>
           </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-3" for="domain">{{ lang.mailbox.domain }}</label>
+            <div class="col-sm-5">
+              <select name="domain" id="temp_alias_domain">
+                {% for domain in user_domains %}
+                <option>{{ domain }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-3" for="validity">{{ lang.user.expire_in }}</label>
+            <div class="col-sm-5">
+              <select name="validity" id="temp_alias_validity">
+                <option value="87600">10 {{ lang.user.years }}</option>
+                <option value="8760" selected>1 {{ lang.user.year }}</option>
+                <option value="744">1 {{ lang.user.month }}</option>
+                <option value="168">1 {{ lang.user.week }}</option>
+                <option value="24">1 {{ lang.user.day }}</option>
+                <option value="1">1 {{ lang.user.hour }}</option>
+                <option value="0">{{ lang.user.expire_never }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="accordion" id="temp_alias_extended_options">
+           <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#temp_alias_extended_options_items" aria-expanded="true" aria-controls="temp_alias_extended_options_items">
+                  {{ lang.user.extended_options }}
+                </button>
+              </h2>
+              <div id="temp_alias_extended_options_items" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                  <div class="row mb-4">
+                    <div class="offset-sm-3 col-sm-5">
+                      <span id="temp_alias_preview"></span>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="offset-sm-3 col-sm-5">
+                      <div class="form-check">
+                        <label><input type="checkbox" id="temp_alias_username_prefix" class="form-check-input" name="username_prefix">{{ lang.user.username_as_prefix }}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="offset-sm-3 col-sm-5">
+                      <div class="form-check">
+                        <input type="hidden" name="random_part" value="">
+                        <label><input type="checkbox" id="temp_alias_random_part" class="form-check-input" name="random_part" checked>{{ lang.user.random_part }}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-3" for="temp_alias_known_part">{{ lang.user.known_part }}</label>
+                    <div class="col-sm-5">
+                      <input type="text" id="temp_alias_known_part" class="form-control" name="known_part" autocomplete="off" pattern="[a-zA-Z0-9._+\-]*" minlenght="0" maxlength="30">
+                    </div>
+                  </div>
+                  {% if not skip_sogo %}
+                  <div class="row mb-4">
+                    <div class="offset-sm-3 col-sm-5">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" name="sogo_visible">{{ lang.edit.sogo_visible }}</label>
+                        <small class="text-muted d-block mb-2">{{ lang.edit.sogo_visible_info }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
-              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="tempaliascreate" data-item="null" data-api-url='add/time_limited_alias' data-api-attr='' href="#">{{ lang.admin.add }}</button>
+              <button id="temp_alias_submit" class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="tempaliascreate" data-api-url='add/time_limited_alias' data-api-attr='' href="#">{{ lang.admin.add }}</button>
             </div>
           </div>
         </form>

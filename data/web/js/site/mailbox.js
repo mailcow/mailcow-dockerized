@@ -486,7 +486,7 @@ jQuery(function($){
               item.domain_h_name = item.domain_h_name + '<small class="d-block">' + item.domain_name + '</small>';
             }
 
-            item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
+            item.aliases = item.aliases_in_domain + " (" + item.user_aliases_in_domain + ")" + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
             item.quota = item.quota_used_in_domain + "/" + item.max_quota_for_domain + "/" + item.bytes_total;
             item.stats = item.msgs_total + "/" + item.bytes_total;
@@ -1903,6 +1903,7 @@ jQuery(function($){
       initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#tab-mbox-aliases', '#alias_table');
         filterByDomain(json, 5, table);
+        filterByUserCreated(11, table);
       },
       ajax: {
         type: "GET",
@@ -1942,9 +1943,10 @@ jQuery(function($){
             else if (item.goto == "ham@localhost") {
               item.goto = '<span class="badge fs-6 bg-success">' + lang.goto_ham + '</span>';
             }
-            if (item.in_primary_domain !== "") {
-              item.domain = '<i data-domainname="' + item.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-bs-toggle="tooltip" title="' + lang.target_domain + ': ' + item.in_primary_domain + '"></i> ' + item.domain;
-            }
+            item.validity = {
+              value: item.validity,
+              permanent: item.permanent
+            };
           });
 
           return json;
@@ -1987,9 +1989,15 @@ jQuery(function($){
         },
         {
           title: lang.domain,
-          data: 'domain',
+          data: null,
           defaultContent: '',
           responsivePriority: 5,
+          render: function(data, type, row) {
+            if (row.in_primary_domain !== ""){
+              return '<i data-domainname="' + row.domain + '" class="bi bi-info-circle-fill alias-domain-info text-info" data-bs-toggle="tooltip" title="' + lang.target_domain + ': ' + row.in_primary_domain + '"></i> ' + row.domain;
+            }
+            return row.domain;
+          }
         },
         {
           title: lang.sogo_visible,
@@ -2026,6 +2034,54 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
+        },
+        {
+          title: lang.user_created,
+          data: 'user_created',
+          render: function (data, type) {
+            switch(type) {
+              case "sort":
+                return data;
+              default:
+                return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+            }
+          },
+          responsivePriority: 6,
+          defaultContent: ''
+        },
+        {
+          title: lang.can_send,
+          data: "sender_allowed",
+          render: function (data, type) {
+            switch(type) {
+              case "sort":
+                return data;
+              default:
+                return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+            }
+          },
+          responsivePriority: 6,
+          defaultContent: ''
+        },
+        {
+          title: lang.alias_valid_until,
+          data: 'validity',
+          defaultContent: '',
+          render: function (data, type) {
+            var date = new Date(data.value ? data.value * 1000 : 0);
+            switch (type) {
+              case "sort":
+                if (data.permanent) {
+                  return 0;
+                }
+                return date.getTime();
+              default:
+                if (data.permanent) {
+                  return lang.forever;
+                }
+                return date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
+            }
+          },
         },
         {
           title: lang.action,
@@ -2412,6 +2468,24 @@ jQuery(function($){
       $(tab).find(".table_collapse_option").hide();
   }
 
+  function filterByUserCreated(column, table) {
+    var tableId = $(table.table().container()).attr('id');
+    // Create the `select` element
+    var select = $('<select class="btn btn-sm btn-xs-lg btn-light text-start mx-2"></select>')
+      .insertBefore(
+        $('#'+tableId+' .dataTables_filter > label > input')
+      )
+      .on('change', function(){
+        table.column(column)
+          .search($(this).val())
+          .draw();
+      });
+    var search = table.column(column).search();
+    select.append($('<option value="0">' + lang.admin_only_items + '</option>').prop('selected', "0" == search));
+    select.append($('<option value="1">' + lang.user_only_items + '</option>').prop('selected', "1" == search));
+    select.append($('<option value="">' + lang.all_items + '</option>').prop('selected', "" == search));
+  }
+
   function filterByDomain(json, column, table){
     var tableId = $(table.table().container()).attr('id');
     // Create the `select` element
@@ -2440,9 +2514,9 @@ jQuery(function($){
       return array.indexOf(value) === index;
     });
 
-    // add domains to select
+    // add domains to select & set the selected one from the table state
     domains.forEach(function(domain) {
-        select.append($('<option>' + domain + '</option>'));
+        select.append($('<option>' + domain + '</option>').prop('selected', domain == table.column(column).search()));
     });
   }
 

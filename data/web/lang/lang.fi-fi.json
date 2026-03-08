@@ -314,7 +314,6 @@
         "ip_list_empty": "Sallittujen IP-luetteloiden luettelo ei voi olla tyhjä",
         "is_alias": "%s tunnetaan jo alias-osoitteena",
         "is_alias_or_mailbox": "%s kutsutaan jo aliakseksi, posti laatikkoksi tai alias-osoitteeksi, joka on laajennettu aliaksen verkkotunnus alueelta.",
-        "is_spam_alias": "%s on jo tunnettu roska postin alias-osoitteena",
         "last_key": "Viimeistä avainta ei voi poistaa",
         "login_failed": "Kirjautuminen epäonnistui",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Oletus kiintiö ylittää kiintiön enimmäisarvo asetuksen",
@@ -371,7 +370,7 @@
         "unknown_tfa_method": "Tuntematon TFA-menetelmä",
         "unlimited_quota_acl": "Rajoittamaton kiintiö kielletty ACL",
         "username_invalid": "Käyttäjätunnusta %s ei voi käyttää",
-        "validity_missing": "Anna voimassaolo aika",
+        "invalid_validity": "Anna voimassaolo aika",
         "value_missing": "Anna kaikki arvot",
         "yotp_verification_failed": "Yubico OTP todentaminen epäonnistui: %s"
     },
