@@ -302,7 +302,7 @@ adapt_new_options() {
             ;;
         ACME_DNS_PROVIDER)
             echo '# DNS provider for DNS-01 challenge (e.g. dns_cf, dns_azure, dns_gd, etc.)' >> mailcow.conf
-            echo '# See the dns-101 provider documentation for more information.' >> mailcow.conf
+            echo '# See the dns-01 provider documentation for more information.' >> mailcow.conf
             echo 'ACME_DNS_PROVIDER=dns_xxx' >> mailcow.conf
             ;;
         ACME_ACCOUNT_EMAIL)

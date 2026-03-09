@@ -299,7 +299,7 @@ ACME_DNS_CHALLENGE=n
 ACME_DNS_PROVIDER=dns_xxx
 ACME_ACCOUNT_EMAIL=me@example.com
 # You will need to pass provider-specific environment variables to the acme-mailcow container.
-# See the dns-101 provider documentation for more information.
+# See the dns-01 provider documentation for more information.
 # for example for Azure DNS:
 #AZUREDNS_SUBSCRIPTIONID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 #AZUREDNS_TENANTID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx

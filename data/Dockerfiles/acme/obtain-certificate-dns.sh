@@ -12,7 +12,7 @@ CERT_DOMAINS=(${DOMAINS[@]})
 CERT_DOMAIN=${CERT_DOMAINS[0]}
 ACME_BASE=/var/lib/acme
 
-# Load optional DNS provider secrets from /etc/acme/dns-101.conf
+# Load optional DNS provider secrets from /etc/acme/dns-01.conf
 if [[ -f /srv/load-dns-config.sh ]]; then
   source /srv/load-dns-config.sh
   if declare -F log_f >/dev/null; then
