@@ -64,7 +64,7 @@ adapt_new_options() {
 
   sed -i --follow-symlinks '$a\' mailcow.conf
   for option in ${CONFIG_ARRAY[@]}; do
-    if grep -q "^${option}=" mailcow.conf; then
+    if grep -q "^#\?${option}=" mailcow.conf; then
       continue
     fi
 
