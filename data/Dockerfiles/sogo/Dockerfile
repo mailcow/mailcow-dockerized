@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     gobjc \
+    pkg-config \
     gnustep-make \
     gnustep-base-runtime \
     libgnustep-base-dev \
@@ -40,6 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libzip-dev \
     libytnef0-dev \
+    libwbxml2-dev \
     curl \
     ca-certificates \
     # Runtime dependencies
@@ -68,6 +70,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 \
     libzip4 \
     libytnef0 \
+    libwbxml2-1 \
   # Download gosu
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
@@ -97,6 +100,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && ./configure --disable-debug --disable-strip \
   && make -j$(nproc) \
   && make install \
+  && cd /tmp/sogo/ActiveSync \
+  && . /usr/share/GNUstep/Makefiles/GNUstep.sh \
+  && make -j$(nproc) install \
   && cd / \
   && rm -rf /tmp/sogo \
   # Strip binaries
