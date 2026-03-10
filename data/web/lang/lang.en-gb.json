@@ -1421,7 +1421,20 @@
         "weeks": "weeks",
         "with_app_password": "with app password",
         "year": "year",
-        "years": "years"
+        "years": "years",
+        "copy": "Copy to clipboard",
+        "user_api_key": "User API Key",
+        "user_api_key_info": "The User API Key allows third-party tools like <a href=\"https://bitwarden.com\" target=\"_blank\">Bitwarden</a> or <a href=\"https://vaultwarden.rs\" target=\"_blank\">Vaultwarden</a> to automatically create email aliases using the <a href=\"https://simplelogin.io\" target=\"_blank\">SimpleLogin</a>-compatible API. Keep this key secret.",
+        "user_api_key_current": "Current API Key",
+        "user_api_key_none": "No API key generated yet.",
+        "user_api_key_generate": "Generate API Key",
+        "user_api_key_regenerate": "Regenerate API Key",
+        "user_api_key_delete": "Delete API Key",
+        "user_api_key_created": "Created",
+        "user_api_key_usage": "Usage",
+        "user_api_key_usage_info": "Use the following endpoints with your API key to manage aliases via the SimpleLogin-compatible API. Configure Bitwarden/Vaultwarden with this mailcow instance URL and your API key.",
+        "user_api_key_endpoint": "API Endpoints:",
+        "user_api_key_auth_header": "Authentication Header:"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",

@@ -73,6 +73,7 @@ $template_data = [
   'lang_user' => json_encode($lang['user']),
   'number_of_app_passwords' => $number_of_app_passwords,
   'lang_datatables' => json_encode($lang['datatables']),
+  'user_api_key_data' => user_api('get'),
 ];
 
 $js_minifier->add('/web/js/site/user.js');

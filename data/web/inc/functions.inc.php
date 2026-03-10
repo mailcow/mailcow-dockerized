@@ -2131,6 +2131,86 @@ function admin_api($access, $action, $data = null) {
     'msg' => 'admin_api_modified'
   );
 }
+function user_api($action, $data = null) {
+  global $pdo;
+  if (!isset($_SESSION['mailcow_cc_role'])) {
+    return false;
+  }
+  if ($_SESSION['mailcow_cc_role'] == 'user') {
+    $username = $_SESSION['mailcow_cc_username'];
+  }
+  elseif ($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+    if (isset($data['username']) && filter_var($data['username'], FILTER_VALIDATE_EMAIL)) {
+      if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $data['username'])) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $action),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      $username = $data['username'];
+    }
+    else {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $action),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+  }
+  else {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $action),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+  switch ($action) {
+    case 'get':
+      $stmt = $pdo->prepare("SELECT * FROM `user_api_key` WHERE `username` = :username AND `active` = '1'");
+      $stmt->execute(array(':username' => $username));
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    break;
+    case 'generate':
+      $api_key = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+      $stmt = $pdo->prepare("SELECT `id` FROM `user_api_key` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($existing)) {
+        $stmt = $pdo->prepare("INSERT INTO `user_api_key` (`username`, `api_key`, `active`) VALUES (:username, :api_key, 1)");
+      }
+      else {
+        $stmt = $pdo->prepare("UPDATE `user_api_key` SET `api_key` = :api_key WHERE `username` = :username");
+      }
+      $stmt->execute(array(':username' => $username, ':api_key' => $api_key));
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action),
+        'msg' => 'user_api_key_generated'
+      );
+      return $api_key;
+    break;
+    case 'delete':
+      $stmt = $pdo->prepare("DELETE FROM `user_api_key` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $action),
+        'msg' => 'user_api_key_deleted'
+      );
+      return true;
+    break;
+  }
+}
 function license($action, $data = null) {
   global $pdo;
   global $redis;

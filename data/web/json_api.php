@@ -331,6 +331,9 @@ if (isset($_GET['query'])) {
         case "app-passwd":
           process_add_return(app_passwd('add', $attr));
         break;
+        case "user-api-key":
+          process_add_return(user_api('generate'));
+        break;
         case "mta-sts":
           process_add_return(mailbox('add', 'mta_sts', $attr));
         break;
@@ -557,6 +560,10 @@ if (isset($_GET['query'])) {
                 process_get_return($data);
               break;
             }
+          break;
+
+          case "user-api-key":
+            process_get_return(user_api('get'));
           break;
 
           case "mailq":
@@ -1731,6 +1738,9 @@ if (isset($_GET['query'])) {
         break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
+        break;
+        case "user-api-key":
+          process_delete_return(user_api('delete'));
         break;
         case "relayhost":
           process_delete_return(relayhost('delete', array('id' => $items)));

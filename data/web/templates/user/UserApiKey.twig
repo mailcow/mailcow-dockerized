@@ -1,0 +1,71 @@
+<div class="tab-pane fade" id="UserApiKey" role="tabpanel" aria-labelledby="UserApiKey">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-UserApiKey" data-bs-toggle="collapse" aria-controls="collapse-tab-UserApiKey">
+        {{ lang.user.user_api_key }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.user_api_key }}</span>
+    </div>
+    <div id="collapse-tab-UserApiKey" class="card-body collapse" data-bs-parent="#user-content">
+      <div class="row">
+        <div class="col-md-12">
+          <p>{{ lang.user.user_api_key_info|raw }}</p>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <legend>{{ lang.user.user_api_key_current }}</legend>
+          <hr>
+          {% if user_api_key_data and user_api_key_data.api_key %}
+            <div class="input-group mb-3" style="max-width:600px">
+              <input type="text" class="form-control font-monospace" id="user_api_key_display" value="{{ user_api_key_data.api_key }}" readonly>
+              <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('user_api_key_display').value)" title="{{ lang.user.copy }}">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+            <p class="text-muted small">{{ lang.user.user_api_key_created }}: {{ user_api_key_data.created }}</p>
+          {% else %}
+            <p class="text-muted">{{ lang.user.user_api_key_none }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="btn-group">
+            <a href="#" class="btn btn-sm btn-success"
+              data-action="add_item"
+              data-api-url="add/user-api-key"
+              data-api-attr="{}">
+              <i class="bi bi-plus-lg"></i> {% if user_api_key_data and user_api_key_data.api_key %}{{ lang.user.user_api_key_regenerate }}{% else %}{{ lang.user.user_api_key_generate }}{% endif %}
+            </a>
+            {% if user_api_key_data and user_api_key_data.api_key %}
+            <a href="#" class="btn btn-sm btn-danger ms-2"
+              data-action="delete_selected"
+              data-id="user-api-key"
+              data-item="current"
+              data-api-url="delete/user-api-key">
+              <i class="bi bi-trash"></i> {{ lang.user.user_api_key_delete }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <legend>{{ lang.user.user_api_key_usage }}</legend>
+          <hr>
+          <p>{{ lang.user.user_api_key_usage_info|raw }}</p>
+          <div class="mb-3">
+            <strong>{{ lang.user.user_api_key_endpoint }}</strong>
+            <code class="d-block mt-1">GET https://{{ mailcow_hostname }}/api/v2/alias/options</code>
+            <code class="d-block mt-1">POST https://{{ mailcow_hostname }}/api/v2/alias/random/new</code>
+          </div>
+          <div class="mb-3">
+            <strong>{{ lang.user.user_api_key_auth_header }}</strong>
+            <code class="d-block mt-1">Authorization: apikey YOUR_API_KEY</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

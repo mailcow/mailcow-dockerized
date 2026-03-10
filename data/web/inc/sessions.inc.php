@@ -93,6 +93,31 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   }
 }
 
+// SimpleLogin-compatible user API key (Authorization: apikey <key>)
+if (!empty($_SERVER['HTTP_AUTHORIZATION']) && empty($_SERVER['HTTP_X_API_KEY'])) {
+  if (preg_match('/^apikey\s+(.+)$/i', $_SERVER['HTTP_AUTHORIZATION'], $auth_matches)) {
+    $user_api_key = preg_replace('/[^a-zA-Z0-9-]/', '', $auth_matches[1]);
+    $stmt = $pdo->prepare("SELECT `username` FROM `user_api_key` WHERE `api_key` = :api_key AND `active` = '1'");
+    $stmt->execute(array(':api_key' => $user_api_key));
+    $user_api_return = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!empty($user_api_return['username'])) {
+      $_SESSION['mailcow_cc_username'] = $user_api_return['username'];
+      $_SESSION['mailcow_cc_role'] = 'user';
+      $_SESSION['mailcow_cc_api'] = true;
+      $_SESSION['mailcow_cc_api_access'] = 'rw';
+    }
+    else {
+      $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid user API key from " . $_SERVER['REMOTE_ADDR']);
+      http_response_code(401);
+      echo json_encode(array(
+        'error' => 'authentication failed',
+        'code' => 'UNAUTHORIZED',
+      ));
+      exit();
+    }
+  }
+}
+
 // Handle logouts
 if (isset($_POST["logout"])) {
   if (isset($_SESSION["dual-login"])) {
