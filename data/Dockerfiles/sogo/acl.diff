@@ -1,5 +1,5 @@
---- /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:57.987504204 +0200
-+++ /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:35.918291298 +0200
+--- /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:57.987504204 +0200
++++ /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox    2018-08-17 18:29:35.918291298 +0200
 @@ -46,7 +46,7 @@
            </md-item-template>
          </md-autocomplete>

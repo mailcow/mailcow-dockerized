@@ -13,15 +13,11 @@ class Cache
 
     /**
      * The cache driver.
-     *
-     * @var CacheInterface
      */
-    protected $store;
+    protected CacheInterface $store;
 
     /**
      * Constructor.
-     *
-     * @param  CacheInterface  $store
      */
     public function __construct(CacheInterface $store)
     {
@@ -30,47 +26,26 @@ class Cache
 
     /**
      * Get an item from the cache.
-     *
-     * @param  string  $key
-     * @return mixed
      */
-    public function get($key)
+    public function get(string $key): mixed
     {
         return $this->store->get($key);
     }
 
     /**
      * Store an item in the cache.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  DateTimeInterface|DateInterval|int|null  $ttl
-     * @return bool
      */
-    public function put($key, $value, $ttl = null)
+    public function put(string $key, mixed $value, DateTimeInterface|DateInterval|int|null $ttl = null): bool
     {
-        $seconds = $this->secondsUntil($ttl);
-
-        if ($seconds <= 0) {
-            return $this->delete($key);
-        }
-
-        return $this->store->set($key, $value, $seconds);
+        return $this->store->set($key, $value, $this->secondsUntil($ttl));
     }
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
-     *
-     * @param  string  $key
-     * @param  DateTimeInterface|DateInterval|int|null  $ttl
-     * @param  Closure  $callback
-     * @return mixed
      */
-    public function remember($key, $ttl, Closure $callback)
+    public function remember(string $key, DateTimeInterface|DateInterval|int|null $ttl, Closure $callback): mixed
     {
-        $value = $this->get($key);
-
-        if (! is_null($value)) {
+        if (! is_null($value = $this->get($key))) {
             return $value;
         }
 
@@ -81,21 +56,16 @@ class Cache
 
     /**
      * Delete an item from the cache.
-     *
-     * @param  string  $key
-     * @return bool
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return $this->store->delete($key);
     }
 
     /**
      * Get the underlying cache store.
-     *
-     * @return CacheInterface
      */
-    public function store()
+    public function store(): CacheInterface
     {
         return $this->store;
     }

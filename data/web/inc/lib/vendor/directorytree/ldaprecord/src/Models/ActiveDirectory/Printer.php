@@ -6,8 +6,6 @@ class Printer extends Entry
 {
     /**
      * The object classes of the LDAP model.
-     *
-     * @var array
      */
-    public static $objectClasses = ['printqueue'];
+    public static array $objectClasses = ['printqueue'];
 }

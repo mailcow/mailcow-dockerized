@@ -1033,20 +1033,24 @@ function edit_user_account($_data) {
   }
 
   // edit password
-  if (!empty($password_old) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
-    $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
-        WHERE `kind` NOT REGEXP 'location|thing|group'
-          AND `username` = :user AND authsource = 'mailcow'");
-    $stmt->execute(array(':user' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  $is_forced_pw_update = !empty($_SESSION['pending_pw_update']);
+  if (((!empty($password_old) || $is_forced_pw_update) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2']))) {
+    // Only verify old password if this is NOT a forced password update
+    if (!$is_forced_pw_update) {
+      $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+          WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `username` = :user AND authsource = 'mailcow'");
+      $stmt->execute(array(':user' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!verify_hash($row['password'], $password_old)) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $_data_log),
-        'msg' => 'access_denied'
-      );
-      return false;
+      if (!verify_hash($row['password'], $password_old)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
     }
 
     $password_new = $_data['user_new_pass'];
@@ -1210,50 +1214,52 @@ function set_tfa($_data) {
   global $iam_settings;
 
   $_data_log = $_data;
-  $access_denied = null;
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
-  $username = $_SESSION['mailcow_cc_username'];
 
-  // check for empty user and role
-  if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) $access_denied = true;
-
-  // check admin confirm password
-  if ($access_denied === null) {
-    $stmt = $pdo->prepare("SELECT `password` FROM `admin`
-        WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-      if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
-      else $access_denied = false;
+  // skip password check if this is a forced TFA enrollment after login
+  if (!empty($_SESSION['pending_tfa_setup'])) {
+    $username = $_SESSION['mailcow_cc_username'];
+    if (empty($username) || !isset($_SESSION['mailcow_cc_role'])) {
+      $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log), 'msg' => 'access_denied');
+      return false;
     }
-  }
+  } else {
+    $username = $_SESSION['mailcow_cc_username'];
+    $access_denied = null;
 
-  // check mailbox confirm password
-  if ($access_denied === null) {
-    $stmt = $pdo->prepare("SELECT `password`, `authsource` FROM `mailbox`
-        WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-      if ($row['authsource'] == 'ldap'){
-        if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
-        else $access_denied = false;
-      } else {
+    if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) $access_denied = true;
+
+    // check admin password
+    if ($access_denied === null) {
+      $stmt = $pdo->prepare("SELECT `password` FROM `admin` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
         if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
         else $access_denied = false;
       }
     }
-  }
 
-  // set access_denied error
-  if ($access_denied){
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $_data_log),
-      'msg' => 'access_denied'
-    );
-    return false;
+    // check mailbox password
+    if ($access_denied === null) {
+      $stmt = $pdo->prepare("SELECT `password`, `authsource` FROM `mailbox` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
+        if ($row['authsource'] == 'ldap'){
+          if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
+          else $access_denied = false;
+        } else {
+          if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
+          else $access_denied = false;
+        }
+      }
+    }
+
+    if ($access_denied) {
+      $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log), 'msg' => 'access_denied');
+      return false;
+    }
   }
 
   switch ($_data["tfa_method"]) {
@@ -1306,6 +1312,7 @@ function set_tfa($_data) {
         );
         return false;
       }
+      unset($_SESSION['pending_tfa_setup']);
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_data_log),
@@ -1319,6 +1326,7 @@ function set_tfa($_data) {
         //$stmt->execute(array(':username' => $username));
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
         $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
+        unset($_SESSION['pending_tfa_setup']);
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_data_log),
@@ -1347,6 +1355,7 @@ function set_tfa($_data) {
             0
         ));
 
+        unset($_SESSION['pending_tfa_setup']);
         $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_data_log),
@@ -1354,6 +1363,25 @@ function set_tfa($_data) {
         );
     break;
     case "none":
+      // Block TFA removal if force_tfa policy is active
+      $is_forced_tfa = false;
+      if ($_SESSION['mailcow_cc_role'] === 'user') {
+        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+        $stmt_check->execute(array($username));
+        $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+      } else {
+        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+        $stmt_check->execute(array($username));
+        $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+      }
+      if ($is_forced_tfa) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data_log),
+          'msg' => 'tfa_removal_blocked'
+        );
+        return false;
+      }
       $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $_SESSION['return'][] =  array(
@@ -1606,6 +1634,26 @@ function unset_tfa_key($_data) {
       return false;
     }
 
+    // Block key removal if force_tfa policy is active
+    $is_forced_tfa = false;
+    if ($_SESSION['mailcow_cc_role'] === 'user') {
+      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+      $stmt_check->execute(array($username));
+      $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+    } else {
+      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+      $stmt_check->execute(array($username));
+      $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+    }
+    if ($is_forced_tfa) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'tfa_removal_blocked'
+      );
+      return false;
+    }
+
     // check if it's last key
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
       WHERE `username` = :username AND `active` = '1'");
@@ -1637,6 +1685,15 @@ function unset_tfa_key($_data) {
     );
     return false;
   }
+}
+function tfa_exists($username) {
+  global $pdo;
+  if (empty($username)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM `tfa` WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  return $stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
 }
 function get_tfa($username = null, $id = null) {
   global $pdo;
@@ -3439,6 +3496,49 @@ function set_user_loggedin_session($user) {
   unset($_SESSION['pending_mailcow_cc_username']);
   unset($_SESSION['pending_mailcow_cc_role']);
   unset($_SESSION['pending_tfa_methods']);
+}
+function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redirects = []) {
+  // Check if user is authenticated
+  if (!isset($_SESSION['mailcow_cc_role'])) {
+    if (isset($redirects['unauthenticated'])) {
+      header('Location: ' . $redirects['unauthenticated']);
+    } else {
+      header('Location: /');
+    }
+    exit();
+  }
+
+  // Check for pending actions (2FA setup, password update)
+  if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+    $pending_redirect = '/';
+    if ($_SESSION['mailcow_cc_role'] === 'admin') {
+      $pending_redirect = '/admin';
+    } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+      $pending_redirect = '/domainadmin';
+    }
+    header('Location: ' . $pending_redirect);
+    exit();
+  }
+
+  // Check if user's role is in the allowed roles for the route
+  if (!in_array($_SESSION['mailcow_cc_role'], $allowed_roles)) {
+    if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
+      header('Location: /admin/dashboard');
+      exit();
+    }
+    elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+      header('Location: /domainadmin/mailbox');
+      exit();
+    }
+    elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
+      header('Location: /user');
+      exit();
+    }
+    else {
+      header('Location: /');
+      exit();
+    }
+  }
 }
 function get_logs($application, $lines = false) {
   if ($lines === false) {

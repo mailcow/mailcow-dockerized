@@ -14,6 +14,17 @@ until [[ $(${REDIS_CMDLINE} PING) == "PONG" ]]; do
   sleep 2
 done
 
+# Create DNS-01 configuration template if it doesn't exist
+if [[ ! -f /etc/acme/dns-01.conf ]]; then
+  mkdir -p /etc/acme
+  cat > /etc/acme/dns-01.conf <<'EOF'
+# Add here your DNS-01 challenge configuration
+# For more information, visit the acme.sh documentation:
+# https://github.com/acmesh-official/acme.sh/wiki/dnsapi
+EOF
+  echo "Created DNS-01 configuration template at /etc/acme/dns-01.conf"
+fi
+
 source /srv/functions.sh
 # Thanks to https://github.com/cvmiller -> https://github.com/cvmiller/expand6
 source /srv/expand6.sh
@@ -40,6 +51,10 @@ fi
 # Request individual certificate for every domain
 if [[ "${ENABLE_SSL_SNI}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   ENABLE_SSL_SNI=y
+fi
+
+if [[ "${ACME_DNS_CHALLENGE}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  ACME_DNS_CHALLENGE=y
 fi
 
 if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then

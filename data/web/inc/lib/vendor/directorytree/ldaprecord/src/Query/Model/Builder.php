@@ -4,51 +4,41 @@ namespace LdapRecord\Query\Model;
 
 use Closure;
 use DateTime;
+use LdapRecord\Models\Attributes\Guid;
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Models\Types\ActiveDirectory;
 use LdapRecord\Query\Builder as BaseBuilder;
-use LdapRecord\Utilities;
+use UnexpectedValueException;
 
 class Builder extends BaseBuilder
 {
     /**
      * The model being queried.
-     *
-     * @var Model
      */
-    protected $model;
+    protected Model $model;
 
     /**
      * The global scopes to be applied.
-     *
-     * @var array
      */
-    protected $scopes = [];
+    protected array $scopes = [];
 
     /**
      * The removed global scopes.
-     *
-     * @var array
      */
-    protected $removedScopes = [];
+    protected array $removedScopes = [];
 
     /**
      * The applied global scopes.
-     *
-     * @var array
      */
-    protected $appliedScopes = [];
+    protected array $appliedScopes = [];
 
     /**
      * Dynamically handle calls into the query instance.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters): static
     {
         if (method_exists($this->model, $scope = 'scope'.ucfirst($method))) {
             return $this->callScope([$this->model, $scope], $parameters);
@@ -59,12 +49,8 @@ class Builder extends BaseBuilder
 
     /**
      * Apply the given scope on the current builder instance.
-     *
-     * @param  callable  $scope
-     * @param  array  $parameters
-     * @return mixed
      */
-    protected function callScope(callable $scope, $parameters = [])
+    protected function callScope(callable $scope, array $parameters = []): static
     {
         array_unshift($parameters, $this);
 
@@ -73,10 +59,8 @@ class Builder extends BaseBuilder
 
     /**
      * Get the attributes to select on the search.
-     *
-     * @return array
      */
-    public function getSelects()
+    public function getSelects(): array
     {
         // Here we will ensure the models GUID attribute is always
         // selected. In some LDAP directories, the attribute is
@@ -88,11 +72,8 @@ class Builder extends BaseBuilder
 
     /**
      * Set the model instance for the model being queried.
-     *
-     * @param  Model  $model
-     * @return $this
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): static
     {
         $this->model = $model;
 
@@ -100,48 +81,97 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Returns the model being queried for.
-     *
-     * @return Model
+     * Get the model being queried for.
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }
 
     /**
      * Get a new model query builder instance.
-     *
-     * @param  string|null  $baseDn
-     * @return static
      */
-    public function newInstance($baseDn = null)
+    public function newInstance(?string $baseDn = null): BaseBuilder
     {
         return parent::newInstance($baseDn)->model($this->model);
     }
 
     /**
-     * Finds a model by its distinguished name.
-     *
-     * @param  array|string  $dn
-     * @param  array|string|string[]  $columns
-     * @return Model|\LdapRecord\Query\Collection|static|null
+     * {@inheritDoc}
      */
-    public function find($dn, $columns = ['*'])
+    public function first(array|string $columns = ['*']): ?Model
     {
-        return $this->afterScopes(function () use ($dn, $columns) {
-            return parent::find($dn, $columns);
-        });
+        return parent::first($columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function firstOrFail(array|string $columns = ['*']): Model
+    {
+        return parent::firstOrFail($columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function sole(array|string $columns = ['*']): Model
+    {
+        return parent::sole($columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function find(array|string $dn, array|string $columns = ['*']): Model|Collection|null
+    {
+        return $this->afterScopes(fn () => parent::find($dn, $columns));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findOrFail(string $dn, array|string $columns = ['*']): Model
+    {
+        return parent::findOrFail($dn, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByOrFail(string $attribute, string $value, array|string $columns = ['*']): Model
+    {
+        return parent::findByOrFail($attribute, $value, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findBy(string $attribute, string $value, array|string $columns = ['*']): ?Model
+    {
+        return parent::findBy($attribute, $value, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findMany(array|string $dns, array|string $columns = ['*']): Collection
+    {
+        return parent::findMany($dns, $columns);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findManyBy(string $attribute, array $values = [], array|string $columns = ['*']): Collection
+    {
+        return parent::findManyBy($attribute, $values, $columns);
     }
 
     /**
      * Finds a record using ambiguous name resolution.
-     *
-     * @param  string|array  $value
-     * @param  array|string  $columns
-     * @return Model|\LdapRecord\Query\Collection|static|null
      */
-    public function findByAnr($value, $columns = ['*'])
+    public function findByAnr(array|string $value, array|string $columns = ['*']): Model|Collection|null
     {
         if (is_array($value)) {
             return $this->findManyByAnr($value, $columns);
@@ -159,10 +189,8 @@ class Builder extends BaseBuilder
 
     /**
      * Determine if the current model is compatible with ANR filters.
-     *
-     * @return bool
      */
-    protected function modelIsCompatibleWithAnr()
+    protected function modelIsCompatibleWithAnr(): bool
     {
         return $this->model instanceof ActiveDirectory;
     }
@@ -172,13 +200,9 @@ class Builder extends BaseBuilder
      *
      * If a record is not found, an exception is thrown.
      *
-     * @param  string  $value
-     * @param  array|string  $columns
-     * @return Model
-     *
      * @throws ModelNotFoundException
      */
-    public function findByAnrOrFail($value, $columns = ['*'])
+    public function findByAnrOrFail(string $value, array|string $columns = ['*']): Model
     {
         if (! $entry = $this->findByAnr($value, $columns)) {
             $this->throwNotFoundException($this->getUnescapedQuery(), $this->dn);
@@ -190,24 +214,17 @@ class Builder extends BaseBuilder
     /**
      * Throws a not found exception.
      *
-     * @param  string  $query
-     * @param  string  $dn
-     *
      * @throws ModelNotFoundException
      */
-    protected function throwNotFoundException($query, $dn)
+    protected function throwNotFoundException(string $query, ?string $dn = null): void
     {
         throw ModelNotFoundException::forQuery($query, $dn);
     }
 
     /**
      * Finds multiple records using ambiguous name resolution.
-     *
-     * @param  array  $values
-     * @param  array  $columns
-     * @return \LdapRecord\Query\Collection
      */
-    public function findManyByAnr(array $values = [], $columns = ['*'])
+    public function findManyByAnr(array $values = [], array|string $columns = ['*']): Collection
     {
         $this->select($columns);
 
@@ -224,13 +241,10 @@ class Builder extends BaseBuilder
 
     /**
      * Creates an ANR equivalent query for LDAP distributions that do not support ANR.
-     *
-     * @param  string  $value
-     * @return $this
      */
-    protected function prepareAnrEquivalentQuery($value)
+    protected function prepareAnrEquivalentQuery(string $value): static
     {
-        return $this->orFilter(function (self $query) use ($value) {
+        return $this->orFilter(function (BaseBuilder $query) use ($value) {
             foreach ($this->model->getAnrAttributes() as $attribute) {
                 $query->whereEquals($attribute, $value);
             }
@@ -239,35 +253,25 @@ class Builder extends BaseBuilder
 
     /**
      * Finds a record by its string GUID.
-     *
-     * @param  string  $guid
-     * @param  array|string  $columns
-     * @return Model|static|null
      */
-    public function findByGuid($guid, $columns = ['*'])
+    public function findByGuid(string $guid, array|string $columns = ['*']): ?Model
     {
         try {
             return $this->findByGuidOrFail($guid, $columns);
         } catch (ModelNotFoundException $e) {
-            return;
+            return null;
         }
     }
 
     /**
-     * Finds a record by its string GUID.
-     *
-     * Fails upon no records returned.
-     *
-     * @param  string  $guid
-     * @param  array|string  $columns
-     * @return Model|static
+     * Finds a record by its string GUID or throw an exception.
      *
      * @throws ModelNotFoundException
      */
-    public function findByGuidOrFail($guid, $columns = ['*'])
+    public function findByGuidOrFail(string $guid, array|string $columns = ['*']): Model
     {
         if ($this->model instanceof ActiveDirectory) {
-            $guid = Utilities::stringGuidToHex($guid);
+            $guid = (new Guid($guid))->getEncodedHex();
         }
 
         return $this->whereRaw([
@@ -276,22 +280,17 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getQuery()
+    public function getQuery(): string
     {
-        return $this->afterScopes(function () {
-            return parent::getQuery();
-        });
+        return $this->afterScopes(fn () => parent::getQuery());
     }
 
     /**
      * Apply the query scopes and execute the callback.
-     *
-     * @param  Closure  $callback
-     * @return mixed
      */
-    protected function afterScopes(Closure $callback)
+    protected function afterScopes(Closure $callback): mixed
     {
         $this->applyScopes();
 
@@ -300,10 +299,8 @@ class Builder extends BaseBuilder
 
     /**
      * Apply the global query scopes.
-     *
-     * @return $this
      */
-    public function applyScopes()
+    public function applyScopes(): static
     {
         if (! $this->scopes) {
             return $this;
@@ -326,12 +323,8 @@ class Builder extends BaseBuilder
 
     /**
      * Register a new global scope.
-     *
-     * @param  string  $identifier
-     * @param  Scope|\Closure  $scope
-     * @return $this
      */
-    public function withGlobalScope($identifier, $scope)
+    public function withGlobalScope(string $identifier, Scope|Closure $scope): static
     {
         $this->scopes[$identifier] = $scope;
 
@@ -340,11 +333,8 @@ class Builder extends BaseBuilder
 
     /**
      * Remove a registered global scope.
-     *
-     * @param  Scope|string  $scope
-     * @return $this
      */
-    public function withoutGlobalScope($scope)
+    public function withoutGlobalScope(Scope|string $scope): static
     {
         if (! is_string($scope)) {
             $scope = get_class($scope);
@@ -359,11 +349,8 @@ class Builder extends BaseBuilder
 
     /**
      * Remove all or passed registered global scopes.
-     *
-     * @param  array|null  $scopes
-     * @return $this
      */
-    public function withoutGlobalScopes(array $scopes = null)
+    public function withoutGlobalScopes(?array $scopes = null): static
     {
         if (! is_array($scopes)) {
             $scopes = array_keys($this->scopes);
@@ -378,51 +365,44 @@ class Builder extends BaseBuilder
 
     /**
      * Get an array of global scopes that were removed from the query.
-     *
-     * @return array
      */
-    public function removedScopes()
+    public function removedScopes(): array
     {
         return $this->removedScopes;
     }
 
     /**
      * Get an array of the global scopes that were applied to the query.
-     *
-     * @return array
      */
-    public function appliedScopes()
+    public function appliedScopes(): array
     {
         return $this->appliedScopes;
     }
 
     /**
      * Processes and converts the given LDAP results into models.
-     *
-     * @param  array  $results
-     * @return \LdapRecord\Query\Collection
      */
-    protected function process(array $results)
+    protected function process(array $results): Collection
     {
         return $this->model->hydrate(parent::process($results));
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    protected function prepareWhereValue($field, $value, $raw = false)
+    protected function prepareWhereValue(string $field, mixed $value = null, $raw = false): string
     {
         if ($value instanceof DateTime) {
             $field = $this->model->normalizeAttributeKey($field);
 
             if (! $this->model->isDateAttribute($field)) {
-                throw new \UnexpectedValueException(
+                throw new UnexpectedValueException(
                     "Cannot convert field [$field] to an LDAP timestamp. You must add this field as a model date."
-                    .' Refer to https://ldaprecord.com/docs/core/v2/model-mutators/#date-mutators'
+                    .' Refer to https://ldaprecord.com/docs/core/v3/model-mutators/#date-mutators'
                 );
             }
 
-            $value = $this->model->fromDateTime($this->model->getDates()[$field], $value);
+            $value = $this->model->fromDateTime($value, $this->model->getDates()[$field]);
         }
 
         return parent::prepareWhereValue($field, $value, $raw);

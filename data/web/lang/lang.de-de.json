@@ -536,6 +536,7 @@
         "temp_error": "Temporärer Fehler",
         "text_empty": "Text darf nicht leer sein",
         "tfa_token_invalid": "TFA-Token ungültig",
+        "tfa_removal_blocked": "Zwei-Faktor-Authentifizierung kann nicht entfernt werden, da sie für Ihr Konto erforderlich ist.",
         "tls_policy_map_dest_invalid": "Ziel ist ungültig",
         "tls_policy_map_entry_exists": "Eine TLS-Richtlinie \"%s\" existiert bereits",
         "tls_policy_map_parameter_invalid": "Parameter ist ungültig",
@@ -1233,7 +1234,12 @@
         "webauthn": "WebAuthn-Authentifizierung",
         "waiting_usb_auth": "<i>Warte auf USB-Gerät...</i><br><br>Bitte jetzt den vorgesehenen Taster des USB-Gerätes berühren.",
         "waiting_usb_register": "<i>Warte auf USB-Gerät...</i><br><br>Bitte zuerst das obere Passwortfeld ausfüllen und erst dann den vorgesehenen Taster des USB-Gerätes berühren.",
-        "yubi_otp": "Yubico OTP-Authentifizierung"
+        "yubi_otp": "Yubico OTP-Authentifizierung",
+        "force_tfa": "Zwei-Faktor-Authentifizierung beim Login erzwingen",
+        "force_tfa_info": "Der Benutzer muss Zwei-Faktor-Authentifizierung einrichten, bevor er auf den Bereich zugreifen kann.",
+        "setup_title": "Zwei-Faktor-Authentifizierung erforderlich",
+        "setup_required": "Ihr Konto erfordert Zwei-Faktor-Authentifizierung. Bitte richten Sie eine 2FA-Methode ein, um fortzufahren.",
+        "cancel_setup": "Abbrechen und abmelden"
     },
     "user": {
         "action": "Aktion",
@@ -1312,6 +1318,7 @@
         "never": "Niemals",
         "new_password": "Neues Passwort",
         "new_password_repeat": "Neues Passwort (Wiederholung)",
+        "pw_update_required": "Ihr Konto erfordert eine Passwortänderung. Bitte setzen Sie ein neues Passwort, um fortzufahren.",
         "no_active_filter": "Kein aktiver Filter vorhanden",
         "no_last_login": "Keine letzte UI-Anmeldung gespeichert",
         "no_record": "Kein Eintrag",

@@ -6,20 +6,16 @@ class OrganizationalUnit extends Entry
 {
     /**
      * The object classes of the LDAP model.
-     *
-     * @var array
      */
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'organizationalunit',
     ];
 
     /**
      * Get the creatable RDN attribute name.
-     *
-     * @return string
      */
-    public function getCreatableRdnAttribute()
+    public function getCreatableRdnAttribute(): string
     {
         return 'ou';
     }

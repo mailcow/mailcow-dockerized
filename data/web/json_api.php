@@ -91,6 +91,11 @@ if (isset($_GET['query'])) {
     if ($action == 'delete') {
       $_POST['items'] = $request;
     }
+
+    // search
+    if ($action == 'search') {
+      // placeholder for search, as the request body is already decoded and available in $requestDecoded
+    }
   }
   api_log($_POST);
 
@@ -169,6 +174,8 @@ if (isset($_GET['query'])) {
               exit;
             }
             fido2(array("action" => "register", "registration" => $data));
+            // Release pending_tfa_setup session hold
+            unset($_SESSION['pending_tfa_setup']);
             $return = new stdClass();
             $return->success = true;
             echo json_encode($return);
@@ -457,47 +464,6 @@ if (isset($_GET['query'])) {
 
           case "domain":
             switch ($object) {
-              case "datatables":
-                $table = ['domain', 'd'];
-                $primaryKey = 'domain';
-                $columns = [
-                  ['db' => 'domain', 'dt' => 2],
-                  ['db' => 'aliases', 'dt' => 3, 'order_subquery' => "SELECT COUNT(*) FROM `alias` WHERE (`domain`= `d`.`domain` OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = `d`.`domain`)) AND `address` NOT IN (SELECT `username` FROM `mailbox`)"],
-                  ['db' => 'mailboxes', 'dt' => 4, 'order_subquery' => "SELECT COUNT(*) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
-                  ['db' => 'quota', 'dt' => 5, 'order_subquery' => "SELECT COALESCE(SUM(`mailbox`.`quota`), 0) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
-                  ['db' => 'stats', 'dt' => 6, 'dummy' => true, 'order_subquery' => "SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` IN (SELECT `username` FROM `mailbox` WHERE `domain` = `d`.`domain`)"],
-                  ['db' => 'defquota', 'dt' => 7],
-                  ['db' => 'maxquota', 'dt' => 8],
-                  ['db' => 'backupmx', 'dt' => 10],
-                  ['db' => 'tags', 'dt' => 14, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_domain` AS `td` ON `td`.`domain` = `d`.`domain`', 'where_column' => '`td`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 15],
-                ];
-
-                require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
-                global $pdo;
-                if($_SESSION['mailcow_cc_role'] === 'admin') {
-                  $data = SSP::simple($_GET, $pdo, $table, $primaryKey, $columns);
-                } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns,
-                    'INNER JOIN domain_admins as da ON da.domain = d.domain',
-                    [
-                      'condition' => 'da.active = 1 and da.username = :username',
-                      'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
-                    ]);
-                }
-
-                if (!empty($data['data'])) {
-                  $domainsData = [];
-                  foreach ($data['data'] as $domain) {
-                    if ($details = mailbox('get', 'domain_details', $domain[2])) {
-                      $domainsData[] = $details;
-                    }
-                  }
-                  $data['data'] = $domainsData;
-                }
-
-                process_get_return($data);
-              break;
               case "all":
                 $tags = null;
                 if (isset($_GET['tags']) && $_GET['tags'] != '')
@@ -997,46 +963,6 @@ if (isset($_GET['query'])) {
           break;
           case "mailbox":
             switch ($object) {
-              case "datatables":
-                $table = ['mailbox', 'm'];
-                $primaryKey = 'username';
-                $columns = [
-                  ['db' => 'username', 'dt' => 2],
-                  ['db' => 'quota', 'dt' => 3],
-                  ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
-                  ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
-                  ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
-                  ['db' => 'name', 'dt' => 7],
-                  ['db' => 'messages', 'dt' => 20, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
-                  ['db' => 'tags', 'dt' => 23, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 24],
-                ];
-
-                require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
-                global $pdo;
-                if($_SESSION['mailcow_cc_role'] === 'admin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns, null, "(`m`.`kind` = '' OR `m`.`kind` = NULL)");
-                } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns,
-                    'INNER JOIN domain_admins as da ON da.domain = m.domain',
-                    [
-                      'condition' => "(`m`.`kind` = '' OR `m`.`kind` = NULL) AND `da`.`active` = 1 AND `da`.`username` = :username",
-                      'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
-                    ]);
-                }
-
-                if (!empty($data['data'])) {
-                  $mailboxData = [];
-                  foreach ($data['data'] as $mailbox) {
-                    if ($details = mailbox('get', 'mailbox_details', $mailbox[2])) {
-                      $mailboxData[] = $details;
-                    }
-                  }
-                  $data['data'] = $mailboxData;
-                }
-
-                process_get_return($data);
-              break;
               case "all":
               case "reduced":
                 $tags = null;
@@ -1623,6 +1549,136 @@ if (isset($_GET['query'])) {
           ));
           exit();
         }
+      }
+    break;
+    case "search":
+      function process_search_return($return) {
+        if ($return === false) {
+          echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'Cannot get item'
+          ));
+        }
+        else {
+          echo json_encode($return, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        }
+      }
+      // only allow POST requests to SEARCH API endpoints
+      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        http_response_code(405);
+        echo json_encode(array(
+          'type' => 'error',
+          'msg' => 'only POST method is allowed'
+        ));
+        exit();
+      }
+
+      // Load SSP class
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
+      global $pdo;
+
+      switch ($category) {
+        case "domain":
+          $table = ['domain', 'd'];
+          $primaryKey = 'domain';
+          $columns = [
+            ['db' => 'domain', 'dt' => 2],
+            ['db' => 'aliases', 'dt' => 3, 'order_subquery' => "SELECT COUNT(*) FROM `alias` WHERE (`domain`= `d`.`domain` OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = `d`.`domain`)) AND `address` NOT IN (SELECT `username` FROM `mailbox`)"],
+            ['db' => 'mailboxes', 'dt' => 4, 'order_subquery' => "SELECT COUNT(*) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
+            ['db' => 'quota', 'dt' => 5, 'order_subquery' => "SELECT COALESCE(SUM(`mailbox`.`quota`), 0) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
+            ['db' => 'stats', 'dt' => 6, 'dummy' => true, 'order_subquery' => "SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` IN (SELECT `username` FROM `mailbox` WHERE `domain` = `d`.`domain`)"],
+            ['db' => 'defquota', 'dt' => 7],
+            ['db' => 'maxquota', 'dt' => 8],
+            ['db' => 'backupmx', 'dt' => 10],
+            ['db' => 'tags', 'dt' => 14, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_domain` AS `td` ON `td`.`domain` = `d`.`domain`', 'where_column' => '`td`.`tag_name`']],
+            ['db' => 'active', 'dt' => 15],
+          ];
+
+          if($_SESSION['mailcow_cc_role'] === 'admin') {
+            $data = SSP::simple($requestDecoded, $pdo, $table, $primaryKey, $columns);
+          } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+            $data = SSP::complex($requestDecoded, $pdo, $table, $primaryKey, $columns,
+              'INNER JOIN domain_admins as da ON da.domain = d.domain',
+              [
+                'condition' => 'da.active = 1 and da.username = :username',
+                'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
+              ]);
+          } else {
+            http_response_code(403);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Insufficient permissions'
+            ));
+            exit();
+          }
+
+          if (!empty($data['data'])) {
+            $domainsData = [];
+            foreach ($data['data'] as $domain) {
+              if ($details = mailbox('get', 'domain_details', $domain[2])) {
+                $domainsData[] = $details;
+              }
+            }
+            $data['data'] = $domainsData;
+          }
+
+          process_search_return($data);
+        break;
+
+        case "mailbox":
+          $table = ['mailbox', 'm'];
+          $primaryKey = 'username';
+          $columns = [
+            ['db' => 'username', 'dt' => 2],
+            ['db' => 'quota', 'dt' => 3],
+            ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
+            ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
+            ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
+            ['db' => 'name', 'dt' => 7],
+            ['db' => 'messages', 'dt' => 20, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
+            ['db' => 'tags', 'dt' => 23, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
+            ['db' => 'active', 'dt' => 24],
+          ];
+
+          if($_SESSION['mailcow_cc_role'] === 'admin') {
+            $data = SSP::complex($requestDecoded, $pdo, $table, $primaryKey, $columns, null,
+              "(`m`.`kind` = '' OR `m`.`kind` = NULL)");
+          } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+            $data = SSP::complex($requestDecoded, $pdo, $table, $primaryKey, $columns,
+              'INNER JOIN domain_admins as da ON da.domain = m.domain',
+              [
+                'condition' => "(`m`.`kind` = '' OR `m`.`kind` = NULL) AND `da`.`active` = 1 AND `da`.`username` = :username",
+                'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
+              ]);
+          } else {
+            http_response_code(403);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Insufficient permissions'
+            ));
+            exit();
+          }
+
+          if (!empty($data['data'])) {
+            $mailboxData = [];
+            foreach ($data['data'] as $mailbox) {
+              if ($details = mailbox('get', 'mailbox_details', $mailbox[2])) {
+                $mailboxData[] = $details;
+              }
+            }
+            $data['data'] = $mailboxData;
+          }
+
+          process_search_return($data);
+        break;
+
+        default:
+          http_response_code(404);
+          echo json_encode(array(
+            'type' => 'error',
+            'msg' => 'Invalid search category'
+          ));
+        break;
       }
     break;
     case "delete":
