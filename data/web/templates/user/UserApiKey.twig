@@ -1,0 +1,56 @@
+<div class="tab-pane fade" id="UserApiKey" role="tabpanel" aria-labelledby="UserApiKey">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-UserApiKey" data-bs-toggle="collapse" aria-controls="collapse-tab-UserApiKey">
+        {{ lang.user.user_api_key }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.user.user_api_key }}</span>
+    </div>
+    <div id="collapse-tab-UserApiKey" class="card-body collapse" data-bs-parent="#user-content">
+      <div class="row">
+        <div class="col-md-12">
+          <p>{{ lang.user.user_api_key_info|raw }}</p>
+          <div id="user-api-key-display" class="mb-4">
+            {% if user_api_key %}
+              <div class="alert alert-info d-flex align-items-center flex-wrap gap-2">
+                <i class="bi bi-key-fill me-2"></i>
+                <code id="user-api-key-value">{{ user_api_key.api_key }}</code>
+                <button class="btn btn-sm btn-outline-secondary ms-auto" onclick="navigator.clipboard.writeText(document.getElementById('user-api-key-value').textContent)" type="button">
+                  <i class="bi bi-clipboard"></i> {{ lang.user.copy }}
+                </button>
+              </div>
+              <p class="text-muted small">{{ lang.user.user_api_key_created }}: {{ user_api_key.created }}</p>
+            {% else %}
+              <div class="alert alert-secondary">
+                <i class="bi bi-info-circle me-2"></i>{{ lang.user.user_api_key_none }}
+              </div>
+            {% endif %}
+          </div>
+          <div class="btn-group" data-acl="{{ acl.spam_alias }}">
+            <a class="btn btn-sm btn-success" href="#" data-action="add_item" data-id="user_api_key_generate" data-api-url='add/user-api-key' data-api-attr='{}'>
+              <i class="bi bi-plus-lg"></i>
+              {% if user_api_key %}
+                {{ lang.user.user_api_key_regenerate }}
+              {% else %}
+                {{ lang.user.user_api_key_generate }}
+              {% endif %}
+            </a>
+            {% if user_api_key %}
+            <a class="btn btn-sm btn-danger ms-2" href="#" data-action="delete_selected" data-id="user_api_key_delete" data-item="{{ mailboxdata.username }}" data-api-url='delete/user-api-key'>
+              <i class="bi bi-trash"></i> {{ lang.user.user_api_key_delete }}
+            </a>
+            {% endif %}
+          </div>
+          <hr>
+          <h6>{{ lang.user.user_api_key_usage }}</h6>
+          <p>{{ lang.user.user_api_key_usage_info|raw }}</p>
+          <pre class="bg-light p-3 rounded"><code>POST https://{{ mailcow_hostname }}/api/alias/random/new
+Authentication: &lt;your-api-key&gt;
+Content-Type: application/json
+
+{"note": "Created for example.com"}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -93,6 +93,48 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   }
 }
 
+// User API key authentication (SimpleLogin-compatible, via Authentication header)
+if (empty($_SESSION['mailcow_cc_username']) && !empty($_SERVER['HTTP_AUTHENTICATION'])) {
+  $user_api_key = preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_AUTHENTICATION']);
+  $stmt = $pdo->prepare("SELECT `username` FROM `user_api` WHERE `api_key` = :api_key AND `active` = '1';");
+  $stmt->execute(array(':api_key' => $user_api_key));
+  $user_api_return = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!empty($user_api_return['username'])) {
+    $stmt2 = $pdo->prepare("SELECT `username`, `domain` FROM `mailbox` WHERE `username` = :username AND `active` = '1'");
+    $stmt2->execute(array(':username' => $user_api_return['username']));
+    $mailbox_return = $stmt2->fetch(PDO::FETCH_ASSOC);
+    if (!empty($mailbox_return['username'])) {
+      $_SESSION['mailcow_cc_username'] = $mailbox_return['username'];
+      $_SESSION['mailcow_cc_role'] = 'user';
+      $_SESSION['mailcow_cc_api'] = true;
+      $_SESSION['mailcow_cc_api_access'] = 'rw';
+      // Load ACL for this user
+      $stmt3 = $pdo->prepare("SELECT * FROM `user_acl` WHERE `username` = :username");
+      $stmt3->execute(array(':username' => $mailbox_return['username']));
+      $acl_return = $stmt3->fetch(PDO::FETCH_ASSOC);
+      if (!empty($acl_return)) {
+        foreach ($acl_return as $acl_key => $acl_val) {
+          if ($acl_key == 'username') continue;
+          $_SESSION['acl'][$acl_key] = $acl_val;
+        }
+      }
+      else {
+        $_SESSION['acl']['spam_alias'] = 1;
+      }
+    }
+    else {
+      http_response_code(401);
+      echo json_encode(array('type' => 'error', 'msg' => 'authentication failed'));
+      exit();
+    }
+  }
+  else {
+    http_response_code(401);
+    echo json_encode(array('type' => 'error', 'msg' => 'authentication failed'));
+    exit();
+  }
+}
+
 // Handle logouts
 if (isset($_POST["logout"])) {
   if (isset($_SESSION["dual-login"])) {

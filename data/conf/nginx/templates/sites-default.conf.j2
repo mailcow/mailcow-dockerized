@@ -104,6 +104,22 @@ location ~ ^/api/v1/(.*)$ {
     try_files $uri $uri/ /json_api.php?query=$1&$args;
 }
 
+location ~ ^/api/alias/(.*)$ {
+    try_files $uri $uri/ /sl-api.php?path=alias/$1&$args;
+}
+
+location ~ ^/api/v2/alias(.*)$ {
+    try_files $uri $uri/ /sl-api.php?path=v2/alias$1&$args;
+}
+
+location ~ ^/api/v2/aliases(.*)$ {
+    try_files $uri $uri/ /sl-api.php?path=v2/aliases$1&$args;
+}
+
+location ~ ^/api/aliases/(.*)$ {
+    try_files $uri $uri/ /sl-api.php?path=aliases/$1&$args;
+}
+
 location ~ ^/cache/(.*)$ {
     try_files $uri $uri/ /resource.php?file=$1;
 }

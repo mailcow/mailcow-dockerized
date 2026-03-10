@@ -42,6 +42,9 @@ if (!empty($user_alias_domains)) {
   $user_domains = array_merge($user_domains, $user_alias_domains);
 }
 
+// Get user API key for SimpleLogin-compatible integration
+$user_api_key_data = user_api('get');
+
 // get number of app passwords
 $number_of_app_passwords = 0;
 foreach (app_passwd("get") as $app_password)
@@ -73,6 +76,8 @@ $template_data = [
   'lang_user' => json_encode($lang['user']),
   'number_of_app_passwords' => $number_of_app_passwords,
   'lang_datatables' => json_encode($lang['datatables']),
+  'user_api_key' => $user_api_key_data,
+  'mailcow_hostname' => $mailcow_hostname,
 ];
 
 $js_minifier->add('/web/js/site/user.js');

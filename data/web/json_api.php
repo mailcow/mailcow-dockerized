@@ -233,6 +233,10 @@ if (isset($_GET['query'])) {
         case "time_limited_alias":
           process_add_return(mailbox('add', 'time_limited_alias', $attr));
         break;
+        case "user-api-key":
+          user_api('add', $attr);
+          process_add_return(!empty($_SESSION['return']) && end($_SESSION['return'])['type'] === 'success');
+        break;
         case "relayhost":
           process_add_return(relayhost('add', $attr));
         break;
@@ -1274,6 +1278,10 @@ if (isset($_GET['query'])) {
               break;
             }
           break;
+          case "user-api-key":
+            $data = user_api('get', $object);
+            process_get_return($data);
+          break;
           case "fail2ban":
             switch ($object) {
               default:
@@ -1806,6 +1814,9 @@ if (isset($_GET['query'])) {
         break;
         case "time_limited_alias":
           process_delete_return(mailbox('delete', 'time_limited_alias', array('address' => $items)));
+        break;
+        case "user-api-key":
+          process_delete_return(user_api('delete', array('username' => $items[0] ?? null)));
         break;
         case "eas_cache":
           process_delete_return(mailbox('delete', 'eas_cache', array('username' => $items)));

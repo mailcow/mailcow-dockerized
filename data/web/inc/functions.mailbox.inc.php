@@ -41,7 +41,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 876000)))) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -6322,4 +6322,101 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   }
 
   return true;
+}
+
+function user_api($_action, $_data = null) {
+  global $pdo;
+  switch ($_action) {
+    case 'add':
+      if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+        if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => 'access_denied'
+          );
+          return false;
+        }
+        $username = $_data['username'];
+      }
+      else {
+        $username = $_SESSION['mailcow_cc_username'];
+      }
+      if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
+      $api_key = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+      $stmt = $pdo->prepare("SELECT `username` FROM `user_api` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (!empty($existing)) {
+        $stmt = $pdo->prepare("UPDATE `user_api` SET `api_key` = :api_key, `active` = '1' WHERE `username` = :username");
+        $stmt->execute(array(':api_key' => $api_key, ':username' => $username));
+      }
+      else {
+        $stmt = $pdo->prepare("INSERT INTO `user_api` (`username`, `api_key`, `active`) VALUES (:username, :api_key, '1')");
+        $stmt->execute(array(':username' => $username, ':api_key' => $api_key));
+      }
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'user_api_key_generated'
+      );
+      return $api_key;
+    break;
+    case 'delete':
+      if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
+        if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data),
+            'msg' => 'access_denied'
+          );
+          return false;
+        }
+        $username = $_data['username'];
+      }
+      else {
+        $username = $_SESSION['mailcow_cc_username'];
+      }
+      $stmt = $pdo->prepare("DELETE FROM `user_api` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'user_api_key_deleted'
+      );
+      return true;
+    break;
+    case 'get':
+      if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+        if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+          return false;
+        }
+        $username = $_data;
+      }
+      else {
+        $username = $_SESSION['mailcow_cc_username'];
+      }
+      $stmt = $pdo->prepare("SELECT `api_key`, `created`, `active` FROM `user_api` WHERE `username` = :username AND `active` = '1'");
+      $stmt->execute(array(':username' => $username));
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (empty($result)) {
+        return null;
+      }
+      return $result;
+    break;
+  }
+  return false;
 }
