@@ -146,8 +146,8 @@ RUN echo "/usr/lib64" > /etc/ld.so.conf.d/sogo.conf \
 # Create sogo user and group
 RUN groupadd -r -g 999 sogo \
   && useradd -r -u 999 -g sogo -d /var/lib/sogo -s /bin/bash -c "SOGo Daemon" sogo \
-  && mkdir -p /var/lib/sogo /var/run/sogo /var/log/sogo \
-  && chown -R sogo:sogo /var/lib/sogo /var/run/sogo /var/log/sogo
+  && mkdir -p /var/lib/sogo /var/run/sogo /var/log/sogo /var/spool/sogo \
+  && chown -R sogo:sogo /var/lib/sogo /var/run/sogo /var/log/sogo /var/spool/sogo
 
 # Create symlinks for SOGo binaries
 RUN ln -s /usr/local/sbin/sogod /usr/sbin/sogod \
