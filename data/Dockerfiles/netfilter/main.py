@@ -184,24 +184,28 @@ def ban(address):
 def unban(net):
   global lock
   logdebug("Calling unban() with net=%s" % net)
-  if not net in bans:
-    logger.logInfo(
-      '%s is not banned, skipping unban and deleting from queue (if any)' % net)
-    r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-    return
-  logger.logInfo('Unbanning %s' % net)
-  if type(ipaddress.ip_network(net)) is ipaddress.IPv4Network:
-    with lock:
-      logdebug("Calling tables.unbanIPv4(%s)" % net)
-      tables.unbanIPv4(net)
+  net_str = '%s' % net
+  in_bans = net in bans
+  if in_bans:
+    logger.logInfo('Unbanning %s' % net)
   else:
-    with lock:
-      logdebug("Calling tables.unbanIPv6(%s)" % net)
-      tables.unbanIPv6(net)
-  r.hdel('F2B_ACTIVE_BANS', '%s' % net)
-  r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-  if net in bans:
-    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net)
+    logger.logInfo('Unbanning %s (not in local bans dict)' % net)
+  try:
+    net_obj = ipaddress.ip_network(net_str, strict=False)
+    if type(net_obj) is ipaddress.IPv4Network:
+      with lock:
+        logdebug("Calling tables.unbanIPv4(%s)" % net_str)
+        tables.unbanIPv4(net_str)
+    else:
+      with lock:
+        logdebug("Calling tables.unbanIPv6(%s)" % net_str)
+        tables.unbanIPv6(net_str)
+  except (ValueError, Exception) as e:
+    logger.logWarn('Invalid or unparseable net %s for firewall unban: %s; removing from Redis only' % (net_str, e))
+  r.hdel('F2B_ACTIVE_BANS', net_str)
+  r.hdel('F2B_QUEUE_UNBAN', net_str)
+  if in_bans:
+    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net_str)
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
 
