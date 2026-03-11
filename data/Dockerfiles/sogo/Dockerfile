@@ -1,6 +1,6 @@
 # SOGo built from source to enable security patch application
 # Repository: https://github.com/Alinto/sogo
-# Version: SOGo-5.12.4
+# Version: SOGo-5.12.5
 #
 # Applied security patches:
 # -
@@ -160,6 +160,10 @@ RUN ln -s /usr/local/sbin/sogod /usr/sbin/sogod \
   && ln -s /usr/local/sbin/sogo-tool /usr/sbin/sogo-tool \
   && ln -s /usr/local/sbin/sogo-ealarms-notify /usr/sbin/sogo-ealarms-notify \
   && ln -s /usr/local/sbin/sogo-slapd-sockd /usr/sbin/sogo-slapd-sockd
+
+# Create compatibility symlink for old SOGo documentation path
+# Allows volume mounts using /usr/lib/GNUstep to work with /usr/local/lib/GNUstep
+RUN ln -sf /usr/local/lib/GNUstep /usr/lib/GNUstep
 
 # Copy configuration files and scripts
 COPY ./bootstrap-sogo.sh /bootstrap-sogo.sh
