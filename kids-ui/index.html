@@ -1,2 +1,63 @@
-<h1>Alfabe Mail</h1>
-<p>Çocuklar için mail uygulaması </p>
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alfabe Mail - Çocuk Gelen Kutusu</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="top-bar">
+        <h1>📮 Alfabe Mail</h1>
+        <button class="primary">✉️ Yeni Mesaj</button>
+      </header>
+
+      <section class="panel">
+        <h2>Gelen Kutusu</h2>
+        <p class="subtitle">Merhaba Ece! Mesajlarını buradan okuyabilirsin.</p>
+
+        <ul class="message-list">
+          <li class="message unread">
+            <span class="avatar">👩‍🏫</span>
+            <div>
+              <strong>Teacher</strong>
+              <p>Bugünkü ödev: Matematik sayfa 12</p>
+            </div>
+            <button class="secondary">Oku</button>
+          </li>
+          <li class="message">
+            <span class="avatar">🧒</span>
+            <div>
+              <strong>Ali</strong>
+              <p>Teneffüste görüşelim mi?</p>
+            </div>
+            <button class="secondary">Oku</button>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel compose">
+        <h2>Mesaj Gönder</h2>
+
+        <label for="contact">Kime?</label>
+        <select id="contact">
+          <option>Ali</option>
+          <option>Ayşe</option>
+          <option>Teacher</option>
+        </select>
+
+        <label for="subject">Konu</label>
+        <input id="subject" type="text" placeholder="Kısa bir başlık yaz" />
+
+        <label for="message">Mesaj</label>
+        <textarea id="message" rows="4" placeholder="Mesajını yaz 😊"></textarea>
+
+        <label for="file">Dosya ekle (max 5MB)</label>
+        <input id="file" type="file" />
+
+        <button class="primary">🚀 Gönder</button>
+      </section>
+    </main>
+  </body>
+</html>
