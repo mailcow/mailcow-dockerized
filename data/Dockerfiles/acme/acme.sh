@@ -308,13 +308,33 @@ while true; do
   done
   fi
 
+  # Check if MAILCOW_HOSTNAME is covered by a wildcard in ADDITIONAL_SAN
+  MAILCOW_HOSTNAME_COVERED=0
+  if [[ ! -z ${VALIDATED_MAILCOW_HOSTNAME} && ! -z ${ADDITIONAL_SAN} ]]; then
+    # Extract parent domain from MAILCOW_HOSTNAME (e.g., mail.example.com -> example.com)
+    MAILCOW_PARENT_DOMAIN=$(echo ${VALIDATED_MAILCOW_HOSTNAME} | cut -d. -f2-)
+    # Check if ADDITIONAL_SAN contains a wildcard for this parent domain
+    if [[ "${ADDITIONAL_SAN}" == *"*.${MAILCOW_PARENT_DOMAIN}"* ]]; then
+      log_f "MAILCOW_HOSTNAME '${VALIDATED_MAILCOW_HOSTNAME}' is covered by wildcard '*.${MAILCOW_PARENT_DOMAIN}' - skipping explicit hostname"
+      MAILCOW_HOSTNAME_COVERED=1
+    fi
+  fi
+
   # Unique domains for server certificate
   if [[ ${ENABLE_SSL_SNI} == "y" ]]; then
     # create certificate for server name and fqdn SANs only
-    SERVER_SAN_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    if [[ ${MAILCOW_HOSTNAME_COVERED} == "1" ]]; then
+      SERVER_SAN_VALIDATED=($(echo ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    else
+      SERVER_SAN_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    fi
   else
     # create certificate for all domains, including all subdomains from other domains [*]
-    SERVER_SAN_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    if [[ ${MAILCOW_HOSTNAME_COVERED} == "1" ]]; then
+      SERVER_SAN_VALIDATED=($(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    else
+      SERVER_SAN_VALIDATED=(${VALIDATED_MAILCOW_HOSTNAME} $(echo ${VALIDATED_CONFIG_DOMAINS[*]} ${ADDITIONAL_VALIDATED_SAN[*]} | xargs -n1 | sort -u | xargs))
+    fi
   fi
   if [[ ! -z ${SERVER_SAN_VALIDATED[*]} ]]; then
     CERT_NAME=${SERVER_SAN_VALIDATED[0]}
