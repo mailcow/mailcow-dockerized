@@ -196,8 +196,8 @@ $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 // Force 2FA enrollment at next login
 $MAILBOX_DEFAULT_ATTRIBUTES['force_tfa'] = false;
 
-// Enable SOGo access - Users will be redirected to SOGo after login (set to false to disable redirect by default)
-$MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
+// Enable SOGo redirection - Users will be redirected to SOGo after login (set to false to disable redirect by default)
+$MAILBOX_DEFAULT_ATTRIBUTES['sogo_redirection'] = true;
 
 // How to handle tagged emails
 // none      - No special handling

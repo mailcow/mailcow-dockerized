@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "12032026_1300";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -506,6 +506,7 @@ function init_db_schema()
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "eas_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "sogo_profile_reset" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "sogo_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "pushover" => "TINYINT(1) NOT NULL DEFAULT '1'",
           // quarantine is for quarantine actions, todo: rename
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -705,7 +706,7 @@ function init_db_schema()
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "sogo_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "sogo_redirection" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "pushover" => "TINYINT(1) NOT NULL DEFAULT '0'",
@@ -1397,7 +1398,10 @@ function init_db_schema()
     $pdo->query("UPDATE `admin` SET `attributes` =  JSON_SET(`attributes`, '$.force_tfa', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_tfa') IS NULL;");
     $pdo->query("UPDATE `admin` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_pw_update') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sieve_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.sieve_access') IS NULL;");
-    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sogo_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.sogo_access') IS NULL;");
+    // Migrate sogo_access attribute to sogo_redirection
+    $pdo->query("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.sogo_redirection', JSON_VALUE(`attributes`, '$.sogo_access')) WHERE JSON_VALUE(`attributes`, '$.sogo_access') IS NOT NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` = JSON_REMOVE(`attributes`, '$.sogo_access') WHERE JSON_VALUE(`attributes`, '$.sogo_access') IS NOT NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.sogo_redirection', \"1\") WHERE JSON_VALUE(`attributes`, '$.sogo_redirection') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.imap_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.imap_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.pop3_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.pop3_access') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.smtp_access', \"1\") WHERE JSON_VALUE(`attributes`, '$.smtp_access') IS NULL;");
@@ -1420,6 +1424,10 @@ function init_db_schema()
     $pdo->query("INSERT INTO `da_acl` (`username`) SELECT DISTINCT `username` FROM `domain_admins` WHERE `username` != 'admin' AND NOT EXISTS (SELECT `username` FROM `da_acl`);");
     // Fix domain_admins
     $pdo->query("DELETE FROM `domain_admins` WHERE `domain` = 'ALL';");
+
+    // Migrate template sogo_access to sogo_redirection
+    $pdo->query("UPDATE `templates` SET `attributes` = JSON_SET(`attributes`, '$.sogo_redirection', JSON_VALUE(`attributes`, '$.sogo_access')) WHERE `type` = 'mailbox' AND JSON_VALUE(`attributes`, '$.sogo_access') IS NOT NULL;");
+    $pdo->query("UPDATE `templates` SET `attributes` = JSON_REMOVE(`attributes`, '$.sogo_access') WHERE `type` = 'mailbox' AND JSON_VALUE(`attributes`, '$.sogo_access') IS NOT NULL;");
 
     // add default templates
     $default_domain_template = array(
@@ -1456,7 +1464,7 @@ function init_db_schema()
         "rl_value" => "",
         "force_pw_update" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['force_pw_update']),
         "force_tfa" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['force_tfa']),
-        "sogo_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sogo_access']),
+        "sogo_redirection" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sogo_redirection']),
         "active" => 1,
         "tls_enforce_in" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['tls_enforce_in']),
         "tls_enforce_out" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['tls_enforce_out']),
@@ -1472,6 +1480,7 @@ function init_db_schema()
         "acl_syncjobs" => 0,
         "acl_eas_reset" => 1,
         "acl_sogo_profile_reset" => 0,
+        "acl_sogo_access" => 1,
         "acl_pushover" => 1,
         "acl_quarantine" => 1,
         "acl_quarantine_attachments" => 1,

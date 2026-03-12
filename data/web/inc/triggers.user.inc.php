@@ -81,8 +81,9 @@ if (isset($_POST["verify_tfa_login"])) {
           header("Location: /");
           die();
         }
-        if (intval($user_details['attributes']['sogo_access']) == 1 &&
+        if (intval($user_details['attributes']['sogo_redirection']) == 1 &&
             intval($user_details['attributes']['force_pw_update']) != 1 &&
+            hasACLAccess('sogo_access') &&
             getenv('SKIP_SOGO') != "y" &&
             !$is_dual) {
           header("Location: /SOGo/so/");
@@ -161,8 +162,9 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
       header("Location: /");
       die();
     }
-    if (intval($user_details['attributes']['sogo_access']) == 1 &&
+    if (intval($user_details['attributes']['sogo_redirection']) == 1 &&
         intval($user_details['attributes']['force_pw_update']) != 1 &&
+        hasACLAccess('sogo_access') &&
         getenv('SKIP_SOGO') != "y" &&
         !$is_dual) {
       header("Location: /SOGo/so/");

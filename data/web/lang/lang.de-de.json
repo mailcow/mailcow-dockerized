@@ -22,14 +22,15 @@
         "ratelimit": "Rate limit",
         "recipient_maps": "Empfängerumschreibungen",
         "smtp_ip_access": "Verwalten der erlaubten Hosts für SMTP",
-        "sogo_access": "Verwalten des SOGo-Zugriffsrechts erlauben",
+        "sogo_access": "SOGo-Nutzung erlauben",
         "sogo_profile_reset": "SOGo-Profil zurücksetzen",
         "spam_alias": "Temporäre E-Mail-Aliasse",
         "spam_policy": "Deny/Allowlist",
         "spam_score": "Spam-Bewertung",
         "syncjobs": "Sync Jobs",
         "tls_policy": "Verschlüsselungsrichtlinie",
-        "unlimited_quota": "Unendliche Quota für Mailboxen"
+        "unlimited_quota": "Unendliche Quota für Mailboxen",
+        "sogo_redirection": "Verwalten der SOGo-Weiterleitung erlauben"
     },
     "add": {
         "activate_filter_warn": "Alle anderen Filter dieses Typs werden deaktiviert, falls dieses Script aktiviert wird.",
@@ -767,8 +768,6 @@
         "sieve_desc": "Kurze Beschreibung",
         "sieve_type": "Filtertyp",
         "skipcrossduplicates": "Duplikate auch über Ordner hinweg überspringen (\"first come, first serve\")",
-        "sogo_access": "Direktes weiterleiten an SOGo",
-        "sogo_access_info": "Nach dem Einloggen wird der Benutzer automatisch an SOGo weitergeleitet.",
         "sogo_visible": "Alias in SOGo sichtbar",
         "sogo_visible_info": "Diese Option hat lediglich Einfluss auf Objekte, die in SOGo darstellbar sind (geteilte oder nicht-geteilte Alias-Adressen mit dem Ziel mindestens einer lokalen Mailbox).",
         "spam_alias": "Anpassen temporärer Alias-Adressen",
@@ -785,7 +784,9 @@
         "unchanged_if_empty": "Unverändert, wenn leer",
         "username": "Benutzername",
         "validate_save": "Validieren und speichern",
-        "pushover_sound": "Ton"
+        "pushover_sound": "Ton",
+        "sogo_redirection": "Direktes weiterleiten an SOGo",
+        "sogo_redirection_info": "Nach dem Einloggen wird der Benutzer automatisch an SOGo weitergeleitet."
     },
     "fido2": {
         "confirm": "Bestätigen",
