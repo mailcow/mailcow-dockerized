@@ -1,0 +1,95 @@
+:root {
+  --bg: #f5fbff;
+  --card: #ffffff;
+  --accent: #2f80ed;
+  --accent-2: #56ccf2;
+  --text: #1f2d3d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--bg), #eaf6ff);
+}
+
+.app-shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.top-bar,
+.panel {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  padding: 18px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subtitle { margin-top: -6px; color: #607084; }
+
+.message-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.message {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  background: #f7fbff;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.message.unread { border-color: var(--accent-2); }
+.avatar { font-size: 28px; text-align: center; }
+
+label {
+  display: block;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+input, select, textarea, button {
+  width: 100%;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 2px solid #d6e6f7;
+  padding: 10px;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  max-width: 220px;
+}
+
+.secondary {
+  width: auto;
+  background: #fff;
+  border-color: var(--accent-2);
+}
