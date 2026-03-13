@@ -2,7 +2,7 @@
 
 backend=nftables
 
-nft list table ip filter &>/dev/null
+nft list ruleset &>/dev/null
 nftables_found=$?
 
 iptables -L -n &>/dev/null
