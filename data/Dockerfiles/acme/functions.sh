@@ -135,3 +135,25 @@ verify_challenge_path(){
     return 1
   fi
 }
+
+# Check if a domain is covered by a wildcard in ADDITIONAL_SAN
+# Usage: is_covered_by_wildcard "subdomain.example.com"
+# Returns: 0 if covered, 1 if not covered
+is_covered_by_wildcard() {
+  local DOMAIN=$1
+
+  # Return early if no ADDITIONAL_SAN is set
+  if [[ -z ${ADDITIONAL_SAN} ]]; then
+    return 1
+  fi
+
+  # Extract parent domain (e.g., mail.example.com -> example.com)
+  local PARENT_DOMAIN=$(echo ${DOMAIN} | cut -d. -f2-)
+
+  # Check if ADDITIONAL_SAN contains a wildcard for this parent domain
+  if [[ "${ADDITIONAL_SAN}" == *"*.${PARENT_DOMAIN}"* ]]; then
+    return 0  # Covered by wildcard
+  fi
+
+  return 1  # Not covered
+}
