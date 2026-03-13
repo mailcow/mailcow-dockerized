@@ -287,6 +287,8 @@ function user_login($user, $pass, $extra = null){
             return false;
           }
 
+          $row['attributes'] = json_decode($row['attributes'], true);
+
           // check for tfa authenticators
           $authenticators = get_tfa($user);
           if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -342,6 +344,8 @@ function user_login($user, $pass, $extra = null){
         if (empty($row)) {
           return false;
         }
+
+        $row['attributes'] = json_decode($row['attributes'], true);
 
         // check for tfa authenticators
         $authenticators = get_tfa($user);

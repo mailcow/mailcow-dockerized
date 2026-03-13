@@ -1,5 +1,6 @@
 $(document).ready(function() {
-  var theme = localStorage.getItem("theme");
-  localStorage.clear();
-  localStorage.setItem("theme", theme);
+  var theme = localStorage.getItem("mailcow_theme");
+  if (theme !== null) {
+    localStorage.setItem("mailcow_theme", theme);
+  }
 });
