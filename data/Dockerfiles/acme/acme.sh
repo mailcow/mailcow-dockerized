@@ -323,11 +323,9 @@ while true; do
 
   # Check if MAILCOW_HOSTNAME is covered by a wildcard in ADDITIONAL_SAN
   MAILCOW_HOSTNAME_COVERED=0
-  if [[ ! -z ${VALIDATED_MAILCOW_HOSTNAME} && ! -z ${ADDITIONAL_SAN} ]]; then
-    # Extract parent domain from MAILCOW_HOSTNAME (e.g., mail.example.com -> example.com)
-    MAILCOW_PARENT_DOMAIN=$(echo ${VALIDATED_MAILCOW_HOSTNAME} | cut -d. -f2-)
-    # Check if ADDITIONAL_SAN contains a wildcard for this parent domain
-    if [[ "${ADDITIONAL_SAN}" == *"*.${MAILCOW_PARENT_DOMAIN}"* ]]; then
+  if [[ ! -z ${VALIDATED_MAILCOW_HOSTNAME} ]]; then
+    if is_covered_by_wildcard "${VALIDATED_MAILCOW_HOSTNAME}"; then
+      MAILCOW_PARENT_DOMAIN=$(echo ${VALIDATED_MAILCOW_HOSTNAME} | cut -d. -f2-)
       log_f "MAILCOW_HOSTNAME '${VALIDATED_MAILCOW_HOSTNAME}' is covered by wildcard '*.${MAILCOW_PARENT_DOMAIN}' - skipping explicit hostname"
       MAILCOW_HOSTNAME_COVERED=1
     fi

@@ -136,11 +136,18 @@ verify_challenge_path(){
   fi
 }
 
-# Check if a domain is covered by a wildcard in ADDITIONAL_SAN
+# Check if a domain is covered by a wildcard (*.example.com) in ADDITIONAL_SAN
 # Usage: is_covered_by_wildcard "subdomain.example.com"
 # Returns: 0 if covered, 1 if not covered
+# Note: Only returns 0 (covered) when DNS-01 challenge is enabled,
+#       as wildcards cannot be validated with HTTP-01 challenge
 is_covered_by_wildcard() {
   local DOMAIN=$1
+
+  # Only skip if DNS challenge is enabled (wildcards require DNS-01)
+  if [[ ${ACME_DNS_CHALLENGE} != "y" ]]; then
+    return 1
+  fi
 
   # Return early if no ADDITIONAL_SAN is set
   if [[ -z ${ADDITIONAL_SAN} ]]; then
