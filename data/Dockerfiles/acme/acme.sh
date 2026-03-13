@@ -253,10 +253,20 @@ while true; do
     unset VALIDATED_CONFIG_DOMAINS_SUBDOMAINS
     declare -a VALIDATED_CONFIG_DOMAINS_SUBDOMAINS
     for SUBDOMAIN in "${ADDITIONAL_WC_ARR[@]}"; do
-      if [[  "${SUBDOMAIN}.${SQL_DOMAIN}" != "${MAILCOW_HOSTNAME}" ]]; then
-        if check_domain "${SUBDOMAIN}.${SQL_DOMAIN}"; then
-          VALIDATED_CONFIG_DOMAINS_SUBDOMAINS+=("${SUBDOMAIN}.${SQL_DOMAIN}")
-        fi
+      FULL_SUBDOMAIN="${SUBDOMAIN}.${SQL_DOMAIN}"
+
+      # Skip if subdomain matches MAILCOW_HOSTNAME
+      if [[ "${FULL_SUBDOMAIN}" == "${MAILCOW_HOSTNAME}" ]]; then
+        continue
+      fi
+      # Skip if subdomain is covered by a wildcard in ADDITIONAL_SAN
+      if is_covered_by_wildcard "${FULL_SUBDOMAIN}"; then
+        log_f "Subdomain '${FULL_SUBDOMAIN}' is covered by wildcard - skipping explicit subdomain"
+        continue
+      fi
+      # Validate and add subdomain
+      if check_domain "${FULL_SUBDOMAIN}"; then
+        VALIDATED_CONFIG_DOMAINS_SUBDOMAINS+=("${FULL_SUBDOMAIN}")
       fi
     done
     VALIDATED_CONFIG_DOMAINS+=("${VALIDATED_CONFIG_DOMAINS_SUBDOMAINS[*]}")
@@ -273,7 +283,10 @@ while true; do
         fi
         # Only add mta-sts subdomain for alias domains
         if [[ "mta-sts.${alias_domain}" != "${MAILCOW_HOSTNAME}" ]]; then
-          if check_domain "mta-sts.${alias_domain}"; then
+          # Skip if mta-sts subdomain is covered by a wildcard
+          if is_covered_by_wildcard "mta-sts.${alias_domain}"; then
+            log_f "Alias domain mta-sts subdomain 'mta-sts.${alias_domain}' is covered by wildcard - skipping"
+          elif check_domain "mta-sts.${alias_domain}"; then
             VALIDATED_CONFIG_DOMAINS+=("mta-sts.${alias_domain}")
           fi
         fi
