@@ -640,7 +640,7 @@ services:
             - olefy
 
     ofelia-mailcow:
-      image: mcuadros/ofelia:latest
+      image: mcuadros/ofelia:v0.3.21
       restart: always
       command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
       environment:
