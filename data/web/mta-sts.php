@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
 function get_requested_host(): string|false {
-  if(!isset($_SERVER['HTTP_X_FORWARDED_HOST']) && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+  if(isset($_SERVER['HTTP_X_FORWARDED_HOST']) && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
     $xfh = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'])[0];
     return trim($xfh);
   }
