@@ -86,6 +86,12 @@ $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_method
 $f2b_data = fail2ban('get');
 // mbox templates
 $mbox_templates = mailbox('get', 'mailbox_templates');
+// SCIM
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
+$scim_tokens    = scim_token('get_all');
+$scim_new_token = $_SESSION['scim_new_token'] ?? null;
+$scim_base_url  = 'https://' . getenv('MAILCOW_HOSTNAME') . '/scim/v2/';
+unset($_SESSION['scim_new_token']);
 
 $template = 'admin.twig';
 $template_data = [
@@ -121,6 +127,9 @@ $template_data = [
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   'iam_settings' => $iam_settings,
   'mbox_templates' => $mbox_templates,
+  'scim_tokens' => $scim_tokens,
+  'scim_new_token' => $scim_new_token,
+  'scim_base_url' => $scim_base_url,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

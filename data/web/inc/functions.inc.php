@@ -2400,7 +2400,11 @@ function getBaseURL($protocol = null) {
   }
 
   if (!isset($protocol)) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+      $protocol = 'https';
+    } else {
+      $protocol = 'http';
+    }
   }
   $base_url = $protocol . '://' . $host;
 
@@ -2866,7 +2870,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $stmt->execute(array(':user' => $info['email']));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row){
-        if (!in_array($row['authsource'], array("keycloak", "generic-oidc"))) {
+        if (!in_array($row['authsource'], array("keycloak", "generic-oidc", "scim"))) {
           clear_session();
           $_SESSION['return'][] =  array(
             'type' => 'danger',
