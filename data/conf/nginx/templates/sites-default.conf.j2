@@ -104,6 +104,10 @@ location ~ ^/api/v1/(.*)$ {
     try_files $uri $uri/ /json_api.php?query=$1&$args;
 }
 
+location ~ ^/scim/v2/(.*)$ {
+    try_files $uri $uri/ /scim.php?path=$1&$args;
+}
+
 location ~ ^/cache/(.*)$ {
     try_files $uri $uri/ /resource.php?file=$1;
 }
