@@ -43,6 +43,9 @@
                           {% if iam_settings.authsource == 'ldap' %}
                           <option value="ldap" {% if result.authsource == "ldap" %}selected{% endif %}>LDAP</option>
                           {% endif %}
+                          {% if scim_tokens is not empty or result.authsource == "scim" %}
+                          <option value="scim" {% if result.authsource == "scim" %}selected{% endif %}>SCIM</option>
+                          {% endif %}
                       </select>
                     </div>
                   </div>

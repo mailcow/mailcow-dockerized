@@ -1,0 +1,179 @@
+<div role="tabpanel" class="tab-pane fade" id="tab-config-scim" role="tabpanel" aria-labelledby="tab-config-scim">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-scim" data-bs-toggle="collapse" aria-controls="collapse-tab-config-scim">
+        SCIM
+      </button>
+      <span class="d-none d-md-block">SCIM</span>
+    </div>
+    <div id="collapse-tab-config-scim" class="card-body collapse" data-bs-parent="#admin-content">
+
+      <p class="offset-sm-3 mb-4">
+        SCIM 2.0 (RFC 7644) allows Identity Providers (Keycloak, Entra ID, Okta, etc.) to push user
+        provisioning events to mailcow in real time. Generate a Bearer token below and configure your
+        IdP to use <code>{{ scim_base_url }}</code>
+        as the SCIM base URL.
+      </p>
+
+      {% if iam_settings.authsource != 'keycloak' and iam_settings.authsource != 'generic-oidc' and iam_settings.authsource != 'ldap' %}
+      <div class="alert alert-warning offset-sm-3 col-sm-9 mb-4">
+        <strong>No external identity provider configured.</strong>
+        SCIM-provisioned users will not be able to log in until a Keycloak, Generic-OIDC, or LDAP provider
+        is configured under <em>System &rsaquo; Configuration &rsaquo; Access &rsaquo; Identity Provider</em>.
+      </div>
+      {% endif %}
+
+      {# One-time raw token flash modal #}
+      {% if scim_new_token %}
+      <div class="modal fade" id="scimNewTokenModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">SCIM Token Created</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="text-danger"><strong>Copy this token now — it will not be shown again.</strong></p>
+              <div class="input-group">
+                <input type="text" class="form-control font-monospace" id="scim_raw_token_display" readonly value="{{ scim_new_token }}">
+                <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('scim_raw_token_display').value)">Copy</button>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I have copied the token</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var el = document.getElementById('scimNewTokenModal');
+          if (el) { new bootstrap.Modal(el).show(); }
+        });
+      </script>
+      {% endif %}
+
+      {# Existing tokens table #}
+      {% if scim_tokens %}
+      <div class="table-responsive mb-4">
+        <table class="table table-striped table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Domain restriction</th>
+              <th>Template</th>
+              <th>IP allow list</th>
+              <th>Active</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for token in scim_tokens %}
+            <tr>
+              <td>{{ token.description }}</td>
+              <td>{{ token.domain_restriction ?? '(all domains)' }}</td>
+              <td>{{ token.template ?? '(default)' }}</td>
+              <td>
+                {% if token.skip_ip_check %}
+                  <em>Any</em>
+                {% else %}
+                  <code>{{ token.allow_from ?: '(any)' }}</code>
+                {% endif %}
+              </td>
+              <td>
+                <form method="post" class="d-inline">
+                  <input type="hidden" name="edit_scim_token" value="1">
+                  <input type="hidden" name="id" value="{{ token.id }}">
+                  <input type="hidden" name="description" value="{{ token.description }}">
+                  <input type="hidden" name="domain_restriction" value="{{ token.domain_restriction }}">
+                  <input type="hidden" name="template" value="{{ token.template }}">
+                  <input type="hidden" name="allow_from" value="{{ token.allow_from }}">
+                  <input type="hidden" name="skip_ip_check" value="{{ token.skip_ip_check }}">
+                  <input type="hidden" name="active" value="{{ token.active ? 0 : 1 }}">
+                  <button type="submit" class="btn btn-xs btn-{{ token.active ? 'success' : 'secondary' }}">
+                    {{ token.active ? 'Active' : 'Inactive' }}
+                  </button>
+                </form>
+              </td>
+              <td>{{ token.created }}</td>
+              <td>
+                <form method="post" class="d-inline" onsubmit="return confirm('Delete this SCIM token?')">
+                  <input type="hidden" name="delete_scim_token" value="1">
+                  <input type="hidden" name="id" value="{{ token.id }}">
+                  <button type="submit" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted offset-sm-3 mb-4">No SCIM tokens configured yet.</p>
+      {% endif %}
+
+      {# Add token form #}
+      <div class="card mb-3">
+        <div class="card-header">Add SCIM Token</div>
+        <div class="card-body">
+          <form method="post" autocomplete="off">
+            <input type="hidden" name="add_scim_token" value="1">
+
+            <div class="row mb-2">
+              <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                <label class="control-label">Description</label>
+              </div>
+              <div class="col-12 col-md-9 col-lg-4">
+                <input type="text" class="form-control" name="description" placeholder="e.g. Keycloak production" required>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                <label class="control-label">Domain restriction <small class="text-muted">(optional)</small></label>
+              </div>
+              <div class="col-12 col-md-9 col-lg-4">
+                <input type="text" class="form-control" name="domain_restriction" placeholder="example.com (leave blank for all domains)">
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                <label class="control-label">Mailbox template <small class="text-muted">(optional)</small></label>
+              </div>
+              <div class="col-12 col-md-9 col-lg-4">
+                <select class="form-control" name="template">
+                  <option value="">(Use system defaults)</option>
+                  {% for tmpl in mbox_templates %}
+                  <option value="{{ tmpl.template }}">{{ tmpl.template }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                <label class="control-label">IP allow list <small class="text-muted">(optional)</small></label>
+              </div>
+              <div class="col-12 col-md-9 col-lg-4">
+                <input type="text" class="form-control" name="allow_from" placeholder="192.168.1.0/24, 10.0.0.1">
+                <div class="form-check mt-1">
+                  <input class="form-check-input" type="checkbox" name="skip_ip_check" value="1" id="scim_skip_ip_check">
+                  <label class="form-check-label" for="scim_skip_ip_check">Allow from any IP</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-9 offset-md-3">
+                <button type="submit" class="btn btn-success"><i class="bi bi-plus-lg"></i> Generate token</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

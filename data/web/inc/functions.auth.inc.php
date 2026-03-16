@@ -429,6 +429,63 @@ function user_login($user, $pass, $extra = null){
         }
       }
     break;
+    case 'scim':
+      // SCIM is a provisioning protocol; authentication is handled by the configured IAM provider.
+      // If LDAP is the IAM, verify credentials against LDAP directly.
+      if ($iam_settings['authsource'] === 'ldap') {
+        $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal));
+        if ($result !== false) {
+          $stmt = $pdo->prepare("SELECT * FROM `mailbox`
+          INNER JOIN domain on mailbox.domain = domain.domain
+          WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `mailbox`.`active`='1'
+            AND `domain`.`active`='1'
+            AND `username` = :user");
+          $stmt->execute(array(':user' => $user));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($row)) {
+            return false;
+          }
+          $row['attributes'] = json_decode($row['attributes'], true);
+          $authenticators = get_tfa($user);
+          if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
+            $_SESSION['pending_mailcow_cc_username'] = $user;
+            $_SESSION['pending_mailcow_cc_role'] = "user";
+            $_SESSION['pending_tfa_methods'] = $authenticators['additional'];
+            unset($_SESSION['ldelay']);
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log'  => array(__FUNCTION__, $user, '*', 'Provider: LDAP (SCIM user)'),
+              'msg'  => array('logged_in_as', $user)
+            );
+            return "pending";
+          } else if (!isset($authenticators['additional']) || !is_array($authenticators['additional']) || count($authenticators['additional']) == 0) {
+            if (!$is_internal) {
+              unset($_SESSION['ldelay']);
+              $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
+              $stmt->execute(array(':user' => $user));
+              if (intval($row['attributes']['force_tfa']) == 1 && !tfa_exists($user)) {
+                $_SESSION['pending_tfa_setup'] = true;
+              }
+              $_SESSION['return'][] = array(
+                'type' => 'success',
+                'log'  => array(__FUNCTION__, $user, '*', 'Provider: LDAP (SCIM user)'),
+                'msg'  => array('logged_in_as', $user)
+              );
+            }
+            return "user";
+          }
+        }
+        return $result;
+      }
+      // For OIDC-based providers (Keycloak, Generic-OIDC), login goes through verify-sso, not here.
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log'  => array(__FUNCTION__, $user, 'SCIM account must authenticate via the configured identity provider'),
+        'msg'  => 'login_failed'
+      );
+      return false;
+    break;
   }
 
   return false;
