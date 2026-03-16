@@ -1,0 +1,314 @@
+openapi: 3.1.0
+info:
+  description: >-
+    SimpleLogin-Compatible API for Mailcow
+    This API allows third-party applications (like Bitwarden, Vaultwarden) to 
+    create and manage email aliases in a SimpleLogin-compatible manner.
+    
+    Authentication is done via X-API-Key header, same as mailcow API.
+  title: SimpleLogin-Compatible API for Mailcow
+  version: "1.0.0"
+
+servers:
+  - url: /api/v1
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Alias:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Base64 encoded alias email
+        email:
+          type: string
+          format: email
+          description: The alias email address
+        creation_date:
+          type: string
+          format: date-time
+        nb_block:
+          type: integer
+          description: Number of blocked emails
+        nb_forward:
+          type: integer
+          description: Number of forwarded emails
+        nb_reply:
+          type: integer
+          description: Number of replies sent
+        enabled:
+          type: boolean
+        note:
+          type: string
+        name:
+          type: string
+        pgp_enabled:
+          type: boolean
+        pgp_verified:
+          type: boolean
+        pinned:
+          type: boolean
+        custom:
+          type: boolean
+    Domain:
+      type: object
+      properties:
+        domain_name:
+          type: string
+        is_custom_domain:
+          type: boolean
+        nb_aliases:
+          type: integer
+        nb_sent:
+          type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /alias/random/new:
+    post:
+      summary: Create a random alias
+      description: Creates a random email alias for the authenticated user
+      operationId: createRandomAlias
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Optional note for the alias
+                name:
+                  type: string
+                  description: Optional display name
+                hosted:
+                  type: boolean
+                  default: true
+            example:
+              note: "Amazon shopping"
+              name: "Shopping"
+      responses:
+        "200":
+          description: Alias created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alias"
+              example:
+                id: "YWxpYXNAZXhhbXBsZS5jb20="
+                email: "random1234@example.com"
+                creation_date: "2026-03-16T12:30:00Z"
+                nb_block: 0
+                nb_forward: 0
+                nb_reply: 0
+                enabled: true
+                note: "Amazon shopping"
+                name: "Shopping"
+                pgp_enabled: false
+                pgp_verified: false
+                pinned: false
+                custom: false
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Alias already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /alias/custom/new:
+    post:
+      summary: Create a custom alias
+      description: Creates a custom email alias with a user-specified prefix
+      operationId: createCustomAlias
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - alias_prefix
+              properties:
+                alias_prefix:
+                  type: string
+                  description: The prefix for the alias (before @)
+                note:
+                  type: string
+                name:
+                  type: string
+                mailbox_id:
+                  type: string
+                  description: Target mailbox (defaults to authenticated user)
+                signed_suffix:
+                  type: string
+                  description: Domain suffix for custom domains
+            example:
+              alias_prefix: "support"
+              note: "Customer support"
+              name: "Support Team"
+      responses:
+        "200":
+          description: Alias created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alias"
+              example:
+                id: "Y3VzdG9tQGV4YW1wbGUuY29t"
+                email: "support@example.com"
+                creation_date: "2026-03-16T12:30:00Z"
+                nb_block: 0
+                nb_forward: 0
+                nb_reply: 0
+                enabled: true
+                note: "Customer support"
+                name: "Support Team"
+                pgp_enabled: false
+                pgp_verified: false
+                pinned: false
+                custom: true
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+        "409":
+          description: Alias already exists
+
+  /alias/{alias_id}:
+    get:
+      summary: Get alias information
+      parameters:
+        - name: alias_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Base64 encoded alias email
+      responses:
+        "200":
+          description: Alias information retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alias"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Alias not found
+    delete:
+      summary: Delete an alias
+      parameters:
+        - name: alias_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Alias deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Alias deleted successfully"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Alias not found
+
+  /domains:
+    get:
+      summary: Get available domains
+      description: List all available domains for alias creation
+      operationId: getDomains
+      responses:
+        "200":
+          description: List of domains
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domains:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Domain"
+              example:
+                domains:
+                  - domain_name: "example.com"
+                    is_custom_domain: true
+                    nb_aliases: 0
+                    nb_sent: 0
+                  - domain_name: "mail.example.com"
+                    is_custom_domain: false
+                    nb_aliases: 0
+                    nb_sent: 0
+        "401":
+          description: Unauthorized
+
+  /options:
+    get:
+      summary: Get alias options
+      description: Get available domains and suffixes for alias creation
+      operationId: getAliasOptions
+      responses:
+        "200":
+          description: Options retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  can_create:
+                    type: boolean
+                  suffixes:
+                    type: array
+                    items:
+                      type: string
+                  recommendations:
+                    type: array
+                    items:
+                      type: string
+              example:
+                can_create: true
+                suffixes:
+                  - "@example.com"
+                  - "@mail.example.com"
+                recommendations: []
+        "401":
+          description: Unauthorized
