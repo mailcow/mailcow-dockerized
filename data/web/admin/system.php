@@ -90,7 +90,7 @@ $mbox_templates = mailbox('get', 'mailbox_templates');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
 $scim_tokens    = scim_token('get_all');
 $scim_new_token = $_SESSION['scim_new_token'] ?? null;
-$scim_base_url  = 'https://' . getenv('MAILCOW_HOSTNAME') . '/scim/v2/';
+$scim_base_url  = getBaseUrl() . '/scim/v2/';
 unset($_SESSION['scim_new_token']);
 
 $template = 'admin.twig';
