@@ -2400,11 +2400,7 @@ function getBaseURL($protocol = null) {
   }
 
   if (!isset($protocol)) {
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-      $protocol = 'https';
-    } else {
-      $protocol = 'http';
-    }
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
   }
   $base_url = $protocol . '://' . $host;
 
