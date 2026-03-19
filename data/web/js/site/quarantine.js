@@ -226,18 +226,18 @@ jQuery(function($){
         }
         if (typeof data.fuzzy_hashes === 'object' && data.fuzzy_hashes !== null && data.fuzzy_hashes.length !== 0) {
           $.each(data.fuzzy_hashes, function (index, value) {
-            $('#qid_detail_fuzzy').append('<p style="font-family:monospace">' + value + '</p>');
+            $('#qid_detail_fuzzy').append('<p style="font-family:monospace">' + escapeHtml(value) + '</p>');
           });
         } else {
           $('#qid_detail_fuzzy').append('-');
         }
         if (typeof data.score !== 'undefined' && typeof data.action !== 'undefined') {
           if (data.action == "add header") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.junk_folder + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + escapeHtml(data.score) + '</b> - ' + lang.junk_folder + '</span>');
           } else if (data.action == "reject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-danger"><b>' + data.score + '</b> - ' + lang.rejected + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-danger"><b>' + escapeHtml(data.score) + '</b> - ' + lang.rejected + '</span>');
           } else if (data.action == "rewrite subject") {
-            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + data.score + '</b> - ' + lang.rewrite_subject + '</span>');
+            $('#qid_detail_score').append('<span class="label-rspamd-action badge fs-6 bg-warning"><b>' + escapeHtml(data.score) + '</b> - ' + lang.rewrite_subject + '</span>');
           }
         }
         if (typeof data.recipients !== 'undefined') {
@@ -254,8 +254,8 @@ jQuery(function($){
           qAtts.text('');
           $.each(data.attachments, function(index, value) {
             qAtts.append(
-              '<p><a href="/inc/ajax/qitem_details.php?id=' + qitem + '&att=' + index + '" target="_blank">' + value[0] + '</a> (' + value[1] + ')' +
-              ' - <small><a href="' + value[3] + '" target="_blank">' + lang.check_hash + '</a></small></p>'
+              '<p><a href="/inc/ajax/qitem_details.php?id=' + escapeHtml(qitem) + '&amp;att=' + index + '" target="_blank">' + escapeHtml(value[0]) + '</a> (' + escapeHtml(value[1]) + ')' +
+              ' - <small><a href="' + escapeHtml(value[3]) + '" target="_blank">' + lang.check_hash + '</a></small></p>'
             );
           });
         }
