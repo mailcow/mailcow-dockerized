@@ -24,6 +24,7 @@
                 <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
                   <input type="hidden" value="default" name="sender_acl">
                   <input type="hidden" value="0" name="force_pw_update">
+                  <input type="hidden" value="0" name="force_tfa">
                   <input type="hidden" value="0" name="sogo_access">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
@@ -314,6 +315,14 @@
                       <div class="form-check">
                         <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"{% if result.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
                         <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="force_tfa"{% if result.attributes.force_tfa == '1' %} checked{% endif %}> {{ lang.tfa.force_tfa }}</label>
+                        <small class="text-muted">{{ lang.tfa.force_tfa_info }}</small>
                       </div>
                     </div>
                   </div>

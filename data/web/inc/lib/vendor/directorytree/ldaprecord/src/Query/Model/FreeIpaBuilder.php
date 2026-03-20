@@ -6,20 +6,16 @@ class FreeIpaBuilder extends Builder
 {
     /**
      * Adds a enabled filter to the current query.
-     *
-     * @return $this
      */
-    public function whereEnabled()
+    public function whereEnabled(): static
     {
         return $this->rawFilter('(!(pwdAccountLockedTime=*))');
     }
 
     /**
      * Adds a disabled filter to the current query.
-     *
-     * @return $this
      */
-    public function whereDisabled()
+    public function whereDisabled(): static
     {
         return $this->rawFilter('(pwdAccountLockedTime=*)');
     }

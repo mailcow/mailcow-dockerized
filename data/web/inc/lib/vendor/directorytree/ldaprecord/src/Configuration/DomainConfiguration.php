@@ -8,19 +8,15 @@ class DomainConfiguration
 {
     /**
      * The extended configuration options.
-     *
-     * @var array
      */
-    protected static $extended = [];
+    protected static array $extended = [];
 
     /**
      * The configuration options array.
      *
      * The default values for each key indicate the type of value it requires.
-     *
-     * @var array
      */
-    protected $options = [
+    protected array $options = [
         // An array of LDAP hosts.
         'hosts' => [],
 
@@ -33,6 +29,9 @@ class DomainConfiguration
         // The port to use for connecting to your hosts.
         'port' => LdapInterface::PORT,
 
+        // The protocol to use for connecting to your hosts (ldap:// or ldaps://).
+        'protocol' => null,
+
         // The base distinguished name of your domain.
         'base_dn' => '',
 
@@ -42,13 +41,28 @@ class DomainConfiguration
         // The password to use for binding.
         'password' => '',
 
-        // Whether or not to use SSL when connecting.
+        // Whether to use SSL when connecting.
         'use_ssl' => false,
 
-        // Whether or not to use TLS when connecting.
+        // Whether to use TLS when connecting.
         'use_tls' => false,
 
-        // Whether or not follow referrals is enabled when performing LDAP operations.
+        // Whether to use SASL when connecting.
+        'use_sasl' => false,
+
+        // Whether to allow password changes over plaintext.
+        'allow_insecure_password_changes' => false,
+
+        // SASL options
+        'sasl_options' => [
+            'mech' => null,
+            'realm' => null,
+            'authc_id' => null,
+            'authz_id' => null,
+            'props' => null,
+        ],
+
+        // Whether follow referrals is enabled when performing LDAP operations.
         'follow_referrals' => false,
 
         // Custom LDAP options.
@@ -57,8 +71,6 @@ class DomainConfiguration
 
     /**
      * Constructor.
-     *
-     * @param  array  $options
      *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
@@ -73,32 +85,24 @@ class DomainConfiguration
 
     /**
      * Extend the configuration with a custom option, or override an existing.
-     *
-     * @param  string  $option
-     * @param  mixed  $default
-     * @return void
      */
-    public static function extend($option, $default = null)
+    public static function extend(string $option, mixed $default = null): void
     {
         static::$extended[$option] = $default;
     }
 
     /**
      * Flush the extended configuration options.
-     *
-     * @return void
      */
-    public static function flushExtended()
+    public static function flushExtended(): void
     {
         static::$extended = [];
     }
 
     /**
      * Get all configuration options.
-     *
-     * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->options;
     }
@@ -106,12 +110,9 @@ class DomainConfiguration
     /**
      * Set a configuration option.
      *
-     * @param  string  $key
-     * @param  mixed  $value
-     *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
-    public function set($key, $value)
+    public function set(string $key, mixed $value): void
     {
         if ($this->validate($key, $value)) {
             $this->options[$key] = $value;
@@ -119,17 +120,14 @@ class DomainConfiguration
     }
 
     /**
-     * Returns the value for the specified configuration options.
-     *
-     * @param  string  $key
-     * @return mixed
+     * Get the value for the specified configuration options.
      *
      * @throws ConfigurationException When the option specified does not exist.
      */
-    public function get($key)
+    public function get(string $key): mixed
     {
         if (! $this->has($key)) {
-            throw new ConfigurationException("Option {$key} does not exist.");
+            throw new ConfigurationException("Option $key does not exist.");
         }
 
         return $this->options[$key];
@@ -137,11 +135,8 @@ class DomainConfiguration
 
     /**
      * Checks if a configuration option exists.
-     *
-     * @param  string  $key
-     * @return bool
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return array_key_exists($key, $this->options);
     }
@@ -149,13 +144,9 @@ class DomainConfiguration
     /**
      * Validate the configuration option.
      *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return bool
-     *
      * @throws ConfigurationException When an option value given is an invalid type.
      */
-    protected function validate($key, $value)
+    protected function validate(string $key, mixed $value): bool
     {
         $default = $this->get($key);
 

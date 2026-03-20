@@ -6,15 +6,13 @@ class BooleanValidator extends Validator
 {
     /**
      * The validation exception message.
-     *
-     * @var string
      */
-    protected $message = 'Option [:option] must be a boolean.';
+    protected string $message = 'Option [:option] must be a boolean.';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function passes()
+    public function passes(): bool
     {
         return is_bool($this->value);
     }

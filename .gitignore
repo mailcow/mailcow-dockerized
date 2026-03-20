@@ -51,6 +51,7 @@ data/conf/sogo/cron.creds
 data/conf/sogo/custom-fulllogo.svg
 data/conf/sogo/custom-shortlogo.svg
 data/conf/sogo/custom-fulllogo.png
+data/conf/acme/dns-01.conf
 data/gitea/
 data/gogs/
 data/hooks/dovecot/*

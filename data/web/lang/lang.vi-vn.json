@@ -111,7 +111,8 @@
         "timeout2": "Thời gian chờ kết nối đến máy chủ cục bộ",
         "username": "Tên người dùng",
         "validate": "Xác thực",
-        "validation_success": "Xác thực thành công"
+        "validation_success": "Xác thực thành công",
+        "sender_allowed": "Cho phép gửi dưới bí danh này"
     },
     "admin": {
         "access": "Truy cập",
