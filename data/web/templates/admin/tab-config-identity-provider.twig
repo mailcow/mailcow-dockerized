@@ -442,6 +442,17 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_use_pkce }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="use_pkce" value="1" {% if iam_settings.use_pkce == 1 %}checked{% endif %}>
+              </div>
+              <small class="text-muted">{{ lang.admin.iam_use_pkce_info }}</small>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
               <label class="control-label">{{ lang.admin.ignore_ssl_error }}</label>
             </div>
             <div class="col-12 col-md-9">

@@ -252,6 +252,8 @@
         "iam_token_url": "Token endpoint",
         "iam_userinfo_url": "User info endpoint",
         "iam_username_field": "Username Field",
+        "iam_use_pkce": "Use PKCE",
+        "iam_use_pkce_info": "Optional for Generic OIDC. Enable this if your provider supports PKCE for the Authorization Code flow.",
         "iam_binddn": "Bind DN",
         "iam_use_ssl": "Use SSL",
         "iam_use_ssl_info": "If enabling SSL, and port is set to 389, it will be automatically overridden to use 636.",

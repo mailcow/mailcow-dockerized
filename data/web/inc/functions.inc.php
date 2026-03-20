@@ -2439,6 +2439,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_ssl":
           case "use_tls":
           case "login_provisioning":
+          case "use_pkce":
           case "ignore_ssl_errors":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
@@ -2450,6 +2451,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // set login_provisioning if not exists
       if (!array_key_exists('login_provisioning', $settings)) {
         $settings['login_provisioning'] = 1;
+      }
+      // set use_pkce if not exists
+      if (!array_key_exists('use_pkce', $settings)) {
+        $settings['use_pkce'] = 0;
       }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
@@ -2532,7 +2537,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
-          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
+          $_data['use_pkce']          = isset($_data['use_pkce']) ? boolval($_data['use_pkce']) : false;
+          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'use_pkce', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "ldap":
           $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
@@ -2786,7 +2792,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
               'urlAuthorize'            => $settings['authorize_url'],
               'urlAccessToken'          => $settings['token_url'],
               'urlResourceOwnerDetails' => $settings['userinfo_url'],
-              'scopes'                  => $settings['client_scopes']
+              'scopes'                  => $settings['client_scopes'],
+              'pkceMethod'              => !empty($settings['use_pkce']) ? \League\OAuth2\Client\Provider\AbstractProvider::PKCE_METHOD_S256 : null
             ]);
             $provider->setHttpClient($guzzyClient);
           }
@@ -2829,11 +2836,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       try {
+        if ($iam_settings['authsource'] == 'generic-oidc' && !empty($iam_settings['use_pkce'])) {
+          $pkceCode = $_SESSION['oauth2pkcecode'] ?? null;
+          if (empty($pkceCode)) {
+            throw new \RuntimeException('Missing PKCE verifier');
+          }
+          $iam_provider->setPkceCode($pkceCode);
+        }
         $token = $iam_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
         $plain_token = $token->getToken();
         $plain_refreshtoken = $token->getRefreshToken();
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
+        unset($_SESSION['oauth2pkcecode']);
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $e->getMessage()),
@@ -2841,6 +2856,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
+      unset($_SESSION['oauth2pkcecode']);
       // check if email address is given
       if (empty($info['email'])) {
         $_SESSION['return'][] =  array(
@@ -3039,6 +3055,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       $authUrl = $iam_provider->getAuthorizationUrl($options);
       $_SESSION['oauth2state'] = $iam_provider->getState();
+      if ($iam_settings['authsource'] == 'generic-oidc' && !empty($iam_settings['use_pkce'])) {
+        $_SESSION['oauth2pkcecode'] = $iam_provider->getPkceCode();
+      } else {
+        unset($_SESSION['oauth2pkcecode']);
+      }
       return $authUrl;
     break;
     case "get-keycloak-admin-token":
