@@ -871,4 +871,103 @@ jQuery(function($){
     if ($(elem).parent().parent().parent().parent().children().length > 2)
       $(elem).parent().parent().parent().remove();
   }
+
+  // ── SCIM attribute mapping helper ──────────────────────────────────────────
+  // Builds a mapper row, appends it to listSelector, then applies selectpicker.
+  // Options are sourced from the Default template select already in the list,
+  // which is server-rendered by Twig — no inline <script> data needed.
+  function addScimMapperRow(listSelector, delBtnClass, mapperVal, templateVal) {
+    var $list = $(listSelector);
+    var $row  = $('<div class="row px-2 mb-1"></div>');
+    var $col1 = $('<div class="col-5 p-0 pe-2"></div>');
+    $col1.append($('<input type="text" class="form-control" name="mappers">').val(mapperVal || ''));
+    var $col2 = $('<div class="col-5 p-0 pe-2"></div>');
+    var $sel  = $('<select class="form-control" name="templates"><option value="">-- template --</option></select>');
+    // Selectpicker hides but does not remove the native <select> from the DOM,
+    // so we can still read its <option> elements to build our new select.
+    $list.find('select[name="default_template"]').find('option[value!=""]').each(function() {
+      $sel.append($('<option></option>').val($(this).val()).text($.trim($(this).text())));
+    });
+    $col2.append($sel);
+    var $col3 = $('<div class="col-2 p-0 d-flex"></div>');
+    $col3.append($('<button type="button" class="btn btn-sm btn-secondary ms-auto ' + delBtnClass + '"><i class="bi bi-x-lg"></i></button>'));
+    $row.append($col1).append($col2).append($col3);
+    $list.append($row);
+    // Apply selectpicker (matching the global init in mailcow.js) after DOM append
+    $sel.selectpicker({'styleBase': 'btn btn-xs-lg', 'noneSelectedText': lang_footer.nothing_selected, 'liveSearch': true});
+    $sel.selectpicker('val', templateVal || '');
+  }
+
+  // Seed the add form with one empty mapper row on page load
+  addScimMapperRow('#scim_add_mapping_list', 'scim_rolemap_del_new', '', '');
+
+  // ── SCIM attribute mapping — edit modal ────────────────────────────────────
+  $('.scim_rolemap_add').click(function(e) {
+    e.preventDefault();
+    addScimMapperRow('#scim_mapping_list', 'scim_rolemap_del', '', '');
+  });
+  $(document).on('click', '#scim_mapping_list .scim_rolemap_del', function(e) {
+    e.preventDefault();
+    $(this).closest('.row').remove();
+  });
+
+  // ── SCIM attribute mapping — add form ──────────────────────────────────────
+  $('.scim_rolemap_add_new').click(function(e) {
+    e.preventDefault();
+    addScimMapperRow('#scim_add_mapping_list', 'scim_rolemap_del_new', '', '');
+  });
+  $(document).on('click', '#scim_add_mapping_list .scim_rolemap_del_new', function(e) {
+    e.preventDefault();
+    $(this).closest('.row').remove();
+  });
+
+  // ── SCIM delete token — Bootstrap confirmation modal ───────────────────────
+  $(document).on('click', '.scim-delete-btn', function(e) {
+    e.preventDefault();
+    var tokenId     = $(this).data('id');
+    var description = $(this).data('description');
+    $('#ItemsToDelete').empty().append($('<li>').text(description));
+    $('#ConfirmDeleteModal').modal('show')
+      .one('click', '#IsConfirmed', function() {
+        var $form = $('<form method="post"></form>');
+        $form.append($('<input type="hidden" name="delete_scim_token" value="1">'));
+        $form.append($('<input type="hidden" name="id">').val(tokenId));
+        $form.append($('<input type="hidden" name="csrf_token">').val(csrf_token));
+        $('body').append($form);
+        $form.submit();
+      })
+      .one('click', '#isCanceled', function() {
+        $('#ConfirmDeleteModal').off();
+        $('#ConfirmDeleteModal').modal('hide');
+      });
+  });
+
+  // ── SCIM edit modal — populate fields from data-* attributes ───────────────
+  $('#scimEditModal').on('show.bs.modal', function(event) {
+    var btn = $(event.relatedTarget);
+    $('#scimEditId').val(btn.data('id'));
+    $('#scimEditDescription').val(btn.data('description'));
+    $('#scimEditDomainRestriction').selectpicker('val', btn.data('domain-restriction') || '');
+    $('#scimEditAllowFrom').val(btn.data('allow-from') || '');
+    $('#scimEditActive').val(btn.data('active'));
+
+    // Set default template via selectpicker API to update the custom dropdown display
+    $('#scimEditTemplate').selectpicker('val', btn.data('default-template') || '');
+
+    // Remove all injected mapper rows, then rebuild from data-* attributes
+    $('#scim_mapping_list').find('.row:not(.scim-default-row)').remove();
+
+    var mappers   = btn.data('mappers')   || [];
+    var templates = btn.data('templates') || [];
+    if (!Array.isArray(mappers))   { try { mappers   = JSON.parse(mappers);   } catch(e) { mappers   = []; } }
+    if (!Array.isArray(templates)) { try { templates = JSON.parse(templates); } catch(e) { templates = []; } }
+
+    if (mappers.length === 0) {
+      addScimMapperRow('#scim_mapping_list', 'scim_rolemap_del', '', '');
+    } else {
+      for (var i = 0; i < mappers.length; i++) {
+        addScimMapperRow('#scim_mapping_list', 'scim_rolemap_del', mappers[i], templates[i] || '');
+      }
+    }
+  });
 });
