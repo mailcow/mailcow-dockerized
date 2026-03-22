@@ -53,6 +53,95 @@
       </script>
       {% endif %}
 
+      {# ── Edit token modal ────────────────────────────────────────────────── #}
+      <div class="modal fade" id="scimEditModal" tabindex="-1" role="dialog" aria-labelledby="scimEditModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="scimEditModalLabel">Edit SCIM Token</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post" autocomplete="off" id="scimEditForm">
+                <input type="hidden" name="edit_scim_token" value="1">
+                <input type="hidden" name="id" id="scimEditId">
+                <input type="hidden" name="active" id="scimEditActive">
+
+                <div class="row mb-2">
+                  <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                    <label class="control-label">Description</label>
+                  </div>
+                  <div class="col-12 col-md-9">
+                    <input type="text" class="form-control" name="description" id="scimEditDescription" required>
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                    <label class="control-label">Domain restriction <small class="text-muted">(optional)</small></label>
+                  </div>
+                  <div class="col-12 col-md-9">
+                    <select class="form-control" name="domain_restriction" id="scimEditDomainRestriction" data-live-search="true">
+                      <option value="">All domains</option>
+                      {% for domain in all_domains %}
+                      <option value="{{ domain }}">{{ domain }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                    <label class="control-label">IP allow list <small class="text-muted">(optional)</small></label>
+                  </div>
+                  <div class="col-12 col-md-9">
+                    <input type="text" class="form-control" name="allow_from" id="scimEditAllowFrom" placeholder="192.168.1.0/24, 10.0.0.1">
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                    <label class="control-label">Attribute mapping</label>
+                  </div>
+                  <div class="col-12 col-md-9 col-lg-6">
+                    <div class="row px-2 align-items-center mb-1">
+                      <span class="col-5 p-0 pe-2"><small class="text-muted">mailcow_template value</small></span>
+                      <span class="col-5 p-0 pe-2"><small class="text-muted">Mailbox template</small></span>
+                      <div class="col-2 p-0 d-flex">
+                        <button type="button" class="btn btn-sm btn-secondary ms-auto scim_rolemap_add"><i class="bi bi-plus-lg"></i></button>
+                      </div>
+                    </div>
+                    <div id="scim_mapping_list">
+                      {# Default row — always present, required, no delete button #}
+                      <div class="row px-2 mb-1 scim-default-row">
+                        <div class="col-5 p-0 pe-2 d-flex align-items-center">
+                          <span>Default</span>
+                        </div>
+                        <div class="col-5 p-0 pe-2">
+                          <select class="form-control" name="default_template" id="scimEditTemplate" data-live-search="true" required>
+                            <option value="">Default</option>
+                            {% for tmpl in mbox_templates %}
+                            <option value="{{ tmpl.template }}">{{ tmpl.template }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="col-2 p-0 d-flex"></div>
+                      </div>
+                      {# Attribute→template rows injected by JS when the modal opens #}
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" form="scimEditForm" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {# Existing tokens table #}
       {% if scim_tokens %}
       <div class="table-responsive mb-4">
@@ -61,7 +150,7 @@
             <tr>
               <th>Description</th>
               <th>Domain restriction</th>
-              <th>Template</th>
+              <th>Default template</th>
               <th>IP allow list</th>
               <th>Active</th>
               <th>Created</th>
@@ -73,7 +162,7 @@
             <tr>
               <td>{{ token.description }}</td>
               <td>{{ token.domain_restriction ?? '(all domains)' }}</td>
-              <td>{{ token.template ?? '(default)' }}</td>
+              <td>{{ token.default_template ?? '(default)' }}</td>
               <td><code>{{ token.allow_from ?: '(any)' }}</code></td>
               <td>
                 <form method="post" class="d-inline">
@@ -81,8 +170,10 @@
                   <input type="hidden" name="id" value="{{ token.id }}">
                   <input type="hidden" name="description" value="{{ token.description }}">
                   <input type="hidden" name="domain_restriction" value="{{ token.domain_restriction }}">
-                  <input type="hidden" name="template" value="{{ token.template }}">
+                  <input type="hidden" name="default_template" value="{{ token.default_template }}">
                   <input type="hidden" name="allow_from" value="{{ token.allow_from }}">
+                  <input type="hidden" name="mappers" value="{{ token.mappers }}">
+                  <input type="hidden" name="templates" value="{{ token.templates }}">
                   <input type="hidden" name="active" value="{{ token.active ? 0 : 1 }}">
                   <button type="submit" class="btn btn-xs btn-{{ token.active ? 'success' : 'secondary' }}">
                     {{ token.active ? 'Active' : 'Inactive' }}
@@ -90,12 +181,20 @@
                 </form>
               </td>
               <td>{{ token.created }}</td>
-              <td>
-                <form method="post" class="d-inline" onsubmit="return confirm('Delete this SCIM token?')">
-                  <input type="hidden" name="delete_scim_token" value="1">
-                  <input type="hidden" name="id" value="{{ token.id }}">
-                  <button type="submit" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i></button>
-                </form>
+              <td class="text-nowrap">
+                <button type="button" class="btn btn-xs btn-primary scim-edit-btn"
+                  data-bs-toggle="modal" data-bs-target="#scimEditModal"
+                  data-id="{{ token.id }}"
+                  data-description="{{ token.description }}"
+                  data-domain-restriction="{{ token.domain_restriction }}"
+                  data-default-template="{{ token.default_template }}"
+                  data-allow-from="{{ token.allow_from }}"
+                  data-mappers="{{ token.mappers }}"
+                  data-templates="{{ token.templates }}"
+                  data-active="{{ token.active }}">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-xs btn-danger scim-delete-btn" data-id="{{ token.id }}" data-description="{{ token.description }}"><i class="bi bi-trash"></i></button>
               </td>
             </tr>
             {% endfor %}
@@ -127,21 +226,45 @@
                 <label class="control-label">Domain restriction <small class="text-muted">(optional)</small></label>
               </div>
               <div class="col-12 col-md-9 col-lg-4">
-                <input type="text" class="form-control" name="domain_restriction" placeholder="example.com (leave blank for all domains)">
+                <select class="form-control" name="domain_restriction" data-live-search="true">
+                  <option value="">All domains</option>
+                  {% for domain in all_domains %}
+                  <option value="{{ domain }}">{{ domain }}</option>
+                  {% endfor %}
+                </select>
               </div>
             </div>
 
             <div class="row mb-2">
               <div class="col-md-3 d-flex align-items-center justify-content-md-end">
-                <label class="control-label">Mailbox template <small class="text-muted">(optional)</small></label>
+                <label class="control-label">Attribute mapping</label>
               </div>
               <div class="col-12 col-md-9 col-lg-4">
-                <select class="form-control" name="template">
-                  <option value="">(Use system defaults)</option>
-                  {% for tmpl in mbox_templates %}
-                  <option value="{{ tmpl.template }}">{{ tmpl.template }}</option>
-                  {% endfor %}
-                </select>
+                <div class="row px-2 align-items-center mb-1">
+                  <span class="col-5 p-0 pe-2"><small class="text-muted">mailcow_template value</small></span>
+                  <span class="col-5 p-0 pe-2"><small class="text-muted">Mailbox template</small></span>
+                  <div class="col-2 p-0 d-flex">
+                    <button type="button" class="btn btn-sm btn-secondary ms-auto scim_rolemap_add_new"><i class="bi bi-plus-lg"></i></button>
+                  </div>
+                </div>
+                <div id="scim_add_mapping_list">
+                  {# Default row — always present, required, no delete button #}
+                  <div class="row px-2 mb-1 scim-default-row">
+                    <div class="col-5 p-0 pe-2 d-flex align-items-center">
+                      <span>Default</span>
+                    </div>
+                    <div class="col-5 p-0 pe-2">
+                      <select class="form-control" name="default_template" data-live-search="true" required>
+                        <option value="">Default</option>
+                        {% for tmpl in mbox_templates %}
+                        <option value="{{ tmpl.template }}">{{ tmpl.template }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-2 p-0 d-flex"></div>
+                  </div>
+                  {# Optional attribute→template rows injected by JS #}
+                </div>
               </div>
             </div>
 

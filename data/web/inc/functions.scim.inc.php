@@ -113,6 +113,58 @@ function scim_setup_session(): void {
   $_SESSION['access_all_exception']        = '1';
 }
 
+/**
+ * Parse and JSON-encode the mappers/templates arrays from POST data.
+ * Returns [mappers_json, templates_json] with only non-empty paired entries kept.
+ */
+function scim_encode_mappers(array $data): array {
+  $mappers_raw   = $data['mappers']   ?? [];
+  $templates_raw = $data['templates'] ?? [];
+  $mappers_raw   = is_array($mappers_raw)   ? $mappers_raw   : [$mappers_raw];
+  $templates_raw = is_array($templates_raw) ? $templates_raw : [$templates_raw];
+
+  $m = [];
+  $t = [];
+  foreach ($mappers_raw as $i => $mapper) {
+    $mapper   = trim((string)$mapper);
+    $template = trim((string)($templates_raw[$i] ?? ''));
+    if ($mapper !== '' && $template !== '') {
+      $m[] = $mapper;
+      $t[] = $template;
+    }
+  }
+
+  return [
+    count($m) > 0 ? json_encode($m) : null,
+    count($t) > 0 ? json_encode($t) : null,
+  ];
+}
+
+/**
+ * Resolve the mailbox template for a SCIM-provisioned user.
+ *
+ * Checks the SCIM body for a 'mailcow_template' attribute (top-level or inside
+ * the enterprise extension), then walks the token's mapper list for a match.
+ * Falls back to the token-level default template, or null if none is configured.
+ */
+function scim_resolve_template(array $body, array $token): ?string {
+  $enterprise_ext = 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User';
+  $attr = $body['mailcow_template']
+       ?? $body[$enterprise_ext]['mailcow_template']
+       ?? null;
+
+  if ($attr !== null) {
+    $mappers   = json_decode($token['mappers']   ?? '[]', true) ?? [];
+    $templates = json_decode($token['templates'] ?? '[]', true) ?? [];
+    $key = array_search($attr, $mappers, true);
+    if ($key !== false && isset($templates[$key]) && $templates[$key] !== '') {
+      return $templates[$key];
+    }
+  }
+
+  return !empty($token['default_template']) ? $token['default_template'] : null;
+}
+
 // ─── Authentication ──────────────────────────────────────────────────────────
 
 /**
@@ -163,35 +215,24 @@ function scim_token(string $_action, array $_data = []): mixed {
     case 'add':
       $description        = htmlspecialchars(trim($_data['description'] ?? ''), ENT_QUOTES);
       $domain_restriction = !empty($_data['domain_restriction']) ? strtolower(trim($_data['domain_restriction'])) : null;
-      $template           = !empty($_data['template']) ? trim($_data['template']) : null;
+      $default_template   = !empty($_data['default_template']) ? trim($_data['default_template']) : null;
       $allow_from         = trim($_data['allow_from'] ?? '');
-
-      // Validate domain_restriction if provided
-      if ($domain_restriction !== null) {
-        $stmt = $pdo->prepare("SELECT `domain` FROM `domain` WHERE `domain` = :domain");
-        $stmt->execute([':domain' => $domain_restriction]);
-        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
-          $_SESSION['return'][] = [
-            'type' => 'danger',
-            'log'  => [__FUNCTION__, $_action],
-            'msg'  => 'scim_domain_not_found',
-          ];
-          return false;
-        }
-      }
+      [$mappers_json, $templates_json] = scim_encode_mappers($_data);
 
       $raw_token  = bin2hex(random_bytes(32));
       $token_hash = hash('sha256', $raw_token);
 
       $stmt = $pdo->prepare("INSERT INTO `scim_tokens`
-        (`description`, `token_hash`, `domain_restriction`, `template`, `allow_from`, `active`)
-        VALUES (:description, :token_hash, :domain_restriction, :template, :allow_from, '1')");
+        (`description`, `token_hash`, `domain_restriction`, `default_template`, `allow_from`, `mappers`, `templates`, `active`)
+        VALUES (:description, :token_hash, :domain_restriction, :default_template, :allow_from, :mappers, :templates, '1')");
       $stmt->execute([
         ':description'        => $description,
         ':token_hash'         => $token_hash,
         ':domain_restriction' => $domain_restriction,
-        ':template'           => $template,
+        ':default_template'   => $default_template,
         ':allow_from'         => $allow_from,
+        ':mappers'            => $mappers_json,
+        ':templates'          => $templates_json,
       ]);
 
       $id = $pdo->lastInsertId();
@@ -207,35 +248,28 @@ function scim_token(string $_action, array $_data = []): mixed {
       $id            = intval($_data['id'] ?? 0);
       $description   = htmlspecialchars(trim($_data['description'] ?? ''), ENT_QUOTES);
       $allow_from    = trim($_data['allow_from'] ?? '');
-      $active        = (isset($_data['active']) && intval($_data['active']) == 1) ? 1 : 0;
-      $template      = !empty($_data['template']) ? trim($_data['template']) : null;
+      $active           = (isset($_data['active']) && intval($_data['active']) == 1) ? 1 : 0;
+      $default_template = !empty($_data['default_template']) ? trim($_data['default_template']) : null;
+      [$mappers_json, $templates_json] = scim_encode_mappers($_data);
 
       $domain_restriction = !empty($_data['domain_restriction']) ? strtolower(trim($_data['domain_restriction'])) : null;
-      if ($domain_restriction !== null) {
-        $stmt = $pdo->prepare("SELECT `domain` FROM `domain` WHERE `domain` = :domain");
-        $stmt->execute([':domain' => $domain_restriction]);
-        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
-          $_SESSION['return'][] = [
-            'type' => 'danger',
-            'log'  => [__FUNCTION__, $_action],
-            'msg'  => 'scim_domain_not_found',
-          ];
-          return false;
-        }
-      }
 
       $stmt = $pdo->prepare("UPDATE `scim_tokens`
         SET `description` = :description,
             `domain_restriction` = :domain_restriction,
-            `template` = :template,
+            `default_template` = :default_template,
             `allow_from` = :allow_from,
+            `mappers` = :mappers,
+            `templates` = :templates,
             `active` = :active
         WHERE `id` = :id");
       $stmt->execute([
         ':description'        => $description,
         ':domain_restriction' => $domain_restriction,
-        ':template'           => $template,
+        ':default_template'   => $default_template,
         ':allow_from'         => $allow_from,
+        ':mappers'            => $mappers_json,
+        ':templates'          => $templates_json,
         ':active'             => $active,
         ':id'                 => $id,
       ]);
@@ -258,8 +292,8 @@ function scim_token(string $_action, array $_data = []): mixed {
       return true;
 
     case 'get_all':
-      $stmt = $pdo->query("SELECT `id`, `description`, `domain_restriction`, `template`,
-        `allow_from`, `skip_ip_check`, `active`, `created`, `modified`
+      $stmt = $pdo->query("SELECT `id`, `description`, `domain_restriction`, `default_template`,
+        `allow_from`, `mappers`, `templates`, `active`, `created`, `modified`
         FROM `scim_tokens` ORDER BY `created` DESC");
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
@@ -544,13 +578,14 @@ function scim_create_user(array $body, array $token): array {
 
   scim_setup_session();
 
-  if (!empty($token['template'])) {
+  $resolved_template = scim_resolve_template($body, $token);
+  if ($resolved_template !== null) {
     mailbox('add', 'mailbox_from_template', [
       'domain'     => $domain,
       'local_part' => $local_part,
       'name'       => $name,
       'authsource' => 'scim',
-      'template'   => $token['template'],
+      'template'   => $resolved_template,
       'active'     => $active,
     ]);
   } else {

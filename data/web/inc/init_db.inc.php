@@ -1156,8 +1156,10 @@ function init_db_schema()
           "description"        => "VARCHAR(255) NOT NULL DEFAULT ''",
           "token_hash"         => "VARCHAR(255) NOT NULL",
           "domain_restriction" => "VARCHAR(255) DEFAULT NULL",
-          "template"           => "VARCHAR(255) DEFAULT NULL",
           "allow_from"         => "TEXT NOT NULL",
+          "default_template"   => "VARCHAR(255) DEFAULT NULL",
+          "mappers"            => "TEXT DEFAULT NULL",
+          "templates"          => "TEXT DEFAULT NULL",
           "active"             => "TINYINT(1) NOT NULL DEFAULT '1'",
           "created"            => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified"           => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
