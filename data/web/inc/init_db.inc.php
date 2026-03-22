@@ -1158,7 +1158,6 @@ function init_db_schema()
           "domain_restriction" => "VARCHAR(255) DEFAULT NULL",
           "template"           => "VARCHAR(255) DEFAULT NULL",
           "allow_from"         => "TEXT NOT NULL",
-          "skip_ip_check"      => "TINYINT(1) NOT NULL DEFAULT '0'",
           "active"             => "TINYINT(1) NOT NULL DEFAULT '1'",
           "created"            => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified"           => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
