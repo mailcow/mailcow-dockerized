@@ -74,13 +74,7 @@
               <td>{{ token.description }}</td>
               <td>{{ token.domain_restriction ?? '(all domains)' }}</td>
               <td>{{ token.template ?? '(default)' }}</td>
-              <td>
-                {% if token.skip_ip_check %}
-                  <em>Any</em>
-                {% else %}
-                  <code>{{ token.allow_from ?: '(any)' }}</code>
-                {% endif %}
-              </td>
+              <td><code>{{ token.allow_from ?: '(any)' }}</code></td>
               <td>
                 <form method="post" class="d-inline">
                   <input type="hidden" name="edit_scim_token" value="1">
@@ -89,7 +83,6 @@
                   <input type="hidden" name="domain_restriction" value="{{ token.domain_restriction }}">
                   <input type="hidden" name="template" value="{{ token.template }}">
                   <input type="hidden" name="allow_from" value="{{ token.allow_from }}">
-                  <input type="hidden" name="skip_ip_check" value="{{ token.skip_ip_check }}">
                   <input type="hidden" name="active" value="{{ token.active ? 0 : 1 }}">
                   <button type="submit" class="btn btn-xs btn-{{ token.active ? 'success' : 'secondary' }}">
                     {{ token.active ? 'Active' : 'Inactive' }}
@@ -158,10 +151,6 @@
               </div>
               <div class="col-12 col-md-9 col-lg-4">
                 <input type="text" class="form-control" name="allow_from" placeholder="192.168.1.0/24, 10.0.0.1">
-                <div class="form-check mt-1">
-                  <input class="form-check-input" type="checkbox" name="skip_ip_check" value="1" id="scim_skip_ip_check">
-                  <label class="form-check-label" for="scim_skip_ip_check">Allow from any IP</label>
-                </div>
               </div>
             </div>
 

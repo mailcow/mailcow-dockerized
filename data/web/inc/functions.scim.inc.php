@@ -142,15 +142,13 @@ function scim_authenticate(): array {
   }
 
   // IP ACL check
-  if (!(int)$token['skip_ip_check']) {
-    $remote     = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-    $allow_from = array_map('trim', preg_split('/[ ,;\n]+/', $token['allow_from']));
-    $allow_from = array_filter($allow_from);
-    if (!empty($allow_from) && !ip_acl($remote, $allow_from)) {
-      $redis->publish('F2B_CHANNEL', 'mailcow SCIM: IP denied for token from ' . $remote);
-      scim_log('err', 'Authentication failed: IP ' . $remote . ' not in allow list for token ID ' . $token['id']);
-      scim_error(401, 'IP address not allowed');
-    }
+  $remote     = filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+  $allow_from = array_map('trim', preg_split('/[ ,;\n]+/', $token['allow_from']));
+  $allow_from = array_filter($allow_from);
+  if (!empty($allow_from) && !ip_acl($remote, $allow_from)) {
+    $redis->publish('F2B_CHANNEL', 'mailcow SCIM: IP denied for token from ' . $remote);
+    scim_log('err', 'Authentication failed: IP ' . $remote . ' not in allow list for token ID ' . $token['id']);
+    scim_error(401, 'IP address not allowed');
   }
 
   return $token;
@@ -167,7 +165,6 @@ function scim_token(string $_action, array $_data = []): mixed {
       $domain_restriction = !empty($_data['domain_restriction']) ? strtolower(trim($_data['domain_restriction'])) : null;
       $template           = !empty($_data['template']) ? trim($_data['template']) : null;
       $allow_from         = trim($_data['allow_from'] ?? '');
-      $skip_ip_check      = (isset($_data['skip_ip_check']) && intval($_data['skip_ip_check']) == 1) ? 1 : 0;
 
       // Validate domain_restriction if provided
       if ($domain_restriction !== null) {
@@ -187,15 +184,14 @@ function scim_token(string $_action, array $_data = []): mixed {
       $token_hash = hash('sha256', $raw_token);
 
       $stmt = $pdo->prepare("INSERT INTO `scim_tokens`
-        (`description`, `token_hash`, `domain_restriction`, `template`, `allow_from`, `skip_ip_check`, `active`)
-        VALUES (:description, :token_hash, :domain_restriction, :template, :allow_from, :skip_ip_check, '1')");
+        (`description`, `token_hash`, `domain_restriction`, `template`, `allow_from`, `active`)
+        VALUES (:description, :token_hash, :domain_restriction, :template, :allow_from, '1')");
       $stmt->execute([
         ':description'        => $description,
         ':token_hash'         => $token_hash,
         ':domain_restriction' => $domain_restriction,
         ':template'           => $template,
         ':allow_from'         => $allow_from,
-        ':skip_ip_check'      => $skip_ip_check,
       ]);
 
       $id = $pdo->lastInsertId();
@@ -211,7 +207,6 @@ function scim_token(string $_action, array $_data = []): mixed {
       $id            = intval($_data['id'] ?? 0);
       $description   = htmlspecialchars(trim($_data['description'] ?? ''), ENT_QUOTES);
       $allow_from    = trim($_data['allow_from'] ?? '');
-      $skip_ip_check = (isset($_data['skip_ip_check']) && intval($_data['skip_ip_check']) == 1) ? 1 : 0;
       $active        = (isset($_data['active']) && intval($_data['active']) == 1) ? 1 : 0;
       $template      = !empty($_data['template']) ? trim($_data['template']) : null;
 
@@ -234,7 +229,6 @@ function scim_token(string $_action, array $_data = []): mixed {
             `domain_restriction` = :domain_restriction,
             `template` = :template,
             `allow_from` = :allow_from,
-            `skip_ip_check` = :skip_ip_check,
             `active` = :active
         WHERE `id` = :id");
       $stmt->execute([
@@ -242,7 +236,6 @@ function scim_token(string $_action, array $_data = []): mixed {
         ':domain_restriction' => $domain_restriction,
         ':template'           => $template,
         ':allow_from'         => $allow_from,
-        ':skip_ip_check'      => $skip_ip_check,
         ':active'             => $active,
         ':id'                 => $id,
       ]);
