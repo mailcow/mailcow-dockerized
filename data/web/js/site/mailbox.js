@@ -923,6 +923,7 @@ jQuery(function($){
             item.last_mail_login = (item.attributes.imap_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(item.last_imap_login)) + '</div><br>' : '') +
                                    (item.attributes.pop3_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(item.last_pop3_login)) + '</div><br>' : '') +
                                    (item.attributes.smtp_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(item.last_smtp_login)) + '</div><br>' : '') +
+                                   '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SOGO @ ' + unix_time_format(Number(item.last_sogo_login)) + '</div><br>' + 
                                    '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(item.last_sso_login)) + '</div>';
             /*
             if (!item.rl) {
