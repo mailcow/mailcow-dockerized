@@ -39,7 +39,7 @@ for ($i = 0; $i < count($mailcow_apps_processed); $i++) {
     $hide_mailcow_apps = false;
   }
   if (!empty($_SESSION['mailcow_cc_username'])){
-    if ($app_links_processed[$i]['user_link']) {
+    if (!empty($mailcow_apps_processed[$i]['user_link'])) {
       $mailcow_apps_processed[$i]['user_link'] = str_replace('%u', $_SESSION['mailcow_cc_username'], $mailcow_apps_processed[$i]['user_link']);
     } else {
       $mailcow_apps_processed[$i]['user_link'] = $mailcow_apps_processed[$i]['link'];
