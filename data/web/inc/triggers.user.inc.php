@@ -85,7 +85,7 @@ if (isset($_POST["verify_tfa_login"])) {
             intval($user_details['attributes']['force_pw_update']) != 1 &&
             getenv('SKIP_SOGO') != "y" &&
             !$is_dual) {
-          header("Location: /SOGo/so/");
+          header("Location: /sogo-auth.php?login=" . urlencode($_SESSION["mailcow_cc_username"]));
           die();
         } else {
           header("Location: /user");
@@ -165,7 +165,7 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
         intval($user_details['attributes']['force_pw_update']) != 1 &&
         getenv('SKIP_SOGO') != "y" &&
         !$is_dual) {
-      header("Location: /SOGo/so/");
+      header("Location: /sogo-auth.php?login=" . urlencode($_SESSION["mailcow_cc_username"]));
       die();
     } else {
       header("Location: /user");
