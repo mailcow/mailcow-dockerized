@@ -139,6 +139,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'user_acls' => acl('get', 'user', $mailbox),
           'mailbox_details' => $result,
           'iam_settings' => $iam_settings,
+          'scim_tokens' => scim_token('get_all'),
         ];
       }
     }
