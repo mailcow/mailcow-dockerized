@@ -1128,6 +1128,11 @@ jQuery(function($){
           item.ua = escapeHtml(item.ua);
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
+        if (item.user == null) {
+          item.user = 'unknown';
+        } else {
+          item.user = escapeHtml(item.user);
+        }
         if (item.service == "activesync") {
           item.service = '<span class="badge fs-6 bg-info">ActiveSync</span>';
         }

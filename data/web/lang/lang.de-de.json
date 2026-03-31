@@ -512,6 +512,7 @@
         "pushover_credentials_missing": "Pushover Token und/oder Key fehlen",
         "pushover_key": "Pushover Key hat das falsche Format",
         "pushover_token": "Pushover Token hat das falsche Format",
+        "quarantine_category_invalid": "Quarantäne-Kategorie muss eine der folgenden sein: add_header, reject, all",
         "quota_not_0_not_numeric": "Speicherplatz muss numerisch und >= 0 sein",
         "recipient_map_entry_exists": "Eine Empfängerumschreibung für Objekt \"%s\" existiert bereits",
         "recovery_email_failed": "E-Mail zur Wiederherstellung konnte nicht gesendet werden. Bitte wenden Sie sich an Ihren Administrator.",

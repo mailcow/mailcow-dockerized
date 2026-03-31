@@ -89,7 +89,7 @@ $globalVariables = [
   'app_links' => $app_links,
   'app_links_processed' => $app_links_processed,
   'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
-  'uri' => $_SERVER['REQUEST_URI'],
+  'uri' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/',
 ];
 
 foreach ($globalVariables as $globalVariableName => $globalVariableValue) {
