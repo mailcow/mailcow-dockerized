@@ -513,6 +513,7 @@
         "pushover_credentials_missing": "Pushover token and or key missing",
         "pushover_key": "Pushover key has a wrong format",
         "pushover_token": "Pushover token has a wrong format",
+        "quarantine_category_invalid": "Quarantine category must be one of: add_header, reject, all",
         "quota_not_0_not_numeric": "Quota must be numeric and >= 0",
         "recipient_map_entry_exists": "A Recipient map entry \"%s\" exists",
         "recovery_email_failed": "Could not send a recovery email. Please contact your administrator.",
