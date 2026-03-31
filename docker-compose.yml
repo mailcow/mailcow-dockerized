@@ -10,6 +10,14 @@ services:
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
       restart: always
       tty: true
+      # Same check as the image HEALTHCHECK, repeated here because Podman ignores
+      # healthchecks embedded in OCI images (needed for depends_on: service_healthy)
+      healthcheck:
+        test: ["CMD-SHELL", "[ -f /tmp/healthcheck_status ] && [ \"$(cat /tmp/healthcheck_status)\" -eq 0 ] || exit 1"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 10s
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.254
@@ -17,7 +25,7 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.11
+      image: docker.io/mariadb:10.11
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
@@ -42,7 +50,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.11-alpine
+      image: docker.io/redis:7.4.11-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
@@ -386,10 +394,15 @@ services:
       depends_on:
         unbound-mailcow:
           condition: service_healthy
+      # Debian's ping carries file capabilities and fails to exec without NET_RAW in the
+      # bounding set (Podman default). Docker grants NET_RAW by default, so this is a no-op there.
+      cap_add:
+        - NET_RAW
       volumes:
         - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
+        - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - TZ=${TZ}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
@@ -404,7 +417,7 @@ services:
             - postfix-tlspol
 
     memcached-mailcow:
-      image: memcached:alpine
+      image: docker.io/memcached:alpine
       restart: always
       environment:
         - TZ=${TZ}
@@ -614,7 +627,7 @@ services:
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
       networks:
         mailcow-network:
           aliases:
@@ -640,7 +653,7 @@ services:
             - olefy
 
     ofelia-mailcow:
-      image: mcuadros/ofelia:latest
+      image: docker.io/mcuadros/ofelia:latest
       restart: always
       command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
       environment:
@@ -654,7 +667,7 @@ services:
       security_opt:
         - label=disable
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
       networks:
         mailcow-network:
           aliases:
