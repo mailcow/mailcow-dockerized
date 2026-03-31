@@ -392,10 +392,16 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.8.23
+      # image: ghcr.io/mailcow/postfix-tlspol:1.8.23 # temp local use:
+      build:
+        context: data/Dockerfiles/postfix-tlspol
+        dockerfile: Dockerfile
+      image: localhost/mailcow/postfix-tlspol-local
       depends_on:
         unbound-mailcow:
           condition: service_healthy
+      cap_add:
+        - NET_RAW
       volumes:
         - postfix-tlspol-vol-1:/var/lib/postfix-tlspol
       environment:

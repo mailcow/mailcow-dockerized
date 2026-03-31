@@ -46,7 +46,7 @@ server:
 
 dns:
   # must support DNSSEC
-  address: 127.0.0.11:53
+  # address: 127.0.0.11:53
 EOF
 
 /usr/local/bin/postfix-tlspol -config /etc/postfix-tlspol/config.yaml
