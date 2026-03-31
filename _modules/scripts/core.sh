@@ -16,7 +16,7 @@ NC='\e[0m'
 caller="${BASH_SOURCE[1]##*/}"
 
 get_installed_tools(){
-    for bin in openssl curl docker git awk sha1sum grep cut jq; do
+    for bin in openssl curl git awk sha1sum grep cut jq; do
         if [[ -z $(command -v ${bin}) ]]; then
           echo "Error: Cannot find command '${bin}'. Cannot proceed."
           echo "Solution: Please review system requirements and install requirements. Then, re-run the script."
@@ -26,29 +26,103 @@ get_installed_tools(){
         fi
     done
 
+    if [[ -z $(command -v docker) ]] && [[ -z $(command -v podman) ]]; then
+        echo "Error: Cannot find 'docker' or 'podman'. Cannot proceed."
+        echo "Solution: Please install Docker or Podman. Then, re-run the script."
+        echo "See System Requirements: https://docs.mailcow.email/getstarted/install/"
+        echo "Exiting..."
+        exit 1
+    fi
+
     if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\"${NC}"; exit 1; fi
     # This will also cover sort
     if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\"${NC}"; exit 1; fi
     if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\"${NC}"; exit 1; fi
 }
 
-get_docker_version(){
-    # Check Docker Version (need at least 24.X)
-    docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
+detect_container_runtime(){
+    # Detect the container runtime (Docker or Podman) and set:
+    #   CONTAINER_RUNTIME - "docker" or "podman"
+    #   CONTAINER_CMD     - binary used for container commands (same as CONTAINER_RUNTIME)
+    #   DOCKER_SOCKET     - host path of the API socket mounted into dockerapi/ofelia
+    # CONTAINER_RUNTIME can be pre-set (e.g. from mailcow.conf) to force a runtime.
+    if [[ -n ${CONTAINER_RUNTIME} ]] && [[ "${CONTAINER_RUNTIME}" != "docker" ]] && [[ "${CONTAINER_RUNTIME}" != "podman" ]]; then
+        echo -e "${RED}Invalid CONTAINER_RUNTIME value '${CONTAINER_RUNTIME}', expected 'docker' or 'podman'.${NC}"
+        exit 1
+    fi
+    if [[ -n ${CONTAINER_RUNTIME} ]] && [[ -z $(command -v ${CONTAINER_RUNTIME}) ]]; then
+        echo -e "${YELLOW}CONTAINER_RUNTIME is set to '${CONTAINER_RUNTIME}' but the binary was not found, autodetecting...${NC}"
+        CONTAINER_RUNTIME=
+    fi
+    if [[ -z ${CONTAINER_RUNTIME} ]]; then
+        # podman-docker installs a "docker" shim that reports "podman version x.y.z"
+        if [[ -n $(command -v docker) ]] && ! docker --version 2>/dev/null | grep -q -i "podman"; then
+            CONTAINER_RUNTIME=docker
+        elif [[ -n $(command -v podman) ]]; then
+            CONTAINER_RUNTIME=podman
+        else
+            echo -e "${RED}Cannot find a supported container runtime (Docker or Podman). Cannot proceed.${NC}"
+            exit 1
+        fi
+    fi
+    CONTAINER_CMD=${CONTAINER_RUNTIME}
+
+    if [[ "${CONTAINER_RUNTIME}" == "podman" ]]; then
+        # Check Podman Version (need at least 5.X)
+        podman_version=$(podman version --format '{{.Server.Version}}' 2>/dev/null | cut -d '.' -f 1)
+        if [[ -z ${podman_version} ]] || [[ ${podman_version} -lt 5 ]]; then
+            echo -e "${RED}Cannot find Podman with a Version higher or equals 5.0.0${NC}"
+            echo -e "${YELLOW}mailcow needs a newer Podman version to work properly...${NC}"
+            echo -e "${RED}Please update your Podman installation... exiting${NC}"
+            exit 1
+        fi
+        # Podman API socket (rootful: /run/podman/podman.sock, rootless: $XDG_RUNTIME_DIR/podman/podman.sock)
+        if [[ -z ${DOCKER_SOCKET} ]]; then
+            DOCKER_SOCKET=$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null)
+            [[ -z ${DOCKER_SOCKET} ]] && DOCKER_SOCKET="/run/podman/podman.sock"
+            DOCKER_SOCKET=${DOCKER_SOCKET#unix://}
+        fi
+        if [[ "$(podman info --format '{{.Host.RemoteSocket.Exists}}' 2>/dev/null)" != "true" ]]; then
+            echo -e "${YELLOW}Podman API socket ${DOCKER_SOCKET} is not active.${NC}"
+            echo -e "${YELLOW}dockerapi-mailcow and ofelia-mailcow need it, enable it with: systemctl enable --now podman.socket (add --user for rootless Podman)${NC}"
+            sleep 2
+        fi
+        echo -e "${GREEN}Podman ${podman_version}.x detected. Using socket: ${DOCKER_SOCKET}${NC}"
+    else
+        # Check Docker Version (need at least 24.X)
+        docker_version=$(docker version --format '{{.Server.Version}}' 2>/dev/null | cut -d '.' -f 1)
+        if [[ -z ${docker_version} ]] || [[ ${docker_version} -lt 24 ]]; then
+            echo -e "${RED}Cannot find Docker with a Version higher or equals 24.0.0${NC}"
+            echo -e "${YELLOW}mailcow needs a newer Docker version to work properly...${NC}"
+            echo -e "${RED}Please update your Docker installation... exiting${NC}"
+            exit 1
+        fi
+        DOCKER_SOCKET=${DOCKER_SOCKET:-/var/run/docker.sock}
+        echo -e "${GREEN}Docker ${docker_version}.x detected. Using socket: ${DOCKER_SOCKET}${NC}"
+    fi
+    export CONTAINER_RUNTIME CONTAINER_CMD DOCKER_SOCKET
 }
 
 get_compose_type(){
-  if docker compose > /dev/null 2>&1; then
-    if docker compose version --short | grep -e "^[2-9]\." -e "^v[2-9]\." -e "^[1-9][0-9]\." -e "^v[1-9][0-9]\." > /dev/null 2>&1; then
+  CONTAINER_CMD=${CONTAINER_CMD:-docker}
+  # Compose plugin ("docker compose" / "podman compose"). Podman delegates to an external
+  # provider and prints a banner on stderr, so only stdout is evaluated.
+  if ${CONTAINER_CMD} compose version --short > /dev/null 2>&1; then
+    COMPOSE_PLUGIN_VERSION=$(${CONTAINER_CMD} compose version --short 2>/dev/null)
+    if echo "${COMPOSE_PLUGIN_VERSION}" | grep -e "^[2-9]\." -e "^v[2-9]\." -e "^[1-9][0-9]\." -e "^v[1-9][0-9]\." > /dev/null 2>&1; then
       COMPOSE_VERSION=native
-      COMPOSE_COMMAND="docker compose"
+      COMPOSE_COMMAND="${CONTAINER_CMD} compose"
       if [[ "$caller" == "update.sh" ]]; then
         sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' "$SCRIPT_DIR/mailcow.conf"
       fi
-      echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
+      echo -e "\e[33mFound Docker Compose Plugin (native) via '${COMPOSE_COMMAND}'.\e[0m"
       echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
       sleep 2
       echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
+    elif [[ "${CONTAINER_CMD}" == "podman" ]] && echo "${COMPOSE_PLUGIN_VERSION}" | grep -e "^[01]\." > /dev/null 2>&1; then
+      echo -e "\e[31m'podman compose' is using podman-compose (${COMPOSE_PLUGIN_VERSION}) as provider, which is not supported by mailcow.\e[0m"
+      echo -e "\e[31mPlease install Docker Compose v2 (docker-compose plugin) as the podman compose provider: https://docs.mailcow.email/install/\e[0m"
+      exit 1
     else
       echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
       echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
@@ -120,13 +194,13 @@ prefetch_images() {
   git fetch origin #${BRANCH}
   while read image; do
     RET_C=0
-    until docker pull "${image}"; do
+    until ${CONTAINER_CMD:-docker} pull "${image}"; do
       RET_C=$((RET_C + 1))
       echo -e "\e[33m\nError pulling $image, retrying...\e[0m"
       [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
       sleep 1
     done
-  done < <(git show "origin/${BRANCH}:docker-compose.yml" | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
+  done < <(git show "origin/${BRANCH}:docker-compose.yml" | awk '$1 == "image:" { print $2 }')
 }
 
 docker_garbage() {
@@ -136,7 +210,7 @@ docker_garbage() {
   declare -A IMAGES_INFO
   COMPOSE_IMAGES=($(grep -oP "image: \K(ghcr\.io/)?mailcow.+" "${SCRIPT_DIR}/docker-compose.yml"))
 
-  for existing_image in $(docker images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep -E '(mailcow/|ghcr\.io/mailcow/)'); do
+  for existing_image in $(${CONTAINER_CMD:-docker} images --format "{{.ID}}:{{.Repository}}:{{.Tag}}" | grep -E '(mailcow/|ghcr\.io/mailcow/)'); do
       ID=$(echo "$existing_image" | cut -d ':' -f 1)
       REPOSITORY=$(echo "$existing_image" | cut -d ':' -f 2)
       TAG=$(echo "$existing_image" | cut -d ':' -f 3)
@@ -164,16 +238,16 @@ docker_garbage() {
       if [ -z "$FORCE" ]; then
           read -r -p "Do you want to delete them to free up some space? [y/N] " response
           if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-              docker rmi ${IMGS_TO_DELETE[*]}
+              ${CONTAINER_CMD:-docker} rmi ${IMGS_TO_DELETE[*]}
           else
               echo "OK, skipped."
           fi
       else
           echo "Running in forced mode! Force removing old mailcow images..."
-          docker rmi ${IMGS_TO_DELETE[*]}
+          ${CONTAINER_CMD:-docker} rmi ${IMGS_TO_DELETE[*]}
       fi
       echo -e "\e[32mFurther cleanup...\e[0m"
-      echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"docker system prune\""
+      echo "If you want to cleanup further garbage collected by Docker, please make sure all containers are up and running before cleaning your system by executing \"${CONTAINER_CMD:-docker} system prune\""
   fi
 }
 

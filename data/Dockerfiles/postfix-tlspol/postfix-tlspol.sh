@@ -45,8 +45,9 @@ server:
   cache-file: /var/lib/postfix-tlspol/cache.db
 
 dns:
-  # must support DNSSEC
-  address: 127.0.0.11:53
+  # must support DNSSEC - query unbound-mailcow directly instead of the runtime's
+  # embedded resolver (127.0.0.11 on Docker, which does not exist on Podman)
+  address: ${IPV4_NETWORK:-172.22.1}.254:53
 EOF
 
 /usr/local/bin/postfix-tlspol -config /etc/postfix-tlspol/config.yaml
