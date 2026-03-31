@@ -34,6 +34,14 @@ until ping postfix -c1 > /dev/null; do
 done
 echo "Postfix OK"
 
+# Podman uses a different internal DNS resolver - comment out the address line if Podman is detected
+if command -v podman > /dev/null 2>&1; then
+  echo "Running in Podman - skipping DNS address configuration"
+  DNS_ADDRESS_LINE=""
+else
+  DNS_ADDRESS_LINE="  address: 127.0.0.11:53"
+fi
+
 cat <<EOF > /etc/postfix-tlspol/config.yaml
 server:
   address: 0.0.0.0:8642
@@ -46,7 +54,7 @@ server:
 
 dns:
   # must support DNSSEC
-  address: 127.0.0.11:53
+${DNS_ADDRESS_LINE}
 EOF
 
 /usr/local/bin/postfix-tlspol -config /etc/postfix-tlspol/config.yaml

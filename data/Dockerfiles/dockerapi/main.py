@@ -39,8 +39,9 @@ async def lifespan(app: FastAPI):
     redis_client = redis = await aioredis.from_url("redis://redis-mailcow:6379/0", password=os.environ['REDISPASS'])
 
   # Init docker clients
-  sync_docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', version='auto')
-  async_docker_client = aiodocker.Docker(url='unix:///var/run/docker.sock')
+  docker_socket = os.environ.get('DOCKER_SOCKET', '/var/run/docker.sock')
+  sync_docker_client = docker.DockerClient(base_url=f'unix:/{docker_socket}', version='auto')
+  async_docker_client = aiodocker.Docker(url=f'unix://{docker_socket}')
 
   dockerapi = DockerApi(redis_client, sync_docker_client, async_docker_client, logger)
 
