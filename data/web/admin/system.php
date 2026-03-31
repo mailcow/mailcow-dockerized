@@ -87,7 +87,6 @@ $f2b_data = fail2ban('get');
 // mbox templates
 $mbox_templates = mailbox('get', 'mailbox_templates');
 // SCIM
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
 $scim_tokens    = scim_token('get_all');
 $scim_new_token = $_SESSION['scim_new_token'] ?? null;
 $scim_base_url  = getBaseUrl() . '/scim/v2/';
