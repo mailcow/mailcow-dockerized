@@ -29,6 +29,8 @@ adapt_new_options() {
   "SNAT6_TO_SOURCE"
   "COMPOSE_PROJECT_NAME"
   "DOCKER_COMPOSE_VERSION"
+  "CONTAINER_RUNTIME"
+  "DOCKER_SOCKET"
   "SQL_PORT"
   "API_KEY"
   "API_KEY_READ_ONLY"
@@ -88,6 +90,17 @@ adapt_new_options() {
             echo "# Please be aware that at least one of those variants should be installed on your machine or mailcow will fail." >> mailcow.conf
             echo "" >> mailcow.conf
             echo "DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}" >> mailcow.conf
+            ;;
+        CONTAINER_RUNTIME)
+            echo '# Container runtime: "docker" or "podman", auto-detected by generate_config.sh and update.sh.' >> mailcow.conf
+            echo '# Set it manually only if both runtimes are installed and the wrong one gets detected.' >> mailcow.conf
+            echo "CONTAINER_RUNTIME=${CONTAINER_RUNTIME}" >> mailcow.conf
+            ;;
+        DOCKER_SOCKET)
+            echo '# Host path of the container API socket mounted into dockerapi-mailcow and ofelia-mailcow.' >> mailcow.conf
+            echo '# Auto-detected: Docker -> /var/run/docker.sock, Podman -> the podman.sock path reported by "podman info".' >> mailcow.conf
+            echo '# Change this if your socket is at a non-standard location.' >> mailcow.conf
+            echo "DOCKER_SOCKET=${DOCKER_SOCKET}" >> mailcow.conf
             ;;
 
         DOVEADM_PORT)

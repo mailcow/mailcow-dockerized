@@ -38,7 +38,7 @@ function preflight_local_checks() {
     exit 1
   fi
 
-  for bin in rsync docker grep cut; do
+  for bin in rsync ${CONTAINER_CMD} grep cut; do
     if [[ -z $(which ${bin}) ]]; then
       >&2 echo -e "\e[31mCannot find ${bin} in local PATH, exiting...\e[0m"
       exit 1
@@ -72,7 +72,7 @@ function preflight_remote_checks() {
       exit 1
   fi
 
-  for bin in rsync docker; do
+  for bin in rsync ${CONTAINER_CMD}; do
     if ! ssh -o StrictHostKeyChecking=no \
       -i "${REMOTE_SSH_KEY}" \
       ${REMOTE_SSH_HOST} \
@@ -88,7 +88,7 @@ function preflight_remote_checks() {
       ${REMOTE_SSH_HOST} \
       -p ${REMOTE_SSH_PORT} \
       "bash -s" << "EOF"
-if docker compose > /dev/null 2>&1; then
+if ${CONTAINER_CMD} compose > /dev/null 2>&1; then
 	exit 0
 elif docker-compose version --short | grep "^2." > /dev/null 2>&1; then
 	exit 1
@@ -98,12 +98,12 @@ fi
 EOF
 
 if [ $? = 0 ]; then
-  COMPOSE_COMMAND="docker compose"
-  echo "INFO: Using native docker compose on remote"
+  COMPOSE_COMMAND="${CONTAINER_CMD} compose"
+  echo "INFO: Using native ${CONTAINER_CMD} compose on remote"
 
 elif [ $? = 1 ]; then
   COMPOSE_COMMAND="docker-compose"
-  echo "INFO: Using standalone docker compose on remote"
+  echo "INFO: Using standalone docker-compose on remote"
 
 else
   echo -e "\e[31mCannot find any Docker Compose on remote, exiting...\e[0m"
@@ -116,6 +116,7 @@ fi
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${SCRIPT_DIR}/../mailcow.conf"
+CONTAINER_CMD=${CONTAINER_RUNTIME:-docker}
 COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
 CMPS_PRJ=$(echo ${COMPOSE_PROJECT_NAME} | tr -cd '0-9A-Za-z-_')
 SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' "${COMPOSE_FILE}")
@@ -175,13 +176,13 @@ fi
 
 # Trigger a Redis save for a consistent Redis copy
 echo -ne "\033[1mRunning redis-cli save... \033[0m"
-docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
+${CONTAINER_CMD} exec $(${CONTAINER_CMD} ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
 
 # Syncing volumes related to compose project
 # Same here: make sure destination exists
-for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
+for vol in $(${CONTAINER_CMD} volume ls -qf name="${CMPS_PRJ}"); do
 
-  mountpoint="$(docker inspect ${vol} | grep Mountpoint | cut -d '"' -f4)"
+  mountpoint="$(${CONTAINER_CMD} inspect ${vol} | grep Mountpoint | cut -d '"' -f4)"
 
   echo -e "\033[1mCreating remote mountpoint ${mountpoint} for ${vol}...\033[0m"
 
@@ -197,9 +198,9 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
     rm -rf "${SCRIPT_DIR}/../_tmp_mariabackup/"
 
     echo -e "\033[1mCreating consistent backup of MariaDB volume...\033[0m"
-    if ! docker run --rm \
-      --network $(docker network ls -qf name=${CMPS_PRJ}_) \
-      -v $(docker volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
+    if ! ${CONTAINER_CMD} run --rm \
+      --network $(${CONTAINER_CMD} network ls -qf name=${CMPS_PRJ}_) \
+      -v $(${CONTAINER_CMD} volume ls -qf name=${CMPS_PRJ}_mysql-vol-1):/var/lib/mysql/:ro \
       --entrypoint= \
       -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
       ${SQLIMAGE} mariabackup --host mysql --user root --password ${DBROOT} --backup --target-dir=/backup 2>/dev/null ; then
@@ -208,8 +209,8 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
         exit 1
     fi
 
-    if ! docker run --rm \
-      --network $(docker network ls -qf name=${CMPS_PRJ}_) \
+    if ! ${CONTAINER_CMD} run --rm \
+      --network $(${CONTAINER_CMD} network ls -qf name=${CMPS_PRJ}_) \
       --entrypoint= \
       -v "${SCRIPT_DIR}/../_tmp_mariabackup":/backup \
       ${SQLIMAGE} mariabackup --prepare --target-dir=/backup 2> /dev/null ; then
@@ -265,7 +266,8 @@ for vol in $(docker volume ls -qf name="${CMPS_PRJ}"); do
 
 done
 
-# Restart Dockerd on destination
+# Restart Dockerd on destination (Podman has no daemon and picks up new volumes directly)
+if [[ "${CONTAINER_CMD}" == "docker" ]]; then
 echo -ne "\033[1mRestarting Docker daemon on remote to detect new volumes... \033[0m"
 if ! ssh -o StrictHostKeyChecking=no \
   -i "${REMOTE_SSH_KEY}" \
@@ -276,6 +278,7 @@ if ! ssh -o StrictHostKeyChecking=no \
     exit 1
 fi
 echo "OK"
+fi
 
   echo -e "\e[33mPulling images on remote...\e[0m"
   echo -e "\e[33mProcess is NOT stuck! Please wait...\e[0m"
