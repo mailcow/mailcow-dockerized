@@ -280,7 +280,7 @@ adapt_new_options() {
             echo ENABLE_IPV6=${IPV6_BOOL} >> mailcow.conf
             ;;
         SKIP_CLAMD)
-            echo '# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n' >> mailcow.conf
+            echo '# Skip ClamAV (clamd-mailcow) anti-virus - y/n' >> mailcow.conf
             echo 'SKIP_CLAMD=n' >> mailcow.conf
             ;;
         SKIP_OLEFY)
