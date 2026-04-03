@@ -29,7 +29,7 @@ if ($trusted_client == 0 && !isset($_POST['authorized'])) {
 }
 
 // print the authorization code if the user has authorized your client
-$is_authorized = ($trusted_client == 1 || $_POST['authorized'] == '1');
+$is_authorized = ($trusted_client == 1 || ($_POST['authorized'] ?? '') == '1');
 $oauth2_server->handleAuthorizeRequest($request, $response, $is_authorized, $_SESSION['mailcow_cc_username']);
 if ($is_authorized) {
   unset($_SESSION['oauth2_request']);
