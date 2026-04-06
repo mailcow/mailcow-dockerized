@@ -2,7 +2,7 @@ FROM debian:trixie-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG RSPAMD_VER=rspamd_4.0.0-1~4a2ab73
+ARG RSPAMD_VER=rspamd_4.0.-1~8700333
 ARG CODENAME=trixie
 ENV LC_ALL=C
 
