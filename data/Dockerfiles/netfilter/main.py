@@ -209,6 +209,12 @@ def unban(net):
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
 
+def safe_unban(net, reason=''):
+  try:
+    unban(net)
+  except Exception as ex:
+    logger.logWarn('safe_unban failed for %s (%s): %s' % (net, reason, ex))
+
 def permBan(net, unban=False):
   global f2boptions
   global lock
@@ -315,7 +321,7 @@ def autopurge():
     if QUEUE_UNBAN:
       for net in QUEUE_UNBAN:
         logdebug("Autopurge: unbanning queued net: %s" % net)
-        unban(str(net))
+        safe_unban(str(net), 'queue_unban')
     # Only check expiry for actively banned IPs:
     active_bans = r.hgetall('F2B_ACTIVE_BANS')
     now = time.time()
@@ -326,13 +332,30 @@ def autopurge():
         expire = float(expire_str)
       except Exception:
         logdebug("Invalid expire time for %s; unbanning" % net_str)
-        unban(net_str)
+        safe_unban(net_str, 'invalid_expire')
         continue
       time_left = expire - now
       logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
-      if time_left <= 0:
-        logdebug("Ban expired for %s" % net_str)
-        unban(net_str)
+      # Safeguard: expiry timestamp in the past must be purged (time_left <= 0)
+      if expire <= now:
+        logger.logInfo(
+          'Safeguard: purging expired active ban %s (expire=%s, now=%.1f, left=%.1fs)' %
+          (net_str, expire_str, now, time_left))
+        safe_unban(net_str, 'expired')
+    # Second pass: retry if first unban failed transiently or entry stuck with past expiry
+    active_bans_retry = r.hgetall('F2B_ACTIVE_BANS')
+    now_retry = time.time()
+    for net_str, expire_str in active_bans_retry.items():
+      try:
+        expire = float(expire_str)
+      except Exception:
+        safe_unban(net_str, 'invalid_expire_retry')
+        continue
+      if expire <= now_retry:
+        logger.logInfo(
+          'Safeguard retry: forcing unban for still-stale %s (expire=%s)' %
+          (net_str, expire_str))
+        safe_unban(net_str, 'stale_retry')
 
 def mailcowChainOrder():
   global lock
