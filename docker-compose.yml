@@ -634,6 +634,7 @@ services:
       image: ghcr.io/mailcow/dockerapi:2.12
       security_opt:
         - label=disable
+        - no-new-privileges:true
       restart: always
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -645,8 +646,6 @@ services:
         - REDISPASS=${REDISPASS}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
-      security_opt:
-        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
@@ -687,10 +686,9 @@ services:
         ofelia.enabled: "true"
       security_opt:
         - label=disable
+        - no-new-privileges:true
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
-      security_opt:
-        - no-new-privileges:true
       networks:
         mailcow-network:
           aliases:
