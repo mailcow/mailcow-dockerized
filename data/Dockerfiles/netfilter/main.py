@@ -190,6 +190,14 @@ def unban(net):
     logger.logInfo('Unbanning %s' % net)
   else:
     logger.logInfo('Unbanning %s (not in local bans dict)' % net)
+  # Clear Redis first (no lock). If firewall calls block on lock, we still drop the
+  # UI "unban pending" state and F2B_ACTIVE_BANS entry; otherwise users stay stuck forever.
+  if r is not None:
+    try:
+      r.hdel('F2B_ACTIVE_BANS', net_str)
+      r.hdel('F2B_QUEUE_UNBAN', net_str)
+    except Exception as ex:
+      logger.logWarn('Redis hdel during unban failed for %s: %s' % (net_str, ex))
   try:
     net_obj = ipaddress.ip_network(net_str, strict=False)
     if type(net_obj) is ipaddress.IPv4Network:
@@ -201,9 +209,7 @@ def unban(net):
         logdebug("Calling tables.unbanIPv6(%s)" % net_str)
         tables.unbanIPv6(net_str)
   except (ValueError, Exception) as e:
-    logger.logWarn('Invalid or unparseable net %s for firewall unban: %s; removing from Redis only' % (net_str, e))
-  r.hdel('F2B_ACTIVE_BANS', net_str)
-  r.hdel('F2B_QUEUE_UNBAN', net_str)
+    logger.logWarn('Invalid or unparseable net %s for firewall unban: %s' % (net_str, e))
   if in_bans:
     logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net_str)
     bans[net]['attempts'] = 0
