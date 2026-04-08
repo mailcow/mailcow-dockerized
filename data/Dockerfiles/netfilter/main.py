@@ -449,6 +449,11 @@ if __name__ == '__main__':
     tables = NFTables(chain_name, logger)
   else:
     logger.logInfo('Using IPTables backend')
+    logger.logWarn(
+        "DEPRECATION: iptables-legacy is deprecated and will be removed in future releases. "
+        "Please switch to nftables on your host to ensure complete compatibility."
+    )
+    time.sleep(5)
     tables = IPTables(chain_name, logger)
 
   clear()

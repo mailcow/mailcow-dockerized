@@ -9,6 +9,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form" autocomplete="off">
           <input type="hidden" value="0" name="force_pw_update">
+          <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
           <input type="hidden" value="0" name="protocol_access">
           <input type="hidden" value="mailcow" name="authsource">
@@ -148,6 +149,8 @@
                 <option value="pop3">POP3</option>
                 <option value="smtp">SMTP</option>
                 <option value="sieve">Sieve</option>
+                <option value="eas">ActiveSync</option>
+                <option value="dav">CalDAV/CardDAV</option>
               </select>
             </div>
           </div>
@@ -202,6 +205,14 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="force_tfa" id="force_tfa"> {{ lang.tfa.force_tfa }}</label>
+                <small class="text-muted">{{ lang.tfa.force_tfa_info }}</small>
+              </div>
+            </div>
+          </div>
           {% if not skip_sogo %}
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
@@ -235,6 +246,7 @@
         <form class="form-horizontal" data-id="addmailbox_template" role="form" method="post">
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="force_pw_update">
+          <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
           <input type="hidden" value="0" name="protocol_access">
 
@@ -335,6 +347,8 @@
                 <option value="pop3" selected>POP3</option>
                 <option value="smtp" selected>SMTP</option>
                 <option value="sieve" selected>Sieve</option>
+                <option value="activesync" selected>ActiveSync</option>
+                <option value="dav" selected>CalDAV/CardDAV</option>
               </select>
             </div>
           </div>
@@ -387,6 +401,14 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
                 <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="force_tfa"> {{ lang.tfa.force_tfa }}</label>
+                <small class="text-muted">{{ lang.tfa.force_tfa_info }}</small>
               </div>
             </div>
           </div>
@@ -778,6 +800,7 @@
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_alias">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="internal">
+          <input type="hidden" value="0" name="sender_allowed">
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="address">{{ lang.add.alias_address }}</label>
             <div class="col-sm-10">
@@ -809,7 +832,11 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="internal"> {{ lang.add.internal }}</label>
               </div>
-              <small class="text-muted d-block">{{ lang.edit.internal_info }}</small>
+              <small class="text-muted d-block mb-2">{{ lang.edit.internal_info }}</small>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sender_allowed" checked> {{ lang.add.sender_allowed }}</label>
+              </div>
+              <small class="text-muted d-block">{{ lang.edit.sender_allowed_info }}</small>
             </div>
           </div>
           <div class="row mb-4">

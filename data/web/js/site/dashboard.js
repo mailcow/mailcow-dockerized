@@ -47,8 +47,6 @@ $(document).ready(function() {
     window.fetch("/api/v1/get/status/host/ip", { method:'GET', cache:'no-cache' }).then(function(response) {
       return response.json();
     }).then(function(data) {
-      console.log(data);
-
       // display host ips
       if (data.ipv4)
         $("#host_ipv4").text(data.ipv4);
@@ -1007,7 +1005,7 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-          },    
+          },
           render: function (data) {
             return data.value;
           }
@@ -1032,7 +1030,7 @@ jQuery(function($){
               "data-order": cellData.sortBy,
               "data-sort": cellData.sortBy
             });
-          },    
+          },
           render: function (data) {
             return data.value;
           }
@@ -1130,6 +1128,11 @@ jQuery(function($){
           item.ua = escapeHtml(item.ua);
         }
         item.ua = '<span style="font-size:small">' + item.ua + '</span>';
+        if (item.user == null) {
+          item.user = 'unknown';
+        } else {
+          item.user = escapeHtml(item.user);
+        }
         if (item.service == "activesync") {
           item.service = '<span class="badge fs-6 bg-info">ActiveSync</span>';
         }
@@ -1348,8 +1351,6 @@ function update_stats(timeout=5){
   window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
     return response.json();
   }).then(function(data) {
-    console.log(data);
-
     if (data){
       // display table data
       $("#host_date").text(data.system_time);
@@ -1399,8 +1400,6 @@ function update_container_stats(timeout=5){
         var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
         var netIOCtx = Chart.getChart(container + "_NetIOChart");
 
-        console.log(container);
-        console.log(data);
         prev_stats = null;
         if (data.length >= 2){
           prev_stats = data[data.length -2];

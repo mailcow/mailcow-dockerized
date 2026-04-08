@@ -2,38 +2,34 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use LdapRecord\Query\Model\Builder;
+
 /** @mixin \LdapRecord\Models\Model */
 trait HasScopes
 {
     /**
      * Begin querying the direct descendants of the model.
-     *
-     * @return \LdapRecord\Query\Model\Builder
      */
-    public function descendants()
+    public function descendants(): Builder
     {
-        return $this->in($this->getDn())->listing();
+        return $this->in($this->getDn())->list();
     }
 
     /**
      * Begin querying the direct ancestors of the model.
-     *
-     * @return \LdapRecord\Query\Model\Builder
      */
-    public function ancestors()
+    public function ancestors(): Builder
     {
         $parent = $this->getParentDn($this->getDn());
 
-        return $this->in($this->getParentDn($parent))->listing();
+        return $this->in($this->getParentDn($parent))->list();
     }
 
     /**
      * Begin querying the direct siblings of the model.
-     *
-     * @return \LdapRecord\Query\Model\Builder
      */
-    public function siblings()
+    public function siblings(): Builder
     {
-        return $this->in($this->getParentDn($this->getDn()))->listing();
+        return $this->in($this->getParentDn($this->getDn()))->list();
     }
 }

@@ -97,18 +97,17 @@ jQuery(function($){
               var datetime = new Date(item.datetime.replace(/-/g, "/"));
               var local_datetime = datetime.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});
               var service = '<div class="badge bg-secondary">' + item.service.toUpperCase() + '</div>';
-              var app_password = item.app_password ? ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-app-indicator"></i> ' + escapeHtml(item.app_password_name || "App") + '</a>' : '';
-              var real_rip = item.real_rip.startsWith("Web") ? item.real_rip : '<a href="https://bgp.tools/prefix/' + item.real_rip + '" target="_blank">' + item.real_rip + "</a>";
-              var ip_location = item.location ? ' <span class="flag-icon flag-icon-' + item.location.toLowerCase() + '"></span>' : '';
+              var app_password = item.app_password ? ' <a href="/edit/app-passwd/' + item.app_password + '"><i class="bi bi-key-fill"></i><span class="ms-1">' + escapeHtml(item.app_password_name || "App") + '</span></a>' : '';
+              var real_rip = item.real_rip.startsWith("Web") ? escapeHtml(item.real_rip) : '<a href="https://bgp.tools/prefix/' + escapeHtml(item.real_rip) + '" target="_blank">' + escapeHtml(item.real_rip) + "</a>";
+              var ip_location = item.location ? ' <span class="flag-icon flag-icon-' + escapeHtml(item.location.toLowerCase()) + '"></span>' : '';
               var ip_data = real_rip + ip_location + app_password;
 
               $(".last-sasl-login").append(`
                 <li class="list-group-item d-flex justify-content-between align-items-start">
                   <div class="ms-2 me-auto d-flex flex-column">
-                    <div class="fw-bold">` + real_rip + `</div>
-                    <small class="fst-italic mt-2">` + service + ` ` + local_datetime + `</small>
+                    <div class="fw-bold">` + ip_location + real_rip + `</div>
+                    <small class="fst-italic mt-2">` + service + ` ` + local_datetime + `</small>` + app_password + `
                   </div>
-                  <span>` + ip_location + `</span>
                 </li>
               `);
             })
@@ -169,7 +168,6 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/time_limited_aliases",
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (acl_data.spam_alias === 1) {
               item.action = '<div class="btn-group">' +
@@ -177,6 +175,10 @@ jQuery(function($){
                 '</div>';
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
               item.address = escapeHtml(item.address);
+              item.validity = {
+                value: item.validity,
+                permanent: item.permanent
+              };
             }
             else {
               item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
@@ -220,9 +222,21 @@ jQuery(function($){
           title: lang.alias_valid_until,
           data: 'validity',
           defaultContent: '',
-          createdCell: function(td, cellData) {
-            createSortableDate(td, cellData)
-          }
+          render: function (data, type) {
+            var date = new Date(data.value ? data.value * 1000 : 0);
+            switch (type) {
+              case "sort":
+                if (data.permanent) {
+                  return 0;
+                }
+                return date.getTime();
+              default:
+                if (data.permanent) {
+                  return lang.forever;
+                }
+                return date.toLocaleDateString(LOCALE, DATETIME_FORMAT);
+            }
+          },
         },
         {
           title: lang.created_on,
@@ -262,7 +276,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
@@ -418,7 +431,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/app-passwd/all',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             item.name = escapeHtml(item.name)
             item.protocols = []
@@ -514,7 +526,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/policy_wl_mailbox',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_wl_mailbox" name="multi_select" value="' + item.prefid + '" />';
@@ -585,7 +596,6 @@ jQuery(function($){
         type: "GET",
         url: '/api/v1/get/policy_bl_mailbox',
         dataSrc: function(data){
-          console.log(data);
           $.each(data, function (i, item) {
             if (validateEmail(item.object)) {
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="policy_bl_mailbox" name="multi_select" value="' + item.prefid + '" />';

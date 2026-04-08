@@ -38,45 +38,45 @@ get_docker_version(){
 }
 
 get_compose_type(){
-    if docker compose > /dev/null 2>&1; then
-        if docker compose version --short | grep -e "^2." -e "^v2." > /dev/null 2>&1; then
-            COMPOSE_VERSION=native
-            COMPOSE_COMMAND="docker compose"
-            if [[ "$caller" == "update.sh" ]]; then
-                sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' "$SCRIPT_DIR/mailcow.conf"
-            fi
-            echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
-            echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
-            sleep 2
-            echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
-        else
-            echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-            echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-            exit 1
-        fi
-    elif docker-compose > /dev/null 2>&1; then
-    if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
-        if docker-compose version --short | grep "^2." > /dev/null 2>&1; then
-            COMPOSE_VERSION=standalone
-            COMPOSE_COMMAND="docker-compose"
-            if [[ "$caller" == "update.sh" ]]; then
-                sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=standalone/' "$SCRIPT_DIR/mailcow.conf"
-            fi
-            echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
-            echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
-            sleep 2
-            echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
-        else
-            echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
-            echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-            exit 1
-        fi
-    fi
+  if docker compose > /dev/null 2>&1; then
+    if docker compose version --short | grep -e "^[2-9]\." -e "^v[2-9]\." -e "^[1-9][0-9]\." -e "^v[1-9][0-9]\." > /dev/null 2>&1; then
+      COMPOSE_VERSION=native
+      COMPOSE_COMMAND="docker compose"
+      if [[ "$caller" == "update.sh" ]]; then
+        sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=native/' "$SCRIPT_DIR/mailcow.conf"
+      fi
+      echo -e "\e[33mFound Docker Compose Plugin (native).\e[0m"
+      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to native\e[0m"
+      sleep 2
+      echo -e "\e[33mNotice: You'll have to update this Compose Version via your Package Manager manually!\e[0m"
     else
-        echo -e "\e[31mCannot find Docker Compose.\e[0m"
-        echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
-        exit 1
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
+      echo -e "\e[31mPlease update/install it manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
+      exit 1
     fi
+  elif docker-compose > /dev/null 2>&1; then
+  if ! [[ $(alias docker-compose 2> /dev/null) ]] ; then
+    if docker-compose version --short | grep -e "^[2-9]\." -e "^[1-9][0-9]\." > /dev/null 2>&1; then
+      COMPOSE_VERSION=standalone
+      COMPOSE_COMMAND="docker-compose"
+      if [[ "$caller" == "update.sh" ]]; then
+        sed -i 's/^DOCKER_COMPOSE_VERSION=.*/DOCKER_COMPOSE_VERSION=standalone/' "$SCRIPT_DIR/mailcow.conf"
+      fi
+      echo -e "\e[33mFound Docker Compose Standalone.\e[0m"
+      echo -e "\e[33mSetting the DOCKER_COMPOSE_VERSION Variable to standalone\e[0m"
+      sleep 2
+      echo -e "\e[33mNotice: For an automatic update of docker-compose please use the update_compose.sh scripts located at the helper-scripts folder.\e[0m"
+    else
+      echo -e "\e[31mCannot find Docker Compose with a Version Higher than 2.X.X.\e[0m"
+      echo -e "\e[31mPlease update/install manually regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
+      exit 1
+    fi
+  fi
+  else
+    echo -e "\e[31mCannot find Docker Compose.\e[0m"
+    echo -e "\e[31mPlease install it regarding to this doc site: https://docs.mailcow.email/install/\e[0m"
+    exit 1
+  fi
 }
 
 detect_bad_asn() {

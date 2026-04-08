@@ -326,6 +326,12 @@
               <small class="text-muted">{{ lang.user.password_reset_info }}</small>
             </div>
           </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-3" for="user_old_pass">{{ lang.user.password_now }}</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" name="user_old_pass" autocomplete="off" required>
+            </div>
+          </div>
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="pw_recovery_change" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.save }}</button>

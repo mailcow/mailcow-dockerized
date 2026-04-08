@@ -9,21 +9,33 @@ if (isset($_SESSION['mailcow_cc_role']) && isset($_SESSION['oauth2_request'])) {
   exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
-  $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
-  $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-  if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
-    header("Location: /SOGo/so/{$_SESSION['mailcow_cc_username']}");
-  } else {
-    header("Location: /user");
+  if (empty($_SESSION['pending_tfa_setup']) && empty($_SESSION['pending_pw_update'])) {
+    $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
+    $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
+      header("Location: /SOGo/so/");
+    } else {
+      header("Location: /user");
+    }
+    exit();
   }
-  exit();
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
-  header('Location: /admin/dashboard');
-  exit();
+  if (empty($_SESSION['pending_tfa_setup']) && empty($_SESSION['pending_pw_update'])) {
+    header('Location: /admin/dashboard');
+    exit();
+  }
 }
 elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-  header('Location: /domainadmin/mailbox');
+  if (empty($_SESSION['pending_tfa_setup']) && empty($_SESSION['pending_pw_update'])) {
+    header('Location: /domainadmin/mailbox');
+    exit();
+  }
+}
+
+$host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+if (str_starts_with($host, 'autodiscover.') || str_starts_with($host, 'autoconfig.')) {
+  http_response_code(404);
   exit();
 }
 

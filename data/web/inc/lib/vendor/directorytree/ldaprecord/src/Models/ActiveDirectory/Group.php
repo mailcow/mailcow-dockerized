@@ -2,14 +2,14 @@
 
 namespace LdapRecord\Models\ActiveDirectory;
 
+use LdapRecord\Models\Relations\HasMany;
+
 class Group extends Entry
 {
     /**
      * The object classes of the LDAP model.
-     *
-     * @var array
      */
-    public static $objectClasses = [
+    public static array $objectClasses = [
         'top',
         'group',
     ];
@@ -17,23 +17,17 @@ class Group extends Entry
     /**
      * The groups relationship.
      *
-     * Retrieves groups that the current group is apart of.
-     *
-     * @return \LdapRecord\Models\Relations\HasMany
+     * Retrieves groups that the current group is a part of.
      */
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(static::class, 'member');
     }
 
     /**
      * The members relationship.
-     *
-     * Retrieves members that are apart of the group.
-     *
-     * @return \LdapRecord\Models\Relations\HasMany
      */
-    public function members()
+    public function members(): HasMany
     {
         return $this->hasMany([
             static::class, User::class, Contact::class, Computer::class,
@@ -44,12 +38,8 @@ class Group extends Entry
 
     /**
      * The primary group members relationship.
-     *
-     * Retrieves members that are apart the primary group.
-     *
-     * @return \LdapRecord\Models\Relations\HasMany
      */
-    public function primaryGroupMembers()
+    public function primaryGroupMembers(): HasMany
     {
         return $this->hasMany([
             static::class, User::class, Contact::class, Computer::class,
@@ -58,13 +48,11 @@ class Group extends Entry
 
     /**
      * Get the RID of the group.
-     *
-     * @return array
      */
-    public function getRidAttribute()
+    public function getRidAttribute(): array
     {
-        $objectSidComponents = explode('-', (string) $this->getConvertedSid());
-
-        return [end($objectSidComponents)];
+        return array_filter([
+            last(explode('-', (string) $this->getConvertedSid())),
+        ]);
     }
 }

@@ -167,7 +167,7 @@ DELIMITER //
 CREATE EVENT clean_spamalias
 ON SCHEDULE EVERY 1 DAY DO
 BEGIN
-  DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP();
+  DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP() AND permanent = 0;
 END;
 //
 DELIMITER ;

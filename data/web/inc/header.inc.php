@@ -62,7 +62,11 @@ if ($app_links_processed){
   }
 }
 
-
+// Workaround to get text with <br> straight to twig.
+// Using "nl2br" doesn't work with Twig as it would escape everything by default.
+if (isset($UI_TEXTS["ui_footer"])) {
+  $UI_TEXTS["ui_footer"] = nl2br($UI_TEXTS["ui_footer"]);
+}
 
 $globalVariables = [
   'mailcow_hostname' => getenv('MAILCOW_HOSTNAME'),
@@ -85,7 +89,7 @@ $globalVariables = [
   'app_links' => $app_links,
   'app_links_processed' => $app_links_processed,
   'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
-  'uri' => $_SERVER['REQUEST_URI'],
+  'uri' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/',
 ];
 
 foreach ($globalVariables as $globalVariableName => $globalVariableValue) {

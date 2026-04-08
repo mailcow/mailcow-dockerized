@@ -1,5 +1,3 @@
-version: '3'
-
 services:
     ldap:
         image: osixia/openldap:1.4.0

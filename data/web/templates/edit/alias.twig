@@ -7,6 +7,7 @@
 <form class="form-horizontal" data-id="editalias" role="form" method="post">
   <input type="hidden" value="0" name="active">
   <input type="hidden" value="0" name="internal">
+  <input type="hidden" value="0" name="sender_allowed">
   {% if not skip_sogo %}
   <input type="hidden" value="0" name="sogo_visible">
   {% endif %}
@@ -39,7 +40,11 @@
       <div class="form-check">
         <label><input type="checkbox" class="form-check-input" value="1" name="internal"{% if result.internal == '1' %} checked{% endif %}> {{ lang.edit.internal }}</label>
       </div>
-      <small class="text-muted d-block">{{ lang.edit.internal_info }}</small>
+      <small class="text-muted d-block mb-2">{{ lang.edit.internal_info }}</small>
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="sender_allowed"{% if result.sender_allowed == '1' %} checked{% endif %}> {{ lang.edit.sender_allowed }}</label>
+      </div>
+      <small class="text-muted d-block">{{ lang.edit.sender_allowed_info }}</small>
     </div>
   </div>
   <hr>

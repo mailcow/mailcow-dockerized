@@ -329,14 +329,17 @@ query = SELECT goto FROM alias
           SELECT id FROM alias
             WHERE address='%s'
             AND (active='1' OR active='2')
+            AND sender_allowed='1'
         ), (
           SELECT id FROM alias
             WHERE address='@%d'
             AND (active='1' OR active='2')
+            AND sender_allowed='1'
         )
       )
     )
     AND active='1'
+    AND sender_allowed='1'
     AND (domain IN
       (SELECT domain FROM domain
         WHERE domain='%d'
@@ -390,7 +393,7 @@ hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
 query = SELECT goto FROM spamalias
   WHERE address='%s'
-    AND validity >= UNIX_TIMESTAMP()
+    AND (validity >= UNIX_TIMESTAMP() OR permanent != 0)
 EOF
 
 if [ ! -f /opt/postfix/conf/dns_blocklists.cf ]; then

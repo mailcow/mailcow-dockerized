@@ -54,7 +54,16 @@ jQuery(function($){
     $.get("/inc/ajax/show_rspamd_global_filters.php");
     $("#confirm_show_rspamd_global_filters").hide();
     $("#rspamd_global_filters").removeClass("d-none");
+    localStorage.setItem('rspamd_global_filters_confirmed', 'true');
   });
+  
+  $(document).ready(function() {
+    if (localStorage.getItem('rspamd_global_filters_confirmed') === 'true') {
+      $("#confirm_show_rspamd_global_filters").hide();
+      $("#rspamd_global_filters").removeClass("d-none");
+    }
+  });
+  
   $("#super_delete").click(function() { return confirm(lang.queue_ays); });
 
   $(".refresh_table").on('click', function(e) {
@@ -715,7 +724,6 @@ jQuery(function($){
     $('.app_hide').off('change');
     $('.app_hide').on('change', function (e) {
       var value = $(this).is(':checked') ? '1' : '0';
-      console.log(value)
       $(this).parent().children(':first-child').val(value);
     })
   }

@@ -108,6 +108,8 @@
           <option value="pop3"{% if template.attributes.pop3_access == '1' %} selected{% endif %}>POP3</option>
           <option value="smtp"{% if template.attributes.smtp_access == '1' %} selected{% endif %}>SMTP</option>
           <option value="sieve"{% if template.attributes.sieve_access == '1' %} selected{% endif %}>Sieve</option>
+          <option value="eas"{% if template.attributes.eas_access == '1' %} selected{% endif %}>ActiveSync</option>
+          <option value="dav"{% if template.attributes.dav_access == '1' %} selected{% endif %}>CalDAV/CardDAV</option>
         </select>
       </div>
     </div>

@@ -8,32 +8,23 @@ abstract class Validator
 {
     /**
      * The configuration key under validation.
-     *
-     * @var string
      */
-    protected $key;
+    protected string $key;
 
     /**
      * The configuration value under validation.
-     *
-     * @var mixed
      */
-    protected $value;
+    protected mixed $value;
 
     /**
      * The validation exception message.
-     *
-     * @var string
      */
-    protected $message;
+    protected string $message;
 
     /**
      * Constructor.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
      */
-    public function __construct($key, $value)
+    public function __construct(string $key, mixed $value)
     {
         $this->key = $key;
         $this->value = $value;
@@ -41,19 +32,15 @@ abstract class Validator
 
     /**
      * Determine if the validation rule passes.
-     *
-     * @return bool
      */
-    abstract public function passes();
+    abstract public function passes(): bool;
 
     /**
      * Validate the configuration value.
      *
-     * @return bool
-     *
      * @throws ConfigurationException
      */
-    public function validate()
+    public function validate(): bool
     {
         if (! $this->passes()) {
             $this->fail();
@@ -65,11 +52,9 @@ abstract class Validator
     /**
      * Throw a configuration exception.
      *
-     * @return void
-     *
      * @throws ConfigurationException
      */
-    protected function fail()
+    protected function fail(): void
     {
         throw new ConfigurationException(
             str_replace(':option', $this->key, $this->message)

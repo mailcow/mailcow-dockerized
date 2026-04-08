@@ -66,7 +66,6 @@ $(document).ready(function() {
   // load tags
   if ($('#tags').length){
     var tagsEl = $('#tags').parent().find('.tag-values')[0];
-    console.log($(tagsEl).val())
     var tags = JSON.parse($(tagsEl).val());
     $(tagsEl).val("");
 

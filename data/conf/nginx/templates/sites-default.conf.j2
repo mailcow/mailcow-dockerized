@@ -14,7 +14,6 @@ ssl_session_tickets off;
 
 add_header Strict-Transport-Security "max-age=15768000;";
 add_header X-Content-Type-Options nosniff;
-add_header X-XSS-Protection "1; mode=block";
 add_header X-Robots-Tag none;
 add_header X-Download-Options noopen;
 add_header X-Frame-Options "SAMEORIGIN" always;
@@ -262,19 +261,19 @@ location ~* /sogo$ {
 }
 
 location /SOGo.woa/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location /.woa/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location /SOGo/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location (^/SOGo/so/ControlPanel/Products/[^/]*UI/Resources/.*\.(jpg|png|gif|css|js)$) {
-    alias /usr/lib/GNUstep/SOGo/$1.SOGo/Resources/$2;
+    alias /usr/local/lib/GNUstep/SOGo/$1.SOGo/Resources/$2;
 }
 {% endif %}
 

@@ -33,6 +33,8 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
+  'displayName' => 'A mailcow mail server',
+  'displayShortName' => 'mail server',
   // General autodiscover service type: "activesync" or "imap"
   // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   // With SOGo disabled, the type will always fallback to imap. CalDAV and CardDAV will be excluded, too.
@@ -85,7 +87,7 @@ $AVAILABLE_LANGUAGES = array(
   // 'ca-es' => 'Català (Catalan)',
   'bg-bg' => 'Български (Bulgarian)',
   'cs-cz' => 'Čeština (Czech)',
-  'da-dk' => 'Danish (Dansk)',
+  'da-dk' => 'Dansk (Danish)',
   'de-de' => 'Deutsch (German)',
   'en-gb' => 'English',
   'es-es' => 'Español (Spanish)',
@@ -110,6 +112,7 @@ $AVAILABLE_LANGUAGES = array(
   'sv-se' => 'Svenska (Swedish)',
   'tr-tr' => 'Türkçe (Turkish)',
   'uk-ua' => 'Українська (Ukrainian)',
+  'vi-vn' => 'Tiếng Việt (Vietnamese)',
   'zh-cn' => '简体中文 (Simplified Chinese)',
   'zh-tw' => '繁體中文 (Traditional Chinese)',
 );
@@ -153,6 +156,13 @@ $LOG_PAGINATION_SIZE = 50;
 // Session lifetime in seconds
 $SESSION_LIFETIME = 10800;
 
+// Session SameSite Policy
+// Use "None", "Lax" or "Strict"
+$SESSION_SAMESITE_POLICY = "Lax";
+
+// Name of the session cookie
+$SESSION_NAME = "MCSESSID";
+
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 
@@ -183,6 +193,9 @@ $MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out'] = false;
 // Force password change on next login (only allows login to mailcow UI)
 $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 
+// Force 2FA enrollment at next login
+$MAILBOX_DEFAULT_ATTRIBUTES['force_tfa'] = false;
+
 // Enable SOGo access - Users will be redirected to SOGo after login (set to false to disable redirect by default)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 
@@ -206,6 +219,12 @@ $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
 // Mailbox has sieve access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['sieve_access'] = true;
+
+// Mailbox has ActiveSync/EAS access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['eas_access'] = true;
+
+// Mailbox has CalDAV/CardDAV (DAV) access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['dav_access'] = true;
 
 // Mailbox receives notifications about...
 // "add_header" - mail that was put into the Junk folder

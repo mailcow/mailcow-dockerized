@@ -22,8 +22,8 @@ $(document).ready(function() {
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
 
-  $(".generate_password").click(async function( event ) {   
-    try { 
+  $(".generate_password").click(async function( event ) {
+    try {
       var password_policy = await window.fetch("/api/v1/get/passwordpolicy", { method:'GET', cache:'no-cache' });
       var password_policy = await password_policy.json();
       random_passwd_length = password_policy.length;
@@ -48,7 +48,11 @@ $(document).ready(function() {
     })
   }
   $(".rot-enc").html(function(){
-    return str_rot13($(this).html())
+    footer_html = $(this).html();
+    footer_html = footer_html.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                             .replace(/&amp;/g, '&').replace(/&nzc;/g, '&')
+                             .replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
+    return str_rot13(footer_html)
   });
   // https://stackoverflow.com/questions/4399005/implementing-jquerys-shake-effect-with-animate
   function shake(div,interval,distance,times) {
@@ -125,7 +129,7 @@ $(document).ready(function() {
         }
       });
   })();
-  
+
   // responsive tabs, scroll to opened tab
   $(document).on("shown.bs.collapse shown.bs.tab", function (e) {
 	  var target = $(e.target);
@@ -341,7 +345,7 @@ $(document).ready(function() {
       $('.main-logo-dark').addClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
-      localStorage.setItem('theme', 'light');
+      localStorage.setItem('mailcow_theme', 'light');
     }else{
       $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
       $('#dark-mode-toggle').prop('checked', true);
@@ -349,7 +353,7 @@ $(document).ready(function() {
       $('.main-logo-dark').removeClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
-      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('mailcow_theme', 'dark');
     }
   }
 

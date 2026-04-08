@@ -1,6 +1,6 @@
 #!/bin/sh
 
-backend=iptables
+backend=nftables
 
 nft list table ip filter &>/dev/null
 nftables_found=$?
