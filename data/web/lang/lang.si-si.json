@@ -558,7 +558,8 @@
         "mode_invalid": "Način %s ni veljaven",
         "mx_invalid": "Zapis MX %s je neveljaven",
         "version_invalid": "Različica %s je neveljavna",
-        "tfa_removal_blocked": "Dvofaktorske avtentikacije ni mogoče odstraniti, ker je obvezna za vaš račun."
+        "tfa_removal_blocked": "Dvofaktorske avtentikacije ni mogoče odstraniti, ker je obvezna za vaš račun.",
+        "quarantine_category_invalid": "Kategorija karantene mora biti ena od: add_header, reject, all"
     },
     "debug": {
         "containers_info": "Informacije o zabojniku",
