@@ -184,26 +184,42 @@ def ban(address):
 def unban(net):
   global lock
   logdebug("Calling unban() with net=%s" % net)
-  if not net in bans:
-    logger.logInfo(
-      '%s is not banned, skipping unban and deleting from queue (if any)' % net)
-    r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-    return
-  logger.logInfo('Unbanning %s' % net)
-  if type(ipaddress.ip_network(net)) is ipaddress.IPv4Network:
-    with lock:
-      logdebug("Calling tables.unbanIPv4(%s)" % net)
-      tables.unbanIPv4(net)
+  net_str = '%s' % net
+  in_bans = net in bans
+  if in_bans:
+    logger.logInfo('Unbanning %s' % net)
   else:
-    with lock:
-      logdebug("Calling tables.unbanIPv6(%s)" % net)
-      tables.unbanIPv6(net)
-  r.hdel('F2B_ACTIVE_BANS', '%s' % net)
-  r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-  if net in bans:
-    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net)
+    logger.logInfo('Unbanning %s (not in local bans dict)' % net)
+  # Clear Redis first (no lock). If firewall calls block on lock, we still drop the
+  # UI "unban pending" state and F2B_ACTIVE_BANS entry; otherwise users stay stuck forever.
+  if r is not None:
+    try:
+      r.hdel('F2B_ACTIVE_BANS', net_str)
+      r.hdel('F2B_QUEUE_UNBAN', net_str)
+    except Exception as ex:
+      logger.logWarn('Redis hdel during unban failed for %s: %s' % (net_str, ex))
+  try:
+    net_obj = ipaddress.ip_network(net_str, strict=False)
+    if type(net_obj) is ipaddress.IPv4Network:
+      with lock:
+        logdebug("Calling tables.unbanIPv4(%s)" % net_str)
+        tables.unbanIPv4(net_str)
+    else:
+      with lock:
+        logdebug("Calling tables.unbanIPv6(%s)" % net_str)
+        tables.unbanIPv6(net_str)
+  except (ValueError, Exception) as e:
+    logger.logWarn('Invalid or unparseable net %s for firewall unban: %s' % (net_str, e))
+  if in_bans:
+    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net_str)
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
+
+def safe_unban(net, reason=''):
+  try:
+    unban(net)
+  except Exception as ex:
+    logger.logWarn('safe_unban failed for %s (%s): %s' % (net, reason, ex))
 
 def permBan(net, unban=False):
   global f2boptions
@@ -311,7 +327,7 @@ def autopurge():
     if QUEUE_UNBAN:
       for net in QUEUE_UNBAN:
         logdebug("Autopurge: unbanning queued net: %s" % net)
-        unban(str(net))
+        safe_unban(str(net), 'queue_unban')
     # Only check expiry for actively banned IPs:
     active_bans = r.hgetall('F2B_ACTIVE_BANS')
     now = time.time()
@@ -322,13 +338,30 @@ def autopurge():
         expire = float(expire_str)
       except Exception:
         logdebug("Invalid expire time for %s; unbanning" % net_str)
-        unban(net_str)
+        safe_unban(net_str, 'invalid_expire')
         continue
       time_left = expire - now
       logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
-      if time_left <= 0:
-        logdebug("Ban expired for %s" % net_str)
-        unban(net_str)
+      # Safeguard: expiry timestamp in the past must be purged (time_left <= 0)
+      if expire <= now:
+        logger.logInfo(
+          'Safeguard: purging expired active ban %s (expire=%s, now=%.1f, left=%.1fs)' %
+          (net_str, expire_str, now, time_left))
+        safe_unban(net_str, 'expired')
+    # Second pass: retry if first unban failed transiently or entry stuck with past expiry
+    active_bans_retry = r.hgetall('F2B_ACTIVE_BANS')
+    now_retry = time.time()
+    for net_str, expire_str in active_bans_retry.items():
+      try:
+        expire = float(expire_str)
+      except Exception:
+        safe_unban(net_str, 'invalid_expire_retry')
+        continue
+      if expire <= now_retry:
+        logger.logInfo(
+          'Safeguard retry: forcing unban for still-stale %s (expire=%s)' %
+          (net_str, expire_str))
+        safe_unban(net_str, 'stale_retry')
 
 def mailcowChainOrder():
   global lock
