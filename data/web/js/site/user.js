@@ -169,20 +169,26 @@ jQuery(function($){
         url: "/api/v1/get/time_limited_aliases",
         dataSrc: function(data){
           $.each(data, function (i, item) {
-            if (acl_data.spam_alias === 1) {
+            item.address = escapeHtml(item.address);
+            item.validity = {
+                value: item.validity,
+                permanent: item.permanent
+            };
+            if (item.description !== null) {
+              item.description = escapeHtml(item.description);
+            }
+            else {
+              item.description = '';
+            }
+            if (acl_data.spam_alias === 1 && item.user_created === 1) {
               item.action = '<div class="btn-group">' +
                 '<a href="#" data-action="delete_selected" data-id="single-tla" data-api-url="delete/time_limited_alias" data-item="' + encodeURIComponent(item.address) + '" class="btn btn-xs btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="tla" name="multi_select" value="' + encodeURIComponent(item.address) + '" />';
-              item.address = escapeHtml(item.address);
-              item.validity = {
-                value: item.validity,
-                permanent: item.permanent
-              };
             }
             else {
-              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
-              item.action = '<span>-</span>';
+              item.chkbox = '<span></span>';
+              item.action = '<span></span>';
             }
           });
 
@@ -216,6 +222,30 @@ jQuery(function($){
           defaultContent: '',
           render: function (data, type) {
             return escapeHtml(data);
+          }
+        },
+        {
+          title: lang.can_send,
+          data: 'sender_allowed',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.sogo_visible,
+          data: 'sogo_visible',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
@@ -694,6 +724,50 @@ jQuery(function($){
     });
   }
 
+  function validateAndUpdateTempAliasPreview() {
+      const usernamePrefix = $('#temp_alias_username_prefix').is(':checked');
+      const randomPart = $('#temp_alias_random_part').is(':checked');
+      const knownPart = $('#temp_alias_known_part').val();
+
+      const selected_domain = $('#temp_alias_domain').find(":selected").text();
+      const username = mailcow_cc_username.split('@')[0];
+
+      let localPart = '';
+
+      if (usernamePrefix) {
+          localPart = username;
+      }
+      if (randomPart) {
+          localPart += (localPart !== '' ? '.' : '') + 'random';
+      }
+      if (knownPart.trim() !== '') {
+          localPart += (localPart !== '' ? '.' : '') + knownPart;
+      }
+
+      const alias = localPart + '@' + selected_domain;
+
+      // Validate against preview. If this fails, then the known part is invalid as it is the only source of user input
+      // Also constructing an alias that matches the username is not allowed
+      const mailValid =  validateEmail(alias) && alias != mailcow_cc_username;
+
+      // Need either one or both of random and known part
+      const randomOrKnownPartGiven = randomPart || knownPart != "";
+
+      // Set invalid markers as needed
+      $('#temp_alias_random_part').toggleClass("inputMissingAttr",  !randomOrKnownPartGiven);
+      $('#temp_alias_known_part').toggleClass("inputMissingAttr",  !randomOrKnownPartGiven || !mailValid);
+
+      // Disable add button as needed
+      $('#temp_alias_submit').prop("disabled",  !randomOrKnownPartGiven || !mailValid);
+
+      // Show preview anyway
+      $('#temp_alias_preview').text(alias);
+  }
+
+  $('#temp_alias_random_part, #temp_alias_known_part, #temp_alias_username_prefix, #temp_alias_domain').on('change', validateAndUpdateTempAliasPreview);
+  $('#temp_alias_known_part').on('input', validateAndUpdateTempAliasPreview);
+  $('#tempAliasModal').on('show.bs.modal', validateAndUpdateTempAliasPreview);
+
   // Load only if the tab is visible
   onVisible("[id^=tla_table]", () => draw_tla_table());
   onVisible("[id^=bl_policy_mailbox_table]", () => draw_bl_policy_mailbox_table());
@@ -702,3 +776,4 @@ jQuery(function($){
   onVisible("[id^=app_passwd_table]", () => draw_app_passwd_table());
   onVisible("[id^=recent-logins]", () => last_logins('get'));
 });
+

@@ -167,7 +167,38 @@ DELIMITER //
 CREATE EVENT clean_spamalias
 ON SCHEDULE EVERY 1 DAY DO
 BEGIN
-  DELETE FROM spamalias WHERE validity < UNIX_TIMESTAMP() AND permanent = 0;
+  -- Note that this routine is only meant for user aliases where there is EXACTLY ONE goto defined and not a potential list of goto's
+  DECLARE timestamp INT DEFAULT UNIX_TIMESTAMP();
+  CREATE OR REPLACE TEMPORARY TABLE affected_users (username VARCHAR(255)) SELECT UNIQUE(goto) FROM alias WHERE permanent = 0 AND validity < timestamp AND user_created = 1;
+  DELETE FROM alias WHERE permanent = 0 AND validity < timestamp AND user_created = 1;
+  INSERT INTO _sogo_static_view (c_uid, domain, c_name, mail, aliases)
+  SELECT
+      mailbox.username,
+      mailbox.domain,
+      mailbox.username,
+      mailbox.username,
+      IFNULL(GROUP_CONCAT(ua.aliases ORDER BY ua.aliases SEPARATOR ' '), '')
+  FROM
+    mailbox
+    LEFT OUTER JOIN (
+      SELECT
+          goto,
+          IFNULL(GROUP_CONCAT(address ORDER BY address SEPARATOR ' '), '') AS aliases
+      FROM alias
+      WHERE
+          goto IN (SELECT goto FROM affected_users)
+          AND address != goto
+          AND active = 1
+          AND sogo_visible = 1
+          AND address NOT LIKE '@%'
+      GROUP BY goto
+    ) ua ON ua.goto = mailbox.username
+  WHERE
+    mailbox.username IN (SELECT goto FROM affected_users)
+  GROUP BY
+    mailbox.username, mailbox.domain
+  ON DUPLICATE KEY UPDATE
+    aliases = VALUES(aliases);
 END;
 //
 DELIMITER ;

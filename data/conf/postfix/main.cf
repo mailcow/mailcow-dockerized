@@ -128,7 +128,6 @@ tls_preempt_cipherlist = yes
 tls_ssl_options = NO_COMPRESSION, NO_RENEGOTIATION
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf
 virtual_gid_maps = static:5000
 virtual_mailbox_base = /var/vmail/

@@ -476,7 +476,6 @@
         "ip_list_empty": "List of allowed IPs cannot be empty",
         "is_alias": "%s is already known as an alias address",
         "is_alias_or_mailbox": "%s is already known as an alias, a mailbox or an alias address expanded from an alias domain.",
-        "is_spam_alias": "%s is already known as a temporary alias address (spam alias address)",
         "last_key": "Last key cannot be deleted, please deactivate TFA instead.",
         "login_failed": "Login failed",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Default quota exceeds max quota limit",
@@ -556,7 +555,10 @@
         "unknown_tfa_method": "Unknown TFA method",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "username_invalid": "Username %s cannot be used",
-        "validity_missing": "Please assign a period of validity",
+        "invalid_validity": "Please assign a period of validity",
+        "invalid_spamalias_options": "Please enable random part or provide the known part",
+        "invalid_input": "The input \"%s\" is invalid",
+        "username_of_alias_too_long": "The username \"%s\" of the alias is too long",
         "value_missing": "Please provide all values",
         "version_invalid": "Version %s is invalid",
         "yotp_verification_failed": "Yubico OTP verification failed: %s"
@@ -786,7 +788,10 @@
         "title": "Edit object",
         "unchanged_if_empty": "If unchanged leave blank",
         "username": "Username",
-        "validate_save": "Validate and save"
+        "validate_save": "Validate and save",
+        "valid_until": "Valid until",
+        "forever": "Forever",
+        "user_created": "Created by user"
     },
     "fido2": {
         "confirm": "Confirm",
@@ -880,6 +885,7 @@
         "alias": "Alias",
         "alias_domain_alias_hint": "Aliases are <b>not</b> applied on domain aliases automatically. An alias address <code>my-alias@domain</code> <b>does not</b> cover the address <code>my-alias@alias-domain</code> (where \"alias-domain\" is an imaginary alias domain for \"domain\").<br>Please use a sieve filter to redirect mail to an external mailbox (see tab \"Filters\" or use  SOGo -> Forwarder). Use \"Expand alias over alias domains\" to automatically add missing aliases.",
         "alias_domain_backupmx": "Alias domain inactive for relay domain",
+        "alias_valid_until": "Valid until",
         "aliases": "Aliases",
         "all_domains": "All Domains",
         "allow_from_smtp": "Only allow these IPs to use <b>SMTP</b>",
@@ -928,6 +934,7 @@
         "filter_table": "Filter table",
         "filters": "Filters",
         "fname": "Full name",
+        "forever": "Forever",
         "force_pw_update": "Force password update at next login",
         "gal": "Global Address List",
         "goto_ham": "Learn as <b>ham</b>",
@@ -1034,7 +1041,12 @@
         "username": "Username",
         "waiting": "Waiting",
         "weekly": "Weekly",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "user_created": "User created",
+        "admin_only_items": "Admin Only",
+        "user_only_items": "User Only",
+        "all_items": "All",
+        "can_send": "Can send"
     },
     "oauth2": {
         "access_denied": "Please login as mailbox owner to grant access via OAuth2.",
@@ -1255,7 +1267,7 @@
         "active_sieve": "Active filter",
         "advanced_settings": "Advanced settings",
         "alias": "Alias",
-        "alias_create_random": "Generate random alias",
+        "alias_create": "Generate alias",
         "alias_extend_all": "Extend aliases by 1 hour",
         "alias_full_date": "d.m.Y, H:i:s T",
         "alias_remove_all": "Remove all aliases",
@@ -1299,6 +1311,7 @@
         "excludes": "Excludes",
         "expire_in": "Expire in",
         "expire_never": "Never Expire",
+        "extended_options": "Extended Options",
         "fido2_webauthn": "FIDO2/WebAuthn",
         "forever": "Forever",
         "force_pw_update": "You <b>must</b> set a new password to be able to access groupware related services.",
@@ -1368,6 +1381,7 @@
         "sogo_profile_reset": "Reset SOGo profile",
         "sogo_profile_reset_help": "This will destroy a user's SOGo profile and <b>delete all contact and calendar data irretrievable</b>.",
         "sogo_profile_reset_now": "Reset profile now",
+        "sogo_visible": "Alias is visible in SOGo",
         "spam_aliases": "Spam email aliases",
         "spam_aliases_info": "A spam alias is a temporary email address that can be used to protect real email addresses. <br>Optionally, an expiration time can be set so that the alias is automatically deactivated after the defined period, effectively disposing of abused or leaked addresses.",
         "spam_score_reset": "Reset to server default",
@@ -1422,7 +1436,11 @@
         "weeks": "weeks",
         "with_app_password": "with app password",
         "year": "year",
-        "years": "years"
+        "years": "years",
+        "can_send": "Can send",
+        "username_as_prefix": "Username as prefix",
+        "random_part": "Random part",
+        "known_part": "Known part"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",
@@ -1432,9 +1450,12 @@
         "hash_not_found": "Hash not found or already deleted",
         "ip_invalid": "Skipped invalid IP: %s",
         "is_not_primary_alias": "Skipped non-primary alias %s",
+        "not_expanding_user_created_alias": "User created alias %s will not be expanded",
         "no_active_admin": "Cannot deactivate last active admin",
         "quota_exceeded_scope": "Domain quota exceeded: Only unlimited mailboxes can be created in this domain scope.",
         "session_token": "Form token invalid: Token mismatch",
-        "session_ua": "Form token invalid: User-Agent validation error"
+        "session_ua": "Form token invalid: User-Agent validation error",
+        "user_alias_goto_change": "Changing the goto address for user created alias %s is not allowed",
+        "user_alias_internal_change": "Changing the user created alias %s to internal is not allowed"
     }
 }

@@ -368,7 +368,6 @@
         "ip_list_empty": "Listen over tilladte IP&#39;er kan ikke være tomme",
         "is_alias": "%s er allerede kendt som en alias-adresse",
         "is_alias_or_mailbox": "%s er allerede kendt som et alias, en postkasse eller en aliasadresse udvidet fra et aliasdomæne.",
-        "is_spam_alias": "%s er allerede kendt som en midlertidig alias-adresse (spam alias-adresse)",
         "last_key": "Sidste nøgle kan ikke slettes. Deaktiver venligst TFA i stedet.",
         "login_failed": "Login mislykkedes",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Standardkvoten overstiger den maksimale kvotegrænse",
@@ -432,7 +431,7 @@
         "unknown_tfa_method": "Ukendt TFA-metode",
         "unlimited_quota_acl": "Ubegrænset kvote forbudt af ACL",
         "username_invalid": "Brugernavn %s kan ikke bruges",
-        "validity_missing": "Tildel venligst en gyldighedsperiode",
+        "invalid_validity": "Tildel venligst en gyldighedsperiode",
         "value_missing": "Angiv alle værdier",
         "yotp_verification_failed": "Yubico OTP verifikationen mislykkedes: %s",
         "webauthn_publickey_failed": "Der er ikke gemt nogen offentlig nøgle for den valgte autentifikator"

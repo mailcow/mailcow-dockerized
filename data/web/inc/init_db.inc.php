@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "21032026_1040";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -29,6 +29,7 @@ function init_db_schema()
         WHERE address!=goto
         AND active = '1'
         AND sogo_visible = '1'
+        AND (permanent = '1' OR validity > UNIX_TIMESTAMP())
         AND address NOT LIKE '@%'
         GROUP BY goto;",
       // START
@@ -187,7 +188,10 @@ function init_db_schema()
           "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "internal" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "sender_allowed" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "validity" => "INT(11) NOT NULL DEFAULT '0'",
+          "permanent" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "user_created" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -546,23 +550,6 @@ function init_db_schema()
             "active" => array("active"),
             "target_domain" => array("target_domain")
           )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
-      "spamalias" => array(
-        "cols" => array(
-          "address" => "VARCHAR(255) NOT NULL",
-          "goto" => "TEXT NOT NULL",
-          "description" => "TEXT NOT NULL",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
-          "validity" => "INT(11)",
-          "permanent" => "TINYINT(1) NOT NULL DEFAULT '0'"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("address")
-          ),
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
@@ -1527,6 +1514,24 @@ function init_db_schema()
     // fill quarantine.qhash
     $pdo->query("UPDATE `quarantine` SET `qhash` = SHA2(CONCAT(`id`, `qid`), 256) WHERE ISNULL(`qhash`)");
 
+    $stmt = $pdo->query("SHOW TABLES LIKE 'spamalias'");
+    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($num_results != 0) {
+      try {
+        $pdo->beginTransaction();
+        $pdo->query("INSERT INTO `alias` (`address`, `goto`, `domain`, `created`, `modified`, `public_comment`, `sogo_visible`, `internal`, `active`, `validity`, `permanent`, `user_created`)
+                    SELECT `address`, `goto`, SUBSTRING_INDEX(`address`, '@', -1), `created`, `modified`, `description`, 0, 0, 1, `validity`, `permanent`, 1
+                    FROM `spamalias`
+                    WHERE `permanent` = 1 OR `validity` > UNIX_TIMESTAMP()");
+        $pdo->query("DROP TABLE `spamalias`");  // DROP does autocommit
+      } catch (PDOException $e) {
+        $pdo->rollBack();
+        // This can happen because before the migration adding spamaliases did not check to see if the resulting alias does exsist in the alias table.
+        // Adding an alias however did check in the spamalias table before inserting.
+        // Because spamaliases before the migration were random the chances are slim but not zero.
+        throw new PDOException("Failed to migrate spamalias to alias table", $e->getCode(), $e);
+      }
+    }
   } catch (PDOException $e) {
     if (php_sapi_name() == "cli") {
       echo "DB initialization failed: " . print_r($e, true) . PHP_EOL;
