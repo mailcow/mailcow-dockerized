@@ -251,6 +251,17 @@
           </div>
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_sync_disabled_users }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="sync_disabled_users" value="1" {% if iam_settings.sync_disabled_users == 1 %}checked{% endif %}>
+                <label class="form-check-label text-muted small">{{ lang.admin.iam_sync_disabled_users_info }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
               <label class="control-label">{{ lang.admin.iam_sync_interval }}</label>
             </div>
             <div class="col-12 col-md-9 col-lg-4">
@@ -693,6 +704,17 @@
             <div class="col-12 col-md-9">
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="import_users"  value="1" {% if iam_settings.import_users == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_sync_disabled_users }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="sync_disabled_users" value="1" {% if iam_settings.sync_disabled_users == 1 %}checked{% endif %}>
+                <label class="form-check-label text-muted small">{{ lang.admin.iam_sync_disabled_users_info }}</label>
               </div>
             </div>
           </div>
