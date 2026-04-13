@@ -142,6 +142,7 @@ function backup() {
     exit 1
   fi
   done
+  ERRORS=0
   while (( "$#" )); do
     case "$1" in
     vmail|all)
@@ -149,12 +150,20 @@ function backup() {
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_vmail-vol-1$):/vmail:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_vmail.tar.zst /vmail
+      if [ $? -ne 0 ]; then
+        echo -e "\e[31mBackup of vmail failed!\e[0m"
+        ERRORS=$((ERRORS + 1))
+      fi
       ;;&
     crypt|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_crypt-vol-1$):/crypt:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_crypt.tar.zst /crypt
+      if [ $? -ne 0 ]; then
+        echo -e "\e[31mBackup of crypt failed!\e[0m"
+        ERRORS=$((ERRORS + 1))
+      fi
       ;;&
     redis|all)
       docker exec $(docker ps -qf name=redis-mailcow) redis-cli -a ${REDISPASS} --no-auth-warning save
@@ -162,18 +171,30 @@ function backup() {
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_redis-vol-1$):/redis:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_redis.tar.zst /redis
+      if [ $? -ne 0 ]; then
+        echo -e "\e[31mBackup of redis failed!\e[0m"
+        ERRORS=$((ERRORS + 1))
+      fi
       ;;&
     rspamd|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_rspamd-vol-1$):/rspamd:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_rspamd.tar.zst /rspamd
+      if [ $? -ne 0 ]; then
+        echo -e "\e[31mBackup of rspamd failed!\e[0m"
+        ERRORS=$((ERRORS + 1))
+      fi
       ;;&
     postfix|all)
       docker run --name mailcow-backup --rm \
         -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
         -v $(docker volume ls -qf name=^${CMPS_PRJ}_postfix-vol-1$):/postfix:ro,z \
         ${DEBIAN_DOCKER_IMAGE} /bin/tar --warning='no-file-ignored' --use-compress-program="zstd --rsyncable -T${THREADS}" -Pcvpf /backup/backup_postfix.tar.zst /postfix
+      if [ $? -ne 0 ]; then
+        echo -e "\e[31mBackup of postfix failed!\e[0m"
+        ERRORS=$((ERRORS + 1))
+      fi
       ;;&
     mysql|all)
       SQLIMAGE=$(grep -iEo '(mysql|mariadb)\:.+' ${COMPOSE_FILE})
@@ -189,10 +210,14 @@ function backup() {
           -t --entrypoint= \
           --sysctl net.ipv6.conf.all.disable_ipv6=1 \
           -v ${BACKUP_LOCATION}/mailcow-${DATE}:/backup:z \
-          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb ; \
-          mariabackup --prepare --target-dir=/backup_mariadb ; \
-          chown -R 999:999 /backup_mariadb ; \
-          /bin/tar --warning='no-file-ignored' --use-compress-program='zstd --rsyncable' -Pcvpf /backup/backup_mariadb.tar.zst /backup_mariadb ;"
+          ${SQLIMAGE} /bin/sh -c "mariabackup --host mysql --user root --password ${DBROOT} --backup --rsync --target-dir=/backup_mariadb && \
+          mariabackup --prepare --target-dir=/backup_mariadb && \
+          chown -R 999:999 /backup_mariadb && \
+          /bin/tar --warning='no-file-ignored' --use-compress-program='zstd --rsyncable' -Pcvpf /backup/backup_mariadb.tar.zst /backup_mariadb"
+        if [ $? -ne 0 ]; then
+          echo -e "\e[31mBackup of mariadb failed!\e[0m"
+          ERRORS=$((ERRORS + 1))
+        fi
       fi
       ;;&
     --delete-days)
@@ -206,6 +231,10 @@ function backup() {
     esac
     shift
   done
+  if [ ${ERRORS} -gt 0 ]; then
+    echo -e "\e[31m${ERRORS} error(s) occurred during backup. The backup may be incomplete!\e[0m"
+    exit 1
+  fi
 }
 
 function get_archive_info() {
