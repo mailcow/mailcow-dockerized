@@ -668,6 +668,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               dkim('add', array('key_size' => $_data['key_size'], 'dkim_selector' => $_data['dkim_selector'], 'domains' => $domain));
             }
           }
+          // Create MTA-STS settings from template if enabled
+          if (!empty($DOMAIN_DEFAULT_ATTRIBUTES['mta_sts']) && $DOMAIN_DEFAULT_ATTRIBUTES['mta_sts'] == 1) {
+            $mta_sts_data = array(
+              'domain' => $domain,
+              'version' => $DOMAIN_DEFAULT_ATTRIBUTES['mta_sts_version'],
+              'mode' => $DOMAIN_DEFAULT_ATTRIBUTES['mta_sts_mode'],
+              'max_age' => $DOMAIN_DEFAULT_ATTRIBUTES['mta_sts_max_age'],
+              'mx' => $DOMAIN_DEFAULT_ATTRIBUTES['mta_sts_mx'],
+              'active' => 1
+            );
+            mailbox('add', 'mta_sts', $mta_sts_data);
+          }
           if (!empty($restart_sogo)) {
             $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
             if ($restart_response['type'] == "success") {
@@ -1682,6 +1694,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
+          $attr['mta_sts']                    = (isset($_data['mta_sts'])) ? intval($_data['mta_sts']) : 0;
+          $attr['mta_sts_version']            = (isset($_data['mta_sts_version'])) ? $_data['mta_sts_version'] : 'stsv1';
+          $attr['mta_sts_mode']               = (isset($_data['mta_sts_mode'])) ? $_data['mta_sts_mode'] : 'enforce';
+          $attr['mta_sts_max_age']            = (isset($_data['mta_sts_max_age'])) ? intval($_data['mta_sts_max_age']) : 604800;
+          $attr['mta_sts_mx']                 = (isset($_data['mta_sts_mx'])) ? $_data['mta_sts_mx'] : '';
 
           // save template
           $stmt = $pdo->prepare("INSERT INTO `templates` (`type`, `template`, `attributes`)
@@ -3065,21 +3082,26 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
             // check attributes
             $attr = array();
-            $attr['tags']                       = (isset($_data['tags'])) ? $_data['tags'] : array();
-            $attr['max_num_aliases_for_domain'] = (isset($_data['max_num_aliases_for_domain'])) ? intval($_data['max_num_aliases_for_domain']) : 0;
-            $attr['max_num_mboxes_for_domain']  = (isset($_data['max_num_mboxes_for_domain'])) ? intval($_data['max_num_mboxes_for_domain']) : 0;
-            $attr['def_quota_for_mbox']         = (isset($_data['def_quota_for_mbox'])) ? intval($_data['def_quota_for_mbox']) * 1048576 : 0;
-            $attr['max_quota_for_mbox']         = (isset($_data['max_quota_for_mbox'])) ? intval($_data['max_quota_for_mbox']) * 1048576 : 0;
-            $attr['max_quota_for_domain']       = (isset($_data['max_quota_for_domain'])) ? intval($_data['max_quota_for_domain']) * 1048576 : 0;
-            $attr['rl_frame']                   = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : "s";
-            $attr['rl_value']                   = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
-            $attr['active']                     = isset($_data['active']) ? intval($_data['active']) : 1;
-            $attr['gal']                        = (isset($_data['gal'])) ? intval($_data['gal']) : 1;
-            $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
-            $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
-            $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
-            $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
-            $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
+            $attr['tags']                       = (isset($_data['tags'])) ? $_data['tags'] : (isset($is_now['attributes']['tags']) ? $is_now['attributes']['tags'] : array());
+            $attr['max_num_aliases_for_domain'] = (isset($_data['max_num_aliases_for_domain'])) ? intval($_data['max_num_aliases_for_domain']) : (isset($is_now['attributes']['max_num_aliases_for_domain']) ? $is_now['attributes']['max_num_aliases_for_domain'] : 0);
+            $attr['max_num_mboxes_for_domain']  = (isset($_data['max_num_mboxes_for_domain'])) ? intval($_data['max_num_mboxes_for_domain']) : (isset($is_now['attributes']['max_num_mboxes_for_domain']) ? $is_now['attributes']['max_num_mboxes_for_domain'] : 0);
+            $attr['def_quota_for_mbox']         = (isset($_data['def_quota_for_mbox'])) ? intval($_data['def_quota_for_mbox']) * 1048576 : (isset($is_now['attributes']['def_quota_for_mbox']) ? $is_now['attributes']['def_quota_for_mbox'] : 0);
+            $attr['max_quota_for_mbox']         = (isset($_data['max_quota_for_mbox'])) ? intval($_data['max_quota_for_mbox']) * 1048576 : (isset($is_now['attributes']['max_quota_for_mbox']) ? $is_now['attributes']['max_quota_for_mbox'] : 0);
+            $attr['max_quota_for_domain']       = (isset($_data['max_quota_for_domain'])) ? intval($_data['max_quota_for_domain']) * 1048576 : (isset($is_now['attributes']['max_quota_for_domain']) ? $is_now['attributes']['max_quota_for_domain'] : 0);
+            $attr['rl_frame']                   = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : (isset($is_now['attributes']['rl_frame']) ? $is_now['attributes']['rl_frame'] : "s");
+            $attr['rl_value']                   = (!empty($_data['rl_value'])) ? $_data['rl_value'] : (isset($is_now['attributes']['rl_value']) ? $is_now['attributes']['rl_value'] : "");
+            $attr['active']                     = isset($_data['active']) ? intval($_data['active']) : (isset($is_now['attributes']['active']) ? $is_now['attributes']['active'] : 1);
+            $attr['gal']                        = (isset($_data['gal'])) ? intval($_data['gal']) : (isset($is_now['attributes']['gal']) ? $is_now['attributes']['gal'] : 1);
+            $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : (isset($is_now['attributes']['backupmx']) ? $is_now['attributes']['backupmx'] : 0);
+            $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : (isset($is_now['attributes']['relay_all_recipients']) ? $is_now['attributes']['relay_all_recipients'] : 0);
+            $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : (isset($is_now['attributes']['relay_unknown_only']) ? $is_now['attributes']['relay_unknown_only'] : 0);
+            $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : (isset($is_now['attributes']['dkim_selector']) ? $is_now['attributes']['dkim_selector'] : "dkim");
+            $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : (isset($is_now['attributes']['key_size']) ? $is_now['attributes']['key_size'] : 2048);
+            $attr['mta_sts']                    = (isset($_data['mta_sts'])) ? intval($_data['mta_sts']) : (isset($is_now['attributes']['mta_sts']) ? $is_now['attributes']['mta_sts'] : 0);
+            $attr['mta_sts_version']            = (isset($_data['mta_sts_version'])) ? $_data['mta_sts_version'] : (isset($is_now['attributes']['mta_sts_version']) ? $is_now['attributes']['mta_sts_version'] : 'stsv1');
+            $attr['mta_sts_mode']               = (isset($_data['mta_sts_mode'])) ? $_data['mta_sts_mode'] : (isset($is_now['attributes']['mta_sts_mode']) ? $is_now['attributes']['mta_sts_mode'] : 'enforce');
+            $attr['mta_sts_max_age']            = (isset($_data['mta_sts_max_age'])) ? intval($_data['mta_sts_max_age']) : (isset($is_now['attributes']['mta_sts_max_age']) ? $is_now['attributes']['mta_sts_max_age'] : 604800);
+            $attr['mta_sts_mx']                 = (isset($_data['mta_sts_mx'])) ? $_data['mta_sts_mx'] : (isset($is_now['attributes']['mta_sts_mx']) ? $is_now['attributes']['mta_sts_mx'] : '');
 
             // update template
             $stmt = $pdo->prepare("UPDATE `templates`
