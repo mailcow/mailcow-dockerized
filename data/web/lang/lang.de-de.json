@@ -245,6 +245,8 @@
         "iam_token_url": "Token Endpunkt",
         "iam_userinfo_url": "User info Endpunkt",
         "iam_username_field": "Username Feld",
+        "iam_use_pkce": "PKCE verwenden",
+        "iam_use_pkce_info": "Optional für Generic OIDC. Aktiviere dies, wenn dein Provider PKCE für den Authorization Code Flow unterstützt.",
         "iam_binddn": "Bind DN",
         "iam_use_ssl": "Benutze SSL",
         "iam_use_ssl_info": "Wenn SSL aktiviert ist und der Port auf 389 gesetzt wurde, wird dieser automatisch auf 636 geändert.",
