@@ -2,7 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
 if (!isset($_SESSION['mailcow_cc_role'])) {
-  header('Location: /');
+  // Save current URL so the user can be redirected back after login
+  header('Location: /?next=' . rawurlencode(ltrim($_SERVER['REQUEST_URI'], '/')));
   exit();
 }
 
