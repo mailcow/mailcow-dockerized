@@ -25,7 +25,7 @@
                   <input type="hidden" value="default" name="sender_acl">
                   <input type="hidden" value="0" name="force_pw_update">
                   <input type="hidden" value="0" name="force_tfa">
-                  <input type="hidden" value="0" name="sogo_access">
+                  <input type="hidden" value="0" name="sogo_redirection">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
@@ -327,11 +327,11 @@
                     </div>
                   </div>
                   {% if not skip_sogo %}
-                  <div data-acl="{{ acl.sogo_access }}" class="row">
+                  <div data-acl="{{ acl.sogo_redirection }}" class="row">
                     <div class="offset-sm-2 col-sm-10">
                       <div class="form-check">
-                        <label><input type="checkbox" class="form-check-input" value="1" name="sogo_access"{% if result.attributes.sogo_access == '1' %} checked{% endif %}> {{ lang.edit.sogo_access }}</label>
-                        <small class="text-muted">{{ lang.edit.sogo_access_info }}</small>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="sogo_redirection"{% if result.attributes.sogo_redirection == '1' %} checked{% endif %}> {{ lang.edit.sogo_redirection }}</label>
+                        <small class="text-muted">{{ lang.edit.sogo_redirection_info }}</small>
                       </div>
                     </div>
                   </div>

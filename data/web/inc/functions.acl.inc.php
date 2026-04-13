@@ -48,7 +48,12 @@ function acl($_action, $_scope = null, $_data = null, $_extra = null) {
               );
               continue;
             }
+            $sogo_acl_changed = false;
             foreach ($set_acls as $set_acl_key => $set_acl_val) {
+              // Track if sogo_access ACL changed
+              if ($set_acl_key == 'sogo_access' && $is_now[$set_acl_key] != $set_acl_val) {
+                $sogo_acl_changed = true;
+              }
               $stmt = $pdo->prepare("UPDATE `user_acl` SET " . $set_acl_key . " = " . intval($set_acl_val) . "
                 WHERE `username` = :username");
               $stmt->execute(array(
@@ -60,6 +65,10 @@ function acl($_action, $_scope = null, $_data = null, $_extra = null) {
               'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
               'msg' => array('acl_saved', $username)
             );
+            // Update SOGo static view if sogo_access ACL changed
+            if ($sogo_acl_changed) {
+              update_sogo_static_view($username);
+            }
           }
         break;
         case 'domainadmin':

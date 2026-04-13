@@ -12,7 +12,9 @@ elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == '
   if (empty($_SESSION['pending_tfa_setup']) && empty($_SESSION['pending_pw_update'])) {
     $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
-    if (intval($user_details['attributes']['sogo_access']) == 1 && !$is_dual && getenv('SKIP_SOGO') != "y") {
+    if (intval($user_details['attributes']['sogo_redirection']) == 1 &&
+        hasACLAccess('sogo_access') &&
+        !$is_dual && getenv('SKIP_SOGO') != "y") {
       header("Location: /SOGo/so/");
     } else {
       header("Location: /user");

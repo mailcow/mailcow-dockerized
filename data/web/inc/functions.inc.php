@@ -940,8 +940,12 @@ function update_sogo_static_view($mailbox = null) {
 
   $mailbox_exists = false;
   if ($mailbox !== null) {
-    // Check if the mailbox exists
-    $stmt = $pdo->prepare("SELECT username FROM mailbox WHERE username = :mailbox AND active = '1'");
+    // Check if the mailbox exists and should have SOGo access
+    $stmt = $pdo->prepare("SELECT m.username FROM mailbox m
+      LEFT JOIN user_acl u ON m.username = u.username
+      WHERE m.username = :mailbox
+      AND m.active = '1'
+      AND (u.sogo_access IS NULL OR u.sogo_access = 1)");
     $stmt->execute(array(':mailbox' => $mailbox));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row){
@@ -976,8 +980,10 @@ function update_sogo_static_view($mailbox = null) {
         LEFT OUTER JOIN grouped_mail_aliases ga ON ga.username REGEXP CONCAT('(^|,)', mailbox.username, '($|,)')
         LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
         LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
+        LEFT OUTER JOIN user_acl ON user_acl.username = mailbox.username
       WHERE
         mailbox.active = '1'
+        AND (user_acl.sogo_access IS NULL OR user_acl.sogo_access = 1)
         $subquery
       ON DUPLICATE KEY UPDATE
         `domain` = VALUES(`domain`),
@@ -1005,7 +1011,27 @@ function update_sogo_static_view($mailbox = null) {
     ));
   }
 
-  $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
+  if ($mailbox_exists) {
+    // For single mailbox update, only delete this specific user
+    $stmt = $pdo->prepare("DELETE FROM _sogo_static_view
+      WHERE `c_uid` = :mailbox
+      AND `c_uid` NOT IN (
+        SELECT m.`username` FROM `mailbox` m
+        LEFT JOIN `user_acl` u ON m.`username` = u.`username`
+        WHERE m.`active` = '1'
+        AND m.`username` = :mailbox2
+        AND (u.`sogo_access` IS NULL OR u.`sogo_access` = 1)
+      )");
+    $stmt->execute(array(':mailbox' => $mailbox, ':mailbox2' => $mailbox));
+  } else {
+    // Full cleanup for all users
+    $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (
+      SELECT m.`username` FROM `mailbox` m
+      LEFT JOIN `user_acl` u ON m.`username` = u.`username`
+      WHERE m.`active` = '1'
+      AND (u.`sogo_access` IS NULL OR u.`sogo_access` = 1)
+    );");
+  }
 
   flush_memcached();
 }
@@ -3490,9 +3516,14 @@ function set_user_loggedin_session($user) {
   session_regenerate_id(true);
   $_SESSION['mailcow_cc_username'] = $user;
   $_SESSION['mailcow_cc_role'] = 'user';
-  $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
-  $_SESSION['sogo-sso-user-allowed'][] = $user;
-  $_SESSION['sogo-sso-pass'] = $sogo_sso_pass;
+
+  acl('to_session');
+  if (hasACLAccess("sogo_access")) {
+    $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
+    $_SESSION['sogo-sso-user-allowed'][] = $user;
+    $_SESSION['sogo-sso-pass'] = $sogo_sso_pass;
+  }
+
   unset($_SESSION['pending_mailcow_cc_username']);
   unset($_SESSION['pending_mailcow_cc_role']);
   unset($_SESSION['pending_tfa_methods']);
