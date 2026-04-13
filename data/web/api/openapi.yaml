@@ -624,6 +624,63 @@ paths:
                     type: string
               type: object
       summary: Create domain
+  /api/v1/add/domain/template:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - domain_template_added
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: Create a domain template for easier domain creation
+      operationId: Create Domain Template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                template: "Standard Template"
+                attributes:
+                  max_num_aliases_for_domain: "400"
+                  max_num_mboxes_for_domain: "10"
+                  def_quota_for_mbox: "3072"
+                  max_quota_for_mbox: "10240"
+                  max_quota_for_domain: "102400"
+              properties:
+                template:
+                  description: Template name
+                  type: string
+                attributes:
+                  description: Domain template attributes
+                  type: object
+              type: object
+      summary: Create Domain Template
   /api/v1/add/domain-admin:
     post:
       responses:
@@ -1159,7 +1216,61 @@ paths:
                   type: boolean
               type: object
       summary: Create mailbox
-
+  /api/v1/add/mailbox/template:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - mailbox_template_added
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: Create a mailbox template for easier mailbox creation
+      operationId: Create Mailbox Template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                template: "Standard User"
+                attributes:
+                  quota: "3072"
+                  tls_enforce_in: "1"
+                  tls_enforce_out: "1"
+              properties:
+                template:
+                  description: Template name
+                  type: string
+                attributes:
+                  description: Mailbox template attributes
+                  type: object
+              type: object
+      summary: Create Mailbox Template
   /api/v1/add/oauth2-client:
     post:
       responses:
@@ -1744,6 +1855,465 @@ paths:
                   type: string
               type: object
       summary: Create Transport Maps
+  /api/v1/add/rsetting:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - rsetting_added
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Rspamd
+      description: Add a new Rspamd setting
+      operationId: Create Rspamd Setting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                active: "1"
+                content: "priority = 10;\nrcpt = \"user@example.org\";\napply \"default\" {\n  actions {\n    reject = 100.0;\n  }\n}"
+                desc: "Custom rspamd setting"
+              properties:
+                active:
+                  description: 1 for active, 0 for disabled
+                  type: number
+                content:
+                  description: Rspamd setting configuration
+                  type: string
+                desc:
+                  description: Description of the setting
+                  type: string
+              type: object
+      summary: Create Rspamd Setting
+  /api/v1/add/filter:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - filter_added
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Filters
+      description: Add a new Sieve filter for a mailbox
+      operationId: Create Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                active: "1"
+                filter_type: "prefilter"
+                script_desc: "Move spam to folder"
+                script_data: "require \"fileinto\";\n\nif header :contains \"X-Spam-Flag\" \"YES\" {\n  fileinto \"Junk\";\n  stop;\n}"
+                username: "user@example.org"
+              properties:
+                active:
+                  description: 1 for active, 0 for disabled
+                  type: number
+                filter_type:
+                  description: Type of filter (prefilter or postfilter)
+                  type: string
+                script_desc:
+                  description: Description of the filter
+                  type: string
+                script_data:
+                  description: Sieve script content
+                  type: string
+                username:
+                  description: Mailbox username
+                  type: string
+              type: object
+      summary: Create Filter
+  /api/v1/add/global-filter:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - global_filter_written
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Filters
+      description: Add or update global Sieve filter (prefilter or postfilter)
+      operationId: Create Global Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                filter_type: "prefilter"
+                script: "require \"reject\";\n\nif header :contains \"subject\" \"spam\" {\n  reject \"Spam detected\";\n}"
+              properties:
+                filter_type:
+                  description: Type of filter (prefilter or postfilter)
+                  type: string
+                script:
+                  description: Sieve script content
+                  type: string
+              type: object
+      summary: Create Global Filter
+  /api/v1/add/alias-domain:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - aliasd_added
+                        - alias.example.org
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domain Aliases
+      description: Create a new alias domain
+      operationId: Create Alias Domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                active: "1"
+                alias_domain: "alias.example.org"
+                target_domain: "example.org"
+              properties:
+                active:
+                  description: 1 for active, 0 for disabled
+                  type: number
+                alias_domain:
+                  description: The alias domain name
+                  type: string
+                target_domain:
+                  description: The target/parent domain
+                  type: string
+              type: object
+      summary: Create Alias Domain
+  /api/v1/add/mailbox-policy:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - object_modified
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Policies
+      description: Add a mailbox policy (whitelist/blacklist entry)
+      operationId: Create Mailbox Policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                object: "user@example.org"
+                object_from: "sender@domain.tld"
+                object_list: "wl"
+              properties:
+                object:
+                  description: Mailbox username
+                  type: string
+                object_from:
+                  description: Sender address to whitelist/blacklist
+                  type: string
+                object_list:
+                  description: List type (wl for whitelist, bl for blacklist)
+                  type: string
+              type: object
+      summary: Create Mailbox Policy
+  /api/v1/add/admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - admin_added
+                        - admin@example.org
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Admins
+      description: Create a new administrator account
+      operationId: Create Admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                active: "1"
+                password: "SecurePassword123"
+                password2: "SecurePassword123"
+                username: "admin@example.org"
+              properties:
+                active:
+                  description: 1 for active, 0 for disabled
+                  type: number
+                password:
+                  description: Password for the admin account
+                  type: string
+                password2:
+                  description: Password confirmation
+                  type: string
+                username:
+                  description: Admin username (email format)
+                  type: string
+              type: object
+      summary: Create Admin
+  /api/v1/add/dkim_import:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - dkim_imported
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - DomainKeys Identified Mail
+      description: Import an existing DKIM private key for a domain
+      operationId: Import DKIM Key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                domains: "example.org"
+                key_size: "2048"
+                private_key: "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+              properties:
+                domains:
+                  description: Domain name
+                  type: string
+                key_size:
+                  description: Key size (1024 or 2048)
+                  type: string
+                private_key:
+                  description: DKIM private key in PEM format
+                  type: string
+              type: object
+      summary: Import DKIM Key
+  /api/v1/add/mta-sts:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - mta_sts_added
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - MTA-STS
+      description: Add MTA-STS policy for a domain
+      operationId: Create MTA-STS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                domains: "example.org"
+                policy:
+                  mode: "enforce"
+                  mx:
+                    - "mx1.example.org"
+                    - "mx2.example.org"
+                  max_age: 604800
+              properties:
+                domains:
+                  description: Domain name
+                  type: string
+                policy:
+                  description: MTA-STS policy configuration
+                  type: object
+              type: object
+      summary: Create MTA-STS
   /api/v1/delete/alias:
     post:
       responses:
@@ -2822,6 +3392,441 @@ paths:
                   type: object
               type: object
       summary: Delete TLS Policy Map
+  /api/v1/delete/rsetting:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - rsetting_removed
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Rspamd
+      description: Delete one or more Rspamd settings
+      operationId: Delete Rspamd Setting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "1"
+              items:
+                type: string
+              type: array
+      summary: Delete Rspamd Setting
+  /api/v1/delete/filter:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - filter_removed
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Filters
+      description: Delete one or more mailbox filters
+      operationId: Delete Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "2"
+              items:
+                type: string
+              type: array
+      summary: Delete Filter
+  /api/v1/delete/alias-domain:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - aliasd_removed
+                        - alias.example.org
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Domain Aliases
+      description: Delete one or more alias domains
+      operationId: Delete Alias Domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "alias.example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete Alias Domain
+  /api/v1/delete/mailbox-policy:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - object_modified
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Policies
+      description: Delete one or more mailbox policies
+      operationId: Delete Mailbox Policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "5"
+              items:
+                type: string
+              type: array
+      summary: Delete Mailbox Policy
+  /api/v1/delete/time_limited_alias:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - mailbox_modified
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: Delete one or more time limited aliases
+      operationId: Delete Time Limited Alias
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "tmp123@example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete Time Limited Alias
+  /api/v1/delete/eas_cache:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - eas_reset
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: Delete EAS cache for one or more mailboxes
+      operationId: Delete EAS Cache
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "user@example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete EAS Cache
+  /api/v1/delete/sogo_profile:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - sogo_profile_reset
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: Delete SOGo profile for one or more mailboxes
+      operationId: Delete SOGo Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "user@example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete SOGo Profile
+  /api/v1/delete/admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - admin_removed
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Admins
+      description: Delete one or more administrator accounts
+      operationId: Delete Admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "admin@example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete Admin
+  /api/v1/delete/rlhash:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    msg: Ratelimit hash deleted
+                    type: success
+          description: OK
+          headers: {}
+      tags:
+        - Ratelimits
+      description: Delete a ratelimit hash to reset the ratelimit for a specific object
+      operationId: Delete Ratelimit Hash
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "rl:smtp_auth:user@example.org"
+              items:
+                type: string
+              type: array
+      summary: Delete Ratelimit Hash
+  /api/v1/delete/identity-provider:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - identity_provider_deleted
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Authentication
+      description: Delete identity provider configuration
+      operationId: Delete Identity Provider
+      summary: Delete Identity Provider
   /api/v1/delete/transport:
     post:
       responses:
@@ -3780,6 +4785,748 @@ paths:
                   type: object
               type: object
       summary: Quarantine Notifications
+  /api/v1/edit/relayhost:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - relayhost_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Routing
+      description: Update relay host settings
+      operationId: Update Relay Host
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  hostname: "relay.example.com"
+                  port: "587"
+                  username: "relayuser"
+                  password: "relaypass"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    hostname:
+                      description: Relay hostname
+                      type: string
+                    port:
+                      description: Relay port
+                      type: string
+                    username:
+                      description: Authentication username
+                      type: string
+                    password:
+                      description: Authentication password
+                      type: string
+                  type: object
+                items:
+                  description: Array of relay host IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Relay Host
+  /api/v1/edit/transport:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - transport_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Routing
+      description: Update transport map settings
+      operationId: Update Transport Map
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  destination: "example.org"
+                  nexthop: "relay.example.com:25"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    destination:
+                      description: Destination domain
+                      type: string
+                    nexthop:
+                      description: Next hop server
+                      type: string
+                  type: object
+                items:
+                  description: Array of transport map IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Transport Map
+  /api/v1/edit/rsetting:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - rsetting_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Rspamd
+      description: Update Rspamd setting
+      operationId: Update Rspamd Setting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  content: "priority = 10;\nrcpt = \"user@example.org\";\n"
+                  desc: "Updated setting"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    content:
+                      description: Rspamd setting content
+                      type: string
+                    desc:
+                      description: Description
+                      type: string
+                  type: object
+                items:
+                  description: Array of rsetting IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Rspamd Setting
+  /api/v1/edit/filter:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - filter_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Filters
+      description: Update mailbox filter
+      operationId: Update Filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  filter_type: "prefilter"
+                  script_desc: "Updated filter"
+                  script_data: "require \"fileinto\";\n\nfileinto \"Spam\";"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    filter_type:
+                      description: Filter type
+                      type: string
+                    script_desc:
+                      description: Script description
+                      type: string
+                    script_data:
+                      description: Sieve script content
+                      type: string
+                  type: object
+                items:
+                  description: Array of filter IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Filter
+  /api/v1/edit/alias-domain:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - aliasd_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Domain Aliases
+      description: Update alias domain
+      operationId: Update Alias Domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                items:
+                  - "alias.example.org"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                  type: object
+                items:
+                  description: Array of alias domains
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Alias Domain
+  /api/v1/edit/bcc:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - bcc_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Routing
+      description: Update BCC map
+      operationId: Update BCC Map
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  bcc_dest: "archive@example.org"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    bcc_dest:
+                      description: BCC destination address
+                      type: string
+                  type: object
+                items:
+                  description: Array of BCC map IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update BCC Map
+  /api/v1/edit/recipient_map:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - recipient_map_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Routing
+      description: Update recipient map
+      operationId: Update Recipient Map
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  new_dest: "newaddress@example.org"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    new_dest:
+                      description: New destination address
+                      type: string
+                  type: object
+                items:
+                  description: Array of recipient map IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Recipient Map
+  /api/v1/edit/tls-policy-map:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - tls_policy_map_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Routing
+      description: Update TLS policy map
+      operationId: Update TLS Policy Map
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  policy: "encrypt"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    policy:
+                      description: TLS policy (none, may, encrypt, dane, etc.)
+                      type: string
+                  type: object
+                items:
+                  description: Array of TLS policy map IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update TLS Policy Map
+  /api/v1/edit/oauth2-client:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - oauth2_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - OAuth2
+      description: Update OAuth2 client
+      operationId: Update OAuth2 Client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  redirect_uri: "https://newapp.example.com/callback"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    redirect_uri:
+                      description: Redirect URI
+                      type: string
+                  type: object
+                items:
+                  description: Array of OAuth2 client IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update OAuth2 Client
+  /api/v1/edit/app-passwd:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - app_passwd_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - App Passwords
+      description: Update application-specific password
+      operationId: Update App Password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  name: "Updated App Name"
+                items:
+                  - "1"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    name:
+                      description: App password name
+                      type: string
+                  type: object
+                items:
+                  description: Array of app password IDs
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update App Password
+  /api/v1/edit/admin:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - admin_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Admins
+      description: Update administrator account
+      operationId: Update Admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  active: "1"
+                  password: "NewSecurePassword123"
+                  password2: "NewSecurePassword123"
+                items:
+                  - "admin@example.org"
+              properties:
+                attr:
+                  properties:
+                    active:
+                      description: Active status
+                      type: number
+                    password:
+                      description: New password
+                      type: string
+                    password2:
+                      description: Password confirmation
+                      type: string
+                  type: object
+                items:
+                  description: Array of admin usernames
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update Admin
+  /api/v1/edit/passwordpolicy:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - password_policy_saved
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - Configuration
+      description: Update password policy configuration
+      operationId: Update Password Policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                length: 10
+                chars: 3
+                upper: 1
+                lower: 1
+                numbers: 1
+                special: 1
+              properties:
+                length:
+                  description: Minimum password length
+                  type: number
+                chars:
+                  description: Minimum number of character classes required
+                  type: number
+                upper:
+                  description: Require uppercase letters
+                  type: number
+                lower:
+                  description: Require lowercase letters
+                  type: number
+                numbers:
+                  description: Require numbers
+                  type: number
+                special:
+                  description: Require special characters
+                  type: number
+              type: object
+      summary: Update Password Policy
+  /api/v1/edit/mta-sts:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - type: success
+                      msg:
+                        - mta_sts_modified
+              schema:
+                properties:
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+      tags:
+        - MTA-STS
+      description: Update MTA-STS policy
+      operationId: Update MTA-STS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  policy:
+                    mode: "enforce"
+                    max_age: 604800
+                items:
+                  - "example.org"
+              properties:
+                attr:
+                  properties:
+                    policy:
+                      description: MTA-STS policy configuration
+                      type: object
+                  type: object
+                items:
+                  description: Array of domain names
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: Update MTA-STS
   /api/v1/edit/syncjob:
     post:
       responses:
@@ -4424,6 +6171,415 @@ paths:
       description: You can list all Forwarding Hosts in your mailcow.
       operationId: Get Forwarding Hosts
       summary: Get Forwarding Hosts
+  /api/v1/get/alias/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      address: "info@example.org"
+                      goto: "admin@example.org"
+                      active: "1"
+                      domain: "example.org"
+          description: OK
+          headers: {}
+      tags:
+        - Aliases
+      description: Get all aliases
+      operationId: Get All Aliases
+      summary: Get All Aliases
+  /api/v1/get/alias-domain/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - alias_domain: "alias.example.org"
+                      target_domain: "example.org"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Domain Aliases
+      description: Get all alias domains
+      operationId: Get All Alias Domains
+      summary: Get All Alias Domains
+  /api/v1/get/relayhost/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      hostname: "mailrelay.example.com"
+                      port: "25"
+                      username: "relayuser"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Get all relay hosts
+      operationId: Get All Relay Hosts
+      summary: Get All Relay Hosts
+  /api/v1/get/transport/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      destination: "example.org"
+                      nexthop: "relay.example.com:25"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Get all transport maps
+      operationId: Get All Transport Maps
+      summary: Get All Transport Maps
+  /api/v1/get/rsetting/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      desc: "Custom setting"
+                      content: "priority = 10;\nrcpt = \"user@example.org\";\n"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Rspamd
+      description: Get all Rspamd settings
+      operationId: Get All Rspamd Settings
+      summary: Get All Rspamd Settings
+  /api/v1/get/filters/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      filter_type: "prefilter"
+                      script_name: "spam_filter"
+                      script_desc: "Move spam to folder"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Filters
+      description: Get all mailbox filters
+      operationId: Get All Filters
+      summary: Get All Filters
+  /api/v1/get/bcc/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      local_dest: "user@example.org"
+                      bcc_dest: "archive@example.org"
+                      type: "sender"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Get all BCC maps
+      operationId: Get All BCC Maps
+      summary: Get All BCC Maps
+  /api/v1/get/recipient_map/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      old_dest: "old@example.org"
+                      new_dest: "new@example.org"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Get all recipient maps
+      operationId: Get All Recipient Maps
+      summary: Get All Recipient Maps
+  /api/v1/get/tls-policy-map/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      dest: "example.org"
+                      policy: "encrypt"
+                      parameters: ""
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Routing
+      description: Get all TLS policy maps
+      operationId: Get All TLS Policy Maps
+      summary: Get All TLS Policy Maps
+  /api/v1/get/oauth2-client/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      client_id: "mailcow-app"
+                      client_secret: "secret123"
+                      redirect_uri: "https://app.example.com/callback"
+                      grant_types: "authorization_code"
+          description: OK
+          headers: {}
+      tags:
+        - OAuth2
+      description: Get all OAuth2 clients
+      operationId: Get All OAuth2 Clients
+      summary: Get All OAuth2 Clients
+  /api/v1/get/app-passwd/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: "1"
+                      name: "Mobile App"
+                      username: "user@example.org"
+                      created: "2024-01-01 10:00:00"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - App Passwords
+      description: Get all application-specific passwords
+      operationId: Get All App Passwords
+      summary: Get All App Passwords
+  /api/v1/get/domain/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - domain_name: "example.org"
+                      description: "Main domain"
+                      max_num_aliases_for_domain: "400"
+                      max_num_mboxes_for_domain: "10"
+                      active: "1"
+          description: OK
+          headers: {}
+      tags:
+        - Domains
+      description: Get all domains
+      operationId: Get All Domains
+      summary: Get All Domains
+  /api/v1/get/mailbox/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - username: "user@example.org"
+                      name: "John Doe"
+                      active: "1"
+                      quota: "2048"
+                      quota_used: "512"
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: Get all mailboxes
+      operationId: Get All Mailboxes
+      summary: Get All Mailboxes
+  /api/v1/get/admin/all:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - username: "admin@example.org"
+                      active: "1"
+                      created: "2024-01-01"
+          description: OK
+          headers: {}
+      tags:
+        - Admins
+      description: Get all administrator accounts
+      operationId: Get All Admins
+      summary: Get All Admins
+  /api/v1/get/passwordpolicy:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    length: 8
+                    chars: 2
+                    upper: 1
+                    lower: 1
+                    numbers: 1
+                    special: 1
+          description: OK
+          headers: {}
+      tags:
+        - Configuration
+      description: Get password policy configuration
+      operationId: Get Password Policy
+      summary: Get Password Policy
+  /api/v1/get/status/host:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    cpu_usage: "25.3"
+                    memory_usage: "45.7"
+                    disk_usage: "60.2"
+          description: OK
+          headers: {}
+      tags:
+        - Status
+      description: Get host system status
+      operationId: Get Host Status
+      summary: Get Host Status
+  /api/v1/get/status/container/{container}:
+    get:
+      parameters:
+        - description: Container name
+          in: path
+          name: container
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    container: "postfix-mailcow"
+                    state: "running"
+                    uptime: "5 days"
+          description: OK
+          headers: {}
+      tags:
+        - Status
+      description: Get specific container status
+      operationId: Get Container Status
+      summary: Get Container Status
+  /api/v1/get/identity-provider:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: true
+                    provider_url: "https://idp.example.com"
+                    client_id: "mailcow"
+          description: OK
+          headers: {}
+      tags:
+        - Authentication
+      description: Get identity provider configuration
+      operationId: Get Identity Provider
+      summary: Get Identity Provider
   "/api/v1/get/logs/acme/{count}":
     get:
       parameters:
