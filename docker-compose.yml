@@ -202,6 +202,9 @@ services:
         ofelia.job-exec.phpfpm_ldap_sync.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_demo_seed.schedule: "15 * * * * *"
+        ofelia.job-exec.phpfpm_demo_seed.no-overlap: "true"
+        ofelia.job-exec.phpfpm_demo_seed.command: "/bin/bash -c \"[[ $${DEV_MODE} == y ]] && php /crons/demo-seed.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
@@ -209,6 +212,8 @@ services:
 
     sogo-mailcow:
       image: ghcr.io/mailcow/sogo:5.12.5-3
+      depends_on:
+        - php-fpm-mailcow
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
