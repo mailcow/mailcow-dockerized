@@ -5224,6 +5224,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           ));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+          if (empty($row)) {
+            return false;
+          }
+
           $mailboxdata['username'] = $row['username'];
           $mailboxdata['active'] = $row['active'];
           $mailboxdata['active_int'] = $row['active'];
