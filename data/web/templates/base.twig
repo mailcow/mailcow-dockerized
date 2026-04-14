@@ -23,8 +23,9 @@
     }
   </script>
 
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/favicon.png" type="image/png">
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
-  <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 {% set is_workspace_route = (mailcow_cc_role == 'admin' and (is_uri('dashboard') or is_uri('system') or is_uri('mailbox') or is_uri('queue') or is_uri('quarantine'))) or (mailcow_cc_role == 'domainadmin' and (is_uri('mailbox') or is_uri('quarantine') or is_uri('user'))) or (mailcow_cc_role == 'user' and (is_uri('user') or is_uri('quarantine'))) %}
 {% set is_edit_route = uri starts with '/edit/' %}
