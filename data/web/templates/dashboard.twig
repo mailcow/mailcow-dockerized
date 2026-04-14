@@ -1,159 +1,224 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="nav-item"><button class="nav-link active" data-bs-target="#tab-containers" aria-controls="tab-containers" role="tab" data-bs-toggle="tab">{{ lang.debug.system_containers }}</button></li>
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.debug.logs }}</a>
-    <ul class="dropdown-menu">
-      <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.in_memory_logs }}</span></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-postfix-logs" aria-selected="false" aria-controls="tab-postfix-logs" role="tab" data-bs-toggle="tab">Postfix</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-dovecot-logs" aria-selected="false" aria-controls="tab-dovecot-logs" role="tab" data-bs-toggle="tab">Dovecot</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-sogo-logs" aria-selected="false" aria-controls="tab-sogo-logs" role="tab" data-bs-toggle="tab">SOGo</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-netfilter-logs" aria-selected="false" aria-controls="tab-netfilter-logs" role="tab" data-bs-toggle="tab">Netfilter</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-autodiscover-logs" aria-selected="false" aria-controls="tab-autodiscover-logs" role="tab" data-bs-toggle="tab">Autodiscover</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-watchdog-logs" aria-selected="false" aria-controls="tab-watchdog-logs" role="tab" data-bs-toggle="tab">Watchdog</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-acme-logs" aria-selected="false" aria-controls="tab-acme-logs" role="tab" data-bs-toggle="tab">ACME</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-logs" aria-selected="false" aria-controls="tab-api-logs" role="tab" data-bs-toggle="tab">API</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-rl" aria-selected="false" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Ratelimits</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-cron-logs" aria-selected="false" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Crontasks</button></li>
-      <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.external_logs }}</span></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-rspamd-history" aria-selected="false" aria-controls="tab-rspamd-history" role="tab" data-bs-toggle="tab">Rspamd</button></li>
-      <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.static_logs }}</span></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-ui" aria-selected="false" aria-controls="tab-ui" role="tab" data-bs-toggle="tab">Mailcow UI</button></li>
-      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-sasl" aria-selected="false" aria-controls="tab-sasl" role="tab" data-bs-toggle="tab">SASL</button></li>
-    </ul>
-  </li>
-</ul>
+{% set running_containers = 0 %}
+{% for container, container_info in containers %}
+  {% if container_info.State.Running == 1 %}
+    {% set running_containers = running_containers + 1 %}
+  {% endif %}
+{% endfor %}
+{% set total_containers = containers|length %}
+{% set stopped_containers = total_containers - running_containers %}
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="tab-content" style="padding-top:20px">
+<div class="admin-page-shell dashboard-shell">
+  {% include 'admin/page-shell.twig' with {
+    sidebar_kicker: 'Admin command center',
+    sidebar_title: hostname,
+    sidebar_copy: 'Monitor runtime health, inspect logs, and work across the rest of the admin surfaces from one shared workspace.',
+    sidebar_metrics: [
+      {'label': lang.debug.containers_info, 'value': total_containers},
+      {'label': lang.debug.container_running, 'value': running_containers},
+      {'label': lang.debug.container_stopped, 'value': stopped_containers},
+      {'label': lang.debug.timezone, 'value': timezone}
+    ],
+    sidebar_sections: [
+      {
+        'heading': 'Logs',
+        'role': 'tablist',
+        'aria_label': lang.debug.system_containers,
+        'items': [
+          {'kind': 'button', 'label': lang.debug.system_containers, 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-containers', 'aria_controls': 'tab-containers', 'aria_selected': true, 'role': 'tab', 'active': true},
+          {'kind': 'button', 'label': 'Postfix', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-postfix-logs', 'aria_controls': 'tab-postfix-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Dovecot', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-dovecot-logs', 'aria_controls': 'tab-dovecot-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'SOGo', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-sogo-logs', 'aria_controls': 'tab-sogo-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Netfilter', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-netfilter-logs', 'aria_controls': 'tab-netfilter-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Autodiscover', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-autodiscover-logs', 'aria_controls': 'tab-autodiscover-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Watchdog', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-watchdog-logs', 'aria_controls': 'tab-watchdog-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'ACME', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-acme-logs', 'aria_controls': 'tab-acme-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'API', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-api-logs', 'aria_controls': 'tab-api-logs', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Ratelimits', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-api-rl', 'aria_controls': 'tab-api-rl', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'Crontasks', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-cron-logs', 'aria_controls': 'tab-cron-logs', 'aria_selected': false, 'role': 'tab'}
+        ]
+      },
+      {
+        'heading': lang.debug.external_logs,
+        'role': 'tablist',
+        'items': [
+          {'kind': 'button', 'label': 'Rspamd', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-rspamd-history', 'aria_controls': 'tab-rspamd-history', 'aria_selected': false, 'role': 'tab'}
+        ]
+      },
+      {
+        'heading': lang.debug.static_logs,
+        'role': 'tablist',
+        'items': [
+          {'kind': 'button', 'label': 'Mailcow UI', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-ui', 'aria_controls': 'tab-ui', 'aria_selected': false, 'role': 'tab'},
+          {'kind': 'button', 'label': 'SASL', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-sasl', 'aria_controls': 'tab-sasl', 'aria_selected': false, 'role': 'tab'}
+        ]
+      }
+    ]
+  } %}
+
+  <div class="dashboard-main">
+    <section class="dashboard-hero">
+      <div class="dashboard-hero-copy">
+        <p class="dashboard-kicker">Runtime overview</p>
+        <h2 class="dashboard-title">{{ hostname }}</h2>
+        <p class="dashboard-subtitle">System telemetry, service health, licensing, and container operations now live inside the same shared shell as the rest of the admin workspace.</p>
+      </div>
+      <div class="dashboard-hero-grid">
+        <div class="dashboard-stat-card">
+          <span class="dashboard-stat-label">Containers</span>
+          <strong class="dashboard-stat-value">{{ total_containers }}</strong>
+          <small>{{ running_containers }} running</small>
+        </div>
+        <div class="dashboard-stat-card">
+          <span class="dashboard-stat-label">{{ lang.debug.disk_usage }}</span>
+          <strong class="dashboard-stat-value">{{ vmail_df[4] }}</strong>
+          <small>{{ vmail_df[2] }} used</small>
+        </div>
+        <div class="dashboard-stat-card">
+          <span class="dashboard-stat-label">Version</span>
+          <strong class="dashboard-stat-value">{{ mailcow_info.version_tag }}</strong>
+          <small>{{ timezone }}</small>
+        </div>
+        <div class="dashboard-stat-card">
+          <span class="dashboard-stat-label">{{ lang.admin.guid }}</span>
+          <strong class="dashboard-stat-value">{{ gal.c|default('?') }}</strong>
+          <small>{% if gal.valid == true %}License active{% else %}Validation pending{% endif %}</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="tab-content dashboard-tab-content">
       <div role="tabpanel" class="tab-pane active" id="tab-containers">
-
-        <div class="card mb-4">
-          <div class="card-header fs-5">
-            <span>{{ ui_texts.title_name|raw }}</span>
-          </div>
+        <div class="card dashboard-overview-card mb-4">
           <div class="card-body">
-            <div class="row">
-              <div class="col-sm-12 col-md-4 d-flex flex-column">
-                <img class="main-logo img-responsive my-auto m-auto" alt="mailcow-logo" style="max-width: 85%; max-height: 85%;" src="{{ logo|default('/img/cow_mailcow.svg') }}">
-                <img class="main-logo-dark img-responsive my-auto m-auto" alt="mailcow-logo-dark" style="max-width: 85%; max-height: 85%;" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
-              </div>
-              <div class="col-sm-12 col-md-8">
-                <div style="margin-top: 10px;">
-                  <table class="table table-striped w-100">
-                    <tbody>
-                      <tr>
-                        <td>Hostname</td>
-                        <td class="text-break"><div>
-                          <p><b>{{ hostname }}</b></p>
-                        </div></td>
-                      </tr>
-                      <tr>
-                        <td>{{ lang.debug.architecture }}</td>
-                        <td class="text-break"><div>
-                          <p id="host_architecture">-</p>
-                        </div></td>
-                      </tr>
-                      <tr>
-                        <td>IPs</td>
-                        <td class="text-break">
-                          {% if ip_check == 1 %}
-                            <span class="d-none" id="host_ipv4">-</span>
-                            <span class="d-none mb-2" id="host_ipv6">-</span>
-                            <button class="d-block btn btn-primary btn-sm" id="host_show_ip">
-                              <span class="text">{{ lang.debug.show_ip }}</span>
-                              <div class="spinner-border spinner-border-sm d-none" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                              </div>
-                            </button>
-                          {% else %}
-                            <span class="d-block">{{ lang.admin.ip_check_disabled|raw }}</span>
-                          {% endif %}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Version</td>
-                        <td class="text-break">
-                          <div class="fw-bolder">
-                            <p ><a href="#" id="mailcow_version">{{ mailcow_info.version_tag }}</a></p>
-                            <p id="mailcow_update"></p>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>{{ lang.debug.current_time }}</td>
-                        <td id="host_date" class="text-break">-</td>
-                      </tr>
-                      <tr>
-                        <td>{{ lang.debug.timezone }}</td>
-                        <td class="text-break">{{ timezone }}</td>
-                      </tr>
-                      <tr>
-                        <td>{{ lang.debug.uptime }}</td>
-                        <td id="host_uptime" class="text-break">-</td>
-                      </tr>
-                      <tr>
-                        <td>{{ lang.debug.disk_usage }}</td>
-                        <td class="text-break">
-                          <div>
-                            <span class="d-block"><i class="bi bi-hdd-fill"></i> {{ vmail_df[0] }}</span>
-                            <span class="d-block">{{ vmail_df[2] }} / {{ vmail_df[1] }} ({{ vmail_df[4] }})</span>
-                          </div>
-                          <div class="mt-2 mb-4">
-                            <div class="progress">
-                              <div class="progress-bar bg-info" role="progressbar" style="width:{{ vmail_df[4] }}"></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <div class="row g-4 align-items-stretch">
+              <div class="col-xl-4">
+                <div class="dashboard-brand-panel">
+                  <div class="dashboard-brand-frame">
+                    <img class="main-logo" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}">
+                    <img class="main-logo-dark" alt="mailcow-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
+                  </div>
+                  <div class="dashboard-brand-copy">
+                    <p class="dashboard-kicker">{{ ui_texts.title_name|striptags }}</p>
+                    <h3>{{ hostname }}</h3>
+                  </div>
                 </div>
               </div>
 
-              <div class="col-sm-6 mt-4">
-                <h3>CPU</h3>
-                <h5><span id="host_cpu_cores">-</span> {{ lang.debug.cores }} @ <span id="host_cpu_usage"></span></h5>
-                <canvas id="host_cpu_chart" width="400" height="200"></canvas>
-              </div>
-              <div class="col-sm-6 mt-4">
-                <h3>{{ lang.debug.memory|upper}}</h3>
-                <h5><span id="host_memory_total">-</span> @ <span id="host_memory_usage"></span></h5>
-                <canvas id="host_mem_chart" width="400" height="200"></canvas>
+              <div class="col-xl-8">
+                <div class="dashboard-detail-grid">
+                  <div class="dashboard-detail-card">
+                    <span>Hostname</span>
+                    <strong>{{ hostname }}</strong>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>{{ lang.debug.architecture }}</span>
+                    <strong id="host_architecture">-</strong>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>Version</span>
+                    <strong><a href="#" id="mailcow_version">{{ mailcow_info.version_tag }}</a></strong>
+                    <small id="mailcow_update"></small>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>{{ lang.debug.timezone }}</span>
+                    <strong>{{ timezone }}</strong>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>{{ lang.debug.current_time }}</span>
+                    <strong id="host_date">-</strong>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>{{ lang.debug.uptime }}</span>
+                    <strong id="host_uptime">-</strong>
+                  </div>
+                  <div class="dashboard-detail-card dashboard-detail-card-wide">
+                    <span>IPs</span>
+                    <div class="dashboard-ip-block">
+                      {% if ip_check == 1 %}
+                        <button class="btn dashboard-action-button" id="host_show_ip">
+                          <span class="text">{{ lang.debug.show_ip }}</span>
+                          <div class="spinner-border spinner-border-sm d-none" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </button>
+                        <span class="d-none" id="host_ipv4">-</span>
+                        <span class="d-none" id="host_ipv6">-</span>
+                      {% else %}
+                        <span>{{ lang.admin.ip_check_disabled|raw }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="dashboard-detail-card dashboard-detail-card-wide">
+                    <span>{{ lang.debug.disk_usage }}</span>
+                    <div class="dashboard-storage-meta">
+                      <strong><i class="bi bi-hdd-stack-fill"></i> {{ vmail_df[0] }}</strong>
+                      <small>{{ vmail_df[2] }} / {{ vmail_df[1] }} ({{ vmail_df[4] }})</small>
+                    </div>
+                    <div class="progress dashboard-storage-progress-wrap">
+                      <div class="progress-bar dashboard-storage-progress" role="progressbar" style="width:{{ vmail_df[4] }}"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="col-sm-12">
-                <legend class="mt-4">
-                  {{ lang.admin.guid_and_license }}
-                </legend>
-                <hr />
-                <div id="license">
+              <div class="col-lg-6">
+                <div class="dashboard-chart-card">
+                  <div class="dashboard-panel-head">
+                    <div>
+                      <p class="dashboard-kicker">Runtime</p>
+                      <h3>CPU</h3>
+                    </div>
+                    <div class="dashboard-chart-meta"><span id="host_cpu_cores">-</span> {{ lang.debug.cores }} @ <span id="host_cpu_usage"></span></div>
+                  </div>
+                  <canvas id="host_cpu_chart" width="400" height="200"></canvas>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="dashboard-chart-card">
+                  <div class="dashboard-panel-head">
+                    <div>
+                      <p class="dashboard-kicker">Runtime</p>
+                      <h3>{{ lang.debug.memory|upper }}</h3>
+                    </div>
+                    <div class="dashboard-chart-meta"><span id="host_memory_total">-</span> @ <span id="host_memory_usage"></span></div>
+                  </div>
+                  <canvas id="host_mem_chart" width="400" height="200"></canvas>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="dashboard-license-card" id="license">
+                  <div class="dashboard-panel-head">
+                    <div>
+                      <p class="dashboard-kicker">{{ lang.admin.guid_and_license }}</p>
+                      <h3>License & identity</h3>
+                    </div>
+                  </div>
                   <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-                    <div class="row">
-                      <label class="control-label col-sm-3" for="guid">{{ lang.admin.guid }}:</label>
-                      <div class="col-sm-9">
+                    <div class="row g-4 align-items-start">
+                      <div class="col-lg-7">
+                        <label class="dashboard-field-label" for="guid">{{ lang.admin.guid }}</label>
                         <div class="input-group">
                           <span class="input-group-text">
                             <i class="bi bi-suit-heart{% if gal.valid == true %}-fill text-danger{% endif %}"></i>
                           </span>
                           <input type="text" id="guid" class="form-control" value="{{ license_guid }}" readonly>
                         </div>
-                        <p class="text-muted">
-                          {{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }} -
-                          {{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }} -
-                          {{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}
-                        </p>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="offset-sm-3 col-sm-9">
-                        <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
-                        <div class="btn-group">
-                          <button class="btn btn-sm d-block d-sm-inline btn-success" name="license_validate_now" type="submit" href="#">{{ lang.admin.validate_license_now }}</button>
+                      <div class="col-lg-5">
+                        <div class="dashboard-license-meta">
+                          <span>{{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }}</span>
+                          <span>{{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }}</span>
+                          <span>{{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}</span>
                         </div>
+                      </div>
+                      <div class="col-12">
+                        <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
+                        <button class="btn dashboard-primary-button" name="license_validate_now" type="submit">{{ lang.admin.validate_license_now }}</button>
                       </div>
                     </div>
                   </form>
@@ -162,80 +227,75 @@
             </div>
           </div>
         </div>
-        <!-- container info -->
-        <div class="card mb-4">
-          <div class="card-header fs-5">
-            <span>{{ lang.debug.containers_info }}</span>
+
+        <div class="card dashboard-containers-card mb-4">
+          <div class="card-header">
+            <div class="dashboard-panel-head mb-0">
+              <div>
+                <p class="dashboard-kicker">{{ lang.debug.containers_info }}</p>
+                <h3>Service runtime cards</h3>
+              </div>
+              <div class="dashboard-panel-meta">{{ running_containers }} running / {{ stopped_containers }} stopped</div>
+            </div>
           </div>
-          <div class="card-body p-0">
-            <div class="row mx-0">
-              <!-- rest of the containers -->
+          <div class="card-body">
+            <div class="row g-3">
               {% for container, container_info in containers %}
-                  <div class="col-md-6 col-sm-12 p-2">
-                    <div class="list-group-item p-0">
-                      <div class="d-flex p-2 list-group-header">
-                        <div>
-                          <span class="fw-bold">{{ container }}</span>
-                          <span class="d-block d-md-inline">({{ container_info.Config.Image }})</span>
-                          <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
+                <div class="col-xl-6">
+                  <div class="dashboard-container-card {% if container_info.State.Running == 1 %}is-running{% else %}is-stopped{% endif %}">
+                    <div class="dashboard-container-head">
+                      <div>
+                        <div class="dashboard-container-title-row">
+                          <span class="dashboard-container-title">{{ container }}</span>
                           {% if container_info.State.Running == 1 %}
-                            <span class="badge fs-7 bg-success loader" style="min-width:100px">
+                            <span class="badge fs-7 bg-success loader">
                               {{ lang.debug.container_running }}
                               <span class="loader-dot">.</span>
                               <span class="loader-dot">.</span>
                               <span class="loader-dot">.</span>
                             </span>
                           {% elseif container_info.State %}
-                            <span class="badge fs-7 bg-danger" style="min-width:100px">
+                            <span class="badge fs-7 bg-danger">
                               {{ lang.debug.container_stopped }}
                               <i class="bi-x ms-1"></i>
                             </span>
                           {% endif %}
                         </div>
-                        <div class="mt-auto ms-auto">
-                          <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#{{ container }}Collapse" aria-expanded="false" aria-controls="{{ container }}Collapse">
-                            <i class="bi bi-caret-down-fill caret"></i>
-                          </button>
-                        </div>
+                        <span class="dashboard-container-image">{{ container_info.Config.Image }}</span>
+                        <small>{{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span></small>
                       </div>
-                      <div class="collapse p-0 list-group-details container-details-collapse" id="{{ container }}Collapse" data-id="{{ container_info.Id }}">
-                        <div class="row p-2 pt-4">
-                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
-                            <h6>Disk I/O</h6>
-                            <div class="spinner-border my-4 mx-auto" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <canvas class="d-none" id="{{ container }}_DiskIOChart" width="400" height="200"></canvas>
+                      <button class="btn dashboard-icon-button" type="button" data-bs-toggle="collapse" data-bs-target="#{{ container }}Collapse" aria-expanded="false" aria-controls="{{ container }}Collapse">
+                        <i class="bi bi-caret-down-fill caret"></i>
+                      </button>
+                    </div>
+                    <div class="collapse container-details-collapse" id="{{ container }}Collapse" data-id="{{ container_info.Id }}">
+                      <div class="row g-3 pt-4">
+                        <div class="col-md-6 d-flex flex-column">
+                          <h6>Disk I/O</h6>
+                          <div class="spinner-border my-4 mx-auto" role="status">
+                            <span class="visually-hidden">Loading...</span>
                           </div>
-                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
-                            <h6>Net I/O</h6>
-                            <div class="spinner-border my-4 mx-auto" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <canvas class="d-none" id="{{ container }}_NetIOChart" width="400" height="200"></canvas>
+                          <canvas class="d-none" id="{{ container }}_DiskIOChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6 d-flex flex-column">
+                          <h6>Net I/O</h6>
+                          <div class="spinner-border my-4 mx-auto" role="status">
+                            <span class="visually-hidden">Loading...</span>
                           </div>
-                          <div class="col-12 d-flex" style="height: 40px">
-                            <a href data-bs-toggle="modal"
-                              data-container="{{ container }}"
-                              data-bs-target="#RestartContainer"
-                              class="btn btn-sm btn-secondary d-flex align-items-center justify-content-center mb-2 ms-auto"
-                              style="height: 30px;">{{ lang.debug.restart_container }}
-                                <i class="ms-1 bi
-                                {% if container_info.State.Running == 1 %}
-                                bi-record-fill text-success
-                                {% elseif container_info.State %}
-                                bi-record-fill text-danger
-                                {% else %}
-                                default
-                                {% endif %}
-                                "
-                              ></i>
-                            </a>
-                          </div>
+                          <canvas class="d-none" id="{{ container }}_NetIOChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="col-12 d-flex">
+                          <a href data-bs-toggle="modal"
+                            data-container="{{ container }}"
+                            data-bs-target="#RestartContainer"
+                            class="btn dashboard-action-button ms-auto">{{ lang.debug.restart_container }}
+                            <i class="ms-1 bi {% if container_info.State.Running == 1 %}bi-record-fill text-success{% elseif container_info.State %}bi-record-fill text-danger{% else %}default{% endif %}"></i>
+                          </a>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
               {% endfor %}
             </div>
           </div>

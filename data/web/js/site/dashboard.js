@@ -1,3 +1,14 @@
+const DASHBOARD_CHART_COLORS = {
+  text: 'rgba(238, 245, 240, 0.74)',
+  grid: 'rgba(255, 255, 255, 0.08)',
+  amberFill: 'rgba(244, 181, 72, 0.18)',
+  amberStroke: 'rgba(244, 181, 72, 0.96)',
+  tealFill: 'rgba(95, 200, 189, 0.18)',
+  tealStroke: 'rgba(95, 200, 189, 0.96)',
+  orangeFill: 'rgba(217, 119, 30, 0.16)',
+  orangeStroke: 'rgba(217, 119, 30, 0.88)'
+};
+
 $(document).ready(function() {
   // Parse seconds ago to date
   // Get "now" timestamp
@@ -26,7 +37,8 @@ $(document).ready(function() {
   // set update loop container list
   containersToUpdate = {};
   // set default ChartJs Font Color
-  Chart.defaults.color = '#999';
+  Chart.defaults.color = DASHBOARD_CHART_COLORS.text;
+  Chart.defaults.borderColor = DASHBOARD_CHART_COLORS.grid;
   // create host cpu and mem charts
   createHostCpuAndMemChart();
   // check for new version
@@ -1507,8 +1519,8 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
     labels: [],
     datasets: [{
       label: read_lable,
-      backgroundColor: "rgba(41, 187, 239, 0.3)",
-      borderColor: "rgba(41, 187, 239, 0.6)",
+      backgroundColor: DASHBOARD_CHART_COLORS.tealFill,
+      borderColor: DASHBOARD_CHART_COLORS.tealStroke,
       pointRadius: 1,
       pointHitRadius: 6,
       borderWidth: 2,
@@ -1517,8 +1529,8 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
       data: []
     }, {
       label: write_lable,
-      backgroundColor: "rgba(239, 60, 41, 0.3)",
-      borderColor: "rgba(239, 60, 41, 0.6)",
+      backgroundColor: DASHBOARD_CHART_COLORS.orangeFill,
+      borderColor: DASHBOARD_CHART_COLORS.orangeStroke,
       pointRadius: 1,
       pointHitRadius: 6,
       borderWidth: 2,
@@ -1535,7 +1547,7 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
       yAxis: {
         min: 0,
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         },
         ticks: {
           callback: function(i, index, ticks) {
@@ -1545,7 +1557,7 @@ function createReadWriteChart(chart_id, read_lable, write_lable){
       },
       xAxis: {
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         }
       }
     }
@@ -1581,8 +1593,8 @@ function createHostCpuAndMemChart(){
     labels: [],
     datasets: [{
       label: "CPU %",
-      backgroundColor: "rgba(41, 187, 239, 0.3)",
-      borderColor: "rgba(41, 187, 239, 0.6)",
+      backgroundColor: DASHBOARD_CHART_COLORS.amberFill,
+      borderColor: DASHBOARD_CHART_COLORS.amberStroke,
       pointRadius: 1,
       pointHitRadius: 6,
       borderWidth: 2,
@@ -1599,7 +1611,7 @@ function createHostCpuAndMemChart(){
       yAxis: {
         min: 0,
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         },
         ticks: {
           callback: function(i, index, ticks) {
@@ -1609,7 +1621,7 @@ function createHostCpuAndMemChart(){
       },
       xAxis: {
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         }
       }
     }
@@ -1619,8 +1631,8 @@ function createHostCpuAndMemChart(){
     labels: [],
     datasets: [{
       label: "MEM %",
-      backgroundColor: "rgba(41, 187, 239, 0.3)",
-      borderColor: "rgba(41, 187, 239, 0.6)",
+      backgroundColor: DASHBOARD_CHART_COLORS.tealFill,
+      borderColor: DASHBOARD_CHART_COLORS.tealStroke,
       pointRadius: 1,
       pointHitRadius: 6,
       borderWidth: 2,
@@ -1637,7 +1649,7 @@ function createHostCpuAndMemChart(){
       yAxis: {
         min: 0,
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         },
         ticks: {
           callback: function(i, index, ticks) {
@@ -1647,7 +1659,7 @@ function createHostCpuAndMemChart(){
       },
       xAxis: {
         grid: {
-          display: false
+          color: DASHBOARD_CHART_COLORS.grid
         }
       }
     }

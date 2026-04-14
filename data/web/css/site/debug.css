@@ -13,24 +13,25 @@
   }
 }
 .footer-add-item {
-  display:block;
+  display: block;
   text-align: center;
   font-style: italic;
   padding: 10px;
-  background: #F5F5F5;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dashboard-ink-soft, #94a3b8);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 @media (min-width: 992px) {
   .container {
-      width: 80%;
+    width: 80%;
   }
 }
 .mass-actions-debug {
   user-select: none;
 }
 .inputMissingAttr {
-  border-color: #FF4136;
+  border-color: #ef4444;
 }
 .table-lines {
   vertical-align: inherit;
 }
-

@@ -6,7 +6,7 @@ $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
 if (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) {
   $css_minifier->add('/web/css/site/mailbox.css');
 }
-if (preg_match("/admin/i", $_SERVER['REQUEST_URI'])) {
+if (preg_match("/(admin|quarantine|qhandler)/i", $_SERVER['REQUEST_URI'])) {
   $css_minifier->add('/web/css/site/admin.css');
 }
 if (preg_match("/user/i", $_SERVER['REQUEST_URI'])) {

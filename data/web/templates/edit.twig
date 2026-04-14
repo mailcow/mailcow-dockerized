@@ -1,26 +1,34 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<a href="{{ return_to }}">&#8592; {{ lang.edit.previous }}</a>
-<div class="row my-4">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header fs-5">
-        <span>{{ lang.edit.title }}</span>
+<div class="admin-page-shell">
+  {% include 'admin/page-shell.twig' with {
+    sidebar_title: lang.edit.title|default('Edit')
+  } %}
+
+  <div class="admin-page-main">
+    <section class="admin-page-hero">
+      <div>
+        <a href="{{ return_to }}" class="edit-back-link"><i class="bi bi-arrow-left me-1"></i>{{ lang.edit.previous }}</a>
+        <h1 class="admin-page-title">{{ lang.edit.title }}</h1>
       </div>
-      <div class="card-body">
-        {% block inner_content %}
-          {% if access_denied %}
-          <div class="alert alert-danger" role="alert">{{ lang.danger.access_denied }}</div>
-          {% else %}
-          <div class="alert alert-info" role="alert">{{ lang.info.no_action }}</div>
-          {% endif %}
-        {% endblock %}
+    </section>
+
+    <div class="admin-page-content admin-page-stack">
+      <div class="card">
+        <div class="card-body">
+          {% block inner_content %}
+            {% if access_denied %}
+            <div class="alert alert-danger" role="alert">{{ lang.danger.access_denied }}</div>
+            {% else %}
+            <div class="alert alert-info" role="alert">{{ lang.info.no_action }}</div>
+            {% endif %}
+          {% endblock %}
+        </div>
       </div>
     </div>
   </div>
 </div>
-<a href="{{ return_to }}">&#8592; {{ lang.edit.previous }}</a>
 
 <script type='text/javascript'>
   var lang_user = {{ lang_user|raw }};

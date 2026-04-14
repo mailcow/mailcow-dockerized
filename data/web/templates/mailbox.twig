@@ -1,65 +1,79 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<div id="mail-content" class="responsive-tabs">
-  <ul class="nav nav-tabs" role="tablist">
-    {% if mailcow_cc_role == 'admin' %}
-    <li class="nav-item dropdown" role="presentation">
-      <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
-      <ul class="dropdown-menu">
-        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
-        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-templates-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-domains">{{ lang.mailbox.templates }}</button></li>
-      </ul>
-    </li>
-    {% else %}
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
-    {% endif %}
-    {% if mailcow_cc_role == 'admin' %}
-    <li class="nav-item dropdown" role="presentation">
-      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}</a>
-      <ul class="dropdown-menu">
-        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
-        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-templates-mbox" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-mbox">{{ lang.mailbox.templates }}</button></li>
-      </ul>
-    </li>
-    {% else %}
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
-    {% endif %}
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-resources" role="tab" data-bs-toggle="tab" data-bs-target="#tab-resources">{{ lang.mailbox.resources }}</button></li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.aliases }}</a>
-      <ul class="dropdown-menu">
-        <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-mbox-aliases" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mbox-aliases">{{ lang.mailbox.aliases }}</button></li>
-        <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-domain-aliases" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domain-aliases">{{ lang.mailbox.domain_aliases }}</button></li>
-      </ul>
-    </li>
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#tab-syncjobs">{{ lang.mailbox.sync_jobs }}</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-filters" role="tab" data-bs-toggle="tab" data-bs-target="#tab-filters">{{ lang.mailbox.filters }}</button></li>
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-bcc" role="tab" data-bs-toggle="tab" data-bs-target="#tab-bcc">{{ lang.mailbox.address_rewriting }}</button></li>
-    <li class="nav-item" role="presentation"{% if mailcow_cc_role != 'admin' %} class="d-none"{% endif %}><button class="nav-link" aria-selected="false" aria-controls="tab-tls-policy" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tls-policy">{{ lang.mailbox.tls_policy_maps }}</button></li>
-  </ul>
+<div class="admin-page-shell">
+  {% include 'admin/page-shell.twig' with {
+    sidebar_title: mailcow_cc_role == 'admin' ? 'Mail' : 'Mailboxes'
+  } %}
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="tab-content" style="padding-top:20px">
-        {% include 'mailbox/tab-domains.twig' %}
+  <div class="admin-page-main">
+    <section class="admin-page-hero">
+      <div>
+        <h1 class="admin-page-title">{{ mailcow_cc_role == 'admin' ? 'Mail' : 'Mailboxes' }}</h1>
+      </div>
+    </section>
+
+    <div id="mail-content" class="responsive-tabs admin-page-content">
+      <ul class="nav nav-tabs" role="tablist">
         {% if mailcow_cc_role == 'admin' %}
-        {% include 'mailbox/tab-templates-domains.twig' %}
+        <li class="nav-item dropdown" role="presentation">
+          <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
+            <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-templates-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-domains">{{ lang.mailbox.templates }}</button></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
         {% endif %}
-        {% include 'mailbox/tab-mailboxes.twig' %}
         {% if mailcow_cc_role == 'admin' %}
-        {% include 'mailbox/tab-templates-mbox.twig' %}
+        <li class="nav-item dropdown" role="presentation">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.mailboxes }}</a>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
+            <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-templates-mbox" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-mbox">{{ lang.mailbox.templates }}</button></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-mailboxes" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mailboxes">{{ lang.mailbox.mailboxes }}</button></li>
         {% endif %}
-        {% include 'mailbox/tab-resources.twig' %}
-        {% include 'mailbox/tab-domain-aliases.twig' %}
-        {% include 'mailbox/tab-mbox-aliases.twig' %}
-        {% include 'mailbox/tab-syncjobs.twig' %}
-        {% include 'mailbox/tab-filters.twig' %}
-        {% include 'mailbox/tab-bcc.twig' %}
-        {% include 'mailbox/tab-tls-policy.twig' %}
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-resources" role="tab" data-bs-toggle="tab" data-bs-target="#tab-resources">{{ lang.mailbox.resources }}</button></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.aliases }}</a>
+          <ul class="dropdown-menu">
+            <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-mbox-aliases" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mbox-aliases">{{ lang.mailbox.aliases }}</button></li>
+            <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-domain-aliases" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domain-aliases">{{ lang.mailbox.domain_aliases }}</button></li>
+          </ul>
+        </li>
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#tab-syncjobs">{{ lang.mailbox.sync_jobs }}</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-filters" role="tab" data-bs-toggle="tab" data-bs-target="#tab-filters">{{ lang.mailbox.filters }}</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-bcc" role="tab" data-bs-toggle="tab" data-bs-target="#tab-bcc">{{ lang.mailbox.address_rewriting }}</button></li>
+        <li class="nav-item{% if mailcow_cc_role != 'admin' %} d-none{% endif %}" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-tls-policy" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tls-policy">{{ lang.mailbox.tls_policy_maps }}</button></li>
+      </ul>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tab-content" style="padding-top:20px">
+            {% include 'mailbox/tab-domains.twig' %}
+            {% if mailcow_cc_role == 'admin' %}
+            {% include 'mailbox/tab-templates-domains.twig' %}
+            {% endif %}
+            {% include 'mailbox/tab-mailboxes.twig' %}
+            {% if mailcow_cc_role == 'admin' %}
+            {% include 'mailbox/tab-templates-mbox.twig' %}
+            {% endif %}
+            {% include 'mailbox/tab-resources.twig' %}
+            {% include 'mailbox/tab-domain-aliases.twig' %}
+            {% include 'mailbox/tab-mbox-aliases.twig' %}
+            {% include 'mailbox/tab-syncjobs.twig' %}
+            {% include 'mailbox/tab-filters.twig' %}
+            {% include 'mailbox/tab-bcc.twig' %}
+            {% include 'mailbox/tab-tls-policy.twig' %}
+          </div> <!-- /tab-content -->
+        </div> <!-- /col-md-12 -->
       </div> <!-- /tab-content -->
-    </div> <!-- /col-md-12 -->
-  </div> <!-- /row -->
+    </div>
+  </div>
 </div>
 
 {% include 'modals/mailbox.twig' %}

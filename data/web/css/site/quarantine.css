@@ -19,7 +19,9 @@
   text-align: center;
   font-style: italic;
   padding: 10px;
-  background: #F5F5F5;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dashboard-ink-soft, #94a3b8);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 @media (min-width: 992px) {
@@ -29,7 +31,7 @@
 }
 @media (min-width: 1920px) {
   .container {
-      width: 80%;
+    width: 80%;
   }
 }
 
@@ -38,7 +40,7 @@
 }
 
 .inputMissingAttr {
-  border-color: #FF4136;
+  border-color: #ef4444;
 }
 
 .modal#qidDetailModal p {
@@ -53,26 +55,26 @@ span#qid_detail_score {
 span.rspamd-symbol {
   display: inline-block;
   margin: 2px 6px 2px 0;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 0 7px;
 }
 
 span.rspamd-symbol.positive {
-  background: #4CAF50;
-  border: 1px solid #4CAF50;
-  color: white;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
 }
 
 span.rspamd-symbol.negative {
-  background: #ff4136;
-  border: 1px solid #ff4136;
-  color: white;
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
 }
 
 span.rspamd-symbol.neutral {
-  background: #f5f5f5;
-  color: #333;
-  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--dashboard-ink-soft, #94a3b8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 span.rspamd-symbol span.score {
@@ -80,12 +82,13 @@ span.rspamd-symbol span.score {
 }
 
 span.mail-address-item {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 2px 7px;
   display: inline-block;
   margin: 2px 6px 2px 0;
+  color: var(--dashboard-ink, #eef5f0);
 }
 
 table tbody tr {
@@ -95,10 +98,12 @@ table tbody tr {
 table tbody tr td input[type="checkbox"] {
   cursor: pointer;
 }
+
 .label-rspamd-action {
-  font-size:110%;
-  margin:20px;
+  font-size: 110%;
+  margin: 20px;
 }
+
 .senders-mw220 {
   max-width: 220px;
 }

@@ -34,11 +34,21 @@
        url('/fonts/noto-sans-v12-latin_greek_cyrillic-700italic.woff') format('woff');
 }
 
+:root {
+  --mailcow-page-bg: #fbfbfb;
+  --mailcow-surface: #fff;
+  --mailcow-surface-alt: #fafafa;
+  --mailcow-border: #dfdfdf;
+  --mailcow-surface-strong: #ffffff;
+  --mailcow-overlay-bg: #fff;
+  --mailcow-divider-soft: #f5f5f5;
+}
+
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #fbfbfb;
+  background-color: var(--mailcow-page-bg);
 }
 #maxmsgsize { min-width: 80px; }
 #slider1 .slider-selection {
@@ -51,11 +61,11 @@ body {
   background: #66CD00;
 }
 .striped:nth-child(odd) {
-  background-color: #fff;
+  background-color: var(--mailcow-surface);
 }
 .striped:nth-child(even) {
-  background-color: #fafafa;
-  border:1px solid white;
+  background-color: var(--mailcow-surface-alt);
+  border:1px solid var(--mailcow-surface-strong);
 }
 .btn {
   text-transform: none;
@@ -86,17 +96,17 @@ body {
   max-height: 1000px
 }
 .nav-tabs .nav-link, .nav-tabs .nav-link.disabled, .nav-tabs .nav-link.disabled:hover, .nav-tabs .nav-link.disabled:focus {
-  border-color: #dfdfdf;
+  border-color: var(--mailcow-border);
 }
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-  border-color: #dfdfdf;
-  border-bottom: 1px solid #ffffff;
+  border-color: var(--mailcow-border);
+  border-bottom: 1px solid var(--mailcow-surface-strong);
 }
 .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
-  border-color: #dfdfdf;
+  border-color: var(--mailcow-border);
 }
 .nav-tabs {
-  border-bottom: 1px solid #dfdfdf;
+  border-bottom: 1px solid var(--mailcow-border);
 }
 .bi {
   display: inline-block;
@@ -206,7 +216,7 @@ legend {
   cursor: not-allowed;
 }
 .overlay {
-  background: #fff;
+  background: var(--mailcow-overlay-bg);
   position: absolute;
   z-index: 10000;
   top: 0; right: 0; bottom: 0; left: 0;
@@ -253,7 +263,7 @@ legend {
 }
 .alert-hr {
   margin:3px 0px;
-  border-bottom:1px solid #f5f5f5!important;
+  border-bottom:1px solid var(--mailcow-divider-soft)!important;
   opacity: 0.3;
 }
 .btn-input-missing,

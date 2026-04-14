@@ -1,3 +1,13 @@
+:root {
+    --mailcow-page-bg: #1c1c1e;
+    --mailcow-surface: #2c2c2e;
+    --mailcow-surface-alt: #242426;
+    --mailcow-border: #444444;
+    --mailcow-surface-strong: #1c1c1e;
+    --mailcow-overlay-bg: #1c1c1e;
+    --mailcow-divider-soft: #3a3a3c;
+}
+
 body {
     background-color: #1c1c1e;
     color: #f2f2f7;

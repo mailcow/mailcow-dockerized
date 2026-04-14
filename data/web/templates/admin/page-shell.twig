@@ -1,0 +1,71 @@
+<aside class="admin-page-sidebar">
+  <div class="admin-page-sidebar-block">
+    {% if sidebar_kicker is defined and sidebar_kicker %}
+    <p class="dashboard-kicker">{{ sidebar_kicker }}</p>
+    {% endif %}
+    <h2 class="admin-page-sidebar-title">{{ sidebar_title|default('Admin') }}</h2>
+    {% if sidebar_copy is defined and sidebar_copy %}
+    <p class="admin-page-sidebar-copy">{{ sidebar_copy }}</p>
+    {% endif %}
+  </div>
+
+  <nav class="admin-page-sidebar-nav" aria-label="Admin workspace">
+    {% if mailcow_cc_role == 'admin' %}
+    <a href="/admin/dashboard" class="admin-page-nav-link {% if is_uri('dashboard') %}active{% endif %}">Runtime overview</a>
+    <a href="/admin/system" class="admin-page-nav-link {% if is_uri('system') %}active{% endif %}">System configuration</a>
+    <a href="/admin/mailbox" class="admin-page-nav-link {% if is_uri('mailbox') %}active{% endif %}">Mail configuration</a>
+    <a href="/admin/queue" class="admin-page-nav-link {% if is_uri('queue') %}active{% endif %}">Queue manager</a>
+    <a href="/quarantine" class="admin-page-nav-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine center</a>
+    {% elseif mailcow_cc_role == 'domainadmin' %}
+    <a href="/domainadmin/mailbox" class="admin-page-nav-link {% if is_uri('mailbox') %}active{% endif %}">Mail configuration</a>
+    <a href="/quarantine" class="admin-page-nav-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine center</a>
+    <a href="/domainadmin/user" class="admin-page-nav-link {% if is_uri('user') %}active{% endif %}">User settings</a>
+    {% elseif mailcow_cc_role == 'user' %}
+    <a href="/user" class="admin-page-nav-link {% if is_uri('user') %}active{% endif %}">Mailbox workspace</a>
+    <a href="/quarantine" class="admin-page-nav-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine center</a>
+    {% endif %}
+  </nav>
+
+  {% if sidebar_metrics is defined and sidebar_metrics %}
+  <div class="dashboard-sidebar-metrics admin-page-sidebar-metrics">
+    {% for metric in sidebar_metrics %}
+    <div class="dashboard-sidebar-metric admin-page-sidebar-metric">
+      <span>{{ metric.label }}</span>
+      <strong>{{ metric.value }}</strong>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if sidebar_sections is defined and sidebar_sections %}
+  <div class="admin-page-sidebar-sections">
+    {% for section in sidebar_sections %}
+    <div class="admin-page-sidebar-section"{% if section.role is defined %} role="{{ section.role }}"{% endif %}>
+      {% if section.heading is defined and section.heading %}
+      <p class="dashboard-nav-heading">{{ section.heading }}</p>
+      {% endif %}
+      <div class="admin-page-sidebar-nav{% if section.role is defined and section.role == 'tablist' %} admin-page-sidebar-tablist{% endif %}"{% if section.role is defined %} role="{{ section.role }}"{% endif %}{% if section.aria_label is defined and section.aria_label %} aria-label="{{ section.aria_label }}"{% endif %}>
+        {% for item in section.items %}
+          {% if item.kind is defined and item.kind == 'button' %}
+          <button class="admin-page-nav-link admin-page-nav-button{% if item.active is defined and item.active %} active{% endif %}"{% if item.data_bs_toggle is defined %} data-bs-toggle="{{ item.data_bs_toggle }}"{% endif %}{% if item.data_bs_target is defined %} data-bs-target="{{ item.data_bs_target }}"{% endif %}{% if item.aria_controls is defined %} aria-controls="{{ item.aria_controls }}"{% endif %}{% if item.aria_selected is defined %} aria-selected="{{ item.aria_selected ? 'true' : 'false' }}"{% endif %}{% if item.role is defined %} role="{{ item.role }}"{% endif %}>{{ item.label }}</button>
+          {% else %}
+          <a href="{{ item.href }}" class="admin-page-nav-link{% if item.active is defined and item.active %} active{% endif %}">{{ item.label }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="admin-page-sidebar-meta">
+    <div class="admin-page-meta-row">
+      <span>Signed in as</span>
+      <strong>{{ mailcow_cc_username }}</strong>
+    </div>
+    <div class="admin-page-meta-row">
+      <span>Role</span>
+      <strong>{% if mailcow_cc_role == 'admin' %}Administrator{% elseif mailcow_cc_role == 'domainadmin' %}Domain administrator{% else %}Mailbox user{% endif %}</strong>
+    </div>
+  </div>
+</aside>

@@ -1,63 +1,123 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-12">
-    <div class="card card-xs-lg">
-      <div class="card-header d-flex">
-        {{ lang.quarantine.quarantine }} <span class="badge bg-info table-lines"></span>
-        <div class="btn-group ms-auto">
-          <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable">{{ lang.quarantine.refresh }}</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="mass-actions-quarantine mb-4">
-          <div class="btn-group" data-acl="{{ acl.quarantine }}">
-            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
-            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
-            <ul class="dropdown-menu">
-              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
-              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
-            </ul>
-          </div>
-        </div>
-        <p class="text-muted">{{ lang.quarantine.qinfo|raw }}</p>
-        <p>
-          {% if not quarantine_settings.retention_size or not quarantine_settings.max_size %}
-          <div class="alert alert-info">{{ lang.quarantine.disabled_by_config }}</div>
+<div class="admin-page-shell">
+  {% include 'admin/page-shell.twig' with {
+    sidebar_kicker: mailcow_cc_role == 'admin' ? 'Admin workspace' : (mailcow_cc_role == 'domainadmin' ? 'Domain workspace' : 'Mailbox workspace'),
+    sidebar_title: 'Quarantine'
+  } %}
+
+  <div class="admin-page-main">
+    <section class="admin-page-hero">
+      <div>
+        <p class="dashboard-kicker">
+          {% if mailcow_cc_role == 'admin' %}
+          Quarantine operations
+          {% elseif mailcow_cc_role == 'domainadmin' %}
+          Domain quarantine
           {% else %}
-          <p style="margin:10px" class="text-muted">
-            {{ lang.quarantine.settings_info|format(quarantine_settings.retention_size, quarantine_settings.max_size)|raw }}
-          </p>
+          Mailbox quarantine
           {% endif %}
         </p>
-        <table id="quarantinetable" class="table table-striped w-100"></table>
-        <div class="mass-actions-quarantine mt-4">
-          <div class="btn-group" data-acl="{{ acl.quarantine }}">
-            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
-            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
-            <ul class="dropdown-menu">
-              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
-              <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
-              <li class="table_collapse_option"><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
-            </ul>
+        <h1 class="admin-page-title">Quarantine</h1>
+      </div>
+    </section>
+
+    <div class="admin-page-content admin-page-stack quarantine-page">
+      <section class="settings-hero-band quarantine-hero-band" aria-label="Quarantine summary">
+        <div class="settings-hero-chip">
+          <span>Signed in as</span>
+          <strong>{{ mailcow_cc_username }}</strong>
+        </div>
+        <div class="settings-hero-chip">
+          <span>Role</span>
+          <strong>
+            {% if mailcow_cc_role == 'admin' %}
+            Administrator
+            {% elseif mailcow_cc_role == 'domainadmin' %}
+            Domain administrator
+            {% else %}
+            Mailbox user
+            {% endif %}
+          </strong>
+        </div>
+        <div class="settings-hero-chip">
+          <span>Status</span>
+          <strong>
+            {% if quarantine_settings.retention_size and quarantine_settings.max_size %}
+            Active
+            {% else %}
+            Limited
+            {% endif %}
+          </strong>
+        </div>
+      </section>
+
+      <section class="settings-section quarantine-page-section">
+        <div class="settings-section-heading quarantine-section-heading">
+          <p class="dashboard-kicker">{{ lang.quarantine.quarantine }}</p>
+          <h2>Review and release</h2>
+        </div>
+
+        <div class="settings-grid quarantine-page-grid">
+          <div class="settings-panel settings-panel-wide">
+            <div class="settings-control-card quarantine-toolbar-card">
+              <div class="quarantine-toolbar-head">
+                <div>
+                  <span class="settings-label">{{ lang.quarantine.quarantine }}</span>
+                  <div class="quarantine-table-count"><span class="badge bg-info table-lines"></span></div>
+                </div>
+                <button class="btn btn-xs btn-xs-lg btn-secondary refresh_table" data-draw="draw_quarantine_table" data-table="quarantinetable">{{ lang.quarantine.refresh }}</button>
+              </div>
+
+              <div class="quarantine-mass-actions">
+                <div class="btn-group" data-acl="{{ acl.quarantine }}">
+                  <a class="btn btn-sm btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
+                  <a class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
+                  <ul class="dropdown-menu">
+                    <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
+                    <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
+                    <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              {% if not quarantine_settings.retention_size or not quarantine_settings.max_size %}
+              <div class="alert alert-info quarantine-page-alert">{{ lang.quarantine.disabled_by_config }}</div>
+              {% endif %}
+
+              <div class="settings-table-card quarantine-table-card">
+                <table id="quarantinetable" class="table table-striped w-100"></table>
+              </div>
+
+              <div class="quarantine-mass-actions quarantine-mass-actions-bottom">
+                <div class="btn-group" data-acl="{{ acl.quarantine }}">
+                  <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="qitems" href="#"><i class="bi bi-check-all"></i> {{ lang.quarantine.toggle_all }}</a>
+                  <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.quarantine.quick_actions }}</a>
+                  <ul class="dropdown-menu">
+                    <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.expand_all }}</a></li>
+                    <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="quarantinetable" data-table="quarantinetable" href="#">{{ lang.datatables.collapse_all }}</a></li>
+                    <li class="table_collapse_option"><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"release"}' href="#">{{ lang.quarantine.deliver_inbox }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="edit_selected" data-id="qitems" data-api-url='edit/qitem' data-api-attr='{"action":"learnspam"}' href="#">{{ lang.quarantine.learn_spam_delete }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" data-action="delete_selected" data-id="qitems" data-api-url='delete/qitem' href="#">{{ lang.quarantine.remove }}</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-  </div> <!-- /col-md-12 -->
-</div> <!-- /row -->
+  </div>
+</div>
 
 {% include 'modals/quarantine.twig' %}
 

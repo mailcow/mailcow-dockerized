@@ -13,17 +13,19 @@
   }
 }
 .footer-add-item {
-  display:block;
+  display: block;
   text-align: center;
   font-style: italic;
   padding: 10px;
-  background: #F5F5F5;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dashboard-ink-soft, #94a3b8);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 .mass-actions-user {
   user-select: none;
 }
 .inputMissingAttr {
-  border-color: #FF4136;
+  border-color: #ef4444;
 }
 .rotate {
   -moz-transition: all 0.3s linear;
@@ -31,12 +33,12 @@
   transition: all 0.3s linear;
 }
 .rotate.animation {
-  -ms-transform:rotateX(180deg);
-  -moz-transform:rotateX(180deg);
-  -webkit-transform:rotateX(180deg);
-  transform:rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -moz-transform: rotateX(180deg);
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
 }
 #sender_acl_disabled {
-  display:none;
-  margin-top:10px;
+  display: none;
+  margin-top: 10px;
 }

@@ -266,43 +266,56 @@
 </div><!-- log modal -->
 <!-- pw change modal -->
 <div class="modal fade" id="pwChangeModal" tabindex="-1" role="dialog" aria-labelledby="pwChangeModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg modal-password-shell" role="document">
+    <div class="modal-content password-modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">{{ lang.user.change_password }}</h3>
+        <div class="password-modal-header-copy">
+          <p class="password-modal-kicker">Security</p>
+          <h3 class="modal-title">{{ lang.user.change_password }}</h3>
+          <p class="password-modal-subtitle">Create a new password, confirm it, then verify with your current password.</p>
+          <div class="password-modal-steps" aria-hidden="true">
+            <span>New password</span>
+            <span>Repeat</span>
+            <span>Confirm</span>
+          </div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body password-modal-body">
         <form class="form-horizontal" data-cached-form="false" data-id="pwchange" role="form" method="post" autocomplete="off">
-          <div class="row">
-            <label class="control-label col-sm-3" for="user_new_pass">{{ lang.user.new_password }} (<a href="#" class="generate_password">{{ lang.user.generate }}</a>)</label>
-            <div class="col-sm-9">
+          <div class="password-modal-grid">
+            <div class="password-modal-panel">
+              <label class="password-modal-label" for="user_new_pass">{{ lang.user.new_password }}</label>
+              <div class="password-modal-inline-meta">
+                <a href="#" class="generate_password">{{ lang.user.generate }}</a>
+              </div>
               <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="user_new_pass" autocomplete="new-password" required>
             </div>
-          </div>
-          <div class="row">
-            <label class="control-label col-sm-3" for="user_new_pass2">{{ lang.user.new_password_repeat }}</label>
-            <div class="col-sm-9">
+            <div class="password-modal-panel">
+              <label class="password-modal-label" for="user_new_pass2">{{ lang.user.new_password_repeat }}</label>
               <input type="password" data-pwgen-field="true" class="form-control" name="user_new_pass2" autocomplete="new-password" required>
-              <p class="text-muted">{{ lang.user.new_password_description }}</p>
+              <p class="password-modal-note">{{ lang.user.new_password_description }}</p>
             </div>
           </div>
-          <hr>
-          <div class="row mb-4">
-            <label class="control-label col-sm-3" for="user_old_pass">{{ lang.user.password_now }}</label>
-            <div class="col-sm-9">
+
+          <div class="password-modal-divider"></div>
+
+          <div class="password-modal-panel password-modal-panel-verify">
+            <label class="password-modal-label" for="user_old_pass">{{ lang.user.password_now }}</label>
+            <div class="password-modal-note">Confirm the change with your current account password.</div>
+            <div class="password-modal-verify-row">
               <input type="password" class="form-control" name="user_old_pass" autocomplete="off" required>
-              {% if number_of_app_passwords > 0 %}
-                <div class="invalid-feedback d-block">
-                  {{ lang.user.change_password_hint_app_passwords|format(number_of_app_passwords) }}
-                </div>
-              {% endif %}
             </div>
+            {% if number_of_app_passwords > 0 %}
+              <div class="invalid-feedback d-block password-modal-warning">
+                {{ lang.user.change_password_hint_app_passwords|format(number_of_app_passwords) }}
+              </div>
+            {% endif %}
           </div>
-          <div class="row">
-            <div class="offset-sm-3 col-sm-9">
-              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.change_password }}</button>
-            </div>
+
+          <div class="password-modal-actions">
+            <button type="button" class="btn btn-secondary password-modal-cancel" data-bs-dismiss="modal">{{ lang.admin.cancel }}</button>
+            <button class="btn btn-xs-lg d-block d-sm-inline btn-success password-modal-submit" data-action="edit_selected" data-id="pwchange" data-item="null" data-api-url='edit/self' data-api-attr='{}' href="#">{{ lang.user.change_password }}</button>
           </div>
         </form>
       </div>
