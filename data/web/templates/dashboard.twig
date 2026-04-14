@@ -16,7 +16,6 @@
   {% include 'admin/page-shell.twig' with {
     sidebar_kicker: 'Admin command center',
     sidebar_title: hostname,
-    sidebar_copy: 'A compact overview of system health, queue pressure, and the admin paths you are most likely to need next.',
     sidebar_metrics: [
       {'label': 'Status', 'value': dashboard_status},
       {'label': lang.debug.container_running, 'value': running_containers},
