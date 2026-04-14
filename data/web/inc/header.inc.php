@@ -1,5 +1,7 @@
 <?php
 
+$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+
 // CSS
 if (preg_match("/mailbox/i", $_SERVER['REQUEST_URI'])) {
   $css_minifier->add('/web/css/site/mailbox.css');
@@ -19,7 +21,7 @@ if (preg_match("/(quarantine|qhandler)/i", $_SERVER['REQUEST_URI'])) {
 if (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) {
   $css_minifier->add('/web/css/site/debug.css');
 }
-if ($_SERVER['REQUEST_URI'] == '/') {
+if (in_array($requestPath, ['/', '/admin', '/admin/', '/domainadmin', '/domainadmin/'], true)) {
   $css_minifier->add('/web/css/site/index.css');
 }
 
@@ -88,8 +90,8 @@ $globalVariables = [
   'mailcow_apps_processed' => $mailcow_apps_processed,
   'app_links' => $app_links,
   'app_links_processed' => $app_links_processed,
-  'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
-  'uri' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/',
+  'is_root_uri' => ($requestPath == '/'),
+  'uri' => $requestPath,
 ];
 
 foreach ($globalVariables as $globalVariableName => $globalVariableValue) {
