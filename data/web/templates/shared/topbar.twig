@@ -1,0 +1,34 @@
+<header class="workspace-topbar">
+  <div class="workspace-topbar-left">
+    <span class="workspace-topbar-brand">mailcow</span>
+    {% if topbar_title is defined and topbar_title %}
+    <span class="workspace-topbar-sep">/</span>
+    <span class="workspace-topbar-page">{{ topbar_title }}</span>
+    {% endif %}
+  </div>
+
+  <div class="workspace-topbar-right">
+    {% if topbar_status is defined and topbar_status %}
+    <span class="workspace-topbar-status workspace-topbar-status-{{ topbar_status_class|default('ok') }}">
+      <span class="workspace-topbar-status-dot"></span>{{ topbar_status }}
+    </span>
+    {% endif %}
+
+    <span class="workspace-topbar-role">
+      {% if mailcow_cc_role == 'admin' %}Administrator
+      {% elseif mailcow_cc_role == 'domainadmin' %}Domain Admin
+      {% else %}Mailbox User{% endif %}
+    </span>
+
+    <span class="workspace-topbar-divider"></span>
+
+    <span class="workspace-topbar-user">
+      <i class="bi bi-person-circle workspace-topbar-user-icon"></i>
+      {{ mailcow_cc_username }}
+    </span>
+
+    <a href="#" onclick="logout.submit(); return false;" class="workspace-topbar-signout" title="Sign out">
+      <i class="bi bi-power"></i>
+    </a>
+  </div>
+</header>

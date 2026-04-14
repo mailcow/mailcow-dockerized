@@ -26,6 +26,11 @@
   } %}
 
   <div class="dashboard-main">
+    {% include 'shared/topbar.twig' with {
+      topbar_title: 'Runtime overview',
+      topbar_status: dashboard_status,
+      topbar_status_class: stopped_containers > 0 ? 'warn' : 'ok'
+    } %}
     <section class="dashboard-command-bar">
       <div class="dashboard-command-copy">
         <div class="dashboard-status-pill {{ dashboard_status_class }}">{{ dashboard_status }}</div>
