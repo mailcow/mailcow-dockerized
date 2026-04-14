@@ -1,4 +1,9 @@
 <aside class="admin-page-sidebar">
+  <a class="admin-page-sidebar-brand" href="/">
+    <img class="main-logo" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}">
+    <img class="main-logo-dark" alt="mailcow-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
+  </a>
+
   <div class="admin-page-sidebar-block">
     {% if sidebar_kicker is defined and sidebar_kicker %}
     <p class="dashboard-kicker">{{ sidebar_kicker }}</p>
@@ -59,6 +64,46 @@
   {% endif %}
 
   <div class="admin-page-sidebar-meta">
+    <div class="admin-page-sidebar-tools">
+      <div class="admin-page-tool-row admin-page-tool-row-theme">
+        <span class="admin-page-tool-label">Theme</span>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="dark-mode-toggle">
+        </div>
+      </div>
+
+      {% if mailcow_locale %}
+      <details class="admin-page-tool-group">
+        <summary>Language</summary>
+        <div class="admin-page-tool-links">
+          {% for key, val in available_languages %}
+          <a href="?{{ query_string({'lang': key}) }}" class="admin-page-tool-link{% if mailcow_locale == key %} active{% endif %}">
+            <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
+          </a>
+          {% endfor %}
+        </div>
+      </details>
+      {% endif %}
+
+      {% if mailcow_apps_processed or app_links_processed %}
+      <details class="admin-page-tool-group">
+        <summary>Apps</summary>
+        <div class="admin-page-tool-links">
+          {% for app in mailcow_apps_processed %}
+            {% if not skip_sogo or not is_uri('SOGo', app.user_link) %}
+            <a href="{{ app.user_link }}" class="admin-page-tool-link">{{ app.name }}</a>
+            {% endif %}
+          {% endfor %}
+          {% for row in app_links_processed %}
+            {% for key, val in row %}
+            <a href="{{ val.user_link }}" class="admin-page-tool-link">{{ key }}</a>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </details>
+      {% endif %}
+    </div>
+
     <div class="admin-page-meta-row">
       <span>Signed in as</span>
       <strong>{{ mailcow_cc_username }}</strong>
@@ -66,6 +111,12 @@
     <div class="admin-page-meta-row">
       <span>Role</span>
       <strong>{% if mailcow_cc_role == 'admin' %}Administrator{% elseif mailcow_cc_role == 'domainadmin' %}Domain administrator{% else %}Mailbox user{% endif %}</strong>
+    </div>
+    <div class="admin-page-meta-row">
+      <a href="#" onclick="logout.submit(); return false;" class="admin-page-logout-link">
+        <span>Session</span>
+        <strong>Sign out</strong>
+      </a>
     </div>
   </div>
 </aside>

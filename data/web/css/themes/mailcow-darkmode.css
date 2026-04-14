@@ -229,6 +229,34 @@ input.form-control:disabled, textarea.form-disabled {
     border: 1px solid #999;
 }
 
+.route-admin input.form-control,
+.route-admin textarea.form-control,
+.route-admin select.form-control,
+.route-admin .form-select,
+.route-admin .input-group-text,
+.route-admin .bootstrap-select > .dropdown-toggle,
+.route-admin .CodeMirror,
+.route-admin .CodeMirror-gutters {
+    color: #eef5f0 !important;
+    background-color: rgba(22, 68, 64, 0.48) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.route-admin input.form-control:focus,
+.route-admin textarea.form-control:focus,
+.route-admin select.form-control:focus,
+.route-admin .form-select:focus,
+.route-admin .bootstrap-select > .dropdown-toggle:focus {
+    background-color: rgba(26, 78, 73, 0.62) !important;
+}
+
+.route-admin input.form-control:disabled,
+.route-admin textarea.form-disabled,
+.route-admin .form-select:disabled {
+    color: rgba(238, 245, 240, 0.6) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 .responsive-tabs .card-header button[data-bs-toggle="collapse"] {
     color: #c7c7c7;
 }
@@ -394,6 +422,12 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.child,
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.child,
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
   background-color: #414141;
+}
+
+.route-admin table.dataTable.dtr-inline.collapsed>tbody>tr>td.child,
+.route-admin table.dataTable.dtr-inline.collapsed>tbody>tr>th.child,
+.route-admin table.dataTable.dtr-inline.collapsed>tbody>tr>td.dataTables_empty {
+  background-color: rgba(22, 68, 64, 0.3) !important;
 }
 
 table.table, .table-striped>tbody>tr:nth-of-type(odd)>*, tbody tr {

@@ -107,13 +107,7 @@ table tbody tr td input[type="checkbox"] {
 }
 
 .route-admin .navbar {
-  margin: 0.85rem 1rem 0;
-  padding-inline: 0.65rem;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 0;
-  background: rgba(7, 23, 25, 0.82) !important;
-  box-shadow: none;
-  backdrop-filter: blur(18px);
+  display: none;
 }
 
 .route-admin .navbar .navbar-brand {
@@ -158,7 +152,7 @@ table tbody tr td input[type="checkbox"] {
 .route-admin .admin-page-container.container {
   width: min(96vw, 1600px);
   max-width: 1600px;
-  margin-top: 1.4rem !important;
+  margin-top: 0.85rem !important;
   margin-bottom: 2rem !important;
 }
 
@@ -652,19 +646,11 @@ table tbody tr td input[type="checkbox"] {
 }
 
 .route-admin .admin-route-strip {
-  position: sticky;
-  top: calc(0.85rem + 66px);
-  z-index: 1021;
-  margin-top: 0.7rem;
+  display: none;
 }
 
 .route-admin .admin-route-strip-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem 1.1rem;
-  padding: 0 0 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: none;
 }
 
 .admin-route-strip-label,
@@ -725,9 +711,22 @@ table tbody tr td input[type="checkbox"] {
 
 .admin-page-sidebar {
   position: sticky;
-  top: 9.3rem;
+  top: 1rem;
   padding: 1.1rem 1.35rem 1.1rem 0;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-page-sidebar-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1.15rem;
+  text-decoration: none;
+}
+
+.admin-page-sidebar-brand img {
+  height: 3rem;
+  width: auto;
 }
 
 .admin-page-sidebar-block {
@@ -807,6 +806,78 @@ table tbody tr td input[type="checkbox"] {
   gap: 0.85rem;
 }
 
+.admin-page-sidebar-tools {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-page-tool-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-page-tool-label {
+  color: var(--dashboard-accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.admin-page-tool-row .form-check {
+  margin: 0;
+}
+
+.admin-page-tool-row .form-check-input {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.admin-page-tool-group {
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-page-tool-group summary {
+  color: var(--dashboard-accent);
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.admin-page-tool-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-page-tool-links {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.admin-page-tool-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--dashboard-ink-soft);
+  padding: 0.4rem 0;
+  text-decoration: none;
+}
+
+.admin-page-tool-link:hover,
+.admin-page-tool-link:focus,
+.admin-page-tool-link.active {
+  color: var(--dashboard-ink);
+}
+
 .admin-page-meta-row {
   display: flex;
   flex-direction: column;
@@ -819,6 +890,19 @@ table tbody tr td input[type="checkbox"] {
   color: var(--dashboard-ink);
   font-size: 1rem;
   font-weight: 700;
+}
+
+.admin-page-logout-link {
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-decoration: none;
+}
+
+.admin-page-logout-link:hover,
+.admin-page-logout-link:focus {
+  color: inherit;
 }
 
 .admin-page-main {
@@ -948,14 +1032,55 @@ table tbody tr td input[type="checkbox"] {
 .admin-page-content .input-group-text {
   border-color: rgba(255, 255, 255, 0.12);
   border-radius: 0;
-  background: rgba(13, 54, 52, 0.28);
+  background: rgba(22, 68, 64, 0.48);
   color: var(--dashboard-ink);
 }
 
 .admin-page-content .form-control:focus,
 .admin-page-content .form-select:focus {
+  background: rgba(26, 78, 73, 0.62);
   border-color: rgba(244, 181, 72, 0.42);
   box-shadow: 0 0 0 3px rgba(244, 181, 72, 0.14);
+}
+
+.route-admin .form-control,
+.route-admin textarea.form-control,
+.route-admin select.form-control,
+.route-admin .form-select,
+.route-admin .input-group-text,
+.route-admin .textarea-code,
+.route-admin .bootstrap-select > .dropdown-toggle,
+.route-admin .CodeMirror,
+.route-admin .CodeMirror-gutters {
+  background: rgba(22, 68, 64, 0.48) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--dashboard-ink) !important;
+}
+
+.route-admin .form-control::placeholder,
+.route-admin textarea.form-control::placeholder {
+  color: rgba(238, 245, 240, 0.48);
+}
+
+.route-admin .form-control:focus,
+.route-admin textarea.form-control:focus,
+.route-admin select.form-control:focus,
+.route-admin .form-select:focus,
+.route-admin .bootstrap-select > .dropdown-toggle:focus {
+  background: rgba(26, 78, 73, 0.62) !important;
+}
+
+.route-admin .form-control:disabled,
+.route-admin textarea.form-disabled,
+.route-admin .form-select:disabled {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(238, 245, 240, 0.6) !important;
+}
+
+.route-admin table.dataTable.dtr-inline.collapsed > tbody > tr > td.child,
+.route-admin table.dataTable.dtr-inline.collapsed > tbody > tr > th.child,
+.route-admin table.dataTable.dtr-inline.collapsed > tbody > tr > td.dataTables_empty {
+  background: rgba(22, 68, 64, 0.3) !important;
 }
 
 .admin-page-content .btn,
@@ -1834,20 +1959,8 @@ table tbody tr td input[type="checkbox"] {
 }
 
 @media (max-width: 767px) {
-  .route-admin .navbar {
-    margin-inline: 0.7rem;
-  }
-
   .admin-page-container.container {
     width: calc(100% - 1.2rem);
-  }
-
-  .admin-route-strip {
-    top: calc(0.7rem + 66px);
-  }
-
-  .admin-route-strip-inner {
-    padding-bottom: 0.75rem;
   }
 
   .dashboard-hero,

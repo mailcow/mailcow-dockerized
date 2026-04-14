@@ -30,6 +30,7 @@
 <body class="{% if is_workspace_route %}route-admin{% endif %}{% if is_uri('dashboard') %} route-dashboard{% endif %}{% if mailcow_cc_role %} role-{{ mailcow_cc_role }}{% endif %}">
 <div class="overlay"></div>
 {% block navbar %}
+{% if not is_workspace_route %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-0">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
@@ -141,28 +142,6 @@
     </div><!--/.nav-collapse -->
   </div><!--/.container-fluid -->
 </nav>
-{% if is_workspace_route %}
-<div class="admin-route-strip">
-  <div class="container admin-route-strip-inner">
-    {% if mailcow_cc_role == 'admin' %}
-    <span class="admin-route-strip-label">Admin workspace</span>
-    <a href="/admin/dashboard" class="admin-route-link {% if is_uri('dashboard') %}active{% endif %}">Overview</a>
-    <a href="/admin/system" class="admin-route-link {% if is_uri('system') %}active{% endif %}">System</a>
-    <a href="/admin/mailbox" class="admin-route-link {% if is_uri('mailbox') %}active{% endif %}">Mail</a>
-    <a href="/admin/queue" class="admin-route-link {% if is_uri('queue') %}active{% endif %}">Queue</a>
-    <a href="/quarantine" class="admin-route-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine</a>
-    {% elseif mailcow_cc_role == 'domainadmin' %}
-    <span class="admin-route-strip-label">Domain workspace</span>
-    <a href="/domainadmin/mailbox" class="admin-route-link {% if is_uri('mailbox') %}active{% endif %}">Mail</a>
-    <a href="/quarantine" class="admin-route-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine</a>
-    <a href="/domainadmin/user" class="admin-route-link {% if is_uri('user') %}active{% endif %}">Settings</a>
-    {% elseif mailcow_cc_role == 'user' %}
-    <span class="admin-route-strip-label">Mailbox workspace</span>
-    <a href="/user" class="admin-route-link {% if is_uri('user') %}active{% endif %}">Mailbox</a>
-    <a href="/quarantine" class="admin-route-link {% if is_uri('quarantine') %}active{% endif %}">Quarantine</a>
-    {% endif %}
-  </div>
-</div>
 {% endif %}
 {% endblock navbar %}
 
