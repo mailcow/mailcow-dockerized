@@ -337,7 +337,7 @@ table tbody tr td input[type="checkbox"] {
   align-items: flex-end;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 0 0 1.2rem;
+  padding: 2.5rem 0 1.2rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1239,7 +1239,7 @@ table tbody tr td input[type="checkbox"] {
 /* ── end workspace topbar ─────────────────────────────────── */
 
 .admin-page-hero {
-  padding: 0 0 1.4rem;
+  padding: 2.5rem 0 1.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
