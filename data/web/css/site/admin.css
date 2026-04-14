@@ -332,6 +332,53 @@ table tbody tr td input[type="checkbox"] {
   background: transparent;
 }
 
+.dashboard-command-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-command-copy {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.dashboard-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 2rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--dashboard-ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.dashboard-status-pill.is-healthy {
+  border-color: rgba(95, 200, 189, 0.35);
+  color: var(--dashboard-teal);
+}
+
+.dashboard-status-pill.is-warning {
+  border-color: rgba(244, 181, 72, 0.35);
+  color: var(--dashboard-accent);
+}
+
+.dashboard-command-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 .dashboard-hero {
   position: relative;
   display: grid;
@@ -375,6 +422,10 @@ table tbody tr td input[type="checkbox"] {
   background: transparent;
 }
 
+.dashboard-stat-card-emphasis {
+  border-top-color: rgba(244, 181, 72, 0.34);
+}
+
 .dashboard-stat-value {
   color: var(--dashboard-ink);
   font-size: clamp(1.35rem, 2vw, 1.9rem);
@@ -388,6 +439,104 @@ table tbody tr td input[type="checkbox"] {
 .dashboard-tab-content {
   min-width: 0;
   background: transparent;
+}
+
+.dashboard-switchboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.35rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-switchboard .nav-link {
+  min-height: 2.8rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+  background: transparent;
+  color: var(--dashboard-ink-soft);
+  font-weight: 700;
+}
+
+.dashboard-switchboard .nav-link:hover,
+.dashboard-switchboard .nav-link:focus,
+.dashboard-switchboard .nav-link.active {
+  border-color: rgba(244, 181, 72, 0.34);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-command-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(22rem, 0.95fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-focus-card,
+.dashboard-runtime-card {
+  display: grid;
+  gap: 1rem;
+  height: 100%;
+  padding: 1.1rem 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-health-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.dashboard-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.dashboard-action-grid-compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-quick-card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    rgba(255, 255, 255, 0.02);
+  color: var(--dashboard-ink-soft);
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-quick-card:hover,
+.dashboard-quick-card:focus {
+  border-color: rgba(244, 181, 72, 0.28);
+  color: var(--dashboard-ink);
+  transform: translateY(-2px);
+}
+
+.dashboard-quick-card strong {
+  color: inherit;
+  font-size: 1.08rem;
+}
+
+.dashboard-quick-card small {
+  color: inherit;
+  line-height: 1.55;
+}
+
+.dashboard-quick-card-static {
+  cursor: default;
+}
+
+.dashboard-quick-card-static:hover,
+.dashboard-quick-card-static:focus {
+  transform: none;
 }
 
 .dashboard-shell .tab-pane {
@@ -536,6 +685,12 @@ table tbody tr td input[type="checkbox"] {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0;
   background: transparent;
+}
+
+.dashboard-license-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
 .dashboard-license-card .input-group-text,
@@ -936,6 +1091,71 @@ table tbody tr td input[type="checkbox"] {
 .admin-page-stack {
   display: grid;
   gap: 1.4rem;
+}
+
+.admin-system-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.admin-system-launcher {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-system-card {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  min-height: 10.5rem;
+  padding: 1.1rem 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    rgba(255, 255, 255, 0.02);
+  color: var(--dashboard-ink-soft);
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.admin-system-card:hover,
+.admin-system-card:focus {
+  border-color: rgba(244, 181, 72, 0.34);
+  color: var(--dashboard-ink);
+  transform: translateY(-2px);
+}
+
+.admin-system-card-active {
+  border-color: rgba(244, 181, 72, 0.42);
+  background:
+    linear-gradient(135deg, rgba(244, 181, 72, 0.08), rgba(255, 255, 255, 0.015)),
+    rgba(255, 255, 255, 0.02);
+  color: var(--dashboard-ink);
+}
+
+.admin-system-card-kicker {
+  color: var(--dashboard-accent);
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.admin-system-card strong {
+  color: inherit;
+  font-size: 1.15rem;
+  line-height: 1.1;
+}
+
+.admin-system-card small {
+  color: inherit;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.admin-system-tabs {
+  padding-top: 0.15rem;
 }
 
 .admin-page-content .nav-tabs {
@@ -1690,6 +1910,7 @@ table tbody tr td input[type="checkbox"] {
 .settings-status-card,
 .settings-control-card,
 .settings-table-card,
+.settings-inline-copy,
 .settings-text-link,
 .settings-inline-button {
   color: var(--dashboard-ink-soft);
@@ -1752,9 +1973,19 @@ table tbody tr td input[type="checkbox"] {
   align-self: start;
 }
 
+.settings-inline-copy {
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
 .settings-status-card-compact {
   display: grid;
   gap: 0.55rem;
+}
+
+.settings-table-card .badge {
+  background: rgba(95, 200, 189, 0.14) !important;
+  color: var(--dashboard-teal);
 }
 
 .settings-table-card .table-responsive {
@@ -1786,6 +2017,62 @@ table tbody tr td input[type="checkbox"] {
 
 .settings-control-card .dropdown-menu {
   width: 100%;
+}
+
+.settings-control-card .btn-primary,
+.settings-control-card .btn-primary:hover,
+.settings-control-card .btn-primary:focus,
+.settings-control-card .btn-primary:active,
+.settings-control-card .btn-primary.dropdown-toggle.show,
+.settings-control-card .btn-group > .btn-primary {
+  border-color: rgba(244, 181, 72, 0.28);
+  background:
+    linear-gradient(135deg, rgba(244, 181, 72, 0.92), rgba(217, 119, 30, 0.92));
+  color: #10201f;
+  box-shadow: none;
+}
+
+.settings-control-card .btn-group > .btn-primary + .btn-primary {
+  border-left-color: rgba(16, 32, 31, 0.18);
+}
+
+.settings-control-card .dropdown-menu,
+.settings-control-card .dropdown-menu.show {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  background: rgba(9, 28, 30, 0.96);
+}
+
+.settings-control-card .dropdown-item {
+  color: var(--dashboard-ink-soft);
+}
+
+.settings-control-card .dropdown-item:hover,
+.settings-control-card .dropdown-item:focus,
+.settings-control-card .dropdown-item.active {
+  background: rgba(244, 181, 72, 0.12);
+  color: var(--dashboard-ink);
+}
+
+.settings-control-card .dropdown-divider {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.settings-status-card-compact #fido2-alerts,
+.settings-status-card-compact #fido2-alerts * {
+  color: var(--dashboard-ink-soft) !important;
+}
+
+.settings-status-card-compact #fido2-alerts .text-danger,
+.settings-status-card-compact #fido2-alerts .text-danger *,
+.settings-status-card-compact #fido2-alerts .text-warning,
+.settings-status-card-compact #fido2-alerts .text-warning * {
+  color: var(--dashboard-accent) !important;
+}
+
+.settings-status-card-compact #fido2-alerts .text-success,
+.settings-status-card-compact #fido2-alerts .text-success * {
+  color: var(--dashboard-teal) !important;
 }
 
 .settings-status-card .table,
@@ -1855,6 +2142,7 @@ table tbody tr td input[type="checkbox"] {
 }
 
 @media (max-width: 1199px) {
+  .admin-system-launcher,
   .settings-hero-band,
   .settings-grid-profile,
   .settings-grid-security,
@@ -1931,7 +2219,10 @@ table tbody tr td input[type="checkbox"] {
 }
 
 @media (max-width: 1399px) {
-  .dashboard-hero-grid {
+  .dashboard-hero-grid,
+  .dashboard-health-grid,
+  .dashboard-action-grid,
+  .dashboard-license-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1948,13 +2239,18 @@ table tbody tr td input[type="checkbox"] {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .dashboard-sidebar-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
+  .dashboard-command-bar,
+  .dashboard-command-grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 
-  .dashboard-nav-heading {
-    grid-column: 1 / -1;
+  .dashboard-command-bar {
+    flex-direction: column;
+  }
+
+  .dashboard-command-actions {
+    justify-content: flex-start;
   }
 }
 
@@ -1991,14 +2287,12 @@ table tbody tr td input[type="checkbox"] {
     padding-left: 0;
   }
 
-  .dashboard-brand-panel {
-    padding-right: 0;
-    border-right: 0;
-  }
-
   .dashboard-hero-grid,
+  .dashboard-health-grid,
+  .dashboard-license-summary,
   .dashboard-detail-grid,
-  .dashboard-sidebar-nav {
+  .dashboard-action-grid,
+  .dashboard-action-grid-compact {
     grid-template-columns: 1fr;
   }
 

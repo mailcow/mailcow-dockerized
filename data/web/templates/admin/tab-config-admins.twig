@@ -1,76 +1,94 @@
 <div class="tab-pane fade show active" id="tab-config-admins" role="tabpanel" aria-labelledby="tab-config-admins">
-  <div class="card mb-4">
-    <div class="card-header bg-danger text-white d-flex fs-5">
-      <button class="btn d-md-none text-white flex-grow-1 text-start" data-bs-target="#collapse-tab-config-admins" data-bs-toggle="collapse" aria-controls="collapse-tab-config-admins">
-        {{ lang.admin.admin_details }}
-      </button>
-      <span class="d-none d-md-block">{{ lang.admin.admin_details }}</span>
+  <section class="settings-section">
+    <div class="settings-section-heading">
+      <span class="settings-label">Access</span>
+      <h2>Administrator accounts</h2>
     </div>
-    <div id="collapse-tab-config-admins" class="card-body collapse show" data-bs-parent="#admin-content">
-      <table id="adminstable" class="table table-striped dt-responsive w-100"></table>
-      <div class="mass-actions-admin mb-4">
-        <div class="btn-group">
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
-          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-            <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"disable_tfa":"1"}' href="#">{{ lang.tfa.disable_tfa }}</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" data-action="delete_selected" data-id="admins" data-api-url='delete/admin' href="#">{{ lang.mailbox.remove }}</a></li>
-          </ul>
-          <a class="btn btn-sm d-block d-sm-inline btn-success" data-id="add_admin" data-bs-toggle="modal" data-bs-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
-        </div>
-      </div>
 
-      {# TFA #}
-      <legend style="margin-top:20px">
-        {{ lang.tfa.tfa }}
-      </legend>
-      <hr />
-      <div class="row">
-        <div class="col-sm-3 col-5 text-end">{{ lang.tfa.tfa }}:</div>
-        <div class="col-sm-9 col-7">
-          {% include 'tfa_keys.twig' %}
-          <br>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-sm-3 col-5 text-end">{{ lang.tfa.set_tfa }}:</div>
-        <div class="col-sm-9 col-7">
-          <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
-            <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
-            <option value="webauthn">{{ lang.tfa.webauthn }}</option>
-            <option value="totp">{{ lang.tfa.totp }}</option>
-            <option value="none">{{ lang.tfa.none }}</option>
-          </select>
-        </div>
-      </div>
-
-      {# FIDO2 #}
-      <legend style="margin-top:20px">
-        <i class="bi bi-shield-fill-check"></i>
-        {{ lang.fido2.fido2_auth }}</legend><hr />
-      <div class="row mb-3">
-        <div class="col-sm-3 col-12 text-sm-end text-start mb-4">{{ lang.fido2.known_ids }}:</div>
-        <div class="col-sm-9 col-12">
-          <div class="table-responsive">
-            <table class="table table-striped table-hover table-condensed" id="fido2_keys">
-              <tr>
-                <th>ID</th>
-                <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
-              </tr>
-              {% include 'fido2.twig' %}
-            </table>
+    <div class="settings-grid">
+      <div class="settings-table-card settings-panel settings-panel-wide">
+        <div class="quarantine-toolbar-head">
+          <div>
+            <span class="settings-label">{{ lang.admin.admin_details }}</span>
+          </div>
+          <div class="quarantine-table-count">
+            <span class="badge text-bg-secondary">{{ lang.admin.admins }}</span>
           </div>
         </div>
-        <br>
+
+        <div class="table-responsive">
+          <table id="adminstable" class="table table-striped dt-responsive w-100"></table>
+        </div>
+
+        <div class="mass-actions-admin quarantine-mass-actions">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+            <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="admins" data-api-url='edit/admin' data-api-attr='{"disable_tfa":"1"}' href="#">{{ lang.tfa.disable_tfa }}</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="admins" data-api-url='delete/admin' href="#">{{ lang.mailbox.remove }}</a></li>
+            </ul>
+            <a class="btn btn-sm d-block d-sm-inline btn-success" data-id="add_admin" data-bs-toggle="modal" data-bs-target="#addAdminModal" href="#"><i class="bi bi-person-plus-fill"></i> {{ lang.admin.add_admin }}</a>
+          </div>
+        </div>
       </div>
 
-      <div class="row">
-        <div class="offset-sm-3 col-sm-9">
-          <div class="btn-group nowrap mass-actions-admin">
+      <div class="settings-grid settings-grid-security">
+        <div class="settings-status-card settings-status-card-compact">
+          <span class="settings-label">Identity lane</span>
+          <div class="settings-status-value">{{ lang.admin.access }}</div>
+          <div class="settings-inline-copy">Manage administrator access, sign-in method, and hardware security registration from one section.</div>
+        </div>
+
+        <div class="settings-control-card settings-panel">
+          <span class="settings-label">Authentication method</span>
+          <div class="row g-3 align-items-center">
+            <div class="col-xl-5 col-lg-12">
+              <div class="settings-inline-copy">{{ lang.tfa.set_tfa }}</div>
+            </div>
+            <div class="col-xl-7 col-lg-12">
+              {% include 'tfa_keys.twig' %}
+              <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-secondary" data-width="fit" id="selectTFA" class="selectpicker" title="{{ lang.tfa.select }}">
+                <option value="yubi_otp">{{ lang.tfa.yubi_otp }}</option>
+                <option value="webauthn">{{ lang.tfa.webauthn }}</option>
+                <option value="totp">{{ lang.tfa.totp }}</option>
+                <option value="none">{{ lang.tfa.none }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="settings-section">
+    <div class="settings-section-heading">
+      <span class="settings-label">Security</span>
+      <h2>FIDO2 and hardware keys</h2>
+    </div>
+
+    <div class="settings-grid settings-grid-fido">
+      <div class="settings-table-card settings-panel settings-panel-wide">
+        <span class="settings-label">{{ lang.fido2.known_ids }}</span>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover table-condensed" id="fido2_keys">
+            <tr>
+              <th>ID</th>
+              <th style="min-width:240px;text-align: right">{{ lang.admin.action }}</th>
+            </tr>
+            {% include 'fido2.twig' %}
+          </table>
+        </div>
+      </div>
+
+      <div class="settings-control-card settings-panel settings-control-card-stack">
+        <div class="settings-control-card settings-panel">
+          <span class="settings-label">{{ lang.fido2.fido2_auth }}</span>
+          <div class="btn-group settings-button-group nowrap mass-actions-admin">
             <button class="btn btn-sm btn-primary d-block d-sm-inline" id="register-fido2">{{ lang.fido2.set_fido2 }}</button>
             <button type="button" class="btn btn-sm btn-xs-lg btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
             <ul class="dropdown-menu">
@@ -78,163 +96,164 @@
             </ul>
           </div>
         </div>
-      </div>
 
-      <div class="row mb-3" id="status-fido2">
-        <div class="col-sm-3 col-5 text-end">{{ lang.fido2.register_status }}:</div>
-        <div class="col-sm-9 col-7">
+        <div class="settings-status-card settings-status-card-compact">
+          <span class="settings-label">{{ lang.fido2.register_status }}</span>
           <div id="fido2-alerts">-</div>
         </div>
-        <br>
       </div>
+    </div>
+  </section>
 
-      <legend style="cursor:pointer;margin-top:20px" data-bs-target="#admin_api" unselectable="on" data-bs-toggle="collapse">
-        <i style="font-size:10pt;" class="bi bi-plus-square"></i> API
-      </legend>
-      <hr />
-      <div id="admin_api" class="collapse">
-        <div class="row">
-          <div class="col-lg-12">
-            <p class="text-muted">{{ lang.admin.api_info|raw }}</p>
-          </div>
-          <div class="col-lg-12">
-            <div class="card mb-3">
-              <div class="card-header">
-                <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.cors_settings }}</h4>
-              </div>
-              <div class="card-body">
-                <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" data-id="editcors" method="post">
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-2 mb-4" for="allowed_origins">{{ lang.admin.allowed_origins }}</label>
-                    <div class="col-sm-9 mb-4">
-                      <textarea class="form-control textarea-code" rows="7" name="allowed_origins" id="allowed_origins">{{ cors_settings.allowed_origins }}</textarea>
-                    </div>
-                  </div>
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-2" for="allowed_methods">{{ lang.admin.allowed_methods }}</label>
-                    <div class="col-sm-9">
-                      <select name="allowed_methods" id="allowed_methods" multiple class="form-control">
-                        <option value="POST"{% if "POST" in cors_settings.allowed_methods  %} selected{% endif %}>POST</option>
-                        <option value="GET"{% if "GET" in cors_settings.allowed_methods  %} selected{% endif %}>GET</option>
-                        <option value="DELETE"{% if "DELETE" in cors_settings.allowed_methods  %} selected{% endif %}>DELETE</option>
-                        <option value="PUT"{% if "PUT" in cors_settings.allowed_methods %} selected{% endif %}>PUT</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="row mb-4">
-                    <div class="offset-sm-2 col-sm-9 d-grid d-sm-block">
-                      <button class="btn btn-sm btn-xs-lg btn-success" data-item="cors" data-api-url="edit/cors" data-id="editcors" data-action="edit_selected" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                    </div>
-                  </div>
-                </form>
+  <section class="settings-section">
+    <div class="settings-section-heading">
+      <span class="settings-label">Integrations</span>
+      <h2>API access</h2>
+    </div>
+
+    <div class="settings-action-card">
+      <p>{{ lang.admin.api_info|raw }}</p>
+      <a class="settings-text-link" data-bs-target="#admin_api" data-bs-toggle="collapse" href="#admin_api" aria-expanded="false" aria-controls="admin_api">
+        <i class="bi bi-plus-square"></i> Open API controls
+      </a>
+    </div>
+
+    <div id="admin_api" class="collapse">
+      <div class="settings-grid">
+        <div class="settings-control-card settings-panel settings-panel-wide">
+          <span class="settings-label">{{ lang.admin.cors_settings }}</span>
+          <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" data-id="editcors" method="post">
+            <div class="row mb-4">
+              <label class="control-label col-sm-2 mb-4" for="allowed_origins">{{ lang.admin.allowed_origins }}</label>
+              <div class="col-sm-9 mb-4">
+                <textarea class="form-control textarea-code" rows="7" name="allowed_origins" id="allowed_origins">{{ cors_settings.allowed_origins }}</textarea>
               </div>
             </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card mb-3">
-              <div class="card-header">
-                <h4 class="card-title"><i class="bi bi-file-earmark-arrow-down"></i> {{ lang.admin.api_read_only }}</h4>
-              </div>
-              <div class="card-body">
-                <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-3" for="allow_from_ro">{{ lang.admin.api_allow_from }}:</label>
-                    <div class="col-sm-9">
-                      <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" {% if api.ro.skip_ip_check %}disabled{% endif %} required>{{ api.ro.allow_from }}</textarea>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <label>
-                        <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
-                      </label>
-                    </div>
-                  </div>
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-3">{{ lang.admin.api_key }}:</label>
-                    <div class="col-sm-9">
-                      <input type="text" class="form-control" value="{{ api.ro.api_key|default('-') }}" readonly />
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <label>
-                        <input type="checkbox" class="form-check-input" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
-                      </label>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <div class="btn-group">
-                        <button class="btn btn-sm btn-xs-lg btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                        <button class="btn btn-sm btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+            <div class="row mb-4">
+              <label class="control-label col-sm-2" for="allowed_methods">{{ lang.admin.allowed_methods }}</label>
+              <div class="col-sm-9">
+                <select name="allowed_methods" id="allowed_methods" multiple class="form-control">
+                  <option value="POST"{% if "POST" in cors_settings.allowed_methods  %} selected{% endif %}>POST</option>
+                  <option value="GET"{% if "GET" in cors_settings.allowed_methods  %} selected{% endif %}>GET</option>
+                  <option value="DELETE"{% if "DELETE" in cors_settings.allowed_methods  %} selected{% endif %}>DELETE</option>
+                  <option value="PUT"{% if "PUT" in cors_settings.allowed_methods %} selected{% endif %}>PUT</option>
+                </select>
               </div>
             </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card mb-3">
-              <div class="card-header">
-                <h4 class="card-title"><i class="bi bi-file-earmark-diff"></i> {{ lang.admin.api_read_write }}</h4>
-              </div>
-              <div class="card-body">
-                <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-3" for="allow_from_rw">{{ lang.admin.api_allow_from }}:</label>
-                    <div class="col-sm-9">
-                      <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_rw" {% if api.rw.skip_ip_check %}disabled{% endif %} required>{{ api.rw.allow_from }}</textarea>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <label>
-                        <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
-                      </label>
-                    </div>
-                  </div>
-                  <div class="row mb-4">
-                    <label class="control-label col-sm-3" for="admin_api_key">{{ lang.admin.api_key }}:</label>
-                    <div class="col-sm-9">
-                      <input type="text" class="form-control" value="{{ api.rw.api_key|default('-') }}" readonly />
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <label>
-                        <input type="checkbox" class="form-check-input" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
-                      </label>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="offset-sm-3 col-sm-9">
-                      <div class="btn-group">
-                        <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
-                        <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+            <div class="row mb-4">
+              <div class="offset-sm-2 col-sm-9 d-grid d-sm-block">
+                <button class="btn btn-sm btn-xs-lg btn-success" data-item="cors" data-api-url="edit/cors" data-id="editcors" data-action="edit_selected" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
               </div>
             </div>
+          </form>
+        </div>
+
+        <div class="settings-grid settings-grid-security">
+          <div class="settings-control-card settings-panel">
+            <span class="settings-label">{{ lang.admin.api_read_only }}</span>
+            <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="allow_from_ro">{{ lang.admin.api_allow_from }}:</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_ro" {% if api.ro.skip_ip_check %}disabled{% endif %} required>{{ api.ro.allow_from }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_ro" {% if api.ro.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="control-label col-sm-3">{{ lang.admin.api_key }}:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" value="{{ api.ro.api_key|default('-') }}" readonly />
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" class="form-check-input" name="active" {% if api.ro.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half d-block d-sm-inline btn-success" name="admin_api[ro]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[ro]" type="submit" href="#" {% if not api.ro.api_key %}disabled{% endif %}>{{ lang.admin.regen_api_key }}</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="settings-control-card settings-panel">
+            <span class="settings-label">{{ lang.admin.api_read_write }}</span>
+            <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="allow_from_rw">{{ lang.admin.api_allow_from }}:</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control textarea-code" rows="7" name="allow_from" id="allow_from_rw" {% if api.rw.skip_ip_check %}disabled{% endif %} required>{{ api.rw.allow_from }}</textarea>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" class="form-check-input" name="skip_ip_check" id="skip_ip_check_rw" {% if api.rw.skip_ip_check %}checked{% endif %}> {{ lang.admin.api_skip_ip_check }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <label class="control-label col-sm-3" for="admin_api_key">{{ lang.admin.api_key }}:</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" value="{{ api.rw.api_key|default('-') }}" readonly />
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <label>
+                    <input type="checkbox" class="form-check-input" name="active" {% if api.rw.active %}checked{% endif %}> {{ lang.admin.activate_api }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="offset-sm-3 col-sm-9">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" name="admin_api[rw]" type="submit" href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary admin-ays-dialog" name="admin_api_regen_key[rw]" type="submit" {% if not api.rw.api_key %}disabled{% endif %} href="#">{{ lang.admin.regen_api_key }}</button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card mb-4">
-    <div class="card-header d-flex fs-5">
-      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-dadmins" data-bs-toggle="collapse" aria-controls="collapse-tab-config-dadmins">
-        {{ lang.admin.domain_admins }}
-      </button>
-      <span class="d-none d-md-block">{{ lang.admin.domain_admins }}</span>
+  <section class="settings-section">
+    <div class="settings-section-heading">
+      <span class="settings-label">Delegation</span>
+      <h2>Domain administrators</h2>
     </div>
-    <div id="collapse-tab-config-dadmins" class="card-body collapse" data-bs-parent="#admin-content">
-      <table id="domainadminstable" class="table table-striped dt-responsive w-100"></table>
-      <div class="mass-actions-admin">
+
+    <div class="settings-table-card settings-panel settings-panel-wide">
+      <div class="quarantine-toolbar-head">
+        <div>
+          <span class="settings-label">{{ lang.admin.domain_admins }}</span>
+        </div>
+        <div class="quarantine-table-count">
+          <span class="badge text-bg-secondary">{{ lang.admin.domain_admins }}</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="domainadminstable" class="table table-striped dt-responsive w-100"></table>
+      </div>
+
+      <div class="mass-actions-admin quarantine-mass-actions">
         <div class="btn-group">
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="domain_admins" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
           <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
@@ -250,5 +269,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>

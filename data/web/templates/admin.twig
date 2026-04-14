@@ -9,12 +9,36 @@
   <div class="admin-page-main">
     <section class="admin-page-hero">
       <div>
+        <p class="dashboard-kicker">Admin command center</p>
         <h1 class="admin-page-title">System</h1>
       </div>
     </section>
 
-    <div id="admin-content" class="responsive-tabs admin-page-content">
-      <ul class="nav nav-tabs" role="tablist">
+    <div id="admin-content" class="responsive-tabs admin-page-content admin-system-page">
+      <section class="admin-system-launcher" aria-label="System quick access">
+        <button class="admin-system-card admin-system-card-active" data-bs-toggle="tab" data-bs-target="#tab-config-admins" aria-controls="tab-config-admins" aria-selected="true" role="tab">
+          <span class="admin-system-card-kicker">Access</span>
+          <strong>Admins & identity</strong>
+          <small>Administrator accounts, identity provider, OAuth, and Rspamd UI.</small>
+        </button>
+        <button class="admin-system-card" data-bs-toggle="tab" data-bs-target="#tab-config-dkim" aria-controls="tab-config-dkim" aria-selected="false" role="tab">
+          <span class="admin-system-card-kicker">Options</span>
+          <strong>Security & policy</strong>
+          <small>DKIM, fail2ban, quotas, password policy, and quarantine controls.</small>
+        </button>
+        <button class="admin-system-card" data-bs-toggle="tab" data-bs-target="#tab-routing" aria-controls="tab-routing" aria-selected="false" role="tab">
+          <span class="admin-system-card-kicker">Routing</span>
+          <strong>Mail flow</strong>
+          <small>Relay hosts and transport maps in a single workspace lane.</small>
+        </button>
+        <button class="admin-system-card" data-bs-toggle="tab" data-bs-target="#tab-sys-mails" aria-controls="tab-sys-mails" aria-selected="false" role="tab">
+          <span class="admin-system-card-kicker">Messaging</span>
+          <strong>System mails</strong>
+          <small>Broadcast operational mail without digging through the full configuration stack.</small>
+        </button>
+      </section>
+
+      <ul class="nav nav-tabs admin-system-tabs" role="tablist">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ lang.admin.access }}</a>
           <ul class="dropdown-menu">
@@ -84,5 +108,20 @@ var admin_username = '{{ mailcow_cc_username }}';
 var csrf_token = '{{ csrf_token }}';
 var pagination_size = Math.trunc('{{ pagination_size }}');
 var log_pagination_size = Math.trunc('{{ log_pagination_size }}');
+
+document.addEventListener('shown.bs.tab', function (event) {
+  var target = event.target.getAttribute('data-bs-target');
+  if (!target) {
+    return;
+  }
+
+  document.querySelectorAll('.admin-system-card').forEach(function (card) {
+    card.classList.toggle('admin-system-card-active', card.getAttribute('data-bs-target') === target);
+  });
+
+  document.querySelectorAll('.admin-page-sidebar-section[role="tablist"] .admin-page-nav-button').forEach(function (button) {
+    button.classList.toggle('active', button.getAttribute('data-bs-target') === target);
+  });
+});
 </script>
 {% endblock %}

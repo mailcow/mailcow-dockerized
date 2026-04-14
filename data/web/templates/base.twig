@@ -27,7 +27,8 @@
   <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 {% set is_workspace_route = (mailcow_cc_role == 'admin' and (is_uri('dashboard') or is_uri('system') or is_uri('mailbox') or is_uri('queue') or is_uri('quarantine'))) or (mailcow_cc_role == 'domainadmin' and (is_uri('mailbox') or is_uri('quarantine') or is_uri('user'))) or (mailcow_cc_role == 'user' and (is_uri('user') or is_uri('quarantine'))) %}
-<body class="{% if is_workspace_route %}route-admin{% endif %}{% if is_uri('dashboard') %} route-dashboard{% endif %}{% if mailcow_cc_role %} role-{{ mailcow_cc_role }}{% endif %}">
+{% set is_edit_route = uri starts with '/edit/' %}
+<body class="{% if is_workspace_route %}route-admin{% endif %}{% if is_edit_route %} route-edit{% endif %}{% if is_uri('dashboard') %} route-dashboard{% endif %}{% if mailcow_cc_role %} role-{{ mailcow_cc_role }}{% endif %}">
 <div class="overlay"></div>
 {% block navbar %}
 {% if not is_workspace_route %}

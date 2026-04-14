@@ -38,6 +38,200 @@
   -webkit-transform: rotateX(180deg);
   transform: rotateX(180deg);
 }
+
+.route-edit {
+  --dashboard-bg-deep: #0f2524;
+  --dashboard-bg-mid: #163836;
+  --dashboard-bg-warm: #251813;
+  --dashboard-surface: rgba(8, 26, 29, 0.76);
+  --dashboard-surface-strong: rgba(10, 34, 37, 0.9);
+  --dashboard-surface-soft: rgba(255, 255, 255, 0.05);
+  --dashboard-line: rgba(255, 255, 255, 0.12);
+  --dashboard-line-strong: rgba(244, 181, 72, 0.18);
+  --dashboard-ink: #eef5f0;
+  --dashboard-ink-soft: rgba(238, 245, 240, 0.72);
+  --dashboard-accent: #f4b548;
+  --dashboard-accent-strong: #d9771e;
+  --dashboard-accent-soft: rgba(244, 181, 72, 0.18);
+  --dashboard-teal: #5fc8bd;
+  background: var(--dashboard-bg-deep);
+  color: var(--dashboard-ink);
+}
+
+.route-edit .overlay {
+  background: rgba(7, 18, 20, 0.14);
+}
+
+.route-edit .navbar {
+  margin: 0.85rem 1rem 0;
+  padding-inline: 0.65rem;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 0;
+  background: rgba(7, 23, 25, 0.82) !important;
+  box-shadow: none;
+  backdrop-filter: blur(18px);
+}
+
+.route-edit .navbar .nav-link,
+.route-edit .navbar .dropdown-item,
+.route-edit .navbar .form-check-label,
+.route-edit .navbar .username-lia,
+.route-edit .navbar .slave-info {
+  color: var(--dashboard-ink-soft) !important;
+}
+
+.route-edit .navbar .nav-link:hover,
+.route-edit .navbar .nav-link:focus,
+.route-edit .navbar .dropdown-item:hover,
+.route-edit .navbar .dropdown-item:focus,
+.route-edit .navbar .dropdown-item.active {
+  color: var(--dashboard-ink) !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.route-edit .navbar .dropdown-menu {
+  margin-top: 0.4rem;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 0;
+  background: rgba(9, 28, 30, 0.96);
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.28);
+}
+
+.route-edit .navbar .form-check-input {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.route-edit .admin-page-container.container {
+  width: min(96vw, 1600px);
+  max-width: 1600px;
+  margin-top: 0.9rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.route-edit .admin-page-sidebar,
+.route-edit .admin-page-hero,
+.route-edit .admin-page-content .card,
+.route-edit .admin-page-content .card-header,
+.route-edit .admin-page-content .card-body,
+.route-edit .admin-page-content .tab-content,
+.route-edit .admin-page-content .tab-pane {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.route-edit .admin-page-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.route-edit .admin-page-main {
+  padding-left: 1.35rem;
+}
+
+.route-edit .admin-page-hero {
+  padding: 0 0 1.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.route-edit .edit-back-link,
+.route-edit .admin-page-sidebar-copy,
+.route-edit .admin-page-intro,
+.route-edit .text-muted,
+.route-edit small,
+.route-edit label,
+.route-edit legend,
+.route-edit .help-block {
+  color: var(--dashboard-ink-soft) !important;
+}
+
+.route-edit .admin-page-title,
+.route-edit .admin-page-sidebar-title,
+.route-edit h4,
+.route-edit strong {
+  color: var(--dashboard-ink);
+}
+
+.route-edit .form-control,
+.route-edit .form-select,
+.route-edit .input-group-text {
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 0;
+  background: rgba(22, 68, 64, 0.48);
+  color: var(--dashboard-ink);
+}
+
+.route-edit .form-control:focus,
+.route-edit .form-select:focus {
+  background: rgba(26, 78, 73, 0.62);
+  border-color: rgba(244, 181, 72, 0.42);
+  box-shadow: 0 0 0 3px rgba(244, 181, 72, 0.14);
+}
+
+.route-edit .form-check-input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.route-edit .form-check-input:checked {
+  background-color: var(--dashboard-teal);
+  border-color: var(--dashboard-teal);
+}
+
+.route-edit .btn {
+  border-radius: 0;
+}
+
+.route-edit .btn-success,
+.route-edit .btn-primary {
+  border: 0;
+  background: linear-gradient(135deg, #ffb85c 0%, #e36c32 100%);
+  color: #112724;
+  font-weight: 800;
+}
+
+.route-edit .btn-success:hover,
+.route-edit .btn-success:focus,
+.route-edit .btn-primary:hover,
+.route-edit .btn-primary:focus {
+  color: #112724;
+}
+
+.route-edit .generate_password {
+  color: var(--dashboard-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.route-edit .generate_password:hover,
+.route-edit .generate_password:focus {
+  color: #ffd18b;
+}
+
+.route-edit kbd {
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--dashboard-ink);
+}
+
+@media screen and (max-width: 767px) {
+  .route-edit .admin-page-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .route-edit .admin-page-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-right: 0;
+  }
+
+  .route-edit .admin-page-main {
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
 #sender_acl_disabled {
   display: none;
   margin-top: 10px;

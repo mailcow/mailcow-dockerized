@@ -9,64 +9,41 @@
 {% endfor %}
 {% set total_containers = containers|length %}
 {% set stopped_containers = total_containers - running_containers %}
+{% set dashboard_status = stopped_containers > 0 ? 'Action needed' : 'Healthy' %}
+{% set dashboard_status_class = stopped_containers > 0 ? 'is-warning' : 'is-healthy' %}
 
 <div class="admin-page-shell dashboard-shell">
   {% include 'admin/page-shell.twig' with {
     sidebar_kicker: 'Admin command center',
     sidebar_title: hostname,
-    sidebar_copy: 'Monitor runtime health, inspect logs, and work across the rest of the admin surfaces from one shared workspace.',
+    sidebar_copy: 'A compact overview of system health, queue pressure, and the admin paths you are most likely to need next.',
     sidebar_metrics: [
-      {'label': lang.debug.containers_info, 'value': total_containers},
+      {'label': 'Status', 'value': dashboard_status},
       {'label': lang.debug.container_running, 'value': running_containers},
-      {'label': lang.debug.container_stopped, 'value': stopped_containers},
+      {'label': lang.debug.disk_usage, 'value': vmail_df[4]},
       {'label': lang.debug.timezone, 'value': timezone}
-    ],
-    sidebar_sections: [
-      {
-        'heading': 'Logs',
-        'role': 'tablist',
-        'aria_label': lang.debug.system_containers,
-        'items': [
-          {'kind': 'button', 'label': lang.debug.system_containers, 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-containers', 'aria_controls': 'tab-containers', 'aria_selected': true, 'role': 'tab', 'active': true},
-          {'kind': 'button', 'label': 'Postfix', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-postfix-logs', 'aria_controls': 'tab-postfix-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Dovecot', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-dovecot-logs', 'aria_controls': 'tab-dovecot-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'SOGo', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-sogo-logs', 'aria_controls': 'tab-sogo-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Netfilter', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-netfilter-logs', 'aria_controls': 'tab-netfilter-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Autodiscover', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-autodiscover-logs', 'aria_controls': 'tab-autodiscover-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Watchdog', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-watchdog-logs', 'aria_controls': 'tab-watchdog-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'ACME', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-acme-logs', 'aria_controls': 'tab-acme-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'API', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-api-logs', 'aria_controls': 'tab-api-logs', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Ratelimits', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-api-rl', 'aria_controls': 'tab-api-rl', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'Crontasks', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-cron-logs', 'aria_controls': 'tab-cron-logs', 'aria_selected': false, 'role': 'tab'}
-        ]
-      },
-      {
-        'heading': lang.debug.external_logs,
-        'role': 'tablist',
-        'items': [
-          {'kind': 'button', 'label': 'Rspamd', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-rspamd-history', 'aria_controls': 'tab-rspamd-history', 'aria_selected': false, 'role': 'tab'}
-        ]
-      },
-      {
-        'heading': lang.debug.static_logs,
-        'role': 'tablist',
-        'items': [
-          {'kind': 'button', 'label': 'Mailcow UI', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-ui', 'aria_controls': 'tab-ui', 'aria_selected': false, 'role': 'tab'},
-          {'kind': 'button', 'label': 'SASL', 'data_bs_toggle': 'tab', 'data_bs_target': '#tab-sasl', 'aria_controls': 'tab-sasl', 'aria_selected': false, 'role': 'tab'}
-        ]
-      }
     ]
   } %}
 
   <div class="dashboard-main">
-    <section class="dashboard-hero">
-      <div class="dashboard-hero-copy">
+    <section class="dashboard-command-bar">
+      <div class="dashboard-command-copy">
+        <div class="dashboard-status-pill {{ dashboard_status_class }}">{{ dashboard_status }}</div>
         <p class="dashboard-kicker">Runtime overview</p>
-        <h2 class="dashboard-title">{{ hostname }}</h2>
-        <p class="dashboard-subtitle">System telemetry, service health, licensing, and container operations now live inside the same shared shell as the rest of the admin workspace.</p>
+        <h2 class="dashboard-title">{{ hostname }} command center</h2>
+        <p class="dashboard-subtitle">See the health story first, jump to the admin surface you need, and open deeper logs only when you actually need them.</p>
       </div>
+      <div class="dashboard-command-actions">
+        <a class="dashboard-primary-button" href="/admin/system">System settings</a>
+        <a class="dashboard-action-button" href="/admin/mailbox">Mail</a>
+        <a class="dashboard-action-button" href="/admin/queue">Queue</a>
+        <a class="dashboard-action-button" href="/quarantine">Quarantine</a>
+      </div>
+    </section>
+
+    <section class="dashboard-hero">
       <div class="dashboard-hero-grid">
-        <div class="dashboard-stat-card">
+        <div class="dashboard-stat-card dashboard-stat-card-emphasis">
           <span class="dashboard-stat-label">Containers</span>
           <strong class="dashboard-stat-value">{{ total_containers }}</strong>
           <small>{{ running_containers }} running</small>
@@ -89,26 +66,51 @@
       </div>
     </section>
 
+    <nav class="nav nav-tabs dashboard-switchboard" role="tablist" aria-label="Dashboard views">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-containers" type="button" role="tab" aria-controls="tab-containers" aria-selected="true">Overview</button>
+      <div class="nav-item dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">Service logs</button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-postfix-logs" type="button" role="tab" aria-controls="tab-postfix-logs">Postfix</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-dovecot-logs" type="button" role="tab" aria-controls="tab-dovecot-logs">Dovecot</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-sogo-logs" type="button" role="tab" aria-controls="tab-sogo-logs">SOGo</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-netfilter-logs" type="button" role="tab" aria-controls="tab-netfilter-logs">Netfilter</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-autodiscover-logs" type="button" role="tab" aria-controls="tab-autodiscover-logs">Autodiscover</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-watchdog-logs" type="button" role="tab" aria-controls="tab-watchdog-logs">Watchdog</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-acme-logs" type="button" role="tab" aria-controls="tab-acme-logs">ACME</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-api-logs" type="button" role="tab" aria-controls="tab-api-logs">API</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-api-rl" type="button" role="tab" aria-controls="tab-api-rl">Ratelimits</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-cron-logs" type="button" role="tab" aria-controls="tab-cron-logs">Crontasks</button></li>
+        </ul>
+      </div>
+      <div class="nav-item dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">Observability</button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-rspamd-history" type="button" role="tab" aria-controls="tab-rspamd-history">Rspamd</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-ui" type="button" role="tab" aria-controls="tab-ui">Mailcow UI</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="tab" data-bs-target="#tab-sasl" type="button" role="tab" aria-controls="tab-sasl">SASL</button></li>
+        </ul>
+      </div>
+    </nav>
+
     <div class="tab-content dashboard-tab-content">
       <div role="tabpanel" class="tab-pane active" id="tab-containers">
         <div class="card dashboard-overview-card mb-4">
           <div class="card-body">
-            <div class="row g-4 align-items-stretch">
-              <div class="col-xl-4">
-                <div class="dashboard-brand-panel">
-                  <div class="dashboard-brand-frame">
-                    <img class="main-logo" alt="mailcow-logo" src="{{ logo|default('/img/cow_mailcow.svg') }}">
-                    <img class="main-logo-dark" alt="mailcow-logo-dark" src="{{ logo_dark|default('/img/cow_mailcow.svg') }}">
-                  </div>
-                  <div class="dashboard-brand-copy">
-                    <p class="dashboard-kicker">{{ ui_texts.title_name|striptags }}</p>
-                    <h3>{{ hostname }}</h3>
+            <div class="dashboard-command-grid">
+              <section class="dashboard-focus-card">
+                <div class="dashboard-panel-head">
+                  <div>
+                    <p class="dashboard-kicker">Health overview</p>
+                    <h3>Priority snapshot</h3>
                   </div>
                 </div>
-              </div>
-
-              <div class="col-xl-8">
-                <div class="dashboard-detail-grid">
+                <div class="dashboard-health-grid">
+                  <div class="dashboard-detail-card">
+                    <span>Status</span>
+                    <strong>{{ dashboard_status }}</strong>
+                    <small>{% if stopped_containers > 0 %}One or more services need attention.{% else %}Core runtime services are up.{% endif %}</small>
+                  </div>
                   <div class="dashboard-detail-card">
                     <span>Hostname</span>
                     <strong>{{ hostname }}</strong>
@@ -121,6 +123,11 @@
                     <span>Version</span>
                     <strong><a href="#" id="mailcow_version">{{ mailcow_info.version_tag }}</a></strong>
                     <small id="mailcow_update"></small>
+                  </div>
+                  <div class="dashboard-detail-card">
+                    <span>{{ lang.debug.container_running }}</span>
+                    <strong>{{ running_containers }}</strong>
+                    <small>{{ stopped_containers }} stopped</small>
                   </div>
                   <div class="dashboard-detail-card">
                     <span>{{ lang.debug.timezone }}</span>
@@ -162,8 +169,41 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </section>
 
+              <section class="dashboard-focus-card">
+                <div class="dashboard-panel-head">
+                  <div>
+                    <p class="dashboard-kicker">Operator actions</p>
+                    <h3>Go straight to work</h3>
+                  </div>
+                </div>
+                <div class="dashboard-action-grid">
+                  <a class="dashboard-quick-card" href="/admin/system">
+                    <span class="dashboard-kicker">Configuration</span>
+                    <strong>System</strong>
+                    <small>Access, policies, customization, and routing.</small>
+                  </a>
+                  <a class="dashboard-quick-card" href="/admin/mailbox">
+                    <span class="dashboard-kicker">Mail flow</span>
+                    <strong>Mailbox manager</strong>
+                    <small>Domains, mailboxes, aliases, and filters.</small>
+                  </a>
+                  <a class="dashboard-quick-card" href="/admin/queue">
+                    <span class="dashboard-kicker">Delivery</span>
+                    <strong>Queue manager</strong>
+                    <small>Inspect and unblock delayed mail quickly.</small>
+                  </a>
+                  <a class="dashboard-quick-card" href="/quarantine">
+                    <span class="dashboard-kicker">Security</span>
+                    <strong>Quarantine center</strong>
+                    <small>Review held mail and release what matters.</small>
+                  </a>
+                </div>
+              </section>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
               <div class="col-lg-6">
                 <div class="dashboard-chart-card">
                   <div class="dashboard-panel-head">
@@ -190,6 +230,66 @@
                 </div>
               </div>
 
+              <div class="col-xl-6">
+                <div class="dashboard-license-card dashboard-runtime-card">
+                  <div class="dashboard-panel-head">
+                    <div>
+                      <p class="dashboard-kicker">Identity</p>
+                      <h3>Platform and license</h3>
+                    </div>
+                  </div>
+                  <div class="dashboard-license-meta">
+                    <span>{{ lang.admin.customer_id }}: {{ gal.c|default('?')|raw }}</span>
+                    <span>{{ lang.admin.service_id }}: {{ gal.s|default('?')|raw }}</span>
+                    <span>{{ lang.admin.sal_level }}: {{ gal.m|default('?')|raw }}</span>
+                  </div>
+                  <div class="dashboard-license-summary">
+                    <div class="dashboard-detail-card">
+                      <span>{{ lang.admin.guid }}</span>
+                      <strong>{{ license_guid }}</strong>
+                    </div>
+                    <div class="dashboard-detail-card">
+                      <span>Validation</span>
+                      <strong>{% if gal.valid == true %}Active{% else %}Pending{% endif %}</strong>
+                    </div>
+                  </div>
+                  <button class="btn dashboard-primary-button" name="license_validate_now" type="submit" form="dashboard-license-form">{{ lang.admin.validate_license_now }}</button>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="dashboard-runtime-card">
+                  <div class="dashboard-panel-head">
+                    <div>
+                      <p class="dashboard-kicker">Workspace</p>
+                      <h3>What this page covers</h3>
+                    </div>
+                  </div>
+                  <div class="dashboard-action-grid dashboard-action-grid-compact">
+                    <div class="dashboard-quick-card dashboard-quick-card-static">
+                      <span class="dashboard-kicker">Runtime</span>
+                      <strong>CPU and memory</strong>
+                      <small>Live usage trends for the current host.</small>
+                    </div>
+                    <div class="dashboard-quick-card dashboard-quick-card-static">
+                      <span class="dashboard-kicker">Services</span>
+                      <strong>Container fleet</strong>
+                      <small>Restart services and inspect per-container I/O.</small>
+                    </div>
+                    <div class="dashboard-quick-card dashboard-quick-card-static">
+                      <span class="dashboard-kicker">Logs</span>
+                      <strong>Operational history</strong>
+                      <small>Switch views from the tabs above instead of the sidebar.</small>
+                    </div>
+                    <div class="dashboard-quick-card dashboard-quick-card-static">
+                      <span class="dashboard-kicker">Identity</span>
+                      <strong>Version and license</strong>
+                      <small>Platform verification and release visibility.</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="col-12">
                 <div class="dashboard-license-card" id="license">
                   <div class="dashboard-panel-head">
@@ -198,7 +298,7 @@
                       <h3>License & identity</h3>
                     </div>
                   </div>
-                  <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
+                  <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post" id="dashboard-license-form">
                     <div class="row g-4 align-items-start">
                       <div class="col-lg-7">
                         <label class="dashboard-field-label" for="guid">{{ lang.admin.guid }}</label>
@@ -218,7 +318,6 @@
                       </div>
                       <div class="col-12">
                         <p class="text-muted">{{ lang.admin.license_info|raw }}</p>
-                        <button class="btn dashboard-primary-button" name="license_validate_now" type="submit">{{ lang.admin.validate_license_now }}</button>
                       </div>
                     </div>
                   </form>
@@ -617,5 +716,37 @@
   var lang_datatables = {{ lang_datatables|raw }};
   var csrf_token = '{{ csrf_token }}';
   var log_pagination_size = Math.trunc('{{ log_pagination_size }}');
+
+  document.addEventListener('shown.bs.tab', function(event) {
+    var target = event.target.getAttribute('data-bs-target');
+    if (!target) {
+      return;
+    }
+
+    document.querySelectorAll('.dashboard-switchboard > .nav-link').forEach(function(link) {
+      var isMatch = link.getAttribute('data-bs-target') === target;
+      link.classList.toggle('active', isMatch);
+      link.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+    });
+
+    document.querySelectorAll('.dashboard-switchboard .dropdown-item').forEach(function(item) {
+      item.classList.toggle('active', item.getAttribute('data-bs-target') === target);
+    });
+
+    document.querySelectorAll('.dashboard-switchboard .dropdown-toggle').forEach(function(toggle) {
+      toggle.classList.remove('active');
+    });
+
+    var activeDropdownItem = document.querySelector('.dashboard-switchboard .dropdown-item.active');
+    if (activeDropdownItem) {
+      var dropdown = activeDropdownItem.closest('.dropdown');
+      if (dropdown) {
+        var toggle = dropdown.querySelector('.dropdown-toggle');
+        if (toggle) {
+          toggle.classList.add('active');
+        }
+      }
+    }
+  });
 </script>
 {% endblock %}
