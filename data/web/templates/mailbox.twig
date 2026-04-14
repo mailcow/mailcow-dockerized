@@ -7,6 +7,7 @@
   } %}
 
   <div class="admin-page-main">
+    {% include 'shared/topbar.twig' with { topbar_title: mailcow_cc_role == 'admin' ? 'Mail configuration' : 'Mailboxes' } %}
     <section class="admin-page-hero">
       <div>
         <h1 class="admin-page-title">{{ mailcow_cc_role == 'admin' ? 'Mail' : 'Mailboxes' }}</h1>

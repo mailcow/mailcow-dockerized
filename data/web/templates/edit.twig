@@ -7,6 +7,7 @@
   } %}
 
   <div class="admin-page-main">
+    {% include 'shared/topbar.twig' with { topbar_title: lang.edit.title|default('Edit') } %}
     <section class="admin-page-hero">
       <div>
         <a href="{{ return_to }}" class="edit-back-link"><i class="bi bi-arrow-left me-1"></i>{{ lang.edit.previous }}</a>
