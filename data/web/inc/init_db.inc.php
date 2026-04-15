@@ -1464,6 +1464,8 @@ function init_db_schema()
         "pop3_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['pop3_access']),
         "smtp_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['smtp_access']),
         "sieve_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sieve_access']),
+        "eas_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['eas_access']),
+        "dav_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['dav_access']),
         "acl_spam_alias" => 1,
         "acl_tls_policy" => 1,
         "acl_spam_score" => 1,
