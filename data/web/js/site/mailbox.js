@@ -2150,7 +2150,7 @@ jQuery(function($){
     var table = $('#sync_job_table').DataTable({
       responsive: true,
       processing: true,
-      serverSide: false,
+      serverSide: true,
       stateSave: true,
       pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
@@ -2162,10 +2162,15 @@ jQuery(function($){
         hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
       },
       ajax: {
-        type: "GET",
-        url: "/api/v1/get/syncjobs/all/no_log",
+        type: "POST",
+        url: "/api/v1/search/syncjob",
+        contentType: "application/json",
+        processData: false,
+        data: function(d) {
+          return JSON.stringify(d);
+        },
         dataSrc: function(json){
-          $.each(json, function (i, item) {
+          $.each(json.data, function (i, item) {
             item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
@@ -2201,7 +2206,7 @@ jQuery(function($){
             item.exit_status = item.success + ' ' + item.exit_status;
           });
 
-          return json;
+          return json.data;
         }
       },
       columns: [
@@ -2225,6 +2230,7 @@ jQuery(function($){
         {
           title: 'ID',
           data: 'id',
+          searchable: false,
           responsivePriority: 3,
           defaultContent: ''
         },
@@ -2242,21 +2248,27 @@ jQuery(function($){
         {
           title: lang.last_run,
           data: 'last_run',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: lang.syncjob_last_run_result,
           data: 'exit_status',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: 'Log',
           data: 'log',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.active,
           data: 'active',
+          searchable: false,
           defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
@@ -2265,23 +2277,31 @@ jQuery(function($){
         {
           title: lang.status,
           data: 'is_running',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.excludes,
           data: 'exclude',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.mins_interval,
           data: 'mins_interval',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.action,
           data: 'action',
+          searchable: false,
+          orderable: false,
           className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''

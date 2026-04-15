@@ -1676,6 +1676,55 @@ if (isset($_GET['query'])) {
           process_search_return($data);
         break;
 
+        case "syncjob":
+          $table = ['imapsync', 'i'];
+          $primaryKey = 'id';
+          $columns = [
+            ['db' => 'id', 'dt' => 2],
+            ['db' => 'user2', 'dt' => 3],
+            ['db' => 'host1', 'dt' => 4, 'search' => ['where_column' => "CONCAT_WS(' ', `i`.`user1`, `i`.`host1`)"]],
+            ['db' => 'last_run', 'dt' => 5],
+            ['db' => 'active', 'dt' => 8],
+          ];
+
+          if ($_SESSION['mailcow_cc_role'] === 'admin') {
+            $data = SSP::simple($requestDecoded, $pdo, $table, $primaryKey, $columns);
+          } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+            $data = SSP::complex($requestDecoded, $pdo, $table, $primaryKey, $columns,
+              'INNER JOIN `mailbox` AS `mb` ON `mb`.`username` = `i`.`user2` ' .
+              'INNER JOIN `domain_admins` AS `da` ON `da`.`domain` = `mb`.`domain`',
+              [
+                'condition' => '`da`.`active` = 1 AND `da`.`username` = :username',
+                'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
+              ]);
+          } elseif ($_SESSION['mailcow_cc_role'] === 'user') {
+            $data = SSP::complex($requestDecoded, $pdo, $table, $primaryKey, $columns, null,
+              [
+                'condition' => '`i`.`user2` = :username',
+                'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
+              ]);
+          } else {
+            http_response_code(403);
+            echo json_encode(array(
+              'type' => 'error',
+              'msg' => 'Insufficient permissions'
+            ));
+            exit();
+          }
+
+          if (!empty($data['data'])) {
+            $syncjobData = [];
+            foreach ($data['data'] as $row) {
+              if ($details = mailbox('get', 'syncjob_details', $row[2], array('no_log'))) {
+                $syncjobData[] = $details;
+              }
+            }
+            $data['data'] = $syncjobData;
+          }
+
+          process_search_return($data);
+        break;
+
         default:
           http_response_code(404);
           echo json_encode(array(
