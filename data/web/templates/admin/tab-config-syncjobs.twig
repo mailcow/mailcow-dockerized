@@ -1,0 +1,21 @@
+<div class="tab-pane fade" id="tab-config-syncjobs" role="tabpanel" aria-labelledby="tab-config-syncjobs">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-config-syncjobs">
+        {{ lang.admin.syncjobs }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.syncjobs }}</span>
+    </div>
+    <div id="collapse-tab-config-syncjobs" class="card-body collapse" data-bs-parent="#admin-content">
+      <form class="form-horizontal" data-id="syncjob_settings" role="form" method="post">
+        <div class="row mb-4">
+          <label class="col-sm-4 control-label text-sm-end" for="syncjobs_max_parallel">{{ lang.admin.syncjobs_max_parallel|raw }}</label>
+          <div class="col-sm-8">
+            <input type="number" class="form-control" id="syncjobs_max_parallel" name="max_parallel" value="{{ sj_data.max_parallel }}" min="1" max="50" required>
+          </div>
+        </div>
+        <button class="btn btn-sm d-block d-sm-inline btn-success" data-action="edit_selected" data-item="self" data-id="syncjob_settings" data-api-url='edit/syncjob_settings' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+      </form>
+    </div>
+  </div>
+</div>

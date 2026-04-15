@@ -2265,6 +2265,35 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
           }
         break;
+        case 'syncjob_settings':
+          if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'admin') {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          $max_parallel = intval($_data['max_parallel']);
+          if ($max_parallel < 1)  { $max_parallel = 1; }
+          if ($max_parallel > 50) { $max_parallel = 50; }
+          try {
+            $redis->Set('SYNCJOBS_MAX_PARALLEL', $max_parallel);
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('redis_error', $e->getMessage())
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+            'msg' => 'syncjob_settings_saved'
+          );
+        break;
         case 'syncjob':
           if (!is_array($_data['id'])) {
             $ids = array();
@@ -4618,6 +4647,20 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           return $syncjobdetails;
+        break;
+        case 'syncjob_settings':
+          if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'admin') {
+            return false;
+          }
+          $settings = array();
+          try {
+            $max_parallel = $redis->Get('SYNCJOBS_MAX_PARALLEL');
+          }
+          catch (RedisException $e) {
+            $max_parallel = null;
+          }
+          $settings['max_parallel'] = intval($max_parallel) ?: 1;
+          return $settings;
         break;
         case 'syncjobs':
           $syncjobdata = array();

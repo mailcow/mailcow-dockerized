@@ -1104,6 +1104,10 @@ if (isset($_GET['query'])) {
               break;
             }
           break;
+          case "syncjob_settings":
+            $data = mailbox('get', 'syncjob_settings');
+            process_get_return($data);
+          break;
           case "active-user-sieve":
             if (isset($object)) {
               $sieve_filter = mailbox('get', 'active_user_sieve', $object);
@@ -1969,6 +1973,9 @@ if (isset($_GET['query'])) {
         break;
         case "syncjob":
           process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
+        break;
+        case "syncjob_settings":
+          process_edit_return(mailbox('edit', 'syncjob_settings', $attr));
         break;
         case "filter":
           process_edit_return(mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));

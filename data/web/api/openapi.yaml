@@ -3931,6 +3931,64 @@ paths:
                   type: object
               type: object
       summary: Update sync job
+  /api/v1/edit/syncjob_settings:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    log:
+                      - entity
+                      - action
+                      - object
+                    msg:
+                      - message
+                      - entity name
+                    type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Update the global sync job settings. Currently exposes the maximum
+        number of imapsync processes that are allowed to run in parallel.
+        Admin access required.
+      operationId: Update sync job settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                max_parallel: 4
+              properties:
+                max_parallel:
+                  description: >-
+                    Maximum number of imapsync processes allowed to run in
+                    parallel (1 = sequential behavior, max 50)
+                  type: integer
+              type: object
+      summary: Update sync job settings
   /api/v1/edit/user-acl:
     post:
       responses:
@@ -5629,6 +5687,36 @@ paths:
       description: You can list all syn jobs existing in system.
       operationId: Get sync jobs
       summary: Get sync jobs
+  /api/v1/get/syncjob_settings:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    max_parallel: 4
+              schema:
+                properties:
+                  max_parallel:
+                    description: >-
+                      Maximum number of imapsync processes allowed to run in
+                      parallel (1 = sequential behavior)
+                    type: integer
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Return the global sync job settings. Currently exposes the maximum
+        number of imapsync processes allowed to run in parallel. Admin access
+        required.
+      operationId: Get sync job settings
+      summary: Get sync job settings
   "/api/v1/get/tls-policy-map/{id}":
     get:
       parameters:

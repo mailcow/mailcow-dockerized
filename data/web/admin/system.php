@@ -106,6 +106,7 @@ $template_data = [
   'f2b_data' => $f2b_data,
   'f2b_banlist_url' => getBaseUrl() . "/f2b-banlist?id=" . $f2b_data['banlist_id'],
   'q_data' => quarantine('settings'),
+  'sj_data' => mailbox('get', 'syncjob_settings'),
   'qn_data' => quota_notification('get'),
   'pw_reset_data' => reset_password('get_notification'),
   'rsettings_map' => file_get_contents('http://nginx:8081/settings.php'),

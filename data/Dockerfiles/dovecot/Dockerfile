@@ -69,6 +69,8 @@ RUN addgroup -g 5000 vmail \
   perl-par-packer \
   perl-parse-recdescent \
   perl-lockfile-simple \
+  perl-parallel-forkmanager \
+  perl-redis \
   libproc2 \
   perl-readonly \
   perl-regexp-common \
