@@ -373,6 +373,7 @@
         "subject": "Betreff",
         "success": "Erfolg",
         "syncjobs": "Sync-Jobs",
+        "syncjobs_max_bps": "Globales Bandbreitenlimit (Bytes/s)<br><small>Maximale Transferrate pro Sync-Job in Bytes pro Sekunde. 0 = kein Limit. Wird durch ein pro Sync-Job gesetztes Limit überschrieben.</small>",
         "syncjobs_max_parallel": "Maximale Anzahl paralleler Sync-Jobs<br><small>Wie viele imapsync-Prozesse dürfen gleichzeitig laufen. 1 = sequentiell (aktuelles Verhalten).</small>",
         "sys_mails": "System-E-Mails",
         "task": "Aufgabe",

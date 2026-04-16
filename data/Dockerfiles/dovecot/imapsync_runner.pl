@@ -77,6 +77,11 @@ sub run_one_job {
   print $passfile1 "$password1\n";
   print $passfile2 trim($master_pass) . "\n";
 
+  my $effective_bps = $maxbytespersecond;
+  if ($effective_bps eq "0" && $global_max_bps > 0) {
+    $effective_bps = $global_max_bps;
+  }
+
   my @custom_params_a = qqw($custom_params);
   my $custom_params_ref = \@custom_params_a;
 
@@ -89,7 +94,7 @@ sub run_one_job {
   ($exclude eq "" ? () : ("--exclude", $exclude)),
   ($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
   ($maxage eq "0" ? () : ('--maxage', $maxage)),
-  ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
+  ($effective_bps eq "0" ? () : ('--maxbytespersecond', $effective_bps)),
   ($delete2duplicates ne "1" ? () : ('--delete2duplicates')),
   ($subscribeall  ne "1" ? () : ('--subscribeall')),
   ($delete1 ne "1" ? () : ('--delete')),
@@ -146,6 +151,7 @@ my $lockmgr = LockFile::Simple->make(-autoclean => 1, -max => 1);
 $lockmgr->lock($lock_file) || die "can't lock ${lock_file}";
 
 my $max_parallel = 1;
+our $global_max_bps = 0;
 try {
   my $redis = Redis->new(
     server    => 'redis-mailcow:6379',
@@ -157,9 +163,13 @@ try {
   if (defined $val && $val =~ /^\d+$/) {
     $max_parallel = int($val);
   }
+  my $bps = $redis->get('SYNCJOBS_MAX_BPS');
+  if (defined $bps && $bps =~ /^\d+$/) {
+    $global_max_bps = int($bps);
+  }
   $redis->quit();
 } catch {
-  warn "Could not read SYNCJOBS_MAX_PARALLEL from Redis, defaulting to 1: $_";
+  warn "Could not read settings from Redis, using defaults: $_";
 };
 $max_parallel = 1  if $max_parallel < 1;
 $max_parallel = 50 if $max_parallel > 50;
@@ -227,7 +237,18 @@ foreach my $job (@jobs) {
     mysql_auto_reconnect => 1,
     mysql_enable_utf8mb4 => 1
   });
-  run_one_job($child_dbh, $job, $master_user, $master_pass);
+  eval {
+    run_one_job($child_dbh, $job, $master_user, $master_pass);
+  };
+  if ($@) {
+    warn "run_one_job died for job $job->[0]: $@";
+    eval {
+      my $err_sth = $child_dbh->prepare("UPDATE imapsync SET last_run = NOW(), is_running = 0, success = 0, returned_text = ? WHERE id = ?");
+      $err_sth->bind_param(1, "Runner error: $@");
+      $err_sth->bind_param(2, $job->[0]);
+      $err_sth->execute();
+    };
+  }
   $child_dbh->disconnect();
 
   $pm->finish;

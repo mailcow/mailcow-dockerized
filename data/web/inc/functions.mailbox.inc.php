@@ -2277,8 +2277,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $max_parallel = intval($_data['max_parallel']);
           if ($max_parallel < 1)  { $max_parallel = 1; }
           if ($max_parallel > 50) { $max_parallel = 50; }
+          $max_bps = intval($_data['max_bps']);
+          if ($max_bps < 0) { $max_bps = 0; }
           try {
             $redis->Set('SYNCJOBS_MAX_PARALLEL', $max_parallel);
+            $redis->Set('SYNCJOBS_MAX_BPS', $max_bps);
           }
           catch (RedisException $e) {
             $_SESSION['return'][] = array(
@@ -4660,6 +4663,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $max_parallel = null;
           }
           $settings['max_parallel'] = intval($max_parallel) ?: 1;
+          try {
+            $max_bps = $redis->Get('SYNCJOBS_MAX_BPS');
+          }
+          catch (RedisException $e) {
+            $max_bps = null;
+          }
+          $settings['max_bps'] = intval($max_bps) ?: 0;
           return $settings;
         break;
         case 'syncjobs':

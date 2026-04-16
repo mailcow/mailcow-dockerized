@@ -383,6 +383,7 @@
         "subject": "Subject",
         "success": "Success",
         "syncjobs": "Sync jobs",
+        "syncjobs_max_bps": "Global bandwidth limit (bytes/s)<br><small>Maximum transfer rate per sync job in bytes per second. 0 = no limit. Overridden by a per-job limit.</small>",
         "syncjobs_max_parallel": "Maximum parallel sync jobs<br><small>How many imapsync processes are allowed to run in parallel. 1 = sequential (legacy behavior).</small>",
         "sys_mails": "System mails",
         "task": "Task",
