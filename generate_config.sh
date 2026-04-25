@@ -28,14 +28,7 @@ source _modules/scripts/ipv6_controller.sh
 set -o pipefail
 
 get_installed_tools
-get_docker_version
-
-if [[ $docker_version -lt 24 ]]; then
-  echo -e "\e[31mCannot find Docker with a Version higher or equals 24.0.0\e[0m"
-  echo -e "\e[33mmailcow needs a newer Docker version to work properly...\e[0m"
-  echo -e "\e[31mPlease update your Docker installation... exiting\e[0m"
-  exit 1
-fi
+detect_container_runtime
 
 detect_bad_asn
 
@@ -454,6 +447,11 @@ ENABLE_IPV6=${IPV6_BOOL}
 # Prevent netfilter from setting an iptables/nftables rule to isolate the mailcow docker network - y/n
 # CAUTION: Disabling this may expose container ports to other neighbors on the same subnet, even if the ports are bound to localhost
 DISABLE_NETFILTER_ISOLATION_RULE=n
+
+# Container runtime socket path
+# Auto-detected: Podman socket if available, otherwise Docker socket
+# Change this if your socket is at a non-standard location
+DOCKER_SOCKET=${DOCKER_SOCKET}
 EOF
 
 mkdir -p data/assets/ssl
