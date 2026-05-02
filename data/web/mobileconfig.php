@@ -52,7 +52,7 @@ if (isset($_GET['app_password'])) {
   else
       $platform = $_SERVER['HTTP_USER_AGENT'];
 
-  $password = password_generate();
+  $password = htmlspecialchars(password_generate(), ENT_NOQUOTES);
 
   $attr = array(
       'app_name' => $platform,
