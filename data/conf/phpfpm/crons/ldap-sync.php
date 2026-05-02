@@ -118,7 +118,7 @@ if (!empty($iam_settings['filter'])) {
 }
 $response = $ldap_query->where($iam_settings['username_field'], "*")
   ->where($iam_settings['attribute_field'], "*")
-  ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname'])
+  ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'userAccountControl', 'pwdAccountLockedTime'])
   ->paginate($max);
 
 // Process the users
@@ -138,6 +138,41 @@ foreach ($response as $user) {
   $user_template = $user[$iam_settings['attribute_field']][0];
   $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
+  // Determine if account is disabled in LDAP (multi-provider support)
+  $ldap_account_active = 1; // Default to active
+  $has_disabled_attr = false;
+  $disabled_check_method = "none";
+
+  // Try Active Directory userAccountControl first
+  if (isset($user['useraccountcontrol'][0])) {
+    $has_disabled_attr = true;
+    $disabled_check_method = "AD-userAccountControl";
+    $uac = intval($user['useraccountcontrol'][0]);
+
+    // UAC flag 0x0002 indicates ACCOUNTDISABLE
+    // If bit is set, account is disabled
+    $ldap_account_active = ($uac & 0x0002) ? 0 : 1;
+
+    $uac_status = ($ldap_account_active == 1) ? "enabled" : "disabled";
+    logMsg("info", "User " . $user[$iam_settings['username_field']][0] . " is {$uac_status} (AD UAC: {$uac})");
+  }
+  // Try OpenLDAP/389DS/FreeIPA pwdAccountLockedTime
+  elseif (isset($user['pwdaccountlockedtime'])) {
+    $has_disabled_attr = true;
+    $disabled_check_method = "OpenLDAP-pwdAccountLockedTime";
+
+    // If pwdAccountLockedTime attribute exists and has a value, account is locked/disabled
+    $ldap_account_active = (!empty($user['pwdaccountlockedtime'][0])) ? 0 : 1;
+
+    $status = ($ldap_account_active == 1) ? "enabled" : "disabled";
+    logMsg("info", "User " . $user[$iam_settings['username_field']][0] . " is {$status} (OpenLDAP/389DS)");
+  }
+  else {
+    // No disabled attribute found - this is normal for some LDAP implementations
+    // We'll skip disabled state sync for this user
+    logMsg("debug", "User " . $user[$iam_settings['username_field']][0] . " - no disabled attribute found (userAccountControl or pwdAccountLockedTime), skipping status sync");
+  }
+
   if (empty($user[$iam_settings['username_field']][0])){
     logMsg("warning", "Skipping user " . $user['displayname'][0] . " due to empty LDAP ". $iam_settings['username_field'] . " property.");
     continue;
@@ -145,6 +180,12 @@ foreach ($response as $user) {
 
   $_SESSION['access_all_exception'] = '1';
   if (!$row && intval($iam_settings['import_users']) == 1){
+    // Skip disabled users during import if sync_disabled_users is enabled
+    if (intval($iam_settings['sync_disabled_users']) == 1 && $has_disabled_attr && $ldap_account_active == 0) {
+      logMsg("info", "Skipping import of disabled user " . $user[$iam_settings['username_field']][0] . " (method: {$disabled_check_method})");
+      continue;
+    }
+
     if ($mapper_key === false){
       if (!empty($iam_settings['default_template'])) {
         $mbox_template = $iam_settings['default_template'];
@@ -174,13 +215,26 @@ foreach ($response as $user) {
       continue;
     }
     $mbox_template = $iam_settings['templates'][$mapper_key];
-    // mailbox user does exist, sync attribtues...
-    logMsg("info", "Syncing attributes for user " . $user[$iam_settings['username_field']][0]);
-    mailbox('edit', 'mailbox_from_template', array(
+
+    // Prepare update data with active status
+    $update_data = array(
       'username' =>  $user[$iam_settings['username_field']][0],
       'name' => $user['displayname'][0],
       'template' => $mbox_template
-    ));
+    );
+
+    // Add active status if sync_disabled_users is enabled and a disabled attribute was found
+    if (intval($iam_settings['sync_disabled_users']) == 1 && $has_disabled_attr) {
+      if ($row['active'] != $ldap_account_active) {
+        $update_data['active'] = $ldap_account_active;
+        $status_change = ($ldap_account_active == 1) ? "enabled" : "disabled";
+        logMsg("info", "Changing active status for user " . $user[$iam_settings['username_field']][0] . " to {$status_change} (method: {$disabled_check_method})");
+      }
+    }
+
+    // mailbox user does exist, sync attributes...
+    logMsg("info", "Syncing attributes for user " . $user[$iam_settings['username_field']][0]);
+    mailbox('edit', 'mailbox_from_template', $update_data);
   } else {
     // skip mailbox user
     logMsg("info", "Skipping user " .  $user[$iam_settings['username_field']][0]);

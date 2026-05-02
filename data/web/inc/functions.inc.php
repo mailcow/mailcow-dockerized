@@ -2440,6 +2440,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_tls":
           case "login_provisioning":
           case "ignore_ssl_errors":
+          case "sync_disabled_users":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2519,13 +2520,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
       switch ($_data['authsource']) {
         case "keycloak":
-          $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
-          $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
-          $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
-          $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
-          $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
-          $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
+          $_data['server_url']         = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
+          $_data['mailpassword_flow']  = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
+          $_data['periodic_sync']      = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
+          $_data['import_users']       = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+          $_data['sync_disabled_users'] = isset($_data['sync_disabled_users']) ? intval($_data['sync_disabled_users']) : 0;
+          $_data['sync_interval']      = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
+          $_data['sync_interval']      = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
+          $required_settings           = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_disabled_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
@@ -2535,18 +2537,19 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
         break;
         case "ldap":
-          $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
-          $_data['port']              = (!empty($_data['port'])) ? intval($_data['port']) : 389;
-          $_data['username_field']    = (!empty($_data['username_field'])) ? strtolower($_data['username_field']) : "mail";
-          $_data['attribute_field']   = (!empty($_data['attribute_field'])) ? strtolower($_data['attribute_field']) : "";
-          $_data['filter']            = (!empty($_data['filter'])) ? $_data['filter'] : "";
-          $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
-          $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
-          $_data['use_ssl']           = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
-          $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
-          $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
-          $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning');
+          $_data['host']               = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
+          $_data['port']               = (!empty($_data['port'])) ? intval($_data['port']) : 389;
+          $_data['username_field']     = (!empty($_data['username_field'])) ? strtolower($_data['username_field']) : "mail";
+          $_data['attribute_field']    = (!empty($_data['attribute_field'])) ? strtolower($_data['attribute_field']) : "";
+          $_data['filter']             = (!empty($_data['filter'])) ? $_data['filter'] : "";
+          $_data['periodic_sync']      = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
+          $_data['import_users']       = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
+          $_data['sync_disabled_users'] = isset($_data['sync_disabled_users']) ? intval($_data['sync_disabled_users']) : 0;
+          $_data['use_ssl']            = isset($_data['use_ssl']) ? boolval($_data['use_ssl']) : false;
+          $_data['use_tls']            = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
+          $_data['sync_interval']      = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
+          $_data['sync_interval']      = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
+          $required_settings           = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_disabled_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning');
         break;
       }
 

@@ -155,6 +155,11 @@ while (true) {
       continue;
     }
 
+    // Determine if account is enabled in Keycloak
+    $keycloak_account_active = isset($user['enabled']) ? intval($user['enabled']) : 1;
+    $status = ($keycloak_account_active == 1) ? "enabled" : "disabled";
+    logMsg("info", "User " . $user['email'] . " is {$status} in Keycloak");
+
     // try get mailbox user
     $stmt = $pdo->prepare("SELECT
       mailbox.*,
@@ -172,6 +177,12 @@ while (true) {
 
     $_SESSION['access_all_exception'] = '1';
     if (!$row && intval($iam_settings['import_users']) == 1){
+      // Skip disabled users during import if sync_disabled_users is enabled
+      if (intval($iam_settings['sync_disabled_users']) == 1 && $keycloak_account_active == 0) {
+        logMsg("info", "Skipping import of disabled user " . $user['email']);
+        continue;
+      }
+
       if ($mapper_key === false){
         if (!empty($iam_settings['default_template'])) {
           $mbox_template = $iam_settings['default_template'];
@@ -202,13 +213,26 @@ while (true) {
         continue;
       }
       $mbox_template = $iam_settings['templates'][$mapper_key];
-      // mailbox user does exist, sync attribtues...
-      logMsg("info", "Syncing attributes for user " . $user['email']);
-      mailbox('edit', 'mailbox_from_template', array(
+
+      // Prepare update data with active status
+      $update_data = array(
         'username' => $user['email'],
         'name' => $user['firstName'] . " " . $user['lastName'],
         'template' => $mbox_template
-      ));
+      );
+
+      // Add active status if sync_disabled_users is enabled
+      if (intval($iam_settings['sync_disabled_users']) == 1) {
+        if ($row['active'] != $keycloak_account_active) {
+          $update_data['active'] = $keycloak_account_active;
+          $status_change = ($keycloak_account_active == 1) ? "enabled" : "disabled";
+          logMsg("info", "Changing active status for user " . $user['email'] . " to {$status_change}");
+        }
+      }
+
+      // mailbox user does exist, sync attributes...
+      logMsg("info", "Syncing attributes for user " . $user['email']);
+      mailbox('edit', 'mailbox_from_template', $update_data);
     } else {
       // skip mailbox user
       logMsg("info", "Skipping user " . $user['email']);
