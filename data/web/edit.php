@@ -179,6 +179,21 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template = 'edit/recipient_map.twig';
         $template_data = ['map' => $map];
     }
+    elseif (isset($_GET['signature_template']) && is_numeric($_GET['signature_template'])) {
+        $id = intval($_GET['signature_template']);
+        $result = signature_template('details', $id);
+        $template = 'edit/signature-template.twig';
+        $template_data = ['id' => $id];
+    }
+    elseif (isset($_GET['signature_rule']) && is_numeric($_GET['signature_rule'])) {
+        $id = intval($_GET['signature_rule']);
+        $result = signature_rule('details', $id);
+        $template = 'edit/signature-rule.twig';
+        $template_data = [
+          'id' => $id,
+          'templates' => signature_template('get'),
+        ];
+    }
     elseif (isset($_GET['tls_policy_map']) &&
       !empty($_GET["tls_policy_map"]) &&
       $_SESSION['mailcow_cc_role'] == "admin") {

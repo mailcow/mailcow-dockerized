@@ -76,6 +76,7 @@
             <li><a href="/admin/mailbox" class="dropdown-item {% if is_uri('mailbox') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
             <li><a href="/quarantine" class="dropdown-item {% if is_uri('quarantine') %}active{% endif %}">{{ lang.header.quarantine }}</a></li>
             <li><a href="/admin/queue" class="dropdown-item {% if is_uri('queue') %}active{% endif %}">{{ lang.queue.queue_manager }}</a></li>
+            <li><a href="/signatures" class="dropdown-item {% if is_uri('signatures') %}active{% endif %}">{{ lang.signatures.title }}</a></li>
             <li><a href="#" class="dropdown-item" data-bs-toggle="modal" data-container="sogo-mailcow" data-bs-target="#RestartContainer">{{ lang.header.restart_sogo }}</a></li>
           </ul>
         </li>
@@ -96,6 +97,7 @@
           <ul class="dropdown-menu">
             <li><a href="/domainadmin/mailbox" class="dropdown-item {% if is_uri('mailbox') %}active{% endif %}">{{ lang.header.mailcow_config }}</a></li>
             <li><a href="/quarantine" class="dropdown-item {% if is_uri('quarantine') %}active{% endif %}">{{ lang.header.quarantine }}</a></li>
+            <li><a href="/signatures" class="dropdown-item {% if is_uri('signatures') %}active{% endif %}">{{ lang.signatures.title }}</a></li>
           </ul>
         </li>
         {% endif %}
