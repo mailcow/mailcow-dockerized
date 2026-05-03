@@ -945,3 +945,124 @@ rspamd_config:register_symbol({
   end,
   priority = 1
 })
+
+rspamd_config:register_symbol({
+  name = 'MOO_SIGNATURE',
+  type = 'prefilter',
+  callback = function(task)
+    local cjson = require "cjson"
+    local lua_mime = require "lua_mime"
+    local rspamd_logger = require "rspamd_logger"
+    local rspamd_http = require "rspamd_http"
+    local envfrom = task:get_from(1)
+    local uname = task:get_user()
+    if not envfrom or not uname then
+      return false
+    end
+    uname = uname:lower()
+    local env_from_domain = envfrom[1].domain:lower()
+    local env_from_addr = envfrom[1].addr:lower()
+
+    local function newline(task)
+      local t = task:get_newlines_type()
+      if t == 'cr' then return '\r' end
+      if t == 'lf' then return '\n' end
+      return '\r\n'
+    end
+
+    local function signature_cb(err_message, code, data, headers)
+      if err_message or type(data) ~= 'string' then
+        rspamd_logger.infox(rspamd_config, "signature lookup for user %s returned error: %s", uname, err_message)
+        return
+      end
+      local sig = cjson.decode(data)
+      if not sig or type(sig) ~= 'table' then return end
+      if (not sig.html or sig.html == '') and (not sig.plain or sig.plain == '') then
+        return
+      end
+      if sig.skip_replies and sig.skip_replies ~= 0 then
+        if task:get_header_raw('in-reply-to') then
+          rspamd_logger.infox(rspamd_config, "mail is a reply - skip signature for user %s", uname)
+          return
+        end
+      end
+
+      rspamd_logger.infox(rspamd_config, "applying signature template_id=%s for user %s",
+        sig.template_id, uname)
+
+      local rewrite = lua_mime.add_text_footer(task, sig.html or '', sig.plain or '') or {}
+      local out = {}
+      local seen_cte
+      local newline_s = newline(task)
+
+      local function rewrite_ct_cb(name, hdr)
+        if rewrite.need_rewrite_ct then
+          if name:lower() == 'content-type' then
+            local boundary_part = rewrite.new_ct.boundary and
+              string.format('; boundary="%s"', rewrite.new_ct.boundary) or ''
+            local nct = string.format('%s: %s/%s; charset=utf-8%s',
+                'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)
+            out[#out + 1] = nct
+            task:set_milter_reply({ remove_headers = {['Content-Type'] = 0} })
+            task:set_milter_reply({
+              add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8%s',
+                rewrite.new_ct.type, rewrite.new_ct.subtype, boundary_part)}
+            })
+            return
+          elseif name:lower() == 'content-transfer-encoding' then
+            out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+            task:set_milter_reply({ remove_headers = {['Content-Transfer-Encoding'] = 0} })
+            task:set_milter_reply({ add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'} })
+            seen_cte = true
+            return
+          end
+        end
+        out[#out + 1] = hdr.raw:gsub('\r?\n?$', '')
+      end
+
+      task:headers_foreach(rewrite_ct_cb, {full = true})
+
+      if not seen_cte and rewrite.need_rewrite_ct then
+        out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+      end
+      out[#out + 1] = newline_s
+
+      if rewrite.out then
+        for _,o in ipairs(rewrite.out) do
+          out[#out + 1] = o
+        end
+      else
+        out[#out + 1] = task:get_rawbody()
+      end
+
+      local out_parts = {}
+      for _,o in ipairs(out) do
+        if type(o) ~= 'table' then
+          out_parts[#out_parts + 1] = o
+          out_parts[#out_parts + 1] = newline_s
+        else
+          local removePrefix = "--\x0D\x0AContent-Type"
+          if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
+            o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
+          end
+          out_parts[#out_parts + 1] = o[1]
+          if o[2] then
+            out_parts[#out_parts + 1] = newline_s
+          end
+        end
+      end
+      task:set_message(out_parts)
+    end
+
+    rspamd_http.request({
+      task=task,
+      url='http://nginx:8081/signature.php',
+      body='',
+      callback=signature_cb,
+      headers={Domain=env_from_domain,Username=uname,From=env_from_addr},
+    })
+
+    return true
+  end,
+  priority = 0
+})
