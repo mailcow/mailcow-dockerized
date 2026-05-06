@@ -403,6 +403,9 @@ $(document).ready(function() {
     if (template.acl_app_passwds == 1){
       acl.push("app_passwds");
     }
+    if (template.acl_pw_change == 1){
+      acl.push("pw_change");
+    }
     if (template.acl_pw_reset == 1){
       acl.push("pw_reset");
     }

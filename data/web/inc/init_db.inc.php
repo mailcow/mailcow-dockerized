@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "16042026_1402";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -513,6 +513,7 @@ function init_db_schema()
           "quarantine_notification" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine_category" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "pw_change" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "pw_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
         ),
         "keys" => array(
@@ -1478,6 +1479,7 @@ function init_db_schema()
         "acl_quarantine_notification" => 1,
         "acl_quarantine_category" => 1,
         "acl_app_passwds" => 1,
+        "acl_pw_change" => 1,
       )
     );
     $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");

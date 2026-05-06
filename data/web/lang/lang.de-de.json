@@ -14,6 +14,7 @@
         "prohibited": "Untersagt durch Richtlinie",
         "protocol_access": "Ändern der erlaubten Protokolle",
         "pushover": "Pushover",
+        "pw_change": "Passwortänderung erlauben",
         "pw_reset": "Verwalten der E-Mail zur Passwortwiederherstellung erlauben",
         "quarantine": "Quarantäne-Aktionen",
         "quarantine_attachments": "Anhänge aus Quarantäne",

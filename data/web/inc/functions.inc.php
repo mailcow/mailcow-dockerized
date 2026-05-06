@@ -1035,6 +1035,14 @@ function edit_user_account($_data) {
   // edit password
   $is_forced_pw_update = !empty($_SESSION['pending_pw_update']);
   if (((!empty($password_old) || $is_forced_pw_update) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2']))) {
+    if (!$is_forced_pw_update && (!isset($_SESSION['acl']['pw_change']) || $_SESSION['acl']['pw_change'] != "1")) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
     // Only verify old password if this is NOT a forced password update
     if (!$is_forced_pw_update) {
       $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
