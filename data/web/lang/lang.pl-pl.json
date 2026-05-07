@@ -1226,7 +1226,7 @@
         "decimal": ".",
         "emptyTable": "Brak danych w tabeli",
         "expand_all": "Rozszerz wszystko",
-        "info": "Wyświetlanie od START do END z TOTAL wpisów",
+        "info": "Wyświetlanie od _START_ do _END_ z _TOTAL_ wpisów",
         "infoEmpty": "Wyświetlanie od 0 do 0 z 0 wpisów",
         "infoFiltered": "(filtrowane z _MAX_ suma wpisów)",
         "thousands": ",",
