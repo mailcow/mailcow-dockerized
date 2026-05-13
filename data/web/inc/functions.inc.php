@@ -2363,7 +2363,7 @@ function cors($action, $data = null) {
 
       header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
       header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
-      header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
+      header('Access-Control-Allow-Headers: Accept, Authentication, Authorization, Content-Type, X-Api-Key, Origin');
 
       // Access-Control settings requested, this is just a preflight request
       if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' &&

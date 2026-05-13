@@ -100,6 +100,10 @@ location /edit {
     rewrite ^/edit/(.*)/(.*) /edit.php?$1=$2;
 }
 
+location ~ ^/api/alias/random/new/?$ {
+    try_files $uri $uri/ /simplelogin_api.php?$args;
+}
+
 location ~ ^/api/v1/(.*)$ {
     try_files $uri $uri/ /json_api.php?query=$1&$args;
 }
