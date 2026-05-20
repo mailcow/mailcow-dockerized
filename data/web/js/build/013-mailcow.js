@@ -277,19 +277,19 @@ $(document).ready(function() {
   // trigger container restart
   $('#RestartContainer').on('show.bs.modal', function(e) {
     var container = $(e.relatedTarget).data('container');
-    $('#containerName').text(container);
-    $('#triggerRestartContainer').click(function(){
+    var node = $(e.relatedTarget).data('node') || '';
+    $('#containerName').text(container + (node ? ' / ' + node : ''));
+    $('#triggerRestartContainer').off('click').on('click', function(){
       $(this).prop("disabled",true);
       $(this).html('<div class="spinner-border text-white" role="status"><span class="visually-hidden">Loading...</span></div>');
       $('#statusTriggerRestartContainer').html(lang_footer.restarting_container);
+      var payload = { 'service': container, 'action': 'restart' };
+      if (node) payload.node = node;
       $.ajax({
         method: 'get',
         url: '/inc/ajax/container_ctrl.php',
         timeout: docker_timeout,
-        data: {
-        'service': container,
-        'action': 'restart'
-        }
+        data: payload
       })
       .always( function (data, status) {
         $('#statusTriggerRestartContainer').append(data);

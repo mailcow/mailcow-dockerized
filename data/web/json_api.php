@@ -1461,42 +1461,66 @@ if (isset($_GET['query'])) {
             if ($_SESSION['mailcow_cc_role'] == "admin") {
               switch ($object) {
                 case "containers":
-                  $containers = (docker('info'));
-                  foreach ($containers as $container => $container_info) {
-                    $container . ' (' . $container_info['Config']['Image'] . ')';
-                    $containerstarttime = ($container_info['State']['StartedAt']);
-                    $containerstate = ($container_info['State']['Status']);
-                    $containerimage = ($container_info['Config']['Image']);
-                    $temp[$container] = array(
+                  $temp = array();
+                  foreach (agent('services') as $svc) {
+                    $nodes = agent('live_nodes', $svc);
+                    $first = $nodes ? $nodes[0] : '';
+                    $meta = $first ? (agent('node_meta', $svc, $first) ?: array()) : array();
+                    $key = $svc . '-mailcow';
+                    $temp[$key] = array(
                       'type' => 'info',
-                      'container' => $container,
-                      'state' => $containerstate,
-                      'started_at' => $containerstarttime,
-                      'image' => $containerimage
+                      'container' => $key,
+                      'state' => $nodes ? 'running' : 'exited',
+                      'node_count' => count($nodes),
+                      'started_at' => isset($meta['started_at']) ? $meta['started_at'] : '',
+                      'image' => isset($meta['image']) ? $meta['image'] : '',
+                      'external' => false
                     );
                   }
+                  foreach (infra('status') as $key => $entry) {
+                    $temp[$key] = array(
+                      'type' => 'info',
+                      'container' => $key,
+                      'state' => $entry['State']['Running'] ? 'running' : 'exited',
+                      'node_count' => $entry['State']['NodeCount'],
+                      'started_at' => '',
+                      'image' => $entry['Config']['Image'],
+                      'error' => $entry['State']['Error'],
+                      'external' => true
+                    );
+                  }
+                  ksort($temp);
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
                 break;
                 case "container":
-                  $container_stats = docker('container_stats', $extra);
-                  echo json_encode($container_stats);
+                  $stats = null;
+                  foreach (agent('services') as $svc) {
+                    $s = agent('node_stats', $svc, $extra);
+                    if ($s) {
+                      $stats = $s;
+                      break;
+                    }
+                  }
+                  echo json_encode($stats);
                 break;
                 case "vmail":
-                  $exec_fields_vmail = array('cmd' => 'system', 'task' => 'df', 'dir' => '/var/vmail');
-                  $vmail_df = explode(',', json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields_vmail), true));
+                  $vmail_resp = agent('request', 'dovecot', 'exec.df', array('dir' => '/var/vmail'), 5);
+                  $vmail_df = (!empty($vmail_resp['ok']) && is_string($vmail_resp['result']))
+                    ? explode(',', $vmail_resp['result'])
+                    : array('', '', '', '', '', '/var/vmail');
                   $temp = array(
                     'type' => 'info',
                     'disk' => $vmail_df[0],
                     'used' => $vmail_df[2],
-                    'total'=> $vmail_df[1],
+                    'total' => $vmail_df[1],
                     'used_percent' => $vmail_df[4]
                   );
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
                 break;
                 case "host":
-                  if (!$extra){
-                    $stats = docker("host_stats");
-                    echo json_encode($stats);
+                  if (!$extra) {
+                    $host_resp = agent('request', 'host', 'exec.host-stats', array(), 5);
+                    echo json_encode(!empty($host_resp['ok']) ? $host_resp['result'] : null);
                   }
                   else if ($extra == "ip") {
                     // get public ips

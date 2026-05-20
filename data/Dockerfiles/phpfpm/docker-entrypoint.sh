@@ -29,63 +29,35 @@ session.save_handler = redis
 session.save_path = "tcp://'${REDIS_HOST}':'${REDIS_PORT}'?auth='${REDISPASS}'"
 ' > /usr/local/etc/php/conf.d/session_store.ini
 
-# Check mysql_upgrade (master and slave)
-CONTAINER_ID=
-until [[ ! -z "${CONTAINER_ID}" ]] && [[ "${CONTAINER_ID}" =~ ^[[:alnum:]]*$ ]]; do
-  CONTAINER_ID=$(curl --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" 2> /dev/null | jq -rc "select( .name | tostring | contains(\"mysql-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id" 2> /dev/null)
-  echo "Could not get mysql-mailcow container id... trying again"
-  sleep 2
-done
-echo "MySQL @ ${CONTAINER_ID}"
-SQL_LOOP_C=0
-SQL_CHANGED=0
-until [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; do
-  if [ ${SQL_LOOP_C} -gt 4 ]; then
-    echo "Tried to upgrade MySQL and failed, giving up after ${SQL_LOOP_C} retries and starting container (oops, not good)"
+# Wait for MariaDB. The upstream mariadb image already runs mariadb-upgrade
+# itself on startup when needed
+echo "Waiting for MariaDB socket at /var/run/mysqld/mysqld.sock..."
+WAIT_C=0
+until mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} -e "SELECT 1" >/dev/null 2>&1; do
+  WAIT_C=$((WAIT_C+1))
+  if [ ${WAIT_C} -gt 60 ]; then
+    echo "MariaDB did not respond after 60s — continuing anyway."
     break
   fi
-  SQL_FULL_UPGRADE_RETURN=$(curl --silent --insecure -XPOST https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_upgrade"}' --silent -H 'Content-type: application/json')
-  SQL_UPGRADE_STATUS=$(echo ${SQL_FULL_UPGRADE_RETURN} | jq -r .type)
-  SQL_LOOP_C=$((SQL_LOOP_C+1))
-  echo "SQL upgrade iteration #${SQL_LOOP_C}"
-  if [[ ${SQL_UPGRADE_STATUS} == 'warning' ]]; then
-    SQL_CHANGED=1
-    echo "MySQL applied an upgrade, debug output:"
-    echo ${SQL_FULL_UPGRADE_RETURN}
-    sleep 3
-    while ! mariadb-admin status --ssl=false --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} --silent; do
-      echo "Waiting for SQL to return, please wait"
-      sleep 2
-    done
-    continue
-  elif [[ ${SQL_UPGRADE_STATUS} == 'success' ]]; then
-    echo "MySQL is up-to-date - debug output:"
-    echo ${SQL_FULL_UPGRADE_RETURN}
-  else
-    echo "No valid reponse for mysql_upgrade was received, debug output:"
-    echo ${SQL_FULL_UPGRADE_RETURN}
-  fi
+  sleep 1
 done
+echo "MariaDB is ready."
 
-# doing post-installation stuff, if SQL was upgraded (master and slave)
-if [ ${SQL_CHANGED} -eq 1 ]; then
-  POSTFIX=$(curl --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" 2> /dev/null | jq -rc "select( .name | tostring | contains(\"postfix-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id" 2> /dev/null)
-  if [[ -z "${POSTFIX}" ]] || ! [[ "${POSTFIX}" =~ ^[[:alnum:]]*$ ]]; then
-    echo "Could not determine Postfix container ID, skipping Postfix restart."
-  else
-    echo "Restarting Postfix"
-    curl -X POST --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${POSTFIX}/restart | jq -r '.msg'
-    echo "Sleeping 5 seconds..."
-    sleep 5
-  fi
-fi
-
-# Check mysql tz import (master and slave)
+# Timezone tables — check if CONVERT_TZ works, import if it returns NULL.
+# Some Alpine builds drop mariadb-tzinfo-to-sql; fall back to a Python
+# emitter that produces the same INSERT statements from /usr/share/zoneinfo.
 TZ_CHECK=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC') AS time;" -BN 2> /dev/null)
 if [[ -z ${TZ_CHECK} ]] || [[ "${TZ_CHECK}" == "NULL" ]]; then
-  SQL_FULL_TZINFO_IMPORT_RETURN=$(curl --silent --insecure -XPOST https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mysql_tzinfo_to_sql"}' --silent -H 'Content-type: application/json')
-  echo "MySQL mysql_tzinfo_to_sql - debug output:"
-  echo ${SQL_FULL_TZINFO_IMPORT_RETURN}
+  echo "Importing timezone data into mysql.time_zone_* …"
+  if command -v mariadb-tzinfo-to-sql >/dev/null 2>&1; then
+    mariadb-tzinfo-to-sql /usr/share/zoneinfo 2>/dev/null \
+      | mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -uroot -p${DBROOT} mysql
+  elif command -v mysql_tzinfo_to_sql >/dev/null 2>&1; then
+    mysql_tzinfo_to_sql /usr/share/zoneinfo 2>/dev/null \
+      | mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -uroot -p${DBROOT} mysql
+  else
+    echo "No tzinfo-to-sql tool available — skipping timezone import."
+  fi
 fi
 
 if [[ "${MASTER}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then

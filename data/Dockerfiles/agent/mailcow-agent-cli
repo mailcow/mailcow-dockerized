@@ -1,0 +1,58 @@
+#!/bin/sh
+# mailcow-agent-cli — publish a control-bus command from inside a service
+# container, optionally collecting one reply. Same wire protocol as the Go
+# agent (see internal/envelope/envelope.go).
+#
+# Usage:
+#   mailcow-agent-cli send <service> <cmd> [json-args]
+#       Fire-and-forget. Prints the number of subscribers reached.
+#   mailcow-agent-cli call <service> <cmd> [json-args] [timeout-seconds]
+#       Publish + wait for one reply on its private reply list. Prints the
+#       reply envelope JSON on stdout.
+#
+# Requires the `redis-cli` binary to be present in the calling container.
+
+set -e
+
+op="${1:-}"
+svc="${2:-}"
+cmd="${3:-}"
+args="${4:-{\}}"
+tmo="${5:-10}"
+
+if [ -z "$op" ] || [ -z "$svc" ] || [ -z "$cmd" ]; then
+  echo "usage: $0 send|call <service> <cmd> [json-args] [timeout-seconds]" >&2
+  exit 2
+fi
+
+redis_host="${REDIS_SLAVEOF_IP:-redis-mailcow}"
+redis_port="${REDIS_SLAVEOF_PORT:-6379}"
+
+rcli() {
+  if [ -n "${REDISPASS:-}" ]; then
+    redis-cli -h "$redis_host" -p "$redis_port" -a "$REDISPASS" --no-auth-warning "$@"
+  else
+    redis-cli -h "$redis_host" -p "$redis_port" "$@"
+  fi
+}
+
+rid="$(date +%s%N)$$"
+issued_by="$(hostname 2>/dev/null || echo unknown)"
+
+case "$op" in
+  send)
+    payload="{\"cmd\":\"${cmd}\",\"request_id\":\"${rid}\",\"args\":${args},\"issued_by\":\"${issued_by}\"}"
+    rcli PUBLISH "mailcow.control.${svc}" "$payload"
+    ;;
+  call)
+    reply="mailcow.reply.${rid}"
+    payload="{\"cmd\":\"${cmd}\",\"request_id\":\"${rid}\",\"args\":${args},\"reply_to\":\"${reply}\",\"issued_by\":\"${issued_by}\"}"
+    rcli PUBLISH "mailcow.control.${svc}" "$payload" >/dev/null
+    # BLPOP returns two lines: the list name then the value. Print only the value.
+    rcli BLPOP "$reply" "$tmo" 2>/dev/null | tail -n1
+    ;;
+  *)
+    echo "usage: $0 send|call <service> <cmd> [json-args] [timeout-seconds]" >&2
+    exit 2
+    ;;
+esac

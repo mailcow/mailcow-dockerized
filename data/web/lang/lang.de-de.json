@@ -559,7 +559,11 @@
         "template_exists": "Vorlage %s existiert bereits",
         "template_id_invalid": "Vorlagen-ID %s ungültig",
         "template_name_invalid": "Name der Vorlage ungültig",
-        "required_data_missing": "Die benötigten Daten: %s fehlen"
+        "required_data_missing": "Die benötigten Daten: %s fehlen",
+        "no_live_agent": "Kein aktiver Agent für Service %s",
+        "agent_timeout": "Agent-Timeout",
+        "agent_unknown_error": "Unbekannter Fehler vom Agent",
+        "queue_command_failed": "Queue-Befehl fehlgeschlagen"
     },
     "datatables": {
         "collapse_all": "Alle Einklappen",
@@ -623,7 +627,25 @@
         "no_update_available": "Das System ist auf aktuellem Stand",
         "update_failed": "Es konnte nicht nach einem Update gesucht werden",
         "username": "Benutzername",
-        "wip": "Aktuell noch in Arbeit"
+        "wip": "Aktuell noch in Arbeit",
+        "data_stores": "Datenspeicher",
+        "nodes": "Knoten",
+        "disk_io": "Disk-I/O",
+        "net_io": "Netz-I/O",
+        "replicas_badge": "%d× Replicas",
+        "replicas_title": "Lebende Agent-Replicas",
+        "external_dep_info": "Externe Infrastruktur — Health-Check per Protokoll-Ping",
+        "status_ok": "OK",
+        "status_down": "down",
+        "status_healthy": "verbunden",
+        "status_unreachable": "nicht erreichbar",
+        "unknown": "unbekannt",
+        "restart_all_nodes": "Alle Knoten neu starten",
+        "restart_node": "Diesen Knoten neu starten",
+        "nodes_count": "%d Knoten",
+        "node": "Knoten",
+        "container_unhealthy": "Service nicht gesund",
+        "container_degraded": "Service teilweise gesund"
     },
     "diagnostics": {
         "cname_from_a": "Wert abgeleitet von A/AAAA-Eintrag. Wird unterstützt, sofern der Eintrag auf die korrekte Ressource zeigt.",
@@ -1207,7 +1229,8 @@
         "verified_fido2_login": "FIDO2-Anmeldung verifiziert",
         "verified_totp_login": "TOTP-Anmeldung verifiziert",
         "verified_webauthn_login": "WebAuthn-Anmeldung verifiziert",
-        "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert"
+        "verified_yotp_login": "Yubico-OTP-Anmeldung verifiziert",
+        "service_restart_ok": "Service erfolgreich neu gestartet"
     },
     "tfa": {
         "authenticators": "Authentikatoren",

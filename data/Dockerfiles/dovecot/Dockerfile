@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM alpine:3.21
 
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
@@ -135,5 +139,14 @@ COPY quota_notify.py /usr/local/bin/quota_notify.py
 COPY repl_health.sh /usr/local/bin/repl_health.sh
 COPY optimize-fts.sh /usr/local/bin/optimize-fts.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
+
+ENV MAILCOW_AGENT_SERVICE=dovecot \
+    MAILCOW_AGENT_MAIN_CMD="/docker-entrypoint.sh /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

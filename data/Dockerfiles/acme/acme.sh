@@ -63,11 +63,11 @@ if [[ "${SKIP_LETS_ENCRYPT}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   exec $(readlink -f "$0")
 fi
 
-log_f "Waiting for Docker API..."
-until ping dockerapi -c1 > /dev/null; do
+log_f "Waiting for Redis control bus..."
+until redis-cli -h "${REDIS_SLAVEOF_IP:-redis-mailcow}" -p "${REDIS_SLAVEOF_PORT:-6379}" -a "${REDISPASS}" --no-auth-warning ping > /dev/null 2>&1; do
   sleep 1
 done
-log_f "Docker API OK"
+log_f "Redis control bus OK"
 
 log_f "Waiting for Postfix..."
 until ping postfix -c1 > /dev/null; do

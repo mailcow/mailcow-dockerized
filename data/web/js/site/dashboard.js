@@ -23,8 +23,6 @@ $(document).ready(function() {
     }
   });
 
-  // set update loop container list
-  containersToUpdate = {};
   // set default ChartJs Font Color
   Chart.defaults.color = '#999';
   // create host cpu and mem charts
@@ -72,7 +70,6 @@ $(document).ready(function() {
       $("#host_show_ip").find(".spinner-border").addClass("d-none");
     });
   });
-  update_container_stats();
 });
 jQuery(function($){
   if (localStorage.getItem("current_page") === null) {
@@ -209,6 +206,11 @@ jQuery(function($){
           title: lang.priority,
           data: 'priority',
           defaultContent: ''
+        },
+        {
+          title: lang_debug.node,
+          data: 'node',
+          defaultContent: '-'
         },
         {
           title: lang.message,
@@ -693,6 +695,11 @@ jQuery(function($){
           defaultContent: ''
         },
         {
+          title: lang_debug.node,
+          data: 'node',
+          defaultContent: '-'
+        },
+        {
           title: lang.message,
           data: 'message',
           defaultContent: '',
@@ -748,6 +755,11 @@ jQuery(function($){
           defaultContent: ''
         },
         {
+          title: lang_debug.node,
+          data: 'node',
+          defaultContent: '-'
+        },
+        {
           title: lang.message,
           data: 'message',
           defaultContent: '',
@@ -801,6 +813,11 @@ jQuery(function($){
           title: lang.priority,
           data: 'priority',
           defaultContent: ''
+        },
+        {
+          title: lang_debug.node,
+          data: 'node',
+          defaultContent: '-'
         },
         {
           title: lang.message,
@@ -861,6 +878,11 @@ jQuery(function($){
           title: lang.priority,
           data: 'priority',
           defaultContent: ''
+        },
+        {
+          title: lang_debug.node,
+          data: 'node',
+          defaultContent: '-'
         },
         {
           title: lang.message,
@@ -1292,52 +1314,6 @@ jQuery(function($){
 
   // start polling host stats if tab is active
   onVisible("[id^=tab-containers]", () => update_stats());
-  // start polling container stats if collapse is active
-  var containerElements = document.querySelectorAll(".container-details-collapse");
-  for (let i = 0; i < containerElements.length; i++){
-    new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if(entry.intersectionRatio > 0) {
-
-          if (!containerElements[i].classList.contains("show")){
-            var container = containerElements[i].id.replace("Collapse", "");
-            var container_id = containerElements[i].getAttribute("data-id");
-
-            // check if chart exists or needs to be created
-            if (!Chart.getChart(container + "_DiskIOChart"))
-              createReadWriteChart(container + "_DiskIOChart", "Read", "Write");
-            if (!Chart.getChart(container + "_NetIOChart"))
-              createReadWriteChart(container + "_NetIOChart", "Recv", "Sent");
-
-            // add container to polling list
-            containersToUpdate[container] = {
-              id: container_id,
-              state: "idle"
-            }
-
-            // stop polling if collapse is closed
-            containerElements[i].addEventListener('hidden.bs.collapse', function () {
-              var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
-              var netIOCtx = Chart.getChart(container + "_NetIOChart");
-
-              diskIOCtx.data.datasets[0].data = [];
-              diskIOCtx.data.datasets[1].data = [];
-              diskIOCtx.data.labels = [];
-              netIOCtx.data.datasets[0].data = [];
-              netIOCtx.data.datasets[1].data = [];
-              netIOCtx.data.labels = [];
-
-              diskIOCtx.update();
-              netIOCtx.update();
-
-              delete containersToUpdate[container];
-            });
-          }
-
-        }
-      });
-    }).observe(containerElements[i]);
-  }
 });
 
 
@@ -1351,126 +1327,48 @@ function update_stats(timeout=5){
   window.fetch("/api/v1/get/status/host", {method:'GET',cache:'no-cache'}).then(function(response) {
     return response.json();
   }).then(function(data) {
-    if (data){
-      // display table data
-      $("#host_date").text(data.system_time);
-      $("#host_uptime").text(formatUptime(data.uptime));
-      $("#host_cpu_cores").text(data.cpu.cores);
-      $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
-      $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
-      $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
-      $("#host_architecture").html(data.architecture);
-      // update cpu and mem chart
-      var cpu_chart = Chart.getChart("host_cpu_chart");
-      var mem_chart = Chart.getChart("host_mem_chart");
+    // Wrapped in try/catch so a malformed payload doesn't break the
+    // polling loop forever. We always reschedule from .finally.
+    try {
+      if (data && data.cpu && data.memory){
+        $("#host_date").text(data.system_time || "");
+        $("#host_uptime").text(formatUptime(data.uptime));
+        $("#host_cpu_cores").text(data.cpu.cores);
+        $("#host_cpu_usage").text(parseInt(data.cpu.usage).toString() + "%");
+        $("#host_memory_total").text((data.memory.total / (1024 ** 3)).toFixed(2).toString() + "GB");
+        $("#host_memory_usage").text(parseInt(data.memory.usage).toString() + "%");
+        $("#host_architecture").html(data.architecture);
 
-      cpu_chart.data.labels.push(data.system_time.split(" ")[1]);
-      if (cpu_chart.data.labels.length > 30) cpu_chart.data.labels.shift();
-      mem_chart.data.labels.push(data.system_time.split(" ")[1]);
-      if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
+        var cpu_chart = Chart.getChart("host_cpu_chart");
+        var mem_chart = Chart.getChart("host_mem_chart");
 
-      cpu_chart.data.datasets[0].data.push(data.cpu.usage);
-      if (cpu_chart.data.datasets[0].data.length > 30) cpu_chart.data.datasets[0].data.shift();
-      mem_chart.data.datasets[0].data.push(data.memory.usage);
-      if (mem_chart.data.datasets[0].data.length > 30) mem_chart.data.datasets[0].data.shift();
+        if (cpu_chart && mem_chart && typeof data.system_time === "string") {
+          var label = data.system_time.split(" ")[1] || "";
+          cpu_chart.data.labels.push(label);
+          if (cpu_chart.data.labels.length > 30) cpu_chart.data.labels.shift();
+          mem_chart.data.labels.push(label);
+          if (mem_chart.data.labels.length > 30) mem_chart.data.labels.shift();
 
-      cpu_chart.update();
-      mem_chart.update();
+          cpu_chart.data.datasets[0].data.push(data.cpu.usage);
+          if (cpu_chart.data.datasets[0].data.length > 30) cpu_chart.data.datasets[0].data.shift();
+          mem_chart.data.datasets[0].data.push(data.memory.usage);
+          if (mem_chart.data.datasets[0].data.length > 30) mem_chart.data.datasets[0].data.shift();
+
+          cpu_chart.update();
+          mem_chart.update();
+        }
+      } else {
+        console.warn("update_stats: unexpected host payload", data);
+      }
+    } catch (e) {
+      console.warn("update_stats: render error", e);
     }
-
-    // run again in n seconds
+  }).catch(function(e) {
+    console.warn("update_stats: fetch failed", e);
+  }).finally(function() {
+    // Always reschedule so a transient backend hiccup can't kill the poll loop.
     setTimeout(update_stats, timeout * 1000);
   });
-}
-// update specific container stats - every n (default 5s) seconds
-function update_container_stats(timeout=5){
-
-  if ($('#tab-containers').hasClass('active')) {
-    for (let container in containersToUpdate){
-      container_id = containersToUpdate[container].id;
-      // check if container update stats is already running
-      if (containersToUpdate[container].state == "running")
-        continue;
-      containersToUpdate[container].state = "running";
-
-
-      window.fetch("/api/v1/get/status/container/" + container_id, {method:'GET',cache:'no-cache'}).then(function(response) {
-        return response.json();
-      }).then(function(data) {
-        var diskIOCtx = Chart.getChart(container + "_DiskIOChart");
-        var netIOCtx = Chart.getChart(container + "_NetIOChart");
-
-        prev_stats = null;
-        if (data.length >= 2){
-          prev_stats = data[data.length -2];
-
-          // hide spinners if we collected enough data
-          $('#' + container + "_DiskIOChart").removeClass('d-none');
-          $('#' + container + "_DiskIOChart").prev().addClass('d-none');
-          $('#' + container + "_NetIOChart").removeClass('d-none');
-          $('#' + container + "_NetIOChart").prev().addClass('d-none');
-        }
-
-        data = data[data.length -1];
-
-        if (prev_stats != null){
-          // calc time diff
-          var time_diff = (new Date(data.read) - new Date(prev_stats.read)) / 1000;
-
-          // calc disk io b/s
-          if ('io_service_bytes_recursive' in prev_stats.blkio_stats && prev_stats.blkio_stats.io_service_bytes_recursive !== null){
-            var prev_read_bytes = 0;
-            var prev_write_bytes = 0;
-            for (var i = 0; i < prev_stats.blkio_stats.io_service_bytes_recursive.length; i++){
-              if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "read")
-                prev_read_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
-              else if (prev_stats.blkio_stats.io_service_bytes_recursive[i].op == "write")
-                prev_write_bytes = prev_stats.blkio_stats.io_service_bytes_recursive[i].value;
-            }
-            var read_bytes = 0;
-            var write_bytes = 0;
-            for (var i = 0; i < data.blkio_stats.io_service_bytes_recursive.length; i++){
-              if (data.blkio_stats.io_service_bytes_recursive[i].op == "read")
-                read_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
-              else if (data.blkio_stats.io_service_bytes_recursive[i].op == "write")
-                write_bytes = data.blkio_stats.io_service_bytes_recursive[i].value;
-            }
-            var diff_bytes_read = (read_bytes - prev_read_bytes) / time_diff;
-            var diff_bytes_write = (write_bytes - prev_write_bytes) / time_diff;
-          }
-
-          // calc net io b/s
-          if ('networks' in prev_stats){
-            var prev_recv_bytes = 0;
-            var prev_sent_bytes = 0;
-            for (var key in prev_stats.networks){
-              prev_recv_bytes += prev_stats.networks[key].rx_bytes;
-              prev_sent_bytes += prev_stats.networks[key].tx_bytes;
-            }
-            var recv_bytes = 0;
-            var sent_bytes = 0;
-            for (var key in data.networks){
-              recv_bytes += data.networks[key].rx_bytes;
-              sent_bytes += data.networks[key].tx_bytes;
-            }
-            var diff_bytes_recv = (recv_bytes - prev_recv_bytes) / time_diff;
-            var diff_bytes_sent = (sent_bytes - prev_sent_bytes) / time_diff;
-          }
-
-          addReadWriteChart(diskIOCtx, diff_bytes_read, diff_bytes_write, "");
-          addReadWriteChart(netIOCtx, diff_bytes_recv, diff_bytes_sent, "");
-        }
-
-        // run again in n seconds
-        containersToUpdate[container].state = "idle";
-      }).catch(err => {
-        console.log(err);
-      });
-    }
-  }
-
-  // run again in n seconds
-  setTimeout(update_container_stats, timeout * 1000);
 }
 // format hosts uptime seconds to readable string
 function formatUptime(seconds){

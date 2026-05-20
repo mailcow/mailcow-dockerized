@@ -125,8 +125,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 fwrite($filter_handle, $script_data);
                 fclose($filter_handle);
               }
-              $restart_response = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
-              if ($restart_response['type'] == "success") {
+              $restart_response = agent('request', 'dovecot', 'restart', array(), 30);
+              if (agent('ok', $restart_response)) {
                 $_SESSION['return'][] = array(
                   'type' => 'success',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -160,8 +160,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 fwrite($filter_handle, $script_data);
                 fclose($filter_handle);
               }
-              $restart_response = json_decode(docker('post', 'dovecot-mailcow', 'restart'), true);
-              if ($restart_response['type'] == "success") {
+              $restart_response = agent('request', 'dovecot', 'restart', array(), 30);
+              if (agent('ok', $restart_response)) {
                 $_SESSION['return'][] = array(
                   'type' => 'success',
                   'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -669,8 +669,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
           if (!empty($restart_sogo)) {
-            $restart_response = json_decode(docker('post', 'sogo-mailcow', 'restart'), true);
-            if ($restart_response['type'] == "success") {
+            $restart_response = agent('request', 'sogo', 'restart', array(), 30);
+            if (agent('ok', $restart_response)) {
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -3553,22 +3553,30 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           // get imap acls
           try {
-            $exec_fields = array(
-              'cmd' => 'doveadm',
-              'task' => 'get_acl',
-              'id' => $old_username
-            );
-            $imap_acls = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
+            $acl_agg = agent('request_all', 'dovecot', 'exec.acl-get', array('user' => $old_username), 10);
+            $imap_acls = array();
+            $seen = array();
+            foreach ($acl_agg['responses'] as $r) {
+              if (empty($r['ok'])) continue;
+              foreach ((isset($r['result']['acls']) ? $r['result']['acls'] : array()) as $a) {
+                $key = (isset($a['mailbox']) ? $a['mailbox'] : '') . '|' . (isset($a['identifier']) ? $a['identifier'] : '');
+                if (isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $imap_acls[] = array(
+                  'user'    => $old_username,
+                  'mailbox' => isset($a['mailbox']) ? $a['mailbox'] : '',
+                  'id'      => isset($a['identifier']) ? $a['identifier'] : '',
+                  'rights'  => isset($a['rights']) ? $a['rights'] : '',
+                );
+              }
+            }
             // delete imap acls
             foreach ($imap_acls as $imap_acl) {
-              $exec_fields = array(
-                'cmd' => 'doveadm',
-                'task' => 'delete_acl',
-                'user' => $imap_acl['user'],
-                'mailbox' => $imap_acl['mailbox'],
-                'id' => $imap_acl['id']
-              );
-              docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+              agent('request_all', 'dovecot', 'exec.acl-delete', array(
+                'user'       => $imap_acl['user'],
+                'mailbox'    => $imap_acl['mailbox'],
+                'identifier' => $imap_acl['id'],
+              ), 10);
             }
           } catch (Exception $e) {
             $_SESSION['return'][] = array(
@@ -3649,41 +3657,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
 
           // move maildir
-          $exec_fields = array(
-            'cmd' => 'maildir',
-            'task' => 'move',
-            'old_maildir' => $domain . '/' . $old_local_part,
-            'new_maildir' => $domain . '/' . $new_local_part
-          );
-          if (getenv("CLUSTERMODE") == "replication") {
-            // broadcast to each dovecot container
-            docker('broadcast', 'dovecot-mailcow', 'exec', $exec_fields);
-          } else {
-            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
-          }
+          agent('request_all', 'dovecot', 'exec.maildir-move', array(
+            'from' => $domain . '/' . $old_local_part,
+            'to'   => $domain . '/' . $new_local_part,
+          ), 30);
 
           // rename username in sogo
-          $exec_fields = array(
-            'cmd' => 'sogo',
-            'task' => 'rename_user',
-            'old_username' => $old_username,
-            'new_username' => $new_username
-          );
-          docker('post', 'sogo-mailcow', 'exec', $exec_fields);
+          agent('request', 'sogo', 'exec.rename-user', array(
+            'old' => $old_username,
+            'new' => $new_username,
+          ), 30);
 
           // set imap acls
           foreach ($imap_acls as $imap_acl) {
             $user_id = ($imap_acl['id'] == $old_username) ? $new_username : $imap_acl['id'];
             $user = ($imap_acl['user'] == $old_username) ? $new_username : $imap_acl['user'];
-            $exec_fields = array(
-              'cmd' => 'doveadm',
-              'task' => 'set_acl',
-              'user' => $user,
-              'mailbox' => $imap_acl['mailbox'],
-              'id' => $user_id,
-              'rights' => $imap_acl['rights']
-            );
-            docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
+            agent('request_all', 'dovecot', 'exec.acl-set', array(
+              'user'       => $user,
+              'mailbox'    => $imap_acl['mailbox'],
+              'identifier' => $user_id,
+              'rights'     => $imap_acl['rights'],
+            ), 15);
           }
 
           // create alias
@@ -4553,24 +4547,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $_data = $_SESSION['mailcow_cc_username'];
           }
-          $exec_fields = array(
-            'cmd' => 'sieve',
-            'task' => 'list',
-            'username' => $_data
-          );
-          $filters = docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
-          $filters = array_filter(preg_split("/(\r\n|\n|\r)/",$filters));
-          foreach ($filters as $filter) {
+          $list_resp = agent('request', 'dovecot', 'exec.sieve-list', array('user' => $_data), 10);
+          if (empty($list_resp['ok'])) {
+            return false;
+          }
+          $scripts = isset($list_resp['result']['scripts']) ? $list_resp['result']['scripts'] : array();
+          foreach ($scripts as $filter) {
             if (preg_match('/.+ ACTIVE/i', $filter)) {
-              $exec_fields = array(
-                'cmd' => 'sieve',
-                'task' => 'print',
-                'script_name' => substr($filter, 0, -7),
-                'username' => $_data
-              );
-              $script = docker('post', 'dovecot-mailcow', 'exec', $exec_fields);
-              // Remove first line
-              return preg_replace('/^.+\n/', '', $script);
+              $print_resp = agent('request', 'dovecot', 'exec.sieve-print', array(
+                'user'   => $_data,
+                'script' => substr($filter, 0, -7),
+              ), 10);
+              if (empty($print_resp['ok'])) return false;
+              return isset($print_resp['result']['body']) ? $print_resp['result']['body'] : '';
             }
           }
           return false;
@@ -5712,13 +5701,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            $exec_fields = array('cmd' => 'maildir', 'task' => 'cleanup', 'maildir' => $domain);
-            $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
-            if ($maildir_gc['type'] != 'success') {
+            $maildir_gc = agent('request_all', 'dovecot', 'exec.maildir-cleanup', array('maildir' => $domain), 30);
+            if (!agent('ok', $maildir_gc)) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'Could not move mail storage to garbage collector: ' . $maildir_gc['msg']
+                'msg' => 'Could not move mail storage to garbage collector: ' . agent('first_error', $maildir_gc)
               );
             }
             $stmt = $pdo->prepare("DELETE FROM `domain` WHERE `domain` = :domain");
@@ -5967,20 +5955,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $mailbox_details = mailbox('get', 'mailbox_details', $username);
             if (!empty($mailbox_details['domain']) && !empty($mailbox_details['local_part'])) {
               $maildir = $mailbox_details['domain'] . '/' . $mailbox_details['local_part'];
-              $exec_fields = array('cmd' => 'maildir', 'task' => 'cleanup', 'maildir' => $maildir);
-
-              if (getenv("CLUSTERMODE") == "replication") {
-                // broadcast to each dovecot container
-                docker('broadcast', 'dovecot-mailcow', 'exec', $exec_fields);
-              } else {
-                $maildir_gc = json_decode(docker('post', 'dovecot-mailcow', 'exec', $exec_fields), true);
-                if ($maildir_gc['type'] != 'success') {
-                  $_SESSION['return'][] = array(
-                    'type' => 'warning',
-                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                    'msg' => 'Could not move maildir to garbage collector: ' . $maildir_gc['msg']
-                  );
-                }
+              $maildir_gc = agent('request_all', 'dovecot', 'exec.maildir-cleanup', array('maildir' => $maildir), 30);
+              if (!agent('ok', $maildir_gc)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'warning',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'Could not move maildir to garbage collector: ' . agent('first_error', $maildir_gc)
+                );
               }
             }
             else {

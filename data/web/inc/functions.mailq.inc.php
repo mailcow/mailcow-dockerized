@@ -1,5 +1,6 @@
 <?php
 function mailq($_action, $_data = null) {
+  global $lang;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(
       'type' => 'danger',
@@ -8,114 +9,130 @@ function mailq($_action, $_data = null) {
     );
     return false;
   }
-  function process_mailq_output($returned_output, $_action, $_data) {
-    if ($returned_output !== NULL) {
-      if ($_action == 'cat') {
-        logger(array('return' => array(
-          array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $_action, $_data),
-            'msg' => 'queue_cat_success'
-          )
-        )));
-        return $returned_output;
-      }
-      else {
-        if (isset($returned_output['type']) && $returned_output['type'] == 'danger') {
-          $_SESSION['return'][] = array(
-            'type' => 'danger',
-            'log' => array(__FUNCTION__, $_action, $_data),
-            'msg' => 'Error: ' . $returned_output['msg']
-          );
+  switch ($_action) {
+    case 'get':
+      $agg = agent('request_all', 'postfix', 'exec.mailq', array(), 15);
+      $lines = array();
+      foreach ($agg['responses'] as $r) {
+        if (empty($r['ok'])) continue;
+        $queue = isset($r['result']['queue']) ? $r['result']['queue'] : array();
+        foreach ($queue as $entry) {
+          if (is_array($entry)) {
+            $entry['node'] = $r['node'];
+            if (!empty($entry['recipients']) && is_array($entry['recipients'])) {
+              $rcpts = array();
+              foreach ($entry['recipients'] as $rcpt) {
+                $addr = isset($rcpt['address']) ? $rcpt['address'] : '';
+                if (isset($rcpt['delay_reason'])) {
+                  $rcpts[] = $addr . ' (' . $rcpt['delay_reason'] . ')';
+                }
+                else {
+                  $rcpts[] = $addr;
+                }
+              }
+              $entry['recipients'] = $rcpts;
+            }
+            $lines[] = $entry;
+          }
+          if (count($lines) >= 10000) break 2;
         }
-        if (isset($returned_output['type']) && $returned_output['type'] == 'success') {
-          $_SESSION['return'][] = array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, $_action, $_data),
-            'msg' => 'queue_command_success'
-          );
+      }
+      return empty($lines) ? '[]' : json_encode($lines);
+    break;
+    case 'delete':
+      $qids = isset($_data['qid']) && is_array($_data['qid']) ? $_data['qid'] : array($_data['qid']);
+      $ok_count = 0;
+      $failed = 0;
+      foreach ($qids as $qid) {
+        $agg = agent('request_all', 'postfix', 'exec.delete-from-queue', array('queue_id' => $qid), 10);
+        if (agent('ok', $agg)) {
+          $ok_count++;
+        }
+        else {
+          $failed++;
         }
       }
-    }
-    else {
+      $ok = ($ok_count > 0 && $failed === 0);
       $_SESSION['return'][] = array(
-        'type' => 'danger',
+        'type' => $ok ? 'success' : 'danger',
         'log' => array(__FUNCTION__, $_action, $_data),
-        'msg' => 'unknown'
+        'msg' => $ok ? 'queue_command_success' : 'queue_command_failed'
       );
-    }
-  }
-  if ($_action == 'get') {
-    $mailq_lines = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'list'));
-    $lines = 0;
-    // Hard limit to 10000 items
-    foreach (preg_split("/((\r?\n)|(\r\n?))/", $mailq_lines) as $mailq_item) if ($lines++ < 10000) {
-      if (empty($mailq_item) || $mailq_item == '1') {
-        continue;
+      return $ok;
+    break;
+    case 'cat':
+      $qids = isset($_data['qid']) && is_array($_data['qid']) ? $_data['qid'] : array($_data['qid']);
+      $body = '';
+      foreach ($qids as $qid) {
+        $agg = agent('request_all', 'postfix', 'exec.cat-queue', array('queue_id' => $qid), 15);
+        foreach ($agg['responses'] as $r) {
+          if (!empty($r['ok']) && !empty($r['result']['body'])) {
+            $body .= $r['result']['body'];
+          }
+        }
       }
-      $mq_line = json_decode($mailq_item, true);
-      if ($mq_line !== NULL) {
-        $rcpts = array();
-        foreach ($mq_line['recipients'] as $rcpt) {
-          if (isset($rcpt['delay_reason'])) {
-            $rcpts[] = $rcpt['address'] . ' (' . $rcpt['delay_reason'] . ')';
+      if ($body === '') {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => 'queue_cat_empty'
+        );
+        return null;
+      }
+      $_SESSION['return'][] = array(
+        'type' => 'success',
+        'log' => array(__FUNCTION__, $_action, $_data),
+        'msg' => 'queue_cat_success'
+      );
+      return $body;
+    break;
+    case 'edit':
+      $cmd_map = array(
+        'hold' => 'exec.hold-queue',
+        'unhold' => 'exec.unhold-queue',
+        'deliver' => 'exec.deliver-now'
+      );
+      if (isset($cmd_map[$_data['action']])) {
+        $qids = isset($_data['qid']) && is_array($_data['qid']) ? $_data['qid'] : array($_data['qid']);
+        $ok_count = 0;
+        $failed = 0;
+        foreach ($qids as $qid) {
+          $agg = agent('request_all', 'postfix', $cmd_map[$_data['action']], array('queue_id' => $qid), 10);
+          if (agent('ok', $agg)) {
+            $ok_count++;
           }
           else {
-            $rcpts[] = $rcpt['address'];
+            $failed++;
           }
         }
-        if (!empty($rcpts)) {
-          $mq_line['recipients'] = $rcpts;
-        }
-        $line[] = $mq_line;
+        $ok = ($ok_count > 0 && $failed === 0);
+        $_SESSION['return'][] = array(
+          'type' => $ok ? 'success' : 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => $ok ? 'queue_command_success' : 'queue_command_failed'
+        );
+        return $ok;
       }
-    }
-    if (!isset($line) || empty($line)) {
-      return '[]';
-    }
-    else {
-      return json_encode($line);
-    }
-  }
-  elseif ($_action == 'delete') {
-    if (!is_array($_data['qid'])) {
-      $qids = array();
-      $qids[] = $_data['qid'];
-    }
-    else {
-      $qids = $_data['qid'];
-    }
-    $docker_return = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'delete', 'items' => $qids));
-    process_mailq_output(json_decode($docker_return, true), $_action, $_data);
-  }
-  elseif ($_action == 'cat') {
-    if (!is_array($_data['qid'])) {
-      $qids = array();
-      $qids[] = $_data['qid'];
-    }
-    else {
-      $qids = $_data['qid'];
-    }
-    $docker_return = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => 'cat', 'items' => $qids));
-    return process_mailq_output($docker_return, $_action, $_data);
-  }
-  elseif ($_action == 'edit') {
-    if (in_array($_data['action'], array('hold', 'unhold', 'deliver'))) {
-      if (!is_array($_data['qid'])) {
-        $qids = array();
-        $qids[] = $_data['qid'];
+      if ($_data['action'] == 'flush') {
+        $agg = agent('request_all', 'postfix', 'exec.flush-queue', array(), 30);
+        $ok = agent('ok', $agg);
+        $_SESSION['return'][] = array(
+          'type' => $ok ? 'success' : 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => $ok ? 'queue_command_success' : 'queue_command_failed'
+        );
+        return $ok;
       }
-      else {
-        $qids = $_data['qid'];
+      if ($_data['action'] == 'super_delete') {
+        $agg = agent('request_all', 'postfix', 'exec.super-delete', array(), 30);
+        $ok = agent('ok', $agg);
+        $_SESSION['return'][] = array(
+          'type' => $ok ? 'success' : 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data),
+          'msg' => $ok ? 'queue_command_success' : 'queue_command_failed'
+        );
+        return $ok;
       }
-      if (!empty($qids)) {
-        $docker_return = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => $_data['action'], 'items' => $qids));
-        process_mailq_output(json_decode($docker_return, true), $_action, $_data);
-      }
-    }
-    if (in_array($_data['action'], array('flush', 'super_delete'))) {
-      $docker_return = docker('post', 'postfix-mailcow', 'exec', array('cmd' => 'mailq', 'task' => $_data['action']));
-      process_mailq_output(json_decode($docker_return, true), $_action, $_data);
-    }
+    break;
   }
 }

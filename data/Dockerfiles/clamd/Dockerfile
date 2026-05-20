@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM alpine:3.21 AS builder
 
 WORKDIR /src
@@ -41,7 +45,7 @@ RUN wget -P /src https://www.clamav.net/downloads/production/clamav-${CLAMD_VERS
   -D ENABLE_MILTER=ON                                                                 \
   -D ENABLE_MAN_PAGES=OFF                                                             \
   -D ENABLE_STATIC_LIB=OFF                                                            \
-  -D ENABLE_JSON_SHARED=ON                                                            \ 
+  -D ENABLE_JSON_SHARED=ON                                                            \
   && cmake --build . \
   && make DESTDIR="/clamav" -j$(($(nproc) - 1)) install \
   && rm -r "/clamav/usr/lib/pkgconfig/" \
@@ -104,7 +108,15 @@ COPY healthcheck.sh /healthcheck.sh
 COPY clamdcheck.sh /usr/local/bin
 RUN chmod +x /healthcheck.sh
 RUN chmod +x /usr/local/bin/clamdcheck.sh
-HEALTHCHECK --start-period=6m CMD "/healthcheck.sh"
 
-ENTRYPOINT []
-CMD ["/sbin/tini", "-g", "--", "/clamd.sh"]
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
+
+ENV MAILCOW_AGENT_SERVICE=clamd \
+    MAILCOW_AGENT_MAIN_CMD="/sbin/tini -g -- /clamd.sh"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

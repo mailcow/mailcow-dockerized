@@ -1,45 +1,29 @@
 #!/bin/bash
+# Tell every live replica of nginx / dovecot / postfix to reload (or restart
+# on cert-amount change) via the mailcow-agent control bus. Replaces the old
+# dockerapi-based container_id lookup + exec dance.
 
-# Reading container IDs
-# Wrapping as array to ensure trimmed content when calling $NGINX etc.
-NGINX=($(curl --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"nginx-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id" | tr "\n" " "))
-DOVECOT=($(curl --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"dovecot-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id" | tr "\n" " "))
-POSTFIX=($(curl --silent --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json | jq -r ".[] | {name: .Config.Labels[\"com.docker.compose.service\"], project: .Config.Labels[\"com.docker.compose.project\"], id: .Id}" | jq -rc "select( .name | tostring | contains(\"postfix-mailcow\")) | select( .project | tostring | contains(\"${COMPOSE_PROJECT_NAME,,}\")) | .id" | tr "\n" " "))
-
-reload_nginx(){
-  echo "Reloading Nginx..."
-  NGINX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${NGINX}/exec -d '{"cmd":"reload", "task":"nginx"}' --silent -H 'Content-type: application/json' | jq -r .type)
-  [[ ${NGINX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Nginx, restarting container..."; restart_container ${NGINX} ; }
+reload_service() {
+  local svc="$1"
+  echo "Reloading ${svc} via mailcow-agent..."
+  if ! mailcow-agent-cli send "${svc}" reload >/dev/null; then
+    echo "Could not publish reload to ${svc}, attempting restart..."
+    mailcow-agent-cli send "${svc}" restart >/dev/null || true
+  fi
 }
 
-reload_dovecot(){
-  echo "Reloading Dovecot..."
-  DOVECOT_RELOAD_RET=$(curl -X POST --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${DOVECOT}/exec -d '{"cmd":"reload", "task":"dovecot"}' --silent -H 'Content-type: application/json' | jq -r .type)
-  [[ ${DOVECOT_RELOAD_RET} != 'success' ]] && { echo "Could not reload Dovecot, restarting container..."; restart_container ${DOVECOT} ; }
-}
-
-reload_postfix(){
-  echo "Reloading Postfix..."
-  POSTFIX_RELOAD_RET=$(curl -X POST --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${POSTFIX}/exec -d '{"cmd":"reload", "task":"postfix"}' --silent -H 'Content-type: application/json' | jq -r .type)
-  [[ ${POSTFIX_RELOAD_RET} != 'success' ]] && { echo "Could not reload Postfix, restarting container..."; restart_container ${POSTFIX} ; }
-}
-
-restart_container(){
-  for container in $*; do
-    echo "Restarting ${container}..."
-    C_REST_OUT=$(curl -X POST --insecure https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${container}/restart --silent | jq -r '.msg')
-    echo "${C_REST_OUT}"
-  done
+restart_service() {
+  local svc="$1"
+  echo "Restarting ${svc} via mailcow-agent..."
+  mailcow-agent-cli send "${svc}" restart >/dev/null || true
 }
 
 if [[ "${CERT_AMOUNT_CHANGED}" == "1" ]]; then
-  restart_container ${NGINX}
-  restart_container ${DOVECOT}
-  restart_container ${POSTFIX}
+  restart_service nginx
+  restart_service dovecot
+  restart_service postfix
 else
-  reload_nginx
-  #reload_dovecot
-  restart_container ${DOVECOT}
-  #reload_postfix
-  restart_container ${POSTFIX}
+  reload_service nginx
+  restart_service dovecot
+  restart_service postfix
 fi

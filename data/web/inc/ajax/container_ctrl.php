@@ -1,6 +1,4 @@
 <?php
-
-// Block requests by checking the 'Sec-Fetch-Dest' header.
 if (isset($_SERVER['HTTP_SEC_FETCH_DEST']) && $_SERVER['HTTP_SEC_FETCH_DEST'] !== 'empty') {
   header('HTTP/1.1 403 Forbidden');
   exit;
@@ -8,52 +6,30 @@ if (isset($_SERVER['HTTP_SEC_FETCH_DEST']) && $_SERVER['HTTP_SEC_FETCH_DEST'] !=
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'admin') {
-	exit();
+  exit();
 }
 
-if (preg_match('/^[a-z\-]{0,}-mailcow/', $_GET['service'])) {
-  if ($_GET['action'] == "start") {
-    header('Content-Type: text/html; charset=utf-8');
-    $retry = 0;
-    while (docker('info', $_GET['service'])['State']['Running'] != 1 && $retry <= 3) {
-      $response = docker('post', $_GET['service'], 'start');
-      $response = json_decode($response, true);
-      $last_response = ($response['type'] == "success") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response['msg'] . '</span></b>';
-      if ($response['type'] == "success") {
-        break;
-      }
-      usleep(1500000);
-      $retry++;
-    }
-    echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Already running</span></b>' : $last_response;
-  }
-  if ($_GET['action'] == "stop") {
-    header('Content-Type: text/html; charset=utf-8');
-    $retry = 0;
-    while (docker('info', $_GET['service'])['State']['Running'] == 1 && $retry <= 3) {
-      $response = docker('post', $_GET['service'], 'stop');
-      $response = json_decode($response, true);
-      $last_response = ($response['type'] == "success") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response['msg'] . '</span></b>';
-      if ($response['type'] == "success") {
-        break;
-      }
-      usleep(1500000);
-      $retry++;
-    }
-    echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Not running</span></b>' : $last_response;
-  }
-  if ($_GET['action'] == "restart") {
-    header('Content-Type: text/html; charset=utf-8');
-    $response = docker('post', $_GET['service'], 'restart');
-    $response = json_decode($response, true);
-    $last_response = ($response['type'] == "success") ? '<b><span class="pull-right text-success">OK</span></b>' : '<b><span class="pull-right text-danger">Error: ' . $response['msg'] . '</span></b>';
-    echo (!isset($last_response)) ? '<b><span class="pull-right text-warning">Cannot restart container</span></b>' : $last_response;
-  }
-  if ($_GET['action'] == "logs") {
-    $lines = (empty($_GET['lines']) || !is_numeric($_GET['lines'])) ? 1000 : $_GET['lines'];
-    header('Content-Type: text/plain; charset=utf-8');
-    print_r(preg_split('/\n/', docker('logs', $_GET['service'], $lines)));
-  }
+if (!preg_match('/^[a-z\-]{0,}-mailcow/', $_GET['service'] ?? '')) {
+  exit();
 }
 
-?>
+if (($_GET['action'] ?? '') !== 'restart') {
+  exit();
+}
+
+$service = preg_replace('/-mailcow$/', '', $_GET['service']);
+$node = isset($_GET['node']) ? preg_replace('/[^a-zA-Z0-9._\-]/', '', $_GET['node']) : '';
+
+$args = ($node !== '') ? array('target_node' => $node) : array();
+$resp = agent('request', $service, 'restart', $args, 60);
+header('Content-Type: text/html; charset=utf-8');
+if (agent('ok', $resp)) {
+  echo '<b><span class="pull-right text-success">' . htmlspecialchars($lang['success']['service_restart_ok']) . '</span></b>';
+}
+else {
+  $err_key = agent('error_lang', $resp);
+  $err_msg = isset($lang['danger'][$err_key])
+    ? sprintf($lang['danger'][$err_key], $service)
+    : $lang['danger']['agent_unknown_error'];
+  echo '<b><span class="pull-right text-danger">' . htmlspecialchars($err_msg) . '</span></b>';
+}

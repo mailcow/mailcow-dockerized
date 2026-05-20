@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM alpine:3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
@@ -18,6 +22,16 @@ ADD olefy.py /app/
 
 RUN chown -R nobody:nobody /app /tmp
 
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
+
 USER nobody
 
-CMD ["python3", "-u", "/app/olefy.py"]
+ENV MAILCOW_AGENT_SERVICE=olefy \
+    MAILCOW_AGENT_MAIN_CMD="python3 -u /app/olefy.py"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

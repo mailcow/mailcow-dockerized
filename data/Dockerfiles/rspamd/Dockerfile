@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM debian:trixie-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -33,8 +37,16 @@ COPY settings.conf /etc/rspamd/settings.conf
 COPY set_worker_password.sh /set_worker_password.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
 STOPSIGNAL SIGTERM
 
-CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd"]
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
+
+ENV MAILCOW_AGENT_SERVICE=rspamd \
+    MAILCOW_AGENT_MAIN_CMD="/docker-entrypoint.sh /usr/bin/rspamd -f -u _rspamd -g _rspamd"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

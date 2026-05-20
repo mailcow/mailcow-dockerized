@@ -162,23 +162,64 @@
             </div>
           </div>
         </div>
-        <!-- container info -->
+        <!-- Infrastructure (data stores) — compact strip at the top -->
+        {% if infra_containers %}
+          <div class="card mb-3 border-0 bg-body-tertiary">
+            <div class="card-body py-2 px-3">
+              <div class="d-flex flex-wrap align-items-center">
+                <span class="text-uppercase text-muted small fw-bold me-3" style="letter-spacing:0.05em">{{ lang.debug.data_stores }}</span>
+                {% for container, info in infra_containers %}
+                  {% set svc = info.Service %}
+                  {% set icon = svc == 'mysql' ? 'bi-database' : (svc == 'redis' ? 'bi-lightning-charge' : 'bi-cpu') %}
+                  <div class="d-flex align-items-center me-4 py-1">
+                    <i class="bi {{ icon }} me-2 fs-5 {{ info.State.Running == 1 ? 'text-success' : 'text-danger' }}"></i>
+                    <div class="d-flex flex-column lh-sm">
+                      <span class="fw-semibold">{{ svc }}</span>
+                      <small class="text-muted" title="{{ info.State.Error }}">
+                        {{ info.Config.Image|default(lang.debug.unknown) }}
+                      </small>
+                    </div>
+                    {% if info.State.Running == 1 %}
+                      <span class="badge bg-success-subtle text-success-emphasis ms-2 fs-7">{{ lang.debug.status_ok }}</span>
+                    {% else %}
+                      <span class="badge bg-danger-subtle text-danger-emphasis ms-2 fs-7" title="{{ info.State.Error }}">{{ lang.debug.status_down }}</span>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Service containers (agent-managed) -->
         <div class="card mb-4">
           <div class="card-header fs-5">
             <span>{{ lang.debug.containers_info }}</span>
           </div>
           <div class="card-body p-0">
             <div class="row mx-0">
-              <!-- rest of the containers -->
               {% for container, container_info in containers %}
                   <div class="col-md-6 col-sm-12 p-2">
                     <div class="list-group-item p-0">
                       <div class="d-flex p-2 list-group-header">
                         <div>
                           <span class="fw-bold">{{ container }}</span>
-                          <span class="d-block d-md-inline">({{ container_info.Config.Image }})</span>
-                          <small class="d-block">({{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span>)</small>
-                          {% if container_info.State.Running == 1 %}
+                          <span class="badge fs-7 bg-secondary ms-1" title="{{ lang.debug.replicas_title }}">{{ lang.debug.nodes_count|format(container_info.State.NodeCount) }}</span>
+                          {% if container_info.Config.Image %}
+                            <span class="d-block d-md-inline text-muted">{{ container_info.Config.Image }}</span>
+                          {% endif %}
+                          {% if container_info.State.StartedAtHR and container_info.State.StartedAtHR != '—' %}
+                            <small class="d-block">{{ lang.debug.started_on }} <span class="parse_date">{{ container_info.State.StartedAtHR }}</span></small>
+                          {% endif %}
+                          {% if container_info.State.Running == 1 and container_info.State.Health == 'fail' %}
+                            <span class="badge fs-7 bg-warning text-dark" style="min-width:100px" title="{{ container_info.State.HealthDetail }}">
+                              <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ lang.debug.container_unhealthy }}
+                            </span>
+                          {% elseif container_info.State.Running == 1 and container_info.State.Health == 'degraded' %}
+                            <span class="badge fs-7 bg-warning text-dark" style="min-width:100px" title="{{ container_info.State.UnhealthyCount }}/{{ container_info.State.NodeCount }} unhealthy: {{ container_info.State.HealthDetail }}">
+                              <i class="bi bi-exclamation-circle me-1"></i>{{ lang.debug.container_degraded }} ({{ container_info.State.UnhealthyCount }}/{{ container_info.State.NodeCount }})
+                            </span>
+                          {% elseif container_info.State.Running == 1 %}
                             <span class="badge fs-7 bg-success loader" style="min-width:100px">
                               {{ lang.debug.container_running }}
                               <span class="loader-dot">.</span>
@@ -198,38 +239,49 @@
                           </button>
                         </div>
                       </div>
-                      <div class="collapse p-0 list-group-details container-details-collapse" id="{{ container }}Collapse" data-id="{{ container_info.Id }}">
-                        <div class="row p-2 pt-4">
-                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
-                            <h6>Disk I/O</h6>
-                            <div class="spinner-border my-4 mx-auto" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <canvas class="d-none" id="{{ container }}_DiskIOChart" width="400" height="200"></canvas>
-                          </div>
-                          <div class="mt-4 col-sm-12 col-md-6 d-flex flex-column">
-                            <h6>Net I/O</h6>
-                            <div class="spinner-border my-4 mx-auto" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <canvas class="d-none" id="{{ container }}_NetIOChart" width="400" height="200"></canvas>
-                          </div>
-                          <div class="col-12 d-flex" style="height: 40px">
+                      <div class="collapse p-0 list-group-details" id="{{ container }}Collapse">
+                        <div class="p-2 pt-3">
+                          <h6 class="mb-2">{{ lang.debug.nodes }}</h6>
+                          {% if container_info.Nodes|length > 0 %}
+                            <ul class="list-group list-group-flush small mb-3">
+                              {% for n in container_info.Nodes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-2">
+                                  <span class="text-truncate me-2">
+                                    {% if n.Health == 'fail' %}
+                                      <i class="bi bi-circle-fill text-warning me-1" title="{{ n.HealthDetail }}"></i>
+                                    {% elseif n.Health == 'ok' %}
+                                      <i class="bi bi-circle-fill text-success me-1"></i>
+                                    {% else %}
+                                      <i class="bi bi-circle text-muted me-1"></i>
+                                    {% endif %}
+                                    <code title="{{ n.NodeId }}">{{ n.NodeId matches '/^[0-9a-f]{12}$/' ? n.NodeId[:8] : n.NodeId }}</code>
+                                    <small class="text-muted ms-2">
+                                      cpu {{ n.CPUPercent ?: '0.00' }}%
+                                      · mem {{ ((n.MemoryBytes ?: 0) / 1024 / 1024) | round }} MiB
+                                    </small>
+                                    {% if n.Health == 'fail' and n.HealthDetail %}
+                                      <small class="d-block text-warning ms-3">{{ n.HealthDetail }}</small>
+                                    {% endif %}
+                                  </span>
+                                  <a href data-bs-toggle="modal"
+                                    data-container="{{ container }}"
+                                    data-node="{{ n.NodeId }}"
+                                    data-bs-target="#RestartContainer"
+                                    class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-arrow-clockwise"></i> {{ lang.debug.restart_node }}
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          {% else %}
+                            <div class="text-muted small mb-3">—</div>
+                          {% endif %}
+                          <div class="d-flex justify-content-end">
                             <a href data-bs-toggle="modal"
                               data-container="{{ container }}"
                               data-bs-target="#RestartContainer"
-                              class="btn btn-sm btn-secondary d-flex align-items-center justify-content-center mb-2 ms-auto"
-                              style="height: 30px;">{{ lang.debug.restart_container }}
-                                <i class="ms-1 bi
-                                {% if container_info.State.Running == 1 %}
-                                bi-record-fill text-success
-                                {% elseif container_info.State %}
-                                bi-record-fill text-danger
-                                {% else %}
-                                default
-                                {% endif %}
-                                "
-                              ></i>
+                              class="btn btn-sm btn-secondary">
+                              <i class="bi bi-arrow-repeat"></i> {{ lang.debug.restart_all_nodes }}
                             </a>
                           </div>
                         </div>

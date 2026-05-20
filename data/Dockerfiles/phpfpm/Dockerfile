@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM php:8.2-fpm-alpine3.21
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
@@ -72,7 +76,7 @@ RUN apk add -U --no-cache autoconf \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     --with-webp \
     --with-xpm \
@@ -109,6 +113,14 @@ RUN apk add -U --no-cache autoconf \
 
 COPY ./docker-entrypoint.sh /
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
 
-CMD ["php-fpm"]
+ENV MAILCOW_AGENT_SERVICE=php-fpm \
+    MAILCOW_AGENT_MAIN_CMD="/docker-entrypoint.sh php-fpm"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

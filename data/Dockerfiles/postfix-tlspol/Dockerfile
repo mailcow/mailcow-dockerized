@@ -1,3 +1,7 @@
+ARG AGENT_IMAGE=ghcr.io/mailcow/agent:1.00
+
+FROM ${AGENT_IMAGE} AS mailcow-agent-src
+
 FROM golang:1.25-bookworm AS builder
 WORKDIR /src
 
@@ -45,6 +49,14 @@ RUN chmod +x /opt/postfix-tlspol.sh \
   /docker-entrypoint.sh
 RUN rm -rf /tmp/* /var/tmp/*
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY --from=mailcow-agent-src /out/mailcow-agent /usr/local/bin/mailcow-agent
+COPY --from=mailcow-agent-src /out/mailcow-agent-cli /usr/local/bin/mailcow-agent-cli
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+ENV MAILCOW_AGENT_SERVICE=postfix-tlspol \
+    MAILCOW_AGENT_MAIN_CMD="/docker-entrypoint.sh /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["/usr/local/bin/mailcow-agent", "healthcheck"]
+
+ENTRYPOINT ["/usr/local/bin/mailcow-agent"]
+CMD []

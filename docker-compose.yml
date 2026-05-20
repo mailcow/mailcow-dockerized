@@ -1,10 +1,15 @@
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.25
+      image: ghcr.io/mailcow/unbound:nightly-14052026
+      depends_on:
+        - redis-mailcow
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
       volumes:
         - ./data/hooks/unbound:/hooks:Z
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
@@ -21,6 +26,12 @@ services:
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
+      healthcheck:
+        test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${DBROOT}"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 60s
       stop_grace_period: 45s
       volumes:
         - mysql-vol-1:/var/lib/mysql/
@@ -47,6 +58,12 @@ services:
       volumes:
         - redis-vol-1:/data/
         - ./data/conf/redis/redis-conf.sh:/redis-conf.sh:z
+      healthcheck:
+        test: ["CMD", "sh", "-c", "redis-cli -a \"$$REDISPASS\" --no-auth-warning ping | grep PONG"]
+        interval: 30s
+        timeout: 5s
+        retries: 3
+        start_period: 30s
       restart: always
       depends_on:
         - netfilter-mailcow
@@ -65,16 +82,21 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.71
+      image: ghcr.io/mailcow/clamd:nightly-14052026
       restart: always
       depends_on:
         unbound-mailcow:
           condition: service_healthy
+        redis-mailcow:
+          condition: service_started
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/:Z
         - clamd-db-vol-1:/var/lib/clamav
@@ -84,7 +106,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:3.14.3-1
+      image: ghcr.io/mailcow/rspamd:nightly-14052026
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -117,7 +139,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.2.29-2
+      image: ghcr.io/mailcow/phpfpm:nightly-14052026
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -200,7 +222,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.8-1
+      image: ghcr.io/mailcow/sogo:nightly-14052026
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -252,7 +274,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.3.21.1-2
+      image: ghcr.io/mailcow/dovecot:nightly-14052026
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -339,7 +361,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:3.7.11-2
+      image: ghcr.io/mailcow/postfix:nightly-14052026
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -382,7 +404,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.8.23
+      image: ghcr.io/mailcow/postfix-tlspol:nightly-14052026
       depends_on:
         unbound-mailcow:
           condition: service_healthy
@@ -408,6 +430,12 @@ services:
       restart: always
       environment:
         - TZ=${TZ}
+      healthcheck:
+        test: ["CMD-SHELL", "nc -z localhost 11211"]
+        interval: 30s
+        timeout: 5s
+        retries: 3
+        start_period: 15s
       networks:
         mailcow-network:
           aliases:
@@ -419,7 +447,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.06
+      image: ghcr.io/mailcow/nginx:nightly-14052026
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -438,6 +466,9 @@ services:
         - REDISHOST=${REDISHOST:-}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
       volumes:
         - ./data/web:/web:ro,z
@@ -465,7 +496,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.97
+      image: ghcr.io/mailcow/acme:nightly-14052026
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -506,7 +537,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.64
+      image: ghcr.io/mailcow/netfilter:nightly-14052026
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -516,8 +547,11 @@ services:
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        # network_mode: host means we get the host's resolver, which can't
+        # see the `redis-mailcow` compose alias. Point the agent at redis
+        # via the bridge IP (overridable through REDIS_SLAVEOF_IP).
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-${IPV4_NETWORK:-172.22.1}.249}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-6379}
         - REDISPASS=${REDISPASS}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
         - DISABLE_NETFILTER_ISOLATION_RULE=${DISABLE_NETFILTER_ISOLATION_RULE:-n}
@@ -526,7 +560,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.11
+      image: ghcr.io/mailcow/watchdog:nightly-14052026
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -600,28 +634,25 @@ services:
           aliases:
             - watchdog
 
-    dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.12
-      security_opt:
-        - label=disable
+    host-agent-mailcow:
+      image: ghcr.io/mailcow/host-agent:nightly-14052026
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
-        - DBROOT=${DBROOT}
         - TZ=${TZ}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
+        - MAILCOW_AGENT_SERVICE=host
       volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /proc:/host/proc:ro
+        - /:/host/rootfs:ro
       networks:
         mailcow-network:
           aliases:
-            - dockerapi
+            - host-agent
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.15
+      image: ghcr.io/mailcow/olefy:nightly-14052026
       restart: always
       environment:
         - TZ=${TZ}
@@ -634,6 +665,9 @@ services:
         - OLEFY_MINLENGTH=500
         - OLEFY_DEL_TMP=1
         - SKIP_OLEFY=${SKIP_OLEFY:-n}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - REDISPASS=${REDISPASS}
       networks:
         mailcow-network:
           aliases:

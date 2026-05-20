@@ -105,14 +105,6 @@ http_response_code(500);
 <?php
 exit;
 }
-// Stop when dockerapi is not available
-if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
-  http_response_code(500);
-?>
-<center style='font-family:sans-serif;'>Connection to dockerapi container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
-<?php
-exit;
-}
 
 // OAuth2
 class mailcowPdo extends OAuth2\Storage\Pdo {
@@ -280,7 +272,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.app_passwd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.agent.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';

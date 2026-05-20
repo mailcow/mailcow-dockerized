@@ -2239,30 +2239,19 @@ function rspamd_ui($action, $data = null) {
         );
         return false;
       }
-      $docker_return = docker('post', 'rspamd-mailcow', 'exec', array('cmd' => 'rspamd', 'task' => 'worker_password', 'raw' => $rspamd_ui_pass), array('Content-Type: application/json'));
-      if ($docker_return_array = json_decode($docker_return, true)) {
-        if ($docker_return_array['type'] == 'success') {
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
-            'log' => array(__FUNCTION__, '*', '*'),
-            'msg' => 'rspamd_ui_pw_set'
-          );
-          return true;
-        }
-        else {
-          $_SESSION['return'][] =  array(
-            'type' => $docker_return_array['type'],
-            'log' => array(__FUNCTION__, '*', '*'),
-            'msg' => $docker_return_array['msg']
-          );
-          return false;
-        }
-      }
-      else {
+      $resp = agent('request_all', 'rspamd', 'exec.set-worker-password', array('password' => $rspamd_ui_pass), 30);
+      if (agent('ok', $resp)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, '*', '*'),
+          'msg' => 'rspamd_ui_pw_set'
+        );
+        return true;
+      } else {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, '*', '*'),
-          'msg' => 'unknown'
+          'msg' => agent('first_error', $resp) ?: 'rspamd: no live agent responded'
         );
         return false;
       }

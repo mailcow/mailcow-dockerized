@@ -559,7 +559,11 @@
         "validity_missing": "Please assign a period of validity",
         "value_missing": "Please provide all values",
         "version_invalid": "Version %s is invalid",
-        "yotp_verification_failed": "Yubico OTP verification failed: %s"
+        "yotp_verification_failed": "Yubico OTP verification failed: %s",
+        "no_live_agent": "No live agent for service %s",
+        "agent_timeout": "Agent timed out",
+        "agent_unknown_error": "Unknown error returned by agent",
+        "queue_command_failed": "Queue command failed"
     },
     "datatables": {
         "collapse_all": "Collapse All",
@@ -623,7 +627,25 @@
         "no_update_available": "The System is on the latest version",
         "update_failed": "Could not check for an Update",
         "username": "Username",
-        "wip": "Currently Work in Progress"
+        "wip": "Currently Work in Progress",
+        "data_stores": "Data stores",
+        "nodes": "Nodes",
+        "disk_io": "Disk I/O",
+        "net_io": "Net I/O",
+        "replicas_badge": "%d× replicas",
+        "replicas_title": "Live agent replicas",
+        "external_dep_info": "External infrastructure dependency — health checked via protocol ping",
+        "status_ok": "ok",
+        "status_down": "down",
+        "status_healthy": "healthy",
+        "status_unreachable": "unreachable",
+        "unknown": "unknown",
+        "restart_all_nodes": "Restart all nodes",
+        "restart_node": "Restart this node",
+        "nodes_count": "%d node(s)",
+        "node": "Node",
+        "container_unhealthy": "Service unhealthy",
+        "container_degraded": "Service degraded"
     },
     "diagnostics": {
         "cname_from_a": "Value derived from A/AAAA record. This is supported as long as the record points to the correct resource.",
@@ -1214,7 +1236,8 @@
         "verified_fido2_login": "Verified FIDO2 login",
         "verified_totp_login": "Verified TOTP login",
         "verified_webauthn_login": "Verified WebAuthn login",
-        "verified_yotp_login": "Verified Yubico OTP login"
+        "verified_yotp_login": "Verified Yubico OTP login",
+        "service_restart_ok": "Service restarted successfully"
     },
     "tfa": {
         "authenticators": "Authenticators",
