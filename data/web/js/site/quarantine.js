@@ -102,18 +102,21 @@ jQuery(function($){
         {
           title: 'ID',
           data: 'id',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang.qid,
           data: 'qid',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang.sender,
           data: 'sender',
           className: 'senders-mw220',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang.subj,
@@ -128,7 +131,8 @@ jQuery(function($){
         {
           title: lang.rcpt,
           data: 'rcpt',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang.danger,
