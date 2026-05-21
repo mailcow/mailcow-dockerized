@@ -189,7 +189,7 @@
         "api_info": "API jest w trakcie prac. Dokumentację można znaleźć pod adresem <a href=\"/api\">/api</a>",
         "api_key": "klucz API",
         "api_read_only": "Dostęp tylko do odczytu",
-        "api_read_write": "Dostęp tylko do odczytu",
+        "api_read_write": "Dostęp do odczytu i zapisu",
         "api_skip_ip_check": "Pomiń sprawdzenie IP dla API",
         "app_hide": "Ukryj dla logowania",
         "app_links": "Linki aplikacji",
