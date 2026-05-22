@@ -2,11 +2,11 @@ FROM alpine:3.23
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
+RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main unbound
 RUN apk add --update --no-cache \
 	curl \
 	bind-tools \
 	coreutils \
-	unbound \
 	bash \
 	openssl \
 	drill \
