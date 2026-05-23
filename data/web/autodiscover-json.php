@@ -8,11 +8,14 @@ if(file_exists('inc/vars.local.inc.php')) {
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
 header('Content-type: application/json');
-if (strtolower($_GET['Protocol']) == 'activesync' && getenv('SKIP_SOGO') != "y") {
-  echo '{"Protocol":"ActiveSync","Url":"' . $autodiscover_config['activesync']['url'] . '"}';
-}
-elseif (strtolower($_GET['Protocol']) == 'autodiscoverv1') {
+if (strtolower($_GET['Protocol']) == 'autodiscoverv1') {
   echo '{"Protocol":"AutodiscoverV1","Url":"https://' . $_SERVER['HTTP_HOST'] . '/Autodiscover/Autodiscover.xml"}';
+}
+elseif (stripos($_SERVER['HTTP_USER_AGENT'], 'Autodetect') !== false) {
+  http_response_code(404);
+}
+elseif (strtolower($_GET['Protocol']) == 'activesync' && getenv('SKIP_SOGO') != "y") {
+  echo '{"Protocol":"ActiveSync","Url":"' . $autodiscover_config['activesync']['url'] . '"}';
 }
 else {
   http_response_code(400);
