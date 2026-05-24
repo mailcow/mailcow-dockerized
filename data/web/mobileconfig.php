@@ -15,6 +15,10 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'use
 
 error_reporting(0);
 
+function mobileconfig_xml_escape($value) {
+  return htmlspecialchars((string)$value, ENT_XML1 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
 header('Content-Type: application/x-apple-aspen-config');
 header('Content-Disposition: attachment; filename="'.$UI_TEXTS['main_name'].'.mobileconfig"');
 
@@ -97,7 +101,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <string><?=$email?></string>
         <?php if($app_password === true): ?>
         <key>IncomingPassword</key>
-        <string><?=$password?></string>
+        <string><?=mobileconfig_xml_escape($password)?></string>
         <?php endif; ?>
         <key>OutgoingMailServerAuthentication</key>
         <string>EmailAuthPassword</string>
@@ -156,7 +160,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <string><?=$email?></string>
         <?php if($app_password === true): ?>
         <key>CalDAVPassword</key>
-        <string><?=$password?></string>
+        <string><?=mobileconfig_xml_escape($password)?></string>
         <?php endif; ?>
         <key>PayloadDescription</key>
         <string>Configures CalDAV account.</string>
@@ -188,7 +192,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <string><?=$email?></string>
         <?php if($app_password === true): ?>
         <key>CardDAVPassword</key>
-        <string><?=$password?></string>
+        <string><?=mobileconfig_xml_escape($password)?></string>
         <?php endif; ?>
         <key>PayloadDescription</key>
         <string>Configures CardDAV accounts</string>
