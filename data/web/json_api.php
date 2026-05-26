@@ -334,6 +334,12 @@ if (isset($_GET['query'])) {
         case "mta-sts":
           process_add_return(mailbox('add', 'mta_sts', $attr));
         break;
+        case "signature-template":
+          process_add_return(signature_template('add', $attr));
+        break;
+        case "signature-rule":
+          process_add_return(signature_rule('add', $attr));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -1539,6 +1545,26 @@ if (isset($_GET['query'])) {
               process_get_return(null);
             }
           break;
+          case "signature-template":
+            switch ($object) {
+              case "all":
+                process_get_return(signature_template('get'), false);
+              break;
+              default:
+                process_get_return(signature_template('details', $object));
+              break;
+            }
+          break;
+          case "signature-rule":
+            switch ($object) {
+              case "all":
+                process_get_return(signature_rule('get'), false);
+              break;
+              default:
+                process_get_return(signature_rule('details', $object));
+              break;
+            }
+          break;
         break;
         // return no route found if no case is matched
         default:
@@ -1825,6 +1851,12 @@ if (isset($_GET['query'])) {
         case "identity-provider":
           process_delete_return(identity_provider('delete'));
         break;
+        case "signature-template":
+          process_delete_return(signature_template('delete', array('id' => $items)));
+        break;
+        case "signature-rule":
+          process_delete_return(signature_rule('delete', array('id' => $items)));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -2063,6 +2095,12 @@ if (isset($_GET['query'])) {
         break;
         case "mta-sts":
           process_edit_return(mailbox('edit', 'mta_sts', array_merge(array('domains' => $items), $attr)));
+        break;
+        case "signature-template":
+          process_edit_return(signature_template('edit', array_merge(array('id' => $items), $attr)));
+        break;
+        case "signature-rule":
+          process_edit_return(signature_rule('edit', array_merge(array('id' => $items), $attr)));
         break;
         // return no route found if no case is matched
         default:

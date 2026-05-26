@@ -1,0 +1,105 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.signature_rule_edit }} #{{ result.id }} <small class="text-muted">({{ result.domain }})</small></h4>
+<p class="text-muted">{{ lang.edit.signature_rule_info|raw }}</p>
+
+<form class="form-horizontal mt-4" data-id="signature_rule" role="form" method="post">
+  <div class="row mb-2">
+    <label class="control-label col-sm-2">{{ lang.edit.signature_rule_template }}</label>
+    <div class="col-sm-10">
+      <select class="form-select" name="template_id" disabled>
+        {% for t in templates %}
+          <option value="{{ t.id }}" {% if t.id == result.template_id %}selected{% endif %}>{{ t.name }} ({{ t.domain }})</option>
+        {% endfor %}
+      </select>
+      <small class="text-muted">{{ lang.edit.signature_rule_template_locked }}</small>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="priority">{{ lang.edit.signature_rule_priority }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.priority }}" type="number" min="0" max="10000" class="form-control" name="priority" id="priority">
+      <small class="text-muted">{{ lang.edit.signature_rule_priority_info }}</small>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="match_type">{{ lang.edit.signature_rule_match_type }}</label>
+    <div class="col-sm-10">
+      <select class="form-select js-match-type" name="match_type" id="match_type">
+        <option value="domain"           {% if result.match_type == 'domain' %}selected{% endif %}>{{ lang.edit.signature_match_domain }}</option>
+        <option value="mailbox_tag"      {% if result.match_type == 'mailbox_tag' %}selected{% endif %}>{{ lang.edit.signature_match_mailbox_tag }}</option>
+        <option value="mailbox_address"  {% if result.match_type == 'mailbox_address' %}selected{% endif %}>{{ lang.edit.signature_match_mailbox_address }}</option>
+        <option value="custom_attribute" {% if result.match_type == 'custom_attribute' %}selected{% endif %}>{{ lang.edit.signature_match_custom_attribute }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mb-2 js-match-key-wrap">
+    <label class="control-label col-sm-2" for="match_key"><span class="js-match-key-label">{{ lang.edit.signature_rule_match_key }}</span></label>
+    <div class="col-sm-10">
+      <input value="{{ result.match_key }}" type="text" class="form-control js-match-key" name="match_key" id="match_key">
+      <small class="text-muted js-match-key-info">{{ lang.edit.signature_rule_match_key_info|raw }}</small>
+    </div>
+  </div>
+  <div class="row mb-2 js-match-value-wrap">
+    <label class="control-label col-sm-2" for="match_value">{{ lang.edit.signature_rule_match_value }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.match_value }}" type="text" class="form-control js-match-value" name="match_value" id="match_value">
+      <small class="text-muted">{{ lang.edit.signature_rule_match_value_info }}</small>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="signature_rule" data-item="{{ id }}" data-api-url='edit/signature-rule' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+
+<script type='text/javascript'>
+(function () {
+  var cfg = {
+    domain:          { showKey:false, showVal:false },
+    mailbox_tag:     { showKey:true,  showVal:false,
+                       label:       '{{ lang.signatures.match_tag_label|escape('js') }}',
+                       placeholder: '{{ lang.signatures.match_tag_placeholder|escape('js') }}',
+                       info:        '{{ lang.signatures.match_tag_info|escape('js') }}' },
+    mailbox_address: { showKey:true,  showVal:false,
+                       label:       '{{ lang.signatures.match_address_label|escape('js') }}',
+                       placeholder: '{{ lang.signatures.match_address_placeholder|escape('js') }}',
+                       info:        '{{ lang.signatures.match_address_info|escape('js') }}' },
+    custom_attribute:{ showKey:true,  showVal:true,
+                       label:       '{{ lang.signatures.match_attr_label|escape('js') }}',
+                       placeholder: '{{ lang.signatures.match_attr_placeholder|escape('js') }}',
+                       info:        '{{ lang.signatures.match_attr_info|escape('js') }}' }
+  };
+  function apply() {
+    var sel = document.querySelector('.js-match-type');
+    if (!sel) return;
+    var c = cfg[sel.value] || cfg.domain;
+    var keyWrap = document.querySelector('.js-match-key-wrap');
+    var valWrap = document.querySelector('.js-match-value-wrap');
+    if (keyWrap) keyWrap.style.display = c.showKey ? '' : 'none';
+    if (valWrap) valWrap.style.display = c.showVal ? '' : 'none';
+    var keyInput = document.querySelector('.js-match-key'); if (keyInput) keyInput.placeholder = c.placeholder || '';
+    var keyLabel = document.querySelector('.js-match-key-label'); if (keyLabel && c.label) keyLabel.textContent = c.label;
+    var keyInfo = document.querySelector('.js-match-key-info'); if (keyInfo && c.info) keyInfo.innerHTML = c.info;
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var sel = document.querySelector('.js-match-type');
+    if (sel) sel.addEventListener('change', apply);
+    apply();
+  });
+})();
+</script>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

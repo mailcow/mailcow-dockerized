@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "03052026_1500";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -287,6 +287,74 @@ function init_db_schema()
         "keys" => array(
           "primary" => array(
             "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "signature_templates" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(255) NOT NULL",
+          "description" => "VARCHAR(500) NOT NULL DEFAULT ''",
+          "html" => "LONGTEXT",
+          "plain" => "LONGTEXT",
+          "skip_replies" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "domain_name" => array("domain", "name")
+          ),
+          "fkey" => array(
+            "fk_signature_templates_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "signature_rules" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "template_id" => "INT NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "priority" => "INT NOT NULL DEFAULT '100'",
+          "match_type" => "ENUM('domain', 'mailbox_tag', 'mailbox_address', 'custom_attribute') NOT NULL",
+          "match_key" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "match_value" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "domain_priority" => array("domain", "priority")
+          ),
+          "fkey" => array(
+            "fk_signature_rules_template" => array(
+              "col" => "template_id",
+              "ref" => "signature_templates.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_signature_rules_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

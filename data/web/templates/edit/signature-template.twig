@@ -1,0 +1,59 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.edit.signature_template_edit }}: {{ result.name }} <small class="text-muted">({{ result.domain }})</small></h4>
+<p class="text-muted">{{ lang.signatures.vars_hint|raw }}</p>
+<details class="mb-3">
+  <summary class="text-muted small">{{ lang.signatures.example|default('Example') }}</summary>
+<pre class="mt-2 mb-0">{{ '{{ name }}' }}
+{{ '{{#title}}{{ title }}' }}
+{{ '{{/title}}{{#phone}}Tel: {{ phone }}' }}
+{{ '{{/phone}}' }}{{ '{{ email }}' }}</pre>
+</details>
+
+<form class="form-horizontal mt-4" data-id="signature_template" role="form" method="post">
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="name">{{ lang.edit.signature_template_name }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.name }}" type="text" class="form-control" name="name" id="name" required>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="description">{{ lang.edit.signature_template_description }}</label>
+    <div class="col-sm-10">
+      <input value="{{ result.description }}" type="text" class="form-control" name="description" id="description">
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="html">{{ lang.edit.signature_template_html }}</label>
+    <div class="col-sm-10">
+      <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="8" id="html" name="html">{{ result.html }}</textarea>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="plain">{{ lang.edit.signature_template_plain }}</label>
+    <div class="col-sm-10">
+      <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="8" id="plain" name="plain">{{ result.plain }}</textarea>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="skip_replies"{% if result.skip_replies == '1' %} checked{% endif %}> {{ lang.edit.signature_skip_replies }}</label>
+      </div>
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="signature_template" data-item="{{ id }}" data-api-url='edit/signature-template' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

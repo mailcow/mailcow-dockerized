@@ -1,0 +1,280 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="container-fluid signatures-page">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h2 class="mb-1">{{ lang.signatures.title }}</h2>
+      <p class="text-muted mb-0">{{ lang.signatures.intro|raw }}</p>
+    </div>
+    <div class="text-muted small">
+      <span class="badge bg-secondary me-1">{{ total_templates }}</span> {{ lang.signatures.templates }}
+      <span class="badge bg-secondary ms-3 me-1">{{ total_rules }}</span> {{ lang.signatures.rules }}
+    </div>
+  </div>
+
+  {% if by_domain is empty %}
+    <div class="alert alert-info">{{ lang.signatures.no_domains }}</div>
+  {% endif %}
+
+  {% for domain, bucket in by_domain %}
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <i class="bi bi-globe2 me-2"></i><strong>{{ domain }}</strong>
+          <span class="badge bg-light text-dark ms-2">{{ bucket.templates|length }} {{ lang.signatures.templates_short }}</span>
+        </div>
+        <button type="button" class="btn btn-sm btn-success js-add-template" data-domain="{{ domain }}" data-bs-toggle="modal" data-bs-target="#addTemplateModal">
+          <i class="bi bi-plus-lg"></i> {{ lang.signatures.add_template }}
+        </button>
+      </div>
+      <div class="card-body">
+        {% if bucket.templates is empty %}
+          <p class="text-muted mb-0"><em>{{ lang.signatures.no_templates_for_domain }}</em></p>
+        {% endif %}
+
+        {% for t in bucket.templates %}
+          <div class="border rounded p-3 mb-3 {% if t.active != '1' %}bg-light text-muted{% endif %}">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+              <div>
+                <h5 class="mb-1"><i class="bi bi-file-earmark-text me-1"></i>{{ t.name }}
+                  {% if t.active != '1' %}<span class="badge bg-secondary ms-2">{{ lang.signatures.inactive }}</span>{% endif %}
+                  {% if t.skip_replies == '1' %}<span class="badge bg-info ms-1" title="{{ lang.edit.signature_skip_replies }}">{{ lang.signatures.skip_replies_short }}</span>{% endif %}
+                </h5>
+                {% if t.description %}<small class="text-muted">{{ t.description }}</small>{% endif %}
+              </div>
+              <div class="btn-group btn-group-sm">
+                <a class="btn btn-outline-secondary" href="/edit/signature_template/{{ t.id }}" title="{{ lang.edit.edit }}"><i class="bi bi-pencil"></i></a>
+                <a class="btn btn-outline-danger" href="#" data-action="delete_selected" data-id="single-signature-template" data-api-url="delete/signature-template" data-item="{{ t.id }}" title="{{ lang.edit.remove }}"><i class="bi bi-trash"></i></a>
+              </div>
+            </div>
+
+            <div class="signatures-rules ms-2 ps-2 border-start">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted text-uppercase">{{ lang.signatures.rules }} ({{ t.rules|length }})</small>
+                <button type="button" class="btn btn-xs btn-outline-success js-add-rule" data-template-id="{{ t.id }}" data-template-name="{{ t.name }}" data-domain="{{ domain }}" data-bs-toggle="modal" data-bs-target="#addRuleModal">
+                  <i class="bi bi-plus"></i> {{ lang.signatures.add_rule }}
+                </button>
+              </div>
+              {% if t.rules is empty %}
+                <p class="text-muted small mb-0"><em>{{ lang.signatures.no_rules_for_template }}</em></p>
+              {% else %}
+                <ul class="list-group list-group-flush">
+                  {% for r in t.rules %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-2 {% if r.active != '1' %}text-muted{% endif %}">
+                      <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="badge bg-primary" title="{{ lang.signatures.priority }}">{{ r.priority }}</span>
+                        <code class="small">{{ r.match_type }}</code>
+                        {% if r.match_key %}<span class="text-muted">→</span> <code class="small">{{ r.match_key }}</code>{% endif %}
+                        {% if r.match_value %}<span class="text-muted">=</span> <code class="small">{{ r.match_value }}</code>{% endif %}
+                        {% if r.active != '1' %}<span class="badge bg-secondary">{{ lang.signatures.inactive }}</span>{% endif %}
+                      </div>
+                      <div class="btn-group btn-group-sm">
+                        <a class="btn btn-outline-secondary btn-sm" href="/edit/signature_rule/{{ r.id }}" title="{{ lang.edit.edit }}"><i class="bi bi-pencil"></i></a>
+                        <a class="btn btn-outline-danger btn-sm" href="#" data-action="delete_selected" data-id="single-signature-rule" data-api-url="delete/signature-rule" data-item="{{ r.id }}" title="{{ lang.edit.remove }}"><i class="bi bi-trash"></i></a>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+
+        {% if bucket.orphan_rules is not empty %}
+          <div class="alert alert-warning small">
+            <strong>{{ lang.signatures.orphan_rules }}:</strong> {{ bucket.orphan_rules|length }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{# ---------- Add-Template-Modal ---------- #}
+<div class="modal fade" id="addTemplateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ lang.signatures.add_template }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form data-id="add_signature_template" method="post">
+        <div class="modal-body">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label class="form-label" for="m_tpl_domain">{{ lang.signatures.domain }}</label>
+              <select class="form-select" id="m_tpl_domain" name="domain" required>
+                {% for d in domains %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="m_tpl_name">{{ lang.signatures.name }}</label>
+              <input type="text" class="form-control" id="m_tpl_name" name="name" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="m_tpl_description">{{ lang.signatures.description }}</label>
+              <input type="text" class="form-control" id="m_tpl_description" name="description">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label" for="m_tpl_html">{{ lang.signatures.html }}</label>
+            <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control font-monospace" rows="5" id="m_tpl_html" name="html"></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label" for="m_tpl_plain">{{ lang.signatures.plain }}</label>
+            <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control font-monospace" rows="4" id="m_tpl_plain" name="plain"></textarea>
+          </div>
+          <small class="text-muted d-block mb-2">{{ lang.signatures.vars_hint|raw }}</small>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" name="skip_replies" value="1"> {{ lang.edit.signature_skip_replies }}</label>
+          </div>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" name="active" value="1" checked> {{ lang.edit.active }}</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.admin.close|default('Close') }}</button>
+          <button class="btn btn-success" data-action="add_item" data-id="add_signature_template" data-api-url="add/signature-template" data-api-attr="{}" href="#">
+            <i class="bi bi-plus-lg"></i> {{ lang.signatures.add_template }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{# ---------- Add-Rule-Modal ---------- #}
+<div class="modal fade" id="addRuleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ lang.signatures.add_rule }}<span id="m_rule_for" class="text-muted"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form data-id="add_signature_rule" method="post">
+        <div class="modal-body">
+          <div class="row mb-2">
+            <div class="col-md-8">
+              <label class="form-label" for="m_rule_template">{{ lang.signatures.template }}</label>
+              <select class="form-select" id="m_rule_template" name="template_id" required>
+                {% for t in all_templates %}<option value="{{ t.id }}" data-domain="{{ t.domain }}">{{ t.name }} &mdash; {{ t.domain }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="m_rule_priority">{{ lang.signatures.priority }}</label>
+              <input type="number" class="form-control" id="m_rule_priority" name="priority" value="100" min="0" max="10000">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label" for="m_rule_match_type">{{ lang.signatures.match_type }}</label>
+            <select class="form-select js-match-type" id="m_rule_match_type" name="match_type">
+              <option value="domain">{{ lang.edit.signature_match_domain }}</option>
+              <option value="mailbox_tag">{{ lang.edit.signature_match_mailbox_tag }}</option>
+              <option value="mailbox_address">{{ lang.edit.signature_match_mailbox_address }}</option>
+              <option value="custom_attribute">{{ lang.edit.signature_match_custom_attribute }}</option>
+            </select>
+          </div>
+          <div class="mb-2 js-match-key-wrap" id="m_rule_match_key_wrap">
+            <label class="form-label" for="m_rule_match_key"><span class="js-match-key-label">{{ lang.signatures.match_key }}</span></label>
+            <input type="text" class="form-control js-match-key" id="m_rule_match_key" name="match_key">
+            <small class="text-muted js-match-key-info">{{ lang.edit.signature_rule_match_key_info|raw }}</small>
+          </div>
+          <div class="mb-2 js-match-value-wrap" id="m_rule_match_value_wrap">
+            <label class="form-label" for="m_rule_match_value">{{ lang.signatures.match_value }}</label>
+            <input type="text" class="form-control js-match-value" id="m_rule_match_value" name="match_value">
+            <small class="text-muted">{{ lang.edit.signature_rule_match_value_info }}</small>
+          </div>
+          <div class="form-check">
+            <label><input type="checkbox" class="form-check-input" name="active" value="1" checked> {{ lang.edit.active }}</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ lang.admin.close|default('Close') }}</button>
+          <button class="btn btn-success" data-action="add_item" data-id="add_signature_rule" data-api-url="add/signature-rule" data-api-attr="{}" href="#">
+            <i class="bi bi-plus-lg"></i> {{ lang.signatures.add_rule }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type='text/javascript'>
+var lang = {{ lang_admin|raw }};
+var lang_datatables = {{ lang_datatables|raw }};
+var csrf_token = '{{ csrf_token }}';
+
+// Show/hide match-key and match-value depending on the chosen match_type.
+// Domain rules need neither field; tag/address only need a key; custom_attribute needs both.
+window.signatureMatchTypeConfig = {
+  domain:          { showKey:false, showVal:false },
+  mailbox_tag:     { showKey:true,  showVal:false,
+                     label:       '{{ lang.signatures.match_tag_label|escape('js') }}',
+                     placeholder: '{{ lang.signatures.match_tag_placeholder|escape('js') }}',
+                     info:        '{{ lang.signatures.match_tag_info|escape('js') }}' },
+  mailbox_address: { showKey:true,  showVal:false,
+                     label:       '{{ lang.signatures.match_address_label|escape('js') }}',
+                     placeholder: '{{ lang.signatures.match_address_placeholder|escape('js') }}',
+                     info:        '{{ lang.signatures.match_address_info|escape('js') }}' },
+  custom_attribute:{ showKey:true,  showVal:true,
+                     label:       '{{ lang.signatures.match_attr_label|escape('js') }}',
+                     placeholder: '{{ lang.signatures.match_attr_placeholder|escape('js') }}',
+                     info:        '{{ lang.signatures.match_attr_info|escape('js') }}' }
+};
+window.signatureApplyMatchTypeUI = function (root) {
+  root = root || document;
+  var sel = root.querySelector('.js-match-type');
+  if (!sel) return;
+  var keyWrap = root.querySelector('.js-match-key-wrap');
+  var valWrap = root.querySelector('.js-match-value-wrap');
+  var keyInput = root.querySelector('.js-match-key');
+  var keyLabel = root.querySelector('.js-match-key-label');
+  var keyInfo = root.querySelector('.js-match-key-info');
+  var cfg = window.signatureMatchTypeConfig[sel.value] || window.signatureMatchTypeConfig.domain;
+  if (keyWrap) keyWrap.style.display = cfg.showKey ? '' : 'none';
+  if (valWrap) valWrap.style.display = cfg.showVal ? '' : 'none';
+  if (keyInput) keyInput.placeholder = cfg.placeholder || '';
+  if (keyLabel && cfg.label) keyLabel.textContent = cfg.label;
+  if (keyInfo && cfg.info) keyInfo.innerHTML = cfg.info;
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  // React to match-type changes inside the Add-Rule modal.
+  var modal = document.getElementById('addRuleModal');
+  if (modal) {
+    var sel = modal.querySelector('.js-match-type');
+    if (sel) {
+      sel.addEventListener('change', function () { signatureApplyMatchTypeUI(modal); });
+    }
+    modal.addEventListener('shown.bs.modal', function () { signatureApplyMatchTypeUI(modal); });
+  }
+  // Pre-fill the Add Template modal with the domain that was clicked.
+  document.querySelectorAll('.js-add-template').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var d = btn.getAttribute('data-domain');
+      var sel = document.getElementById('m_tpl_domain');
+      if (sel && d) for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === d) { sel.selectedIndex = i; break; }
+      }
+      var name = document.getElementById('m_tpl_name'); if (name) name.value = '';
+    });
+  });
+  // Pre-fill the Add Rule modal with the template that was clicked.
+  document.querySelectorAll('.js-add-rule').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var tid = btn.getAttribute('data-template-id');
+      var tname = btn.getAttribute('data-template-name');
+      var sel = document.getElementById('m_rule_template');
+      if (sel && tid) for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === String(tid)) { sel.selectedIndex = i; break; }
+      }
+      var label = document.getElementById('m_rule_for');
+      if (label) label.textContent = tname ? ' — ' + tname : '';
+      ['m_rule_match_key','m_rule_match_value'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+      var pri = document.getElementById('m_rule_priority'); if (pri) pri.value = 100;
+    });
+  });
+});
+</script>
+{% endblock %}
