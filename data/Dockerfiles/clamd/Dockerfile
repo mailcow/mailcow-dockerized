@@ -1,7 +1,7 @@
-FROM alpine:3.21 AS builder
+FROM alpine:3.23 AS builder
 
 WORKDIR /src
-ENV CLAMD_VERSION=1.4.2
+ENV CLAMD_VERSION=1.4.4
 
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \
@@ -68,7 +68,7 @@ RUN wget -P /src https://www.clamav.net/downloads/production/clamav-${CLAMD_VERS
   "/clamav/etc/clamav/clamav-milter.conf.sample" > "/clamav/etc/clamav/clamav-milter.conf" || exit 1
 
 
-FROM alpine:3.21
+FROM alpine:3.23
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
