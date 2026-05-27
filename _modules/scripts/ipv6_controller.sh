@@ -139,9 +139,13 @@ docker_daemon_edit(){
           exit 1
         fi
       else
-        echo -e "${YELLOW}User declined Docker update – please insert these changes manually:${NC}"
+        echo -e "${YELLOW}User declined Docker update – skipping Docker daemon configuration.${NC}"
+        echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+        echo ""
+        echo -e "${YELLOW}If you change your mind later, please insert these changes manually to $DOCKER_DAEMON_CONFIG:${NC}"
         echo "${MISSING[*]}"
-        exit 1
+        echo ""
+        return 1
       fi
     fi
 
@@ -185,9 +189,23 @@ EOF
       (command -v systemctl &>/dev/null && systemctl restart docker) || service docker restart
       echo "Docker restarted."
     else
-      echo "User declined to create daemon.json – please manually merge the docker daemon with these configs:"
-      echo "${MISSING[*]}"
-      exit 1
+      echo -e "${YELLOW}User declined to create daemon.json – skipping Docker daemon configuration.${NC}"
+      echo -e "${YELLOW}IPv6 will be disabled for mailcow.${NC}"
+      echo ""
+      echo -e "${YELLOW}If you change your mind later, please create $DOCKER_DAEMON_CONFIG with these settings:${NC}"
+      if [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 27 ]]; then
+        echo '  "ipv6": true,'
+        echo '  "fixed-cidr-v6": "fd00:dead:beef:c0::/80",'
+        echo '  "ip6tables": true,'
+        echo '  "experimental": true'
+      elif [[ -n "$DOCKER_MAJOR" && "$DOCKER_MAJOR" -lt 28 ]]; then
+        echo '  "ipv6": true,'
+        echo '  "fixed-cidr-v6": "fd00:dead:beef:c0::/80"'
+      else
+        echo '  "ipv6": true'
+      fi
+      echo ""
+      return 1
     fi
   fi
 }
@@ -223,7 +241,22 @@ configure_ipv6() {
     return
   fi
 
-  docker_daemon_edit
+  if ! docker_daemon_edit; then
+    # User declined Docker daemon configuration
+    # When called from update.sh, MAILCOW_CONF is set and we modify the existing file
+    # When called from generate_config.sh, MAILCOW_CONF is not set and we export IPV6_BOOL
+    if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
+      if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
+        sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=false/' "$MAILCOW_CONF"
+      else
+        echo "ENABLE_IPV6=false" >> "$MAILCOW_CONF"
+      fi
+    else
+      export IPV6_BOOL=false
+    fi
+    echo "IPv6 configuration complete: ENABLE_IPV6=false"
+    return 0
+  fi
 
   if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
     if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
