@@ -1053,7 +1053,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           if ($_data['authsource'] == "mailcow" ||
-              in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
+              in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource'] ||
+              $_data['authsource'] == 'scim'){
             $authsource = $_data['authsource'];
           }
           if (empty($name)) {
@@ -1122,7 +1123,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $quota_b    = ($quota_m * 1048576);
           $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
-          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
             $force_pw_update = 0;
           }
           if ($authsource == 'generic-oidc'){
@@ -3149,10 +3150,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
               $authsource           = $is_now['authsource'];
               if ($_data['authsource'] == "mailcow" ||
-                  in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
+                  in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource'] ||
+                  $_data['authsource'] == 'scim'){
                 $authsource = $_data['authsource'];
               }
-              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
                 $force_pw_update = 0;
               }
               if ($authsource == 'generic-oidc'){

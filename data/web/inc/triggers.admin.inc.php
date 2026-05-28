@@ -121,5 +121,20 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	if (isset($_POST["mass_send"])) {
 		sys_mail($_POST);
 	}
+  if (isset($_POST["add_scim_token"])) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
+    $raw_token = scim_token('add', $_POST);
+    if ($raw_token !== false) {
+      $_SESSION['scim_new_token'] = $raw_token;
+    }
+  }
+  if (isset($_POST["edit_scim_token"])) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
+    scim_token('edit', $_POST);
+  }
+  if (isset($_POST["delete_scim_token"])) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.scim.inc.php';
+    scim_token('delete', ['id' => intval($_POST['id'] ?? 0)]);
+  }
 }
 ?>
