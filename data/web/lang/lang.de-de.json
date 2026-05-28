@@ -150,7 +150,7 @@
         "arrival_time": "Ankunftszeit (Serverzeit)",
         "authed_user": "Auth. Benutzer",
         "ays": "Soll der Vorgang wirklich ausgeführt werden?",
-        "ban_list_info": "Übersicht ausgesperrter Netzwerke: <b>Netzwerk (verbleibende Bannzeit) - [Aktionen]</b>.<br />IPs, die zum Entsperren eingereiht werden, verlassen die Liste aktiver Banns nach wenigen Sekunden.<br />Rote Labels sind Indikatoren für aktive Allowlist-Einträge.",
+        "ban_list_info": "Übersicht ausgesperrter Netzwerke: <b>Netzwerk (verbleibende Bannzeit) - [Aktionen]</b>.<br />IPs, die zum Entsperren eingereiht werden, verlassen die Liste aktiver Banns nach wenigen Sekunden.<br />Rote Labels kennzeichnen aktive permanente Sperren durch Denylisting.",
         "change_logo": "Logo ändern",
         "configuration": "Konfiguration",
         "convert_html_to_text": "Konvertiere HTML zu reinem Text",
