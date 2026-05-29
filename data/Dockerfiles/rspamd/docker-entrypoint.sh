@@ -104,6 +104,21 @@ EOF
   fi
 fi
 
+CLAMD_AUTO_DISABLE_CONF=/etc/rspamd/override.d/antivirus.conf
+if [[ "${SKIP_CLAMD}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  # Only auto-disable when antivirus.conf still points to the default local Mailcow
+  # ClamAV target. This avoids breaking custom external ClamAV setups.
+  if grep -Eq '^[[:space:]]*servers[[:space:]]*=[[:space:]]*"clamd:3310";' /etc/rspamd/local.d/antivirus.conf 2>/dev/null; then
+    cat <<EOF > "${CLAMD_AUTO_DISABLE_CONF}"
+clamav {
+  enabled = false;
+}
+EOF
+  fi
+else
+  rm -f "${CLAMD_AUTO_DISABLE_CONF}"
+fi
+
 # Provide additional lua modules
 ln -s /usr/lib/$(uname -m)-linux-gnu/liblua5.1-cjson.so.0.0.0 /usr/lib/rspamd/cjson.so
 

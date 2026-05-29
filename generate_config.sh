@@ -322,7 +322,7 @@ SKIP_HTTP_VERIFICATION=n
 # Skip Unbound (DNS Resolver) Healthchecks (NOT Recommended!) - y/n
 SKIP_UNBOUND_HEALTHCHECK=n
 
-# Skip ClamAV (clamd-mailcow) anti-virus (Rspamd will auto-detect a missing ClamAV container) - y/n
+# Skip ClamAV (clamd-mailcow) anti-virus - y/n
 SKIP_CLAMD=${SKIP_CLAMD}
 
 # Skip Olefy (olefy-mailcow) anti-virus for Office documents (Rspamd will auto-detect a missing Olefy container) - y/n
