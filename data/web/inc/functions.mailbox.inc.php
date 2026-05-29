@@ -13,6 +13,34 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
   // Track mailboxes affected by alias operations for incremental SOGo updates
   $update_sogo_mailboxes = array();
 
+  // check if the passed mail is not managed by us
+  // I assume only a single and valid email gets passed
+  $is_external_mail_domain = function($email) use ($pdo) {
+    // split email and only keep the domain part
+    $domain = idn_to_ascii(substr(strstr($email, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
+    error_log($domain);
+
+    // check if the domain exists as domain or alias domain
+    $stmt = $pdo->prepare('
+      SELECT
+        EXISTS ( SELECT 1 FROM domain WHERE domain = :domain AND active = 1)
+        OR
+        EXISTS ( SELECT 1 FROM alias_domain WHERE alias_domain = :alias_domain AND active = 1)
+      AS domain_exists
+    ');
+
+    $stmt->execute([
+      ':domain' => $domain,
+      ':alias_domain' => $domain
+    ]);
+   $result = $stmt->fetch(PDO::FETCH_ASSOC);
+   error_log($email);
+   error_log($result['domain_exists']);
+
+   return ! (bool) $result['domain_exists'];
+  };
+
+
   switch ($_action) {
     case 'add':
       switch ($_type) {
@@ -769,6 +797,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 );
                 unset($gotos[$i]);
                 continue;
+              }
+              if ($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] ) {
+                if ($is_external_mail_domain($gotos[$i])) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('external_goto_denied', htmlspecialchars($goto))
+                  );
+                  unset($gotos[$i]);
+                  continue;
+                }
               }
             }
             $gotos = array_unique($gotos);
@@ -2720,6 +2759,17 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   );
                   unset($gotos[$i]);
                   continue;
+                }
+                if ($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] ) {
+                  if ($is_external_mail_domain($gotos[$i])) {
+                    $_SESSION['return'][] = array(
+                      'type' => 'danger',
+                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                      'msg' => array('external_goto_denied', htmlspecialchars($goto))
+                    );
+                    unset($gotos[$i]);
+                    continue;
+                  }
                 }
                 // Delete from sender_acl to prevent duplicates
                 $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE

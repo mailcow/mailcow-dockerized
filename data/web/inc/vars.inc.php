@@ -246,6 +246,9 @@ $PW_RESET_TOKEN_LIMIT = 3;
 // Maximum time in minutes a password reset token is valid
 $PW_RESET_TOKEN_LIFETIME = 15;
 
+// disable alias creation for external domains
+$ALIAS_DISABLE_EXTERNAL_DOMAINS = false;
+
 // UV flag handling in FIDO2/WebAuthn - defaults to false to allow iOS logins
 // true = required
 // false = preferred
