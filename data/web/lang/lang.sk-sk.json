@@ -395,7 +395,6 @@
         "ip_list_empty": "Zoznam povolených IP nemôže byť prázdny",
         "is_alias": "%s je už používané ako alias adresa",
         "is_alias_or_mailbox": "%s je už používaná ako adresa aliasu, mailovej schránky alebo aliasu odvodeného z aliasu domény.",
-        "is_spam_alias": "%s je už používaná ako adresa dočasného aliasu (spam alias adresa)",
         "last_key": "Posledný kľúč nemôže byť vymazaný, deaktivujte najprv TFA.",
         "login_failed": "Prihlásenie zlyhalo",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Predvolená kvóta presahuje max. kvótu mailovej schránky",
@@ -462,7 +461,7 @@
         "unknown_tfa_method": "Neznáma TFA metóda",
         "unlimited_quota_acl": "Neobmedzené kvóta je zakázaná cez ACL",
         "username_invalid": "Používateľské meno %s nemôže byť použité",
-        "validity_missing": "Zadajte periódu platnosti",
+        "invalid_validity": "Zadajte periódu platnosti",
         "value_missing": "Prosím poskytnite všetky hodnoty",
         "yotp_verification_failed": "Overenie cez OTP Yubico zlyhalo: %s"
     },

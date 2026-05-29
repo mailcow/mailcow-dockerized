@@ -977,7 +977,7 @@ function update_sogo_static_view($mailbox = null) {
         LEFT OUTER JOIN grouped_domain_alias_address gda ON gda.username = mailbox.username
         LEFT OUTER JOIN grouped_sender_acl_external external_acl ON external_acl.username = mailbox.username
       WHERE
-        mailbox.active = '1'
+        mailbox.active = '1' # Note that grouped_mail_aliases only provides aliases that are permanent or nor expired so there is no need to filter here.
         $subquery
       ON DUPLICATE KEY UPDATE
         `domain` = VALUES(`domain`),

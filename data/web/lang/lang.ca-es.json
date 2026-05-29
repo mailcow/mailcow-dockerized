@@ -208,7 +208,6 @@
         "invalid_mime_type": "Mime type invàlid",
         "is_alias": "%s ja està definida com una direcció àlies",
         "is_alias_or_mailbox": "%s ja està definit como un àlies o una bústia",
-        "is_spam_alias": "%s ja està definida com una adreça àlies de spam",
         "last_key": "No es pot esborrar la úlitma clau",
         "login_failed": "L'inici de sessió ha fallat",
         "mailbox_invalid": "El nom de la bústia no és vàlid",
@@ -234,7 +233,7 @@
         "target_domain_invalid": "El domini \"goto\" no és vàlid",
         "targetd_not_found": "No s'ha trobat el domini destí",
         "username_invalid": "El nom d'usuari no es pot fer servir",
-        "validity_missing": "Si et plau posa un període de validesa"
+        "invalid_validity": "Si et plau posa un període de validesa"
     },
     "diagnostics": {
         "cname_from_a": "Valor derivat de registre A/AAAA. Això és compatible sempre que el registre assenyali el recurs correcte.",

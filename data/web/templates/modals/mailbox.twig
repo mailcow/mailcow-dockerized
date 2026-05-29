@@ -839,6 +839,20 @@
               <small class="text-muted d-block">{{ lang.edit.sender_allowed_info }}</small>
             </div>
           </div>
+          <hr>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="private_">{{ lang.edit.private_comment }}</label>
+            <div class="col-sm-10">
+              <input maxlength="160" class="form-control" type="text" name="private_comment" value="{{ result.private_comment }}" />
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-2" for="public_comment">{{ lang.edit.public_comment }}</label>
+            <div class="col-sm-10">
+              <input maxlength="160" class="form-control" type="text" name="public_comment" value="{{ result.public_comment }}" />
+            </div>
+          </div>
+          <hr>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">

@@ -377,7 +377,6 @@
         "ip_list_empty": "Listan över tillåtna IP adresser kan inte vara tom",
         "is_alias": "%s används redan som en aliasadress",
         "is_alias_or_mailbox": "%s används redan som en aliasadress, en mejllåda eller en aliasadress som har utvidgats från en aliasdomän.",
-        "is_spam_alias": "%s används redan som för tilllfällig aliasadress (spam-aliasadress)",
         "last_key": "Den senaste nyckeln kan inte tas bort, avaktivera istället multifaktorautentisering (2FA)",
         "login_failed": "Inloggningsfel",
         "mailbox_defquota_exceeds_mailbox_maxquota": "Standardkvoten överstiger den maximala kvotgränsen",
@@ -442,7 +441,7 @@
         "unknown_tfa_method": "Okänd TFA method",
         "unlimited_quota_acl": "På grund av en åtkomstlista tillåts inte en obegränsad kvot",
         "username_invalid": "Användarnamnet %s kan inte användas",
-        "validity_missing": "Ange en giltighetsperiod",
+        "invalid_validity": "Ange en giltighetsperiod",
         "value_missing": "Ange alla värden",
         "yotp_verification_failed": "Yubico OTP-verifiering misslyckades: %s"
     },

@@ -419,7 +419,6 @@
         "ip_list_empty": "許可されるIPリストを空にすることはできません",
         "is_alias": "%s は既にエイリアスアドレスとして登録されています",
         "is_alias_or_mailbox": "%s は既にエイリアス、メールボックス、またはエイリアスドメインから展開されたエイリアスアドレスとして登録されています。",
-        "is_spam_alias": "%s は既に一時的なエイリアスアドレス（スパムエイリアスアドレス）として登録されています",
         "last_key": "最後のキーを削除することはできません。代わりにTFAを無効化してください。",
         "login_failed": "ログインに失敗しました",
         "mailbox_defquota_exceeds_mailbox_maxquota": "デフォルトクォータが最大クォータ制限を超えています",
@@ -494,7 +493,7 @@
         "unknown_tfa_method": "未知のTFA方法",
         "unlimited_quota_acl": "ACLによって無制限クォータは禁止されています",
         "username_invalid": "ユーザー名 %s は使用できません",
-        "validity_missing": "有効期限を設定してください",
+        "invalid_validity": "有効期限を設定してください",
         "value_missing": "すべての値を入力してください",
         "yotp_verification_failed": "Yubico OTP認証に失敗しました: %s"
     },

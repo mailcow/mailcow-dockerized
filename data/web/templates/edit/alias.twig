@@ -20,15 +20,15 @@
   <div class="row mb-4">
     <label class="control-label col-sm-2" for="goto">{{ lang.edit.target_address|raw }}</label>
     <div class="col-sm-10">
-      <textarea id="textarea_alias_goto" class="form-control mb-4" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required>{{ goto|replace({',': ', '}) }}</textarea>
+      <textarea id="textarea_alias_goto" class="form-control mb-4" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required {% if result.user_created %} disabled{% endif %}>{{ goto|replace({',': ', '}) }}</textarea>
       <div class="form-check">
-        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_null"{% if result.goto == 'null@localhost' %} checked{% endif %}> {{ lang.add.goto_null }}</label>
+        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_null"{% if result.goto == 'null@localhost' %} checked{% endif %}{% if result.user_created %} disabled{% endif %}> {{ lang.add.goto_null }}</label>
       </div>
       <div class="form-check">
-        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_spam"{% if result.goto == 'spam@localhost' %} checked{% endif %}> {{ lang.add.goto_spam|raw }}</label>
+        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_spam"{% if result.goto == 'spam@localhost' %} checked{% endif %}{% if result.user_created %} disabled{% endif %}> {{ lang.add.goto_spam|raw }}</label>
       </div>
       <div class="form-check">
-        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_ham"{% if result.goto == 'ham@localhost' %} checked{% endif %}> {{ lang.add.goto_ham|raw }}</label>
+        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_ham"{% if result.goto == 'ham@localhost' %} checked{% endif %}{% if result.user_created %} disabled{% endif %}> {{ lang.add.goto_ham|raw }}</label>
       </div>
       {% if not skip_sogo %}
       <hr>
@@ -38,7 +38,7 @@
       <small class="text-muted d-block mb-2">{{ lang.edit.sogo_visible_info }}</small>
       {% endif %}
       <div class="form-check">
-        <label><input type="checkbox" class="form-check-input" value="1" name="internal"{% if result.internal == '1' %} checked{% endif %}> {{ lang.edit.internal }}</label>
+        <label><input type="checkbox" class="form-check-input" value="1" name="internal"{% if result.internal == '1' %} checked{% endif %}{% if result.user_created %} disabled{% endif %}> {{ lang.edit.internal }}</label>
       </div>
       <small class="text-muted d-block mb-2">{{ lang.edit.internal_info }}</small>
       <div class="form-check">
@@ -68,6 +68,23 @@
       </div>
     </div>
   </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="user_created"{% if result.user_created == '1' %} checked{% endif %} disabled> {{ lang.edit.user_created }}</label>
+      </div>
+    </div>
+  </div>
+  {% if result.user_created %}
+  <div class="row mb-4">
+    <label class="control-label col-sm-2" for="validity">{{ lang.edit.valid_until }}</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" name="validity"
+            value="{{ result.permanent ? lang.edit.forever : (result.validity|date("d.m.Y, H:i:s")) }}"
+            disabled/>
+    </div>
+  </div>
+  {% endif %}
   <div class="row">
     <div class="offset-sm-2 col-sm-10">
       <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editalias" data-item="{{ alias }}" data-api-url='edit/alias' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>

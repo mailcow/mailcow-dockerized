@@ -26,22 +26,16 @@
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"8760","permanent":"0"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.year }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"87600","permanent":"0"}' href="#">{{ lang.user.expire_in }} 10 {{ lang.user.years }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"permanent":"1"}' href="#">{{ lang.user.expire_never }}</a></li>
+              {% if not skip_sogo %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"sogo_visible":"1"}' href="#">{{ lang.mailbox.sogo_visible_y }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"sogo_visible":"0"}' href="#">{{ lang.mailbox.sogo_visible_n }}</a></li>
+              {% endif %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#">{{ lang.mailbox.remove }}</a></li>
             </ul>
           </div>
-          <div class="btn-group">
-            <a class="btn btn-sm d-block d-sm-inline btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</a>
-            <ul class="dropdown-menu">
-              {% for domain in user_domains %}
-                <li>
-                  <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#tempAliasModal" onclick='$("#tempAliasModal #temp_alias_domain").val("{{ domain }}")' href="#">
-                    @ {{ domain }}
-                  </a>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-bs-toggle="modal" data-bs-target="#tempAliasModal" href="#"><i class="bi bi-plus-lg"></i>{{ lang.user.alias_create }}</a>
         </div>
       </div>
     </div>
