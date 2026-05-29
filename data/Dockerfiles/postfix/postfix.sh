@@ -476,18 +476,30 @@ EOF
   fi
 fi
 
-# Reset main.cf
-sed -i '/Overrides/q' /opt/postfix/conf/main.cf
+# Reset main.cf to base config.
+# The sentinel "# Overrides #" marks the boundary between the static base
+# config (tracked in git) and the dynamic section written on each startup.
+# If the sentinel is missing for any reason, add it so the truncation below
+# always works and never silently no-ops.
+grep -qF '# Overrides #' /opt/postfix/conf/main.cf \
+  || printf '\n# DO NOT EDIT ANYTHING BELOW #\n# Overrides #\n' >> /opt/postfix/conf/main.cf
+sed -i '/# Overrides #/q' /opt/postfix/conf/main.cf
 echo >> /opt/postfix/conf/main.cf
 # Append postscreen dnsbl sites to main.cf
 if [ ! -z "$DNSBL_CONFIG" ]; then
   echo -e "${DNSBL_CONFIG}\n${SPAMHAUS_DNSBL_CONFIG}" >> /opt/postfix/conf/main.cf
 fi
-# Append user overrides
-echo -e "\n# User Overrides" >> /opt/postfix/conf/main.cf
+# Append user overrides (extra.cf) to main.cf.
+# Set myhostname idempotently at the top of extra.cf, then append the whole
+# file to main.cf.  Using a temp file avoids the read-then-write-same-file
+# race and prevents blank lines from accumulating across restarts.
 touch /opt/postfix/conf/extra.cf
-sed -i '/\$myhostname/! { /myhostname/d }' /opt/postfix/conf/extra.cf
-echo -e "myhostname = ${MAILCOW_HOSTNAME}\n$(cat /opt/postfix/conf/extra.cf)" > /opt/postfix/conf/extra.cf
+echo -e "\n# User Overrides" >> /opt/postfix/conf/main.cf
+{
+  echo "myhostname = ${MAILCOW_HOSTNAME}"
+  grep -v '^[[:space:]]*myhostname[[:space:]]*=' /opt/postfix/conf/extra.cf || true
+} > /opt/postfix/conf/extra.cf.tmp
+mv /opt/postfix/conf/extra.cf.tmp /opt/postfix/conf/extra.cf
 cat /opt/postfix/conf/extra.cf >> /opt/postfix/conf/main.cf
 
 if [ ! -f /opt/postfix/conf/custom_transport.pcre ]; then
