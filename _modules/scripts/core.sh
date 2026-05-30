@@ -16,7 +16,7 @@ NC='\e[0m'
 caller="${BASH_SOURCE[1]##*/}"
 
 get_installed_tools(){
-    for bin in openssl curl docker git awk sha1sum grep cut jq; do
+    for bin in openssl curl git awk sha1sum grep cut jq; do
         if [[ -z $(command -v ${bin}) ]]; then
           echo "Error: Cannot find command '${bin}'. Cannot proceed."
           echo "Solution: Please review system requirements and install requirements. Then, re-run the script."
@@ -26,15 +26,45 @@ get_installed_tools(){
         fi
     done
 
+    if [[ -z $(command -v docker) ]] && [[ -z $(command -v podman) ]]; then
+        echo "Error: Cannot find 'docker' or 'podman'. Cannot proceed."
+        echo "Solution: Please install Docker or Podman. Then, re-run the script."
+        echo "See System Requirements: https://docs.mailcow.email/getstarted/install/"
+        echo "Exiting..."
+        exit 1
+    fi
+
     if grep --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\"${NC}"; exit 1; fi
     # This will also cover sort
     if cp --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox cp detected, please install coreutils, \"apk add --no-cache --upgrade coreutils\"${NC}"; exit 1; fi
     if sed --help 2>&1 | head -n 1 | grep -q -i "busybox"; then echo -e "${LIGHT_RED}BusyBox sed detected, please install gnu sed, \"apk add --no-cache --upgrade sed\"${NC}"; exit 1; fi
 }
 
-get_docker_version(){
-    # Check Docker Version (need at least 24.X)
-    docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
+detect_container_runtime(){
+    # Detect whether Podman or Docker is in use and set DOCKER_SOCKET accordingly
+    if command -v podman > /dev/null 2>&1; then
+        # Prefer Podman socket: rootless first, then root
+        if [[ -S "/run/user/$(id -u)/podman/podman.sock" ]]; then
+            DOCKER_SOCKET="/run/user/$(id -u)/podman/podman.sock"
+        elif [[ -S "/run/podman/podman.sock" ]]; then
+            DOCKER_SOCKET="/run/podman/podman.sock"
+        else
+            echo -e "${YELLOW}Podman detected but no running socket found. Falling back to Docker socket.${NC}"
+            DOCKER_SOCKET="/var/run/docker.sock"
+        fi
+        echo -e "${GREEN}Podman detected. Using socket: ${DOCKER_SOCKET}${NC}"
+        docker_version=$(podman version --format '{{.Server.Version}}' 2>/dev/null | cut -d '.' -f 1 || echo "0")
+    else
+        DOCKER_SOCKET="/var/run/docker.sock"
+        echo -e "${GREEN}Docker detected. Using socket: ${DOCKER_SOCKET}${NC}"
+        docker_version=$(docker version --format '{{.Server.Version}}' | cut -d '.' -f 1)
+        if [[ $docker_version -lt 24 ]]; then
+            echo -e "${RED}Cannot find Docker with a Version higher or equals 24.0.0${NC}"
+            echo -e "${YELLOW}mailcow needs a newer Docker version to work properly...${NC}"
+            echo -e "${RED}Please update your Docker installation... exiting${NC}"
+            exit 1
+        fi
+    fi
 }
 
 get_compose_type(){
@@ -126,7 +156,7 @@ prefetch_images() {
       [ ${RET_C} -gt 3 ] && { echo -e "\e[31m\nToo many failed retries, exiting\e[0m"; exit 1; }
       sleep 1
     done
-  done < <(git show "origin/${BRANCH}:docker-compose.yml" | grep "image:" | awk '{ gsub("image:","", $3); print $2 }')
+  done < <(git show "origin/${BRANCH}:docker-compose.yml" | awk '$1 == "image:" { print $2 }')
 }
 
 docker_garbage() {
