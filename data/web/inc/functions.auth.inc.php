@@ -515,7 +515,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
 
   // get the mailcow_password attribute from keycloak user
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
-  $queryParams = array('email' => $user, 'exact' => true);
+  $queryParams = array('email' => $user, 'exact' => 'true');
   $queryString = http_build_query($queryParams);
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_TIMEOUT, 7);
