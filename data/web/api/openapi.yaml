@@ -1071,6 +1071,10 @@ paths:
                           password: "*"
                           password2: "*"
                           quota: "3072"
+                          sender_acl:
+                            - info@domain2.tld
+                            - domain3.tld
+                            - "*"
                           force_pw_update: "1"
                           tls_enforce_in: "1"
                           tls_enforce_out: "1"
@@ -1117,6 +1121,10 @@ paths:
                 password: atedismonsin
                 password2: atedismonsin
                 quota: "3072"
+                sender_acl:
+                  - info@domain2.tld
+                  - domain3.tld
+                  - "*"
                 force_pw_update: "1"
                 tls_enforce_in: "1"
                 tls_enforce_out: "1"
@@ -1148,6 +1156,11 @@ paths:
                 quota:
                   description: mailbox quota
                   type: number
+                sender_acl:
+                  description: list of allowed send from addresses
+                  type: array
+                  items:
+                    type: string
                 force_pw_update:
                   description: forces the user to update its password on first login
                   type: boolean
@@ -3505,7 +3518,9 @@ paths:
                       type: number
                     sender_acl:
                       description: list of allowed send from addresses
-                      type: object
+                      type: array
+                      items:
+                        type: string
                     sogo_access:
                       description: is access to SOGo webmail active or not
                       type: boolean
@@ -4897,6 +4912,10 @@ paths:
                       quota: 3221225472
                       quota_used: 0
                       rl: false
+                      sender_acl:
+                        - info@domain2.tld
+                        - domain3.tld
+                        - "*"
                       spam_aliases: 0
                       username: info@doman3.tld
                       tags: ["tag1", "tag2"]
@@ -5822,6 +5841,10 @@ paths:
                       quota: 3221225472
                       quota_used: 0
                       rl: false
+                      sender_acl:
+                        - info@domain2.tld
+                        - domain3.tld
+                        - "*"
                       spam_aliases: 0
                       username: info@domain3.tld
                       tags: ["tag1", "tag2"]

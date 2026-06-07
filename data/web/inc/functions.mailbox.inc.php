@@ -1,4 +1,154 @@
 <?php
+function mailbox_get_sender_acl_values($username) {
+  global $pdo;
+
+  $sender_acl = array();
+  $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl`
+    WHERE `logged_in_as` = :logged_in_as
+      AND `external` = '0'
+    ORDER BY `send_as`");
+  $stmt->execute(array(':logged_in_as' => $username));
+  $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  while ($row = array_shift($rows)) {
+    $send_as = $row['send_as'];
+    if (substr($send_as, 0, 1) === '@') {
+      $send_as = substr($send_as, 1);
+    }
+    $sender_acl[] = $send_as;
+  }
+
+  return $sender_acl;
+}
+
+function mailbox_set_sender_acl($username, $sender_acl, $_data_log, $_action, $_type, $_attr = null) {
+  global $pdo;
+
+  $current_sender_acls = mailbox('get', 'sender_acl_handles', $username);
+  if (!is_array($current_sender_acls)) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+
+  $sender_acl_admin = array_merge(
+    $current_sender_acls['sender_acl_domains']['ro'],
+    $current_sender_acls['sender_acl_addresses']['ro']
+  );
+
+  $sender_acl = (array)$sender_acl;
+  if (in_array("*", $sender_acl)) {
+    $sender_acl_domain_admin = array('*');
+  }
+  elseif (array("default") === $sender_acl) {
+    $sender_acl_domain_admin = array();
+  }
+  else {
+    if (array_search('default', $sender_acl) !== false){
+      unset($sender_acl[array_search('default', $sender_acl)]);
+    }
+    $sender_acl_domain_admin = $sender_acl;
+  }
+
+  if (!empty($sender_acl_domain_admin) || !empty($sender_acl_admin)) {
+    foreach ($sender_acl_domain_admin as $key => $val) {
+      if (!filter_var($val, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name(ltrim($val, '@')) && $val != '*') {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+          'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
+        );
+        unset($sender_acl_domain_admin[$key]);
+        continue;
+      }
+
+      $acl_domain = ltrim($sender_acl_domain_admin[$key], '@');
+      if (is_valid_domain_name($acl_domain)) {
+        $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+        if (!empty($domains)) {
+          if (!in_array($acl_domain, $domains)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+              'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
+            );
+            unset($sender_acl_domain_admin[$key]);
+            continue;
+          }
+        }
+        if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $acl_domain)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+            'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
+          );
+          unset($sender_acl_domain_admin[$key]);
+          continue;
+        }
+      }
+
+      if ($val == '*' && $_SESSION['mailcow_cc_role'] != 'admin') {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+          'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
+        );
+        unset($sender_acl_domain_admin[$key]);
+        continue;
+      }
+
+      if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
+        if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array('mailbox', $_action, $_type, $_data_log, $_attr),
+            'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
+          );
+          unset($sender_acl_domain_admin[$key]);
+          continue;
+        }
+      }
+    }
+
+    $sender_acl_merged = array_merge($sender_acl_domain_admin, $sender_acl_admin);
+    !in_array('*', $sender_acl_merged) ?: $sender_acl_merged = array('*');
+    $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+    $sender_acl_handles = mailbox('get', 'sender_acl_handles', $username);
+    $fixed_sender_aliases_allowed = $sender_acl_handles['fixed_sender_aliases_allowed'];
+
+    foreach ($sender_acl_merged as $sender_acl_item) {
+      $acl_domain = ltrim($sender_acl_item, '@');
+      if (is_valid_domain_name($acl_domain)) {
+        $sender_acl_item = '@' . $acl_domain;
+      }
+
+      if (in_array($sender_acl_item, $fixed_sender_aliases_allowed)) {
+        continue;
+      }
+
+      $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`)
+        VALUES (:sender_acl, :username)");
+      $stmt->execute(array(
+        ':sender_acl' => $sender_acl_item,
+        ':username' => $username
+      ));
+    }
+  }
+  else {
+    $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
+    $stmt->execute(array(
+      ':username' => $username
+    ));
+  }
+
+  return true;
+}
+
 function mailbox($_action, $_type, $_data = null, $_extra = null) {
   global $pdo;
   global $redis;
@@ -1392,6 +1542,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'rl_frame' => $_data['rl_frame'],
               'rl_value' => $_data['rl_value']
             ), $_extra);
+          }
+
+          if (isset($_data['sender_acl'])) {
+            if (!mailbox_set_sender_acl($username, $_data['sender_acl'], $_data_log, $_action, $_type)) {
+              return false;
+            }
           }
 
           // Track affected mailboxes for SOGo update
@@ -3273,130 +3429,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               }
             }
             if (isset($_data['sender_acl'])) {
-              // Get sender_acl items set by admin
-              $current_sender_acls = mailbox('get', 'sender_acl_handles', $username);
-              $sender_acl_admin = array_merge(
-                $current_sender_acls['sender_acl_domains']['ro'],
-                $current_sender_acls['sender_acl_addresses']['ro']
-              );
-              // Get sender_acl items from POST array
-              // Set sender_acl_domain_admin to empty array if sender_acl contains "default" to trigger a reset
-              // Delete records from sender_acl if sender_acl contains "*" and set to array("*")
-              $_data['sender_acl'] = (array)$_data['sender_acl'];
-              if (in_array("*", $_data['sender_acl'])) {
-                $sender_acl_domain_admin = array('*');
-              }
-              elseif (array("default") === $_data['sender_acl']) {
-                $sender_acl_domain_admin = array();
-              }
-              else {
-                if (array_search('default', $_data['sender_acl']) !== false){
-                  unset($_data['sender_acl'][array_search('default', $_data['sender_acl'])]);
-                }
-                $sender_acl_domain_admin = $_data['sender_acl'];
-              }
-              if (!empty($sender_acl_domain_admin) || !empty($sender_acl_admin)) {
-                // Check items in POST array and skip invalid
-                foreach ($sender_acl_domain_admin as $key => $val) {
-                  // Check for invalid domain or email format or not *
-                  if (!filter_var($val, FILTER_VALIDATE_EMAIL) && !is_valid_domain_name(ltrim($val, '@')) && $val != '*') {
-                    $_SESSION['return'][] = array(
-                      'type' => 'danger',
-                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                      'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
-                    );
-                    unset($sender_acl_domain_admin[$key]);
-                    continue;
-                  }
-                  // Check if user has domain access (if object is domain)
-                  $domain = ltrim($sender_acl_domain_admin[$key], '@');
-                  if (is_valid_domain_name($domain)) {
-                    // Check for- and skip non-mailcow domains
-                    $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
-                    if (!empty($domains)) {
-                      if (!in_array($domain, $domains)) {
-                        $_SESSION['return'][] = array(
-                          'type' => 'danger',
-                          'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                          'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
-                        );
-                        unset($sender_acl_domain_admin[$key]);
-                        continue;
-                      }
-                    }
-                    if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $domain)) {
-                      $_SESSION['return'][] = array(
-                        'type' => 'danger',
-                        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                        'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
-                      );
-                      unset($sender_acl_domain_admin[$key]);
-                      continue;
-                    }
-                  }
-                  // Wildcard can only be used if role == admin
-                  if ($val == '*' && $_SESSION['mailcow_cc_role'] != 'admin') {
-                    $_SESSION['return'][] = array(
-                      'type' => 'danger',
-                      'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                      'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
-                    );
-                    unset($sender_acl_domain_admin[$key]);
-                    continue;
-                  }
-                  // Check if user has alias access (if object is email)
-                  if (filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                    if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $val)) {
-                      $_SESSION['return'][] = array(
-                        'type' => 'danger',
-                        'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                        'msg' => array('sender_acl_invalid', $sender_acl_domain_admin[$key])
-                      );
-                      unset($sender_acl_domain_admin[$key]);
-                      continue;
-                    }
-                  }
-                }
-                // Merge both arrays
-                $sender_acl_merged = array_merge($sender_acl_domain_admin, $sender_acl_admin);
-                // If merged array still contains "*", set it as only value
-                !in_array('*', $sender_acl_merged) ?: $sender_acl_merged = array('*');
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
-                $stmt->execute(array(
-                  ':username' => $username
-                ));
-                $sender_acl_handles = mailbox('get', 'sender_acl_handles', $username);
-                $fixed_sender_aliases_allowed = $sender_acl_handles['fixed_sender_aliases_allowed'];
-                $fixed_sender_aliases_blocked = $sender_acl_handles['fixed_sender_aliases_blocked'];
-
-                foreach ($sender_acl_merged as $sender_acl) {
-                  $domain = ltrim($sender_acl, '@');
-                  if (is_valid_domain_name($domain)) {
-                    $sender_acl = '@' . $domain;
-                  }
-
-                  // Always add to sender_acl table to create explicit permission
-                  // Skip only if it's in allowed list (would be redundant)
-                  // But DO add if it's in blocked list (creates override)
-                  if (in_array($sender_acl, $fixed_sender_aliases_allowed)) {
-                    // Skip: already allowed by sender_allowed=1, no need for sender_acl entry
-                    continue;
-                  }
-
-                  // Add to sender_acl (either override for blocked aliases, or grant for selectable ones)
-                  $stmt = $pdo->prepare("INSERT INTO `sender_acl` (`send_as`, `logged_in_as`)
-                    VALUES (:sender_acl, :username)");
-                  $stmt->execute(array(
-                    ':sender_acl' => $sender_acl,
-                    ':username' => $username
-                  ));
-                }
-              }
-              else {
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
-                $stmt->execute(array(
-                  ':username' => $username
-                ));
+              if (!mailbox_set_sender_acl($username, $_data['sender_acl'], $_data_log, $_action, $_type, $_attr)) {
+                return false;
               }
             }
             if (!empty($password)) {
@@ -5239,6 +5273,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['created'] = $row['created'];
           $mailboxdata['modified'] = $row['modified'];
           $mailboxdata['authsource'] = ($row['authsource']) ? $row['authsource'] : 'mailcow';
+          $mailboxdata['sender_acl'] = mailbox_get_sender_acl_values($_data);
 
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";
