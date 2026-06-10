@@ -2398,6 +2398,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
         $settings["client_scopes"] = "openid profile email mailcow_template";
       }
+      // return default role filter options for keycloak if none is set
+      if ($settings["authsource"] == "keycloak"){
+        $settings['role_filter_type'] = !isset($settings['role_filter_type']) ? 'none' : $settings['role_filter_type'];
+        $settings['role_filter_role_name'] = !isset($settings['role_filter_role_name']) ? '' : $settings['role_filter_role_name'];
+      }
       if ($_extra['hide_sensitive']){
         $settings['client_secret'] = '';
         $settings['access_token'] = '';
@@ -2468,7 +2473,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
+          $_data['role_filter_type']      = (!empty($_data['role_filter_type']) && in_array($_data['role_filter_type'], array('none', 'realm', 'client'))) ? $_data['role_filter_type'] : 'none';
+          $_data['role_filter_role_name'] = (!empty($_data['role_filter_role_name'])) ? trim($_data['role_filter_role_name']) : '';
+          if ($_data['role_filter_type'] !== 'none' && empty($_data['role_filter_role_name'])) {
+            $_SESSION['return'][] =  array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $data_log),
+              'msg' => array('required_data_missing', 'role_filter_role_name')
+            );
+            return false;
+          }
+          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'role_filter_type', 'role_filter_role_name');
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
@@ -2794,8 +2809,24 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
+      // check role filter
+      if (!empty($iam_settings['role_filter_type']) && $iam_settings['role_filter_type'] !== 'none' && !empty($iam_settings['role_filter_role_name'])) {
+        $admin_token = identity_provider("get-keycloak-admin-token");
+        $user_kc_id = isset($info['sub']) ? $info['sub'] : null;
+        $role_result = identity_provider("check-keycloak-user-role", array('admin_token' => $admin_token, 'user_id' => $user_kc_id));
+        if (!$user_kc_id || !$role_result) {
+          clear_session();
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], 'User does not have the required role'),
+            'msg' => 'login_failed'
+          );
+          return false;
+        }
+      }
+
       // get mapped template
-      $user_template = $info['mailcow_template'];
+      $user_template = $info['mailcow_template'] ?? null;
       $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
       // token valid, get mailbox
@@ -2984,9 +3015,126 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $_SESSION['oauth2state'] = $iam_provider->getState();
       return $authUrl;
     break;
+    case "keycloak-admin-get":
+      if ($iam_settings['authsource'] !== 'keycloak' || empty($_data['url']) || empty($_data['admin_token'])) {
+        return false;
+      }
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $_data['url']);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 7);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Content-Type: application/json",
+        "Authorization: Bearer " . $_data['admin_token']
+      ]);
+      if (!empty($iam_settings['ignore_ssl_error'])) {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+      }
+      $body = curl_exec($ch);
+      $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      curl_close($ch);
+      return array('body' => $body, 'code' => $code);
+    break;
+    case "keycloak-admin-get-all":
+      if (empty($_data['url']) || empty($_data['admin_token'])) {
+        return false;
+      }
+      $items = array();
+      $first = 0;
+      $max = 100;
+      while (true) {
+        $url = $_data['url'] . (strpos($_data['url'], '?') !== false ? '&' : '?') . "first={$first}&max={$max}";
+        $res = identity_provider("keycloak-admin-get", array('url' => $url, 'admin_token' => $_data['admin_token']));
+        if (!$res || $res['code'] != 200) {
+          return false;
+        }
+        $batch = json_decode($res['body'], true);
+        if (!is_array($batch)) {
+          return false;
+        }
+        $items = array_merge($items, $batch);
+        if (count($batch) < $max) {
+          break;
+        }
+        $first += $max;
+      }
+      return $items;
+    break;
+    case "get-keycloak-client-uuid":
+      if (empty($_data['admin_token'])) {
+        return false;
+      }
+      $clients_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/clients?" . http_build_query(array('clientId' => $iam_settings['client_id']));
+      $res = identity_provider("keycloak-admin-get", array('url' => $clients_url, 'admin_token' => $_data['admin_token']));
+      if (!$res || $res['code'] != 200) {
+        return false;
+      }
+      $clients = json_decode($res['body'], true);
+      return (!is_array($clients) || count($clients) == 0 || empty($clients[0]['id'])) ? false : $clients[0]['id'];
+    break;
+    case "check-keycloak-user-role":
+      if ($iam_settings['authsource'] !== 'keycloak') { return true; }
+      if (empty($iam_settings['role_filter_type']) || $iam_settings['role_filter_type'] === 'none') { return true; }
+      if (empty($iam_settings['role_filter_role_name']) || empty($_data['admin_token']) || empty($_data['user_id'])) { return false; }
+
+      $admin_token = $_data['admin_token'];
+      $user_id = $_data['user_id'];
+      $role_name = $iam_settings['role_filter_role_name'];
+      $role_name_enc = rawurlencode($role_name);
+      $client_uuid = false;
+
+      if ($iam_settings['role_filter_type'] === 'realm') {
+        $role_map_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users/{$user_id}/role-mappings/realm";
+        $role_groups_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/roles/{$role_name_enc}/groups";
+      } elseif ($iam_settings['role_filter_type'] === 'client') {
+        $client_uuid = identity_provider("get-keycloak-client-uuid", array('admin_token' => $admin_token));
+        if (!$client_uuid) {
+          return false;
+        }
+        $role_map_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users/{$user_id}/role-mappings/clients/{$client_uuid}";
+        $role_groups_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/clients/{$client_uuid}/roles/{$role_name_enc}/groups";
+      } else {
+        return true;
+      }
+
+      $res = identity_provider("keycloak-admin-get", array('url' => $role_map_url, 'admin_token' => $admin_token));
+      if (!$res || $res['code'] != 200) {
+        return false;
+      }
+      $roles = json_decode($res['body'], true);
+      if (!is_array($roles)) {
+        return false;
+      }
+
+      foreach ($roles as $role) {
+        if (isset($role['name']) && $role['name'] === $role_name) {
+          return true;
+        }
+      }
+
+      $user_groups_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users/{$user_id}/groups";
+      $user_groups = identity_provider("keycloak-admin-get-all", array('url' => $user_groups_url, 'admin_token' => $admin_token));
+      if (!is_array($user_groups) || count($user_groups) == 0) {
+        return false;
+      }
+      $role_groups = identity_provider("keycloak-admin-get-all", array('url' => $role_groups_url, 'admin_token' => $admin_token));
+      if (!is_array($role_groups) || count($role_groups) == 0) {
+        return false;
+      }
+
+      $user_group_ids = array_column($user_groups, 'id');
+      $role_group_ids = array_column($role_groups, 'id');
+      $matching_groups = array_intersect($user_group_ids, $role_group_ids);
+      if (count($matching_groups) > 0) {
+        return true;
+      }
+
+      return false;
+    break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
-      if ($iam_settings['authsource'] !== 'keycloak') return false;
+      if ($iam_settings['authsource'] !== 'keycloak') { return false; }
       if (isset($iam_settings['access_token'])) {
         // check if access_token is valid
         $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token/introspect";
@@ -3003,10 +3151,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
-        $res = json_decode(curl_exec($curl), true);
+        if (!empty($iam_settings['ignore_ssl_error'])) {
+          curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+          curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        }
+        $introspect_raw = curl_exec($curl);
+        $res = json_decode($introspect_raw, true);
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close ($curl);
-        if ($code == 200 && $res['active'] == true) {
+        if ($code == 200 && !empty($res['active'])) {
           // token is valid
           return $iam_settings['access_token'];
         }
@@ -3026,10 +3179,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_TIMEOUT, 5);
-      $res = json_decode(curl_exec($curl), true);
+      if (!empty($iam_settings['ignore_ssl_error'])) {
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+      }
+      $token_raw = curl_exec($curl);
+      $res = json_decode($token_raw, true);
       $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
       curl_close ($curl);
-      if ($code != 200) {
+      if ($code != 200 || empty($res['access_token'])) {
         return false;
       }
 

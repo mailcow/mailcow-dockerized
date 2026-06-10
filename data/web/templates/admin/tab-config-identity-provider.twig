@@ -257,6 +257,31 @@
               <input class="form-control" type="number" min="1" name="sync_interval" style="width: 80px;"  {% if iam_settings.sync_interval %}value="{{ iam_settings.sync_interval }}"{% else %}value="15"{% endif %}>
             </div>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_role_filter }}</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select class="form-control" name="role_filter_type" id="iam_keycloak_role_filter_type">
+                <option value="none" {% if not iam_settings.role_filter_type or iam_settings.role_filter_type == 'none' %}selected{% endif %}>{{ lang.admin.iam_role_filter_off }}</option>
+                <option value="realm" {% if iam_settings.role_filter_type == 'realm' %}selected{% endif %}>{{ lang.admin.iam_role_filter_realm }}</option>
+                <option value="client" {% if iam_settings.role_filter_type == 'client' %}selected{% endif %}>{{ lang.admin.iam_role_filter_client }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_keycloak_role_filter_role_name_row" {% if not iam_settings.role_filter_type or iam_settings.role_filter_type == 'none' %}style="display:none"{% endif %}>
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_role_filter_role_name }}</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" name="role_filter_role_name" value="{{ iam_settings.role_filter_role_name }}">
+              <p class="text-muted">
+                <small>
+                  {{ lang.admin.iam_role_filter_info }}
+                </small>
+              </p>
+            </div>
+          </div>
           <div class="row mt-4 mb-2">
             <div class="offset-md-3 col-12 col-md-9 d-flex flex-wrap">
               <div class="btn-group mb-2">

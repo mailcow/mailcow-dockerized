@@ -479,25 +479,40 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
   $queryParams = array('email' => $user, 'exact' => true);
   $queryString = http_build_query($queryParams);
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_TIMEOUT, 7);
-  curl_setopt($curl, CURLOPT_URL, $url . '?' . $queryString);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-      'Authorization: Bearer ' . $admin_token,
-      'Content-Type: application/json'
-  ));
-  $user_res = json_decode(curl_exec($curl), true)[0];
-  $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-  curl_close($curl);
-  if ($code != 200) {
+  $res = identity_provider("keycloak-admin-get", array('url' => $url . '?' . $queryString, 'admin_token' => $admin_token));
+  if (!$res || $res['code'] != 200) {
     $_SESSION['return'][] =  array(
       'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', 'Identity Provider returned HTTP ' . $code),
+      'log' => array(__FUNCTION__, $user, '*', 'Identity Provider returned HTTP ' . ($res ? $res['code'] : 0)),
       'msg' => 'generic_server_error'
     );
     return false;
   }
+  $decoded = json_decode($res['body'], true);
+  $user_res = is_array($decoded) ? ($decoded[0] ?? null) : null;
+  if (!is_array($user_res)) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'No Keycloak user found'),
+      'msg' => 'generic_server_error'
+    );
+    return false;
+  }
+
+  // check role filter
+  if (!empty($iam_settings['role_filter_type']) && $iam_settings['role_filter_type'] !== 'none' && !empty($iam_settings['role_filter_role_name'])) {
+    $user_kc_id = isset($user_res['id']) ? $user_res['id'] : null;
+    $role_check = identity_provider("check-keycloak-user-role", array('admin_token' => $admin_token, 'user_id' => $user_kc_id));
+    if (!$user_kc_id || !$role_check) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', 'User does not have the required role'),
+        'msg' => 'login_failed'
+      );
+      return false;
+    }
+  }
+
   if (!isset($user_res['attributes']['mailcow_password']) || !is_array($user_res['attributes']['mailcow_password'])){
     $_SESSION['return'][] =  array(
       'type' => 'danger',
@@ -522,7 +537,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   }
 
   // get mapped template
-  $user_template = $user_res['attributes']['mailcow_template'][0];
+  $user_template = $user_res['attributes']['mailcow_template'][0] ?? null;
   $mapper_key = array_search($user_template, $iam_settings['mappers']);
 
   if (!$create) {

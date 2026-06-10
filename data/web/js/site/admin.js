@@ -809,6 +809,15 @@ jQuery(function($){
   $('.iam_generic_redirect_del').click(async function(e){
     deleteRedirectUrlRow(this, e);
   });
+  function toggleRoleFilterFields() {
+    var val = $('#iam_keycloak_role_filter_type').val();
+    var active = val !== 'none';
+    $('#iam_keycloak_role_filter_role_name_row').toggle(active);
+    $('#iam_keycloak_role_filter_role_name_row input').prop('required', active);
+  }
+  $('#iam_keycloak_role_filter_type').on('change', toggleRoleFilterFields);
+  toggleRoleFilterFields();
+
   // selecting identity provider
   $('#iam_provider').on('change', function(){
     // toggle password fields

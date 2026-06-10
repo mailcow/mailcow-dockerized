@@ -111,116 +111,196 @@ fclose($lock_file_handle);
 // Init Keycloak Provider
 $iam_provider = identity_provider('init');
 
-// Loop until all users have been retrieved
-while (true) {
-  // Get admin access token
-  $admin_token = identity_provider("get-keycloak-admin-token");
+function kc_admin_get($url, $token) {
+  return identity_provider("keycloak-admin-get", array('url' => $url, 'admin_token' => $token));
+}
 
-  // Make the API request to retrieve the users
-  $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users?first=$start&max=$max";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Content-Type: application/json",
-    "Authorization: Bearer " . $admin_token
-  ]);
-  $response = curl_exec($ch);
-  $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
+function kc_fetch_all($base_url, $token, $max = 100) {
+  $items = array();
+  $start = 0;
+  while (true) {
+    $url = "{$base_url}" . (strpos($base_url, '?') !== false ? '&' : '?') . "first={$start}&max={$max}";
+    $res = kc_admin_get($url, $token);
 
-  if ($code != 200){
-    logMsg("err", "Received HTTP {$code}");
-    session_destroy();
-    exit;
+    if (!$res || $res['code'] != 200) {
+      logMsg("err", "Received HTTP " . ($res ? $res['code'] : 0) . " from {$url}");
+      return false;
+    }
+    $batch = json_decode($res['body'], true);
+    if (!is_array($batch)) {
+      logMsg("err", "Received malformed response from keycloak api");
+      return false;
+    }
+    if (count($batch) == 0) break;
+
+    $items = array_merge($items, $batch);
+    if (count($batch) < $max) break;
+    $start += $max;
+    sleep(1);
   }
-  try {
-    $response = json_decode($response, true);
-  } catch (Exception $e) {
-    logMsg("err", $e->getMessage());
-    break;
+  return $items;
+}
+
+function kc_fetch_all_users($base_url, $token, $max = 100) {
+  $users = array();
+  $keycloak_users = kc_fetch_all($base_url, $token, $max);
+  if ($keycloak_users === false) {
+    return false;
   }
-  if (!is_array($response)){
-    logMsg("err", "Received malformed response from keycloak api");
-    break;
+  foreach ($keycloak_users as $user) {
+    if (!empty($user['email'])) {
+      if (!isset($users[$user['email']])) {
+        $users[$user['email']] = $user;
+      }
+    } else {
+      logMsg("warning", "No email address in keycloak found for user " . ($user['username'] ?? $user['name'] ?? 'unknown'));
+    }
   }
-  if (count($response) == 0) {
-    break;
+  return $users;
+}
+
+$admin_token = identity_provider("get-keycloak-admin-token");
+if (!$admin_token) {
+  logMsg("err", "Cannot obtain admin token");
+  session_destroy();
+  exit;
+}
+
+$all_users = array();
+$role_filter_active = !empty($iam_settings['role_filter_type']) && $iam_settings['role_filter_type'] !== 'none' && !empty($iam_settings['role_filter_role_name']);
+$base_users_path = "/admin/realms/{$iam_settings['realm']}/users";
+$client_uuid = false;
+
+if ($role_filter_active) {
+  $role_name = rawurlencode($iam_settings['role_filter_role_name']);
+  if ($iam_settings['role_filter_type'] === 'realm') {
+    $base_users_path = "/admin/realms/{$iam_settings['realm']}/roles/{$role_name}/users";
+    logMsg("info", "Filtering users by realm role '{$iam_settings['role_filter_role_name']}'");
+  } elseif ($iam_settings['role_filter_type'] === 'client') {
+    $client_uuid = identity_provider("get-keycloak-client-uuid", array('admin_token' => $admin_token));
+    if (!$client_uuid) {
+      logMsg("err", "Could not resolve client UUID for client_id '{$iam_settings['client_id']}'");
+      session_destroy();
+      exit;
+    }
+    $base_users_path = "/admin/realms/{$iam_settings['realm']}/clients/{$client_uuid}/roles/{$role_name}/users";
+    logMsg("info", "Filtering users by client role '{$iam_settings['role_filter_role_name']}'");
+  }
+}
+
+$direct_url = "{$iam_settings['server_url']}{$base_users_path}";
+$direct_users = kc_fetch_all_users($direct_url, $admin_token, $max);
+if ($direct_users === false) {
+  session_destroy();
+  exit;
+}
+$all_users = $direct_users;
+
+if ($role_filter_active) {
+  $role_name_enc = rawurlencode($iam_settings['role_filter_role_name']);
+  if ($iam_settings['role_filter_type'] === 'realm') {
+    $groups_path = "/admin/realms/{$iam_settings['realm']}/roles/{$role_name_enc}/groups";
+  } elseif ($iam_settings['role_filter_type'] === 'client') {
+    $groups_path = "/admin/realms/{$iam_settings['realm']}/clients/{$client_uuid}/roles/{$role_name_enc}/groups";
+  } else {
+    $groups_path = null;
   }
 
-  // Process the batch of users
-  foreach ($response as $user) {
-    if (empty($user['email'])){
-      logMsg("warning", "No email address in keycloak found for user " . $user['name']);
+  if ($groups_path) {
+    $groups_url = "{$iam_settings['server_url']}{$groups_path}";
+    $groups = kc_fetch_all($groups_url, $admin_token, $max);
+
+    if ($groups === false) {
+      session_destroy();
+      exit;
+    }
+    foreach ($groups as $group) {
+      if (empty($group['id'])) {
+        continue;
+      }
+      $members_url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/groups/{$group['id']}/members";
+      $group_users = kc_fetch_all_users($members_url, $admin_token, $max);
+      if ($group_users === false) {
+        session_destroy();
+        exit;
+      }
+      foreach ($group_users as $email => $user) {
+        if (!isset($all_users[$email])) {
+          $all_users[$email] = $user;
+        }
+      }
+    }
+  }
+}
+
+logMsg("info", "Total unique users to process: " . count($all_users));
+
+// Process all collected users
+foreach ($all_users as $user) {
+  // try get mailbox user
+  $stmt = $pdo->prepare("SELECT
+    mailbox.*,
+    domain.active AS d_active
+    FROM `mailbox`
+    INNER JOIN domain on mailbox.domain = domain.domain
+    WHERE `kind` NOT REGEXP 'location|thing|group'
+      AND `username` = :user");
+  $stmt->execute(array(':user' => $user['email']));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  // check if matching attribute mapping exists
+  $user_template = $user['attributes']['mailcow_template'][0] ?? null;
+  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+
+  $_SESSION['access_all_exception'] = '1';
+  if (!$row && intval($iam_settings['import_users']) == 1){
+    if ($mapper_key === false){
+      if (!empty($iam_settings['default_template'])) {
+        $mbox_template = $iam_settings['default_template'];
+        logMsg("warning", "Using default template for user " . $user['email']);
+      } else {
+        logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
+        $_SESSION['access_all_exception'] = '0';
+        continue;
+      }
+    } else {
+      $mbox_template = $iam_settings['templates'][$mapper_key];
+    }
+    // mailbox user does not exist, create...
+    logMsg("info", "Creating user " . $user['email']);
+    $create_res = mailbox('add', 'mailbox_from_template', array(
+      'domain' => explode('@', $user['email'])[1],
+      'local_part' => explode('@', $user['email'])[0],
+      'name' => $user['firstName'] . " " . $user['lastName'],
+      'authsource' => 'keycloak',
+      'template' => $mbox_template
+    ));
+    if (!$create_res){
+      logMsg("err", "Could not create user " . $user['email']);
+      $_SESSION['access_all_exception'] = '0';
       continue;
     }
-
-    // try get mailbox user
-    $stmt = $pdo->prepare("SELECT
-      mailbox.*,
-      domain.active AS d_active
-      FROM `mailbox`
-      INNER JOIN domain on mailbox.domain = domain.domain
-      WHERE `kind` NOT REGEXP 'location|thing|group'
-        AND `username` = :user");
-    $stmt->execute(array(':user' => $user['email']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // check if matching attribute mapping exists
-    $user_template = $user['attributes']['mailcow_template'][0];
-    $mapper_key = array_search($user_template, $iam_settings['mappers']);
-
-    $_SESSION['access_all_exception'] = '1';
-    if (!$row && intval($iam_settings['import_users']) == 1){
-      if ($mapper_key === false){
-        if (!empty($iam_settings['default_template'])) {
-          $mbox_template = $iam_settings['default_template'];
-          logMsg("warning", "Using default template for user " . $user['email']);
-        } else {
-          logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
-          continue;
-        }
-      } else {
-        $mbox_template = $iam_settings['templates'][$mapper_key];
-      }
-      // mailbox user does not exist, create...
-      logMsg("info", "Creating user " . $user['email']);
-      $create_res = mailbox('add', 'mailbox_from_template', array(
-        'domain' => explode('@', $user['email'])[1],
-        'local_part' => explode('@', $user['email'])[0],
-        'name' => $user['firstName'] . " " . $user['lastName'],
-        'authsource' => 'keycloak',
-        'template' => $mbox_template
-      ));
-      if (!$create_res){
-        logMsg("err", "Could not create user " . $user['email']);
-        continue;
-      }
-    } else if ($row && intval($iam_settings['periodic_sync']) == 1 && $row['authsource'] == "keycloak") {
-      if ($mapper_key === false){
-        logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
-        continue;
-      }
-      $mbox_template = $iam_settings['templates'][$mapper_key];
-      // mailbox user does exist, sync attribtues...
-      logMsg("info", "Syncing attributes for user " . $user['email']);
-      mailbox('edit', 'mailbox_from_template', array(
-        'username' => $user['email'],
-        'name' => $user['firstName'] . " " . $user['lastName'],
-        'template' => $mbox_template
-      ));
-    } else {
-      // skip mailbox user
-      logMsg("info", "Skipping user " . $user['email']);
+  } else if ($row && intval($iam_settings['periodic_sync']) == 1 && $row['authsource'] == "keycloak") {
+    if ($mapper_key === false){
+      logMsg("warning", "No matching attribute mapping found for user " . $user['email']);
+      $_SESSION['access_all_exception'] = '0';
+      continue;
     }
-    $_SESSION['access_all_exception'] = '0';
-
-    sleep(0.025);
+    $mbox_template = $iam_settings['templates'][$mapper_key];
+    // mailbox user does exist, sync attributes...
+    logMsg("info", "Syncing attributes for user " . $user['email']);
+    mailbox('edit', 'mailbox_from_template', array(
+      'username' => $user['email'],
+      'name' => $user['firstName'] . " " . $user['lastName'],
+      'template' => $mbox_template
+    ));
+  } else {
+    // skip mailbox user
+    logMsg("info", "Skipping user " . $user['email']);
   }
+  $_SESSION['access_all_exception'] = '0';
 
-  // Update the pagination variables for the next batch
-  $start += $max;
-  sleep(1);
+  sleep(0.025);
 }
 
 logMsg("info", "DONE!");
