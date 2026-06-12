@@ -435,6 +435,7 @@
         "defquota_empty": "Default quota per mailbox must not be 0.",
         "demo_mode_enabled": "Demo Mode is enabled",
         "description_invalid": "Resource description for %s is invalid",
+        "description_missing": "Please provide a description",
         "dkim_domain_or_sel_exists": "A DKIM key for \"%s\" exists and will not be overwritten",
         "dkim_domain_or_sel_invalid": "DKIM domain or selector invalid: %s",
         "domain_cannot_match_hostname": "Domain cannot match hostname",
@@ -556,7 +557,7 @@
         "unknown_tfa_method": "Unknown TFA method",
         "unlimited_quota_acl": "Unlimited quota prohibited by ACL",
         "username_invalid": "Username %s cannot be used",
-        "validity_missing": "Please assign a period of validity",
+        "validity_missing": "Please assign a period of validity between 1-87600",
         "value_missing": "Please provide all values",
         "version_invalid": "Version %s is invalid",
         "yotp_verification_failed": "Yubico OTP verification failed: %s"

@@ -41,13 +41,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'validity_missing'
-            );
-            return false;
+          if (isset($_data["validity"])) {
+            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'validity_missing'
+              );
+              return false;
+            }
           }
           else {
             // Default to 1 yr
@@ -60,6 +62,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $permanent = 0;
           }
           $domain = $_data['domain'];
+          if (!isset($_data['description']) || empty(trim($_data['description']))) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'description_missing'
+            );
+            return false;
+          }
           $description = $_data['description'];
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
@@ -75,15 +85,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           $validity = strtotime("+" . $_data["validity"] . " hour");
-          $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`, `permanent`) VALUES
-            (:address, :description, :goto, :validity, :permanent)");
-          $stmt->execute(array(
-            ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
-            ':description' => $description,
-            ':goto' => $username,
-            ':validity' => $validity,
-            ':permanent' => $permanent
-          ));
+          try {
+            $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`, `permanent`) VALUES
+              (:address, :description, :goto, :validity, :permanent)");
+            $stmt->execute(array(
+              ':address' => readable_random_string(rand(rand(3, 9), rand(3, 9))) . '.' . readable_random_string(rand(rand(3, 9), rand(3, 9))) . '@' . $domain,
+              ':description' => $description,
+              ':goto' => $username,
+              ':validity' => $validity,
+              ':permanent' => $permanent
+            ));
+          }
+          catch (PDOException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('mysql_error', $e)
+            );
+            return false;
+          }
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),

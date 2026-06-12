@@ -185,6 +185,7 @@ paths:
               example:
                 username: info@domain.tld
                 domain: domain.tld
+                description: my time limited alias
               properties:
                 username:
                   description: 'the mailbox an alias should be created for'
@@ -192,6 +193,18 @@ paths:
                 domain:
                   description: "the domain"
                   type: string
+                description:
+                  description: "a description for the alias"
+                  type: string
+                validity:
+                  description: "validity period in hours (1-87600); defaults to 8760 (1 year) if omitted"
+                  type: integer
+                permanent:
+                  description: "if true, the alias never expires"
+                  type: boolean
+              required:
+                - domain
+                - description
               type: object
       summary: Create time limited alias
   /api/v1/add/app-passwd:
