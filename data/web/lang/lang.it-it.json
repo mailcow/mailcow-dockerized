@@ -376,7 +376,8 @@
         "iam_client_id": "ID cliente",
         "iam_default_template": "Template predefinito",
         "iam_host": "Host",
-        "iam_import_users": "Importa utenti"
+        "iam_import_users": "Importa utenti",
+        "password_policy_match": "Le password devono corrispondere"
     },
     "danger": {
         "access_denied": "Accesso negato o form di login non corretto",

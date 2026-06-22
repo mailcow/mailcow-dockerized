@@ -111,7 +111,8 @@
         "ui_header_announcement_content": "Texto (HTML permitido)",
         "ui_footer": "Rodapé (HTML permitido)",
         "activate_send": "Ativar botão de envio",
-        "help_text": "Anular texto de ajuda abaixo da máscara de login (HTML permitido)"
+        "help_text": "Anular texto de ajuda abaixo da máscara de login (HTML permitido)",
+        "password_policy_match": "As palavras-passe devem corresponder"
     },
     "danger": {
         "access_denied": "Acesso negado ou dados inválidos",

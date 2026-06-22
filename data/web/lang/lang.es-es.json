@@ -400,7 +400,8 @@
         "user_quicklink": "Ocultar enlace rápido a página de inicio de sesión de usuario",
         "validate_license_now": "Validar el GUID contra el servidor de licencias",
         "verify": "Verificar",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Las contraseñas deben coincidir"
     },
     "danger": {
         "access_denied": "Acceso denegado o datos del formulario inválidos",

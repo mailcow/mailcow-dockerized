@@ -317,7 +317,8 @@
         "yes": "&#10003;",
         "ip_check_opt_in": "Opt-In for brug af tredjepartstjeneste <strong>ipv4.mailcow.email</strong> og <strong>ipv6.mailcow.email</strong> til at finde eksterne IP-adresser.",
         "queue_unban": "unban",
-        "admins": "Administratorer"
+        "admins": "Administratorer",
+        "password_policy_match": "Adgangskoderne skal være ens"
     },
     "danger": {
         "access_denied": "Adgang nægtet eller ugyldig formular data",

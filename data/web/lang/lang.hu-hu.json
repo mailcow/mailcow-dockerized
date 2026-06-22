@@ -297,7 +297,8 @@
         "yes": "&#10003;",
         "success": "Siker",
         "login_page": "Belépő oldal",
-        "needs_restart": "újraindítást igényel"
+        "needs_restart": "újraindítást igényel",
+        "password_policy_match": "A jelszavaknak egyezniuk kell"
     },
     "edit": {
         "active": "Aktív",

@@ -411,7 +411,8 @@
         "user_quicklink": "Ẩn liên kết nhanh đến trang đăng nhập người dùng",
         "validate_license_now": "Xác thực GUID với máy chủ giấy phép",
         "verify": "Xác minh",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Mat khau phai trung khop"
     },
     "danger": {
         "access_denied": "Truy cập bị từ chối hoặc dữ liệu biểu mẫu không hợp lệ",

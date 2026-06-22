@@ -412,7 +412,8 @@
         "quicklink_text": "Mostrar ou ocultar links rápidos para outras páginas de login abaixo do formulário de login",
         "task": "Tarefa",
         "user_link": "Link do usuário",
-        "user_quicklink": "Ocultar link rápido para página de login do usuário"
+        "user_quicklink": "Ocultar link rápido para página de login do usuário",
+        "password_policy_match": "As senhas devem corresponder"
     },
     "danger": {
         "access_denied": "Acesso negado ou dados de formulário inválidos",

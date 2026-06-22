@@ -359,7 +359,8 @@
         "username": "ユーザー名",
         "validate_license_now": "GUIDをライセンスサーバーで検証",
         "verify": "確認",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "パスワードが一致している必要があります"
     },
     "danger": {
         "access_denied": "アクセスが拒否されるか、フォームデータが無効です",

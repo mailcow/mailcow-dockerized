@@ -357,7 +357,8 @@
         "password_reset_settings": "Parola Kurtarma Ayarları",
         "password_reset_tmpl_html": "HTML Şablonu",
         "password_reset_tmpl_text": "Metin Şablonu",
-        "password_settings": "Şifre Ayarları"
+        "password_settings": "Şifre Ayarları",
+        "password_policy_match": "Şifreler eşleşmelidir"
     },
     "warning": {
         "cannot_delete_self": "Cannot delete logged in user",

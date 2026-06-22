@@ -412,7 +412,8 @@
         "task": "Naloga",
         "user_link": "Uporabniška povezava",
         "iam_realm": "Realm",
-        "needs_restart": "potreben je ponovni zagon"
+        "needs_restart": "potreben je ponovni zagon",
+        "password_policy_match": "Gesli se morajo ujemati"
     },
     "danger": {
         "alias_goto_identical": "Vzdevek in ciljni naslov se ne smeta ujemati",

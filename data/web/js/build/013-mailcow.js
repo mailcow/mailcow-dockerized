@@ -32,15 +32,22 @@ $(document).ready(function() {
     }
 
     event.preventDefault();
-    $('[data-hibp]').trigger('input');
-    if (typeof($(this).closest("form").data('pwgen-length')) == "number") {
-      var random_passwd = GPW.pronounceable($(this).closest("form").data('pwgen-length'))
+    var $form = $(this).closest("form");
+    $form.find('[data-hibp]').trigger('input');
+    if (typeof($form.data('pwgen-length')) == "number") {
+      var random_passwd = GPW.pronounceable($form.data('pwgen-length'))
     }
     else {
       var random_passwd = GPW.pronounceable(random_passwd_length)
     }
-    $(this).closest("form").find('[data-pwgen-field]').attr('type', 'text');
-    $(this).closest("form").find('[data-pwgen-field]').val(random_passwd);
+    $form.find('[data-pwgen-field]').attr('type', 'text');
+    $form.find('[data-pwgen-field]').val(random_passwd);
+    $form.find('[data-hibp]').each(function() {
+      var $confirm = mailcowFindConfirmPasswordField($(this));
+      if ($confirm.length) {
+        $confirm.trigger('input');
+      }
+    });
   });
   function str_rot13(str) {
     return (str + '').replace(/[a-z]/gi, function(s){
@@ -153,22 +160,28 @@ $(document).ready(function() {
   });
 
   // haveibeenpwned and passwd policy
+  mailcowInitPasswordFields();
   $.ajax({
     url: '/api/v1/get/passwordpolicy/html',
     type: 'GET',
     success: function(res) {
-      $(".hibp-out").after(res);
+      if (res && res !== '{}') {
+        $(".hibp-out").after(res);
+      }
+      mailcowBindPasswordPolicyFields();
     }
   });
-  $('[data-hibp]').after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> ' + lang_footer.hibp_check + '</p><span class="hibp-out"></span>');
   $('[data-hibp]').on('input', function() {
-    out_field = $(this).next('.haveibeenpwned').next('.hibp-out').text('').attr('class', 'hibp-out');
+    var addons = mailcowGetPasswordFieldAddons($(this));
+    addons.hibpOut.text('').attr('class', 'hibp-out');
+    mailcowRefreshPasswordPolicyChecklist($(this));
   });
   $('.haveibeenpwned:not(.task-running)').on('click', function() {
     var hibp_field = $(this)
     $(hibp_field).addClass('task-running');
-    var hibp_result = $(hibp_field).next('.hibp-out')
-    var password_field = $(this).prev('[data-hibp]')
+    var addons = mailcowGetPasswordFieldAddonsFromHibp(hibp_field);
+    var hibp_result = addons.hibpOut;
+    var password_field = addons.passwordField;
     if ($(password_field).val() == '') {
       shake(password_field);
     }
@@ -369,6 +382,135 @@ $(document).ready(function() {
   });
 });
 
+
+function mailcowGetPasswordFieldAnchor($input) {
+  var $wrap = $input.parent('.reveal-password-input');
+  return $wrap.length ? $wrap : $input;
+}
+
+function mailcowGetPasswordFieldAddons($input) {
+  var $anchor = mailcowGetPasswordFieldAnchor($input);
+  return {
+    anchor: $anchor,
+    hibpLink: $anchor.next('.haveibeenpwned'),
+    hibpOut: $anchor.next('.haveibeenpwned').next('.hibp-out'),
+    policy: $anchor.next('.haveibeenpwned').next('.hibp-out').next('.password-policy-checklist')
+  };
+}
+
+function mailcowGetPasswordFieldAddonsFromHibp($hibpLink) {
+  var $anchor = $hibpLink.prev('.reveal-password-input');
+  var passwordField = $anchor.length ? $anchor.find('[data-hibp]').first() : $hibpLink.prev('[data-hibp]');
+  return {
+    anchor: $anchor.length ? $anchor : passwordField,
+    hibpLink: $hibpLink,
+    hibpOut: $hibpLink.next('.hibp-out'),
+    policy: $hibpLink.next('.hibp-out').next('.password-policy-checklist'),
+    passwordField: passwordField
+  };
+}
+
+function mailcowInitPasswordFields() {
+  $('[data-hibp]').each(function() {
+    var $input = $(this);
+    if ($input.data('hibp-init')) {
+      return;
+    }
+    if ($input.attr('type') === 'password' && !$input.closest('.reveal-password-input').length) {
+      $input.addClass('password-field');
+      $input.wrap('<div class="reveal-password-input input-group"></div>');
+      $input.after('<button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1"><i class="bi bi-eye"></i></button>');
+    }
+    var $anchor = mailcowGetPasswordFieldAnchor($input);
+    $anchor.after('<p class="small haveibeenpwned"><i class="bi bi-shield-fill-exclamation"></i> ' + lang_footer.hibp_check + '</p><span class="hibp-out"></span>');
+    $input.data('hibp-init', true);
+  });
+}
+
+function mailcowFindConfirmPasswordField($primary) {
+  var key = $primary.attr('name') || $primary.attr('id');
+  var confirmNames = {
+    password: 'password2',
+    user_new_pass: 'user_new_pass2',
+    app_passwd: 'app_passwd2',
+    changePWNew: 'changePWNew2'
+  };
+  if (!key || !confirmNames[key]) {
+    return $();
+  }
+  return $primary.closest('form').find('[name="' + confirmNames[key] + '"], #' + confirmNames[key]).first();
+}
+
+function mailcowPasswordPolicyRuleMet(rule, ruleValue, password) {
+  if (rule === 'length') {
+    return password.length >= parseInt(ruleValue, 10);
+  }
+  if (rule === 'chars') {
+    return /[a-zA-Z]/.test(password);
+  }
+  if (rule === 'numbers') {
+    return /\d/.test(password);
+  }
+  if (rule === 'special_chars') {
+    return /[^a-zA-Z\d]/.test(password);
+  }
+  if (rule === 'lowerupper') {
+    return /[a-z]/.test(password) && /[A-Z]/.test(password);
+  }
+  return false;
+}
+
+function mailcowUpdatePasswordPolicyChecklist($checklist, password, confirmPassword, hasConfirm) {
+  if (!$checklist.length) {
+    return;
+  }
+  $checklist.find('[data-pw-policy]').each(function() {
+    var rule = $(this).attr('data-pw-policy');
+    var met = false;
+    if (rule === 'match') {
+      if (!hasConfirm) {
+        $(this).hide();
+        return;
+      }
+      $(this).show();
+      met = password.length > 0 && password === confirmPassword;
+    } else {
+      met = mailcowPasswordPolicyRuleMet(rule, $(this).attr('data-pw-policy-value'), password);
+    }
+    $(this).find('input').prop('checked', met);
+  });
+}
+
+function mailcowRefreshPasswordPolicyChecklist($primary) {
+  var addons = mailcowGetPasswordFieldAddons($primary);
+  var $confirm = mailcowFindConfirmPasswordField($primary);
+  mailcowUpdatePasswordPolicyChecklist(addons.policy, $primary.val(), $confirm.val(), $confirm.length > 0);
+}
+
+function mailcowBindPasswordPolicyFields() {
+  $('[data-hibp]').each(function() {
+    var $primary = $(this);
+    if ($primary.data('pw-policy-bound')) {
+      mailcowRefreshPasswordPolicyChecklist($primary);
+      return;
+    }
+    var addons = mailcowGetPasswordFieldAddons($primary);
+    if (!addons.policy.length) {
+      return;
+    }
+    var $confirm = mailcowFindConfirmPasswordField($primary);
+    $primary.data('pw-policy-bound', true);
+    $primary.on('input.mailcowPasswordPolicy', function() {
+      mailcowRefreshPasswordPolicyChecklist($primary);
+    });
+    if ($confirm.length) {
+      $confirm.on('input.mailcowPasswordPolicy', function() {
+        mailcowRefreshPasswordPolicyChecklist($primary);
+      });
+    }
+    mailcowRefreshPasswordPolicyChecklist($primary);
+  });
+}
 
 // https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 function escapeHtml(n){var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}; return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}

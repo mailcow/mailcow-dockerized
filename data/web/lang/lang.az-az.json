@@ -13,5 +13,8 @@
         "mailbox_relayhost": "E-poçt qutusu üçün relay serveri dəyiş",
         "prohibited": "ACL tərəfindən məhdudlaşdırılıb",
         "protocol_access": "Protokol girişini dəyiş"
+    },
+    "admin": {
+        "password_policy_match": "Şifrələr uyğun olmalıdır"
     }
 }

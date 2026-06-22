@@ -356,7 +356,8 @@
         "logo_dark_label": "Темна тема",
         "password_reset_settings": "Налаштування відновлення паролів",
         "password_reset_tmpl_html": "HTML шаблон",
-        "logo_normal_label": "Світла тема"
+        "logo_normal_label": "Світла тема",
+        "password_policy_match": "Паролі повинні збігатися"
     },
     "danger": {
         "alias_domain_invalid": "Неприпустимий псевдонім домену: %s",

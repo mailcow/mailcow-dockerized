@@ -412,7 +412,8 @@
         "user_quicklink": "Foydalanuvchi kirish sahifasiga tezkor havolani yashirish",
         "validate_license_now": "GUID ni litsenziya serveriga qarshi tekshirish",
         "verify": "Tasdiqlash",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Parollar mos kelishi kerak"
     },
     "danger": {
         "access_denied": "Kirish rad etildi yoki noma'lum forma ma'lumotlari",

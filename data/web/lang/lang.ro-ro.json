@@ -343,7 +343,8 @@
         "ip_check_disabled": "Verificarea IP este dezactivată. Puteţi activa la<br> <strong>Sistem > Configuraţie > Opţiuni > Personalizează</strong>",
         "ip_check_opt_in": "Alegeţi să folosiţi servicile <strong>ipv4.mailcow.email</strong> şi <strong>ipv6.mailcow.email</strong> să rezolvaţi addrese IP externale.",
         "options": "Opţiuni",
-        "queue_unban": "retractează interzicere"
+        "queue_unban": "retractează interzicere",
+        "password_policy_match": "Parolele trebuie sa coincida"
     },
     "danger": {
         "access_denied": "Accesul a fost respins sau datele formularului sunt invalide",

@@ -196,12 +196,27 @@ function password_complexity($_action, $_data = null) {
     break;
     case 'html':
       $policies = password_complexity('get');
+      if ($policies === false) {
+        return false;
+      }
+      $policy_checks = array();
       foreach ($policies as $name => $value) {
         if ($value != 0) {
-          $policy_text[] = sprintf($lang['admin']["password_policy_$name"], $value);
+          $label = htmlspecialchars(sprintf($lang['admin']["password_policy_$name"], $value), ENT_QUOTES, 'UTF-8');
+          $policy_checks[] = '<div class="form-check" data-pw-policy="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '" data-pw-policy-value="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '">' .
+            '<input type="checkbox" class="form-check-input" disabled>' .
+            '<label class="form-check-label">' . $label . '</label>' .
+            '</div>';
         }
       }
-      return '<p class="help-block small">- ' . implode('<br>- ', (array)$policy_text) . '</p>';
+      $policy_checks[] = '<div class="form-check" data-pw-policy="match">' .
+        '<input type="checkbox" class="form-check-input" disabled>' .
+        '<label class="form-check-label">' . htmlspecialchars($lang['admin']['password_policy_match'], ENT_QUOTES, 'UTF-8') . '</label>' .
+        '</div>';
+      return '<div class="password-policy-checklist mb-3 small" aria-live="polite">' .
+        '<p class="mb-2 fw-semibold">' . htmlspecialchars($lang['admin']['password_policy'], ENT_QUOTES, 'UTF-8') . '</p>' .
+        implode('', $policy_checks) .
+        '</div>';
     break;
   }
 }

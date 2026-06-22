@@ -412,7 +412,8 @@
         "iam_import_users": "Importer des utilisateurs",
         "filter": "Filtrer",
         "needs_restart": "nécessite un redémarrage",
-        "iam": "Fournisseur d'identité"
+        "iam": "Fournisseur d'identité",
+        "password_policy_match": "Les mots de passe doivent correspondre"
     },
     "danger": {
         "access_denied": "Accès refusé ou données de formulaire non valides",

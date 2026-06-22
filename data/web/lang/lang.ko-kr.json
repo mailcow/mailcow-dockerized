@@ -353,7 +353,8 @@
         "api_read_write": "읽기-쓰기 액세스",
         "is_mx_based": "MX 기반",
         "login_time": "로그인 시간",
-        "ip_check_opt_in": "외부 IP 주소 확인을 위해 타사 서비스 <strong>ipv4.mailcow.email</strong> 및 <strong>ipv6.mailcow.email</strong>을 사용하도록 설정합니다."
+        "ip_check_opt_in": "외부 IP 주소 확인을 위해 타사 서비스 <strong>ipv4.mailcow.email</strong> 및 <strong>ipv6.mailcow.email</strong>을 사용하도록 설정합니다.",
+        "password_policy_match": "비밀번호가 일치해야 합니다"
     },
     "danger": {
         "access_denied": "접근이 거부되거나 잘못된 데이터 양식",

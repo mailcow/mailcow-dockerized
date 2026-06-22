@@ -412,7 +412,8 @@
         "user_quicklink": "Hide Quicklink to User Login Page",
         "validate_license_now": "Validate GUID against license server",
         "verify": "Verify",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Passwords must match"
     },
     "danger": {
         "access_denied": "Access denied or invalid form data",

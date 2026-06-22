@@ -411,7 +411,8 @@
         "user_quicklink": "Ukryj Quicklink do strony logowania użytkownika",
         "validate_license_now": "Sprawdź identyfikator GUID względem serwera licencji",
         "verify": "Zweryfikuj",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Hasła muszą być zgodne"
     },
     "danger": {
         "access_denied": "Odmowa dostępu lub nieprawidłowe dane w formularzu",

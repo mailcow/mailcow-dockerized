@@ -359,7 +359,8 @@
         "password_reset_tmpl_html": "HTML 範本",
         "password_reset_tmpl_text": "文字範本",
         "password_settings": "密碼設定",
-        "restore_template": "留白以還原預設範本"
+        "restore_template": "留白以還原預設範本",
+        "password_policy_match": "兩次輸入的密碼必須一致"
     },
     "danger": {
         "access_denied": "存取拒絕或表單資料有誤",

@@ -175,7 +175,8 @@
         "f2b_blacklist": "Tinklai juodajame saraše",
         "loading": "Prašau palaukite...",
         "password_policy_lowerupper": "Privalo turėti mažuosius ir didžiuosius ženklus/raides",
-        "relay_from": "„Nuo:“ adresas"
+        "relay_from": "„Nuo:“ adresas",
+        "password_policy_match": "Slaptazodziai turi sutapti"
     },
     "danger": {
         "demo_mode_enabled": "Demo Režimas įjungtas",

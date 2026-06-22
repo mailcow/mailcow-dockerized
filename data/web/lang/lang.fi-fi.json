@@ -271,7 +271,8 @@
         "allowed_methods": "Kulunvalvonta-salli-menetelmät",
         "admins": "Järjestelmänvalvojat",
         "admins_ldap": "LDAP-ylläpitäjät",
-        "advanced_settings": "Lisäasetukset"
+        "advanced_settings": "Lisäasetukset",
+        "password_policy_match": "Salasanojen on oltava samat"
     },
     "danger": {
         "access_denied": "Käyttö estetty tai lomake tiedot eivät kelpaa",

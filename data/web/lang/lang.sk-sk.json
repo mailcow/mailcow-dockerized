@@ -342,7 +342,8 @@
         "username": "Prihlasovacie meno",
         "validate_license_now": "Validovať GUID cez licenčný server",
         "verify": "Kontrola",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Hesla sa musia zhodovat"
     },
     "danger": {
         "access_denied": "Prístup zamietnutý alebo nesprávne dáta formulára",

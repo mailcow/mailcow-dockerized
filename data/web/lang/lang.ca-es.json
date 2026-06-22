@@ -183,7 +183,8 @@
         "ui_texts": "Etiquetes i textos de la UI",
         "unchanged_if_empty": "Si no hi ha canvis, deixa'l en blanc",
         "upload": "Pujar",
-        "username": "Nom d'usuari"
+        "username": "Nom d'usuari",
+        "password_policy_match": "Les contrasenyes han de coincidir"
     },
     "danger": {
         "access_denied": "Accés denegat o dades incorrectes",

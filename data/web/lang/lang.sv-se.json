@@ -325,7 +325,8 @@
         "username": "Användarnamn",
         "validate_license_now": "Validera installations-ID mot licensservern",
         "verify": "Verifiera",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Lösenorden måste matcha"
     },
     "danger": {
         "access_denied": "Nekad åtkomst, eller ofullständig/ogiltig data",

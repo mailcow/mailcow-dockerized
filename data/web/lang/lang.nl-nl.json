@@ -407,7 +407,8 @@
         "transport_test_rcpt_info": "&#8226; Gebruik null@hosted.mailcow.de om relaying naar een externe bestemming te testen.",
         "user_link": "Gebruikerslink",
         "user_quicklink": "Snelle link naar de gebruikers-loginpagina verbergen",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Wachtwoorden moeten overeenkomen"
     },
     "danger": {
         "access_denied": "Toegang geweigerd of ongeldige gegevens",

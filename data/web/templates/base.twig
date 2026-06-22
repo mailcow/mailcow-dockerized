@@ -440,6 +440,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
     });
     changePWModal.show();
 
+    $('#changePWNew, #changePWNew2').on('input', function() {
+      $('#changePWAlert').hide();
+    });
+
     $('#changePWModalForm').on('submit', function(e) {
       e.preventDefault();
       var newPw = $('#changePWNew').val();
@@ -472,7 +476,8 @@ function recursiveBase64StrToArrayBuffer(obj) {
           if (data && data[0] && data[0].type === 'success') {
             window.location.reload();
           } else {
-            var msg = (data && data[0] && data[0].msg) ? data[0].msg : 'Password change failed.';
+            var rawMsg = (data && data[0] && data[0].msg) ? data[0].msg : 'password_change_failed';
+            var msg = (lang_danger && lang_danger[rawMsg]) ? lang_danger[rawMsg] : rawMsg;
             $('#changePWAlert').show().text(msg);
           }
         },

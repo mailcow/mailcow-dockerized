@@ -158,7 +158,8 @@
         "username": "Brukernavn",
         "validate_license_now": "Validér GUID mot lisenstjener",
         "verify": "Validér",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "password_policy_match": "Passordene må være like"
     },
     "acl": {
         "ratelimit": "Nivågrense",

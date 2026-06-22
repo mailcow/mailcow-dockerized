@@ -195,7 +195,8 @@
         "admin_quicklink": "Paslēpt ātro saiti uz pārvaldītāju pieteikšanās lapu",
         "domain_admin": "Domēna pārvaldītājs",
         "domainadmin_quicklink": "Paslēpt ātro saiti uz domēna pārvaldītāju pieteikšanās lapu",
-        "user_quicklink": "Paslēpt ātro saiti uz lietotāju pieteikšanās lapu"
+        "user_quicklink": "Paslēpt ātro saiti uz lietotāju pieteikšanās lapu",
+        "password_policy_match": "Parolem jaatbilst"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",

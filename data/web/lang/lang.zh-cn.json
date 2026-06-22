@@ -410,7 +410,8 @@
         "user_link": "自定义链接",
         "app_hide": "在登入界面隐藏",
         "needs_restart": "需要重启",
-        "iam_use_tls_info": "如果使用了 TLS，必须使用 LDAP 服务器的默认端口（389）。SSL 的端口不能使用。"
+        "iam_use_tls_info": "如果使用了 TLS，必须使用 LDAP 服务器的默认端口（389）。SSL 的端口不能使用。",
+        "password_policy_match": "两次输入的密码必须一致"
     },
     "danger": {
         "access_denied": "访问被拒绝或者表单数据无效",
