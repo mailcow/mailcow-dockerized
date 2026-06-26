@@ -63,6 +63,34 @@
         </div>
         <hr>
         <div class="row mb-2">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_def_notification">{{ lang.admin.quarantine_defaults_notification|raw }}</label>
+          <div class="col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <select data-width="100%" id="quarantine_def_notification" name="def_notification" class="selectpicker" title="{{ lang.tfa.select }}">
+              <option {% if q_data.def_notification == 'never' %}selected{% endif %} value="never">{{ lang.user.never }}</option>
+              <option {% if q_data.def_notification == 'hourly' %}selected{% endif %} value="hourly">{{ lang.user.hourly }}</option>
+              <option {% if q_data.def_notification == 'daily' %}selected{% endif %} value="daily">{{ lang.user.daily }}</option>
+              <option {% if q_data.def_notification == 'weekly' %}selected{% endif %} value="weekly">{{ lang.user.weekly }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <label class="col-sm-4 control-label text-sm-end" for="quarantine_def_category">{{ lang.admin.quarantine_defaults_category|raw }}</label>
+          <div class="col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <select data-width="100%" id="quarantine_def_category" name="def_category" class="selectpicker" title="{{ lang.tfa.select }}">
+              <option {% if q_data.def_category == 'reject' %}selected{% endif %} value="reject">{{ lang.user.q_reject }}</option>
+              <option {% if q_data.def_category == 'add_header' %}selected{% endif %} value="add_header">{{ lang.user.q_add_header }}</option>
+              <option {% if q_data.def_category == 'all' %}selected{% endif %} value="all">{{ lang.user.q_all }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-sm-8 offset-sm-4">
+            <button type="button" class="btn btn-sm d-block d-sm-inline btn-warning" data-action="edit_selected" data-item="self" data-id="quarantine" data-api-url='edit/quarantine' data-api-attr='{"action":"apply_existing"}' onclick="if(!confirm('{{ lang.admin.quarantine_defaults_apply_confirm }}')){event.stopImmediatePropagation();event.preventDefault();return false;}"><i class="bi bi-arrow-repeat"></i> {{ lang.admin.quarantine_defaults_apply }}</button>
+            <p class="text-muted mt-2 mb-0">{{ lang.admin.quarantine_defaults_apply_info|raw }}</p>
+          </div>
+        </div>
+        <hr>
+        <div class="row mb-2">
           <label class="col-sm-4 control-label text-sm-end" for="quarantine_release_format">{{ lang.admin.quarantine_release_format }}:</label>
           <div class="col-sm-8 col-md-6 col-lg-4 col-xl-3">
             <select data-width="100%" id="quarantine_release_format" name="release_format" class="selectpicker" title="{{ lang.tfa.select }}">
