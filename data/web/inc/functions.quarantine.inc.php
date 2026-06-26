@@ -6,6 +6,7 @@ function quarantine($_action, $_data = null) {
 	global $pdo;
 	global $redis;
 	global $lang;
+	global $MAILBOX_DEFAULT_ATTRIBUTES;
 	$_data_log = $_data;
   switch ($_action) {
     case 'quick_delete':
@@ -331,6 +332,9 @@ function quarantine($_action, $_data = null) {
           $max_age = 365;
         }
         $exclude_domains = (array)$_data['exclude_domains'];
+        // Server-wide default quarantine notification settings for new mailboxes
+        $def_notification = (in_array($_data['def_notification'], array('never', 'hourly', 'daily', 'weekly'))) ? $_data['def_notification'] : 'never';
+        $def_category = (in_array($_data['def_category'], array('add_header', 'reject', 'all'))) ? $_data['def_category'] : 'reject';
         try {
           $redis->Set('Q_RETENTION_SIZE', intval($retention_size));
           $redis->Set('Q_MAX_SIZE', intval($max_size));
@@ -343,6 +347,8 @@ function quarantine($_action, $_data = null) {
           $redis->Set('Q_REDIRECT', $redirect);
           $redis->Set('Q_SUBJ', $subject);
           $redis->Set('Q_HTML', $html);
+          $redis->Set('Q_DEF_NOTIFICATION', $def_notification);
+          $redis->Set('Q_DEF_CATEGORY', $def_category);
         }
         catch (RedisException $e) {
           $_SESSION['return'][] = array(
@@ -356,6 +362,55 @@ function quarantine($_action, $_data = null) {
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
           'msg' => 'saved_settings'
+        );
+      }
+      // Force the server-wide default onto all existing mailboxes (overwrites user overrides)
+      elseif ($_data['action'] == 'apply_existing') {
+        if ($_SESSION['mailcow_cc_role'] != "admin") {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          );
+          return false;
+        }
+        // Resolve the default to apply: prefer the values submitted with the form
+        // (the settings form is merged into this request), fall back to the stored default.
+        $def_notification = (in_array($_data['def_notification'], array('never', 'hourly', 'daily', 'weekly'))) ? $_data['def_notification'] : get_quarantine_default('notification');
+        $def_category = (in_array($_data['def_category'], array('add_header', 'reject', 'all'))) ? $_data['def_category'] : get_quarantine_default('category');
+        try {
+          // Keep the stored default in sync with what we are forcing onto mailboxes
+          $redis->Set('Q_DEF_NOTIFICATION', $def_notification);
+          $redis->Set('Q_DEF_CATEGORY', $def_category);
+          $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`,
+            '$.quarantine_notification', :quarantine_notification,
+            '$.quarantine_category', :quarantine_category)");
+          $stmt->execute(array(
+            ':quarantine_notification' => $def_notification,
+            ':quarantine_category' => $def_category
+          ));
+          $affected = $stmt->rowCount();
+        }
+        catch (RedisException $e) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('redis_error', $e)
+          );
+          return false;
+        }
+        catch (PDOException $e) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => array('mysql_error', $e)
+          );
+          return false;
+        }
+        $_SESSION['return'][] = array(
+          'type' => 'success',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('quarantine_defaults_applied', $affected)
         );
       }
       // Release item
@@ -791,6 +846,8 @@ function quarantine($_action, $_data = null) {
         if (empty($settings['html_tmpl'])) {
           $settings['html_tmpl'] = htmlspecialchars(file_get_contents("/tpls/quarantine.tpl"));
         }
+        $settings['def_notification'] = $redis->Get('Q_DEF_NOTIFICATION') ?: $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'];
+        $settings['def_category'] = $redis->Get('Q_DEF_CATEGORY') ?: $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category'];
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(

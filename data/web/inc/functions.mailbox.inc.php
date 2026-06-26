@@ -1,4 +1,29 @@
 <?php
+// Resolve the default quarantine setting for new mailboxes.
+// Order of precedence: server-wide default (Redis, set in the admin quarantine
+// settings) -> compile-time default ($MAILBOX_DEFAULT_ATTRIBUTES in vars.inc.php).
+// $key is either 'notification' or 'category'.
+function get_quarantine_default($key) {
+  global $redis, $MAILBOX_DEFAULT_ATTRIBUTES;
+  $redis_keys = array(
+    'notification' => 'Q_DEF_NOTIFICATION',
+    'category'     => 'Q_DEF_CATEGORY'
+  );
+  $attr_keys = array(
+    'notification' => 'quarantine_notification',
+    'category'     => 'quarantine_category'
+  );
+  if (!isset($redis_keys[$key])) {
+    return null;
+  }
+  try {
+    $value = $redis->Get($redis_keys[$key]);
+  }
+  catch (RedisException $e) {
+    $value = false;
+  }
+  return ($value !== false && $value !== '') ? $value : $MAILBOX_DEFAULT_ATTRIBUTES[$attr_keys[$key]];
+}
 function mailbox($_action, $_type, $_data = null, $_extra = null) {
   global $pdo;
   global $redis;
@@ -1109,8 +1134,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $eas_access = (isset($_data['eas_access'])) ? intval($_data['eas_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
           $dav_access = (isset($_data['dav_access'])) ? intval($_data['dav_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
-          $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
-          $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
+          $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval(get_quarantine_default('notification'));
+          $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval(get_quarantine_default('category'));
           // Validate quarantine_category
           if (!in_array($quarantine_category, array('add_header', 'reject', 'all'))) {
             $_SESSION['return'][] = array(
@@ -1740,8 +1765,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["quota"]                       = isset($_data['quota']) ? intval($_data['quota']) * 1048576 : 0;
           $attr['tags']                        = (isset($_data['tags'])) ? $_data['tags'] : array();
           $attr["tagged_mail_handler"]         = (!empty($_data['tagged_mail_handler'])) ? $_data['tagged_mail_handler'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['tagged_mail_handler']);
-          $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
-          $attr["quarantine_category"]         = (!empty($_data['quarantine_category'])) ? $_data['quarantine_category'] : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
+          $attr["quarantine_notification"]     = (!empty($_data['quarantine_notification'])) ? $_data['quarantine_notification'] : strval(get_quarantine_default('notification'));
+          $attr["quarantine_category"]         = (!empty($_data['quarantine_category'])) ? $_data['quarantine_category'] : strval(get_quarantine_default('category'));
           // Validate quarantine_category
           if (!in_array($attr["quarantine_category"], array('add_header', 'reject', 'all'))) {
             $_SESSION['return'][] = array(
