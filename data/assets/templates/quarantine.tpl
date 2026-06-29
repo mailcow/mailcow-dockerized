@@ -41,8 +41,9 @@
       .text-muted { color: #a4a9b4 !important; }
       .border-card { border-color: #343842 !important; }
       .divider { border-color: #343842 !important; }
-      .btn-secondary a { color: #e7e9ee !important; border-color: #4a4f5a !important; }
       .btn-primary-cell { background-color: #3a4350 !important; }
+      .btn-secondary-cell { background-color: #2c313a !important; }
+      .btn-secondary-cell a { color: #e7e9ee !important; }
     }
   </style>
 </head>
@@ -132,11 +133,11 @@
                                   </tr>
                                 </table>
                               </td>
-                              <td class="btn-cell btn-secondary">
+                              <td class="btn-cell">
                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                                   <tr>
-                                    <td align="center" class="border-card" style="border-radius:8px; border:1px solid #d3d8e0;">
-                                      <a class="btn-a" href="https://{{ hostname }}/qhandler/delete/{{ line.qhash }}" target="_blank" style="display:inline-block; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#5b6472; padding:10px 18px; border-radius:8px;">Delete</a>
+                                    <td align="center" class="btn-secondary-cell" style="border-radius:8px; background-color:#eceef1;">
+                                      <a class="btn-a" href="https://{{ hostname }}/qhandler/delete/{{ line.qhash }}" target="_blank" style="display:inline-block; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#2b333f; padding:10px 18px; border-radius:8px;">Delete</a>
                                     </td>
                                   </tr>
                                 </table>
