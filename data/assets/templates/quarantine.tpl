@@ -42,6 +42,7 @@
       .border-card { border-color: #343842 !important; }
       .divider { border-color: #343842 !important; }
       .btn-secondary a { color: #e7e9ee !important; border-color: #4a4f5a !important; }
+      .btn-primary-cell { background-color: #3a4350 !important; }
     }
   </style>
 </head>
@@ -58,11 +59,11 @@
 
           <!-- Header -->
           <tr>
-            <td style="padding:0 0 4px 0;">
+            <td style="padding:0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td class="px" style="border-radius:12px 12px 0 0; background-color:#56B04C; padding:24px 32px;">
-                    <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:18px; font-weight:700; color:#ffffff; letter-spacing:0.2px;">
+                  <td class="px bg-card border-card" style="border-radius:12px 12px 0 0; background-color:#ffffff; border-bottom:1px solid #e4e7ec; padding:24px 32px;">
+                    <span class="text-main" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:18px; font-weight:700; color:#1f2430; letter-spacing:0.2px;">
                       &#9993;&nbsp; Quarantine notification
                     </span>
                   </td>
@@ -125,7 +126,7 @@
                               <td class="btn-cell" style="padding-right:8px;">
                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
                                   <tr>
-                                    <td align="center" style="border-radius:8px; background-color:#56B04C;">
+                                    <td align="center" class="btn-primary-cell" style="border-radius:8px; background-color:#2b333f;">
                                       <a class="btn-a" href="https://{{ hostname }}/qhandler/release/{{ line.qhash }}" target="_blank" style="display:inline-block; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:14px; font-weight:600; color:#ffffff; padding:10px 18px; border-radius:8px;">{% if line.action == "reject" %}Release to inbox{% else %}Send copy to inbox{% endif %}</a>
                                     </td>
                                   </tr>
