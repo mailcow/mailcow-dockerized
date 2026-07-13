@@ -300,35 +300,52 @@ def snat6(snat_target):
 
 def autopurge():
   global f2boptions
+  global quit_now
+  global exit_code
   logdebug("autopurge thread started")
   while not quit_now:
-    logdebug("autopurge tick")
-    time.sleep(10)
-    refreshF2boptions()
-    MAX_ATTEMPTS = int(f2boptions['max_attempts'])
-    QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
-    logdebug("QUEUE_UNBAN: %s" % QUEUE_UNBAN)
-    if QUEUE_UNBAN:
-      for net in QUEUE_UNBAN:
-        logdebug("Autopurge: unbanning queued net: %s" % net)
-        unban(str(net))
-    # Only check expiry for actively banned IPs:
-    active_bans = r.hgetall('F2B_ACTIVE_BANS')
-    now = time.time()
-    for net_str, expire_str in active_bans.items():
-      logdebug("Checking ban expiry for (actively banned): %s" % net_str)
-      # Defensive: always process if timer missing or expired
-      try:
-        expire = float(expire_str)
-      except Exception:
-        logdebug("Invalid expire time for %s; unbanning" % net_str)
-        unban(net_str)
-        continue
-      time_left = expire - now
-      logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
-      if time_left <= 0:
-        logdebug("Ban expired for %s" % net_str)
-        unban(net_str)
+    try:
+      logdebug("autopurge tick")
+      time.sleep(10)
+      refreshF2boptions()
+      MAX_ATTEMPTS = int(f2boptions['max_attempts'])
+      QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
+      logdebug("QUEUE_UNBAN: %s" % QUEUE_UNBAN)
+      if QUEUE_UNBAN:
+        for net in QUEUE_UNBAN:
+          logdebug("Autopurge: unbanning queued net: %s" % net)
+          unban(str(net))
+      # Only check expiry for actively banned IPs:
+      active_bans = r.hgetall('F2B_ACTIVE_BANS')
+      now = time.time()
+      for net_str, expire_str in active_bans.items():
+        logdebug("Checking ban expiry for (actively banned): %s" % net_str)
+        # Defensive: always process if timer missing or expired
+        try:
+          expire = float(expire_str)
+        except Exception:
+          logdebug("Invalid expire time for %s; unbanning" % net_str)
+          unban(net_str)
+          continue
+        time_left = expire - now
+        logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
+        if time_left <= 0:
+          logdebug("Ban expired for %s" % net_str)
+          unban(net_str)
+    except Exception as ex:
+      # An uncaught exception here (e.g. a transient Redis connection error,
+      # or a KeyError from refreshF2boptions()'s unsynchronized global
+      # f2boptions dict being read while another thread is mid-refresh) used
+      # to silently kill this thread forever, since Python threads do not
+      # restart on an uncaught exception. That left active bans stuck
+      # enforced past their expiry indefinitely, with no further attempt to
+      # clean them up until the container was manually restarted. Follow the
+      # same recovery pattern already used by watch(): log it and let the
+      # process exit so the container's restart policy brings up a clean
+      # instance.
+      logger.logWarn('Error in autopurge thread, restarting: %s' % ex)
+      quit_now = True
+      exit_code = 2
 
 def mailcowChainOrder():
   global lock
@@ -388,40 +405,56 @@ def genNetworkList(list):
 def whitelistUpdate():
   global lock
   global quit_now
+  global exit_code
   global WHITELIST
   while not quit_now:
-    start_time = time.time()
-    list = r.hgetall('F2B_WHITELIST')
-    new_whitelist = []
-    if list:
-      new_whitelist = genNetworkList(list)
-    with lock:
-      if Counter(new_whitelist) != Counter(WHITELIST):
-        WHITELIST = new_whitelist
-        logger.logInfo('Allowlist was changed, it has %s entries' % len(WHITELIST))
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
+    try:
+      start_time = time.time()
+      list = r.hgetall('F2B_WHITELIST')
+      new_whitelist = []
+      if list:
+        new_whitelist = genNetworkList(list)
+      with lock:
+        if Counter(new_whitelist) != Counter(WHITELIST):
+          WHITELIST = new_whitelist
+          logger.logInfo('Allowlist was changed, it has %s entries' % len(WHITELIST))
+      time.sleep(60.0 - ((time.time() - start_time) % 60.0))
+    except Exception as ex:
+      # See autopurge() for why this thread must not be allowed to die
+      # silently on an uncaught exception (e.g. a transient Redis error).
+      logger.logWarn('Error in whitelistUpdate thread, restarting: %s' % ex)
+      quit_now = True
+      exit_code = 2
 
 def blacklistUpdate():
   global quit_now
+  global exit_code
   global BLACKLIST
   while not quit_now:
-    start_time = time.time()
-    list = r.hgetall('F2B_BLACKLIST')
-    new_blacklist = []
-    if list:
-      new_blacklist = genNetworkList(list)
-    if Counter(new_blacklist) != Counter(BLACKLIST):
-      addban = set(new_blacklist).difference(BLACKLIST)
-      delban = set(BLACKLIST).difference(new_blacklist)
-      BLACKLIST = new_blacklist
-      logger.logInfo('Denylist was changed, it has %s entries' % len(BLACKLIST))
-      if addban:
-        for net in addban:
-          permBan(net=net)
-      if delban:
-        for net in delban:
-          permBan(net=net, unban=True)
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0))
+    try:
+      start_time = time.time()
+      list = r.hgetall('F2B_BLACKLIST')
+      new_blacklist = []
+      if list:
+        new_blacklist = genNetworkList(list)
+      if Counter(new_blacklist) != Counter(BLACKLIST):
+        addban = set(new_blacklist).difference(BLACKLIST)
+        delban = set(BLACKLIST).difference(new_blacklist)
+        BLACKLIST = new_blacklist
+        logger.logInfo('Denylist was changed, it has %s entries' % len(BLACKLIST))
+        if addban:
+          for net in addban:
+            permBan(net=net)
+        if delban:
+          for net in delban:
+            permBan(net=net, unban=True)
+      time.sleep(60.0 - ((time.time() - start_time) % 60.0))
+    except Exception as ex:
+      # See autopurge() for why this thread must not be allowed to die
+      # silently on an uncaught exception (e.g. a transient Redis error).
+      logger.logWarn('Error in blacklistUpdate thread, restarting: %s' % ex)
+      quit_now = True
+      exit_code = 2
 
 def sigterm_quit(signum, frame):
   global clear_before_quit
