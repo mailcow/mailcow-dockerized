@@ -253,7 +253,7 @@ class DockerApi:
       else:
         res = { 'type': 'error', 'msg': 'mariadb-upgrade: error running command', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")
-  # api call: container_post - post_action: exec - cmd: system - task: mariadb-tzinfo-to-sql
+  # api call: container_post - post_action: exec - cmd: system - task: mariadb_tzinfo-to-sql
   def container_post__exec__system__mariadb_tzinfo_to_sql(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
