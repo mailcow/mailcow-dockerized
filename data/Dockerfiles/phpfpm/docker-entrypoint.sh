@@ -83,7 +83,7 @@ fi
 # Check mysql tz import (master and slave)
 TZ_CHECK=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT CONVERT_TZ('2019-11-02 23:33:00','Europe/Berlin','UTC') AS time;" -BN 2> /dev/null)
 if [[ -z ${TZ_CHECK} ]] || [[ "${TZ_CHECK}" == "NULL" ]]; then
-  SQL_FULL_TZINFO_IMPORT_RETURN=$(curl --silent --insecure -XPOST https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mariadb-tzinfo-to-sql"}' --silent -H 'Content-type: application/json')
+  SQL_FULL_TZINFO_IMPORT_RETURN=$(curl --silent --insecure -XPOST https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${CONTAINER_ID}/exec -d '{"cmd":"system", "task":"mariadb_tzinfo-to-sql"}' --silent -H 'Content-type: application/json')
   echo "MariaDB tzinfo-to-sql - debug output:"
   echo ${SQL_FULL_TZINFO_IMPORT_RETURN}
 fi
