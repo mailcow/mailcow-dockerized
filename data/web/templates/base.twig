@@ -26,7 +26,7 @@
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
   <link rel="icon" href="/favicon.png" type="image/png">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 <div class="overlay"></div>
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-0">
