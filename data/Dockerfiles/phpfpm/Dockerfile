@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.21
+FROM php:8.4-fpm-alpine3.23
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -16,11 +16,7 @@ ARG REDIS_PECL_VERSION=6.3.0
 ARG COMPOSER_VERSION=2.10.2
 
 RUN apk add -U --no-cache autoconf \
-  aspell-dev \
-  aspell-libs \
   bash \
-  c-client \
-  cyrus-sasl-dev \
   freetype \
   freetype-dev \
   g++ \
@@ -33,7 +29,6 @@ RUN apk add -U --no-cache autoconf \
   icu-libs \
   imagemagick \
   imagemagick-dev \
-  imap-dev \
   jq \
   libavif \
   libavif-dev \
@@ -72,26 +67,21 @@ RUN apk add -U --no-cache autoconf \
   && pecl clear-cache \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
-  && docker-php-ext-configure imap --with-imap --with-imap-ssl \
-  && docker-php-ext-install -j 4 imap \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
-    aspell-dev \
-    cyrus-sasl-dev \
     freetype-dev \
     g++ \
     gettext-dev \
     icu-dev \
     imagemagick-dev \
-    imap-dev \
     libavif-dev \
     libjpeg-turbo-dev \
     libmemcached-dev \
