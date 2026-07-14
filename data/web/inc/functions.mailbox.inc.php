@@ -41,13 +41,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'validity_missing'
-            );
-            return false;
+          if (isset($_data["validity"])) {
+            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'validity_missing'
+              );
+              return false;
+            }
           }
           else {
             // Default to 1 yr
@@ -60,7 +62,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $permanent = 0;
           }
           $domain = $_data['domain'];
-          $description = $_data['description'];
+          // spamalias.description is NOT NULL, an absent description must not become a null insert
+          $description = $_data['description'] ?? '';
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
           if (!empty($valid_alias_domains)) {
