@@ -878,6 +878,7 @@
         "quarantine": "Kwarantanna",
         "quick_actions": "Szybkie działania",
         "remove": "Usuń",
+        "qinfo": "System kwarantanny zapisuje w bazie danych zarówno odrzucone wiadomości (nadawca <em>nie</em> otrzymuje informacji sugerującej, że wiadomość została doręczona), jak i te, które są dostarczane jako kopie do folderu „Spam” (Junk) danej skrzynki pocztowej. <br>Opcja „Oznacz jako spam i usuń” (Learn as spam and delete) pozwala systemowi nauczyć się rozpoznawać daną wiadomość jako spam w oparciu o twierdzenie Bayesa oraz obliczyć tzw. rozmyte skróty (fuzzy hashes) w celu blokowania podobnych wiadomości w przyszłości. <br>Należy pamiętać, że proces uczenia się na podstawie wielu wiadomości może – w zależności od konfiguracji systemu – być czasochłonny.<br>Elementy znajdujące się na czarnej liście są wyłączone z kwarantanny.",
         "toggle_all": "Zaznacz wszystkie",
         "confirm_delete": "Potwierdź usunięcie tego elementu.",
         "learn_spam_delete": "Zapamiętaj jako spam i usuwaj w przyszłości",
