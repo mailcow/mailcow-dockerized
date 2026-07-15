@@ -5,6 +5,7 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
+        - ENABLE_IPV6=${ENABLE_IPV6:-true}
       volumes:
         - ./data/hooks/unbound:/hooks:Z
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
