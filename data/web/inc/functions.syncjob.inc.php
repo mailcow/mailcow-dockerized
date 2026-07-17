@@ -360,6 +360,21 @@ function imapsync_get_settings() {
   return $settings;
 }
 
+function imapsync_normalize_custom_params($input) {
+  $pairs = json_decode((string)$input, true);
+  if (!is_array($pairs)) return '[]';
+  $allow = $GLOBALS['IMAPSYNC_OPTIONS']['whitelist'];
+  $out = array();
+  foreach ($pairs as $p) {
+    if (!is_array($p)) continue;
+    $o = ltrim(strtolower(trim((string)($p['o'] ?? ''))), '-');
+    if ($o === '') continue;
+    if (!in_array($o, $allow, true)) return false;   // disallowed option -> reject the whole set
+    $out[] = array('o' => $o, 'v' => str_replace("\0", '', (string)($p['v'] ?? '')));
+  }
+  return json_encode($out);
+}
+
 function imapsync_set_setting($name, $value) {
   // Admin-only writer for a global syncjob setting.
   global $pdo;
@@ -508,36 +523,15 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
 
-          // validate custom params
-          foreach (explode('-', $custom_params) as $param){
-            if(empty($param)) continue;
-
-            // extract option
-            if (str_contains($param, '=')) $param = explode('=', $param)[0];
-            else $param = rtrim($param, ' ');
-            // remove first char if first char is -
-            if ($param[0] == '-') $param = ltrim($param, $param[0]);
-
-            if (str_contains($param, ' ')) {
-              // bad char
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'bad character SPACE'
-              );
-              return false;
-            }
-
-            // check if param is whitelisted
-            if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
-              // bad option
-              $_SESSION['return'][] = array(
-                'type' => 'danger',
-                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                'msg' => 'bad option '. $param
-              );
-              return false;
-            }
+          // Structured custom params: validate option names against the allowlist, store as JSON pairs
+          $custom_params = imapsync_normalize_custom_params($custom_params);
+          if ($custom_params === false) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'imapsync_custom_param_invalid'
+            );
+            return false;
           }
           if (empty($subfolder2)) {
             $subfolder2 = "";
@@ -879,36 +873,15 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               $password1 = '';
             }
 
-            // validate custom params
-            foreach (explode('-', $custom_params) as $param){
-              if(empty($param)) continue;
-
-              // extract option
-              if (str_contains($param, '=')) $param = explode('=', $param)[0];
-              else $param = rtrim($param, ' ');
-              // remove first char if first char is -
-              if ($param[0] == '-') $param = ltrim($param, $param[0]);
-
-              if (str_contains($param, ' ')) {
-                // bad char
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'bad character SPACE'
-                );
-                return false;
-              }
-
-              // check if param is whitelisted
-              if (!in_array(strtolower($param), $GLOBALS["IMAPSYNC_OPTIONS"]["whitelist"])){
-                // bad option
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-                  'msg' => 'bad option '. $param
-                );
-                return false;
-              }
+            // Structured custom params: validate option names against the allowlist, store as JSON pairs
+            $custom_params = imapsync_normalize_custom_params($custom_params);
+            if ($custom_params === false) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'imapsync_custom_param_invalid'
+              );
+              continue;
             }
             if (empty($subfolder2)) {
               $subfolder2 = "";

@@ -1028,10 +1028,14 @@
             </div>
           </div>
           <div class="row mb-4">
-            <label class="control-label col-sm-2 text-sm-end" for="custom_params">{{ lang.syncjobs.custom_params }}</label>
+            <label class="control-label col-sm-2 text-sm-end">{{ lang.syncjobs.custom_params }}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="custom_params" placeholder="--some-param=xy --other-param=yx">
-              <small class="text-muted">{{ lang.syncjobs.custom_params_hint }}</small>
+              <div class="imapsync-cp-editor">
+                <div class="imapsync-cp-rows"></div>
+                <button type="button" class="btn btn-sm btn-secondary imapsync-cp-add"><i class="bi bi-plus-lg"></i> {{ lang.syncjobs.custom_param_add }}</button>
+              </div>
+              <input type="hidden" name="custom_params" class="imapsync-cp-value" value="">
+              <small class="text-muted d-block mt-1">{{ lang.syncjobs.custom_params_hint }}</small>
             </div>
           </div>
           <div class="row mb-2">

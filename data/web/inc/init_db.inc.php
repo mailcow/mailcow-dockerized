@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "16072026_1000";
+    $db_version = "17072026_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -886,7 +886,7 @@ function init_db_schema()
           "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "automap" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "skipcrossduplicates" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "custom_params" => "VARCHAR(512) NOT NULL DEFAULT ''",
+          "custom_params" => "TEXT",
           "timeout1" => "SMALLINT NOT NULL DEFAULT '600'",
           "timeout2" => "SMALLINT NOT NULL DEFAULT '600'",
           "subscribeall" => "TINYINT(1) NOT NULL DEFAULT '1'",
@@ -1531,6 +1531,28 @@ function init_db_schema()
         && intval($pdo->query("SELECT MAX(`order_id`) FROM `imapsync`")->fetchColumn()) === 0) {
       $pdo->query("SET @r := 0");
       $pdo->query("UPDATE `imapsync` SET `order_id` = (@r := @r + 1) ORDER BY `id`");
+    }
+
+    // Syncjobs: migrate custom_params from raw imapsync string to structured JSON pairs.
+    // Old values could not contain spaces (they were rejected), so a whitespace split is safe.
+    $allow = $GLOBALS['IMAPSYNC_OPTIONS']['whitelist'];
+    $cp_upd = $pdo->prepare("UPDATE `imapsync` SET `custom_params` = :cp WHERE `id` = :id");
+    foreach ($pdo->query("SELECT `id`, `custom_params` FROM `imapsync`")->fetchAll(PDO::FETCH_ASSOC) as $r) {
+      $cp = trim((string)$r['custom_params']);
+      if ($cp !== '' && $cp[0] === '[') continue; // already migrated (JSON)
+      $pairs = array();
+      if ($cp !== '') {
+        $tokens = preg_split('/\s+/', $cp, -1, PREG_SPLIT_NO_EMPTY);
+        for ($i = 0; $i < count($tokens); $i++) {
+          if (strpos($tokens[$i], '--') !== 0) continue;
+          $opt = ltrim($tokens[$i], '-'); $val = '';
+          if (strpos($opt, '=') !== false) { list($opt, $val) = explode('=', $opt, 2); }
+          elseif ($i + 1 < count($tokens) && strpos($tokens[$i + 1], '--') !== 0) { $val = $tokens[++$i]; }
+          if (!in_array(strtolower($opt), $allow)) continue; // drop options no longer allowed
+          $pairs[] = array('o' => strtolower($opt), 'v' => $val);
+        }
+      }
+      $cp_upd->execute(array(':cp' => json_encode($pairs), ':id' => $r['id']));
     }
 
     // Inject admin if not exists

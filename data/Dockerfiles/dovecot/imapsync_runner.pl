@@ -5,29 +5,13 @@ use LockFile::Simple qw(lock trylock unlock);
 use Proc::ProcessTable;
 use Data::Dumper qw(Dumper);
 use IPC::Run 'run';
+use JSON::PP;
 use File::Temp;
 use Try::Tiny;
 use POSIX ();
 use sigtrap 'handler' => \&sig_handler, qw(INT TERM KILL QUIT);
 
 sub trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
-
-sub qqw($) {
-  my @params = ();
-  my @values = split(/(?=--)/, $_[0]);
-  foreach my $val (@values) {
-    my @tmpparam = split(/ /, $val, 2);
-    foreach my $tmpval (@tmpparam) {
-        if ($tmpval ne '') {
-          push @params, $tmpval;
-        }
-    }
-  }
-  foreach my $val (@params) {
-    $val=trim($val);
-  }
-  return @params;
-}
 
 # Move a finished job to the back of the queue, keeping order_id contiguous (1..N).
 # Called only from the parent after reaping a child, so all rotations are serialized.
@@ -214,7 +198,18 @@ foreach my $row (@rows) {
 
   print $passfile2 trim($master_pass) . "\n";
 
-  my @custom_params_a = qqw($custom_params);
+  # Structured custom params: JSON array of {o,v}. Build one argv token per pair as "--opt=value"
+  # (value glued to its option) so a value can never become a separate option; passed via
+  # IPC::Run list form (execvp, no shell). Only allowlisted option names are stored (validated on write).
+  my @custom_params_a;
+  my $cp_pairs = eval { decode_json(defined($custom_params) && $custom_params ne '' ? $custom_params : '[]') };
+  if (ref($cp_pairs) eq 'ARRAY') {
+    for my $p (@$cp_pairs) {
+      next unless ref($p) eq 'HASH' && defined $p->{o} && $p->{o} ne '';
+      (my $ov = defined($p->{v}) ? $p->{v} : '') =~ s/\x00//g;
+      push @custom_params_a, ($ov eq '' ? "--$p->{o}" : "--$p->{o}=$ov");
+    }
+  }
   my $custom_params_ref = \@custom_params_a;
 
   # Effective per-process bandwidth cap (bytes/s): per-job value, capped by the global limit.

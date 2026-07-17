@@ -1520,7 +1520,7 @@ paths:
                 timeout1: "600"
                 timeout2: "600"
                 exclude: "(?i)spam|(?i)junk"
-                custom_params: "--dry"
+                custom_params: '[{"o":"dry","v":""}]'
                 delete2duplicates: "1"
                 delete1: "1"
                 delete2: "0"
@@ -1569,7 +1569,13 @@ paths:
                   description: exclude objects (regex)
                   type: string
                 custom_params:
-                  description: custom parameters
+                  description: >-
+                    JSON array of allowlisted imapsync options as
+                    option/value pairs, e.g.
+                    `[{"o":"folder","v":"INBOX"},{"o":"dry","v":""}]`. Only
+                    option names from `GET /get/syncjob_options` are accepted;
+                    values may contain any character and are passed as a single
+                    argument.
                   type: string
                 delete2duplicates:
                   description: delete duplicates on destination (--delete2duplicates)
@@ -4063,7 +4069,13 @@ paths:
                         etc.)
                       type: boolean
                     custom_params:
-                      description: Custom parameters passed to imapsync command
+                      description: >-
+                        JSON array of allowlisted imapsync options as
+                        option/value pairs, e.g.
+                        `[{"o":"folder","v":"INBOX"},{"o":"dry","v":""}]`. Only
+                        option names from `GET /get/syncjob_options` are
+                        accepted; values may contain any character and are
+                        passed as a single argument.
                       type: string
                     delete1:
                       description: Delete from source when completed
@@ -6216,6 +6228,38 @@ paths:
         flags — they are never returned over the JSON API.
       operationId: Get sync job sources
       summary: Get sync job sources
+  /api/v1/get/syncjob_options:
+    get:
+      parameters:
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - dry
+                    - folder
+                    - delete2folders
+                    - maxsize
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Returns the allowlist of imapsync option names accepted in a sync job's
+        `custom_params`. Used by the UI to populate the option autocompletion.
+      operationId: Get sync job options
+      summary: Get sync job options
   "/api/v1/get/tls-policy-map/{id}":
     get:
       parameters:

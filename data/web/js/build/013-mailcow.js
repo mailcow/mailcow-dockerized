@@ -480,7 +480,88 @@ function imapsyncSyncSourceOauthToggle($form) {
   $form.find('.imapsync-source-redirect-uri').val(window.location.origin + '/syncjob-oauth');
 }
 
+// Allowlisted imapsync option names for the custom-params selects. Loaded once and cached.
+var imapsyncCpOptions = null;
+function imapsyncCpEnsureOptions(cb) {
+  if (imapsyncCpOptions !== null) { cb(); return; }
+  $.get("/api/v1/get/syncjob_options", function(opts) {
+    imapsyncCpOptions = Array.isArray(opts) ? opts : [];
+    cb();
+  });
+}
+
+// Append one row to an editor; option is a bootstrap-select (not free-text), value is arbitrary.
+function imapsyncCpAddRow($editor, o, v) {
+  var $row = $(
+    '<div class="input-group mb-2 imapsync-cp-row">' +
+      '<select class="form-control imapsync-cp-opt" data-width="35%"></select>' +
+      '<input type="text" class="form-control imapsync-cp-val">' +
+      '<button type="button" class="btn btn-secondary imapsync-cp-remove"><i class="bi bi-trash"></i></button>' +
+    '</div>'
+  );
+  var $sel = $row.find('.imapsync-cp-opt')
+    .attr('title', (lang.syncjobs && lang.syncjobs.custom_param_option) || 'option');
+  (imapsyncCpOptions || []).forEach(function(name) {
+    $sel.append($('<option></option>').attr('value', name).text(name));
+  });
+  // keep a stored value that is no longer allowlisted visible instead of silently dropping it
+  if (o && (imapsyncCpOptions || []).indexOf(o) === -1) {
+    $sel.append($('<option></option>').attr('value', o).text(o));
+  }
+  $sel.val(o || '');
+  $row.find('.imapsync-cp-val').attr('placeholder', (lang.syncjobs && lang.syncjobs.custom_param_value) || 'value').val(v || '');
+  $editor.find('.imapsync-cp-rows').append($row);
+  $sel.selectpicker();
+}
+
+// Build the rows of an editor from its hidden JSON value.
+function imapsyncCpBuild($editor) {
+  var $hidden = $editor.siblings('.imapsync-cp-value');
+  $editor.find('.imapsync-cp-opt').selectpicker('destroy');
+  $editor.find('.imapsync-cp-rows').empty();
+  var pairs = [];
+  try { pairs = JSON.parse($hidden.val() || '[]'); } catch (e) { pairs = []; }
+  if (!Array.isArray(pairs)) pairs = [];
+  pairs.forEach(function(p) {
+    if (p && typeof p === 'object') imapsyncCpAddRow($editor, p.o, p.v);
+  });
+}
+
+// Re-serialize an editor's rows back into its hidden JSON value (option name required).
+function imapsyncCpSerialize($editor) {
+  var out = [];
+  $editor.find('.imapsync-cp-row').each(function() {
+    var o = $.trim($(this).find('.imapsync-cp-opt').val() || '').replace(/^-+/, '');
+    if (o === '') return;
+    out.push({ o: o, v: $(this).find('.imapsync-cp-val').val() || '' });
+  });
+  $editor.siblings('.imapsync-cp-value').val(JSON.stringify(out));
+}
+
 $(document).ready(function() {
+  // Custom-params editor: keep the hidden JSON in sync with the rows
+  $(document).on('change', '.imapsync-cp-opt', function() {
+    imapsyncCpSerialize($(this).closest('.imapsync-cp-editor'));
+  });
+  $(document).on('input', '.imapsync-cp-val', function() {
+    imapsyncCpSerialize($(this).closest('.imapsync-cp-editor'));
+  });
+  $(document).on('click', '.imapsync-cp-add', function() {
+    var $editor = $(this).closest('.imapsync-cp-editor');
+    imapsyncCpEnsureOptions(function() { imapsyncCpAddRow($editor); });
+  });
+  $(document).on('click', '.imapsync-cp-remove', function() {
+    var $editor = $(this).closest('.imapsync-cp-editor');
+    $(this).closest('.imapsync-cp-row').find('.imapsync-cp-opt').selectpicker('destroy');
+    $(this).closest('.imapsync-cp-row').remove();
+    imapsyncCpSerialize($editor);
+  });
+
+  // Edit page (syncjob.twig): build rows from the stored value on load
+  imapsyncCpEnsureOptions(function() {
+    $('.imapsync-cp-editor').each(function() { imapsyncCpBuild($(this)); });
+  });
+
   // Syncjob form: toggle password row / OAuth "connect" button by the selected source's flow
   $(document).on('change', 'select.imapsync-source-select', function() {
     var $sel = $(this);
@@ -543,5 +624,9 @@ $(document).ready(function() {
   // Add-syncjob modal opens: (re)load the source dropdown from the API
   $(document).on('shown.bs.modal', '#addSyncJobModalAdmin, #addSyncJobModal', function() {
     populateImapsyncSourceSelects();
+    var $modal = $(this);
+    imapsyncCpEnsureOptions(function() {
+      $modal.find('.imapsync-cp-editor').each(function() { imapsyncCpBuild($(this)); });
+    });
   });
 });
