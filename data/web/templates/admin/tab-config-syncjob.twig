@@ -1,0 +1,35 @@
+<div class="tab-pane fade" id="tab-config-syncjob" role="tabpanel" aria-labelledby="tab-config-syncjob">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-syncjob" data-bs-toggle="collapse" aria-controls="collapse-tab-config-syncjob">
+        {{ lang.admin.syncjobs }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.syncjobs }}</span>
+    </div>
+    <div id="collapse-tab-config-syncjob" class="card-body collapse" data-bs-parent="#admin-content">
+      <form class="form" role="form" data-id="imapsync_settings" method="post">
+        <div class="row mb-4">
+          <div class="col-sm-6">
+            <label for="max_parallel">{{ lang.admin.syncjob_max_parallel }}:</label>
+            <input type="number" class="form-control" id="max_parallel" name="max_parallel" min="1" max="1000" value="{{ imapsync_settings.max_parallel }}">
+            <small class="text-muted">{{ lang.admin.syncjob_max_parallel_info }}</small>
+          </div>
+          <div class="col-sm-6">
+            <label for="max_kb_per_second">{{ lang.admin.syncjob_max_kb_per_second }}:</label>
+            <input type="number" class="form-control" id="max_kb_per_second" name="max_kb_per_second" min="0" max="1220000" value="{{ (imapsync_settings.max_bytes_per_second / 1024)|round }}">
+            <small class="text-muted">{{ lang.admin.syncjob_max_kb_per_second_info }}</small>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10">
+            <a type="button" class="btn btn-sm d-block d-sm-inline btn-success" data-action="edit_selected"
+               data-item="imapsync_settings"
+               data-id="imapsync_settings"
+               data-api-url='edit/imapsync_settings'
+               data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.user.save_changes }}</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

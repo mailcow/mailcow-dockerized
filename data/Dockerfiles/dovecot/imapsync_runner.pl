@@ -7,16 +7,10 @@ use Data::Dumper qw(Dumper);
 use IPC::Run 'run';
 use File::Temp;
 use Try::Tiny;
+use POSIX ();
 use sigtrap 'handler' => \&sig_handler, qw(INT TERM KILL QUIT);
 
 sub trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
-my $t = Proc::ProcessTable->new;
-my $imapsync_running = grep { $_->{cmndline} =~ /imapsync\s/i } @{$t->table};
-if ($imapsync_running ge 1)
-{
-  print "imapsync is active, exiting...";
-  exit;
-}
 
 sub qqw($) {
   my @params = ();
@@ -35,6 +29,19 @@ sub qqw($) {
   return @params;
 }
 
+# Move a finished job to the back of the queue, keeping order_id contiguous (1..N).
+# Called only from the parent after reaping a child, so all rotations are serialized.
+sub rotate_to_back {
+  my ($dbh, $jid) = @_;
+  return unless defined $jid;
+  my ($cnt) = $dbh->selectrow_array("SELECT COUNT(*) FROM imapsync");
+  my ($old) = $dbh->selectrow_array("SELECT order_id FROM imapsync WHERE id = ?", undef, $jid);
+  return unless (defined $cnt && defined $old && $old < $cnt);
+  # close the gap left behind, then place this job last
+  $dbh->do("UPDATE imapsync SET order_id = order_id - 1 WHERE order_id > ? ORDER BY order_id ASC", undef, $old);
+  $dbh->do("UPDATE imapsync SET order_id = ? WHERE id = ?", undef, $cnt, $jid);
+}
+
 $run_dir="/tmp";
 $dsn = 'DBI:mysql:database=' . $ENV{'DBNAME'} . ';mysql_socket=/var/run/mysqld/mysqld.sock';
 $lock_file = $run_dir . "/imapsync_busy";
@@ -45,6 +52,16 @@ $dbh = DBI->connect($dsn, $ENV{'DBUSER'}, $ENV{'DBPASS'}, {
   mysql_enable_utf8mb4 => 1
 });
 $dbh->do("UPDATE imapsync SET is_running = 0");
+
+# Max concurrent imapsync processes (admin-configurable, stored in MySQL). Fallback 1.
+my $max_parallel = 1;
+my ($mp) = $dbh->selectrow_array("SELECT value FROM imapsync_settings WHERE name = 'max_parallel'");
+$max_parallel = int($mp) if defined($mp) && int($mp) >= 1;
+
+# Global per-process bandwidth cap in bytes/s (0 = off). Applied to every imapsync run below.
+my $global_bw = 0;
+my ($gbw) = $dbh->selectrow_array("SELECT value FROM imapsync_settings WHERE name = 'max_bytes_per_second'");
+$global_bw = int($gbw) if defined($gbw) && int($gbw) > 0;
 
 sub sig_handler {
   # Send die to force exception in "run"
@@ -91,12 +108,36 @@ my $sth = $dbh->prepare("SELECT
           UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(i.last_run) > i.mins_interval * 60
           OR
           i.last_run IS NULL)
-  ORDER BY i.last_run");
+  ORDER BY i.order_id ASC, i.id ASC");
 
 $sth->execute();
-my $row;
+my @rows = @{$sth->fetchall_arrayref()};
+$sth->finish();
 
-while ($row = $sth->fetchrow_arrayref()) {
+# Fork pool: run up to $max_parallel imapsync children at once, in order_id order.
+my $active = 0;
+my %pid_job;   # child pid => syncjob id, so the parent can rotate it to the back when it finishes
+foreach my $row (@rows) {
+  # Throttle: once max children are running, reap one before starting the next
+  if ($active >= $max_parallel) {
+    my $done = wait();
+    my $rc = $? >> 8;
+    $active-- if $active > 0;
+    if (defined $pid_job{$done}) {
+      rotate_to_back($dbh, $pid_job{$done}) if $rc == 0;   # rotate only jobs that actually ran
+      delete $pid_job{$done};
+    }
+  }
+  my $pid = fork();
+  next if (!defined $pid);
+  if ($pid != 0) { $pid_job{$pid} = @$row[0]; $active++; next; }   # parent: remember pid->job, continue
+
+  # ---- CHILD ---- own DB connection so the parent's handle stays intact across forks
+  $dbh->{InactiveDestroy} = 1;
+  $dbh = DBI->connect($dsn, $ENV{'DBUSER'}, $ENV{'DBPASS'}, {
+    mysql_auto_reconnect => 1,
+    mysql_enable_utf8mb4 => 1
+  });
 
   $id                  = @$row[0];
   $user1               = @$row[1];
@@ -151,7 +192,11 @@ while ($row = $sth->fetchrow_arrayref()) {
         || !defined($oauth_token_expires) || $oauth_token_expires - time() < 120) {
       my $upd = $dbh->prepare("UPDATE imapsync SET returned_text=?, success=0, exit_status='OAUTH_TOKEN_NOT_READY', last_run=NOW(), is_running=0 WHERE id=?");
       $upd->execute("OAuth access token for the configured source is missing or expires too soon; refresh cron will retry.", $id);
-      next;
+      $dbh->disconnect();
+      unlink $passfile1->filename if defined $passfile1;
+      unlink $passfile2->filename if defined $passfile2;
+      # exit 75 (EX_TEMPFAIL): did not actually sync -> parent keeps its queue position (no rotate)
+      POSIX::_exit(75);
     }
     $tokenfile1 = File::Temp->new(TEMPLATE => $template);
     binmode($tokenfile1, ":utf8");
@@ -172,6 +217,12 @@ while ($row = $sth->fetchrow_arrayref()) {
   my @custom_params_a = qqw($custom_params);
   my $custom_params_ref = \@custom_params_a;
 
+  # Effective per-process bandwidth cap (bytes/s): per-job value, capped by the global limit.
+  my $eff_bw = int($maxbytespersecond);
+  if ($global_bw > 0) {
+    $eff_bw = ($eff_bw > 0 && $eff_bw < $global_bw) ? $eff_bw : $global_bw;
+  }
+
   my $generated_cmds = [ "/usr/local/bin/imapsync",
   "--tmpdir", "/tmp",
   "--nofoldersizes",
@@ -181,7 +232,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   ($exclude eq "" ? () : ("--exclude", $exclude)),
   ($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
   ($maxage eq "0" ? () : ('--maxage', $maxage)),
-  ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
+  ($eff_bw <= 0 ? () : ('--maxbytespersecond', $eff_bw)),
   ($delete2duplicates ne "1" ? () : ('--delete2duplicates')),
   ($subscribeall  ne "1" ? () : ('--subscribeall')),
   ($delete1 ne "1" ? () : ('--delete')),
@@ -231,10 +282,25 @@ while ($row = $sth->fetchrow_arrayref()) {
     $update->execute();
   };
 
-
+  $dbh->disconnect();
+  # Remove this child's own temp files, then _exit so END/DESTROY are skipped — this keeps
+  # the parent's LockFile lock and DB handle intact (a plain exit() would run autoclean and
+  # release the shared lock while the parent + siblings are still working).
+  unlink $passfile1->filename if defined $passfile1;
+  unlink $passfile2->filename if defined $passfile2;
+  unlink $tokenfile1->filename if defined $tokenfile1;
+  POSIX::_exit(0);   # ---- end CHILD ----
 }
 
-$sth->finish();
+# Parent: wait for all remaining children, rotating each finished job to the back
+while ((my $done = wait()) != -1) {
+  my $rc = $? >> 8;
+  if (defined $pid_job{$done}) {
+    rotate_to_back($dbh, $pid_job{$done}) if $rc == 0;   # rotate only jobs that actually ran
+    delete $pid_job{$done};
+  }
+}
+
 $dbh->disconnect();
 
 $lockmgr->unlock($lock_file);

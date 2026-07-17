@@ -397,7 +397,12 @@
         "logo_dark_label": "Invertiert für den Darkmode",
         "logo_normal_label": "Normal",
         "user_link": "Nutzer-Link",
-        "filter": "Filter"
+        "filter": "Filter",
+        "syncjobs": "Sync Jobs",
+        "syncjob_max_parallel": "Max. parallele Sync-Prozesse",
+        "syncjob_max_parallel_info": "Wie viele Sync-Jobs gleichzeitig laufen dürfen.",
+        "syncjob_max_kb_per_second": "Bandbreiten-Limit pro Prozess (KB/s)",
+        "syncjob_max_kb_per_second_info": "0 = unbegrenzt. Kappt jeden Sync-Prozess; ein per-Job-Wert wird hierdurch begrenzt. Gesamt ≈ dieser Wert × parallele Prozesse."
     },
     "danger": {
         "access_denied": "Zugriff verweigert oder unvollständige/ungültige Daten",
@@ -559,7 +564,8 @@
         "imapsync_source_oauth_endpoint_invalid": "Ungültige OAuth2-Endpoint-URL",
         "imapsync_source_oauth_extra_invalid": "OAuth2-Extra-Parameter müssen gültiges JSON sein",
         "imapsync_source_invalid": "Ungültige Daten der Sync-Quelle",
-        "imapsync_source_oauth_invalid": "Ungültige OAuth2-Konfiguration"
+        "imapsync_source_oauth_invalid": "Ungültige OAuth2-Konfiguration",
+        "imapsync_max_parallel_invalid": "Anzahl paralleler Prozesse muss mindestens 1 sein"
     },
     "datatables": {
         "collapse_all": "Alle Einklappen",
@@ -1188,7 +1194,9 @@
         "imapsync_source_added": "Sync-Quelle %s wurde hinzugefügt",
         "imapsync_source_modified": "Sync-Quelle %s wurde gespeichert",
         "imapsync_source_deleted": "Sync-Quelle %s wurde gelöscht",
-        "imapsync_source_token_refreshed": "OAuth-Token für %s wurde erneuert"
+        "imapsync_source_token_refreshed": "OAuth-Token für %s wurde erneuert",
+        "max_parallel_saved": "Sync-Job-Einstellungen gespeichert",
+        "imapsync_order_updated": "Sync-Job auf Position %s verschoben"
     },
     "tfa": {
         "authenticators": "Authentikatoren",
@@ -1282,7 +1290,10 @@
         "timeout2": "Timeout für Verbindung zum lokalen Host",
         "maxbytespersecond": "Max. Übertragungsrate in Bytes/s (0 für unlimitiert)",
         "custom_params": "Eigene Parameter",
-        "custom_params_hint": "Richtig: --param=xy, falsch: --param xy"
+        "custom_params_hint": "Richtig: --param=xy, falsch: --param xy",
+        "order_id": "Position",
+        "order_id_hint": "Kleinere Position läuft zuerst; Ändern sortiert die globale Warteschlange um.",
+        "set_position": "Position setzen"
     },
     "user": {
         "action": "Aktion",

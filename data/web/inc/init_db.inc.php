@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "15072026_1000";
+    $db_version = "16072026_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -892,6 +892,7 @@ function init_db_schema()
           "subscribeall" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "dry" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "order_id" => "INT NOT NULL DEFAULT 0",
           "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "success" => "TINYINT(1) UNSIGNED DEFAULT NULL",
@@ -905,7 +906,8 @@ function init_db_schema()
             "" => array("id")
           ),
           "key" => array(
-            "idx_source_id" => array("source_id")
+            "idx_source_id" => array("source_id"),
+            "idx_order_id" => array("order_id")
           ),
           "fkey" => array(
             "fk_imapsync_source" => array(
@@ -914,6 +916,20 @@ function init_db_schema()
               "delete" => "RESTRICT",
               "update" => "NO ACTION"
             )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_settings" => array(
+        "cols" => array(
+          "name" => "VARCHAR(64) NOT NULL",
+          "value" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("name")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -1508,6 +1524,14 @@ function init_db_schema()
 
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
+
+    // Syncjobs: seed global settings + one-time sequential order_id for pre-existing jobs
+    $pdo->query("INSERT IGNORE INTO `imapsync_settings` (`name`, `value`) VALUES ('max_parallel', '1')");
+    if (intval($pdo->query("SELECT COUNT(*) FROM `imapsync`")->fetchColumn()) > 0
+        && intval($pdo->query("SELECT MAX(`order_id`) FROM `imapsync`")->fetchColumn()) === 0) {
+      $pdo->query("SET @r := 0");
+      $pdo->query("UPDATE `imapsync` SET `order_id` = (@r := @r + 1) ORDER BY `id`");
+    }
 
     // Inject admin if not exists
     $stmt = $pdo->query("SELECT NULL FROM `admin`");

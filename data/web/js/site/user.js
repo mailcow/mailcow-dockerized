@@ -272,6 +272,7 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order: [[3, 'asc']],
       ajax: {
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
@@ -342,6 +343,12 @@ jQuery(function($){
         {
           title: 'ID',
           data: 'id',
+          defaultContent: '',
+          responsivePriority: 3
+        },
+        {
+          title: lang.syncjobs.order_id,
+          data: 'order_id',
           defaultContent: '',
           responsivePriority: 3
         },

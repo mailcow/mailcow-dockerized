@@ -397,7 +397,12 @@
         "user_quicklink": "Hide Quicklink to User Login Page",
         "validate_license_now": "Validate GUID against license server",
         "verify": "Verify",
-        "yes": "&#10003;"
+        "yes": "&#10003;",
+        "syncjobs": "Sync jobs",
+        "syncjob_max_parallel": "Max. parallel sync processes",
+        "syncjob_max_parallel_info": "How many sync jobs may run at the same time.",
+        "syncjob_max_kb_per_second": "Bandwidth limit per process (KB/s)",
+        "syncjob_max_kb_per_second_info": "0 = unlimited. Caps every sync process; a per-job value is capped by this. Total ≈ this × max parallel."
     },
     "danger": {
         "access_denied": "Access denied or invalid form data",
@@ -559,7 +564,8 @@
         "imapsync_source_oauth_endpoint_invalid": "Invalid OAuth2 endpoint URL",
         "imapsync_source_oauth_extra_invalid": "OAuth2 extra parameters must be valid JSON",
         "imapsync_source_invalid": "Invalid sync source data",
-        "imapsync_source_oauth_invalid": "Invalid OAuth2 configuration"
+        "imapsync_source_oauth_invalid": "Invalid OAuth2 configuration",
+        "imapsync_max_parallel_invalid": "Parallel process count must be at least 1"
     },
     "datatables": {
         "collapse_all": "Collapse All",
@@ -1195,7 +1201,9 @@
         "imapsync_source_added": "Sync source %s has been added",
         "imapsync_source_modified": "Sync source %s has been saved",
         "imapsync_source_deleted": "Sync source %s has been deleted",
-        "imapsync_source_token_refreshed": "OAuth token for %s has been refreshed"
+        "imapsync_source_token_refreshed": "OAuth token for %s has been refreshed",
+        "max_parallel_saved": "Sync job settings saved",
+        "imapsync_order_updated": "Sync job moved to position %s"
     },
     "tfa": {
         "authenticators": "Authenticators",
@@ -1289,7 +1297,10 @@
         "timeout2": "Timeout for connection to local host",
         "maxbytespersecond": "Max. bytes per second <br><small>(0 = unlimited)</small>",
         "custom_params": "Custom parameters",
-        "custom_params_hint": "Right: --param=xy, wrong: --param xy"
+        "custom_params_hint": "Right: --param=xy, wrong: --param xy",
+        "order_id": "Position",
+        "order_id_hint": "Lower position runs first; setting it re-sorts the global queue.",
+        "set_position": "Set position"
     },
     "user": {
         "action": "Action",

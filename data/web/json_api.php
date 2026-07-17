@@ -2001,7 +2001,29 @@ if (isset($_GET['query'])) {
           }
         break;
         case "syncjob":
-          process_edit_return(syncjob('edit', 'job', array_merge(array('id' => $items), $attr)));
+          switch ($object) {
+            case "order":
+              process_edit_return(syncjob('edit', 'job_order', array_merge(array('id' => $items), $attr)));
+            break;
+            default:
+              process_edit_return(syncjob('edit', 'job', array_merge(array('id' => $items), $attr)));
+            break;
+          }
+        break;
+        case "imapsync_settings":
+          $mp = intval($attr['max_parallel'] ?? 0);
+          // UI sends KB/s; store bytes/s (runner + per-job field are bytes/s)
+          $bw = max(0, intval($attr['max_kb_per_second'] ?? 0)) * 1024;
+          if ($mp < 1) {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array('imapsync_settings', 'edit', $attr), 'msg' => 'imapsync_max_parallel_invalid');
+            process_edit_return(false);
+          } elseif (imapsync_set_setting('max_parallel', $mp) && imapsync_set_setting('max_bytes_per_second', $bw)) {
+            $_SESSION['return'][] = array('type' => 'success', 'log' => array('imapsync_settings', 'edit'), 'msg' => 'max_parallel_saved');
+            process_edit_return(true);
+          } else {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array('imapsync_settings', 'edit'), 'msg' => 'access_denied');
+            process_edit_return(false);
+          }
         break;
         case "syncjob_source":
           switch ($object) {

@@ -2157,7 +2157,7 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order: [[2, 'desc']],
+      order: [[3, 'asc']],
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
       },
@@ -2225,6 +2225,12 @@ jQuery(function($){
         {
           title: 'ID',
           data: 'id',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.syncjobs.order_id,
+          data: 'order_id',
           responsivePriority: 3,
           defaultContent: ''
         },

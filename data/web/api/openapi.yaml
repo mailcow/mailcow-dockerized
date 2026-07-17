@@ -1615,7 +1615,7 @@ paths:
                           enc1: SSL
                           auth_type: PLAIN
                           active: 1
-                          is_global: 0
+                          scope: all
                       msg:
                         - imapsync_source_added
                         - Example import
@@ -1659,7 +1659,7 @@ paths:
                 enc1: SSL
                 auth_type: PLAIN
                 active: "1"
-                is_global: "0"
+                scope: all
               properties:
                 name:
                   description: source name, unique per owner
@@ -1688,8 +1688,20 @@ paths:
                     - LOGIN
                     - CRAM-MD5
                     - XOAUTH2
+                oauth_flow:
+                  description: XOAUTH2 grant type (default client_credentials)
+                  type: string
+                  enum:
+                    - client_credentials
+                    - authorization_code
                 oauth_token_endpoint:
                   description: required when auth_type is XOAUTH2 (token URL)
+                  type: string
+                oauth_authorize_endpoint:
+                  description: required when oauth_flow is authorization_code (authorize URL)
+                  type: string
+                oauth_userinfo_endpoint:
+                  description: optional identity endpoint for authorization_code
                   type: string
                 oauth_client_id:
                   description: required when auth_type is XOAUTH2
@@ -1706,12 +1718,25 @@ paths:
                 active:
                   description: enables or disables the source
                   type: boolean
-                is_global:
-                  description: admin-only — make the source available to everyone
-                  type: boolean
-                owner:
-                  description: admin-only — assign ownership to a specific username
+                scope:
+                  description: >-
+                    admin/domainadmin — source visibility. client_credentials
+                    XOAUTH2 sources are always forced to a private scope.
                   type: string
+                  enum:
+                    - all
+                    - domain
+                    - user
+                domains:
+                  description: target domains when scope is domain
+                  type: array
+                  items:
+                    type: string
+                users:
+                  description: target users when scope is user
+                  type: array
+                  items:
+                    type: string
               type: object
   /api/v1/add/tls-policy-map:
     post:
@@ -4196,7 +4221,19 @@ paths:
                         - LOGIN
                         - CRAM-MD5
                         - XOAUTH2
+                    oauth_flow:
+                      description: XOAUTH2 grant type
+                      type: string
+                      enum:
+                        - client_credentials
+                        - authorization_code
                     oauth_token_endpoint:
+                      type: string
+                    oauth_authorize_endpoint:
+                      description: required when oauth_flow is authorization_code
+                      type: string
+                    oauth_userinfo_endpoint:
+                      description: optional identity endpoint for authorization_code
                       type: string
                     oauth_client_id:
                       type: string
@@ -4209,6 +4246,23 @@ paths:
                       type: string
                     active:
                       type: boolean
+                    scope:
+                      description: source visibility (admin/domainadmin)
+                      type: string
+                      enum:
+                        - all
+                        - domain
+                        - user
+                    domains:
+                      description: target domains when scope is domain
+                      type: array
+                      items:
+                        type: string
+                    users:
+                      description: target users when scope is user
+                      type: array
+                      items:
+                        type: string
                   type: object
                 items:
                   description: list of source ids to update
@@ -4277,6 +4331,135 @@ paths:
                   type: array
                   items:
                     type: string
+              type: object
+  /api/v1/edit/syncjob/order:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - job_order
+                      msg:
+                        - imapsync_order_updated
+                        - "1"
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Move a sync job to a global queue position (admin only). Positions are
+        contiguous (1..N) across all sync jobs; setting a job to a position
+        shifts the others accordingly. The runner processes jobs in ascending
+        order, up to the configured `max_parallel` at a time, and rotates a job
+        to the back after it runs.
+      operationId: Set sync job queue position
+      summary: Set sync job queue position
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items: "3"
+                attr:
+                  order_id: "1"
+              properties:
+                attr:
+                  properties:
+                    order_id:
+                      description: target position (1..N)
+                      type: number
+                  type: object
+                items:
+                  description: sync job id to move
+                  type: string
+              type: object
+  /api/v1/edit/imapsync_settings:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - imapsync_settings
+                        - edit
+                      msg:
+                        - max_parallel_saved
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Update global sync job settings (admin only). `max_parallel` is the
+        number of imapsync processes that may run concurrently; `max_kb_per_second`
+        is a per-process bandwidth cap in KB/s (0 = unlimited), stored internally
+        in bytes/s.
+      operationId: Update sync job settings
+      summary: Update sync job settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  max_parallel: "4"
+                  max_kb_per_second: "2000"
+              properties:
+                attr:
+                  properties:
+                    max_parallel:
+                      description: Max. concurrent sync processes (>= 1)
+                      type: number
+                    max_kb_per_second:
+                      description: Bandwidth limit per process in KB/s (0 = unlimited)
+                      type: number
+                  type: object
               type: object
   /api/v1/edit/user-acl:
     post:
@@ -6005,7 +6188,8 @@ paths:
                     - id: 3
                       name: Example import
                       description: ""
-                      owner: null
+                      created_by: ""
+                      scope: all
                       host1: imap.example.org
                       port1: 993
                       enc1: SSL
