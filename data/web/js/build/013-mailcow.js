@@ -414,3 +414,134 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(copyText.value);
   mailcow_alert_box(lang.copy_to_clipboard, "success");
 }
+
+// ===== IMAP sync sources: shared helpers + delegated listeners =====
+// Used by the mailbox/user/edit pages (each still owns its own draw_imapsync_source_table).
+// Kept here because 013-mailcow.js is loaded globally, so the logic lives in one place.
+
+// Human-readable visibility label for a source row (used by the per-page source tables)
+function imapsyncScopeDisplay(item) {
+  if (item.scope === 'all') return '<i class="bi bi-globe"></i> ' + lang.syncjobs.source_scope_all;
+  if (item.scope === 'domain') return escapeHtml(lang.syncjobs.source_scope_domain + ': ' + (item.domains || []).join(', '));
+  var us = item.users || [];
+  if (us.length === 0) return escapeHtml(item.created_by || '');
+  return escapeHtml(lang.syncjobs.source_scope_user + ': ' + us.join(', '));
+}
+
+// (Re)build every imapsync-source dropdown from the ACL-filtered API (fresh on modal open)
+function populateImapsyncSourceSelects() {
+  $.get("/api/v1/get/syncjob_source/all", function(sources) {
+    $('select.imapsync-source-select').each(function() {
+      var $sel = $(this);
+      var keepId = $sel.data('current-source-id');
+      $sel.empty();
+      $sel.append('<option value="">' + (lang.syncjobs ? lang.syncjobs.source_select : '') + '</option>');
+      $.each(sources, function(_, src) {
+        var label = src.name + ' — ' + src.host1 + ':' + src.port1 + ' (' + src.auth_type + ')';
+        if (src.scope === 'all') label += ' [' + (lang.syncjobs ? lang.syncjobs.source_scope_all : 'all') + ']';
+        var $opt = $('<option/>').val(src.id).text(label)
+          .data('auth-type', src.auth_type).data('oauth-flow', src.oauth_flow);
+        if (keepId && parseInt(keepId) === parseInt(src.id)) $opt.attr('selected', 'selected');
+        $sel.append($opt);
+      });
+      if (typeof $sel.selectpicker === 'function') {
+        $sel.selectpicker('destroy');
+        $sel.selectpicker();
+      }
+      $sel.trigger('change');
+    });
+  });
+}
+
+// Populate a scope domain/user multiselect from the ACL-filtered endpoint (preserves existing options)
+function fillImapsyncScopeSelect($sel, url, field) {
+  $.get('/api/v1/get/' + url, function(rows) {
+    var have = {};
+    $sel.find('option').each(function() { have[$(this).val()] = true; });
+    $.each(rows, function(_, r) {
+      var v = r[field];
+      if (!v || have[v]) return;
+      $sel.append($('<option/>').val(v).text(v));
+    });
+    // Rebuild the bootstrap-select wrapper (destroy + re-init)
+    if (typeof $sel.selectpicker === 'function') {
+      $sel.selectpicker('destroy');
+      $sel.selectpicker();
+    }
+  });
+}
+
+// Source editor: OAuth block visibility + authorization_code-only fields + redirect URI
+function imapsyncSyncSourceOauthToggle($form) {
+  var isOauth = $form.find('select.imapsync-source-auth-type').val() === 'XOAUTH2';
+  var isAuthCode = $form.find('select.imapsync-source-oauth-flow').val() === 'authorization_code';
+  $form.find('.imapsync-source-oauth-block').toggle(isOauth);
+  $form.find('.imapsync-source-authcode-block').toggle(isOauth && isAuthCode);
+  $form.find('.imapsync-source-redirect-uri').val(window.location.origin + '/syncjob-oauth');
+}
+
+$(document).ready(function() {
+  // Syncjob form: toggle password row / OAuth "connect" button by the selected source's flow
+  $(document).on('change', 'select.imapsync-source-select', function() {
+    var $sel = $(this);
+    var $opt = $sel.find('option:selected');
+    var $form = $sel.closest('form');
+    var isOauth = ($opt.data('auth-type') === 'XOAUTH2');
+    var isAuthCode = isOauth && ($opt.data('oauth-flow') === 'authorization_code');
+    $form.find('.password1-row').toggle(!isOauth);
+    $form.find('input[name="password1"]').prop('required', !isOauth);
+    $form.find('.oauth-source-hint').toggle(isOauth);
+    $form.find('.imapsync-oauth-connect-row').toggle(isAuthCode);
+  });
+
+  // Source editor: OAuth block + authorization_code fields
+  $(document).on('change', 'select.imapsync-source-auth-type, select.imapsync-source-oauth-flow', function() {
+    imapsyncSyncSourceOauthToggle($(this).closest('form'));
+  });
+
+  // Source editor: scope -> show + populate the domain/user pickers
+  $(document).on('change', 'select.imapsync-source-scope', function() {
+    var $form = $(this).closest('form');
+    var scope = $(this).val();
+    $form.find('.imapsync-source-domains-row').toggle(scope === 'domain');
+    $form.find('.imapsync-source-users-row').toggle(scope === 'user');
+    if (scope === 'domain') fillImapsyncScopeSelect($form.find('.imapsync-source-domains'), 'domain/all', 'domain_name');
+    if (scope === 'user') fillImapsyncScopeSelect($form.find('.imapsync-source-users'), 'mailbox/all', 'username');
+  });
+
+  // "Connect with the provider": open the per-user OAuth popup for the selected source
+  $(document).on('click', '.imapsync-oauth-connect-btn', function() {
+    var $form = $(this).closest('form');
+    var sourceId = $form.find('select.imapsync-source-select').val();
+    if (!sourceId) return;
+    window.open('/syncjob-oauth?action=start&source_id=' + encodeURIComponent(sourceId),
+      'syncjob_oauth', 'width=600,height=700');
+  });
+
+  // Result from the OAuth popup: fill + lock user1, mark connected (or show the error)
+  window.addEventListener('message', function(ev) {
+    if (ev.origin !== window.location.origin || !ev.data || ev.data.type !== 'syncjob_oauth') return;
+    $('.imapsync-oauth-connect-row:visible').each(function() {
+      var $form = $(this).closest('form');
+      var $status = $form.find('.imapsync-oauth-connect-status');
+      if (ev.data.ok) {
+        $form.find('input[name="user1"]').val(ev.data.user1).prop('readonly', true);
+        $status.removeClass('text-danger').addClass('text-success')
+          .text((lang.syncjobs ? lang.syncjobs.syncjob_oauth_connected : 'Connected') + ': ' + ev.data.user1);
+      } else {
+        $status.removeClass('text-success').addClass('text-danger').text(ev.data.error || 'error');
+      }
+    });
+  });
+
+  // Add-source modal opens: init scope pickers + OAuth block (auth_type may be cached-form preselected)
+  $(document).on('shown.bs.modal', '#addImapsyncSourceModal', function() {
+    $(this).find('select.imapsync-source-scope').trigger('change');
+    imapsyncSyncSourceOauthToggle($(this).find('form'));
+  });
+
+  // Add-syncjob modal opens: (re)load the source dropdown from the API
+  $(document).on('shown.bs.modal', '#addSyncJobModalAdmin, #addSyncJobModal', function() {
+    populateImapsyncSourceSelects();
+  });
+});

@@ -31,23 +31,19 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">{{ lang.add.syncjob }}</h3>
+        <h3 class="modal-title">{{ lang.syncjobs.add }}</h3>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p>{{ lang.add.syncjob_hint }}</p>
+        <p>{{ lang.syncjobs.add_hint }}</p>
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_syncjob">
-          <div class="row mb-2">
-            <label class="control-label col-sm-2" for="host1">{{ lang.add.hostname }}</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="host1" required>
-            </div>
-          </div>
           <div class="row mb-4">
-            <label class="control-label col-sm-2" for="port1">{{ lang.add.port }}</label>
+            <label class="control-label col-sm-2" for="source_id">{{ lang.syncjobs.source_select }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="port1" min="1" max="65535" value="143" required>
-              <small class="text-muted">1-65535</small>
+              <select class="imapsync-source-select" data-live-search="true" name="source_id" title="{{ lang.syncjobs.source_select }}" required>
+                {# options are loaded via the API on modal open (populateImapsyncSourceSelects) #}
+              </select>
+              <small class="text-muted oauth-source-hint" style="display:none;">{{ lang.syncjobs.oauth_source_hint }}</small>
             </div>
           </div>
           <div class="row mb-2">
@@ -56,71 +52,67 @@
               <input type="text" class="form-control" name="user1" required>
             </div>
           </div>
-          <div class="row mb-4">
+          <div class="row mb-2 imapsync-oauth-connect-row" style="display:none;">
+            <div class="offset-sm-2 col-sm-10">
+              <button type="button" class="btn btn-sm btn-primary imapsync-oauth-connect-btn">{{ lang.syncjobs.syncjob_oauth_connect }}</button>
+              <span class="imapsync-oauth-connect-status ms-2"></span>
+            </div>
+          </div>
+          <div class="row mb-4 password1-row">
             <label class="control-label col-sm-2" for="password1">{{ lang.add.password }}</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" name="password1" data-hibp="true" required>
+              <input type="password" class="form-control" name="password1" data-hibp="true">
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="enc1">{{ lang.add.enc_method }}</label>
-            <div class="col-sm-10">
-              <select name="enc1" title="{{ lang.add.select }}" required>
-                <option value="SSL" selected>SSL</option>
-                <option value="TLS">STARTTLS</option>
-                <option value="PLAIN">PLAIN</option>
-              </select>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2" for="mins_interval">{{ lang.add.mins_interval }}</label>
+            <label class="control-label col-sm-2" for="mins_interval">{{ lang.syncjobs.mins_interval }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="20" required>
               <small class="text-muted">1-43800</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="subfolder2">{{ lang.edit.subfolder2|raw }}</label>
+            <label class="control-label col-sm-2" for="subfolder2">{{ lang.syncjobs.subfolder2|raw }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="subfolder2" value="">
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="maxage">{{ lang.edit.maxage|raw }}</label>
+            <label class="control-label col-sm-2" for="maxage">{{ lang.syncjobs.maxage|raw }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="maxage" min="0" max="32000" value="0">
               <small class="text-muted">0-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="maxbytespersecond">{{ lang.edit.maxbytespersecond|raw }}</label>
+            <label class="control-label col-sm-2" for="maxbytespersecond">{{ lang.syncjobs.maxbytespersecond|raw }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="maxbytespersecond" min="0" max="125000000" value="0">
               <small class="text-muted">0-125000000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="timeout1">{{ lang.edit.timeout1 }}</label>
+            <label class="control-label col-sm-2" for="timeout1">{{ lang.syncjobs.timeout1 }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="timeout1" min="1" max="32000" value="600">
               <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="timeout2">{{ lang.edit.timeout2 }}</label>
+            <label class="control-label col-sm-2" for="timeout2">{{ lang.syncjobs.timeout2 }}</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" name="timeout2" min="1" max="32000" value="600">
               <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2" for="exclude">{{ lang.add.exclude }}</label>
+            <label class="control-label col-sm-2" for="exclude">{{ lang.syncjobs.exclude }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="exclude" value="(?i)spam|(?i)junk">
             </div>
           </div>
           <div class="row mb-4">
-            <label class="control-label col-sm-2" for="custom_params">{{ lang.add.custom_params }}</label>
+            <label class="control-label col-sm-2" for="custom_params">{{ lang.syncjobs.custom_params }}</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" name="custom_params" placeholder="--delete2folders --otheroption">
             </div>
@@ -128,49 +120,49 @@
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.syncjobs.delete2duplicates }} (--delete2duplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.syncjobs.delete1 }} (--delete1)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.syncjobs.delete2 }} (--delete2)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.syncjobs.automap }} (--automap)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.syncjobs.skipcrossduplicates }} (--skipcrossduplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.syncjobs.subscribeall }} (--subscribeall)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="dry" checked> {{ lang.add.dry }} (--dry)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="dry" checked> {{ lang.syncjobs.dry }} (--dry)</label>
               </div>
             </div>
           </div>
@@ -191,6 +183,7 @@
     </div>
   </div>
 </div><!-- add sync job modal -->
+{% include 'modals/imapsync_source.twig' %}
 <!-- app passwd modal -->
 <div class="modal fade" id="addAppPasswdModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">

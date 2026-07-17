@@ -1593,6 +1593,126 @@ paths:
                   description: enables or disables the sync job
                   type: boolean
               type: object
+  /api/v1/add/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - add
+                        - source
+                        - name: Example import
+                          description: ""
+                          host1: imap.example.org
+                          port1: 993
+                          enc1: SSL
+                          auth_type: PLAIN
+                          active: 1
+                          is_global: 0
+                      msg:
+                        - imapsync_source_added
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Create a reusable IMAP sync source. A sync job binds to a source by id;
+        the source carries host/port/encryption and either static credentials
+        (PLAIN/LOGIN/CRAM-MD5 — supplied per-job) or an OAuth2 token endpoint
+        (XOAUTH2 — token cached on the source row).
+      operationId: Create sync job source
+      summary: Create sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                name: Example import
+                description: ""
+                host1: imap.example.org
+                port1: "993"
+                enc1: SSL
+                auth_type: PLAIN
+                active: "1"
+                is_global: "0"
+              properties:
+                name:
+                  description: source name, unique per owner
+                  type: string
+                description:
+                  description: free text shown in the UI
+                  type: string
+                host1:
+                  description: remote IMAP host
+                  type: string
+                port1:
+                  description: remote IMAP port (1-65535)
+                  type: integer
+                enc1:
+                  description: TLS / SSL / PLAIN
+                  type: string
+                  enum:
+                    - TLS
+                    - SSL
+                    - PLAIN
+                auth_type:
+                  description: authentication mechanism
+                  type: string
+                  enum:
+                    - PLAIN
+                    - LOGIN
+                    - CRAM-MD5
+                    - XOAUTH2
+                oauth_token_endpoint:
+                  description: required when auth_type is XOAUTH2 (token URL)
+                  type: string
+                oauth_client_id:
+                  description: required when auth_type is XOAUTH2
+                  type: string
+                oauth_client_secret:
+                  description: required when auth_type is XOAUTH2
+                  type: string
+                oauth_scope:
+                  description: required when auth_type is XOAUTH2
+                  type: string
+                oauth_extra_params:
+                  description: optional JSON object merged into the token request body
+                  type: string
+                active:
+                  description: enables or disables the source
+                  type: boolean
+                is_global:
+                  description: admin-only — make the source available to everyone
+                  type: boolean
+                owner:
+                  description: admin-only — assign ownership to a specific username
+                  type: string
+              type: object
   /api/v1/add/tls-policy-map:
     post:
       responses:
@@ -2510,7 +2630,7 @@ paths:
       description: >-
         Using this endpoint you can perform actions on quarantine items. It is possible to release
         emails from quarantine into to the inbox, or learn them as ham to improve Rspamd filtering.
-        You must provide the quarantine item IDs. You can get the IDs using the GET method.      
+        You must provide the quarantine item IDs. You can get the IDs using the GET method.
       operationId: Edit mails in Quarantine
       requestBody:
         content:
@@ -2765,6 +2885,62 @@ paths:
                   type: object
               type: object
       summary: Delete sync job
+  /api/v1/delete/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - delete
+                        - source
+                        - id:
+                            - "3"
+                      msg:
+                        - imapsync_source_deleted
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Delete one or more sync job sources by id. Sources still referenced by
+        a sync job cannot be deleted (FK ON DELETE RESTRICT) — delete or
+        repoint the dependent jobs first.
+      operationId: Delete sync job source
+      summary: Delete sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "3"
+              items:
+                type: string
+              type: array
   /api/v1/delete/tls-policy-map:
     post:
       responses:
@@ -3931,6 +4107,177 @@ paths:
                   type: object
               type: object
       summary: Update sync job
+  /api/v1/edit/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - source
+                        - id:
+                            - "3"
+                          name: Example import
+                          host1: imap.example.org
+                          port1: 993
+                      msg:
+                        - imapsync_source_modified
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Update one or more sync job sources. Fields not provided are left
+        unchanged. For XOAUTH2 sources, an empty `oauth_client_secret`
+        preserves the stored value.
+      operationId: Update sync job source
+      summary: Update sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "3"
+                attr:
+                  name: Example import
+                  description: ""
+                  host1: imap.example.org
+                  port1: "993"
+                  enc1: SSL
+                  auth_type: PLAIN
+                  active: "1"
+              properties:
+                attr:
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    host1:
+                      type: string
+                    port1:
+                      type: integer
+                    enc1:
+                      type: string
+                      enum:
+                        - TLS
+                        - SSL
+                        - PLAIN
+                    auth_type:
+                      type: string
+                      enum:
+                        - PLAIN
+                        - LOGIN
+                        - CRAM-MD5
+                        - XOAUTH2
+                    oauth_token_endpoint:
+                      type: string
+                    oauth_client_id:
+                      type: string
+                    oauth_client_secret:
+                      description: empty keeps the previously stored secret
+                      type: string
+                    oauth_scope:
+                      type: string
+                    oauth_extra_params:
+                      type: string
+                    active:
+                      type: boolean
+                  type: object
+                items:
+                  description: list of source ids to update
+                  type: array
+                  items:
+                    type: string
+              type: object
+  /api/v1/edit/syncjob_source/refresh_token:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - refresh_token
+                        - id:
+                            - "3"
+                      msg:
+                        - imapsync_source_token_refreshed
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Force an OAuth2 access-token refresh for a XOAUTH2 source. Performs a
+        Client-Credentials grant against the source's `oauth_token_endpoint`
+        and caches the new access token + expiry on the source row. On failure,
+        the error is recorded in `oauth_last_refresh_error`.
+      operationId: Refresh sync job source token
+      summary: Refresh sync job source token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "3"
+              properties:
+                items:
+                  description: list of source ids to refresh
+                  type: array
+                  items:
+                    type: string
+              type: object
   /api/v1/edit/user-acl:
     post:
       responses:
@@ -5629,6 +5976,62 @@ paths:
       description: You can list all syn jobs existing in system.
       operationId: Get sync jobs
       summary: Get sync jobs
+  "/api/v1/get/syncjob_source/{id}":
+    get:
+      parameters:
+        - description: source id, or `all` to list every source visible to the session
+          example: all
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 3
+                      name: Example import
+                      description: ""
+                      owner: null
+                      host1: imap.example.org
+                      port1: 993
+                      enc1: SSL
+                      auth_type: PLAIN
+                      oauth_token_endpoint: null
+                      oauth_client_id: null
+                      oauth_client_secret: ""
+                      oauth_scope: null
+                      oauth_extra_params: null
+                      oauth_access_token: ""
+                      oauth_token_expires: null
+                      oauth_last_refresh_error: null
+                      active: 1
+                      created: "2026-06-11 09:00:00"
+                      modified: "2026-06-11 09:00:00"
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Returns a single sync job source by id, or all sources visible to the
+        caller when `id` is `all`. Secrets (`oauth_client_secret`,
+        `oauth_access_token`) are blanked unless requested with internal
+        flags — they are never returned over the JSON API.
+      operationId: Get sync job sources
+      summary: Get sync job sources
   "/api/v1/get/tls-policy-map/{id}":
     get:
       parameters:

@@ -51,40 +51,47 @@ sub sig_handler {
   die "sig_handler received signal, preparing to exit...\n";
 };
 
-open my $file, '<', "/etc/sogo/sieve.creds"; 
-my $creds = <$file>; 
+open my $file, '<', "/etc/sogo/sieve.creds";
+my $creds = <$file>;
 close $file;
 my ($master_user, $master_pass) = split /:/, $creds;
-my $sth = $dbh->prepare("SELECT id,
-  user1,
-  user2,
-  host1,
-  authmech1,
-  password1,
-  exclude,
-  port1,
-  enc1,
-  delete2duplicates,
-  maxage,
-  subfolder2,
-  delete1,
-  delete2,
-  automap,
-  skipcrossduplicates,
-  maxbytespersecond,
-  custom_params,
-  subscribeall,
-  timeout1,
-  timeout2,
-  dry
-    FROM imapsync
-      WHERE active = 1
-        AND is_running = 0
+# Source-based schema: join imapsync_source to read host/port/encryption/auth-type
+my $sth = $dbh->prepare("SELECT
+  i.id,
+  i.user1,
+  i.user2,
+  s.host1,
+  s.auth_type,
+  i.password1,
+  i.exclude,
+  s.port1,
+  s.enc1,
+  i.delete2duplicates,
+  i.maxage,
+  i.subfolder2,
+  i.delete1,
+  i.delete2,
+  i.automap,
+  i.skipcrossduplicates,
+  i.maxbytespersecond,
+  i.custom_params,
+  i.subscribeall,
+  i.timeout1,
+  i.timeout2,
+  i.dry,
+  s.oauth_access_token,
+  s.oauth_token_expires,
+  s.oauth_flow,
+  i.source_id
+    FROM imapsync i JOIN imapsync_source s ON i.source_id = s.id
+      WHERE i.active = 1
+        AND s.active = 1
+        AND i.is_running = 0
         AND (
-          UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last_run) > mins_interval * 60
+          UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(i.last_run) > i.mins_interval * 60
           OR
-          last_run IS NULL)
-  ORDER BY last_run");
+          i.last_run IS NULL)
+  ORDER BY i.last_run");
 
 $sth->execute();
 my $row;
@@ -95,7 +102,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   $user1               = @$row[1];
   $user2               = @$row[2];
   $host1               = @$row[3];
-  $authmech1           = @$row[4];
+  $auth_type           = @$row[4];
   $password1           = @$row[5];
   $exclude             = @$row[6];
   $port1               = @$row[7];
@@ -113,16 +120,53 @@ while ($row = $sth->fetchrow_arrayref()) {
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
   $dry                 = @$row[21];
+  $oauth_access_token  = @$row[22];
+  $oauth_token_expires = @$row[23];
+  $oauth_flow          = @$row[24];
+  $source_id           = @$row[25];
 
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
   my $passfile1 = File::Temp->new(TEMPLATE => $template);
   my $passfile2 = File::Temp->new(TEMPLATE => $template);
-  
+  my $tokenfile1;
+
   binmode( $passfile1, ":utf8" );
-  
-  print $passfile1 "$password1\n";
+
+  # Auth-mode-specific argument set
+  my @auth_args;
+  if (defined($auth_type) && $auth_type eq 'XOAUTH2') {
+    # authorization_code sources use a per-user token (keyed by source + user1),
+    # not the shared source-level token used by client_credentials.
+    if (defined($oauth_flow) && $oauth_flow eq 'authorization_code') {
+      my $tsth = $dbh->prepare("SELECT access_token, token_expires FROM imapsync_source_oauth_token WHERE source_id=? AND username=?");
+      $tsth->execute($source_id, $user1);
+      my $trow = $tsth->fetchrow_arrayref();
+      $oauth_access_token  = $trow ? @$trow[0] : undef;
+      $oauth_token_expires = $trow ? @$trow[1] : undef;
+    }
+    # Skip sync if cached token is missing or about to expire (<2 min)
+    if (!defined($oauth_access_token) || $oauth_access_token eq ''
+        || !defined($oauth_token_expires) || $oauth_token_expires - time() < 120) {
+      my $upd = $dbh->prepare("UPDATE imapsync SET returned_text=?, success=0, exit_status='OAUTH_TOKEN_NOT_READY', last_run=NOW(), is_running=0 WHERE id=?");
+      $upd->execute("OAuth access token for the configured source is missing or expires too soon; refresh cron will retry.", $id);
+      next;
+    }
+    $tokenfile1 = File::Temp->new(TEMPLATE => $template);
+    binmode($tokenfile1, ":utf8");
+    print $tokenfile1 "$oauth_access_token\n";
+    @auth_args = ("--authmech1", "XOAUTH2",
+                  "--oauthaccesstoken1", $tokenfile1->filename);
+  } else {
+    print $passfile1 "$password1\n";
+    @auth_args = ("--passfile1", $passfile1->filename);
+    # imapsync auto-picks PLAIN; only emit --authmech1 for LOGIN/CRAM-MD5
+    if (defined($auth_type) && $auth_type ne 'PLAIN') {
+      push @auth_args, "--authmech1", $auth_type;
+    }
+  }
+
   print $passfile2 trim($master_pass) . "\n";
 
   my @custom_params_a = qqw($custom_params);
@@ -147,7 +191,7 @@ while ($row = $sth->fetchrow_arrayref()) {
   (!defined($enc1) ? () : ($enc1)),
   "--host1", $host1,
   "--user1", $user1,
-  "--passfile1", $passfile1->filename,
+  @auth_args,
   "--port1", $port1,
   "--host2", "localhost",
   "--user2", $user2 . '*' . trim($master_user),

@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "15072026_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -754,24 +754,133 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "imapsync_source" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "name" => "VARCHAR(100) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created_by" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "scope" => "ENUM('all','domain','user') NOT NULL DEFAULT 'user'",
+          "host1" => "VARCHAR(255) NOT NULL",
+          "port1" => "SMALLINT UNSIGNED NOT NULL",
+          "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
+          "auth_type" => "ENUM('PLAIN','LOGIN','CRAM-MD5','XOAUTH2') DEFAULT 'PLAIN'",
+          "oauth_flow" => "ENUM('client_credentials','authorization_code') NOT NULL DEFAULT 'client_credentials'",
+          "oauth_token_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_authorize_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_userinfo_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_client_id" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_client_secret" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_scope" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_extra_params" => "TEXT DEFAULT NULL",
+          "oauth_access_token" => "TEXT DEFAULT NULL",
+          "oauth_token_expires" => "BIGINT UNSIGNED DEFAULT NULL",
+          "oauth_last_refresh_error" => "TEXT DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "uniq_creator_name" => array("created_by", "name")
+          ),
+          "key" => array(
+            "idx_created_by" => array("created_by"),
+            "idx_scope" => array("scope")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_domain" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "domain")
+          ),
+          "key" => array(
+            "idx_domain" => array("domain")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_domain" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_user" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "username")
+          ),
+          "key" => array(
+            "idx_username" => array("username")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_user" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_oauth_token" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "access_token" => "TEXT DEFAULT NULL",
+          "refresh_token" => "TEXT DEFAULT NULL",
+          "token_expires" => "BIGINT UNSIGNED DEFAULT NULL",
+          "last_refresh_error" => "TEXT DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "username")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_oauth_token" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "imapsync" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "user2" => "VARCHAR(255) NOT NULL",
-          "host1" => "VARCHAR(255) NOT NULL",
-          "authmech1" => "ENUM('PLAIN','LOGIN','CRAM-MD5') DEFAULT 'PLAIN'",
+          "source_id" => "INT NOT NULL",
           "regextrans2" => "VARCHAR(255) DEFAULT ''",
           "authmd51" => "TINYINT(1) NOT NULL DEFAULT 0",
           "domain2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "subfolder2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "user1" => "VARCHAR(255) NOT NULL",
-          "password1" => "VARCHAR(255) NOT NULL",
+          "password1" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "exclude" => "VARCHAR(500) NOT NULL DEFAULT ''",
           "maxage" => "SMALLINT NOT NULL DEFAULT '0'",
           "mins_interval" => "SMALLINT UNSIGNED NOT NULL DEFAULT '0'",
           "maxbytespersecond" => "VARCHAR(50) NOT NULL DEFAULT '0'",
-          "port1" => "SMALLINT UNSIGNED NOT NULL",
-          "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
@@ -794,6 +903,17 @@ function init_db_schema()
         "keys" => array(
           "primary" => array(
             "" => array("id")
+          ),
+          "key" => array(
+            "idx_source_id" => array("source_id")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "RESTRICT",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -1179,6 +1299,33 @@ function init_db_schema()
             while ($row = array_shift($tls_options_rows)) {
               $tls_options[$row['username']] = array('tls_enforce_in' => $row['tls_enforce_in'], 'tls_enforce_out' => $row['tls_enforce_out']);
             }
+          }
+        }
+      }
+
+      // Migrate imapsync to source-based schema
+      if ($table == 'imapsync') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'imapsync'");
+        if (count($stmt->fetchAll(PDO::FETCH_ASSOC)) != 0) {
+          $stmt = $pdo->query("SHOW COLUMNS FROM `imapsync` LIKE 'host1'");
+          $has_legacy_cols = (count($stmt->fetchAll(PDO::FETCH_ASSOC)) != 0);
+          $stmt = $pdo->query("SHOW COLUMNS FROM `imapsync` LIKE 'source_id'");
+          $has_source_id = (count($stmt->fetchAll(PDO::FETCH_ASSOC)) != 0);
+
+          if ($has_legacy_cols && !$has_source_id) {
+            $pdo->exec("INSERT IGNORE INTO `imapsync_source` (`name`, `created_by`, `scope`, `host1`, `port1`, `enc1`, `auth_type`, `active`)
+              SELECT CONCAT('legacy-', `host1`, '-', `port1`, '-', `enc1`) AS name,
+                '' AS created_by, 'all' AS scope, `host1`, `port1`, `enc1`, `authmech1`, 1
+              FROM `imapsync`
+              GROUP BY `host1`, `port1`, `enc1`, `authmech1`");
+            $pdo->exec("ALTER TABLE `imapsync` ADD COLUMN `source_id` INT DEFAULT NULL");
+            $pdo->exec("UPDATE `imapsync` i
+              JOIN `imapsync_source` s
+                ON s.`host1` = i.`host1` AND s.`port1` = i.`port1`
+                AND s.`enc1` = i.`enc1` AND s.`auth_type` = i.`authmech1`
+                AND s.`created_by` = '' AND s.`scope` = 'all'
+              SET i.`source_id` = s.`id`");
+            $pdo->exec("ALTER TABLE `imapsync` MODIFY COLUMN `source_id` INT NOT NULL");
           }
         }
       }
