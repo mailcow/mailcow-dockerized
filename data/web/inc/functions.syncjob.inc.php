@@ -361,15 +361,15 @@ function imapsync_get_settings() {
 }
 
 function imapsync_normalize_custom_params($input) {
-  $pairs = json_decode((string)$input, true);
-  if (!is_array($pairs)) return '[]';
-  $allow = $GLOBALS['IMAPSYNC_OPTIONS']['whitelist'];
+  if (!is_array($input)) return '[]';
+  $pairs = $input;
+  $allow = $GLOBALS['IMAPSYNC_OPTIONS'];
   $out = array();
   foreach ($pairs as $p) {
     if (!is_array($p)) continue;
     $o = ltrim(strtolower(trim((string)($p['o'] ?? ''))), '-');
     if ($o === '') continue;
-    if (!in_array($o, $allow, true)) return false;   // disallowed option -> reject the whole set
+    if (!array_key_exists($o, $allow)) return false;   // disallowed option -> reject the whole set
     $out[] = array('o' => $o, 'v' => str_replace("\0", '', (string)($p['v'] ?? '')));
   }
   return json_encode($out);
@@ -484,7 +484,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
           $subfolder2           = $_data['subfolder2'];
           $user1                = $_data['user1'];
           $mins_interval        = $_data['mins_interval'];
-          $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
+          $custom_params        = $_data['custom_params'] ?? '';
 
           // Resolve and authorize the chosen sync source. Visibility is enforced by syncjob('get', 'source').
           $source = syncjob('get', 'source', array('id' => $source_id));
@@ -843,7 +843,8 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               $subfolder2 = (isset($_data['subfolder2'])) ? $_data['subfolder2'] : $is_now['subfolder2'];
               $mins_interval = (!empty($_data['mins_interval'])) ? $_data['mins_interval'] : $is_now['mins_interval'];
               $exclude = (isset($_data['exclude'])) ? $_data['exclude'] : $is_now['exclude'];
-              $custom_params = (isset($_data['custom_params'])) ? $_data['custom_params'] : $is_now['custom_params'];
+              $custom_params_provided = isset($_data['custom_params']);
+              $custom_params = $custom_params_provided ? $_data['custom_params'] : $is_now['custom_params'];
               $maxage = (isset($_data['maxage']) && $_data['maxage'] != "") ? intval($_data['maxage']) : $is_now['maxage'];
               $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
               $timeout1 = (isset($_data['timeout1']) && $_data['timeout1'] != "") ? intval($_data['timeout1']) : $is_now['timeout1'];
@@ -873,8 +874,9 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               $password1 = '';
             }
 
-            // Structured custom params: validate option names against the allowlist, store as JSON pairs
-            $custom_params = imapsync_normalize_custom_params($custom_params);
+            if ($custom_params_provided) {
+              $custom_params = imapsync_normalize_custom_params($custom_params);
+            }
             if ($custom_params === false) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',

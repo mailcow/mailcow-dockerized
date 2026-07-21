@@ -1050,8 +1050,7 @@ if (isset($_GET['query'])) {
             process_get_return($data);
           break;
           case "syncjob_options":
-            // allowlisted imapsync option names, for the custom-params datalist in the UI
-            process_get_return($GLOBALS['IMAPSYNC_OPTIONS']['whitelist']);
+            process_get_return($GLOBALS['IMAPSYNC_OPTIONS']);
           break;
           case "syncjob_source":
             switch ($object) {

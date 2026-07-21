@@ -520,44 +520,62 @@ function imapsyncSyncSourceOauthToggle($form) {
   $form.find('.imapsync-source-redirect-uri').val(window.location.origin + '/syncjob-oauth');
 }
 
-// Allowlisted imapsync option names for the custom-params selects. Loaded once and cached.
+// Allowlisted imapsync options as a map { name: takesValue }. Loaded once and cached.
 var imapsyncCpOptions = null;
 function imapsyncCpEnsureOptions(cb) {
   if (imapsyncCpOptions !== null) { cb(); return; }
   $.get("/api/v1/get/syncjob_options", function(opts) {
-    imapsyncCpOptions = Array.isArray(opts) ? opts : [];
+    imapsyncCpOptions = (opts && typeof opts === 'object') ? opts : {};
     cb();
   });
 }
 
-// Append one row to an editor; option is a bootstrap-select (not free-text), value is arbitrary.
+// A imapsync flag option takes no value
+function imapsyncCpTakesValue(name) {
+  return !(imapsyncCpOptions && imapsyncCpOptions[name] === false);
+}
+
+// Enable/disable/require a row's value field based on the selected option.
+function imapsyncCpApplyValueState($row) {
+  var name = $row.find('.imapsync-cp-opt').val() || '';
+  var isFlag = (name !== '') && !imapsyncCpTakesValue(name);
+  var needsValue = (name !== '') && !isFlag;
+  var $val = $row.find('.imapsync-cp-val');
+  $val.prop('disabled', isFlag);
+  if (isFlag) $val.val('');
+  $val.prop('required', needsValue);
+  $val.attr('placeholder', isFlag
+    ? ((lang.syncjobs && lang.syncjobs.custom_param_no_value) || 'no value')
+    : ((lang.syncjobs && lang.syncjobs.custom_param_value) || 'value'));
+}
+
+// Append one row to an editor; option is a native <select> (not free-text), value is arbitrary.
 function imapsyncCpAddRow($editor, o, v) {
   var $row = $(
     '<div class="input-group mb-2 imapsync-cp-row">' +
-      '<select class="form-control imapsync-cp-opt" data-width="35%"></select>' +
+      '<select class="form-control imapsync-cp-opt" style="flex:0 0 35%"></select>' +
       '<input type="text" class="form-control imapsync-cp-val">' +
       '<button type="button" class="btn btn-secondary imapsync-cp-remove"><i class="bi bi-trash"></i></button>' +
     '</div>'
   );
-  var $sel = $row.find('.imapsync-cp-opt')
-    .attr('title', (lang.syncjobs && lang.syncjobs.custom_param_option) || 'option');
-  (imapsyncCpOptions || []).forEach(function(name) {
+  var $sel = $row.find('.imapsync-cp-opt');
+  $sel.append($('<option></option>').attr('value', '').text('— ' + ((lang.syncjobs && lang.syncjobs.custom_param_option) || 'option') + ' —'));
+  Object.keys(imapsyncCpOptions || {}).forEach(function(name) {
     $sel.append($('<option></option>').attr('value', name).text(name));
   });
   // keep a stored value that is no longer allowlisted visible instead of silently dropping it
-  if (o && (imapsyncCpOptions || []).indexOf(o) === -1) {
+  if (o && !(imapsyncCpOptions && (o in imapsyncCpOptions))) {
     $sel.append($('<option></option>').attr('value', o).text(o));
   }
   $sel.val(o || '');
-  $row.find('.imapsync-cp-val').attr('placeholder', (lang.syncjobs && lang.syncjobs.custom_param_value) || 'value').val(v || '');
+  $row.find('.imapsync-cp-val').val(v || '');
   $editor.find('.imapsync-cp-rows').append($row);
-  $sel.selectpicker();
+  imapsyncCpApplyValueState($row);
 }
 
 // Build the rows of an editor from its hidden JSON value.
 function imapsyncCpBuild($editor) {
   var $hidden = $editor.siblings('.imapsync-cp-value');
-  $editor.find('.imapsync-cp-opt').selectpicker('destroy');
   $editor.find('.imapsync-cp-rows').empty();
   var pairs = [];
   try { pairs = JSON.parse($hidden.val() || '[]'); } catch (e) { pairs = []; }
@@ -581,6 +599,7 @@ function imapsyncCpSerialize($editor) {
 $(document).ready(function() {
   // Custom-params editor: keep the hidden JSON in sync with the rows
   $(document).on('change', '.imapsync-cp-opt', function() {
+    imapsyncCpApplyValueState($(this).closest('.imapsync-cp-row'));
     imapsyncCpSerialize($(this).closest('.imapsync-cp-editor'));
   });
   $(document).on('input', '.imapsync-cp-val', function() {
@@ -592,7 +611,6 @@ $(document).ready(function() {
   });
   $(document).on('click', '.imapsync-cp-remove', function() {
     var $editor = $(this).closest('.imapsync-cp-editor');
-    $(this).closest('.imapsync-cp-row').find('.imapsync-cp-opt').selectpicker('destroy');
     $(this).closest('.imapsync-cp-row').remove();
     imapsyncCpSerialize($editor);
   });
@@ -609,11 +627,12 @@ $(document).ready(function() {
     var $form = $sel.closest('form');
     var isOauth = ($opt.data('auth-type') === 'XOAUTH2');
     var isAuthCode = isOauth && ($opt.data('oauth-flow') === 'authorization_code');
+    var isEdit = ($form.data('id') === 'editsyncjob');
     $form.find('.password1-row').toggle(!isOauth);
-    $form.find('input[name="password1"]').prop('required', !isOauth);
+    $form.find('input[name="password1"]').prop('required', !isOauth && !isEdit);
     $form.find('.imapsync-oauth-connect-row').toggle(isAuthCode);
     $form.find('.imapsync-user1-row').toggle(!isAuthCode);
-    $form.find('input[name="user1"]').prop('required', !isAuthCode);
+    $form.find('input[name="user1"]').prop('required', !isAuthCode && !isEdit);
   });
 
   // Source editor: OAuth block + authorization_code fields

@@ -1535,7 +1535,7 @@ function init_db_schema()
 
     // Syncjobs: migrate custom_params from raw imapsync string to structured JSON pairs.
     // Old values could not contain spaces (they were rejected), so a whitespace split is safe.
-    $allow = $GLOBALS['IMAPSYNC_OPTIONS']['whitelist'];
+    $allow = $GLOBALS['IMAPSYNC_OPTIONS'];
     $cp_upd = $pdo->prepare("UPDATE `imapsync` SET `custom_params` = :cp WHERE `id` = :id");
     foreach ($pdo->query("SELECT `id`, `custom_params` FROM `imapsync`")->fetchAll(PDO::FETCH_ASSOC) as $r) {
       $cp = trim((string)$r['custom_params']);
@@ -1548,7 +1548,7 @@ function init_db_schema()
           $opt = ltrim($tokens[$i], '-'); $val = '';
           if (strpos($opt, '=') !== false) { list($opt, $val) = explode('=', $opt, 2); }
           elseif ($i + 1 < count($tokens) && strpos($tokens[$i + 1], '--') !== 0) { $val = $tokens[++$i]; }
-          if (!in_array(strtolower($opt), $allow)) continue; // drop options no longer allowed
+          if (!array_key_exists(strtolower($opt), $allow)) continue; // drop options no longer allowed
           $pairs[] = array('o' => strtolower($opt), 'v' => $val);
         }
       }

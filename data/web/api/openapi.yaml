@@ -1520,7 +1520,9 @@ paths:
                 timeout1: "600"
                 timeout2: "600"
                 exclude: "(?i)spam|(?i)junk"
-                custom_params: '[{"o":"dry","v":""}]'
+                custom_params:
+                  - {o: dry, v: ""}
+                  - {o: folder, v: INBOX}
                 delete2duplicates: "1"
                 delete1: "1"
                 delete2: "0"
@@ -1570,13 +1572,18 @@ paths:
                   type: string
                 custom_params:
                   description: >-
-                    JSON array of allowlisted imapsync options as
-                    option/value pairs, e.g.
-                    `[{"o":"folder","v":"INBOX"},{"o":"dry","v":""}]`. Only
-                    option names from `GET /get/syncjob_options` are accepted;
-                    values may contain any character and are passed as a single
-                    argument.
-                  type: string
+                    Allowlisted imapsync options as option/value pairs. `o` is the
+                    option name (must be one from `GET /get/syncjob_options`); `v`
+                    is the value (empty string for pure flags). Values may contain
+                    any character and are passed to imapsync as a single argument.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      o:
+                        type: string
+                      v:
+                        type: string
                 delete2duplicates:
                   description: delete duplicates on destination (--delete2duplicates)
                   type: boolean
@@ -4070,13 +4077,18 @@ paths:
                       type: boolean
                     custom_params:
                       description: >-
-                        JSON array of allowlisted imapsync options as
-                        option/value pairs, e.g.
-                        `[{"o":"folder","v":"INBOX"},{"o":"dry","v":""}]`. Only
-                        option names from `GET /get/syncjob_options` are
-                        accepted; values may contain any character and are
-                        passed as a single argument.
-                      type: string
+                        Allowlisted imapsync options as option/value pairs. `o` is
+                        the option name (must be one from `GET /get/syncjob_options`);
+                        `v` is the value (empty string for flags). Values are passed to imapsync as a single
+                        argument.
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          o:
+                            type: string
+                          v:
+                            type: string
                     delete1:
                       description: Delete from source when completed
                       type: boolean
