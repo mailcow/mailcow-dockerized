@@ -1252,7 +1252,6 @@
         "source_token_error": "Letzter Refresh-Fehler",
         "source_refresh_now": "Token jetzt erneuern",
         "source_secret_unchanged_hint": "Leer lassen, um das gespeicherte Secret beizubehalten.",
-        "oauth_source_hint": "Authentifizierung über OAuth2 — kein Passwort erforderlich.",
         "source_oauth_flow": "OAuth2-Flow",
         "source_oauth_flow_app": "App (Client Credentials)",
         "source_oauth_flow_user": "Benutzer-Login (Authorization Code)",

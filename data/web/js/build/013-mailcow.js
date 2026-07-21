@@ -611,7 +611,6 @@ $(document).ready(function() {
     var isAuthCode = isOauth && ($opt.data('oauth-flow') === 'authorization_code');
     $form.find('.password1-row').toggle(!isOauth);
     $form.find('input[name="password1"]').prop('required', !isOauth);
-    $form.find('.oauth-source-hint').toggle(isOauth);
     $form.find('.imapsync-oauth-connect-row').toggle(isAuthCode);
     $form.find('.imapsync-user1-row').toggle(!isAuthCode);
     $form.find('input[name="user1"]').prop('required', !isAuthCode);

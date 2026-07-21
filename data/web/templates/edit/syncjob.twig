@@ -21,7 +21,6 @@
                 data-current-source-auth-type="{{ result.source_auth_type }}" required>
           <option value="{{ result.source_id }}" data-auth-type="{{ result.source_auth_type }}" data-oauth-flow="{{ result.source_oauth_flow }}" selected>{{ result.source_name }} ({{ result.source_host }}:{{ result.source_port }} / {{ result.source_auth_type }})</option>
         </select>
-        <small class="text-muted oauth-source-hint" style="display:{% if result.source_auth_type == 'XOAUTH2' %}block{% else %}none{% endif %};">{{ lang.syncjobs.oauth_source_hint }}</small>
       </div>
     </div>
     <div class="row mb-2 imapsync-user1-row" style="display:{% if result.source_oauth_flow == 'authorization_code' %}none{% else %}flex{% endif %};">

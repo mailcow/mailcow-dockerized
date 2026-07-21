@@ -1259,7 +1259,6 @@
         "source_token_error": "Last refresh error",
         "source_refresh_now": "Refresh token now",
         "source_secret_unchanged_hint": "Leave blank to keep the stored secret unchanged.",
-        "oauth_source_hint": "Authentication via OAuth2 — no password required.",
         "source_oauth_flow": "OAuth2 flow",
         "source_oauth_flow_app": "App (client credentials)",
         "source_oauth_flow_user": "User login (authorization code)",
