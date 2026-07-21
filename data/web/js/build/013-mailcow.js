@@ -613,6 +613,8 @@ $(document).ready(function() {
     $form.find('input[name="password1"]').prop('required', !isOauth);
     $form.find('.oauth-source-hint').toggle(isOauth);
     $form.find('.imapsync-oauth-connect-row').toggle(isAuthCode);
+    $form.find('.imapsync-user1-row').toggle(!isAuthCode);
+    $form.find('input[name="user1"]').prop('required', !isAuthCode);
   });
 
   // Source editor: OAuth block + authorization_code fields

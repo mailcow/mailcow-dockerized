@@ -24,7 +24,7 @@
         <small class="text-muted oauth-source-hint" style="display:{% if result.source_auth_type == 'XOAUTH2' %}block{% else %}none{% endif %};">{{ lang.syncjobs.oauth_source_hint }}</small>
       </div>
     </div>
-    <div class="row mb-2">
+    <div class="row mb-2 imapsync-user1-row" style="display:{% if result.source_oauth_flow == 'authorization_code' %}none{% else %}flex{% endif %};">
       <label class="control-label col-sm-2" for="user1">{{ lang.edit.username }}</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" name="user1" id="user1" value="{{ result.user1 }}">
