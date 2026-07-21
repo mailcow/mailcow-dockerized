@@ -1256,6 +1256,8 @@
         "source_oauth_flow": "OAuth2-Flow",
         "source_oauth_flow_app": "App (Client Credentials)",
         "source_oauth_flow_user": "Benutzer-Login (Authorization Code)",
+        "source_flow_badge_app": "Client Credentials",
+        "source_flow_badge_user": "Benutzer-Login",
         "source_authorize_endpoint": "Authorize-Endpoint",
         "source_userinfo_endpoint": "Userinfo-Endpoint",
         "source_redirect_uri": "Redirect-URI",

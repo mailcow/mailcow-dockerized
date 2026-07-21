@@ -1263,6 +1263,8 @@
         "source_oauth_flow": "OAuth2 flow",
         "source_oauth_flow_app": "App (client credentials)",
         "source_oauth_flow_user": "User login (authorization code)",
+        "source_flow_badge_app": "Client credentials",
+        "source_flow_badge_user": "User login",
         "source_authorize_endpoint": "Authorize endpoint",
         "source_userinfo_endpoint": "Userinfo endpoint",
         "source_redirect_uri": "Redirect URI",

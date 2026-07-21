@@ -721,16 +721,7 @@ jQuery(function($){
         dataSrc: function(json) {
           $.each(json, function(i, item) {
             item.endpoint = escapeHtml(item.host1 + ':' + item.port1 + ' (' + item.enc1 + ')');
-            item.auth_display = escapeHtml(item.auth_type);
-            if (item.auth_type === 'XOAUTH2') {
-              if (item.oauth_token_expires && item.oauth_token_expires * 1000 > Date.now()) {
-                item.auth_display += ' <span class="badge bg-success">' + lang.syncjobs.source_token_status + ': ' + new Date(item.oauth_token_expires * 1000).toLocaleString() + '</span>';
-              } else if (item.oauth_last_refresh_error) {
-                item.auth_display += ' <span class="badge bg-danger" title="' + escapeHtml(item.oauth_last_refresh_error) + '">' + lang.syncjobs.source_token_error + '</span>';
-              } else {
-                item.auth_display += ' <span class="badge bg-warning">' + lang.waiting + '</span>';
-              }
-            }
+            item.auth_display = imapsyncAuthDisplay(item);
             item.visibility_display = imapsyncScopeDisplay(item);
             if (acl_data.syncjobs === 1 && item.can_edit) {
               item.action = '<div class="btn-group">' +

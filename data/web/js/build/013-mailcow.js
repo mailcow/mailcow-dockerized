@@ -428,6 +428,32 @@ function imapsyncScopeDisplay(item) {
   return escapeHtml(lang.syncjobs.source_scope_user + ': ' + us.join(', '));
 }
 
+// Auth column for a source row: auth type, and for XOAUTH2 the flow + a token-status badge.
+function imapsyncAuthDisplay(item) {
+  var out = escapeHtml(item.auth_type);
+  if (item.auth_type !== 'XOAUTH2') return out;
+  var flow = item.oauth_flow || 'client_credentials';
+  var flowLabel = (flow === 'authorization_code')
+    ? lang.syncjobs.source_flow_badge_user
+    : lang.syncjobs.source_flow_badge_app;
+  out += ' <span class="text-muted">(' + escapeHtml(flowLabel) + ')</span>';
+  if (flow === 'authorization_code') {
+    // token lives per user+source (created via the syncjob "connect"), not on the source row
+    return out;
+  }
+  var badge;
+  if (item.oauth_token_expires && item.oauth_token_expires * 1000 > Date.now()) {
+    badge = '<span class="badge bg-success">' + lang.syncjobs.source_token_status + ': ' + new Date(item.oauth_token_expires * 1000).toLocaleString() + '</span>';
+  } else if (item.oauth_last_refresh_error) {
+    badge = '<span class="badge bg-danger" title="' + escapeHtml(item.oauth_last_refresh_error) + '">' + lang.syncjobs.source_token_error + '</span>';
+  } else {
+    badge = '<span class="badge bg-warning">' + lang.waiting + '</span>';
+  }
+  // badge on its own line, below "XOAUTH2 (Client Credentials)"
+  out += '<div class="mt-1">' + badge + '</div>';
+  return out;
+}
+
 // (Re)build every imapsync-source dropdown from the ACL-filtered API (fresh on modal open)
 function populateImapsyncSourceSelects() {
   $.get("/api/v1/get/syncjob_source/all", function(sources) {
