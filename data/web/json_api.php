@@ -2081,8 +2081,7 @@ if (isset($_GET['query'])) {
       exit();
   }
 }
-if (array_key_exists('mailcow_cc_api', $_SESSION) && $_SESSION['mailcow_cc_api'] === true) {
-  if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
-    unset($_SESSION['return']);
-  }
+
+if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
+  unset($_SESSION['return']);
 }
