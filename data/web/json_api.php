@@ -2055,9 +2055,6 @@ if (isset($_GET['query'])) {
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
         break;
-        case "cors":
-          process_edit_return(cors('edit', $attr));
-        break;
         case "reset-password-notification":
           process_edit_return(reset_password('edit_notification', $attr));
         break;
