@@ -2166,7 +2166,6 @@ jQuery(function($){
         url: "/api/v1/get/syncjobs/all/no_log",
         dataSrc: function(json){
           $.each(json, function (i, item) {
-            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
             item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';
@@ -2178,6 +2177,7 @@ jQuery(function($){
             if (tokenBadge) item.server_w_port += '<div class="mt-1">' + tokenBadge + '</div>';
             item.action = '<div class="btn-group">' +
               '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-info"><i class="bi bi-card-list"></i> ' + lang.open_logs + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
@@ -2255,11 +2255,6 @@ jQuery(function($){
         {
           title: lang.syncjobs.syncjob_last_run_result,
           data: 'exit_status',
-          defaultContent: ''
-        },
-        {
-          title: 'Log',
-          data: 'log',
           defaultContent: ''
         },
         {
