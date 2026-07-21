@@ -286,6 +286,8 @@ jQuery(function($){
               item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
             item.server_w_port = escapeHtml(item.user1 + '@' + (item.source_name || '?') + ' (' + (item.source_host || '?') + ':' + (item.source_port || '?') + ')');
+            var tokenBadge = imapsyncJobTokenBadge(item);
+            if (tokenBadge) item.server_w_port += '<div class="mt-1">' + tokenBadge + '</div>';
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group">' +
                 '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +

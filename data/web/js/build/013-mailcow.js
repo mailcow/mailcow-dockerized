@@ -454,6 +454,20 @@ function imapsyncAuthDisplay(item) {
   return out;
 }
 
+// Per-syncjob OAuth token badge for authorization_code sources: the token is issued
+// per user (via "connect"), so a job can be pending / issued / failed. Returns '' for
+// non-XOAUTH2 or client_credentials jobs (those have no per-user token).
+function imapsyncJobTokenBadge(item) {
+  if (item.source_auth_type !== 'XOAUTH2' || item.source_oauth_flow !== 'authorization_code') return '';
+  if (item.user_token_error) {
+    return '<span class="badge bg-danger" title="' + escapeHtml(item.user_token_error) + '">' + lang.syncjobs.token_state_failed + '</span>';
+  }
+  if (item.user_token_expires && item.user_token_expires * 1000 > Date.now()) {
+    return '<span class="badge bg-success" title="' + lang.syncjobs.source_token_status + ': ' + new Date(item.user_token_expires * 1000).toLocaleString() + '">' + lang.syncjobs.token_state_issued + '</span>';
+  }
+  return '<span class="badge bg-warning">' + lang.syncjobs.token_state_pending + '</span>';
+}
+
 // (Re)build every imapsync-source dropdown from the ACL-filtered API (fresh on modal open)
 function populateImapsyncSourceSelects() {
   $.get("/api/v1/get/syncjob_source/all", function(sources) {

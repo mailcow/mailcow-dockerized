@@ -2174,6 +2174,8 @@ jQuery(function($){
               item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
             item.server_w_port = escapeHtml(item.user1) + '@' + escapeHtml(item.source_name || '?') + ' (' + escapeHtml(item.source_host || '?') + ':' + escapeHtml(item.source_port || '?') + ')';
+            var tokenBadge = imapsyncJobTokenBadge(item);
+            if (tokenBadge) item.server_w_port += '<div class="mt-1">' + tokenBadge + '</div>';
             item.action = '<div class="btn-group">' +
               '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +

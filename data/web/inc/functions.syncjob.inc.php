@@ -1228,7 +1228,13 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
             s.`auth_type` AS source_auth_type, s.`created_by` AS source_created_by, s.`scope` AS source_scope,
             s.`oauth_flow` AS source_oauth_flow,
             s.`oauth_token_expires` AS source_oauth_token_expires,
-            s.`oauth_last_refresh_error` AS source_oauth_last_refresh_error";
+            s.`oauth_last_refresh_error` AS source_oauth_last_refresh_error,
+            t.`token_expires` AS user_token_expires,
+            t.`last_refresh_error` AS user_token_error,
+            CASE WHEN t.`username` IS NULL THEN 0 ELSE 1 END AS user_token_exists";
+          // Per-user token status for authorization_code sources (never leaks the token itself)
+          $token_join = "LEFT JOIN `imapsync_source_oauth_token` t
+            ON t.`source_id` = i.`source_id` AND t.`username` = i.`user1`";
           if (isset($_extra) && in_array('no_log', $_extra)) {
             $field_query = $pdo->query('SHOW FIELDS FROM `imapsync` WHERE FIELD NOT IN ("returned_text", "password1")');
             $fields = $field_query->fetchAll(PDO::FETCH_ASSOC);
@@ -1237,11 +1243,13 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("SELECT " . implode(',', (array)$shown_fields) . ", $source_select
                 FROM `imapsync` i LEFT JOIN `imapsync_source` s ON i.`source_id` = s.`id`
+                $token_join
                 WHERE i.`id` = :id");
           }
           elseif (isset($_extra) && in_array('with_password', $_extra)) {
             $stmt = $pdo->prepare("SELECT i.*, $source_select
                 FROM `imapsync` i LEFT JOIN `imapsync_source` s ON i.`source_id` = s.`id`
+                $token_join
                 WHERE i.`id` = :id");
           }
           else {
@@ -1252,6 +1260,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
             }
             $stmt = $pdo->prepare("SELECT " . implode(',', (array)$shown_fields) . ", $source_select
                 FROM `imapsync` i LEFT JOIN `imapsync_source` s ON i.`source_id` = s.`id`
+                $token_join
                 WHERE i.`id` = :id");
           }
           $stmt->execute(array(':id' => $_data));
