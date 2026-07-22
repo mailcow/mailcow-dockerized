@@ -1197,7 +1197,7 @@
         "imapsync_source_deleted": "Sync-Quelle %s wurde gelöscht",
         "imapsync_source_token_refreshed": "OAuth-Token für %s wurde erneuert",
         "max_parallel_saved": "Sync-Job-Einstellungen gespeichert",
-        "imapsync_order_updated": "Sync-Job auf Position %s verschoben"
+        "imapsync_run_next_done": "%s Sync-Job(s) an den Anfang der Warteschlange gesetzt"
     },
     "tfa": {
         "authenticators": "Authentikatoren",
@@ -1300,9 +1300,8 @@
         "custom_param_value": "Wert",
         "custom_param_no_value": "kein Wert nötig",
         "custom_param_add": "Parameter hinzufügen",
-        "order_id": "Position",
-        "order_id_hint": "Kleinere Position läuft zuerst; Ändern sortiert die globale Warteschlange um.",
-        "set_position": "Position setzen"
+        "prio": "Priorität",
+        "prio_hint": "Fällige Jobs laufen am längsten-nicht-gelaufen zuerst; bei gleichem Stand entscheidet die höhere Priorität (0 = normal)."
     },
     "user": {
         "action": "Aktion",

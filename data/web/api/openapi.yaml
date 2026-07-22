@@ -4089,6 +4089,12 @@ paths:
                             type: string
                           v:
                             type: string
+                    prio:
+                      description: >-
+                        Priority (admin only; ignored otherwise). The runner processes due
+                        jobs least-recently-run first, priority breaks ties (0 = normal,
+                        higher wins).
+                      type: number
                     delete1:
                       description: Delete from source when completed
                       type: boolean
@@ -4355,72 +4361,6 @@ paths:
                   type: array
                   items:
                     type: string
-              type: object
-  /api/v1/edit/syncjob/order:
-    post:
-      responses:
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "200":
-          content:
-            application/json:
-              examples:
-                response:
-                  value:
-                    - log:
-                        - syncjob
-                        - edit
-                        - job_order
-                      msg:
-                        - imapsync_order_updated
-                        - "1"
-                      type: success
-              schema:
-                properties:
-                  log:
-                    description: contains request object
-                    items: {}
-                    type: array
-                  msg:
-                    items: {}
-                    type: array
-                  type:
-                    enum:
-                      - success
-                      - danger
-                      - error
-                    type: string
-                type: object
-          description: OK
-          headers: {}
-      tags:
-        - Sync jobs
-      description: >-
-        Move a sync job to a global queue position (admin only). Positions are
-        contiguous (1..N) across all sync jobs; setting a job to a position
-        shifts the others accordingly. The runner processes jobs in ascending
-        order, up to the configured `max_parallel` at a time, and rotates a job
-        to the back after it runs.
-      operationId: Set sync job queue position
-      summary: Set sync job queue position
-      requestBody:
-        content:
-          application/json:
-            schema:
-              example:
-                items: "3"
-                attr:
-                  order_id: "1"
-              properties:
-                attr:
-                  properties:
-                    order_id:
-                      description: target position (1..N)
-                      type: number
-                  type: object
-                items:
-                  description: sync job id to move
-                  type: string
               type: object
   /api/v1/edit/imapsync_settings:
     post:

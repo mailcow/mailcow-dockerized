@@ -385,42 +385,27 @@ function imapsync_set_setting($name, $value) {
   return true;
 }
 
-function imapsync_set_order($id, $pos) {
-  // Move syncjob $id to global queue position $pos (1..N), shifting only the rows between
-  // the old and new position (range-shift, not a full renumber). Admin-only, transactional.
+function imapsync_run_next($ids) {
+  // clear last_run and bump prio.
+  // Admin-only.
   global $pdo;
-  if (($_SESSION['mailcow_cc_role'] ?? '') !== 'admin' || !is_numeric($id)) return false;
-  $pos = intval($pos);
+  if (($_SESSION['mailcow_cc_role'] ?? '') !== 'admin') return false;
+  if (!is_array($ids)) $ids = array($ids);
+  $sel = array();
+  foreach ($ids as $i) { if (is_numeric($i)) $sel[] = (int)$i; }
+  $sel = array_values(array_unique($sel));
+  if (empty($sel)) return false;
   try {
-    $pdo->beginTransaction();
-    $cnt = intval($pdo->query("SELECT COUNT(*) FROM `imapsync`")->fetchColumn());
-    if ($cnt === 0) { $pdo->commit(); return false; }
-    if ($pos < 1) $pos = 1;
-    if ($pos > $cnt) $pos = $cnt;
-    $stmt = $pdo->prepare("SELECT `order_id` FROM `imapsync` WHERE `id` = :id");
-    $stmt->execute(array(':id' => $id));
-    $old = $stmt->fetchColumn();
-    if ($old === false) { $pdo->rollBack(); return false; }
-    $old = intval($old);
-    if ($old !== $pos) {
-      if ($pos < $old) {
-        // moving up: shift the [pos, old-1] band down (+1), highest first to avoid collisions
-        $pdo->prepare("UPDATE `imapsync` SET `order_id` = `order_id` + 1
-          WHERE `order_id` >= :pos AND `order_id` < :old ORDER BY `order_id` DESC")
-          ->execute(array(':pos' => $pos, ':old' => $old));
-      } else {
-        // moving down: shift the (old, pos] band up (-1), lowest first
-        $pdo->prepare("UPDATE `imapsync` SET `order_id` = `order_id` - 1
-          WHERE `order_id` > :old AND `order_id` <= :pos ORDER BY `order_id` ASC")
-          ->execute(array(':old' => $old, ':pos' => $pos));
-      }
-      $pdo->prepare("UPDATE `imapsync` SET `order_id` = :pos WHERE `id` = :id")
-        ->execute(array(':pos' => $pos, ':id' => $id));
-    }
-    $pdo->commit();
-    return true;
+    $in = implode(',', array_fill(0, count($sel), '?'));
+    // Assign each selected job a prio above the current global max, lowest-current first.
+    $pdo->exec("SET @m := (SELECT COALESCE(MAX(`prio`), 0) FROM `imapsync`)");
+    $pdo->exec("SET @r := 0");
+    $pdo->prepare("UPDATE `imapsync` SET `prio` = @m + (@r := @r + 1)
+      WHERE `id` IN ($in) ORDER BY `prio` ASC, `id` ASC")->execute($sel);
+    $pdo->prepare("UPDATE `imapsync` SET `last_run` = NULL, `success` = NULL
+      WHERE `id` IN ($in)")->execute($sel);
+    return count($sel);
   } catch (Exception $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
     return false;
   }
 }
@@ -576,9 +561,8 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `dry`, `maxage`, `subfolder2`, `source_id`, `user1`, `password1`, `mins_interval`, `delete2duplicates`, `custom_params`, `active`, `order_id`)
-            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :dry, :maxage, :subfolder2, :source_id, :user1, :password1, :mins_interval, :delete2duplicates, :custom_params, :active,
-              (SELECT COALESCE(MAX(o.`order_id`), 0) + 1 FROM (SELECT `order_id` FROM `imapsync`) o))");
+          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `dry`, `maxage`, `subfolder2`, `source_id`, `user1`, `password1`, `mins_interval`, `delete2duplicates`, `custom_params`, `active`)
+            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :dry, :maxage, :subfolder2, :source_id, :user1, :password1, :mins_interval, :delete2duplicates, :custom_params, :active)");
           $stmt->execute(array(
             ':user2' => $username,
             ':custom_params' => $custom_params,
@@ -787,12 +771,10 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
     break;
     case 'edit':
       switch ($_type) {
-        case 'job_order':
-          // Set a syncjob's global queue position (admin-only). $_data = {id, order_id}
-          $id = is_array($_data) ? ($_data['id'] ?? null) : null;
-          if (is_array($id)) $id = reset($id);
-          $pos = is_array($_data) ? ($_data['order_id'] ?? null) : null;
-          if (!is_numeric($id) || !is_numeric($pos) || imapsync_set_order($id, $pos) === false) {
+        case 'run_next':
+          $ids = is_array($_data) ? ($_data['id'] ?? null) : null;
+          $moved = imapsync_run_next($ids);
+          if ($moved === false) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log),
@@ -803,7 +785,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_type, $_data_log),
-            'msg' => array('imapsync_order_updated', intval($pos))
+            'msg' => array('imapsync_run_next_done', intval($moved))
           );
           return true;
         break;
@@ -849,6 +831,8 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               $maxbytespersecond = (isset($_data['maxbytespersecond']) && $_data['maxbytespersecond'] != "") ? intval($_data['maxbytespersecond']) : $is_now['maxbytespersecond'];
               $timeout1 = (isset($_data['timeout1']) && $_data['timeout1'] != "") ? intval($_data['timeout1']) : $is_now['timeout1'];
               $timeout2 = (isset($_data['timeout2']) && $_data['timeout2'] != "") ? intval($_data['timeout2']) : $is_now['timeout2'];
+              // prio is a global-queue concern: only admins may change it, others keep the stored value
+              $prio = (isset($_data['prio']) && is_numeric($_data['prio']) && ($_SESSION['mailcow_cc_role'] ?? '') === 'admin') ? intval($_data['prio']) : $is_now['prio'];
             }
             else {
               $_SESSION['return'][] = array(
@@ -936,6 +920,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               `timeout2` = :timeout2,
               `subscribeall` = :subscribeall,
               `dry` = :dry,
+              `prio` = :prio,
               `active` = :active
                 WHERE `id` = :id");
             $stmt->execute(array(
@@ -960,6 +945,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               ':timeout2' => $timeout2,
               ':subscribeall' => $subscribeall,
               ':dry' => $dry,
+              ':prio' => $prio,
               ':active' => $active,
             ));
             $_SESSION['return'][] = array(
@@ -1162,17 +1148,9 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
-            // Read the position first so we can close the gap in the global queue afterwards
-            $ord = $pdo->prepare("SELECT `order_id` FROM `imapsync` WHERE `id` = :id");
-            $ord->execute(array(':id' => $id));
-            $deleted_pos = $ord->fetchColumn();
+            // prio is a sparse sort key (ties allowed), so no gap needs closing on delete.
             $stmt = $pdo->prepare("DELETE FROM `imapsync` WHERE `id`= :id");
             $stmt->execute(array(':id' => $id));
-            if ($deleted_pos !== false) {
-              $pdo->prepare("UPDATE `imapsync` SET `order_id` = `order_id` - 1
-                WHERE `order_id` > :pos ORDER BY `order_id` ASC")
-                ->execute(array(':pos' => intval($deleted_pos)));
-            }
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -1289,7 +1267,7 @@ function syncjob($_action, $_type, $_data = null, $_extra = null) {
           else {
             $_data = $_SESSION['mailcow_cc_username'];
           }
-          $stmt = $pdo->prepare("SELECT `id` FROM `imapsync` WHERE `user2` = :username ORDER BY `order_id`");
+          $stmt = $pdo->prepare("SELECT `id` FROM `imapsync` WHERE `user2` = :username ORDER BY `last_run` ASC, `prio` DESC, `id` ASC");
           $stmt->execute(array(':username' => $_data));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {

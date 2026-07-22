@@ -2005,8 +2005,8 @@ if (isset($_GET['query'])) {
         break;
         case "syncjob":
           switch ($object) {
-            case "order":
-              process_edit_return(syncjob('edit', 'job_order', array_merge(array('id' => $items), $attr)));
+            case "run_next":
+              process_edit_return(syncjob('edit', 'run_next', array('id' => $items)));
             break;
             default:
               process_edit_return(syncjob('edit', 'job', array_merge(array('id' => $items), $attr)));

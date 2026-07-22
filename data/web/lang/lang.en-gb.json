@@ -1204,7 +1204,7 @@
         "imapsync_source_deleted": "Sync source %s has been deleted",
         "imapsync_source_token_refreshed": "OAuth token for %s has been refreshed",
         "max_parallel_saved": "Sync job settings saved",
-        "imapsync_order_updated": "Sync job moved to position %s"
+        "imapsync_run_next_done": "%s sync job(s) moved to the front of the queue"
     },
     "tfa": {
         "authenticators": "Authenticators",
@@ -1307,9 +1307,8 @@
         "custom_param_value": "Value",
         "custom_param_no_value": "no value needed",
         "custom_param_add": "Add parameter",
-        "order_id": "Position",
-        "order_id_hint": "Lower position runs first; setting it re-sorts the global queue.",
-        "set_position": "Set position"
+        "prio": "Priority",
+        "prio_hint": "Due jobs run least-recently-run first; on a tie the higher priority wins (0 = normal)."
     },
     "user": {
         "action": "Action",

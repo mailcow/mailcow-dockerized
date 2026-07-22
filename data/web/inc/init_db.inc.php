@@ -892,7 +892,7 @@ function init_db_schema()
           "subscribeall" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "dry" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "order_id" => "INT NOT NULL DEFAULT 0",
+          "prio" => "INT NOT NULL DEFAULT 0",
           "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "success" => "TINYINT(1) UNSIGNED DEFAULT NULL",
@@ -907,7 +907,7 @@ function init_db_schema()
           ),
           "key" => array(
             "idx_source_id" => array("source_id"),
-            "idx_order_id" => array("order_id")
+            "idx_prio" => array("prio")
           ),
           "fkey" => array(
             "fk_imapsync_source" => array(
@@ -1525,13 +1525,8 @@ function init_db_schema()
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
 
-    // Syncjobs: seed global settings + one-time sequential order_id for pre-existing jobs
+    // Syncjobs: seed global settings
     $pdo->query("INSERT IGNORE INTO `imapsync_settings` (`name`, `value`) VALUES ('max_parallel', '1')");
-    if (intval($pdo->query("SELECT COUNT(*) FROM `imapsync`")->fetchColumn()) > 0
-        && intval($pdo->query("SELECT MAX(`order_id`) FROM `imapsync`")->fetchColumn()) === 0) {
-      $pdo->query("SET @r := 0");
-      $pdo->query("UPDATE `imapsync` SET `order_id` = (@r := @r + 1) ORDER BY `id`");
-    }
 
     // Syncjobs: migrate custom_params from raw imapsync string to structured JSON pairs.
     // Old values could not contain spaces (they were rejected), so a whitespace split is safe.

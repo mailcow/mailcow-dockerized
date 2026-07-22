@@ -2231,8 +2231,8 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: lang.syncjobs.order_id,
-          data: 'order_id',
+          title: lang.syncjobs.prio,
+          data: 'prio',
           responsivePriority: 3,
           defaultContent: ''
         },

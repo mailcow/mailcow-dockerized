@@ -13,19 +13,6 @@ use sigtrap 'handler' => \&sig_handler, qw(INT TERM KILL QUIT);
 
 sub trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
 
-# Move a finished job to the back of the queue, keeping order_id contiguous (1..N).
-# Called only from the parent after reaping a child, so all rotations are serialized.
-sub rotate_to_back {
-  my ($dbh, $jid) = @_;
-  return unless defined $jid;
-  my ($cnt) = $dbh->selectrow_array("SELECT COUNT(*) FROM imapsync");
-  my ($old) = $dbh->selectrow_array("SELECT order_id FROM imapsync WHERE id = ?", undef, $jid);
-  return unless (defined $cnt && defined $old && $old < $cnt);
-  # close the gap left behind, then place this job last
-  $dbh->do("UPDATE imapsync SET order_id = order_id - 1 WHERE order_id > ? ORDER BY order_id ASC", undef, $old);
-  $dbh->do("UPDATE imapsync SET order_id = ? WHERE id = ?", undef, $cnt, $jid);
-}
-
 $run_dir="/tmp";
 $dsn = 'DBI:mysql:database=' . $ENV{'DBNAME'} . ';mysql_socket=/var/run/mysqld/mysqld.sock';
 $lock_file = $run_dir . "/imapsync_busy";
@@ -92,29 +79,24 @@ my $sth = $dbh->prepare("SELECT
           UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(i.last_run) > i.mins_interval * 60
           OR
           i.last_run IS NULL)
-  ORDER BY i.order_id ASC, i.id ASC");
+  ORDER BY i.last_run ASC, i.prio DESC, i.id ASC
+  LIMIT $max_parallel");
 
 $sth->execute();
 my @rows = @{$sth->fetchall_arrayref()};
 $sth->finish();
 
-# Fork pool: run up to $max_parallel imapsync children at once, in order_id order.
+# Only up to $max_parallel due jobs are pulled per run (LIMIT above)
 my $active = 0;
-my %pid_job;   # child pid => syncjob id, so the parent can rotate it to the back when it finishes
 foreach my $row (@rows) {
   # Throttle: once max children are running, reap one before starting the next
   if ($active >= $max_parallel) {
-    my $done = wait();
-    my $rc = $? >> 8;
+    wait();
     $active-- if $active > 0;
-    if (defined $pid_job{$done}) {
-      rotate_to_back($dbh, $pid_job{$done}) if $rc == 0;   # rotate only jobs that actually ran
-      delete $pid_job{$done};
-    }
   }
   my $pid = fork();
   next if (!defined $pid);
-  if ($pid != 0) { $pid_job{$pid} = @$row[0]; $active++; next; }   # parent: remember pid->job, continue
+  if ($pid != 0) { $active++; next; }   # parent: one more child running, continue
 
   # ---- CHILD ---- own DB connection so the parent's handle stays intact across forks
   $dbh->{InactiveDestroy} = 1;
@@ -179,8 +161,7 @@ foreach my $row (@rows) {
       $dbh->disconnect();
       unlink $passfile1->filename if defined $passfile1;
       unlink $passfile2->filename if defined $passfile2;
-      # exit 75 (EX_TEMPFAIL): did not actually sync -> parent keeps its queue position (no rotate)
-      POSIX::_exit(75);
+      POSIX::_exit(75);   # EX_TEMPFAIL: did not actually sync (token not ready)
     }
     $tokenfile1 = File::Temp->new(TEMPLATE => $template);
     binmode($tokenfile1, ":utf8");
@@ -287,14 +268,8 @@ foreach my $row (@rows) {
   POSIX::_exit(0);   # ---- end CHILD ----
 }
 
-# Parent: wait for all remaining children, rotating each finished job to the back
-while ((my $done = wait()) != -1) {
-  my $rc = $? >> 8;
-  if (defined $pid_job{$done}) {
-    rotate_to_back($dbh, $pid_job{$done}) if $rc == 0;   # rotate only jobs that actually ran
-    delete $pid_job{$done};
-  }
-}
+# Parent: wait for all remaining children to finish
+while (wait() != -1) { }
 
 $dbh->disconnect();
 
