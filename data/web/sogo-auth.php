@@ -8,8 +8,12 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
 $session_var_user_allowed = 'sogo-sso-user-allowed';
 $session_var_pass = 'sogo-sso-pass';
 
+// only the internal nginx auth_request loopback (127.0.0.1:65510) sets this;
+// external clients can never supply it (bare fastcgi param, not an HTTP header)
+$is_internal_auth = (($_SERVER['SOGO_AUTH_INTERNAL'] ?? '') === '1');
+
 // validate credentials for basic auth requests
-if (isset($_SERVER['PHP_AUTH_USER'])) {
+if ($is_internal_auth && isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
@@ -80,7 +84,7 @@ elseif (isset($_GET['login'])) {
   exit;
 }
 // only check for admin-login on sogo GUI requests
-elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
+elseif ($is_internal_auth && isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
   if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {

@@ -42,6 +42,11 @@ http {
         https https;
     }
 
+    map $server_port $sogo_auth_internal {
+        65510   "1";
+        default "";
+    }
+
     {% if HTTP_REDIRECT %}
     # HTTP to HTTPS redirect
     server {
