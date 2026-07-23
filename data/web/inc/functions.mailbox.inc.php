@@ -5647,8 +5647,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $username . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6044,8 +6047,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . str_replace('%', '\%', $username) . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6201,8 +6207,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $name
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $name . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($name, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $name
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
