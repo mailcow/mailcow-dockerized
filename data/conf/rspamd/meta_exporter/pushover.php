@@ -50,7 +50,7 @@ $qid      = $meta['qid']    ?? 'unknown';
 $rcpts    = $meta['rcpt']   ?? array();
 $sender   = $meta['from']   ?? '';
 $ip       = $meta['ip']     ?? 'unknown';
-$subject  = iconv_mime_decode($meta['subject'] ?? '');
+$subject  = $meta['subject'] ?? '';
 $messageid= $meta['message_id'] ?? '';
 $priority = 0;
 
