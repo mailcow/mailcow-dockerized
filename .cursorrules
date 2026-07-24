@@ -1,0 +1,9 @@
+Workspace boundary hard rule:
+- Only operate under C:\dev\repos or C:\dev\worktrees.
+- Never read/write under C:\Users\aewoo\CascadeProjects, Desktop, Documents, or any path outside allowed roots.
+- Before edits run and report:
+  Get-Location
+  git rev-parse --show-toplevel
+  git branch --show-current
+  git status --short
+- If outside allowed roots: stop and report boundary violation.

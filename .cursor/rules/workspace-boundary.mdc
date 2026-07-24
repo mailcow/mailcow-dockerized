@@ -1,0 +1,22 @@
+---
+description: Enforce STAX workspace boundaries
+alwaysApply: true
+---
+
+Allowed paths only:
+- C:\dev\repos\**
+- C:\dev\worktrees\**
+
+Forbidden:
+- C:\Users\aewoo\CascadeProjects\**
+- C:\Users\aewoo\Desktop\**
+- C:\Users\aewoo\Documents\**
+- Any path outside allowed roots.
+
+Before edits, run and report:
+Get-Location
+git rev-parse --show-toplevel
+git branch --show-current
+git status --short
+
+If outside allowed roots: STOP and report boundary violation.
