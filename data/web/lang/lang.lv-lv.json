@@ -13,7 +13,7 @@
         "domain_relayhost": "Mainīt domēna relayhost",
         "eas_reset": "EAS ierīču atiestatīšana",
         "extend_sender_acl": "Ļauj paplašināt sūtītāja ACL ar ārējām adresēm",
-        "login_as": "Pieteikšanās kā pastkastes lietotājam",
+        "login_as": "Pieteikties kā pastkastes lietotājam",
         "mailbox_relayhost": "Pasta kastītes relayhost maiņa",
         "prohibited": "Aizliegts ar ACL",
         "protocol_access": "Protokola piekļuves maiņa",
@@ -91,12 +91,12 @@
         "activate_api": "Aktivizēt API",
         "active": "Aktīvs",
         "add": "Pievienot",
-        "add_domain_admin": "Pievienot domēna administratoru",
+        "add_domain_admin": "Pievienot domēna pārvaldītāju",
         "add_forwarding_host": "Pievienot pāradresācijas hostu",
         "add_relayhost": "Pievienot Relayhost",
         "add_row": "Pievienot rindu",
-        "admin": "Administrators",
-        "admin_details": "Labot administratora detaļas",
+        "admin": "Pārvaldītājs",
+        "admin_details": "Labot informāciju par pārvaldītāju",
         "admin_domains": "Domēna uzdevumi",
         "api_allow_from": "Atļaut API piekļuvi no šīm IP",
         "api_key": "API atslēga",
@@ -114,7 +114,7 @@
         "dkim_keys": "ARC/DKIM atslēgas",
         "dkim_private_key": "Privāta atslēga",
         "domain": "Domēns",
-        "domain_admins": "Domēna administratori",
+        "domain_admins": "Domēna pārvaldītāji",
         "edit": "Labot",
         "empty": "Nav iznākuma",
         "f2b_ban_time": "Aizlieguma laiks (s)",
@@ -188,7 +188,14 @@
         "quarantine_max_score": "Atmest paziņojumu, ja e-pasta ziņojuma mēstuļu novērtējums ir augstāks par šo vērtību:<br><small>Noklusējums ir 9999.0</small>",
         "options": "Iespējas",
         "password_reset_settings": "Paroļu atkopes iestatījumi",
-        "password_settings": "Paroļu iestatījumi"
+        "password_settings": "Paroļu iestatījumi",
+        "add_admin": "Pievienot pārvaldītāju",
+        "admins": "Pārvaldītāji",
+        "admins_ldap": "LDAP pārvaldītāji",
+        "admin_quicklink": "Paslēpt ātro saiti uz pārvaldītāju pieteikšanās lapu",
+        "domain_admin": "Domēna pārvaldītājs",
+        "domainadmin_quicklink": "Paslēpt ātro saiti uz domēna pārvaldītāju pieteikšanās lapu",
+        "user_quicklink": "Paslēpt ātro saiti uz lietotāju pieteikšanās lapu"
     },
     "danger": {
         "access_denied": "Piekļuve liegta, vai nepareizi dati",
@@ -244,7 +251,10 @@
         "app_passwd_id_invalid": "Lietotnes paroles Id %s ir nederīgs",
         "img_dimensions_exceeded": "Attēls pārsniedz lielāko pieļaujamo attēla lielumu",
         "img_size_exceeded": "Attēls pārsniedz lielāko pieļaujamo datnes lielumu",
-        "version_invalid": "Versija %s ir nederīga"
+        "version_invalid": "Versija %s ir nederīga",
+        "generic_server_error": "Atgadījās neparedzēta servera kļūda. Lūgums sazināties ar pārvaldītāju.",
+        "password_reset_na": "Paroļu atkope šobrīd nav pieejama. Lūgums sazināties ar pārvaldītāju.",
+        "recovery_email_failed": "Nevarēja nosūtīt atkopes e-pasta ziņojumu. Lūgums sazināties ar pārvaldītāju."
     },
     "diagnostics": {
         "cname_from_a": "Vērtība, kas iegūta no A/AAAA ieraksta. Tas tiek atbalstīts tik ilgi, kamēr ieraksts norāda uz pareizo resursu.",
@@ -266,7 +276,7 @@
         "delete2duplicates": "Izdzēst atkārtojošos vienumus galamērķī",
         "description": "Apraksts",
         "domain": "Labot domēnu",
-        "domain_admin": "Labot domēna administratoru",
+        "domain_admin": "Labot domēna pārvaldītāju",
         "domain_quota": "Domēna kvota",
         "domains": "Domēni",
         "dont_check_sender_acl": "Atspējot sūtītāju pārbaudi domēnam %s (+ aizstājdomēni)",
@@ -329,7 +339,8 @@
         "app_passwd": "Lietotnes parole",
         "mta_sts_version": "Versija",
         "mta_sts_version_info": "Norāda MTA-STS standarta versiju – pašreiz ir derīga tikai <code>STSv1</code>.",
-        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">Sūtītāja pārbaude ir atspējota</span>"
+        "sender_acl_disabled": "<span class=\"badge fs-6 bg-danger\">Sūtītāja pārbaude ir atspējota</span>",
+        "admin": "Labot pārvaldītāju"
     },
     "footer": {
         "cancel": "Atcelt",
@@ -362,7 +373,14 @@
         "username": "Lietotājvārds",
         "fido2_webauthn": "FIDO/WebAuthn pieteikšanās",
         "mobileconfig_info": "Lūgums pieteikties kā pastkastes lietotājam, lai lejupielādētu pieprasīto Apple savienojuma profilu.",
-        "other_logins": "vai pieslēgties ar"
+        "other_logins": "vai pieteikties ar",
+        "forgot_password": "> Aizmirsta parole?",
+        "login_linkstext": "Nepareiza pieteikšanās?",
+        "login_domainadmintext": "Pieteikties kā domēna pārvaldītājam",
+        "login_admintext": "Pieteikties kā pārvaldītājam",
+        "login_user": "Lietotu pieteikšanās",
+        "login_dadmin": "Domēna pārvaldītāju pieteikšanās",
+        "login_admin": "Pārvaldītāju pieteikšanās"
     },
     "mailbox": {
         "action": "Rīcība",
@@ -397,7 +415,7 @@
         "description": "Apraksts",
         "dkim_key_length": "DKIM atslēgas garums (bits)",
         "domain": "Domēns",
-        "domain_admins": "Domēna administratori",
+        "domain_admins": "Domēna pārvaldītāji",
         "domain_aliases": "Domēna aizstājvārdi",
         "domain_quota": "Kvota",
         "domain_quota_total": "Kopējais domēna ierobežojums",
@@ -507,7 +525,7 @@
         "imap_smtp_server_auth_info": "Lūgums izmantot pilnu e-pasta adresi un PLAIN autentificēšanās mehānismu.<br>\nPieteikšanās dati tiks šifrēti ar servera puses obligātu šifrēšanu."
     },
     "success": {
-        "admin_modified": "Izmaiņas administrātoram ir saglabātas",
+        "admin_modified": "Pārvaldītāja izmaiņas tika saglabātas",
         "alias_added": "Aizstājadrese %s (%d) tika pievienota",
         "alias_domain_removed": "Aizstājdomēns %s tika noņemts",
         "alias_modified": "Aizstājadreses izmaiņas %s tika saglabātas",
@@ -518,9 +536,9 @@
         "dkim_added": "DKIM atslēga saglabāta",
         "dkim_removed": "DKIM atslēga %s ir noņemta",
         "domain_added": "Pievienots domēns %s",
-        "domain_admin_added": "Domēna administrātors %s pievienots",
-        "domain_admin_modified": "Izmaiņas domēna administrātoram %s ir saglabātas",
-        "domain_admin_removed": "Domēna administrators %s tika noņemts",
+        "domain_admin_added": "Tika pievienots domēna pārvaldītājs %s",
+        "domain_admin_modified": "Domēna pārvaldītāja %s izmaiņas tika saglabātas",
+        "domain_admin_removed": "Tika noņemts domēna pārvaldītājs %s",
         "domain_modified": "Izmaiņas domēnam %s ir saglabātas",
         "domain_removed": "Domēns %s ir noņemts",
         "eas_reset": "ActiveSync ierīces priekš lietotāja %s tika atiestatītas",
@@ -548,7 +566,9 @@
         "verified_yotp_login": "Apliecināta Yubico OTP pieteikšanās",
         "app_passwd_removed": "Noņemta lietotnes parole ar Id %s",
         "app_passwd_added": "Pievienota jauna lietotnes parole",
-        "f2b_banlist_refreshed": "Liegumu saraksta Id tika sekmīgi atsvaidzināts."
+        "f2b_banlist_refreshed": "Liegumu saraksta Id tika sekmīgi atsvaidzināts.",
+        "admin_added": "Tika pievienots pārvaldītājs %s",
+        "admin_removed": "Tika noņemts pārvaldītājs %s"
     },
     "tfa": {
         "api_register": "%s izmanto Yubico Cloud API. Lūdzu iegūstiet API atslēgu priekš Jūsu atslēgas<a href=\"https://upgrade.yubico.com/getapikey/\" target=\"_blank\">here</a>",
@@ -569,7 +589,8 @@
         "waiting_usb_auth": "<i>Gaida USB ierīci...</i><br><br>Lūdzu, tagad nospiežiet pogu uz Jūsu WebAuthn USB ierīces.",
         "waiting_usb_register": "<i>Gaida USB ierīci...</i><br><br>Lūgums augstāk ievadīt savu paroli un apstiprināt reģistrēšanos ar USB ierīces pogas nospiešanu.",
         "yubi_otp": "Yubico OTP autentifikators",
-        "authenticators": "Autentificētāji"
+        "authenticators": "Autentificētāji",
+        "u2f_deprecated_important": "Lūgums reģistrēt savu atslēgu pārvaldības lapā ar jauno WebAuthn veidu."
     },
     "user": {
         "action": "Rīcība",
@@ -701,7 +722,8 @@
     "warning": {
         "domain_added_sogo_failed": "Domēns pievienots, bet neizdevās pārsāknēt SOGO. Lūgums pārbaudīt servera žurnālus.",
         "dovecot_restart_failed": "Dovecot neizdevās pārsāknēties. Lūgums pārbaudīt žurnālus",
-        "is_not_primary_alias": "Izlaists aizstājvārds %s, kas nav galvenais"
+        "is_not_primary_alias": "Izlaists aizstājvārds %s, kas nav galvenais",
+        "no_active_admin": "Nevar deaktivēt pēdējo aktīvo pārvaldītāju"
     },
     "oauth2": {
         "access_denied": "Lūgums pieteikties kā pastkastes īpašniekam, lai nodrošinātu piekļuvi ar OAuth2."

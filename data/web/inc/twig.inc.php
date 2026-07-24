@@ -13,7 +13,9 @@ $twig = new Environment($loader, [
 
 // functions
 $twig->addFunction(new TwigFunction('query_string', function (array $params = []) {
-  return http_build_query(array_merge($_GET, $params));
+  $allowed = ['lang', 'mobileconfig'];
+  $filtered = array_intersect_key($_GET, array_flip($allowed));
+  return http_build_query(array_merge($filtered, $params));
 }));
 
 $twig->addFunction(new TwigFunction('is_uri', function (string $uri, string $where = null) {

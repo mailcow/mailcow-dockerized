@@ -27,7 +27,8 @@
         "tls_policy": "Versleutelingsbeleid",
         "unlimited_quota": "Onbeperkte quota voor mailboxen",
         "domain_desc": "Wijzig domeinbeschrijving",
-        "pw_reset": "Toegang om mailcow gebruikers wachtwoord te resetten"
+        "pw_reset": "Toegang om mailcow gebruikers wachtwoord te resetten",
+        "domain_relayhost": "Verander relayhost voor een domein"
     },
     "add": {
         "activate_filter_warn": "Alle andere filters worden gedeactiveerd zolang deze geactiveerd is.",

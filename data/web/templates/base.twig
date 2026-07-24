@@ -193,7 +193,7 @@ $(window).scroll(function() {
 });
 // Select language and reopen active URL without POST
 function setLang(sel) {
-  $.post( '{{ uri }}', {lang: sel} );
+  $.post( '{{ uri|escape("js") }}', {lang: sel} );
   window.location.href = window.location.pathname + window.location.search;
 }
 // FIDO2 functions

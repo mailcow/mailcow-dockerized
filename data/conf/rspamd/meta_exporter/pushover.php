@@ -32,50 +32,46 @@ function parse_email($email) {
   $a = strrpos($email, '@');
   return array('local' => substr($email, 0, $a), 'domain' => substr(substr($email, $a), 1));
 }
-if (!function_exists('getallheaders'))  {
-  function getallheaders() {
-    if (!is_array($_SERVER)) {
-      return array();
-    }
-    $headers = array();
-    foreach ($_SERVER as $name => $value) {
-      if (substr($name, 0, 5) == 'HTTP_') {
-        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-      }
-    }
-    return $headers;
-  }
+// rspamd metadata_exporter (multipart formatter): metadata JSON arrives as $_POST['metadata'].
+if (empty($_POST['metadata'])) {
+  error_log("NOTIFY: missing metadata part from rspamd" . PHP_EOL);
+  http_response_code(400);
+  exit;
 }
 
-$headers = getallheaders();
-$json_body = json_decode(file_get_contents('php://input'));
+$meta = json_decode($_POST['metadata'], true);
+if (!is_array($meta)) {
+  error_log("NOTIFY: cannot decode metadata JSON" . PHP_EOL);
+  http_response_code(400);
+  exit;
+}
 
-$qid      = $headers['X-Rspamd-Qid'];
-$rcpts    = $headers['X-Rspamd-Rcpt'];
-$sender   = $headers['X-Rspamd-From'];
-$ip       = $headers['X-Rspamd-Ip'];
-$subject  = iconv_mime_decode($headers['X-Rspamd-Subject']);
-$messageid= $json_body->message_id;
+$qid      = $meta['qid']    ?? 'unknown';
+$rcpts    = $meta['rcpt']   ?? array();
+$sender   = $meta['from']   ?? '';
+$ip       = $meta['ip']     ?? 'unknown';
+$subject  = iconv_mime_decode($meta['subject'] ?? '');
+$messageid= $meta['message_id'] ?? '';
 $priority = 0;
 
-$symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
+$symbols_array = $meta['symbols'] ?? array();
 if (is_array($symbols_array)) {
   foreach ($symbols_array as $symbol) {
-    if ($symbol['name'] == 'HAS_X_PRIO_ONE') {
+    if (($symbol['name'] ?? null) == 'HAS_X_PRIO_ONE') {
       $priority = 1;
       break;
     }
   }
 }
 
-$sender_address = $json_body->header_from[0];
+$sender_address = $meta['header_from'][0] ?? '';
 $sender_name = '-';
 if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $sender_address, $matches)) {
 	$sender_address = $matches['address'];
   $sender_name =  trim($matches['name'], '"\' ');
 }
 
-$to_address = $json_body->header_to[0];
+$to_address = $meta['header_to'][0] ?? '';
 $to_name = '-';
 if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
 	$to_address = $matches['address'];
@@ -85,7 +81,7 @@ if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
 $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
-foreach (json_decode($rcpts, true) as $rcpt) {
+foreach ($rcpts as $rcpt) {
   // Remove tag
   $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
 

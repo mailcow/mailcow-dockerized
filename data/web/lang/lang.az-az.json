@@ -1,0 +1,17 @@
+{
+    "acl": {
+        "login_as": "E-poçt qutusu istifadəçisi olaraq daxil ol",
+        "alias_domains": "Alternativ domenlər əlavə et",
+        "app_passwds": "Tətbiq parollarını idarə et",
+        "bcc_maps": "BCC yönləndirmə xəritələri",
+        "delimiter_action": "Ayırıcı əməliyyatı",
+        "domain_desc": "Domen təsvirini dəyiş",
+        "domain_relayhost": "Domen üçün relay serveri dəyiş",
+        "eas_reset": "EAS cihazlarını sıfırla",
+        "extend_sender_acl": "Göndərən ACL-ni xarici ünvanlarla genişləndirməyə icazə ver",
+        "filters": "Filtrlər",
+        "mailbox_relayhost": "E-poçt qutusu üçün relay serveri dəyiş",
+        "prohibited": "ACL tərəfindən məhdudlaşdırılıb",
+        "protocol_access": "Protokol girişini dəyiş"
+    }
+}

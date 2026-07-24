@@ -1072,6 +1072,7 @@ paths:
                           password2: "*"
                           quota: "3072"
                           force_pw_update: "1"
+                          force_tfa: "1"
                           tls_enforce_in: "1"
                           tls_enforce_out: "1"
                           tags: ["tag1", "tag2"]
@@ -1118,6 +1119,7 @@ paths:
                 password2: atedismonsin
                 quota: "3072"
                 force_pw_update: "1"
+                force_tfa: "1"
                 tls_enforce_in: "1"
                 tls_enforce_out: "1"
                 tags: ["tag1", "tag2"]
@@ -1150,6 +1152,9 @@ paths:
                   type: number
                 force_pw_update:
                   description: forces the user to update its password on first login
+                  type: boolean
+                force_tfa:
+                  description: force 2FA enrollment at login
                   type: boolean
                 tls_enforce_in:
                   description: force inbound email tls encryption
@@ -2510,7 +2515,7 @@ paths:
       description: >-
         Using this endpoint you can perform actions on quarantine items. It is possible to release
         emails from quarantine into to the inbox, or learn them as ham to improve Rspamd filtering.
-        You must provide the quarantine item IDs. You can get the IDs using the GET method.      
+        You must provide the quarantine item IDs. You can get the IDs using the GET method.
       operationId: Edit mails in Quarantine
       requestBody:
         content:
@@ -3414,6 +3419,7 @@ paths:
                         - mailbox
                         - active: "1"
                           force_pw_update: "0"
+                          force_tfa: "0"
                           name: Full name
                           password: "*"
                           password2: "*"
@@ -3464,6 +3470,7 @@ paths:
                 attr:
                   active: "1"
                   force_pw_update: "0"
+                  force_tfa: "0"
                   name: Full name
                   authsource: mailcow
                   password: ""
@@ -3486,6 +3493,9 @@ paths:
                       type: boolean
                     force_pw_update:
                       description: force user to change password on next login
+                      type: boolean
+                    force_tfa:
+                      description: force 2FA enrollment at login
                       type: boolean
                     name:
                       description: Full name of the mailbox user
@@ -4881,6 +4891,7 @@ paths:
                     - active: "1"
                       attributes:
                         force_pw_update: "0"
+                        force_tfa: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
                         sogo_access: "1"
@@ -5805,6 +5816,7 @@ paths:
                     - active: "1"
                       attributes:
                         force_pw_update: "0"
+                        force_tfa: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
                         sogo_access: "1"

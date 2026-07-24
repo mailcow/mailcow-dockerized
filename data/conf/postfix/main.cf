@@ -37,7 +37,7 @@ postscreen_access_list = permit_mynetworks,
   cidr:/opt/postfix/conf/postscreen_access.cidr,
   tcp:127.0.0.1:10027
 postscreen_bare_newline_enable = no
-postscreen_blacklist_action = drop
+postscreen_denylist_action = drop
 postscreen_cache_cleanup_interval = 24h
 postscreen_cache_map = proxy:btree:$data_directory/postscreen_cache
 postscreen_dnsbl_action = enforce
@@ -107,8 +107,6 @@ smtpd_sender_restrictions = reject_authenticated_sender_login_mismatch,
   reject_unknown_sender_domain
 smtpd_soft_error_limit = 3
 smtpd_tls_auth_only = yes
-smtpd_tls_dh1024_param_file = /etc/ssl/mail/dhparams.pem
-smtpd_tls_eecdh_grade = auto
 smtpd_tls_exclude_ciphers = ECDHE-RSA-RC4-SHA, RC4, aNULL, DES-CBC3-SHA, ECDHE-RSA-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA
 smtpd_tls_loglevel = 1
 

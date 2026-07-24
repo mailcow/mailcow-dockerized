@@ -108,6 +108,14 @@ function fwdhost($_action, $_data = null) {
       }
     break;
     case 'delete':
+      if ($_SESSION['mailcow_cc_role'] != "admin") {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
       $hosts = (array)$_data['forwardinghost'];
       foreach ($hosts as $host) {
         try {

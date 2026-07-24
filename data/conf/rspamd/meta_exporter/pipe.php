@@ -32,45 +32,40 @@ function parse_email($email) {
   $a = strrpos($email, '@');
   return array('local' => substr($email, 0, $a), 'domain' => substr(substr($email, $a), 1));
 }
-if (!function_exists('getallheaders'))  {
-  function getallheaders() {
-    if (!is_array($_SERVER)) {
-      return array();
-    }
-    $headers = array();
-    foreach ($_SERVER as $name => $value) {
-      if (substr($name, 0, 5) == 'HTTP_') {
-        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-      }
-    }
-    return $headers;
-  }
+// rspamd metadata_exporter (multipart formatter):
+//   - $_POST['metadata']        JSON with the rspamd metadata
+//   - $_FILES['message']        raw RFC822 message
+if (empty($_POST['metadata']) || !isset($_FILES['message']) || $_FILES['message']['error'] !== UPLOAD_ERR_OK) {
+  error_log("QUARANTINE: missing multipart parts from rspamd" . PHP_EOL);
+  http_response_code(400);
+  exit;
 }
 
-$raw_data_content = file_get_contents('php://input');
+$meta = json_decode($_POST['metadata'], true);
+if (!is_array($meta)) {
+  error_log("QUARANTINE: cannot decode metadata JSON" . PHP_EOL);
+  http_response_code(400);
+  exit;
+}
+
+$raw_data_content = file_get_contents($_FILES['message']['tmp_name']);
 $raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
-$headers = getallheaders();
+$raw_size = (int)$_FILES['message']['size'];
 
-$qid      = $headers['X-Rspamd-Qid'];
-$fuzzy    = $headers['X-Rspamd-Fuzzy'];
-$subject  = iconv_mime_decode($headers['X-Rspamd-Subject']);
-$score    = $headers['X-Rspamd-Score'];
-$rcpts    = $headers['X-Rspamd-Rcpt'];
-$user     = $headers['X-Rspamd-User'];
-$ip       = $headers['X-Rspamd-Ip'];
-$action   = $headers['X-Rspamd-Action'];
-$sender   = $headers['X-Rspamd-From'];
-$symbols  = $headers['X-Rspamd-Symbols'];
-
-$raw_size = (int)$_SERVER['CONTENT_LENGTH'];
+$qid      = $meta['qid']     ?? 'unknown';
+$subject  = iconv_mime_decode($meta['subject'] ?? '');
+$score    = $meta['score']   ?? 0;
+$rcpts    = $meta['rcpt']    ?? array();
+$user     = $meta['user']    ?? 'unknown';
+$ip       = $meta['ip']      ?? 'unknown';
+$action   = $meta['action']  ?? 'no action';
+$sender   = $meta['from']    ?? '';
+$symbols  = json_encode($meta['symbols'] ?? array());
+$fuzzy    = json_encode(is_array($meta['fuzzy'] ?? null) ? $meta['fuzzy'] : array());
 
 if (empty($sender)) {
   error_log("QUARANTINE: Unknown sender, assuming empty-env-from@localhost" . PHP_EOL);
   $sender = 'empty-env-from@localhost';
-}
-
-if ($fuzzy == 'unknown') {
-  $fuzzy = '[]';
 }
 
 try {
@@ -94,7 +89,7 @@ catch (RedisException $e) {
 $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
-foreach (json_decode($rcpts, true) as $rcpt) {
+foreach ($rcpts as $rcpt) {
   // Remove tag
   $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
 
