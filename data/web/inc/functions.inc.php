@@ -53,6 +53,28 @@ function valid_network($network) {
 function valid_hostname($hostname) {
   return filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
 }
+// Validates a browser-style Origin: scheme://host[:port], no path/query/fragment/credentials
+function valid_origin($origin) {
+  $parts = parse_url($origin);
+  if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+    return false;
+  }
+  if (!in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+    return false;
+  }
+  if (isset($parts['user']) || isset($parts['pass']) || isset($parts['path']) || isset($parts['query']) || isset($parts['fragment'])) {
+    return false;
+  }
+  $host = $parts['host'];
+  $host_without_brackets = trim($host, '[]');
+  if (!valid_hostname($host_without_brackets) && !filter_var($host_without_brackets, FILTER_VALIDATE_IP)) {
+    return false;
+  }
+  // Reject anything that doesn't round-trip to the exact same origin (e.g. stray trailing slash)
+  $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+  $rebuilt = strtolower($parts['scheme']) . '://' . strtolower($host) . $port;
+  return strtolower($origin) === $rebuilt;
+}
 // Thanks to https://stackoverflow.com/a/49373789
 // Validates exact ip matches and ip-in-cidr, ipv4 and ipv6
 function ip_acl($ip, $networks) {
@@ -2283,10 +2305,13 @@ function cors($action, $data = null) {
         return false;
       }
 
-      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array(getBaseURL());
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
-      foreach ($allowed_origins as $origin) {
-        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+      foreach ($allowed_origins as &$origin) {
+        if ($origin === '*') {
+          continue;
+        }
+        if (!valid_origin($origin)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $action, $data),
@@ -2294,7 +2319,10 @@ function cors($action, $data = null) {
           );
           return false;
         }
+        // browsers always send a lowercase scheme/host in the Origin header, so normalize to match
+        $origin = strtolower($origin);
       }
+      unset($origin);
 
       $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
       $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;

@@ -5870,7 +5870,7 @@ paths:
                 response:
                   value:
                     - type: "success"
-                      log: ["cors", "edit", {"allowed_origins": ["*", "mail.mailcow.tld"], "allowed_methods": ["POST", "GET", "DELETE", "PUT"]}]
+                      log: ["cors", "edit", {"allowed_origins": ["*", "https://mail.mailcow.tld"], "allowed_methods": ["POST", "GET", "DELETE", "PUT"]}]
                       msg: "cors_headers_edited"
           description: OK
           headers: { }
@@ -5887,7 +5887,7 @@ paths:
             schema:
               example:
                 attr:
-                  allowed_origins: ["*", "mail.mailcow.tld"]
+                  allowed_origins: ["*", "https://mail.mailcow.tld"]
                   allowed_methods: ["POST", "GET", "DELETE", "PUT"]
               properties:
                 attr:
