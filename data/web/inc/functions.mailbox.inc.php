@@ -5323,6 +5323,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxdata['rl_scope'] = 'domain';
             }
             $mailboxdata['is_relayed'] = $row['backupmx'];
+            // Internal send-as ACL for this mailbox, mirrors the sender_acl field accepted by edit/mailbox
+            $mailboxdata['sender_acl'] = array();
+            $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '0'");
+            $stmt->execute(array(':username' => $_data));
+            $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($sender_acl_rows as $sender_acl_row) {
+              $mailboxdata['sender_acl'][] = $sender_acl_row['send_as'];
+            }
           }
           $stmt = $pdo->prepare("SELECT `tag_name`
             FROM `tags_mailbox` WHERE `username`= :username");
