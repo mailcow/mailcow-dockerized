@@ -167,10 +167,10 @@ while true; do
   DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
   # Re-using previous acme-mailcow account and domain keys
   if [[ ! -f ${ACME_BASE}/acme/key.pem ]]; then
-    log_f "Generating missing domain private rsa key..."
-    openssl genrsa 4096 > ${ACME_BASE}/acme/key.pem
+    log_f "Generating missing domain private key (ECDSA P-256)..."
+    openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 > ${ACME_BASE}/acme/key.pem
   else
-    log_f "Using existing domain rsa key ${ACME_BASE}/acme/key.pem"
+    log_f "Using existing domain key ${ACME_BASE}/acme/key.pem"
   fi
   if [[ ! -f ${ACME_BASE}/acme/account.pem ]]; then
     log_f "Generating missing Lets Encrypt account key..."
@@ -352,7 +352,7 @@ while true; do
     VALIDATED_CERTIFICATES+=("${CERT_NAME}")
 
     # obtain server certificate if required
-    DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh rsa
+    DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh ecdsa
     RETURN="$?"
     if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
       CERT_AMOUNT_CHANGED=1
@@ -394,7 +394,7 @@ while true; do
       CERT_NAME=${VALIDATED_DOMAINS_SORTED[0]}
       VALIDATED_CERTIFICATES+=("${CERT_NAME}")
       # obtain certificate if required
-      DOMAINS=${VALIDATED_DOMAINS_SORTED[@]} /srv/obtain-certificate.sh rsa
+      DOMAINS=${VALIDATED_DOMAINS_SORTED[@]} /srv/obtain-certificate.sh ecdsa
       RETURN="$?"
       if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
         CERT_AMOUNT_CHANGED=1
