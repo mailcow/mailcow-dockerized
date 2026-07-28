@@ -54,6 +54,11 @@ elseif (isset($_GET['login'])) {
     (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (user_get_alias_details($login) !== false) {
+        // enforce tenant boundary
+        if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $login)) {
+          header("Location: /");
+          exit;
+        }
         // Block SOGo access if pending actions (2FA setup, password update)
         if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
           header("Location: /");
