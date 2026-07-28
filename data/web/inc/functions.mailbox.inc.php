@@ -634,11 +634,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               break;
             }
-            $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
-            $stmt->execute(array(
-              ':domain' => $domain,
-              ':tag_name' => $tag,
-            ));
+            try {
+              $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+              $stmt->execute(array(
+                ':domain' => $domain,
+                ':tag_name' => $tag,
+              ));
+            } catch (Exception $e) {
+              // tag already assigned to this domain, skip it
+            }
           }
 
           try {
@@ -2847,11 +2851,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   );
                   break;
                 }
-                $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
-                $stmt->execute(array(
-                  ':domain' => $domain,
-                  ':tag_name' => $tag,
-                ));
+                try {
+                  $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+                  $stmt->execute(array(
+                    ':domain' => $domain,
+                    ':tag_name' => $tag,
+                  ));
+                } catch (Exception $e) {
+                  // tag already assigned to this domain, skip it
+                }
               }
 
               $_SESSION['return'][] = array(
@@ -3015,11 +3023,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   );
                   break;
                 }
-                $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
-                $stmt->execute(array(
-                  ':domain' => $domain,
-                  ':tag_name' => $tag,
-                ));
+                try {
+                  $stmt = $pdo->prepare("INSERT INTO `tags_domain` (`domain`, `tag_name`) VALUES (:domain, :tag_name)");
+                  $stmt->execute(array(
+                    ':domain' => $domain,
+                    ':tag_name' => $tag,
+                  ));
+                } catch (Exception $e) {
+                  // tag already assigned to this domain, skip it
+                }
               }
 
               $_SESSION['return'][] = array(
