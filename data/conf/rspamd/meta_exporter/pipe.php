@@ -53,7 +53,7 @@ $raw_data = mb_convert_encoding($raw_data_content, 'HTML-ENTITIES', "UTF-8");
 $raw_size = (int)$_FILES['message']['size'];
 
 $qid      = $meta['qid']     ?? 'unknown';
-$subject  = iconv_mime_decode($meta['subject'] ?? '');
+$subject  = $meta['subject'] ?? '';
 $score    = $meta['score']   ?? 0;
 $rcpts    = $meta['rcpt']    ?? array();
 $user     = $meta['user']    ?? 'unknown';
