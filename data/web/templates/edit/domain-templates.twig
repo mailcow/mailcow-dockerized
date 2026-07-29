@@ -10,6 +10,7 @@
     <input type="hidden" value="0" name="gal">
     <input type="hidden" value="0" name="relay_all_recipients">
     <input type="hidden" value="0" name="relay_unknown_only">
+    <input type="hidden" value="0" name="mta_sts">
 
     {% if mailcow_cc_role == 'admin' %}
     <div class="row mb-4">
@@ -120,6 +121,47 @@
           <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
           <br>
           <p>{{ lang.edit.relay_transport_info|raw }}</p>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row mb-4">
+      <label class="control-label col-sm-2">{{ lang.edit.mta_sts }}</label>
+      <div class="col-sm-10">
+        <div class="form-check mb-3">
+          <label><input type="checkbox" class="form-check-input" value="1" name="mta_sts"{% if template.attributes.mta_sts == '1' %} checked{% endif %}> {{ lang.edit.mta_sts_enable }}</label>
+          <p><small class="text-muted">{{ lang.edit.mta_sts_template_info|raw }}</small></p>
+        </div>
+        <div class="row mb-2">
+          <label class="control-label col-sm-3" for="mta_sts_version">{{ lang.edit.mta_sts_version }}</label>
+          <div class="col-sm-9">
+            <select data-style="btn btn-light" class="form-control" name="mta_sts_version">
+              <option value="stsv1"{% if template.attributes.mta_sts_version == 'stsv1' %} selected{% endif %}>STSv1</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <label class="control-label col-sm-3" for="mta_sts_mode">{{ lang.edit.mta_sts_mode }}</label>
+          <div class="col-sm-9">
+            <select data-style="btn btn-light" class="form-control" name="mta_sts_mode">
+              <option value="enforce"{% if template.attributes.mta_sts_mode == 'enforce' %} selected{% endif %}>enforce</option>
+              <option value="testing"{% if template.attributes.mta_sts_mode == 'testing' %} selected{% endif %}>testing</option>
+              <option value="none"{% if template.attributes.mta_sts_mode == 'none' %} selected{% endif %}>none</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <label class="control-label col-sm-3" for="mta_sts_max_age">{{ lang.edit.mta_sts_max_age }}</label>
+          <div class="col-sm-9">
+            <input type="number" class="form-control" name="mta_sts_max_age" value="{{ template.attributes.mta_sts_max_age|default('604800') }}">
+          </div>
+        </div>
+        <div class="row mb-2">
+          <label class="control-label col-sm-3" for="mta_sts_mx">{{ lang.edit.mta_sts_mx }}</label>
+          <div class="col-sm-9">
+            <textarea autocorrect="off" autocapitalize="none" class="form-control" rows="3" name="mta_sts_mx">{{ template.attributes.mta_sts_mx }}</textarea>
+            <small class="text-muted">{{ lang.edit.mta_sts_mx_notice|raw }}</small>
+          </div>
         </div>
       </div>
     </div>

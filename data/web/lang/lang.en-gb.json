@@ -728,6 +728,8 @@
         "mta_sts_mx": "MX server",
         "mta_sts_mx_info": "Allows sending only to explicitly listed mail server hostnames; the sending MTA checks if the DNS MX hostname matches the policy list, and only allows delivery with a valid TLS certificate (guards against MITM).",
         "mta_sts_mx_notice": "Multiple MX servers can be specified (separated by commas).",
+        "mta_sts_enable": "Enable MTA-STS",
+        "mta_sts_template_info": "When enabled, MTA-STS will be automatically configured for all domains created with this template.",
         "multiple_bookings": "Multiple bookings",
         "none_inherit": "None / Inherit",
         "nexthop": "Next hop",

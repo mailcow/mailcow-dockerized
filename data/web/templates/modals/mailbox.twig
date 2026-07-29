@@ -710,6 +710,48 @@
             </div>
           </div>
           <hr>
+          <div class="row mb-4">
+            <label class="control-label col-sm-2 text-sm-end">{{ lang.edit.mta_sts }}</label>
+            <div class="col-sm-10">
+              <div class="form-check mb-3">
+                <input type="hidden" value="0" name="mta_sts">
+                <label><input type="checkbox" class="form-check-input" value="1" name="mta_sts"> {{ lang.edit.mta_sts_enable }}</label>
+                <p><small class="text-muted">{{ lang.edit.mta_sts_template_info|raw }}</small></p>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-3 text-sm-end" for="mta_sts_version">{{ lang.edit.mta_sts_version }}</label>
+                <div class="col-sm-9">
+                  <select data-style="btn btn-light" class="form-control" name="mta_sts_version">
+                    <option value="stsv1" selected>STSv1</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-3 text-sm-end" for="mta_sts_mode">{{ lang.edit.mta_sts_mode }}</label>
+                <div class="col-sm-9">
+                  <select data-style="btn btn-light" class="form-control" name="mta_sts_mode">
+                    <option value="enforce" selected>enforce</option>
+                    <option value="testing">testing</option>
+                    <option value="none">none</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-3 text-sm-end" for="mta_sts_max_age">{{ lang.edit.mta_sts_max_age }}</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="mta_sts_max_age" value="604800">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-3 text-sm-end" for="mta_sts_mx">{{ lang.edit.mta_sts_mx }}</label>
+                <div class="col-sm-9">
+                  <textarea autocorrect="off" autocapitalize="none" class="form-control" rows="3" name="mta_sts_mx"></textarea>
+                  <small class="text-muted">{{ lang.edit.mta_sts_mx_notice|raw }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="adddomain_template" data-item="{{ domain }}" data-api-url='add/domain/template' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
