@@ -728,6 +728,7 @@
         "mta_sts_mx": "MX-Server",
         "mta_sts_mx_info": "Erlaubt das Senden nur an explizit aufgeführte Mailserver-Hostnamen; der sendende MTA überprüft, ob der DNS-MX-Hostname mit der Richtlinienliste übereinstimmt, und erlaubt die Zustellung nur mit einem gültigen TLS-Zertifikat (schützt vor MITM).",
         "mta_sts_mx_notice": "Es können mehrere MX-Server angegeben werden (durch Kommas getrennt).",
+        "mta_sts_active_info": "Wenn nicht angehakt, wird die MTA-STS-Richtlinie nicht veröffentlicht und für die mta-sts-Subdomain kein Zertifikat über ACME angefordert.",
         "multiple_bookings": "Mehrfaches Buchen",
         "nexthop": "Next Hop",
         "none_inherit": "Keine Auswahl / Erben",
