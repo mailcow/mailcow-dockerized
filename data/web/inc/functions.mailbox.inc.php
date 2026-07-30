@@ -41,13 +41,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'validity_missing'
-            );
-            return false;
+          if (isset($_data["validity"])) {
+            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'validity_missing'
+              );
+              return false;
+            }
           }
           else {
             // Default to 1 yr
@@ -60,7 +62,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $permanent = 0;
           }
           $domain = $_data['domain'];
-          $description = $_data['description'];
+          // spamalias.description is NOT NULL, an absent description must not become a null insert
+          $description = $_data['description'] ?? '';
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
           if (!empty($valid_alias_domains)) {
@@ -5320,6 +5323,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxdata['rl_scope'] = 'domain';
             }
             $mailboxdata['is_relayed'] = $row['backupmx'];
+            // Internal send-as ACL for this mailbox, mirrors the sender_acl field accepted by edit/mailbox
+            $mailboxdata['sender_acl'] = array();
+            $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '0'");
+            $stmt->execute(array(':username' => $_data));
+            $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($sender_acl_rows as $sender_acl_row) {
+              $mailboxdata['sender_acl'][] = $sender_acl_row['send_as'];
+            }
           }
           $stmt = $pdo->prepare("SELECT `tag_name`
             FROM `tags_mailbox` WHERE `username`= :username");
@@ -5647,8 +5658,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $username . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6044,8 +6058,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . str_replace('%', '\%', $username) . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6201,8 +6218,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $name
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $name . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($name, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $name
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");

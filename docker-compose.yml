@@ -84,7 +84,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:4.1.0-1
+      image: ghcr.io/mailcow/rspamd:4.1.4-1
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -419,7 +419,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.3-1
+      image: ghcr.io/mailcow/nginx:1.30.4-1
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -465,7 +465,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.97
+      image: ghcr.io/mailcow/acme:1.98
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

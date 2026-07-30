@@ -249,11 +249,32 @@ while true; do
   done <<< "${SQL_DOMAINS}"
 
   if [[ ${ONLY_MAILCOW_HOSTNAME} != "y" ]]; then
+  # Fetch all domains with an active MTA-STS policy once.
+  unset MTA_STS_ACTIVE_DOMAINS
+  declare -A MTA_STS_ACTIVE_DOMAINS
+  if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
+    SQL_MTA_STS_DOMAINS=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM mta_sts WHERE active = 1" -Bs)
+    if [[ $? -eq 0 ]]; then
+      while read mta_sts_domain; do
+        if [[ -z "${mta_sts_domain}" ]]; then
+          # ignore empty lines
+          continue
+        fi
+        MTA_STS_ACTIVE_DOMAINS["${mta_sts_domain}"]=1
+      done <<< "${SQL_MTA_STS_DOMAINS}"
+    fi
+  fi
   for SQL_DOMAIN in "${SQL_DOMAIN_ARR[@]}"; do
     unset VALIDATED_CONFIG_DOMAINS_SUBDOMAINS
     declare -a VALIDATED_CONFIG_DOMAINS_SUBDOMAINS
     for SUBDOMAIN in "${ADDITIONAL_WC_ARR[@]}"; do
       FULL_SUBDOMAIN="${SUBDOMAIN}.${SQL_DOMAIN}"
+
+      # Skip mta-sts subdomain unless MTA-STS is enabled (active) for this domain
+      if [[ "${SUBDOMAIN}" == "mta-sts" && -z "${MTA_STS_ACTIVE_DOMAINS[${SQL_DOMAIN}]}" ]]; then
+        log_f "MTA-STS is not enabled for ${SQL_DOMAIN} - skipping mta-sts subdomain certificate"
+        continue
+      fi
 
       # Skip if subdomain matches MAILCOW_HOSTNAME
       if [[ "${FULL_SUBDOMAIN}" == "${MAILCOW_HOSTNAME}" ]]; then

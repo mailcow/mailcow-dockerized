@@ -996,6 +996,7 @@ jQuery(function($){
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
             };
             item.username = escapeHtml(item.username);
+            item.name = escapeHtml(item.name);
 
             if (Array.isArray(item.tags)){
               var tags = '';
