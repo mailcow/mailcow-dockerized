@@ -30,7 +30,7 @@ $(document).ready(function() {
   // create host cpu and mem charts
   createHostCpuAndMemChart();
   // check for new version
-  if (mailcow_info.branch === "master"){
+  if (mailcow_info.branch === "master" && mailcow_cc_role === "admin"){
     check_update(mailcow_info.version_tag, mailcow_info.project_url);
   }
   $("#mailcow_version").click(function(){
@@ -1676,41 +1676,26 @@ function createHostCpuAndMemChart(){
 function check_update(current_version, github_repo_url){
   if (!current_version || !github_repo_url) return false;
 
-  var github_account = github_repo_url.split("/")[3];
-  var github_repo_name = github_repo_url.split("/")[4];
 
-  // get details about latest release
-  window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/latest", {method:'GET',cache:'no-cache'}).then(function(response) {
+  window.fetch("/inc/ajax/update_check.php", {method:'GET',cache:'no-cache'}).then(function(response) {
+    if (!response.ok) throw new Error("update check returned " + response.status);
     return response.json();
-  }).then(function(latest_data) {
-    // get details about current release
-    window.fetch("https://api.github.com/repos/"+github_account+"/"+github_repo_name+"/releases/tags/"+current_version, {method:'GET',cache:'no-cache'}).then(function(response) {
-      return response.json();
-    }).then(function(current_data) {
-      // compare releases
-      var date_current = new Date(current_data.created_at);
-      var date_latest = new Date(latest_data.created_at);
-      if (date_latest.getTime() <= date_current.getTime()){
-        // no update available
-        $("#mailcow_update").removeClass("text-warning text-danger").addClass("text-success");
-        $("#mailcow_update").html("<b>" + lang_debug.no_update_available + "</b>");
-      } else {
-        // update available
-        $("#mailcow_update").removeClass("text-danger text-success").addClass("text-warning");
-        $("#mailcow_update").html(lang_debug.update_available + ` <a href="#" id="mailcow_update_changelog">`+latest_data.tag_name+`</a>`);
-        $("#mailcow_update_changelog").click(function(){
-          if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
-            return;
+  }).then(function(data) {
+    if (data.status === "no_update") {
+      $("#mailcow_update").removeClass("text-warning text-danger").addClass("text-success");
+      $("#mailcow_update").html("<b>" + lang_debug.no_update_available + "</b>");
+    } else if (data.status === "update_available") {
+      $("#mailcow_update").removeClass("text-danger text-success").addClass("text-warning");
+      $("#mailcow_update").html(lang_debug.update_available + ` <a href="#" id="mailcow_update_changelog">`+data.latest_tag+`</a>`);
+      $("#mailcow_update_changelog").click(function(){
+        if (mailcow_cc_role !== "admin" && mailcow_cc_role !== "domainadmin")
+          return;
 
-          showVersionModal("New Release " + latest_data.tag_name, latest_data.tag_name);
-        })
-      }
-    }).catch(err => {
-      // err
-      console.log(err);
-      $("#mailcow_update").removeClass("text-success text-warning").addClass("text-danger");
-      $("#mailcow_update").html("<b>"+ lang_debug.update_failed +"</b>");
-    });
+        showVersionModal("New Release " + data.latest_tag, data.latest_tag);
+      })
+    } else {
+      throw new Error(data.message || "update check failed");
+    }
   }).catch(err => {
     // err
     console.log(err);
