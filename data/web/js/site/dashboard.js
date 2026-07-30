@@ -1089,6 +1089,8 @@ jQuery(function($){
         return str;
       }).join('<br>\n');
       item.subject = escapeHtml(item.subject);
+      if (item.sender_mime != null) item.sender_mime = escapeHtml(item.sender_mime);
+      if (item['message-id'] != null) item['message-id'] = escapeHtml(item['message-id']);
       var scan_time = item.time_real.toFixed(3);
       if (item.time_virtual) {
         scan_time += ' / ' + item.time_virtual.toFixed(3);
@@ -1212,6 +1214,11 @@ jQuery(function($){
       });
     } else if (table == 'rllog') {
       $.each(data, function (i, item) {
+        if (item.header_from != null) item.header_from = escapeHtml(item.header_from);
+        if (item.header_subject != null) item.header_subject = escapeHtml(item.header_subject);
+        if (item.from != null) item.from = escapeHtml(item.from);
+        if (item.rcpt != null) item.rcpt = escapeHtml(item.rcpt);
+        if (item.message_id != null) item.message_id = escapeHtml(item.message_id);
         if (item.user == null) {
           item.user = "none";
         }
