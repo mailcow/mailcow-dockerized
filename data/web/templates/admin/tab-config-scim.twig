@@ -13,6 +13,9 @@
         provisioning events to mailcow in real time. Generate a Bearer token below and configure your
         IdP to use <code>{{ scim_base_url }}</code>
         as the SCIM base URL.
+        Mailbox templates can be selected per user via the <code>template</code> attribute of the
+        <code>urn:mailcow:params:scim:schemas:extension:mailcow:2.0:User</code> schema extension,
+        mapped to a mailcow mailbox template in the &laquo;Attribute mapping&raquo; table.
       </p>
 
       {% if iam_settings.authsource != 'keycloak' and iam_settings.authsource != 'generic-oidc' and iam_settings.authsource != 'ldap' %}
@@ -101,11 +104,25 @@
 
                 <div class="row mb-2">
                   <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                    <label class="control-label">Claim pre-created mailboxes</label>
+                  </div>
+                  <div class="col-12 col-md-9">
+                    <div class="form-check pt-1">
+                      <input class="form-check-input" type="checkbox" name="allow_claim" value="1" id="scimEditAllowClaim">
+                      <label class="form-check-label" for="scimEditAllowClaim">
+                        <small class="text-muted">Allow POST /Users to adopt existing mailboxes with authsource &laquo;SCIM&raquo; instead of returning 409 Conflict</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-2">
+                  <div class="col-md-3 d-flex align-items-center justify-content-md-end">
                     <label class="control-label">Attribute mapping</label>
                   </div>
                   <div class="col-12 col-md-9 col-lg-6">
                     <div class="row px-2 align-items-center mb-1">
-                      <span class="col-5 p-0 pe-2"><small class="text-muted">mailcow_template value</small></span>
+                      <span class="col-5 p-0 pe-2"><small class="text-muted">template attribute value</small></span>
                       <span class="col-5 p-0 pe-2"><small class="text-muted">Mailbox template</small></span>
                       <div class="col-2 p-0 d-flex">
                         <button type="button" class="btn btn-sm btn-secondary ms-auto scim_rolemap_add"><i class="bi bi-plus-lg"></i></button>
@@ -174,6 +191,7 @@
                   <input type="hidden" name="allow_from" value="{{ token.allow_from }}">
                   <input type="hidden" name="mappers" value="{{ token.mappers }}">
                   <input type="hidden" name="templates" value="{{ token.templates }}">
+                  <input type="hidden" name="allow_claim" value="{{ token.allow_claim }}">
                   <input type="hidden" name="active" value="{{ token.active ? 0 : 1 }}">
                   <button type="submit" class="btn btn-xs btn-{{ token.active ? 'success' : 'secondary' }}">
                     {{ token.active ? 'Active' : 'Inactive' }}
@@ -191,6 +209,7 @@
                   data-allow-from="{{ token.allow_from }}"
                   data-mappers="{{ token.mappers }}"
                   data-templates="{{ token.templates }}"
+                  data-allow-claim="{{ token.allow_claim }}"
                   data-active="{{ token.active }}">
                   <i class="bi bi-pencil"></i>
                 </button>
@@ -241,7 +260,7 @@
               </div>
               <div class="col-12 col-md-9 col-lg-4">
                 <div class="row px-2 align-items-center mb-1">
-                  <span class="col-5 p-0 pe-2"><small class="text-muted">mailcow_template value</small></span>
+                  <span class="col-5 p-0 pe-2"><small class="text-muted">template attribute value</small></span>
                   <span class="col-5 p-0 pe-2"><small class="text-muted">Mailbox template</small></span>
                   <div class="col-2 p-0 d-flex">
                     <button type="button" class="btn btn-sm btn-secondary ms-auto scim_rolemap_add_new"><i class="bi bi-plus-lg"></i></button>
@@ -274,6 +293,20 @@
               </div>
               <div class="col-12 col-md-9 col-lg-4">
                 <input type="text" class="form-control" name="allow_from" placeholder="192.168.1.0/24, 10.0.0.1">
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+                <label class="control-label">Claim pre-created mailboxes</label>
+              </div>
+              <div class="col-12 col-md-9 col-lg-4">
+                <div class="form-check pt-1">
+                  <input class="form-check-input" type="checkbox" name="allow_claim" value="1" id="scim_add_allow_claim">
+                  <label class="form-check-label" for="scim_add_allow_claim">
+                    <small class="text-muted">Allow POST /Users to adopt existing mailboxes with authsource &laquo;SCIM&raquo; instead of returning 409 Conflict</small>
+                  </label>
+                </div>
               </div>
             </div>
 
