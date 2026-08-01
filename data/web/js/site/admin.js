@@ -880,9 +880,9 @@ jQuery(function($){
     var $list = $(listSelector);
     var $row  = $('<div class="row px-2 mb-1"></div>');
     var $col1 = $('<div class="col-5 p-0 pe-2"></div>');
-    $col1.append($('<input type="text" class="form-control" name="mappers">').val(mapperVal || ''));
+    $col1.append($('<input type="text" class="form-control" name="mappers[]">').val(mapperVal || ''));
     var $col2 = $('<div class="col-5 p-0 pe-2"></div>');
-    var $sel  = $('<select class="form-control" name="templates"><option value="">-- template --</option></select>');
+    var $sel  = $('<select class="form-control" name="templates[]"><option value="">-- template --</option></select>');
     // Selectpicker hides but does not remove the native <select> from the DOM,
     // so we can still read its <option> elements to build our new select.
     $list.find('select[name="default_template"]').find('option[value!=""]').each(function() {
@@ -950,6 +950,7 @@ jQuery(function($){
     $('#scimEditDomainRestriction').selectpicker('val', btn.data('domain-restriction') || '');
     $('#scimEditAllowFrom').val(btn.data('allow-from') || '');
     $('#scimEditActive').val(btn.data('active'));
+    $('#scimEditAllowClaim').prop('checked', String(btn.data('allow-claim')) === '1');
 
     // Set default template via selectpicker API to update the custom dropdown display
     $('#scimEditTemplate').selectpicker('val', btn.data('default-template') || '');

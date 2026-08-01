@@ -1429,6 +1429,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mbox_template_data['local_part'] = $_data['local_part'];
           $mbox_template_data['authsource'] = $_data['authsource'];
           $mbox_template_data['attribute_hash'] = $attribute_hash;
+          if (isset($_data['active'])) {
+            // Caller-supplied active state (e.g. SCIM create) overrides the template value
+            $mbox_template_data['active'] = intval($_data['active']);
+          }
           $mbox_template_data['quota'] = intval($mbox_template_data['quota'] / 1048576);
 
           $mailbox_attributes = array('acl' => array());
