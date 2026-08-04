@@ -147,7 +147,7 @@ def ban(address):
   logdebug("Ban net: %s" % net)
 
   if not net in bans:
-    bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0}
+    bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0, 'banned': False}
     logdebug("Initing new ban counter for %s" % net)
 
   current_attempt = time.time()
@@ -162,6 +162,9 @@ def ban(address):
   logdebug("%s attempts now %d" % (net, bans[net]['attempts']))
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
+    if bans[net].get('banned'):
+      logdebug("%s is already actively banned -- skipping duplicate ban()" % net)
+      return
     cur_time = int(round(time.time()))
     NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
@@ -174,6 +177,7 @@ def ban(address):
         logdebug("Calling tables.banIPv6(%s)" % net)
         tables.banIPv6(net)
 
+    bans[net]['banned'] = True
     logdebug("Updating F2B_ACTIVE_BANS[%s]=%d" %
               (net, cur_time + NET_BAN_TIME))
     r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
@@ -228,6 +232,7 @@ def unban(net):
     logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net_str)
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
+    bans[net]['banned'] = False
 
 def safe_unban(net, reason=''):
   try:
