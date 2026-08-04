@@ -257,6 +257,19 @@
               <input class="form-control" type="number" min="1" name="sync_interval" style="width: 80px;"  {% if iam_settings.sync_interval %}value="{{ iam_settings.sync_interval }}"{% else %}value="15"{% endif %}>
             </div>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_keycloak_end_session_url">{{ lang.admin.iam_end_session_url }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_keycloak_end_session_url" name="end_session_url" value="{{ iam_settings.end_session_url }}" placeholder="https://keycloak.example.com/realms/mailcow/protocol/openid-connect/logout">
+              <p class="text-muted">
+                <small>
+                  {{ lang.admin.iam_end_session_url_info }}
+                </small>
+              </p>
+            </div>
+          </div>
           <div class="row mt-4 mb-2">
             <div class="offset-md-3 col-12 col-md-9 d-flex flex-wrap">
               <div class="btn-group mb-2">
@@ -458,6 +471,19 @@
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="login_provisioning"  value="1" {% if iam_settings.login_provisioning == 1 %}checked{% endif %}>
               </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_generic_end_session_url">{{ lang.admin.iam_end_session_url }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_generic_end_session_url" name="end_session_url" value="{{ iam_settings.end_session_url }}" placeholder="https://auth.example.com/connect/endsession">
+              <p class="text-muted">
+                <small>
+                  {{ lang.admin.iam_end_session_url_info }}
+                </small>
+              </p>
             </div>
           </div>
           <div class="row mt-4 mb-2">

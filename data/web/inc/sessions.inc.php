@@ -112,12 +112,44 @@ if (isset($_POST["logout"])) {
   }
   else {
     $role = $_SESSION["mailcow_cc_role"];
+    
+    // Check if user was authenticated via OIDC and OIDC logout is enabled
+    $oidc_logout_url = null;
+    if (isset($_SESSION['iam_auth_source']) && ($_SESSION['iam_auth_source'] == 'keycloak' || $_SESSION['iam_auth_source'] == 'generic-oidc')) {
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+      
+      // Determine the schema
+      $schema = 'http';
+      if ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == "https") || 
+          isset($_SERVER['HTTPS'])) {
+        $schema = 'https';
+      }
+      
+      // Determine post-logout redirect URI based on role
+      $post_logout_redirect_uri = $schema . '://' . $_SERVER['HTTP_HOST'];
+      if ($role == "admin") {
+        $post_logout_redirect_uri .= '/admin';
+      } elseif ($role == "domainadmin") {
+        $post_logout_redirect_uri .= '/domainadmin';
+      } else {
+        $post_logout_redirect_uri .= '/';
+      }
+
+      $iam_provider = identity_provider('init');
+      $iam_settings = identity_provider('get');
+      $oidc_logout_url = identity_provider('get-logout-url', array('post_logout_redirect_uri' => $post_logout_redirect_uri));
+    }
+    
     session_regenerate_id(true);
     session_unset();
     session_destroy();
     session_write_close();
-    if ($role == "admin") {
-      header("Location: /admin");
+    
+    // Redirect to OIDC logout URL if available, otherwise use standard logout
+    if ($oidc_logout_url) {
+      header("Location: " . $oidc_logout_url);
+    } elseif($role == "admin") {
+        header("Location: /admin");
     }
     elseif ($role == "domainadmin") {
       header("Location: /domainadmin");
