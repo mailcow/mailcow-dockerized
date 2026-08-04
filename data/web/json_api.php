@@ -2055,9 +2055,6 @@ if (isset($_GET['query'])) {
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
         break;
-        case "cors":
-          process_edit_return(cors('edit', $attr));
-        break;
         case "reset-password-notification":
           process_edit_return(reset_password('edit_notification', $attr));
         break;
@@ -2084,8 +2081,7 @@ if (isset($_GET['query'])) {
       exit();
   }
 }
-if (array_key_exists('mailcow_cc_api', $_SESSION) && $_SESSION['mailcow_cc_api'] === true) {
-  if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
-    unset($_SESSION['return']);
-  }
+
+if (isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true) {
+  unset($_SESSION['return']);
 }
