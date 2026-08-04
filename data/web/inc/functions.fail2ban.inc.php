@@ -61,7 +61,14 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         if (is_array($active_bans)) {
           foreach ($active_bans as $network => $banned_until) {
             $queued_for_unban = (isset($queue_unban[$network]) && $queue_unban[$network] == 1) ? 1 : 0;
-            $difference = $banned_until - time();
+            $until_ts = (int) $banned_until;
+            $difference = $until_ts - time();
+            // Safeguard: negative remaining time means ban already expired; queue unban so
+            // netfilter clears Redis + firewall (covers clock skew vs netfilter and stuck entries).
+            if ($difference < 0) {
+              $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+              $queued_for_unban = 1;
+            }
             $f2b_options['active_bans'][] = array(
               'queued_for_unban' => $queued_for_unban,
               'network' => $network,
