@@ -2,6 +2,8 @@
 
 {% block navbar %}{% endblock %}
 
+{% block body_class %}login-portal login-portal-user{% endblock %}
+
 {% block content %}
 <div class="row mb-4" style="margin-top: 60px">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
@@ -108,12 +110,17 @@
     </div>
 
     {% if custom_login.hide_admin_quicklink != 1 or custom_login.hide_domainadmin_quicklink != 1 %}
-    <p class="text-center mt-3 text-muted" style="font-size: 0.9rem;">
-      {{ lang.login.login_linkstext }}<br>
-      {% if custom_login.hide_admin_quicklink != 1 %}<a href="/admin">{{ lang.login.login_admintext }}</a>{% endif %}
-      {% if custom_login.hide_admin_quicklink != 1 and custom_login.hide_domainadmin_quicklink != 1 %}|{% endif %}
-      {% if custom_login.hide_domainadmin_quicklink != 1 %}<a href="/domainadmin">{{ lang.login.login_domainadmintext }}</a>{% endif %}
-    </p>
+    <div class="text-center mt-4">
+      <div class="text-muted mb-2" style="font-size: 0.9rem;">{{ lang.login.login_linkstext }}</div>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        {% if custom_login.hide_domainadmin_quicklink != 1 %}
+          <a href="/domainadmin" class="btn btn-sm btn-outline-primary">{{ lang.login.login_domainadmintext }}</a>
+        {% endif %}
+        {% if custom_login.hide_admin_quicklink != 1 %}
+          <a href="/admin" class="btn btn-sm btn-outline-danger">{{ lang.login.login_admintext }}</a>
+        {% endif %}
+      </div>
+    </div>
     {% endif %}
   </div>
 </div>
