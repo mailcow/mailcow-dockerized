@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/spf.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dns.inc.php';
 
 define('state_good', '<i class="bi bi-check-lg text-success"></i>');
 define('state_missing', '<i class="bi bi-x-lg text-danger"></i>');
@@ -430,13 +431,15 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           }
           $state = implode('<br />', $state);
         }
+        $recommended_record = mailcow_dns_recommended_value($record[1], $record[2]);
+
         echo sprintf('
         <tr>
           <td>%s</td>
           <td>%s</td>
           <td class="dns-found">%s</td>
           <td class="dns-recommended">%s</td>
-        </tr>', $record[0], $record[1], $record[2], $state);
+        </tr>', $record[0], $record[1], $recommended_record, $state);
         $record[3] = explode('<br />', $state);
       }
 
@@ -446,7 +449,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
       foreach ($records as $record) {
         if ($domain == substr($record[0], -strlen($domain))) {
           $label = substr($record[0], 0, -strlen($domain)-1);
-          $val = $record[2];
+          $val = mailcow_dns_recommended_value($record[1], $record[2]);
 
           if (strlen($label) == 0) {
             $label = "@";
@@ -471,7 +474,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           }
 
           foreach ($vals as $val) {
-            $dns_data .= str_replace($domain, $domain . '.', $val);
+            $dns_data .= $val;
           }
         }
       }
