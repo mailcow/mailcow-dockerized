@@ -1056,7 +1056,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             return false;
           }
           if ($_data['authsource'] == "mailcow" ||
-              in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
+              in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource'] ||
+              $_data['authsource'] == 'scim'){
             $authsource = $_data['authsource'];
           }
           if (empty($name)) {
@@ -1125,7 +1126,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $quota_b    = ($quota_m * 1048576);
           $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
-          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
             $force_pw_update = 0;
           }
           if ($authsource == 'generic-oidc'){
@@ -1428,6 +1429,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mbox_template_data['local_part'] = $_data['local_part'];
           $mbox_template_data['authsource'] = $_data['authsource'];
           $mbox_template_data['attribute_hash'] = $attribute_hash;
+          if (isset($_data['active'])) {
+            // Caller-supplied active state (e.g. SCIM create) overrides the template value
+            $mbox_template_data['active'] = intval($_data['active']);
+          }
           $mbox_template_data['quota'] = intval($mbox_template_data['quota'] / 1048576);
 
           $mailbox_attributes = array('acl' => array());
@@ -3152,10 +3157,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
               $authsource           = $is_now['authsource'];
               if ($_data['authsource'] == "mailcow" ||
-                  in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
+                  in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource'] ||
+                  $_data['authsource'] == 'scim'){
                 $authsource = $_data['authsource'];
               }
-              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
                 $force_pw_update = 0;
               }
               if ($authsource == 'generic-oidc'){
