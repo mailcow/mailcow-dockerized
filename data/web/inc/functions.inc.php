@@ -3551,7 +3551,16 @@ function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redir
     if (isset($redirects['unauthenticated'])) {
       header('Location: ' . $redirects['unauthenticated']);
     } else {
-      header('Location: /');
+      // Send a deep link to the login page for its area instead of the user login at /,
+      // e.g. /admin/dashboard -> /admin rather than /
+      $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin');
+      } elseif (strpos($request_uri, '/domainadmin/') === 0) {
+        header('Location: /domainadmin');
+      } else {
+        header('Location: /');
+      }
     }
     exit();
   }
