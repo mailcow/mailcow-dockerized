@@ -1078,7 +1078,7 @@
         "rspamd_result": "Rezultat Rspamd",
         "sender": "Pošiljatelj (SMTP)",
         "sender_header": "Pošiljatelj (glava »Od«)",
-        "settings_info": "Največje število elementov za karanteno: %s<br>Največja velikost e-pošte: %s MiB",
+        "settings_info": "Največje število elementov za karanteno (na poštni predal): %s<br>Največja velikost e-pošte: %s MiB",
         "show_item": "Prikaži element",
         "spam": "Neželena pošta",
         "subj": "Zadeva",
