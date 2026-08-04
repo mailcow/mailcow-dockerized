@@ -5971,6 +5971,8 @@ paths:
                           periodic_sync: true
                           import_users: true
                           sync_interval: 30
+                          role_filter_type: "realm"
+                          role_filter_role_name: "mailcow-user"
                       msg:
                         - "object_modified"
                         - ""
@@ -6046,6 +6048,14 @@ paths:
                       description: Defines the time interval (in minutes) for periodic synchronization and user imports.
                       type: number
                       default: 15
+                    role_filter_type:
+                      description: Optional Keycloak role filter for user synchronization and login.
+                      type: string
+                      enum: [none, realm, client]
+                      default: none
+                    role_filter_role_name:
+                      description: Keycloak role name. Required when `role_filter_type` is `realm` or `client`.
+                      type: string
                     host:
                       description: The address of your LDAP server. You can provide a single hostname or a comma-separated list of hosts for fallback in case the primary server is unreachable. Required if `authsource` is ldap.
                       type: string
@@ -6114,6 +6124,8 @@ paths:
                     periodic_sync: true
                     import_users: true
                     sync_interval: 30
+                    role_filter_type: "realm"
+                    role_filter_role_name: "mailcow-user"
               ldap:
                 value:
                   items:
