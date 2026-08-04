@@ -229,44 +229,44 @@ class DockerApi:
           return df_return.output.decode('utf-8').rstrip()
         else:
           return "0,0,0,0,0,0"
-  # api call: container_post - post_action: exec - cmd: system - task: mysql_upgrade
-  def container_post__exec__system__mysql_upgrade(self, request_json, **kwargs):
+  # api call: container_post - post_action: exec - cmd: system - task: mariadb-upgrade
+  def container_post__exec__system__mariadb_upgrade(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
     elif 'container_name' in kwargs:
       filters = {"name": kwargs['container_name']}
 
     for container in self.sync_docker_client.containers.list(filters=filters):
-      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mariadb-upgrade -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "'\n"], user='mysql')
       if sql_return.exit_code == 0:
         matched = False
         for line in sql_return.output.decode('utf-8').split("\n"):
           if 'is already upgraded to' in line:
             matched = True
         if matched:
-          res = { 'type': 'success', 'msg':'mysql_upgrade: already upgraded', 'text': sql_return.output.decode('utf-8')}
+          res = { 'type': 'success', 'msg':'mariadb-upgrade: already upgraded', 'text': sql_return.output.decode('utf-8')}
           return Response(content=json.dumps(res, indent=4), media_type="application/json")
         else:
           container.restart()
-          res = { 'type': 'warning', 'msg':'mysql_upgrade: upgrade was applied', 'text': sql_return.output.decode('utf-8')}
+          res = { 'type': 'warning', 'msg':'mariadb-upgrade: upgrade was applied', 'text': sql_return.output.decode('utf-8')}
           return Response(content=json.dumps(res, indent=4), media_type="application/json")
       else:
-        res = { 'type': 'error', 'msg': 'mysql_upgrade: error running command', 'text': sql_return.output.decode('utf-8')}
+        res = { 'type': 'error', 'msg': 'mariadb-upgrade: error running command', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")
-  # api call: container_post - post_action: exec - cmd: system - task: mysql_tzinfo_to_sql
-  def container_post__exec__system__mysql_tzinfo_to_sql(self, request_json, **kwargs):
+  # api call: container_post - post_action: exec - cmd: system - task: mariadb_tzinfo-to-sql
+  def container_post__exec__system__mariadb_tzinfo_to_sql(self, request_json, **kwargs):
     if 'container_id' in kwargs:
       filters = {"id": kwargs['container_id']}
     elif 'container_name' in kwargs:
       filters = {"name": kwargs['container_name']}
 
     for container in self.sync_docker_client.containers.list(filters=filters):
-      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mysql_tzinfo_to_sql /usr/share/zoneinfo | /bin/sed 's/Local time zone must be set--see zic manual page/FCTY/' | /usr/bin/mysql -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "' mysql \n"], user='mysql')
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mariadb-tzinfo-to-sql /usr/share/zoneinfo | /bin/sed 's/Local time zone must be set--see zic manual page/FCTY/' | /usr/bin/mysql -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "' mysql \n"], user='mysql')
       if sql_return.exit_code == 0:
-        res = { 'type': 'info', 'msg': 'mysql_tzinfo_to_sql: command completed successfully', 'text': sql_return.output.decode('utf-8')}
+        res = { 'type': 'info', 'msg': 'mariadb-tzinfo-to-sql: command completed successfully', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")
       else:
-        res = { 'type': 'error', 'msg': 'mysql_tzinfo_to_sql: error running command', 'text': sql_return.output.decode('utf-8')}
+        res = { 'type': 'error', 'msg': 'mariadb-tzinfo-to-sql: error running command', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")
   # api call: container_post - post_action: exec - cmd: reload - task: dovecot
   def container_post__exec__reload__dovecot(self, request_json, **kwargs):
