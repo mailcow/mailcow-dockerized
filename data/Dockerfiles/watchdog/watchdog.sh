@@ -72,6 +72,11 @@ get_ipv6(){
   echo ${IPV6}
 }
 
+ipv6_enabled() {
+  local enabled="${ENABLE_IPV6:-true}"
+  [[ "${enabled,,}" =~ ^(true|yes|y|1)$ ]]
+}
+
 array_diff() {
   # https://stackoverflow.com/questions/2312762, Alex Offshore
   eval local ARR1=\(\"\${$2[@]}\"\)
@@ -227,8 +232,164 @@ get_container_ip() {
   [[ ${LOOP_C} -gt 5 ]] && echo 240.0.0.0 || echo ${CONTAINER_IP}
 }
 
+get_container_ipv6() {
+  local service="$1"
+  local attempt
+  local container_id
+  local container_ipv6
+
+  for attempt in {1..5}; do
+    container_id="$(
+      curl --silent --insecure \
+        "https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/json" \
+        | jq -r \
+          --arg service "${service}" \
+          --arg project "${COMPOSE_PROJECT_NAME,,}" \
+          '.[] |
+           select(.Config.Labels["com.docker.compose.service"] == $service) |
+           select((.Config.Labels["com.docker.compose.project"] | ascii_downcase) == $project) |
+           .Id' \
+        | shuf \
+        | head -n 1
+    )"
+
+    if [[ -n "${container_id}" ]]; then
+      container_ipv6="$(
+        curl --silent --insecure \
+          "https://dockerapi.${COMPOSE_PROJECT_NAME}_mailcow-network/containers/${container_id}/json" \
+          | jq -r \
+            '.NetworkSettings.Networks
+             | to_entries
+             | map(select(.key | endswith("_mailcow-network")))
+             | map(.value.GlobalIPv6Address // empty)
+             | map(select(length > 0))
+             | .[0] // empty'
+      )"
+      if [[ "${container_ipv6}" == *:* ]]; then
+        printf '%s\n' "${container_ipv6}"
+        return 0
+      fi
+    fi
+
+    [[ "${attempt}" -lt 5 ]] && sleep 0.5
+  done
+
+  return 1
+}
+
+dnssec_validation_mode() {
+  local config="${1:-/etc/mailcow/unbound.conf}"
+
+  [[ -r "${config}" ]] || return 1
+  awk -F: '
+    /^[[:space:]]*#/ { next }
+    $1 ~ /^[[:space:]]*val-permissive-mode[[:space:]]*$/ { value=$2 }
+    END {
+      sub(/[[:space:]]*#.*/, "", value)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      if (tolower(value) == "yes") {
+        print "permissive"
+      } else {
+        print "strict"
+      }
+    }
+  ' "${config}"
+}
+
+dnssec_validation_healthy() {
+  local family="$1"
+  local server="$2"
+  local transport="$3"
+  local mode="$4"
+  local signed_response
+  local bogus_response
+
+  signed_response="$(
+    dig "-${family}" com. SOA +dnssec +timeout=2 +tries=1 @"${server}" 2>&1
+  )"
+  if ! grep -Eq 'status: NOERROR' <<< "${signed_response}" \
+    || ! grep -Eq 'flags:.+ ad[ ;]' <<< "${signed_response}"; then
+    echo "DNSSEC authenticated-answer failure over ${transport}" \
+      2>> /tmp/unbound-mailcow 1>&2
+    return 1
+  fi
+
+  bogus_response="$(
+    dig "-${family}" dnssec-failed.org A +dnssec +timeout=2 +tries=1 @"${server}" 2>&1
+  )"
+
+  if grep -Eq 'flags:.+ ad[ ;]' <<< "${bogus_response}"; then
+    echo "DNSSEC bogus chain was marked authenticated over ${transport}" \
+      2>> /tmp/unbound-mailcow 1>&2
+    return 1
+  fi
+
+  if [[ "${mode}" == "strict" ]] \
+    && ! grep -Eq 'status: SERVFAIL' <<< "${bogus_response}"; then
+    echo "DNSSEC bogus-chain rejection failure over ${transport}" \
+      2>> /tmp/unbound-mailcow 1>&2
+    return 1
+  fi
+
+  if [[ "${mode}" == "permissive" ]] \
+    && ! grep -Eq 'status: (NOERROR|SERVFAIL)' <<< "${bogus_response}"; then
+    echo "DNSSEC permissive-mode response failure over ${transport}" \
+      2>> /tmp/unbound-mailcow 1>&2
+    return 1
+  fi
+
+  echo "DNSSEC ${mode} validation succeeded over ${transport}" \
+    2>> /tmp/unbound-mailcow 1>&2
+}
+
+run_dns_check() {
+  /usr/lib/mailcow/check_dns.sh "$@"
+}
+
+unbound_check_round() {
+  local failed=0
+  local host_ip
+  local host_ipv6
+  local mode
+
+  host_ip="$(get_container_ip unbound-mailcow)"
+  if ! mode="$(dnssec_validation_mode)"; then
+    mode="strict"
+    echo "Cannot read the mounted Unbound configuration; using strict DNSSEC checks" \
+      2>> /tmp/unbound-mailcow 1>&2
+  fi
+
+  if ! run_dns_check -s "${host_ip}" -H stackoverflow.com \
+    2>> /tmp/unbound-mailcow 1>&2; then
+    failed=1
+  fi
+  if ! dnssec_validation_healthy 4 "${host_ip}" IPv4 "${mode}"; then
+    failed=1
+  fi
+
+  if ipv6_enabled; then
+    if ! host_ipv6="$(get_container_ipv6 unbound-mailcow)"; then
+      echo "Cannot discover Unbound's IPv6 address on mailcow-network" \
+        2>> /tmp/unbound-mailcow 1>&2
+      notify_error "ipv6-config" \
+        "Watchdog cannot discover Unbound's IPv6 address on mailcow-network." \
+        3600
+    else
+      if ! run_dns_check -s "${host_ipv6}" -H stackoverflow.com \
+        2>> /tmp/unbound-mailcow 1>&2; then
+        failed=1
+      fi
+      if ! dnssec_validation_healthy 6 "${host_ipv6}" IPv6 "${mode}"; then
+        failed=1
+      fi
+    fi
+  fi
+
+  return "${failed}"
+}
+
 # One-time check
-if grep -qi "$(echo ${IPV6_NETWORK} | cut -d: -f1-3)" <<< "$(ip a s)"; then
+if ipv6_enabled; then
   if [[ -z "$(get_ipv6)" ]]; then
     notify_error "ipv6-config" "enable_ipv6 is true in docker-compose.yml, but an IPv6 link could not be established. Please verify your IPv6 connection."
   fi
@@ -300,16 +461,11 @@ unbound_checks() {
   trap "[ ${err_count} -gt 1 ] && err_count=$(( ${err_count} - 2 ))" USR1
   while [ ${err_count} -lt ${THRESHOLD} ]; do
     touch /tmp/unbound-mailcow; echo "$(tail -50 /tmp/unbound-mailcow)" > /tmp/unbound-mailcow
-    host_ip=$(get_container_ip unbound-mailcow)
     err_c_cur=${err_count}
-    /usr/lib/mailcow/check_dns.sh -s ${host_ip} -H stackoverflow.com 2>> /tmp/unbound-mailcow 1>&2; err_count=$(( ${err_count} + $? ))
-    DNSSEC=$(dig com +dnssec | egrep 'flags:.+ad')
-    if [[ -z ${DNSSEC} ]]; then
-      echo "DNSSEC failure" 2>> /tmp/unbound-mailcow 1>&2
-      err_count=$(( ${err_count} + 1))
-    else
-      echo "DNSSEC check succeeded" 2>> /tmp/unbound-mailcow 1>&2
+    if ! unbound_check_round; then
+      err_count=$(( ${err_count} + 1 ))
     fi
+
     [ ${err_c_cur} -eq ${err_count} ] && [ ! $((${err_count} - 1)) -lt 0 ] && err_count=$((${err_count} - 1)) diff_c=1
     [ ${err_c_cur} -ne ${err_count} ] && diff_c=$(( ${err_c_cur} - ${err_count} ))
     progress "Unbound" ${THRESHOLD} $(( ${THRESHOLD} - ${err_count} )) ${diff_c}
@@ -1167,4 +1323,3 @@ while true; do
     kill -USR1 ${BACKGROUND_TASKS[*]}
   fi
 done
-
