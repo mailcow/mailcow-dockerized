@@ -68,7 +68,7 @@ if (isset($_GET["cancel_tfa_setup"])) {
 }
 
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
-  $login_user = strtolower(trim($_POST["login_user"]));
+  $login_user = normalize_login_name($_POST["login_user"]);
   $as = check_login($login_user, $_POST["pass_user"], array("role" => "domain_admin", "service" => "MAILCOWUI"));
 
   if ($as == "domainadmin") {
