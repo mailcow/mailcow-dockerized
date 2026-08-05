@@ -856,6 +856,11 @@ rspamd_config:register_symbol({
 
             local seen_cte
             local newline_s = newline(task)
+            -- add_text_footer reports the encoding it actually applied: a part that
+            -- came in as 7bit is passed through untouched instead of being encoded.
+            -- Announcing quoted-printable regardless leaves the header describing an
+            -- encoding the body does not use.
+            local new_cte = rewrite.new_cte or 'quoted-printable'
 
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
@@ -877,13 +882,13 @@ rspamd_config:register_symbol({
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
-                      'Content-Transfer-Encoding', 'quoted-printable')
+                      'Content-Transfer-Encoding', new_cte)
                   -- update Content-Transfer-Encoding header
                   task:set_milter_reply({
                     remove_headers = {['Content-Transfer-Encoding'] = 0},
                   })
                   task:set_milter_reply({
-                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                    add_headers = {['Content-Transfer-Encoding'] = new_cte}
                   })
                   seen_cte = true
                   return
@@ -895,7 +900,7 @@ rspamd_config:register_symbol({
             task:headers_foreach(rewrite_ct_cb, {full = true})
 
             if not seen_cte and rewrite.need_rewrite_ct then
-              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', new_cte)
             end
 
             -- End of headers
