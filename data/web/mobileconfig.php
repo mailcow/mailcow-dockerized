@@ -36,7 +36,7 @@ $emailAddresses = $email;
 if (isset($_GET['with_aliases'])) {
   $aliasDetails = user_get_alias_details($email);
   if (!empty($aliasDetails['direct_aliases'])) {
-    $emailAddresses = implode(',', array_merge(array($email), array_keys($aliasDetails['direct_aliases'])));
+    $emailAddresses = implode(', ', array_merge(array($email), array_keys($aliasDetails['direct_aliases'])));
   }
 }
 
