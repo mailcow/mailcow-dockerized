@@ -32,6 +32,14 @@ catch(PDOException $e) {
   $displayname = $email;
 }
 
+$emailAddresses = $email;
+if (isset($_GET['with_aliases'])) {
+  $aliasDetails = user_get_alias_details($email);
+  if (!empty($aliasDetails['direct_aliases'])) {
+    $emailAddresses = implode(',', array_merge(array($email), array_keys($aliasDetails['direct_aliases'])));
+  }
+}
+
 if (isset($_GET['only_email'])) {
   $onlyEmailAccount = true;
   $description = 'IMAP';
@@ -85,7 +93,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <key>EmailAccountName</key>
         <string><?=$displayname?></string>
         <key>EmailAddress</key>
-        <string><?=$email?></string>
+        <string><?=$emailAddresses?></string>
         <key>IncomingMailServerAuthentication</key>
         <string>EmailAuthPassword</string>
         <key>IncomingMailServerHostName</key>
