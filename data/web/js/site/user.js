@@ -701,4 +701,18 @@ jQuery(function($){
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
   onVisible("[id^=app_passwd_table]", () => draw_app_passwd_table());
   onVisible("[id^=recent-logins]", () => last_logins('get'));
+
+  // Toggle aliases in mobileconfig links
+  $('#mobileconfig-with-aliases').on('change', function() {
+    $('.mobileconfig-link').each(function() {
+      var url = new URL($(this).attr('href'), window.location.origin);
+      if ($('#mobileconfig-with-aliases').is(':checked')) {
+        url.searchParams.set('with_aliases', '');
+      } else {
+        url.searchParams.delete('with_aliases');
+      }
+      var query = url.searchParams.toString();
+      $(this).attr('href', query ? url.pathname + '?' + query : url.pathname);
+    });
+  });
 });
