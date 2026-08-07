@@ -1274,6 +1274,7 @@
         "apple_connection_profile_complete": "This connection profile includes IMAP and SMTP parameters as well as CalDAV (calendars) and CardDAV (contacts) paths for an Apple device.",
         "apple_connection_profile_mailonly": "This connection profile includes IMAP and SMTP configuration parameters for an Apple device.",
         "apple_connection_profile_with_app_password": "A new app password is generated and added to the profile so that no password needs to be entered when setting up your device. Please do not share the file as it grants full access to your mailbox.",
+        "apple_connection_profile_include_aliases": "Include mailbox aliases as additional email addresses in the profile",
         "attribute": "Attribute",
         "authentication": "Authentication",
         "change_password": "Change password",
