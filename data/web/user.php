@@ -9,6 +9,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.user.inc.php';
 // Protect route: user only
 protect_route(['user']);
 
+// SOGo will set ?sogo if user is logged out, so that they can be redirected
+if (isset($_GET['sogo'])) {
+  header("Location: /SOGo/so/");
+  exit();
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $username = $_SESSION['mailcow_cc_username'];
