@@ -433,3 +433,24 @@ button[aria-expanded='true'] > .caret {
 .hr-title:not(:empty)::after {
   margin-left: 10px;
 }
+/* Visual differentiation of login portals */
+body.login-portal-user {
+  background-color: #f2faf5 !important;
+}
+body.login-portal-user .card {
+  border-top: 4px solid #198754 !important;
+}
+
+body.login-portal-domainadmin {
+  background-color: #f3f4fc !important;
+}
+body.login-portal-domainadmin .card {
+  border-top: 4px solid #0d6efd !important;
+}
+
+body.login-portal-admin {
+  background-color: #fdf3f3 !important;
+}
+body.login-portal-admin .card {
+  border-top: 4px solid #dc3545 !important;
+}

@@ -455,3 +455,37 @@ input::placeholder {
 .btn-light, .btn-light:hover {
     background-image: none;
 }
+
+/* Dark Mode Login Portals */
+body.login-portal-user {
+  background-color: #121814 !important;
+}
+body.login-portal-user .card {
+  background-color: #1d2520 !important;
+  border-color: #27332c !important;
+}
+body.login-portal-user .card-header {
+  background-color: #121814 !important;
+}
+
+body.login-portal-domainadmin {
+  background-color: #13151c !important;
+}
+body.login-portal-domainadmin .card {
+  background-color: #1d202b !important;
+  border-color: #282c3c !important;
+}
+body.login-portal-domainadmin .card-header {
+  background-color: #13151c !important;
+}
+
+body.login-portal-admin {
+  background-color: #1a1111 !important;
+}
+body.login-portal-admin .card {
+  background-color: #281b1b !important;
+  border-color: #382525 !important;
+}
+body.login-portal-admin .card-header {
+  background-color: #1a1111 !important;
+}

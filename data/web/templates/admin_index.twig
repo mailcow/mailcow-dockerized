@@ -2,6 +2,8 @@
 
 {% block navbar %}{% endblock %}
 
+{% block body_class %}login-portal login-portal-admin{% endblock %}
+
 {% block content %}
 <div class="row mb-4" style="margin-top: 60px">
   <div class="col-12 col-md-7 col-lg-6 col-xl-5 ms-auto me-auto">
@@ -52,7 +54,7 @@
             </div>
           </div>
           <div class="d-flex justify-content-between mt-4" style="position: relative">
-            <button type="submit" class="btn btn-xs-lg btn-success w-100 mt-2 mx-auto" style="max-width: 400px;" value="Login">{{ lang.login.login }}</button>
+            <button type="submit" class="btn btn-xs-lg btn-danger w-100 mt-2 mx-auto" style="max-width: 400px;" value="Login">{{ lang.login.login }}</button>
           </div>
         </form>
         <div class="hr-title"><strong>{{ lang.login.other_logins }}</strong></div>
@@ -90,12 +92,17 @@
     </div>
 
     {% if custom_login.hide_user_quicklink != 1 or custom_login.hide_domainadmin_quicklink != 1 %}
-    <p class="text-center mt-3 text-muted" style="font-size: 0.9rem;">
-      {{ lang.login.login_linkstext }}<br>
-      {% if custom_login.hide_user_quicklink != 1 %}<a href="/">{{ lang.login.login_usertext }}</a>{% endif %}
-      {% if custom_login.hide_user_quicklink != 1 and custom_login.hide_domainadmin_quicklink != 1 %}|{% endif %}
-      {% if custom_login.hide_domainadmin_quicklink != 1 %}<a href="/domainadmin">{{ lang.login.login_domainadmintext }}</a>{% endif %}
-    </p>
+    <div class="text-center mt-4">
+      <div class="text-muted mb-2" style="font-size: 0.9rem;">{{ lang.login.login_linkstext }}</div>
+      <div class="d-flex justify-content-center gap-2 flex-wrap">
+        {% if custom_login.hide_user_quicklink != 1 %}
+          <a href="/" class="btn btn-sm btn-outline-success">{{ lang.login.login_usertext }}</a>
+        {% endif %}
+        {% if custom_login.hide_domainadmin_quicklink != 1 %}
+          <a href="/domainadmin" class="btn btn-sm btn-outline-primary">{{ lang.login.login_domainadmintext }}</a>
+        {% endif %}
+      </div>
+    </div>
     {% endif %}
   </div>
 </div>
