@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "01082026_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -375,7 +375,7 @@ function init_db_schema()
           "custom_attributes" => "JSON NOT NULL DEFAULT ('{}')",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1",
-          "authsource" => "ENUM('mailcow', 'keycloak', 'generic-oidc', 'ldap') DEFAULT 'mailcow'",
+          "authsource" => "ENUM('mailcow', 'keycloak', 'generic-oidc', 'ldap', 'scim') DEFAULT 'mailcow'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -1146,6 +1146,74 @@ function init_db_schema()
         "keys" => array(
           "primary" => array(
             "" => array("refresh_token")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "scim_tokens" => array(
+        "cols" => array(
+          "id"                 => "INT NOT NULL AUTO_INCREMENT",
+          "description"        => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "token_hash"         => "VARCHAR(255) NOT NULL",
+          "domain_restriction" => "VARCHAR(255) DEFAULT NULL",
+          "allow_from"         => "TEXT NOT NULL",
+          "default_template"   => "VARCHAR(255) DEFAULT NULL",
+          "mappers"            => "TEXT DEFAULT NULL",
+          "templates"          => "TEXT DEFAULT NULL",
+          "allow_claim"        => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "active"             => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "created"            => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified"           => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "token_hash" => array("token_hash")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // One row per SCIM-managed mailbox: scim_id is the stable, opaque SCIM
+      // resource id (RFC 7643 §3.1); external_id is the IdP's identifier;
+      // token_id records provenance (survives token deletion via SET NULL);
+      // template stores the mailbox template resolved at creation time.
+      "scim_maps" => array(
+        "cols" => array(
+          "id"          => "INT NOT NULL AUTO_INCREMENT",
+          "scim_id"     => "VARCHAR(36) DEFAULT NULL",
+          "external_id" => "VARCHAR(255) DEFAULT NULL",
+          "username"    => "VARCHAR(255) NOT NULL",
+          "token_id"    => "INT DEFAULT NULL",
+          "template"    => "VARCHAR(255) DEFAULT NULL",
+          "created"     => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified"    => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "scim_maps_scim_id"  => array("scim_id"),
+            "scim_maps_username" => array("username")
+          ),
+          "key" => array(
+            "scim_maps_external_id" => array("external_id")
+          ),
+          "fkey" => array(
+            "fk_scim_maps_username" => array(
+              "col"    => "username",
+              "ref"    => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_scim_maps_token_id" => array(
+              "col"    => "token_id",
+              "ref"    => "scim_tokens.id",
+              "delete" => "SET NULL",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
