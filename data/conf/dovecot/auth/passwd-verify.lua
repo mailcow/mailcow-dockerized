@@ -1,4 +1,5 @@
 function auth_password_verify(request, password)
+  request.domain = request.auth_user:match("@(.+)") or nil
   if request.domain == nil then
     return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
   end
@@ -9,10 +10,10 @@ function auth_password_verify(request, password)
   https.TIMEOUT = 30
 
   local req = {
-    username = request.user,
+    username = request.auth_user,
     password = password,
-    real_rip = request.real_rip,
-    service = request.service
+    real_rip = request.remote_ip,
+    service = request.protocol
   }
   local req_json = json.encode(req)
   local res = {}
@@ -33,7 +34,6 @@ function auth_password_verify(request, password)
   -- Returning PASSDB_RESULT_INTERNAL_FAILURE keeps the existing cache entry,
   -- even if the TTL has expired. Useful to avoid cache eviction during backend issues.
   if c ~= 200 and c ~= 401 then
-    dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
     return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Upstream error"
   end
 
@@ -46,7 +46,7 @@ function auth_password_verify(request, password)
   end
 
   if response_json.success == true then
-    return dovecot.auth.PASSDB_RESULT_OK, ""
+    return dovecot.auth.PASSDB_RESULT_OK, { msg = "" }
   end
 
   return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Failed to authenticate"
@@ -54,4 +54,8 @@ end
 
 function auth_passdb_lookup(req)
    return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, ""
+end
+
+function auth_passdb_get_cache_key()
+  return "%{protocol}:%{user | username}\t:%{password}"
 end
