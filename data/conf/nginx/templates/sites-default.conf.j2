@@ -116,6 +116,7 @@ location ~ \.php$ {
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param HTTP_X_REAL_IP $remote_addr;
     # trusted internal-auth marker; empty for external clients (see nginx.conf map)
     fastcgi_param SOGO_AUTH_INTERNAL $sogo_auth_internal;
     fastcgi_read_timeout 3600;
