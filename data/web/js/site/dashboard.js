@@ -1169,6 +1169,7 @@ jQuery(function($){
         if (item === null) { return true; }
         item.user = escapeHtml(item.user);
         item.call = escapeHtml(item.call);
+        if (item.msg) item.msg = escapeHtml(item.msg);
         item.task = '<code>' + item.task + '</code>';
         item.type = '<span class="badge fs-6 bg-' + item.type + '">' + item.type + '</span>';
       });
@@ -1176,6 +1177,7 @@ jQuery(function($){
       $.each(data, function (i, item) {
         if (item === null) { return true; }
         item.username = escapeHtml(item.username);
+        item.real_rip = escapeHtml(item.real_rip);
         item.service = '<div class="badge fs-6 bg-secondary">' + item.service.toUpperCase() + '</div>';
       });
     } else if (table == 'general_syslog') {
