@@ -750,6 +750,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
               $goto_local_part = strstr($goto, '@', true);
               $goto = $goto_local_part.'@'.$goto_domain;
+              // Deny external goto domains: global switch (all roles) overrides the per-DA ACL
+              if (($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] === true ||
+                  (isset($_SESSION['acl']['alias_external_goto']) && $_SESSION['acl']['alias_external_goto'] != "1")) &&
+                  !is_local_mailcow_domain($goto_domain)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('external_goto_denied', htmlspecialchars($goto))
+                );
+                unset($gotos[$i]);
+                continue;
+              }
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
                 WHERE `kind` REGEXP 'location|thing|group'
                   AND `username`= :goto");
@@ -2711,6 +2723,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                     'type' => 'danger',
                     'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
                     'msg' => array('goto_invalid', $goto)
+                  );
+                  unset($gotos[$i]);
+                  continue;
+                }
+                // Deny external goto domains: global switch (all roles) overrides the per-DA ACL
+                $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
+                if (($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] === true ||
+                    (isset($_SESSION['acl']['alias_external_goto']) && $_SESSION['acl']['alias_external_goto'] != "1")) &&
+                    !is_local_mailcow_domain($goto_domain)) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('external_goto_denied', htmlspecialchars($goto))
                   );
                   unset($gotos[$i]);
                   continue;
