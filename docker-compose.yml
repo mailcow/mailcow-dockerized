@@ -42,7 +42,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.6-alpine
+      image: redis:7.4.10-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
@@ -65,7 +65,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.71
+      image: ghcr.io/mailcow/clamd:1.4.6-1
       restart: always
       depends_on:
         unbound-mailcow:
@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.9-1
+      image: ghcr.io/mailcow/sogo:5.12.10-1
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
