@@ -1001,7 +1001,8 @@
         "weekly": "Tedensko",
         "sieve_info": "Na uporabnika lahko shranite več filtrov, vendar je lahko hkrati aktiven le en predfilter in en postfilter.<br>\nVsak filter bo obdelan v opisanem vrstnem redu. Niti neuspešen skript niti izdan ukaz »keep;« ne bosta ustavila obdelave nadaljnjih skript. Spremembe globalnih skriptov sita bodo sprožile ponovni zagon Dovecota.<br><br>Globalni predfilter sita &#8226; Predfilter &#8226; Uporabniški skripti &#8226; Postfilter &#8226; Globalni postfilter sita",
         "tls_policy_maps_info": "Ta preslikava pravilnikov preglasi pravila odhodnega prenosa TLS neodvisno od uporabnikovih nastavitev pravilnikov TLS.<br>\n  Za več informacij preverite <a href=\"http://www.postfix.org/postconf.5.html#smtp_tls_policy_maps\" target=\"_blank\">dokumentacijo »smtp_tls_policy_maps«</a>.",
-        "internal": "Notranje"
+        "internal": "Notranje",
+        "force_tfa": "TFA"
     },
     "fido2": {
         "known_ids": "Znani ID-ji",
@@ -1077,7 +1078,7 @@
         "rspamd_result": "Rezultat Rspamd",
         "sender": "Pošiljatelj (SMTP)",
         "sender_header": "Pošiljatelj (glava »Od«)",
-        "settings_info": "Največje število elementov za karanteno: %s<br>Največja velikost e-pošte: %s MiB",
+        "settings_info": "Največje število elementov za karanteno (na poštni predal): %s<br>Največja velikost e-pošte: %s MiB",
         "show_item": "Prikaži element",
         "spam": "Neželena pošta",
         "subj": "Zadeva",

@@ -246,6 +246,10 @@ $PW_RESET_TOKEN_LIMIT = 3;
 // Maximum time in minutes a password reset token is valid
 $PW_RESET_TOKEN_LIFETIME = 15;
 
+// Globally forbid aliases with external (non-local) goto domains for ALL roles (incl. admins),
+// overriding the per-domain-admin da_acl. false = defer to da_acl.
+$ALIAS_DISABLE_EXTERNAL_DOMAINS = false;
+
 // UV flag handling in FIDO2/WebAuthn - defaults to false to allow iOS logins
 // true = required
 // false = preferred

@@ -719,7 +719,8 @@ function init_db_schema()
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "mailbox_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'"
+          "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
           "primary" => array(
@@ -1641,6 +1642,8 @@ function init_db_schema()
         "pop3_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['pop3_access']),
         "smtp_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['smtp_access']),
         "sieve_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sieve_access']),
+        "eas_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['eas_access']),
+        "dav_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['dav_access']),
         "acl_spam_alias" => 1,
         "acl_tls_policy" => 1,
         "acl_spam_score" => 1,
