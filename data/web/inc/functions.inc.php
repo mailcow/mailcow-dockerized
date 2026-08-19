@@ -2706,23 +2706,31 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           }
         break;
         case 'generic-oidc':
-          $url = $_data['token_url'];
-          $curl = curl_init();
-          curl_setopt($curl, CURLOPT_URL, $url);
-          curl_setopt($curl, CURLOPT_TIMEOUT, 7);
-          curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-          curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
-          if ($_data['ignore_ssl_error'] == "1"){
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-          }
-          $res = curl_exec($curl);
-          $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-          curl_close ($curl);
-
-          if ($code != 200) {
-            return false;
-          }
+          // Use OIDC discovery endpoint — universally supported per spec
+          // Derive from authorize_url base (e.g. https://provider/auth → https://provider/.well-known/openid-configuration)
+        $parsed = parse_url($_data['authorize_url']);
+        $discovery_url = $parsed['scheme'] . '://' . $parsed['host'] .
+          (isset($parsed['port']) ? ':' . $parsed['port'] : '') .
+          '/.well-known/openid-configuration';
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $discovery_url);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 7);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        if ($_data['ignore_ssl_error'] == "1"){
+          curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+          curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        }
+        $res = curl_exec($curl);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        if ($code != 200) {
+          return false;
+        }
+        // Validate response is valid OIDC discovery document
+        $discovery = json_decode($res, true);
+        if (empty($discovery['issuer'])) {
+          return false;
+        }
         break;
         case 'ldap':
           if (!$_data['host'] || !$_data['port'] || !$_data['basedn'] ||
