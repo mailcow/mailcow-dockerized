@@ -785,7 +785,8 @@
         "internal": "Notranje",
         "internal_info": "Notranji vzdevki so dostopni samo iz lastne domene ali vzdevkov domen.",
         "sender_allowed": "Dovoli pošiljanje kot ta vzdevek",
-        "sender_allowed_info": "Če je onemogočeno, lahko ta vzdevek samo prejema pošto. Za preglasitev in dodelitev dovoljenja za pošiljanje določenim poštnim predalom uporabite seznam za nadzor dostopa pošiljatelja."
+        "sender_allowed_info": "Če je onemogočeno, lahko ta vzdevek samo prejema pošto. Za preglasitev in dodelitev dovoljenja za pošiljanje določenim poštnim predalom uporabite seznam za nadzor dostopa pošiljatelja.",
+        "mta_sts_active_info": "Če ni označeno, pravilnik MTA-STS ne bo objavljen in za poddomeno mta-sts ne bo zahtevano nobeno potrdilo prek ACME."
     },
     "footer": {
         "restart_container_info": "<b>Pomembno:</b> Eleganten ponovni zagon lahko traja nekaj časa, zato počakajte, da se konča.",
