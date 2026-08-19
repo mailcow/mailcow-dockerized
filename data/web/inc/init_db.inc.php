@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "17072026_1000";
+    $db_version = "19082026_0900";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -1330,7 +1330,7 @@ function init_db_schema()
 
           if ($has_legacy_cols && !$has_source_id) {
             $pdo->exec("INSERT IGNORE INTO `imapsync_source` (`name`, `created_by`, `scope`, `host1`, `port1`, `enc1`, `auth_type`, `active`)
-              SELECT CONCAT('legacy-', `host1`, '-', `port1`, '-', `enc1`) AS name,
+              SELECT CONCAT('legacy-', `host1`, '-', `port1`, '-', `enc1`, '-', `authmech1`) AS name,
                 '' AS created_by, 'all' AS scope, `host1`, `port1`, `enc1`, `authmech1`, 1
               FROM `imapsync`
               GROUP BY `host1`, `port1`, `enc1`, `authmech1`");
@@ -1510,17 +1510,6 @@ function init_db_schema()
         AND JSON_EXTRACT(`call`, '$[1]') = 'edit'
         AND (JSON_CONTAINS_PATH(`call`, 'one', '$[2].password')
           OR JSON_CONTAINS_PATH(`call`, 'one', '$[2].password2'));");
-
-    // Mitigate imapsync argument injection issue
-    $pdo->query("UPDATE `imapsync` SET `custom_params` = ''
-      WHERE `custom_params` LIKE '%pipemess%'
-        OR custom_params LIKE '%skipmess%'
-        OR custom_params LIKE '%delete2foldersonly%'
-        OR custom_params LIKE '%delete2foldersbutnot%'
-        OR custom_params LIKE '%regexflag%'
-        OR custom_params LIKE '%pipemess%'
-        OR custom_params LIKE '%regextrans2%'
-        OR custom_params LIKE '%maxlinelengthcmd%';");
 
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
