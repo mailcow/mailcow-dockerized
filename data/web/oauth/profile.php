@@ -12,7 +12,7 @@ $mailbox = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!empty($mailbox)) {
   if ($oauth2_server->getScopeUtil()->checkScope('profile', $token['scope'])) {
     $name = trim((string)($mailbox['name'] ?? ''));
-    $name_parts = $name === '' ? array() : preg_split('/\s+/u', $name);
+    $name_parts = $name === '' ? array() : preg_split('/\s+/u', $name, -1, PREG_SPLIT_NO_EMPTY);
     $given_name = $name_parts[0] ?? '';
     $family_name = count($name_parts) > 1 ? implode(' ', array_slice($name_parts, 1)) : '';
     header('Content-Type: application/json');
