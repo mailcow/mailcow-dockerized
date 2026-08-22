@@ -10,6 +10,7 @@ $stmt = $pdo->prepare("SELECT * FROM `mailbox` WHERE `username` = :username AND 
 $stmt->execute(array(':username' => $token['user_id']));
 $mailbox = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!empty($mailbox)) {
+  // Require profile while allowing additional scopes.
   if ($oauth2_server->getScopeUtil()->checkScope('profile', $token['scope'])) {
     $name = trim((string)($mailbox['name'] ?? ''));
     $name_parts = $name === '' ? array() : preg_split('/\s+/u', $name, -1, PREG_SPLIT_NO_EMPTY);
