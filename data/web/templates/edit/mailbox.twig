@@ -267,6 +267,7 @@
                       <small class="text-muted">{{ lang.admin.password_reset_info }}</small>
                     </div>
                   </div>
+                  {% endif %}
                   <div data-acl="{{ acl.extend_sender_acl }}" class="row mb-4">
                     <label class="control-label col-sm-2" for="extended_sender_acl">{{ lang.edit.extended_sender_acl }}</label>
                     <div class="col-sm-10">
@@ -279,7 +280,6 @@
                       {% endif %}
                     </div>
                   </div>
-                  {% endif %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="protocol_access">{{ lang.edit.allowed_protocols }}</label>
                     <div class="col-sm-10">

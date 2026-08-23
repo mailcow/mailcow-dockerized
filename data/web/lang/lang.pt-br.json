@@ -786,7 +786,8 @@
         "mta_sts_mx_info": "Permite envio apenas para nomes de host de servidor de email explicitamente listados; o MTA de envio verifica se o nome do host DNS MX corresponde à lista de políticas e permite entrega apenas com certificado TLS válido (protege contra MITM).",
         "mta_sts_mx_notice": "Múltiplos servidores MX podem ser especificados (separados por vírgulas).",
         "sender_allowed": "Permitir enviar como este alias",
-        "sender_allowed_info": "Se desativado, este alias poderá apenas receber e-mails. Use a ACL de remetente para substituir essa configuração e conceder a caixas de correio específicas permissão para enviar."
+        "sender_allowed_info": "Se desativado, este alias poderá apenas receber e-mails. Use a ACL de remetente para substituir essa configuração e conceder a caixas de correio específicas permissão para enviar.",
+        "mta_sts_active_info": "Se esta opção estiver desmarcada, a política MTA-STS não será publicada e nenhum certificado será solicitado via ACME para o subdomínio mta-sts."
     },
     "fido2": {
         "confirm": "Confirme",
@@ -1034,7 +1035,8 @@
         "weekly": "Semanalmente",
         "yes": "✓",
         "iam": "Provedor de Identidade",
-        "internal": "Interno"
+        "internal": "Interno",
+        "force_tfa": "A2F"
     },
     "oauth2": {
         "access_denied": "Faça login como proprietário da mailbox para conceder acesso via OAuth2.",
@@ -1086,7 +1088,7 @@
         "rspamd_result": "Resultado do Rspamd",
         "sender": "Remetente (SMTP)",
         "sender_header": "Remetente (cabeçalho “De”)",
-        "settings_info": "Quantidade máxima de elementos a serem colocados em quarentena: %s <br>Tamanho máximo do e-mail: %s MiB",
+        "settings_info": "Número máximo de elementos em quarentena (por caixa de correio): %s <br>Tamanho máximo do e-mail: %s MiB",
         "show_item": "Mostrar item",
         "spam": "Spam",
         "spam_score": "Ponto",

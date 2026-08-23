@@ -41,13 +41,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $username = $_SESSION['mailcow_cc_username'];
           }
-          if (isset($_data["validity"]) && !filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
-            $_SESSION['return'][] = array(
-              'type' => 'danger',
-              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'validity_missing'
-            );
-            return false;
+          if (isset($_data["validity"])) {
+            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'validity_missing'
+              );
+              return false;
+            }
           }
           else {
             // Default to 1 yr
@@ -60,7 +62,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $permanent = 0;
           }
           $domain = $_data['domain'];
-          $description = $_data['description'];
+          // spamalias.description is NOT NULL, an absent description must not become a null insert
+          $description = $_data['description'] ?? '';
           $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
           $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
           if (!empty($valid_alias_domains)) {
@@ -747,6 +750,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
               $goto_local_part = strstr($goto, '@', true);
               $goto = $goto_local_part.'@'.$goto_domain;
+              // Deny external goto domains: global switch (all roles) overrides the per-DA ACL
+              if (($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] === true ||
+                  (isset($_SESSION['acl']['alias_external_goto']) && $_SESSION['acl']['alias_external_goto'] != "1")) &&
+                  !is_local_mailcow_domain($goto_domain)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => array('external_goto_denied', htmlspecialchars($goto))
+                );
+                unset($gotos[$i]);
+                continue;
+              }
               $stmt = $pdo->prepare("SELECT `username` FROM `mailbox`
                 WHERE `kind` REGEXP 'location|thing|group'
                   AND `username`= :goto");
@@ -2712,6 +2727,19 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   unset($gotos[$i]);
                   continue;
                 }
+                // Deny external goto domains: global switch (all roles) overrides the per-DA ACL
+                $goto_domain = idn_to_ascii(substr(strstr($goto, '@'), 1), 0, INTL_IDNA_VARIANT_UTS46);
+                if (($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] === true ||
+                    (isset($_SESSION['acl']['alias_external_goto']) && $_SESSION['acl']['alias_external_goto'] != "1")) &&
+                    !is_local_mailcow_domain($goto_domain)) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('external_goto_denied', htmlspecialchars($goto))
+                  );
+                  unset($gotos[$i]);
+                  continue;
+                }
                 if ($goto == $address) {
                   $_SESSION['return'][] = array(
                     'type' => 'danger',
@@ -3505,7 +3533,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             // Track affected mailboxes for SOGo update
             $update_sogo_mailboxes[] = $username;
           }
-          return true;
         break;
         case 'mailbox_rename':
           $domain = $_data['domain'];
@@ -3828,6 +3855,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr["rl_frame"]                    = (!empty($_data['rl_frame'])) ? $_data['rl_frame'] : $is_now['rl_frame'];
             $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : $is_now['rl_value'];
             $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : $is_now['force_pw_update'];
+            $attr["force_tfa"]                   = isset($_data['force_tfa']) ? intval($_data['force_tfa']) : $is_now['force_tfa'];
             $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : $is_now['sogo_access'];
             $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : $is_now['active'];
             $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
@@ -5320,6 +5348,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $mailboxdata['rl_scope'] = 'domain';
             }
             $mailboxdata['is_relayed'] = $row['backupmx'];
+            // Internal send-as ACL for this mailbox, mirrors the sender_acl field accepted by edit/mailbox
+            $mailboxdata['sender_acl'] = array();
+            $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '0'");
+            $stmt->execute(array(':username' => $_data));
+            $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($sender_acl_rows as $sender_acl_row) {
+              $mailboxdata['sender_acl'][] = $sender_acl_row['send_as'];
+            }
           }
           $stmt = $pdo->prepare("SELECT `tag_name`
             FROM `tags_mailbox` WHERE `username`= :username");
@@ -5647,8 +5683,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $username . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6044,8 +6083,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $username
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . str_replace('%', '\%', $username) . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($username, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");
@@ -6127,7 +6169,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             // Track affected mailboxes for SOGo update
             $update_sogo_mailboxes[] = $username;
           }
-          return true;
         break;
         case 'mailbox_templates':
           if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -6202,8 +6243,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':username' => $name
             ));
-            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE '%/" . $name . "/%' OR `c_uid` = :username");
+            // bind LIKE pattern + escape LIKE wildcards so the value matches literally (no SQLi, no over-match)
+            $c_object_like = '%/' . addcslashes($name, '\\%_') . '/%';
+            $stmt = $pdo->prepare("DELETE FROM `sogo_acl` WHERE `c_object` LIKE :c_object_like OR `c_uid` = :username");
             $stmt->execute(array(
+              ':c_object_like' => $c_object_like,
               ':username' => $name
             ));
             $stmt = $pdo->prepare("DELETE FROM `sogo_store` WHERE `c_folder_id` IN (SELECT `c_folder_id` FROM `sogo_folder_info` WHERE `c_path2` = :username)");

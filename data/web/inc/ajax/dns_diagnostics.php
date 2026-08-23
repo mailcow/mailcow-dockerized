@@ -380,13 +380,13 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             else {
               $state = state_nomatch;
             }
-            $state .= '<br />' . $current[$data_field[$current['type']]];
+            $state .= '<br />' . htmlspecialchars($current[$data_field[$current['type']]]);
           }
           if ($current['type'] == 'TXT' &&
               stripos($current['txt'], 'v=dmarc') === 0 &&
               $record[2] == $dmarc_link) {
             $current['txt'] = str_replace(' ', '', $current['txt']);
-            $state = $current[$data_field[$current['type']]] . state_optional;
+            $state = htmlspecialchars($current[$data_field[$current['type']]]) . state_optional;
           }
           elseif ($current['type'] == 'TXT' &&
                   stripos($current['txt'], 'v=spf') === 0 &&
@@ -396,7 +396,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
             if (in_array($ip, $rslt) && in_array(expand_ipv6($ip6), $rslt)) {
               $state = state_good;
             }
-            $state .= '<br />' . $current[$data_field[$current['type']]] . state_optional;
+            $state .= '<br />' . htmlspecialchars($current[$data_field[$current['type']]]) . state_optional;
           }
           elseif ($current['type'] == 'TXT' &&
                   stripos($current['txt'], 'v=dkim') === 0 &&
@@ -426,7 +426,7 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
         if ($state == state_nomatch) {
           $state = array();
           foreach ($currents as $current) {
-            $state[] = $current[$data_field[$current['type']]];
+            $state[] = htmlspecialchars($current[$data_field[$current['type']]]);
           }
           $state = implode('<br />', $state);
         }
@@ -436,11 +436,21 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
           <td>%s</td>
           <td class="dns-found">%s</td>
           <td class="dns-recommended">%s</td>
-        </tr>', $record[0], $record[1], $record[2], $state);
+        </tr>', htmlspecialchars($record[0]), htmlspecialchars($record[1]), $record[2], $state);
         $record[3] = explode('<br />', $state);
       }
 
       unset($record);
+
+      // Make a hostname RHS absolute so it is not read relative to $ORIGIN.
+      // Already-absolute names, the SRV root target "." and IP addresses are left alone.
+      $absolutize = function($host) {
+        $host = trim($host);
+        if ($host === '' || $host === '.' || substr($host, -1) === '.' || filter_var($host, FILTER_VALIDATE_IP)) {
+          return $host;
+        }
+        return $host . '.';
+      };
 
       $dns_data = sprintf("\$ORIGIN %s.\n", $domain);
       foreach ($records as $record) {
@@ -462,22 +472,32 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               $val = str_replace(state_optional, '', $val);
               $val = str_replace(state_good, '', $val);
               if (strlen($val) > 0) {
+                // these are all TXT values, their RHS is a character string, not a name
                 $vals[] = sprintf("%s\tIN\t%s\t%s\n", $label, $record[1], $val);
               }
             }
           }
           else {
+            if ($record[1] == 'MX' || $record[1] == 'CNAME') {
+              $val = $absolutize($val);
+            }
+            elseif ($record[1] == 'SRV') {
+              // format here is "target port"; only the target is a name
+              $parts = explode(' ', $val, 2);
+              $parts[0] = $absolutize($parts[0]);
+              $val = implode(' ', $parts);
+            }
             $vals[] = sprintf("%s\tIN\t%s\t%s\n", $label, $record[1], $val);
           }
 
           foreach ($vals as $val) {
-            $dns_data .= str_replace($domain, $domain . '.', $val);
+            $dns_data .= $val;
           }
         }
       }
       ?>
     </table>
-    <a id='download-zonefile' class="btn btn-sm btn-secondary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline mb-4" style="margin-top:10px" data-zonefile="<?=base64_encode($dns_data);?>" download='<?=$_GET['domain'];?>.txt' type='text/csv'>Download</a>
+    <a id='download-zonefile' class="btn btn-sm btn-secondary visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline mb-4" style="margin-top:10px" data-zonefile="<?=base64_encode($dns_data);?>" download='<?=htmlspecialchars($_GET['domain']);?>.txt' type='text/csv'>Download</a>
     <script>
       var zonefile_dl_link = document.getElementById('download-zonefile');
       var zonefile = atob(zonefile_dl_link.getAttribute('data-zonefile'));

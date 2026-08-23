@@ -268,10 +268,10 @@
         "includes": "Bao gồm những người nhận này",
         "ip_check": "Kiểm tra IP",
         "ip_check_disabled": "Kiểm tra IP đã bị vô hiệu hóa. Bạn có thể bật nó trong<br> <strong>Hệ thống > Cấu hình > Tùy chọn > Tùy chỉnh</strong>",
-        "ip_check_opt_in": "Chọn tham gia sử dụng dịch vụ bên thứ ba <strong>ipv4.mailcow.email</strong> và <strong>ipv6.mailcow.email</strong> để phân giải địa chỉ IP bên ngoài.",
+        "ip_check_opt_in": "Đăng ký tham gia sử dụng dịch vụ bên thứ ba dùng <strong>ipv4.mailcow.email</strong> và <strong>ipv6.mailcow.email</strong> để phân giải địa chỉ IP bên ngoài.",
         "is_mx_based": "Dựa trên MX",
         "last_applied": "Áp dụng lần cuối",
-        "license_info": "Giấy phép không bắt buộc nhưng giúp phát triển thêm.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"Đặt hàng SAL\">Đăng ký GUID của bạn tại đây</a> hoặc <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Đặt hàng hỗ trợ\">mua hỗ trợ cho cài đặt mailcow của bạn.</a>",
+        "license_info": "Giấy phép tuy không bắt buộc nhưng giúp phát triển thêm.<br><a href=\"https://www.servercow.de/mailcow?lang=en#sal\" target=\"_blank\" alt=\"Đặt hàng SAL\">Đăng ký GUID của bạn tại đây</a> hoặc <a href=\"https://www.servercow.de/mailcow?lang=en#support\" target=\"_blank\" alt=\"Đặt hàng hỗ trợ\">mua hỗ trợ cho cài đặt mailcow của bạn.</a>",
         "link": "Liên kết",
         "loading": "Vui lòng đợi...",
         "login_time": "Thời gian đăng nhập",
@@ -556,7 +556,9 @@
         "validity_missing": "Vui lòng gán thời hạn hiệu lực",
         "value_missing": "Vui lòng cung cấp tất cả các giá trị",
         "version_invalid": "Phiên bản %s không hợp lệ",
-        "yotp_verification_failed": "Xác thực Yubico OTP thất bại: %s"
+        "yotp_verification_failed": "Xác thực Yubico OTP thất bại: %s",
+        "tfa_removal_blocked": "Xác thực hai yếu tố không thể bị xóa vì đây là yêu cầu bắt buộc đối với tài khoản của bạn.",
+        "quarantine_category_invalid": "Danh mục cách ly phải là một trong các loại sau : add_header, reject, all."
     },
     "datatables": {
         "collapse_all": "Thu gọn tất cả",
@@ -579,7 +581,9 @@
         "aria": {
             "sortAscending": ": kích hoạt để sắp xếp cột tăng dần",
             "sortDescending": ": kích hoạt để sắp xếp cột giảm dần"
-        }
+        },
+        "decimal": ".",
+        "thousands": ","
     },
     "debug": {
         "architecture": "Kiến trúc",
@@ -693,6 +697,19 @@
         "internal_info": "Bí danh nội bộ chỉ có thể truy cập từ tên miền sở hữu hoặc tên miền bí danh.",
         "kind": "Loại",
         "last_modified": "Sửa đổi lần cuối",
-        "lookup_mx": "Đích là một biểu thức chính quy để khớp với tên MX (<code>.*.google.com</code> để định tuyến tất cả thư nhắm đến MX kết thúc bằng google.com qua bước nhảy này)"
+        "lookup_mx": "Đích là một biểu thức chính quy để khớp với tên MX (<code>.*.google.com</code> để định tuyến tất cả thư nhắm đến MX kết thúc bằng google.com qua bước nhảy này)",
+        "sender_allowed": "Cho phép gửi đi bằng bí danh",
+        "sender_allowed_info": "Nếu bị vô hiệu hóa, bí danh này chỉ có thể nhận thư. Sử dụng ACL của người gửi để ghi đè và cấp quyền gửi cho các hộp thư cụ thể.",
+        "mailbox": "Chỉnh sửa hộp thư",
+        "mailbox_quota_def": "Hạn mức hộp thư mặc định",
+        "mailbox_relayhost_info": "Chỉ áp dụng cho hộp thư và các bí danh trực tiếp, thao tác này sẽ ghi đè lên máy chủ chuyển tiếp tên miền.",
+        "mailbox_rename": "Đổi tên hộp thư",
+        "mailbox_rename_agree": "Tôi đã tạo bản sao lưu.",
+        "mailbox_rename_warning": "QUAN TRỌNG! Hãy tạo bản sao lưu trước khi đổi tên hộp thư.",
+        "mailbox_rename_alias": "Tạo tự động bí danh",
+        "mailbox_rename_title": "Tên mới của hộp thư cục bộ",
+        "max_aliases": "Số lượng Bí danh tối đa",
+        "max_mailboxes": "Số lượng hộp thư tối đa có thể có",
+        "max_quota": "Dung lượng tối đa cho mỗi hộp thư (MiB)"
     }
 }

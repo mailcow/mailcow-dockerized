@@ -53,6 +53,39 @@ function valid_network($network) {
 function valid_hostname($hostname) {
   return filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
 }
+// Validates a browser-style Origin: scheme://host[:port], no path/query/fragment/credentials
+function valid_origin($origin) {
+  $parts = parse_url($origin);
+  if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+    return false;
+  }
+  if (!in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+    return false;
+  }
+  if (isset($parts['user']) || isset($parts['pass']) || isset($parts['path']) || isset($parts['query']) || isset($parts['fragment'])) {
+    return false;
+  }
+  $host = $parts['host'];
+  $host_without_brackets = trim($host, '[]');
+  if (!valid_hostname($host_without_brackets) && !filter_var($host_without_brackets, FILTER_VALIDATE_IP)) {
+    return false;
+  }
+  // Reject anything that doesn't round-trip to the exact same origin (e.g. stray trailing slash)
+  $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+  $rebuilt = strtolower($parts['scheme']) . '://' . strtolower($host) . $port;
+  return strtolower($origin) === $rebuilt;
+}
+// Bring an origin into the exact form a browser sends it (scheme://host[:port], lowercase).
+function normalize_cors_origin($origin) {
+  $origin = trim($origin);
+  if ($origin === '*') {
+    return '*';
+  }
+  if ($origin !== '' && !preg_match('~^[a-z][a-z0-9+.-]*://~i', $origin)) {
+    $origin = 'https://' . $origin;
+  }
+  return valid_origin($origin) ? strtolower($origin) : false;
+}
 // Thanks to https://stackoverflow.com/a/49373789
 // Validates exact ip matches and ip-in-cidr, ipv4 and ipv6
 function ip_acl($ip, $networks) {
@@ -558,7 +591,7 @@ function logger($_data = false) {
       $type = $return['type'];
       $msg = null;
       if (isset($return['msg'])) {
-        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE);
+        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
       }
       $call = null;
       if (isset($return['log'])) {
@@ -599,6 +632,18 @@ function logger($_data = false) {
   else {
     return true;
   }
+}
+function is_local_mailcow_domain($domain) {
+  // True if domain is a locally managed, active primary or alias domain
+  global $pdo;
+  $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+  if (empty($domain)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = 1
+    UNION SELECT 1 FROM `alias_domain` WHERE `alias_domain` = :d2 AND `active` = 1 LIMIT 1");
+  $stmt->execute(array(':d' => $domain, ':d2' => $domain));
+  return (bool)$stmt->fetchColumn();
 }
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
@@ -2283,10 +2328,13 @@ function cors($action, $data = null) {
         return false;
       }
 
-      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array(getBaseURL());
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
-      foreach ($allowed_origins as $origin) {
-        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+      foreach ($allowed_origins as &$origin) {
+        if ($origin === '*') {
+          continue;
+        }
+        if (!valid_origin($origin)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $action, $data),
@@ -2294,7 +2342,10 @@ function cors($action, $data = null) {
           );
           return false;
         }
+        // browsers always send a lowercase scheme/host in the Origin header, so normalize to match
+        $origin = strtolower($origin);
       }
+      unset($origin);
 
       $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
       $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
@@ -2342,26 +2393,35 @@ function cors($action, $data = null) {
         );
       }
 
-      $cors_settings                    = !$cors_settings ? array('allowed_origins' => $_SERVER['SERVER_NAME'], 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
-      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? $_SERVER['SERVER_NAME'] : $cors_settings['allowed_origins'];
+      $cors_settings                    = !$cors_settings ? array('allowed_origins' => getBaseURL(), 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
+      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? getBaseURL() : $cors_settings['allowed_origins'];
       $cors_settings['allowed_methods'] = empty($cors_settings['allowed_methods']) ? 'GET, POST, PUT, DELETE, OPTION' : $cors_settings['allowed_methods'];
 
       return $cors_settings;
     break;
     case "set_headers":
       $cors_settings = cors('get');
+      // normalize the stored list; it may still hold bare hostnames written before origins were validated as origins
+      $allowed_origins = array_filter(array_map('normalize_cors_origin', explode(',', $cors_settings['allowed_origins'])));
+      $origin = isset($_SERVER['HTTP_ORIGIN']) ? normalize_cors_origin($_SERVER['HTTP_ORIGIN']) : false;
       // check if requested origin is in allowed origins
-      $allowed_origins = explode(', ', $cors_settings['allowed_origins']);
-      $cors_settings['allowed_origins'] = $allowed_origins[0];
-      if (in_array('*', $allowed_origins)){
-        $cors_settings['allowed_origins'] = '*';
-      } else if (array_key_exists('HTTP_ORIGIN', $_SERVER) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-        $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
+      $allow_origin = null;
+      if (in_array('*', $allowed_origins, true)) {
+        $allow_origin = '*';
+      } else if ($origin !== false && in_array($origin, $allowed_origins, true)) {
+        $allow_origin = $origin;
       }
       // always allow OPTIONS for preflight request
       $cors_settings["allowed_methods"] = empty($cors_settings["allowed_methods"]) ? 'OPTIONS' : $cors_settings["allowed_methods"] . ', ' . 'OPTIONS';
 
-      header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
+      // a disallowed origin gets no Access-Control-Allow-Origin at all; echoing a different origin than the requesting one tells a browser nothing
+      if ($allow_origin !== null) {
+        header('Access-Control-Allow-Origin: ' . $allow_origin);
+      }
+      if ($allow_origin !== '*') {
+        // the response depends on the request origin, keep caches from mixing them up
+        header('Vary: Origin', false);
+      }
       header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
       header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
 
@@ -3503,7 +3563,16 @@ function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redir
     if (isset($redirects['unauthenticated'])) {
       header('Location: ' . $redirects['unauthenticated']);
     } else {
-      header('Location: /');
+      // Send a deep link to the login page for its area instead of the user login at /,
+      // e.g. /admin/dashboard -> /admin rather than /
+      $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin');
+      } elseif (strpos($request_uri, '/domainadmin/') === 0) {
+        header('Location: /domainadmin');
+      } else {
+        header('Location: /');
+      }
     }
     exit();
   }
