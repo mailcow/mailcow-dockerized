@@ -89,6 +89,56 @@ $(document).ready(function() {
     var id = $(this).data('id');
     var api_url = $(this).data('api-url');
     var api_attr = $(this).data('api-attr');
+
+    // Domain-specific confirmation for the configured temporary-alias domain.
+    if (api_url == 'edit/domain') {
+      if (id == 'editdomain') {
+        var form = $(this).closest("form");
+        var edited_domain = $(this).data('domain');
+        var current_temporary_alias_domain = $(this).data('temporary-alias-domain-current') || '';
+        var original_domain_active = String($(this).data('domain-active'));
+        var temporary_alias_domain_checked = form.find("input[type='checkbox'][name='temporary_alias_domain']").prop('checked');
+        var domain_active_checked = form.find("input[type='checkbox'][name='active']").prop('checked');
+
+        if (current_temporary_alias_domain &&
+            temporary_alias_domain_checked &&
+            current_temporary_alias_domain != edited_domain) {
+          var replace_warning = String($(this).data('temporary-alias-domain-replace-warning') || '')
+            .replace('%CURRENT%', current_temporary_alias_domain)
+            .replace('%NEW%', edited_domain);
+          if (!window.confirm(replace_warning)) {
+            return false;
+          }
+        }
+        else if (current_temporary_alias_domain == edited_domain &&
+                 !temporary_alias_domain_checked) {
+          var disable_warning = String($(this).data('temporary-alias-domain-disable-warning') || '')
+            .replace('%DOMAIN%', edited_domain);
+          if (!window.confirm(disable_warning)) {
+            return false;
+          }
+        }
+
+        if (current_temporary_alias_domain == edited_domain &&
+            original_domain_active == '1' &&
+            !domain_active_checked) {
+          var deactivate_warning = String($(this).data('temporary-alias-domain-deactivate-warning') || '');
+          if (!window.confirm(deactivate_warning)) {
+            return false;
+          }
+        }
+      }
+      else if (id == 'domain' && api_attr && String(api_attr.active) == '0') {
+        var selected_temporary_alias_domain = $("input[data-id='domain'][name='multi_select']:checked[data-temporary-alias-domain='1']");
+        if (selected_temporary_alias_domain.length > 0) {
+          var deactivate_selected_warning = String($(this).data('temporary-alias-domain-deactivate-warning') || '');
+          if (!window.confirm(deactivate_selected_warning)) {
+            return false;
+          }
+        }
+      }
+    }
+
     if (typeof $(this).data('api-reload-window') !== 'undefined') {
       api_reload_window = $(this).data('api-reload-window');
     } else {
@@ -336,6 +386,15 @@ $(document).ready(function() {
   $(document).on('click', "[data-action='delete_selected']", function(e) {
     e.preventDefault();
     var id = $(this).data('id');
+
+    if (id == 'domain') {
+      var selected_temporary_alias_domain = $("input[data-id='domain'][name='multi_select']:checked[data-temporary-alias-domain='1']");
+      if (selected_temporary_alias_domain.length > 0) {
+        $("#DeleteText").empty();
+        $("#DeleteText").text(String($(this).data('temporary-alias-domain-delete-warning') || ''));
+      }
+    }
+
     // If clicked element #delete_selected has data-item attribute, it is added to "items"
     if (typeof $(this).data('item') !== 'undefined') {
       var id = $(this).data('id');

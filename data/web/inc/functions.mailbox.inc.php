@@ -64,18 +64,46 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domain = $_data['domain'];
           // spamalias.description is NOT NULL, an absent description must not become a null insert
           $description = $_data['description'] ?? '';
-          $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
-          $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
-          if (!empty($valid_alias_domains)) {
-            $valid_domains = array_merge($valid_domains, $valid_alias_domains);
+
+          try {
+            $temporary_alias_domain = $redis->Get('SPAM_ALIAS_DOMAIN');
           }
-          if (!in_array($domain, $valid_domains)) {
+          catch (RedisException $e) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
-              'msg' => 'domain_invalid'
+              'msg' => array('redis_error', $e)
             );
             return false;
+          }
+
+          if (!empty($temporary_alias_domain)) {
+            $stmt = $pdo->prepare("SELECT `domain` FROM `domain` WHERE `domain` = :domain AND `active` = 1");
+            $stmt->execute(array(':domain' => $temporary_alias_domain));
+            if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_invalid'
+              );
+              return false;
+            }
+            $domain = $temporary_alias_domain;
+          }
+          else {
+            $valid_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
+            $valid_alias_domains = user_get_alias_details($username)['alias_domains'];
+            if (!empty($valid_alias_domains)) {
+              $valid_domains = array_merge($valid_domains, $valid_alias_domains);
+            }
+            if (!in_array($domain, $valid_domains)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_invalid'
+              );
+              return false;
+            }
           }
           $validity = strtotime("+" . $_data["validity"] . " hour");
           $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`, `permanent`) VALUES
@@ -3000,6 +3028,22 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 continue;
               }
 
+              // Check Redis before changing the domain row so an unavailable
+              // Redis service does not leave the domain update partially applied.
+              if (array_key_exists('temporary_alias_domain', $_data)) {
+                try {
+                  $temporary_alias_domain_current = $redis->Get('SPAM_ALIAS_DOMAIN');
+                }
+                catch (RedisException $e) {
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('redis_error', $e)
+                  );
+                  return false;
+                }
+              }
+
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `relay_all_recipients` = :relay_all_recipients,
               `relay_unknown_only` = :relay_unknown_only,
@@ -3029,6 +3073,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':description' => $description,
                 ':domain' => $domain
               ));
+
+              if (array_key_exists('temporary_alias_domain', $_data)) {
+                try {
+                  if (intval($_data['temporary_alias_domain']) === 1) {
+                    $redis->Set('SPAM_ALIAS_DOMAIN', $domain);
+                  }
+                  elseif ($temporary_alias_domain_current === $domain) {
+                    $redis->Del('SPAM_ALIAS_DOMAIN');
+                  }
+                }
+                catch (RedisException $e) {
+                  // The domain row is already saved at this point. Report the
+                  // Redis failure as a warning instead of claiming the complete
+                  // domain update failed.
+                  $_SESSION['return'][] = array(
+                    'type' => 'warning',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => array('redis_error', $e)
+                  );
+                }
+              }
+
               // save tags
               foreach($tags as $index => $tag){
                 if (empty($tag)) continue;
@@ -5068,6 +5134,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (empty($row)) {
             return false;
           }
+
+          try {
+            $temporary_alias_domain = $redis->Get('SPAM_ALIAS_DOMAIN');
+          }
+          catch (RedisException $e) {
+            $temporary_alias_domain = '';
+          }
+
           $stmt = $pdo->prepare("SELECT COUNT(`username`) AS `count`,
             COALESCE(SUM(`quota`), 0) AS `in_use`
               FROM `mailbox`
@@ -5121,6 +5195,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['gal_int'] = $row['gal'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
+          $domaindata['temporary_alias_domain'] = ($temporary_alias_domain === $row['domain']);
+          $domaindata['temporary_alias_domain_current'] = $temporary_alias_domain;
           $domaindata['active_int'] = $row['active'];
           $domaindata['relay_all_recipients'] = $row['relay_all_recipients'];
           $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients'];
@@ -5817,6 +5893,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             try {
               $redis->hDel('DOMAIN_MAP', $domain);
               $redis->hDel('RL_VALUE', $domain);
+              if ($redis->Get('SPAM_ALIAS_DOMAIN') === $domain) {
+                $redis->Del('SPAM_ALIAS_DOMAIN');
+              }
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
