@@ -505,11 +505,13 @@ jQuery(function($){
 
             item.def_quota_for_mbox = humanFileSize(item.def_quota_for_mbox);
             item.max_quota_for_mbox = humanFileSize(item.max_quota_for_mbox);
-            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" />';
+            item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain" name="multi_select" value="' + encodeURIComponent(item.domain_name) + '" data-temporary-alias-domain="' + (item.temporary_alias_domain ? '1' : '0') + '" />';
             item.action = '<div class="btn-group">';
             if (role == "admin") {
               item.action += '<a href="/edit/domain/' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
-                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-domain" data-api-url="delete/domain" data-item="' + encodeURIComponent(item.domain_name) + '"' +
+                  (item.temporary_alias_domain ? ' data-text="' + escapeHtml(lang.temporary_alias_domain_delete_warning) + '"' : '') +
+                  ' class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                   '<a href="#dnsInfoModal" class="btn btn-sm btn-xs-lg btn-info" data-bs-toggle="modal" data-domain="' + encodeURIComponent(item.domain_name) + '"><i class="bi bi-globe2"></i> DNS</a></div>';
             }
             else {
