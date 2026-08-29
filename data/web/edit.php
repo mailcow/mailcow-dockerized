@@ -44,6 +44,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           $result = mailbox('get', 'domain_details', $domain);
           $quota_notification_bcc = quota_notification_bcc('get', $domain);
           $rl = ratelimit('get', 'domain', $domain);
+          $rl_mbox = ratelimit('get', 'mailbox_default', $domain);
           $rlyhosts = relayhost('get');
           $domain_footer = mailbox('get', 'domain_wide_footer', $domain);
           $mta_sts = mailbox('get', 'mta_sts', $domain);
@@ -58,6 +59,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'domain' => $domain,
             'quota_notification_bcc' => $quota_notification_bcc,
             'rl' => $rl,
+            'rl_mbox' => $rl_mbox,
             'rlyhosts' => $rlyhosts,
             'dkim' => dkim('details', $domain),
             'domain_details' => $result,
