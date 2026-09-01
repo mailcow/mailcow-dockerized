@@ -1,4 +1,22 @@
 <?php
+// Normalize a login name to the form usernames are stored in.
+// Every write path runs domains through idn_to_ascii, so an IDN domain is only
+// ever stored as punycode. Without the same conversion here an IDN login is
+// rejected as malformed and would not match the stored username either.
+// Names without a domain part (admin logins) are returned unchanged.
+function normalize_login_name($login_name) {
+  $login_name = strtolower(trim($login_name));
+  $at = strrpos($login_name, '@');
+  if ($at === false) {
+    return $login_name;
+  }
+  $domain = idn_to_ascii(substr($login_name, $at + 1), 0, INTL_IDNA_VARIANT_UTS46);
+  if ($domain === false) {
+    return $login_name;
+  }
+  return substr($login_name, 0, $at) . '@' . $domain;
+}
+
 function check_login($user, $pass, $extra = null) {
   global $pdo;
   global $redis;
