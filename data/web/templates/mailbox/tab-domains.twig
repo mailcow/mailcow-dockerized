@@ -19,9 +19,9 @@
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' data-temporary-alias-domain-deactivate-warning="{{ lang.mailbox.temporary_alias_domain_deactivate_selected_warning }}" href="#">{{ lang.mailbox.deactivate }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="delete_selected" data-id="domain" data-api-url='delete/domain' href="#">{{ lang.mailbox.remove }}</a></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="domain" data-api-url='delete/domain' data-temporary-alias-domain-delete-warning="{{ lang.mailbox.temporary_alias_domain_delete_selected_warning }}" href="#">{{ lang.mailbox.remove }}</a></li>
               <li class="table_collapse_option"><hr class="dropdown-divider"></li>
             {% endif %}
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="domain_table">{{ lang.datatables.expand_all }}</a></li>
@@ -40,9 +40,9 @@
           <ul class="dropdown-menu">
             {% if mailcow_cc_role == 'admin' %}
               <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
-              <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="domain" data-api-url='edit/domain' data-api-attr='{"active":"0"}' data-temporary-alias-domain-deactivate-warning="{{ lang.mailbox.temporary_alias_domain_deactivate_selected_warning }}" href="#">{{ lang.mailbox.deactivate }}</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" data-action="delete_selected" data-id="domain" data-api-url='delete/domain' href="#">{{ lang.mailbox.remove }}</a></li>
+              <li><a class="dropdown-item" data-action="delete_selected" data-id="domain" data-api-url='delete/domain' data-temporary-alias-domain-delete-warning="{{ lang.mailbox.temporary_alias_domain_delete_selected_warning }}" href="#">{{ lang.mailbox.remove }}</a></li>
               <li class="table_collapse_option"><hr class="dropdown-divider"></li>
             {% endif %}
             <li class="table_collapse_option"><a class="dropdown-item" data-datatables-expand="domain_table">{{ lang.datatables.expand_all }}</a></li>

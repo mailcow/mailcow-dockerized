@@ -36,10 +36,31 @@ if (file_exists('thunderbird-plugins/version.csv')) {
 $user_get_alias_details = user_get_alias_details($username);
 $user_get_alias_details['direct_aliases'] = array_filter($user_get_alias_details['direct_aliases']);
 $user_get_alias_details['shared_aliases'] = array_filter($user_get_alias_details['shared_aliases']);
-$user_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
-$user_alias_domains = $user_get_alias_details['alias_domains'];
-if (!empty($user_alias_domains)) {
-  $user_domains = array_merge($user_domains, $user_alias_domains);
+try {
+  $temporary_alias_domain = $redis->Get('SPAM_ALIAS_DOMAIN');
+}
+catch (RedisException $e) {
+  $temporary_alias_domain = '';
+}
+
+if (!empty($temporary_alias_domain)) {
+  $stmt = $pdo->prepare("SELECT `active` FROM `domain` WHERE `domain` = :domain");
+  $stmt->execute(array(':domain' => $temporary_alias_domain));
+  $temporary_alias_domain_details = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!empty($temporary_alias_domain_details) && $temporary_alias_domain_details['active'] == '1') {
+    $user_domains = array($temporary_alias_domain);
+  }
+  else {
+    $user_domains = array();
+  }
+}
+else {
+  $user_domains[] = mailbox('get', 'mailbox_details', $username)['domain'];
+  $user_alias_domains = $user_get_alias_details['alias_domains'];
+  if (!empty($user_alias_domains)) {
+    $user_domains = array_merge($user_domains, $user_alias_domains);
+  }
 }
 
 // get number of app passwords
