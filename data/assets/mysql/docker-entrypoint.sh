@@ -114,7 +114,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 		if [ -z "$MYSQL_INITDB_SKIP_TZINFO" ]; then
 			# sed is for https://bugs.mysql.com/bug.php?id=20545
-			mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/' | "${mysql[@]}" mysql
+			mariadb-tzinfo-to-sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/' | "${mysql[@]}" mysql
 		fi
 
 		if [ ! -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
