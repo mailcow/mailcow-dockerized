@@ -29,7 +29,8 @@
         "syncjobs": "同步任务",
         "tls_policy": "TLS 策略",
         "unlimited_quota": "无限邮箱容量配额",
-        "pw_reset": "允许重置mailcow使用者密码"
+        "pw_reset": "允许重置mailcow使用者密码",
+        "alias_external_goto": "允许带有外部目标地址的别名"
     },
     "add": {
         "activate_filter_warn": "当“启用”选项被勾选后，其它所有的过滤器都会被禁用。",
@@ -111,7 +112,8 @@
         "validation_success": "验证成功",
         "dry": "模拟同步（Dry run）",
         "internal_info": "内部的别名只能在域内部或者别名域内部访问。",
-        "internal": "内部的"
+        "internal": "内部的",
+        "sender_allowed": "允许以该别名发送"
     },
     "admin": {
         "access": "权限管理",
@@ -555,7 +557,10 @@
         "max_age_invalid": "最大有效时间 %s 无效",
         "mode_invalid": "模式 %s 无效",
         "mx_invalid": "MX 记录 %s 无效",
-        "version_invalid": "版本 %s 无效"
+        "version_invalid": "版本 %s 无效",
+        "tfa_removal_blocked": "无法移除两步验证，你的账户必须使用两步验证。",
+        "external_goto_denied": "不允许使用外部目标地址 %s",
+        "quarantine_category_invalid": "隔离分类必须是 add_header, reject, all 的其中一个"
     },
     "debug": {
         "chart_this_server": "图表 (此服务器)",
@@ -754,7 +759,10 @@
         "mta_sts_max_age_info": "接收方邮件服务器可缓存该策略的时长（秒），超出后需重新获取策略。",
         "mta_sts_mx": "MX 服务器",
         "mta_sts_mx_info": "仅允许向明确列出的邮件服务器发送邮件；发送方 MTA 会验证 DNS MX 记录的主机名是否与策略列表匹配，并仅允许携带有效 TLS 证书的投递（可防范中间人攻击）。",
-        "mta_sts_mx_notice": "可配置多个 MX 服务器（以逗号分隔）。"
+        "mta_sts_mx_notice": "可配置多个 MX 服务器（以逗号分隔）。",
+        "sender_allowed": "允许以此别名发送",
+        "sender_allowed_info": "如果禁用了，此别名只能接收邮件。使用发件者 ACL 来覆盖此选项并赋予指定的邮箱发送权限。",
+        "mta_sts_active_info": "如果未选中，MTA-STS 策略不会被公布并且不会通过 ACME 为 MTA-STS 子域名请求证书。"
     },
     "fido2": {
         "confirm": "确认",
@@ -1002,7 +1010,8 @@
         "templates": "模板",
         "template": "模板",
         "iam": "身份提供者（IDP）",
-        "internal": "内部的"
+        "internal": "内部的",
+        "force_tfa": "两步验证"
     },
     "oauth2": {
         "access_denied": "请作为邮箱所有者登录以使用 OAuth2 授权。",
@@ -1210,7 +1219,12 @@
         "waiting_usb_auth": "<i>等待 USB 设备中...</i><br><br>现在请触碰你的 WebAuthn USB 设备上的按钮。",
         "waiting_usb_register": "<i>等待 USB 设备中...</i><br><br>请在上方输入你的密码并请触碰你的 WebAuthn USB 设备上的按钮以确认注册该 WebAuthn 设备。",
         "yubi_otp": "Yubico OTP 认证",
-        "authenticators": "验证器（Authenticators）"
+        "authenticators": "验证器（Authenticators）",
+        "force_tfa": "在登录时强制启用 2FA",
+        "force_tfa_info": "在访问面板前用户会被要求设置两步验证。",
+        "setup_title": "需要设置两步验证",
+        "setup_required": "你的账户需要设置两步验证。请添加一个两步验证方法以继续。",
+        "cancel_setup": "取消并注销"
     },
     "user": {
         "action": "操作",
@@ -1384,7 +1398,8 @@
         "overview": "概览",
         "expire_never": "永不过期",
         "forever": "永久",
-        "spam_aliases_info": "垃圾邮件别名是一种临时电子邮件地址，可用于保护真实电子邮件地址。<br>还可以选择设置过期时间，以便在设定的时间后自动停用别名，从而有效地销毁被滥用或泄露的地址。"
+        "spam_aliases_info": "垃圾邮件别名是一种临时电子邮件地址，可用于保护真实电子邮件地址。<br>还可以选择设置过期时间，以便在设定的时间后自动停用别名，从而有效地销毁被滥用或泄露的地址。",
+        "pw_update_required": "你的账户需要修改一次密码。请设置一个新密码以继续。"
     },
     "warning": {
         "cannot_delete_self": "不能删除已登录的用户",
