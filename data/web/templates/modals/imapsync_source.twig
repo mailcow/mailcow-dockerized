@@ -1,0 +1,161 @@
+<!-- add imapsync source modal (shared between user and admin views) -->
+<div class="modal fade" id="addImapsyncSourceModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.syncjobs.source_add }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_imapsync_source">
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="name">{{ lang.syncjobs.source_name }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="name" maxlength="100" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="description">{{ lang.syncjobs.source_description }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="description" maxlength="255">
+            </div>
+          </div>
+          {% if mailcow_cc_role == 'admin' or mailcow_cc_role == 'domainadmin' %}
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="scope">{{ lang.syncjobs.source_scope }}</label>
+            <div class="col-sm-10">
+              <select class="form-control imapsync-source-scope" name="scope">
+                {% if mailcow_cc_role == 'admin' %}
+                <option value="all">{{ lang.syncjobs.source_scope_all }}</option>
+                {% endif %}
+                <option value="domain">{{ lang.syncjobs.source_scope_domain }}</option>
+                <option value="user" selected>{{ lang.syncjobs.source_scope_user }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2 imapsync-source-domains-row" style="display:none;">
+            <label class="control-label col-sm-2" for="domains">{{ lang.syncjobs.source_domains }}</label>
+            <div class="col-sm-10">
+              <select class="form-control imapsync-source-domains" name="domains[]" data-live-search="true" title="{{ lang.syncjobs.source_domains }}" multiple></select>
+            </div>
+          </div>
+          <div class="row mb-2 imapsync-source-users-row" style="display:none;">
+            <label class="control-label col-sm-2" for="users">{{ lang.syncjobs.source_users }}</label>
+            <div class="col-sm-10">
+              <select class="form-control imapsync-source-users" name="users[]" data-live-search="true" title="{{ lang.syncjobs.source_users }}" multiple></select>
+            </div>
+          </div>
+          {% endif %}
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="host1">{{ lang.add.hostname }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="host1" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="port1">{{ lang.add.port }}</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" name="port1" min="1" max="65535" value="993" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2" for="enc1">{{ lang.add.enc_method }}</label>
+            <div class="col-sm-10">
+              <select name="enc1" title="{{ lang.add.select }}" required>
+                <option value="SSL" selected>SSL</option>
+                <option value="TLS">STARTTLS</option>
+                <option value="PLAIN">PLAIN</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-2" for="auth_type">{{ lang.syncjobs.source_auth_type }}</label>
+            <div class="col-sm-10">
+              <select class="form-control imapsync-source-auth-type" name="auth_type" required>
+                <option value="PLAIN" selected>PLAIN</option>
+                <option value="LOGIN">LOGIN</option>
+                <option value="CRAM-MD5">CRAM-MD5</option>
+                <option value="XOAUTH2">XOAUTH2 (OAuth2)</option>
+              </select>
+            </div>
+          </div>
+          <fieldset class="imapsync-source-oauth-block" style="display:none;">
+            <legend class="fs-5">{{ lang.syncjobs.source_oauth_block }}</legend>
+            <div class="row mb-2">
+              <label class="control-label col-sm-2" for="oauth_flow">{{ lang.syncjobs.source_oauth_flow }}</label>
+              <div class="col-sm-10">
+                <select class="form-control imapsync-source-oauth-flow" name="oauth_flow">
+                  <option value="client_credentials" selected>{{ lang.syncjobs.source_oauth_flow_app }}</option>
+                  <option value="authorization_code">{{ lang.syncjobs.source_oauth_flow_user }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label class="control-label col-sm-2" for="oauth_token_endpoint">Token-Endpoint</label>
+              <div class="col-sm-10">
+                <input type="url" class="form-control" name="oauth_token_endpoint" placeholder="https://provider.example.com/oauth2/token">
+              </div>
+            </div>
+            <div class="imapsync-source-authcode-block" style="display:none;">
+              <div class="row mb-2">
+                <label class="control-label col-sm-2" for="oauth_authorize_endpoint">{{ lang.syncjobs.source_authorize_endpoint }}</label>
+                <div class="col-sm-10">
+                  <input type="url" class="form-control" name="oauth_authorize_endpoint" placeholder="https://provider.example.com/oauth2/authorize">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-2" for="oauth_userinfo_endpoint">{{ lang.syncjobs.source_userinfo_endpoint }}</label>
+                <div class="col-sm-10">
+                  <input type="url" class="form-control" name="oauth_userinfo_endpoint" placeholder="https://provider.example.com/oauth2/userinfo">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label class="control-label col-sm-2">{{ lang.syncjobs.source_redirect_uri }}</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control imapsync-source-redirect-uri" readonly value="">
+                  <small class="text-muted">{{ lang.syncjobs.source_redirect_uri_hint }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label class="control-label col-sm-2" for="oauth_client_id">Client-ID</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="oauth_client_id">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label class="control-label col-sm-2" for="oauth_client_secret">Client-Secret</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" name="oauth_client_secret">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label class="control-label col-sm-2" for="oauth_scope">Scope</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="oauth_scope" placeholder="openid email offline_access">
+              </div>
+            </div>
+            <div class="row mb-4">
+              <label class="control-label col-sm-2" for="oauth_extra_params">Extra-Params (JSON)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="oauth_extra_params" placeholder='{"resource":"https://provider.example.com"}'>
+              </div>
+            </div>
+          </fieldset>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_imapsync_source" data-api-url='add/syncjob_source' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
