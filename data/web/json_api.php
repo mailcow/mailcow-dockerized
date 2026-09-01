@@ -640,6 +640,34 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "rl-mbox-default":
+            switch ($object) {
+              case "all":
+                $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
+                if (!empty($domains)) {
+                  foreach ($domains as $domain) {
+                    if ($details = ratelimit('get', 'mailbox_default', $domain)) {
+                      $details['domain'] = $domain;
+                      $data[] = $details;
+                    }
+                    else {
+                      continue;
+                    }
+                  }
+                  process_get_return($data);
+                }
+                else {
+                  echo '{}';
+                }
+              break;
+
+              default:
+                $data = ratelimit('get', 'mailbox_default', $object);
+                process_get_return($data);
+              break;
+            }
+          break;
+
           case "rl-mbox":
             switch ($object) {
               case "all":
@@ -1991,6 +2019,9 @@ if (isset($_GET['query'])) {
         break;
         case "rl-domain":
           process_edit_return(ratelimit('edit', 'domain', array_merge(array('object' => $items), $attr)));
+        break;
+        case "rl-mbox-default":
+          process_edit_return(ratelimit('edit', 'mailbox_default', array_merge(array('object' => $items), $attr)));
         break;
         case "rl-mbox":
           process_edit_return(ratelimit('edit', 'mailbox', array_merge(array('object' => $items), $attr)));
