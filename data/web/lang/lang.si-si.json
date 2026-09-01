@@ -29,7 +29,8 @@
         "extend_sender_acl": "Dovoli razširitev pošiljateljevega ACL z zunanjimi e-poštnimi naslovi",
         "quarantine_category": "Spremeni kategorijo obvestil o karanteni",
         "syncjobs": "Sinhronizacijska opravila",
-        "pw_reset": "Dovoli ponastavitev uporabniškega gesla mailcow"
+        "pw_reset": "Dovoli ponastavitev uporabniškega gesla mailcow",
+        "alias_external_goto": "Dovoli vzdevke z zunanjimi domenami goto"
     },
     "add": {
         "active": "Aktivno",
@@ -559,7 +560,8 @@
         "mx_invalid": "Zapis MX %s je neveljaven",
         "version_invalid": "Različica %s je neveljavna",
         "tfa_removal_blocked": "Dvofaktorske avtentikacije ni mogoče odstraniti, ker je obvezna za vaš račun.",
-        "quarantine_category_invalid": "Kategorija karantene mora biti ena od: add_header, reject, all"
+        "quarantine_category_invalid": "Kategorija karantene mora biti ena od: add_header, reject, all",
+        "external_goto_denied": "Zunanji naslov goto %s ni dovoljen"
     },
     "debug": {
         "containers_info": "Informacije o zabojniku",
