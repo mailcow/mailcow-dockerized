@@ -5,6 +5,8 @@ services:
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
+      tmpfs:
+        - /tmp
       volumes:
         - ./data/hooks/unbound:/hooks:Z
         - ./data/conf/unbound/unbound.conf:/etc/unbound/unbound.conf:ro,Z
