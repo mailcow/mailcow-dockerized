@@ -37,32 +37,49 @@ chain_name = "MAILCOW"
 r = None
 pubsub = None
 clear_before_quit = False
+f2boptions = {}
+# Guards f2boptions only. Kept separate from the firewall lock above, which is
+# held across iptables/nft calls and is not reentrant.
+f2boptions_lock = Lock()
 
 def refreshF2boptions():
   global f2boptions
   global quit_now
   global exit_code
-  f2boptions = {}
+
+  new_f2boptions = {}
 
   if not r.get('F2B_OPTIONS'):
-    f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
-    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
-    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
-    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
-    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
+    new_f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
+    new_f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
+    new_f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
+    new_f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
+    new_f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
+    new_f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
+    new_f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
   else:
     try:
-      f2boptions = json.loads(r.get('F2B_OPTIONS'))
+      new_f2boptions = json.loads(r.get('F2B_OPTIONS'))
     except ValueError as e:
       logger.logCrit(
         'Error loading F2B options: F2B_OPTIONS is not json. Exception: %s' % e)
       quit_now = True
       exit_code = 2
 
-  verifyF2boptions(f2boptions)
-  r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
+  verifyF2boptions(new_f2boptions)
+  r.set('F2B_OPTIONS', json.dumps(new_f2boptions, ensure_ascii=False))
+
+  # Build the dict locally and publish it in a single assignment. Resetting the
+  # global to {} and refilling it key by key let watch() and autopurge() observe
+  # a half-populated mapping and die with a KeyError.
+  with f2boptions_lock:
+    f2boptions = new_f2boptions
+
+def getF2boptions():
+  # Options are replaced wholesale and never mutated in place, so the caller can
+  # keep using the returned dict as a consistent snapshot after we drop the lock.
+  with f2boptions_lock:
+    return f2boptions
 
 def verifyF2boptions(f2boptions):
   verifyF2boption(f2boptions, 'ban_time', 1800)
@@ -113,14 +130,15 @@ def get_ip(address):
   return ip
 
 def ban(address):
-  global f2boptions
   global lock
   logdebug("ban() called with address=%s" % address)
   refreshF2boptions()
-  MAX_ATTEMPTS = int(f2boptions['max_attempts'])
-  RETRY_WINDOW = int(f2boptions['retry_window'])
-  NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
-  NETBAN_IPV6 = '/' + str(f2boptions['netban_ipv6'])
+  options = getF2boptions()
+  MAX_ATTEMPTS = int(options['max_attempts'])
+  RETRY_WINDOW = int(options['retry_window'])
+  NETBAN_IPV4 = '/' + str(options['netban_ipv4'])
+  NETBAN_IPV6 = '/' + str(options['netban_ipv6'])
+  MANAGE_EXTERNAL = int(options['manage_external'])
 
   ip = get_ip(address)
   if not ip:
@@ -166,13 +184,13 @@ def ban(address):
       logdebug("%s is already actively banned -- skipping duplicate ban()" % net)
       return
     cur_time = int(round(time.time()))
-    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
+    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'], options)
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
-    if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
+    if type(ip) is ipaddress.IPv4Address and MANAGE_EXTERNAL != 1:
       with lock:
         logdebug("Calling tables.banIPv4(%s)" % net)
         tables.banIPv4(net)
-    elif int(f2boptions['manage_external']) != 1:
+    elif MANAGE_EXTERNAL != 1:
       with lock:
         logdebug("Calling tables.banIPv6(%s)" % net)
         tables.banIPv6(net)
@@ -241,8 +259,11 @@ def safe_unban(net, reason=''):
     logger.logWarn('safe_unban failed for %s (%s): %s' % (net, reason, ex))
 
 def permBan(net, unban=False):
-  global f2boptions
   global lock
+
+  # Read the options before taking the firewall lock, not inside the critical
+  # sections below.
+  manage_external = int(getF2boptions()['manage_external'])
 
   is_unbanned = False
   is_banned = False
@@ -250,13 +271,13 @@ def permBan(net, unban=False):
     with lock:
       if unban:
         is_unbanned = tables.unbanIPv4(net)
-      elif int(f2boptions['manage_external']) != 1:
+      elif manage_external != 1:
         is_banned = tables.banIPv4(net)
   else:
     with lock:
       if unban:
         is_unbanned = tables.unbanIPv6(net)
-      elif int(f2boptions['manage_external']) != 1:
+      elif manage_external != 1:
         is_banned = tables.banIPv6(net)
 
 
@@ -334,7 +355,6 @@ def snat6(snat_target):
       tables.snat6(snat_target, os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64'))
 
 def autopurge():
-  global f2boptions
   logdebug("autopurge thread started")
   while not quit_now:
     try:
@@ -388,12 +408,10 @@ def mailcowChainOrder():
     except Exception as ex:
       logger.logWarn('mailcowChainOrder tick failed, continuing: %s' % ex)
 
-def calcNetBanTime(ban_counter):
-  global f2boptions
-
-  BAN_TIME = int(f2boptions['ban_time'])
-  MAX_BAN_TIME = int(f2boptions['max_ban_time'])
-  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
+def calcNetBanTime(ban_counter, options):
+  BAN_TIME = int(options['ban_time'])
+  MAX_BAN_TIME = int(options['max_ban_time'])
+  BAN_TIME_INCREMENT = bool(options['ban_time_increment'])
   NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** ban_counter
   NET_BAN_TIME = max([BAN_TIME, min([NET_BAN_TIME, MAX_BAN_TIME])])
   return NET_BAN_TIME
