@@ -570,9 +570,12 @@ if __name__ == '__main__':
 
   refreshF2boptions()
 
+  workers = {}
+
   watch_thread = Thread(target=watch)
   watch_thread.daemon = True
   watch_thread.start()
+  workers['watch'] = watch_thread
 
   if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') != 'n':
     try:
@@ -582,6 +585,7 @@ if __name__ == '__main__':
         snat4_thread = Thread(target=snat4, args=(snat_ip,))
         snat4_thread.daemon = True
         snat4_thread.start()
+        workers['snat4'] = snat4_thread
     except ValueError:
       print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
@@ -593,27 +597,43 @@ if __name__ == '__main__':
         snat6_thread = Thread(target=snat6,args=(snat_ip,))
         snat6_thread.daemon = True
         snat6_thread.start()
+        workers['snat6'] = snat6_thread
     except ValueError:
       print(os.getenv('SNAT6_TO_SOURCE') + ' is not a valid IPv6 address')
 
   autopurge_thread = Thread(target=autopurge)
   autopurge_thread.daemon = True
   autopurge_thread.start()
+  workers['autopurge'] = autopurge_thread
 
   mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
   mailcowchainwatch_thread.daemon = True
   mailcowchainwatch_thread.start()
+  workers['mailcowChainOrder'] = mailcowchainwatch_thread
 
   blacklistupdate_thread = Thread(target=blacklistUpdate)
   blacklistupdate_thread.daemon = True
   blacklistupdate_thread.start()
+  workers['blacklistUpdate'] = blacklistupdate_thread
 
   whitelistupdate_thread = Thread(target=whitelistUpdate)
   whitelistupdate_thread.daemon = True
   whitelistupdate_thread.start()
+  workers['whitelistUpdate'] = whitelistupdate_thread
 
+  # A worker that dies takes its job down with it while the container stays up and
+  # keeps looking healthy: a dead autopurge stops expiring bans, so hosts remain
+  # banned forever and the UI counts into negative time. Exit non-zero instead and
+  # let Docker restart us.
   while not quit_now:
     time.sleep(0.5)
+    for name, thread in workers.items():
+      if quit_now:
+        break
+      if not thread.is_alive():
+        logger.logCrit('Thread %s died unexpectedly, exiting to force a restart' % name)
+        quit_now = True
+        exit_code = 2
 
   logdebug("Exiting with code %s" % exit_code)
   sys.exit(exit_code)
