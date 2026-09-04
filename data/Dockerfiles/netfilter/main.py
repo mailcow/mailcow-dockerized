@@ -37,32 +37,49 @@ chain_name = "MAILCOW"
 r = None
 pubsub = None
 clear_before_quit = False
+f2boptions = {}
+# Guards f2boptions only. Kept separate from the firewall lock above, which is
+# held across iptables/nft calls and is not reentrant.
+f2boptions_lock = Lock()
 
 def refreshF2boptions():
   global f2boptions
   global quit_now
   global exit_code
-  f2boptions = {}
+
+  new_f2boptions = {}
 
   if not r.get('F2B_OPTIONS'):
-    f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
-    f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
-    f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
-    f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
-    f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
+    new_f2boptions['ban_time'] = r.get('F2B_BAN_TIME')
+    new_f2boptions['max_ban_time'] = r.get('F2B_MAX_BAN_TIME')
+    new_f2boptions['ban_time_increment'] = r.get('F2B_BAN_TIME_INCREMENT')
+    new_f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS')
+    new_f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW')
+    new_f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4')
+    new_f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6')
   else:
     try:
-      f2boptions = json.loads(r.get('F2B_OPTIONS'))
+      new_f2boptions = json.loads(r.get('F2B_OPTIONS'))
     except ValueError as e:
       logger.logCrit(
         'Error loading F2B options: F2B_OPTIONS is not json. Exception: %s' % e)
       quit_now = True
       exit_code = 2
 
-  verifyF2boptions(f2boptions)
-  r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
+  verifyF2boptions(new_f2boptions)
+  r.set('F2B_OPTIONS', json.dumps(new_f2boptions, ensure_ascii=False))
+
+  # Build the dict locally and publish it in a single assignment. Resetting the
+  # global to {} and refilling it key by key let watch() and autopurge() observe
+  # a half-populated mapping and die with a KeyError.
+  with f2boptions_lock:
+    f2boptions = new_f2boptions
+
+def getF2boptions():
+  # Options are replaced wholesale and never mutated in place, so the caller can
+  # keep using the returned dict as a consistent snapshot after we drop the lock.
+  with f2boptions_lock:
+    return f2boptions
 
 def verifyF2boptions(f2boptions):
   verifyF2boption(f2boptions, 'ban_time', 1800)
@@ -113,14 +130,15 @@ def get_ip(address):
   return ip
 
 def ban(address):
-  global f2boptions
   global lock
   logdebug("ban() called with address=%s" % address)
   refreshF2boptions()
-  MAX_ATTEMPTS = int(f2boptions['max_attempts'])
-  RETRY_WINDOW = int(f2boptions['retry_window'])
-  NETBAN_IPV4 = '/' + str(f2boptions['netban_ipv4'])
-  NETBAN_IPV6 = '/' + str(f2boptions['netban_ipv6'])
+  options = getF2boptions()
+  MAX_ATTEMPTS = int(options['max_attempts'])
+  RETRY_WINDOW = int(options['retry_window'])
+  NETBAN_IPV4 = '/' + str(options['netban_ipv4'])
+  NETBAN_IPV6 = '/' + str(options['netban_ipv6'])
+  MANAGE_EXTERNAL = int(options['manage_external'])
 
   ip = get_ip(address)
   if not ip:
@@ -147,7 +165,7 @@ def ban(address):
   logdebug("Ban net: %s" % net)
 
   if not net in bans:
-    bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0}
+    bans[net] = {'attempts': 0, 'last_attempt': 0, 'ban_counter': 0, 'banned': False}
     logdebug("Initing new ban counter for %s" % net)
 
   current_attempt = time.time()
@@ -162,18 +180,22 @@ def ban(address):
   logdebug("%s attempts now %d" % (net, bans[net]['attempts']))
 
   if bans[net]['attempts'] >= MAX_ATTEMPTS:
+    if bans[net].get('banned'):
+      logdebug("%s is already actively banned -- skipping duplicate ban()" % net)
+      return
     cur_time = int(round(time.time()))
-    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'])
+    NET_BAN_TIME = calcNetBanTime(bans[net]['ban_counter'], options)
     logger.logCrit('Banning %s for %d minutes' % (net, NET_BAN_TIME / 60 ))
-    if type(ip) is ipaddress.IPv4Address and int(f2boptions['manage_external']) != 1:
+    if type(ip) is ipaddress.IPv4Address and MANAGE_EXTERNAL != 1:
       with lock:
         logdebug("Calling tables.banIPv4(%s)" % net)
         tables.banIPv4(net)
-    elif int(f2boptions['manage_external']) != 1:
+    elif MANAGE_EXTERNAL != 1:
       with lock:
         logdebug("Calling tables.banIPv6(%s)" % net)
         tables.banIPv6(net)
 
+    bans[net]['banned'] = True
     logdebug("Updating F2B_ACTIVE_BANS[%s]=%d" %
               (net, cur_time + NET_BAN_TIME))
     r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
@@ -184,30 +206,64 @@ def ban(address):
 def unban(net):
   global lock
   logdebug("Calling unban() with net=%s" % net)
-  if not net in bans:
-    logger.logInfo(
-      '%s is not banned, skipping unban and deleting from queue (if any)' % net)
-    r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-    return
-  logger.logInfo('Unbanning %s' % net)
-  if type(ipaddress.ip_network(net)) is ipaddress.IPv4Network:
-    with lock:
-      logdebug("Calling tables.unbanIPv4(%s)" % net)
-      tables.unbanIPv4(net)
+  net_str = '%s' % net
+  in_bans = net in bans
+  if in_bans:
+    logger.logInfo('Unbanning %s' % net)
   else:
-    with lock:
-      logdebug("Calling tables.unbanIPv6(%s)" % net)
-      tables.unbanIPv6(net)
-  r.hdel('F2B_ACTIVE_BANS', '%s' % net)
-  r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
-  if net in bans:
-    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net)
+    logger.logInfo('Unbanning %s (not in local bans dict)' % net)
+
+  try:
+    net_obj = ipaddress.ip_network(net_str, strict=False)
+  except ValueError as e:
+    logger.logWarn('Invalid or unparseable net %s for firewall unban: %s' % (net_str, e))
+    # Still drop Redis state so the UI doesn't keep a phantom entry.
+    if r is not None:
+      try:
+        r.hdel('F2B_ACTIVE_BANS', net_str)
+        r.hdel('F2B_QUEUE_UNBAN', net_str)
+      except Exception as ex:
+        logger.logWarn('Redis hdel during unban failed for %s: %s' % (net_str, ex))
+    return
+
+  # Hold the lock across Redis hdel + firewall removal so a concurrent ban()
+  # (which holds the same lock for its firewall add + r.hset) cannot interleave
+  # and leave a phantom F2B_ACTIVE_BANS entry without a matching firewall rule.
+  with lock:
+    if r is not None:
+      try:
+        r.hdel('F2B_ACTIVE_BANS', net_str)
+        r.hdel('F2B_QUEUE_UNBAN', net_str)
+      except Exception as ex:
+        logger.logWarn('Redis hdel during unban failed for %s: %s' % (net_str, ex))
+    try:
+      if type(net_obj) is ipaddress.IPv4Network:
+        logdebug("Calling tables.unbanIPv4(%s)" % net_str)
+        tables.unbanIPv4(net_str)
+      else:
+        logdebug("Calling tables.unbanIPv6(%s)" % net_str)
+        tables.unbanIPv6(net_str)
+    except Exception as e:
+      logger.logWarn('Firewall unban failed for %s: %s' % (net_str, e))
+
+  if in_bans:
+    logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net_str)
     bans[net]['attempts'] = 0
     bans[net]['ban_counter'] += 1
+    bans[net]['banned'] = False
+
+def safe_unban(net, reason=''):
+  try:
+    unban(net)
+  except Exception as ex:
+    logger.logWarn('safe_unban failed for %s (%s): %s' % (net, reason, ex))
 
 def permBan(net, unban=False):
-  global f2boptions
   global lock
+
+  # Read the options before taking the firewall lock, not inside the critical
+  # sections below.
+  manage_external = int(getF2boptions()['manage_external'])
 
   is_unbanned = False
   is_banned = False
@@ -215,13 +271,13 @@ def permBan(net, unban=False):
     with lock:
       if unban:
         is_unbanned = tables.unbanIPv4(net)
-      elif int(f2boptions['manage_external']) != 1:
+      elif manage_external != 1:
         is_banned = tables.banIPv4(net)
   else:
     with lock:
       if unban:
         is_unbanned = tables.unbanIPv6(net)
-      elif int(f2boptions['manage_external']) != 1:
+      elif manage_external != 1:
         is_banned = tables.banIPv6(net)
 
 
@@ -299,36 +355,44 @@ def snat6(snat_target):
       tables.snat6(snat_target, os.getenv('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64'))
 
 def autopurge():
-  global f2boptions
   logdebug("autopurge thread started")
   while not quit_now:
-    logdebug("autopurge tick")
-    time.sleep(10)
-    refreshF2boptions()
-    MAX_ATTEMPTS = int(f2boptions['max_attempts'])
-    QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
-    logdebug("QUEUE_UNBAN: %s" % QUEUE_UNBAN)
-    if QUEUE_UNBAN:
-      for net in QUEUE_UNBAN:
-        logdebug("Autopurge: unbanning queued net: %s" % net)
-        unban(str(net))
-    # Only check expiry for actively banned IPs:
-    active_bans = r.hgetall('F2B_ACTIVE_BANS')
-    now = time.time()
-    for net_str, expire_str in active_bans.items():
-      logdebug("Checking ban expiry for (actively banned): %s" % net_str)
-      # Defensive: always process if timer missing or expired
-      try:
-        expire = float(expire_str)
-      except Exception:
-        logdebug("Invalid expire time for %s; unbanning" % net_str)
-        unban(net_str)
-        continue
-      time_left = expire - now
-      logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
-      if time_left <= 0:
-        logdebug("Ban expired for %s" % net_str)
-        unban(net_str)
+    try:
+      logdebug("autopurge tick")
+      time.sleep(10)
+      refreshF2boptions()
+      QUEUE_UNBAN = r.hgetall('F2B_QUEUE_UNBAN')
+      logdebug("QUEUE_UNBAN: %s" % QUEUE_UNBAN)
+      if QUEUE_UNBAN:
+        for net in QUEUE_UNBAN:
+          logdebug("Autopurge: unbanning queued net: %s" % net)
+          safe_unban(str(net), 'queue_unban')
+      # Only check expiry for actively banned IPs:
+      active_bans = r.hgetall('F2B_ACTIVE_BANS')
+      now = time.time()
+      for net_str, expire_str in active_bans.items():
+        logdebug("Checking ban expiry for (actively banned): %s" % net_str)
+        # Defensive: always process if timer missing or expired
+        try:
+          expire = float(expire_str)
+        except Exception:
+          logdebug("Invalid expire time for %s; unbanning" % net_str)
+          safe_unban(net_str, 'invalid_expire')
+          continue
+        time_left = expire - now
+        logdebug("Time left for %s: %.1f seconds" % (net_str, time_left))
+        # Safeguard: expiry timestamp in the past must be purged (time_left <= 0)
+        if expire <= now:
+          logger.logInfo(
+            'Safeguard: purging expired active ban %s (expire=%s, now=%.1f, left=%.1fs)' %
+            (net_str, expire_str, now, time_left))
+          safe_unban(net_str, 'expired')
+    except Exception as ex:
+      # Never let an exception kill the thread: a dead autopurge stops draining
+      # F2B_QUEUE_UNBAN and clearing expired F2B_ACTIVE_BANS, which is what produces
+      # the sticky "negative timer" state until netfilter is manually restarted.
+      logger.logWarn('autopurge tick failed, continuing: %s' % ex)
+      time.sleep(5)
 
 def mailcowChainOrder():
   global lock
@@ -336,17 +400,18 @@ def mailcowChainOrder():
   global exit_code
   while not quit_now:
     time.sleep(10)
-    with lock:
-      quit_now, exit_code = tables.checkIPv4ChainOrder()
-      if quit_now: return
-      quit_now, exit_code = tables.checkIPv6ChainOrder()
+    try:
+      with lock:
+        quit_now, exit_code = tables.checkIPv4ChainOrder()
+        if quit_now: return
+        quit_now, exit_code = tables.checkIPv6ChainOrder()
+    except Exception as ex:
+      logger.logWarn('mailcowChainOrder tick failed, continuing: %s' % ex)
 
-def calcNetBanTime(ban_counter):
-  global f2boptions
-
-  BAN_TIME = int(f2boptions['ban_time'])
-  MAX_BAN_TIME = int(f2boptions['max_ban_time'])
-  BAN_TIME_INCREMENT = bool(f2boptions['ban_time_increment'])
+def calcNetBanTime(ban_counter, options):
+  BAN_TIME = int(options['ban_time'])
+  MAX_BAN_TIME = int(options['max_ban_time'])
+  BAN_TIME_INCREMENT = bool(options['ban_time_increment'])
   NET_BAN_TIME = BAN_TIME if not BAN_TIME_INCREMENT else BAN_TIME * 2 ** ban_counter
   NET_BAN_TIME = max([BAN_TIME, min([NET_BAN_TIME, MAX_BAN_TIME])])
   return NET_BAN_TIME
@@ -391,14 +456,17 @@ def whitelistUpdate():
   global WHITELIST
   while not quit_now:
     start_time = time.time()
-    list = r.hgetall('F2B_WHITELIST')
-    new_whitelist = []
-    if list:
-      new_whitelist = genNetworkList(list)
-    with lock:
-      if Counter(new_whitelist) != Counter(WHITELIST):
-        WHITELIST = new_whitelist
-        logger.logInfo('Allowlist was changed, it has %s entries' % len(WHITELIST))
+    try:
+      list = r.hgetall('F2B_WHITELIST')
+      new_whitelist = []
+      if list:
+        new_whitelist = genNetworkList(list)
+      with lock:
+        if Counter(new_whitelist) != Counter(WHITELIST):
+          WHITELIST = new_whitelist
+          logger.logInfo('Allowlist was changed, it has %s entries' % len(WHITELIST))
+    except Exception as ex:
+      logger.logWarn('whitelistUpdate tick failed, continuing: %s' % ex)
     time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def blacklistUpdate():
@@ -406,21 +474,24 @@ def blacklistUpdate():
   global BLACKLIST
   while not quit_now:
     start_time = time.time()
-    list = r.hgetall('F2B_BLACKLIST')
-    new_blacklist = []
-    if list:
-      new_blacklist = genNetworkList(list)
-    if Counter(new_blacklist) != Counter(BLACKLIST):
-      addban = set(new_blacklist).difference(BLACKLIST)
-      delban = set(BLACKLIST).difference(new_blacklist)
-      BLACKLIST = new_blacklist
-      logger.logInfo('Denylist was changed, it has %s entries' % len(BLACKLIST))
-      if addban:
-        for net in addban:
-          permBan(net=net)
-      if delban:
-        for net in delban:
-          permBan(net=net, unban=True)
+    try:
+      list = r.hgetall('F2B_BLACKLIST')
+      new_blacklist = []
+      if list:
+        new_blacklist = genNetworkList(list)
+      if Counter(new_blacklist) != Counter(BLACKLIST):
+        addban = set(new_blacklist).difference(BLACKLIST)
+        delban = set(BLACKLIST).difference(new_blacklist)
+        BLACKLIST = new_blacklist
+        logger.logInfo('Denylist was changed, it has %s entries' % len(BLACKLIST))
+        if addban:
+          for net in addban:
+            permBan(net=net)
+        if delban:
+          for net in delban:
+            permBan(net=net, unban=True)
+    except Exception as ex:
+      logger.logWarn('blacklistUpdate tick failed, continuing: %s' % ex)
     time.sleep(60.0 - ((time.time() - start_time) % 60.0))
 
 def sigterm_quit(signum, frame):
@@ -499,9 +570,12 @@ if __name__ == '__main__':
 
   refreshF2boptions()
 
+  workers = {}
+
   watch_thread = Thread(target=watch)
   watch_thread.daemon = True
   watch_thread.start()
+  workers['watch'] = watch_thread
 
   if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') != 'n':
     try:
@@ -511,6 +585,7 @@ if __name__ == '__main__':
         snat4_thread = Thread(target=snat4, args=(snat_ip,))
         snat4_thread.daemon = True
         snat4_thread.start()
+        workers['snat4'] = snat4_thread
     except ValueError:
       print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
@@ -522,27 +597,43 @@ if __name__ == '__main__':
         snat6_thread = Thread(target=snat6,args=(snat_ip,))
         snat6_thread.daemon = True
         snat6_thread.start()
+        workers['snat6'] = snat6_thread
     except ValueError:
       print(os.getenv('SNAT6_TO_SOURCE') + ' is not a valid IPv6 address')
 
   autopurge_thread = Thread(target=autopurge)
   autopurge_thread.daemon = True
   autopurge_thread.start()
+  workers['autopurge'] = autopurge_thread
 
   mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
   mailcowchainwatch_thread.daemon = True
   mailcowchainwatch_thread.start()
+  workers['mailcowChainOrder'] = mailcowchainwatch_thread
 
   blacklistupdate_thread = Thread(target=blacklistUpdate)
   blacklistupdate_thread.daemon = True
   blacklistupdate_thread.start()
+  workers['blacklistUpdate'] = blacklistupdate_thread
 
   whitelistupdate_thread = Thread(target=whitelistUpdate)
   whitelistupdate_thread.daemon = True
   whitelistupdate_thread.start()
+  workers['whitelistUpdate'] = whitelistupdate_thread
 
+  # A worker that dies takes its job down with it while the container stays up and
+  # keeps looking healthy: a dead autopurge stops expiring bans, so hosts remain
+  # banned forever and the UI counts into negative time. Exit non-zero instead and
+  # let Docker restart us.
   while not quit_now:
     time.sleep(0.5)
+    for name, thread in workers.items():
+      if quit_now:
+        break
+      if not thread.is_alive():
+        logger.logCrit('Thread %s died unexpectedly, exiting to force a restart' % name)
+        quit_now = True
+        exit_code = 2
 
   logdebug("Exiting with code %s" % exit_code)
   sys.exit(exit_code)
