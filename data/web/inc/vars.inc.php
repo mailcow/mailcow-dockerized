@@ -212,6 +212,11 @@ $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 // Mailbox has IMAP access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['imap_access'] = true;
 
+// Mailbox may sign in through the configured identity provider by default.
+// OFF: SSO login is a per-mailbox opt-in, independent of authsource, so an
+// existing local-password mailbox keeps its behaviour until an admin enables it.
+$MAILBOX_DEFAULT_ATTRIBUTES['sso_access'] = false;
+
 // Mailbox has POP3 access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['pop3_access'] = true;
 
