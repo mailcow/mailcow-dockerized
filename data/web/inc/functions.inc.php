@@ -2500,6 +2500,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_tls":
           case "login_provisioning":
           case "ignore_ssl_errors":
+          case "auto_redirect":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2577,6 +2578,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       $_data['ignore_ssl_error']    = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
       $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
+      $_data['auto_redirect']       = isset($_data['auto_redirect']) ? boolval($_data['auto_redirect']) : false;
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
@@ -2585,14 +2587,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
+          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'auto_redirect');
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
-          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
+          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning', 'auto_redirect');
         break;
         case "ldap":
           $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
@@ -2668,6 +2670,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $stmt->bindParam(':value', $templates);
           $stmt->execute();
         }
+      }
+
+      // add end_session_url (optional, used for RP-Initiated Logout / SLO)
+      if (isset($_data['end_session_url'])) {
+        $_data['end_session_url'] = trim($_data['end_session_url']);
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('end_session_url', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $_data['end_session_url']);
+        $stmt->execute();
       }
 
       // delete old access_token
@@ -3100,6 +3110,39 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $authUrl = $iam_provider->getAuthorizationUrl($options);
       $_SESSION['oauth2state'] = $iam_provider->getState();
       return $authUrl;
+    break;
+    case "get-logout-redirect":
+      // Build an RP-Initiated Logout (OIDC) URL to propagate a mailcow logout
+      // to the identity provider, so the IdP session is also ended and the
+      // "auto redirect" feature does not silently log the user back in.
+      $settings = identity_provider('get');
+      if ($settings['authsource'] != 'keycloak' && $settings['authsource'] != 'generic-oidc')
+        return false;
+
+      $end_session_url = !empty($settings['end_session_url']) ? $settings['end_session_url'] : null;
+      if (!$end_session_url && $settings['authsource'] == 'keycloak' && $settings['server_url'] && $settings['realm']) {
+        // Keycloak's end session endpoint follows a well-known, fixed path
+        $end_session_url = rtrim($settings['server_url'], '/') . '/realms/' . rawurlencode($settings['realm']) . '/protocol/openid-connect/logout';
+      }
+      if (!$end_session_url) return false;
+
+      $post_logout_redirect_uri = rtrim($settings['redirect_url'], '/') . '/?nosso=1';
+      if (isset($settings['redirect_url_extra'])) {
+        $targetDomain = strtolower($_SERVER['HTTP_HOST']);
+        foreach ($settings['redirect_url_extra'] as $testUrl) {
+          $testUrlParsed = parse_url($testUrl);
+          if (isset($testUrlParsed['host']) && strtolower($testUrlParsed['host']) == $targetDomain) {
+            $post_logout_redirect_uri = rtrim($testUrl, '/') . '/?nosso=1';
+            break;
+          }
+        }
+      }
+
+      $query = http_build_query([
+        'client_id' => $settings['client_id'],
+        'post_logout_redirect_uri' => $post_logout_redirect_uri,
+      ]);
+      return $end_session_url . (str_contains($end_session_url, '?') ? '&' : '?') . $query;
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client

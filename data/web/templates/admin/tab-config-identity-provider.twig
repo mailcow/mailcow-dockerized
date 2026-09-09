@@ -230,6 +230,26 @@
             </div>
           </div>
           <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-start justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_auto_redirect_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_auto_redirect }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="auto_redirect" value="1" {% if iam_settings.auto_redirect == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-start justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_end_session_url_info }}"></i>
+              <label class="control-label" for="iam_end_session_url">{{ lang.admin.iam_end_session_url }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_end_session_url" name="end_session_url" value="{{ iam_settings.end_session_url }}">
+            </div>
+          </div>
+          <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">
               <label class="control-label">{{ lang.admin.iam_periodic_full_sync }}</label>
             </div>
@@ -458,6 +478,26 @@
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="login_provisioning"  value="1" {% if iam_settings.login_provisioning == 1 %}checked{% endif %}>
               </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-start justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_auto_redirect_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_auto_redirect }}</label>
+            </div>
+            <div class="col-12 col-md-9">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="auto_redirect" value="1" {% if iam_settings.auto_redirect == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-start justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_end_session_url_info }}"></i>
+              <label class="control-label" for="iam_generic_end_session_url">{{ lang.admin.iam_end_session_url }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_generic_end_session_url" name="end_session_url" value="{{ iam_settings.end_session_url }}">
             </div>
           </div>
           <div class="row mt-4 mb-2">

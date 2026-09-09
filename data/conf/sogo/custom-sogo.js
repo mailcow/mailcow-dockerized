@@ -6,14 +6,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 // logout function
+var mc_logout_submitted = false;
 function mc_logout() {
-    fetch("/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "logout=1"
-    }).then(() => window.location.href = '/');
+    // Guard against a double click/double invocation submitting two
+    // competing navigations, which can cause the browser to abort the
+    // first one (net::ERR_ABORTED) before it reaches the identity
+    // provider's logout endpoint.
+    if (mc_logout_submitted) {
+        return;
+    }
+    mc_logout_submitted = true;
+    // Submit a real form (instead of fetch()) so the browser performs a
+    // genuine top-level navigation. This is required for the logout to
+    // correctly follow a redirect chain that leaves mail.miolab.it (e.g.
+    // Identity Provider Single Logout), which a fetch()-based redirect
+    // cannot reliably follow due to cross-origin cookie restrictions.
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/';
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'logout';
+    input.value = '1';
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Custom SOGo JS
