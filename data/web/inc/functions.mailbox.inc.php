@@ -2862,6 +2862,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain
               ));
               // save tags
+              $tags_changed = false;
               foreach($tags as $index => $tag){
                 if (empty($tag)) continue;
                 if ($index > $GLOBALS['TAGGING_LIMIT']) {
@@ -2877,6 +2878,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':domain' => $domain,
                   ':tag_name' => $tag,
                 ));
+                if ($stmt->rowCount() > 0) $tags_changed = true;
+              }
+              // tags are stored in a separate table, so adding one does not touch
+              // `domain` and its `modified` ON UPDATE column never fires
+              if ($tags_changed) {
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(':domain' => $domain));
               }
 
               $_SESSION['return'][] = array(
@@ -3030,6 +3038,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain
               ));
               // save tags
+              $tags_changed = false;
               foreach($tags as $index => $tag){
                 if (empty($tag)) continue;
                 if ($index > $GLOBALS['TAGGING_LIMIT']) {
@@ -3045,6 +3054,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':domain' => $domain,
                   ':tag_name' => $tag,
                 ));
+                if ($stmt->rowCount() > 0) $tags_changed = true;
+              }
+              // tags are stored in a separate table, so adding one does not touch
+              // `domain` and its `modified` ON UPDATE column never fires
+              if ($tags_changed) {
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(':domain' => $domain));
               }
 
               $_SESSION['return'][] = array(
@@ -3504,6 +3520,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ));
             }
             // save tags
+            $tags_changed = false;
             foreach($tags as $index => $tag){
               if (empty($tag)) continue;
               if ($index > $GLOBALS['TAGGING_LIMIT']) {
@@ -3520,8 +3537,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':username' => $username,
                   ':tag_name' => $tag,
                 ));
+                if ($stmt->rowCount() > 0) $tags_changed = true;
               } catch (Exception $e) {
               }
+            }
+            // tags are stored in a separate table, so adding one does not touch
+            // `mailbox` and its `modified` ON UPDATE column never fires
+            if ($tags_changed) {
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+              $stmt->execute(array(':username' => $username));
             }
 
             $_SESSION['return'][] = array(
@@ -6307,6 +6331,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               return false;
             }
 
+            $tags_changed = false;
             foreach($tags as $tag){
               // delete tag
               $wasModified = true;
@@ -6315,6 +6340,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) $tags_changed = true;
+            }
+            // tags are stored in a separate table, so removing one does not touch
+            // `domain` and its `modified` ON UPDATE column never fires
+            if ($tags_changed) {
+              $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+              $stmt->execute(array(':domain' => $domain));
             }
           }
 
@@ -6359,6 +6391,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
 
             // delete tags
+            $tags_changed = false;
             foreach($tags as $tag){
               $wasModified = true;
 
@@ -6367,6 +6400,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':username' => $username,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) $tags_changed = true;
+            }
+            // tags are stored in a separate table, so removing one does not touch
+            // `mailbox` and its `modified` ON UPDATE column never fires
+            if ($tags_changed) {
+              $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+              $stmt->execute(array(':username' => $username));
             }
           }
 
