@@ -1132,12 +1132,18 @@ while true; do
     F2B_RES=($(timeout 4s ${REDIS_CMDLINE} --raw GET F2B_RES 2> /dev/null))
     if [[ ! -z "${F2B_RES}" ]]; then
       ${REDIS_CMDLINE} DEL F2B_RES > /dev/null
-      host=
-      for host in "${F2B_RES[@]}"; do
-        log_msg "Banned ${host}"
+      banned_net=
+      for banned_net in "${F2B_RES[@]}"; do
+        log_msg "Banned ${banned_net}"
         rm /tmp/fail2ban 2> /dev/null
-        timeout 2s whois "${host}" > /tmp/fail2ban
-        [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && notify_error "${com_pipe_answer}" "IP ban: ${host}"
+        # CIDR WHOIS queries may not return useful registration data.
+        # Prefer the triggering IP, falling back to the network address if unavailable.
+        whois_ip_address="$(${REDIS_CMDLINE} --raw HGET F2B_ACTIVE_BAN_SOURCE_IP_ADDRESS "${banned_net}" 2> /dev/null)"
+        if [[ -z "${whois_ip_address}" ]]; then
+          whois_ip_address="${banned_net%%/*}"
+        fi
+        timeout 2s whois "${whois_ip_address}" > /tmp/fail2ban
+        [[ ${WATCHDOG_NOTIFY_BAN} =~ ^([yY][eE][sS]|[yY])+$ ]] && notify_error "${com_pipe_answer}" "IP ban: ${banned_net}"
       done
     fi
   elif [[ ${com_pipe_answer} =~ .+-mailcow ]]; then
