@@ -194,6 +194,9 @@ services:
         ofelia.job-exec.phpfpm_ldap_sync.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
         ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.no-overlap: "true"
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.command: "/bin/bash -c \"php /crons/imapsync-oauth-refresh.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
@@ -252,7 +255,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.3.21.1-2
+      image: ghcr.io/mailcow/dovecot:2.3.21.1-3
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
