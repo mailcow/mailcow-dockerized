@@ -206,6 +206,14 @@ $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 // subject   - Add tag to subject (e.g. "[Facebook] Subject")
 $MAILBOX_DEFAULT_ATTRIBUTES['tagged_mail_handler'] = "none";
 
+// Plus addressing for new mailboxes (the domain switch must also be on to take effect)
+// user+tag@example.org reaches user@example.org
+// _in  = receive mail at user+tag@, _out = send mail as user+tag@
+// Note: dots are NOT folded. "u.s.er@" and "user@" are different local parts; RFC 5321 section 2.3.11
+// leaves the meaning of the local part to the receiving host and mailcow keeps them distinct.
+$MAILBOX_DEFAULT_ATTRIBUTES['plus_addressing_in'] = true;
+$MAILBOX_DEFAULT_ATTRIBUTES['plus_addressing_out'] = true;
+
 // Send notification when quarantine is not empty (never, hourly, daily, weekly)
 $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification'] = 'hourly';
 

@@ -52,6 +52,8 @@ postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_plus_addressing_rcpt_policy.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_plus_addressing_sender_policy.cf,
   $sender_dependent_default_transport_maps,
   $smtp_tls_policy_maps,
   $local_recipient_maps,
@@ -90,6 +92,7 @@ smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
 smtpd_recipient_restrictions = check_recipient_mx_access proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
+  check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_plus_addressing_rcpt_policy.cf,
   permit_sasl_authenticated,
   permit_mynetworks,
   check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
@@ -100,7 +103,8 @@ smtpd_sasl_authenticated_header = yes
 smtpd_sasl_path = inet:dovecot:10001
 smtpd_sasl_type = dovecot
 smtpd_sender_login_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_sender_acl.cf
-smtpd_sender_restrictions = reject_authenticated_sender_login_mismatch,
+smtpd_sender_restrictions = check_sender_access proxy:mysql:/opt/postfix/conf/sql/mysql_plus_addressing_sender_policy.cf,
+  reject_authenticated_sender_login_mismatch,
   permit_mynetworks,
   permit_sasl_authenticated,
   reject_unlisted_sender,

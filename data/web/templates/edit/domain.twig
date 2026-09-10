@@ -27,6 +27,8 @@
                   <input type="hidden" value="0" name="gal">
                   <input type="hidden" value="0" name="relay_all_recipients">
                   <input type="hidden" value="0" name="relay_unknown_only">
+                  <input type="hidden" value="0" name="plus_addressing_in">
+                  <input type="hidden" value="0" name="plus_addressing_out">
                   <div class="row mb-4">
                     <label class="control-label col-sm-2" for="domain">{{ lang.mailbox.domain }}</label>
                     <div class="col-sm-10">
@@ -122,6 +124,27 @@
                         <p>{{ lang.edit.relay_transport_info|raw }}</p>
                         <hr style="margin:25px 0px 0px 0px">
                       </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.address_variants }}</label>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_in"{% if result.plus_addressing_in == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_in }}</label>
+                        <br>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_out"{% if result.plus_addressing_out == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_out }}</label>
+                        <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
+                        <p class="text-muted"><small>{{ lang.edit.addressing_domain_info }}</small></p>
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2">{{ lang.edit.address_variants }}</label>
+                    <div class="col-sm-10">
+                      <p class="mb-1"><i class="bi bi-{% if result.plus_addressing_in == '1' %}check-lg text-success{% else %}x-lg text-danger{% endif %}"></i> {{ lang.edit.plus_addressing_in }}</p>
+                      <p class="mb-1"><i class="bi bi-{% if result.plus_addressing_out == '1' %}check-lg text-success{% else %}x-lg text-danger{% endif %}"></i> {{ lang.edit.plus_addressing_out }}</p>
+                      <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
                     </div>
                   </div>
                   {% endif %}

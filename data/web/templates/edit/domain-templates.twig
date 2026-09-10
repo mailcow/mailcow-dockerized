@@ -10,6 +10,8 @@
     <input type="hidden" value="0" name="gal">
     <input type="hidden" value="0" name="relay_all_recipients">
     <input type="hidden" value="0" name="relay_unknown_only">
+    <input type="hidden" value="0" name="plus_addressing_in">
+    <input type="hidden" value="0" name="plus_addressing_out">
 
     {% if mailcow_cc_role == 'admin' %}
     <div class="row mb-4">
@@ -120,6 +122,18 @@
           <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"{% if template.attributes.relay_unknown_only == '1' %} checked{% endif %}> {{ lang.edit.relay_unknown_only }}</label>
           <br>
           <p>{{ lang.edit.relay_transport_info|raw }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2">{{ lang.edit.address_variants }}</label>
+      <div class="col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_in"{% if template.attributes.plus_addressing_in == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_in }}</label>
+          <br>
+          <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_out"{% if template.attributes.plus_addressing_out == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_out }}</label>
+          <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
+          <p class="text-muted"><small>{{ lang.edit.addressing_domain_info }}</small></p>
         </div>
       </div>
     </div>

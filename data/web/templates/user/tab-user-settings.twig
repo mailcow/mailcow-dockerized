@@ -7,10 +7,22 @@
       <span class="d-none d-md-block">{{ lang.user.mailbox_settings }}</span>
     </div>
     <div id="collapse-tab-user-settings" class="card-body collapse" data-bs-parent="#user-content">
+      {# Show address variants (read only) #}
+      <div class="row">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.address_variants }}:</div>
+        <div class="col-sm-9 col-12 mb-4">
+          <p class="mb-1"><i class="bi bi-{% if mailboxdata.addressing_effective.plus_addressing_in == 1 %}check-lg text-success{% else %}x-lg text-danger{% endif %}"></i> {{ lang.user.plus_addressing_in }}</p>
+          <p class="mb-1"><i class="bi bi-{% if mailboxdata.addressing_effective.plus_addressing_out == 1 %}check-lg text-success{% else %}x-lg text-danger{% endif %}"></i> {{ lang.user.plus_addressing_out }}</p>
+          <p class="text-muted"><small>{{ lang.user.addressing_info }}</small></p>
+        </div>
+      </div>
       {# Show tagging options #}
       <div class="row">
         <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.tag_handling }}:</div>
         <div class="col-sm-9 col-12">
+          {% if mailboxdata.addressing_effective.plus_addressing_in != 1 %}
+          <p class="text-muted">{{ lang.user.plus_addressing_disabled }}</p>
+          {% else %}
           <div class="btn-group" data-acl="{{ acl.delimiter_action }}">
             <button type="button" class="btn btn-sm btn-xs-third d-block d-sm-inline{% if get_tagging_options == 'subfolder' %} btn-dark{% else %} btn-light{% endif %}"
             data-action="edit_selected"
@@ -33,6 +45,7 @@
           </div>
           <p class="text-muted">{{ lang.user.tag_help_explain|raw }}</p>
           <p class="text-muted">{{ lang.user.tag_help_example|raw }}</p>
+          {% endif %}
         </div>
       </div>
       {# Show TLS policy options #}

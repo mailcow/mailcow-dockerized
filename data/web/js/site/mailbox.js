@@ -258,6 +258,12 @@ $(document).ready(function() {
       $('#addDomain_relay_unknown_only').prop('checked', false);
     }
 
+    var addressing_defaults = {plus_addressing_in: 1, plus_addressing_out: 1};
+    Object.keys(addressing_defaults).forEach(function(key) {
+      var value = (typeof template[key] === 'undefined') ? addressing_defaults[key] : template[key];
+      $('#addDomain_' + key).prop('checked', value == 1);
+    });
+
 
     // load tags
     $('#addDomain_tags').val("");
@@ -286,6 +292,11 @@ $(document).ready(function() {
       $('#tagged_mail_handler_subject').prop('checked', false);
       $('#tagged_mail_handler_none').prop('checked', true);
     }
+
+    ['plus_addressing_in', 'plus_addressing_out'].forEach(function(key) {
+      var value = (typeof template[key] === 'undefined') ? 1 : template[key];
+      $('#addMailbox_' + key).prop('checked', value == 1);
+    });
 
     if (template.quarantine_notification === "never"){
       $('#quarantine_notification_never').prop('checked', true);

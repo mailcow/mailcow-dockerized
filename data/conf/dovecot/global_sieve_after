@@ -17,8 +17,8 @@ if allof (
   header :contains "X-Moo-Tag" "YES"
   ) {
   set :lower :upperfirst "tag" "${1}";
-  if mailboxexists "INBOX/${1}" {
-    fileinto "INBOX/${1}";
+  if mailboxexists "INBOX/${tag}" {
+    fileinto "INBOX/${tag}";
   } else {
     fileinto :create "INBOX/${tag}";
   }
