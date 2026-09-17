@@ -98,7 +98,12 @@ unset DOCKER_COMPOSE_VERSION
 
 get_installed_tools
 
-get_docker_version
+# Honor a container runtime / API socket pinned in mailcow.conf before autodetecting
+if [[ -f mailcow.conf ]]; then
+  CONTAINER_RUNTIME=$(grep -oP '^CONTAINER_RUNTIME=\K.*' mailcow.conf)
+  DOCKER_SOCKET=$(grep -oP '^DOCKER_SOCKET=\K.*' mailcow.conf)
+fi
+detect_container_runtime
 
 export LC_ALL=C
 DATE=$(date +%Y-%m-%d_%H_%M_%S)
@@ -399,7 +404,7 @@ $COMPOSE_COMMAND down
 echo -e "\e[32mChecking for remaining containers...\e[0m"
 sleep 2
 for container in "${MAILCOW_CONTAINERS[@]}"; do
-  docker rm -f "$container" 2> /dev/null
+  ${CONTAINER_CMD} rm -f "$container" 2> /dev/null
 done
 
 configure_ipv6
