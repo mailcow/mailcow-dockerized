@@ -47,6 +47,11 @@ http {
         default "";
     }
 
+    map $server_port $mailcow_real_ip {
+        65510   $http_x_real_ip;
+        default $remote_addr;
+    }
+
     {% if HTTP_REDIRECT %}
     # HTTP to HTTPS redirect
     server {
