@@ -102,6 +102,10 @@ rspamd_config:register_symbol({
       local rcpt_split = rspamd_str_split(rcpt['addr'], '@')
       if #rcpt_split == 2 then
         if rcpt_split[1] == 'postmaster' then
+          if os.getenv('POSTMASTER_FILTERING') == 'n' then
+            task:set_pre_result('accept', 'whitelisting postmaster smtp rcpt', 'postmaster')
+            return
+          end
           -- keep the regular filter chain, but never greylist or reject postmaster mail
           task:set_settings({ actions = { reject = 9999, greylist = 9998 } })
           rspamd_logger.infox(task, "POSTMASTER_HANDLER: regular filtering, reject/greylist disabled")
