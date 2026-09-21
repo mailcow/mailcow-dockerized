@@ -619,6 +619,12 @@ paths:
                 relay_unknown_only:
                   description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
                   type: boolean
+                plus_addressing_in:
+                  description: accept mail for user+tag@ addresses in this domain
+                  type: boolean
+                plus_addressing_out:
+                  description: allow sending as user+tag@ addresses in this domain
+                  type: boolean
                 rl_frame:
                   enum:
                     - s
@@ -1173,6 +1179,12 @@ paths:
                   type: boolean
                 tls_enforce_out:
                   description: force oubound tmail tls encryption
+                  type: boolean
+                plus_addressing_in:
+                  description: accept mail for user+tag@ addresses in this mailbox (the domain must allow it as well)
+                  type: boolean
+                plus_addressing_out:
+                  description: allow sending as user+tag@ addresses in this mailbox (the domain must allow it as well)
                   type: boolean
               type: object
       summary: Create mailbox
@@ -3222,6 +3234,12 @@ paths:
                     relay_unknown_only:
                       description: Relay non-existing mailboxes only. Existing mailboxes will be delivered locally.
                       type: boolean
+                    plus_addressing_in:
+                      description: accept mail for user+tag@ addresses in this domain
+                      type: boolean
+                    plus_addressing_out:
+                      description: allow sending as user+tag@ addresses in this domain
+                      type: boolean
                     relayhost:
                       description: id of relayhost
                       type: number
@@ -3530,6 +3548,12 @@ paths:
                       type: object
                     sogo_access:
                       description: is access to SOGo webmail active or not
+                      type: boolean
+                    plus_addressing_in:
+                      description: accept mail for user+tag@ addresses in this mailbox (the domain must allow it as well)
+                      type: boolean
+                    plus_addressing_out:
+                      description: allow sending as user+tag@ addresses in this mailbox (the domain must allow it as well)
                       type: boolean
                   type: object
                 items:
@@ -4358,6 +4382,8 @@ paths:
                       quota_used_in_domain: "0"
                       relay_all_recipients: "0"
                       relayhost: "0"
+                      plus_addressing_in: "1"
+                      plus_addressing_out: "1"
                       rl: false
                       tags: ["tag1", "tag2"]
                     - active: "1"
@@ -4381,6 +4407,8 @@ paths:
                       quota_used_in_domain: "0"
                       relay_all_recipients: "0"
                       relayhost: "0"
+                      plus_addressing_in: "1"
+                      plus_addressing_out: "1"
                       rl: false
                       tags: ["tag3", "tag4"]
           description: OK
@@ -4909,6 +4937,11 @@ paths:
                         sogo_access: "1"
                         tls_enforce_in: "0"
                         tls_enforce_out: "0"
+                        plus_addressing_in: "1"
+                        plus_addressing_out: "1"
+                      addressing_effective:
+                        plus_addressing_in: 1
+                        plus_addressing_out: 1
                       domain: doman3.tld
                       is_relayed: 0
                       local_part: info
