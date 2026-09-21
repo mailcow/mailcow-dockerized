@@ -370,7 +370,7 @@ if (isset($_GET['query'])) {
           if (isset($_SESSION["mailcow_cc_role"])) {
               // Exclude existing CredentialIds, if any
               $excludeCredentialIds = fido2(array("action" => "get_user_cids"));
-              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, true, $GLOBALS['FIDO2_UV_FLAG_REGISTER'], null, $excludeCredentialIds);
+              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"] . '-fido2', $_SESSION["mailcow_cc_username"] . ' (FIDO2)', $_SESSION["mailcow_cc_username"] . ' (FIDO2)', 30, true, $GLOBALS['FIDO2_UV_FLAG_REGISTER'], null, $excludeCredentialIds);
               print(json_encode($createArgs));
               $_SESSION['challenge'] = $WebAuthn->getChallenge();
               return;
@@ -410,7 +410,7 @@ if (isset($_GET['query'])) {
               // cross-platform: true, if type internal is not allowed
               //        false, if only internal is allowed
               //        null, if internal and cross-platform is allowed
-              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], $_SESSION["mailcow_cc_username"], 30, false, $GLOBALS['WEBAUTHN_UV_FLAG_REGISTER'], null, $excludeCredentialIds);
+              $createArgs = $WebAuthn->getCreateArgs($_SESSION["mailcow_cc_username"] . '-tfa', $_SESSION["mailcow_cc_username"] . ' (TFA)', $_SESSION["mailcow_cc_username"] . ' (TFA)', 30, false, $GLOBALS['WEBAUTHN_UV_FLAG_REGISTER'], null, $excludeCredentialIds);
 
               print(json_encode($createArgs));
               $_SESSION['challenge'] = $WebAuthn->getChallenge();
