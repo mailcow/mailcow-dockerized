@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "19022026_1220";
+    $db_version = "18082026_1200";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -719,7 +719,8 @@ function init_db_schema()
           "alias_domains" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "mailbox_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'"
+          "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
           "primary" => array(

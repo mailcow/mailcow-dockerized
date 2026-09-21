@@ -1,17 +1,17 @@
-FROM golang:1.25-bookworm AS builder
+FROM golang:1.26-trixie AS builder
 WORKDIR /src
 
 ENV CGO_ENABLED=0 \
     GO111MODULE=on \
 		NOOPT=1 \
-    VERSION=1.8.22
+    VERSION=1.11.0
 
 RUN git clone --branch v${VERSION} https://github.com/Zuplu/postfix-tlspol && \
     cd /src/postfix-tlspol && \
     scripts/build.sh build-only
 
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive

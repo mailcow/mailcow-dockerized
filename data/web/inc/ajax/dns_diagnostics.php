@@ -442,6 +442,16 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
 
       unset($record);
 
+      // Make a hostname RHS absolute so it is not read relative to $ORIGIN.
+      // Already-absolute names, the SRV root target "." and IP addresses are left alone.
+      $absolutize = function($host) {
+        $host = trim($host);
+        if ($host === '' || $host === '.' || substr($host, -1) === '.' || filter_var($host, FILTER_VALIDATE_IP)) {
+          return $host;
+        }
+        return $host . '.';
+      };
+
       $dns_data = sprintf("\$ORIGIN %s.\n", $domain);
       foreach ($records as $record) {
         if ($domain == substr($record[0], -strlen($domain))) {
@@ -462,16 +472,26 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
               $val = str_replace(state_optional, '', $val);
               $val = str_replace(state_good, '', $val);
               if (strlen($val) > 0) {
+                // these are all TXT values, their RHS is a character string, not a name
                 $vals[] = sprintf("%s\tIN\t%s\t%s\n", $label, $record[1], $val);
               }
             }
           }
           else {
+            if ($record[1] == 'MX' || $record[1] == 'CNAME') {
+              $val = $absolutize($val);
+            }
+            elseif ($record[1] == 'SRV') {
+              // format here is "target port"; only the target is a name
+              $parts = explode(' ', $val, 2);
+              $parts[0] = $absolutize($parts[0]);
+              $val = implode(' ', $parts);
+            }
             $vals[] = sprintf("%s\tIN\t%s\t%s\n", $label, $record[1], $val);
           }
 
           foreach ($vals as $val) {
-            $dns_data .= str_replace($domain, $domain . '.', $val);
+            $dns_data .= $val;
           }
         }
       }

@@ -1,7 +1,7 @@
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.25.1-1
+      image: ghcr.io/mailcow/unbound:1.26.1-1
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -42,7 +42,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.10-alpine
+      image: redis:7.4.11-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.10-1
+      image: ghcr.io/mailcow/sogo:5.12.11-1
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -382,7 +382,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.8.23
+      image: ghcr.io/mailcow/postfix-tlspol:1.11.0
       depends_on:
         unbound-mailcow:
           condition: service_healthy

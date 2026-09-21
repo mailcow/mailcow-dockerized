@@ -473,6 +473,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
             window.location.reload();
           } else {
             var msg = (data && data[0] && data[0].msg) ? data[0].msg : 'Password change failed.';
+            // the API returns raw language keys, resolve them like the alert box does
+            if (Object.prototype.hasOwnProperty.call(lang_danger, msg)) {
+              msg = lang_danger[msg];
+            }
             $('#changePWAlert').show().text(msg);
           }
         },

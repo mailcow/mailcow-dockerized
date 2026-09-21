@@ -633,6 +633,18 @@ function logger($_data = false) {
     return true;
   }
 }
+function is_local_mailcow_domain($domain) {
+  // True if domain is a locally managed, active primary or alias domain
+  global $pdo;
+  $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+  if (empty($domain)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = 1
+    UNION SELECT 1 FROM `alias_domain` WHERE `alias_domain` = :d2 AND `active` = 1 LIMIT 1");
+  $stmt->execute(array(':d' => $domain, ':d2' => $domain));
+  return (bool)$stmt->fetchColumn();
+}
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
   if (empty($domain) || !is_valid_domain_name($domain)) {
@@ -3551,7 +3563,16 @@ function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redir
     if (isset($redirects['unauthenticated'])) {
       header('Location: ' . $redirects['unauthenticated']);
     } else {
-      header('Location: /');
+      // Send a deep link to the login page for its area instead of the user login at /,
+      // e.g. /admin/dashboard -> /admin rather than /
+      $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin');
+      } elseif (strpos($request_uri, '/domainadmin/') === 0) {
+        header('Location: /domainadmin');
+      } else {
+        header('Location: /');
+      }
     }
     exit();
   }
