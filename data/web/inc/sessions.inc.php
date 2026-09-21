@@ -112,19 +112,33 @@ if (isset($_POST["logout"])) {
   }
   else {
     $role = $_SESSION["mailcow_cc_role"];
+    // If the user is logged in via an identity provider and "auto redirect"
+    // is enabled, propagate the logout to the provider (RP-Initiated Logout),
+    // otherwise the auto redirect would immediately log the user back in.
+    $iam_logout_redirect = null;
+    if (!empty($_SESSION['iam_token'])) {
+      $_iam_settings = identity_provider('get');
+      if (!empty($_iam_settings['auto_redirect'])) {
+        $iam_logout_redirect = identity_provider('get-logout-redirect');
+      }
+    }
     session_regenerate_id(true);
     session_unset();
     session_destroy();
     session_write_close();
-    if ($role == "admin") {
+    if ($iam_logout_redirect) {
+      header("Location: " . $iam_logout_redirect);
+    }
+    elseif ($role == "admin") {
       header("Location: /admin");
     }
     elseif ($role == "domainadmin") {
       header("Location: /domainadmin");
     }
     else {
-      header("Location: /");
+      header("Location: /?nosso=1");
     }
+    exit();
   }
 }
 
