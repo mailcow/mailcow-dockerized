@@ -317,7 +317,10 @@ if (isset($_GET['query'])) {
           process_add_return(admin('add', $attr));
         break;
         case "syncjob":
-          process_add_return(mailbox('add', 'syncjob', $attr));
+          process_add_return(syncjob('add', 'job', $attr));
+        break;
+        case "syncjob_source":
+          process_add_return(syncjob('add', 'source', $attr));
         break;
         case "bcc":
           process_add_return(bcc('add', $attr));
@@ -1046,6 +1049,36 @@ if (isset($_GET['query'])) {
             }
             process_get_return($data);
           break;
+          case "syncjob_options":
+            process_get_return($GLOBALS['IMAPSYNC_OPTIONS']);
+          break;
+          case "syncjob_source":
+            switch ($object) {
+              case "all":
+                $ids = syncjob('get', 'sources');
+                $data = array();
+                if (is_array($ids)) {
+                  foreach ($ids as $sid) {
+                    $row = syncjob('get', 'source', array('id' => $sid));
+                    if ($row) $data[] = $row;
+                  }
+                }
+                process_get_return($data);
+              break;
+              default:
+                if (is_numeric($object)) {
+                  $row = syncjob('get', 'source', array('id' => $object));
+                  if ($row) {
+                    process_get_return($row);
+                  } else {
+                    echo '{}';
+                  }
+                } else {
+                  echo '{}';
+                }
+              break;
+            }
+          break;
           case "syncjobs":
             switch ($object) {
               case "all":
@@ -1055,14 +1088,14 @@ if (isset($_GET['query'])) {
                     $mailboxes = mailbox('get', 'mailboxes', $domain);
                     if (!empty($mailboxes)) {
                       foreach ($mailboxes as $mailbox) {
-                        $syncjobs = mailbox('get', 'syncjobs', $mailbox);
+                        $syncjobs = syncjob('get', 'jobs', $mailbox);
                         if (!empty($syncjobs)) {
-                          foreach ($syncjobs as $syncjob) {
+                          foreach ($syncjobs as $sj) {
                             if (isset($extra)) {
-                              $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
+                              $details = syncjob('get', 'job', $sj, explode(',', $extra));
                             }
                             else {
-                              $details = mailbox('get', 'syncjob_details', $syncjob);
+                              $details = syncjob('get', 'job', $sj);
                             }
                             if ($details) {
                               $data[] = $details;
@@ -1083,14 +1116,14 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                $syncjobs = mailbox('get', 'syncjobs', $object);
+                $syncjobs = syncjob('get', 'jobs', $object);
                 if (!empty($syncjobs)) {
-                  foreach ($syncjobs as $syncjob) {
+                  foreach ($syncjobs as $sj) {
                     if (isset($extra)) {
-                      $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
+                      $details = syncjob('get', 'job', $sj, explode(',', $extra));
                     }
                     else {
-                      $details = mailbox('get', 'syncjob_details', $syncjob);
+                      $details = syncjob('get', 'job', $sj);
                     }
                     if ($details) {
                       $data[] = $details;
@@ -1742,7 +1775,10 @@ if (isset($_GET['query'])) {
           process_delete_return(rsettings('delete', array('id' => $items)));
         break;
         case "syncjob":
-          process_delete_return(mailbox('delete', 'syncjob', array('id' => $items)));
+          process_delete_return(syncjob('delete', 'job', array('id' => $items)));
+        break;
+        case "syncjob_source":
+          process_delete_return(syncjob('delete', 'source', array('id' => $items)));
         break;
         case "filter":
           process_delete_return(mailbox('delete', 'filter', array('id' => $items)));
@@ -1968,7 +2004,39 @@ if (isset($_GET['query'])) {
           }
         break;
         case "syncjob":
-          process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
+          switch ($object) {
+            case "run_next":
+              process_edit_return(syncjob('edit', 'run_next', array('id' => $items)));
+            break;
+            default:
+              process_edit_return(syncjob('edit', 'job', array_merge(array('id' => $items), $attr)));
+            break;
+          }
+        break;
+        case "imapsync_settings":
+          $mp = intval($attr['max_parallel'] ?? 0);
+          // UI sends KB/s; store bytes/s (runner + per-job field are bytes/s)
+          $bw = max(0, intval($attr['max_kb_per_second'] ?? 0)) * 1024;
+          if ($mp < 1) {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array('imapsync_settings', 'edit', $attr), 'msg' => 'imapsync_max_parallel_invalid');
+            process_edit_return(false);
+          } elseif (imapsync_set_setting('max_parallel', $mp) && imapsync_set_setting('max_bytes_per_second', $bw)) {
+            $_SESSION['return'][] = array('type' => 'success', 'log' => array('imapsync_settings', 'edit'), 'msg' => 'max_parallel_saved');
+            process_edit_return(true);
+          } else {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array('imapsync_settings', 'edit'), 'msg' => 'access_denied');
+            process_edit_return(false);
+          }
+        break;
+        case "syncjob_source":
+          switch ($object) {
+            case "refresh_token":
+              process_edit_return(syncjob('edit', 'refresh_token', array('id' => $items)));
+            break;
+            default:
+              process_edit_return(syncjob('edit', 'source', array_merge(array('id' => $items), $attr)));
+            break;
+          }
         break;
         case "filter":
           process_edit_return(mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));

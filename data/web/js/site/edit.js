@@ -240,4 +240,15 @@ jQuery(function($){
   // Draw Table if tab is active
   onVisible("[id^=wl_policy_domain_table]", () => draw_wl_policy_domain_table());
   onVisible("[id^=bl_policy_domain_table]", () => draw_bl_policy_domain_table());
+
+  // initialise imapsync-source form on load.
+  if ($('select.imapsync-source-oauth-flow').length) {
+    imapsyncSyncSourceOauthToggle($('select.imapsync-source-oauth-flow').closest('form'));
+  }
+  if ($('select.imapsync-source-scope').length) {
+    $('select.imapsync-source-scope').trigger('change');
+  }
+  if ($('select.imapsync-source-select').length) {
+    populateImapsyncSourceSelects();
+  }
 });
