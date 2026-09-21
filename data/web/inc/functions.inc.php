@@ -2926,16 +2926,30 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $stmt->execute(array(':user' => $info['email']));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row){
-        if (!in_array($row['authsource'], array("keycloak", "generic-oidc"))) {
+        // SSO is a login FLOW, not an authentication source. A mailbox whose
+        // authsource is an OIDC provider is signed in here as before; a
+        // local-password mailbox (`authsource=mailcow`) may ALSO be signed in
+        // this way when it opts in with `sso_access`, matched by the email the
+        // provider returns for the account (mailcow does not inspect an
+        // `email_verified` claim here, and did not before this change). Its
+        // authsource and password are left untouched, so the ordinary local
+        // login keeps working beside this one.
+        $row_attributes = json_decode($row['attributes'], true) ?: array();
+        $is_oidc_mailbox = in_array($row['authsource'], array("keycloak", "generic-oidc"));
+        $sso_login_allowed = !empty($row_attributes['sso_access']) && intval($row_attributes['sso_access']) === 1;
+        if (!$is_oidc_mailbox && !$sso_login_allowed) {
           clear_session();
           $_SESSION['return'][] =  array(
             'type' => 'danger',
-            'log' => array(__FUNCTION__, $info['email'], "The user's authentication source is not of type OIDC"),
+            'log' => array(__FUNCTION__, $info['email'], "SSO login is not enabled for this mailbox"),
             'msg' => 'login_failed'
           );
           return false;
         }
-        if ($mapper_key !== false) {
+        // Template mapping provisions and rewrites a mailbox from the provider,
+        // which is only meaningful for a mailbox the provider owns. A local
+        // mailbox opting into SSO is not rewritten — it just gets a session.
+        if ($is_oidc_mailbox && $mapper_key !== false) {
           // update user
           $_SESSION['access_all_exception'] = '1';
           mailbox('edit', 'mailbox_from_template', array(
