@@ -506,7 +506,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.64
+      image: ghcr.io/mailcow/netfilter:1.64a
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -526,7 +526,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.11
+      image: ghcr.io/mailcow/watchdog:2.11a
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
