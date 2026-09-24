@@ -22,8 +22,7 @@ fi
 
 TYPE=${1}
 PREFIX=""
-# only support rsa certificates for now
-if [[ "${TYPE}" != "rsa" ]]; then
+if [[ "${TYPE}" != "rsa" && "${TYPE}" != "ecdsa" ]]; then
   log_f "Unknown certificate type '${TYPE}' requested"
   exit 5
 fi
