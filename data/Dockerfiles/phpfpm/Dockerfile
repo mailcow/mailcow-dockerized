@@ -12,9 +12,6 @@ ARG MAILPARSE_PECL_VERSION=3.2.0
 ARG MEMCACHED_PECL_VERSION=3.4.0
 # renovate: datasource=github-tags depName=phpredis/phpredis versioning=semver-coerced extractVersion=(?<version>.*)$
 ARG REDIS_PECL_VERSION=6.3.0
-# renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
-ARG COMPOSER_VERSION=2.10.2
-
 RUN apk add -U --no-cache autoconf \
   bash \
   freetype \
@@ -23,6 +20,7 @@ RUN apk add -U --no-cache autoconf \
   git \
   gettext \
   gettext-dev \
+  gmp \
   gmp-dev \
   gnupg \
   icu-dev \
@@ -73,13 +71,11 @@ RUN apk add -U --no-cache autoconf \
     --with-xpm \
     --with-avif \
   && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
-  && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
-  && mv composer.phar /usr/local/bin/composer \
-  && chmod +x /usr/local/bin/composer \
   && apk del --purge autoconf \
     freetype-dev \
     g++ \
     gettext-dev \
+    gmp-dev \
     icu-dev \
     imagemagick-dev \
     libavif-dev \
@@ -92,10 +88,18 @@ RUN apk add -U --no-cache autoconf \
     libxpm-dev \
     libzip-dev \
     linux-headers \
+    libtool \
     make \
     openldap-dev \
     pcre-dev \
+    re2c \
     zlib-dev
+
+# renovate: datasource=github-tags depName=composer/composer versioning=semver-coerced extractVersion=(?<version>.*)$
+ARG COMPOSER_VERSION=2.10.2
+RUN curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
+  && mv composer.phar /usr/local/bin/composer \
+  && chmod +x /usr/local/bin/composer
 
 COPY ./docker-entrypoint.sh /
 
