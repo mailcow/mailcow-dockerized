@@ -261,7 +261,7 @@ class DockerApi:
       filters = {"name": kwargs['container_name']}
 
     for container in self.sync_docker_client.containers.list(filters=filters):
-      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mariadb-tzinfo-to-sql /usr/share/zoneinfo | /bin/sed 's/Local time zone must be set--see zic manual page/FCTY/' | /usr/bin/mysql -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "' mysql \n"], user='mysql')
+      sql_return = container.exec_run(["/bin/bash", "-c", "/usr/bin/mariadb-tzinfo-to-sql /usr/share/zoneinfo | /bin/sed 's/Local time zone must be set--see zic manual page/FCTY/' | /usr/bin/mariadb -uroot -p'" + os.environ['DBROOT'].replace("'", "'\\''") + "' mysql \n"], user='mysql')
       if sql_return.exit_code == 0:
         res = { 'type': 'info', 'msg': 'mariadb-tzinfo-to-sql: command completed successfully', 'text': sql_return.output.decode('utf-8')}
         return Response(content=json.dumps(res, indent=4), media_type="application/json")

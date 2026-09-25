@@ -50,7 +50,7 @@ RUN apk add -U --no-cache autoconf \
   libzip-dev \
   linux-headers \
   make \
-  mysql-client \
+  mariadb-client \
   openldap-dev \
   pcre-dev \
   re2c \
