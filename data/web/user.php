@@ -66,6 +66,7 @@ $template_data = [
   'user_get_alias_details' => $user_get_alias_details,
   'get_tagging_options' => mailbox('get', 'delimiter_action', $username),
   'get_tls_policy' => mailbox('get', 'tls_policy', $username),
+  'get_save_sent_copy' => mailbox('get', 'save_sent_copy', $username),
   'quarantine_notification' => mailbox('get', 'quarantine_notification', $username),
   'quarantine_category' => mailbox('get', 'quarantine_category', $username),
   'user_domains' => $user_domains,

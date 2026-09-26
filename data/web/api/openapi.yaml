@@ -3802,6 +3802,46 @@ paths:
                   type: object
               type: object
       summary: Quarantine Notifications
+  /api/v1/edit/save_sent_copy:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          description: OK
+          headers: {}
+      tags:
+        - Mailboxes
+      description: >-
+        Enable or disable saving a copy of mail sent via authenticated SMTP to
+        the Sent folder of one or more mailboxes. Mail sent via SOGo is never
+        copied.
+      operationId: Save Sent Copy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  save_sent_copy: "1"
+                items:
+                  - mailbox1@domain.tld
+                  - mailbox2@domain.tld
+              properties:
+                attr:
+                  properties:
+                    save_sent_copy:
+                      description: 1 to save a copy to Sent, 0 to disable
+                      enum:
+                        - "0"
+                        - "1"
+                      type: string
+                  type: object
+                items:
+                  description: contains list of mailboxes to update
+                  type: object
+              type: object
+      summary: Save Sent Copy
   /api/v1/edit/syncjob:
     post:
       responses:

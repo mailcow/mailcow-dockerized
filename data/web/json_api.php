@@ -1936,6 +1936,9 @@ if (isset($_GET['query'])) {
         case "quarantine_category":
           process_edit_return(mailbox('edit', 'quarantine_category', array_merge(array('username' => $items), $attr)));
         break;
+        case "save_sent_copy":
+          process_edit_return(mailbox('edit', 'save_sent_copy', array_merge(array('username' => $items), $attr)));
+        break;
         case "qitem":
           process_edit_return(quarantine('edit', array_merge(array('id' => $items), $attr)));
         break;

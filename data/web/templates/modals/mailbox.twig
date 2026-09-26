@@ -11,6 +11,7 @@
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="save_sent_copy">
           <input type="hidden" value="0" name="protocol_access">
           <input type="hidden" value="mailcow" name="authsource">
 
@@ -173,6 +174,7 @@
                   <option value="quarantine_category" selected>{{ lang.acl["quarantine_category"] }}</option>
                   <option value="app_passwds" selected>{{ lang.acl["app_passwds"] }}</option>
                   <option value="pw_reset" selected>{{ lang.acl["pw_reset"] }}</option>
+                  <option value="save_sent_copy" selected>{{ lang.acl["save_sent_copy"] }}</option>
               </select>
             </div>
           </div>
@@ -223,6 +225,14 @@
             </div>
           </div>
           {% endif %}
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="save_sent_copy" id="save_sent_copy"> {{ lang.user.save_sent_copy_enable }}</label>
+                <small class="text-muted">{{ lang.user.save_sent_copy_info|raw }}</small>
+              </div>
+            </div>
+          </div>
           <hr>
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
@@ -248,6 +258,7 @@
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="save_sent_copy">
           <input type="hidden" value="0" name="protocol_access">
 
           <div class="row mb-4">
@@ -371,6 +382,7 @@
                 <option value="quarantine_category" selected>{{ lang.acl["quarantine_category"] }}</option>
                 <option value="app_passwds" selected>{{ lang.acl["app_passwds"] }}</option>
                 <option value="pw_reset" selected>{{ lang.acl["pw_reset"] }}</option>
+                <option value="save_sent_copy" selected>{{ lang.acl["save_sent_copy"] }}</option>
               </select>
             </div>
           </div>
@@ -422,6 +434,14 @@
             </div>
           </div>
           {% endif %}
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="save_sent_copy"> {{ lang.user.save_sent_copy_enable }}</label>
+                <small class="text-muted">{{ lang.user.save_sent_copy_info|raw }}</small>
+              </div>
+            </div>
+          </div>
           <div class="row my-2">
             <div class="offset-sm-2 col-sm-10">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="addmailbox_template" data-api-url='add/mailbox/template' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
