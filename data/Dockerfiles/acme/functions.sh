@@ -16,6 +16,26 @@ log_f() {
   fi
 }
 
+# Let's Encrypt refuses orders with more than 100 names per certificate.
+# Returns 1 if the limit is exceeded, warns when getting close to it.
+LE_SAN_LIMIT=100
+LE_SAN_WARN_THRESHOLD=90
+
+check_le_san_limit() {
+  local CERT_NAME=${1}
+  local SAN_COUNT=${2}
+
+  if [[ ${SAN_COUNT} -gt ${LE_SAN_LIMIT} ]]; then
+    log_f "Cannot obtain certificate for '${CERT_NAME}': it would contain ${SAN_COUNT} names, but Let's Encrypt allows a maximum of ${LE_SAN_LIMIT} names per certificate"
+    log_f "Set ENABLE_SSL_SNI=y in mailcow.conf to request individual certificates per domain or reduce the amount of names (AUTODISCOVER_SAN=n, ADDITIONAL_SAN)"
+    return 1
+  elif [[ ${SAN_COUNT} -ge ${LE_SAN_WARN_THRESHOLD} ]]; then
+    log_f "Warning: certificate for '${CERT_NAME}' contains ${SAN_COUNT} names, Let's Encrypt allows a maximum of ${LE_SAN_LIMIT} names per certificate"
+    log_f "Consider setting ENABLE_SSL_SNI=y in mailcow.conf before the limit is reached, otherwise the certificate cannot be renewed anymore"
+  fi
+  return 0
+}
+
 verify_email(){
   regex="^(([A-Za-z0-9]+((\.|\-|\_|\+)?[A-Za-z0-9]?)*[A-Za-z0-9]+)|[A-Za-z0-9]+)@(([A-Za-z0-9]+)+((\.|\-|\_)?([A-Za-z0-9]+)+)*)+\.([A-Za-z]{2,})+$"
   if [[ $1 =~ ${regex} ]]; then
