@@ -509,7 +509,6 @@ services:
       image: ghcr.io/mailcow/netfilter:1.64
       stop_grace_period: 30s
       restart: always
-      privileged: true
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
@@ -522,6 +521,10 @@ services:
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
         - DISABLE_NETFILTER_ISOLATION_RULE=${DISABLE_NETFILTER_ISOLATION_RULE:-n}
       network_mode: "host"
+      cap_drop:
+        - ALL
+      cap_add:
+        - NET_ADMIN
       volumes:
         - /lib/modules:/lib/modules:ro
 
