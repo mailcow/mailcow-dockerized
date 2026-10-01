@@ -47,6 +47,10 @@ $(document).ready(function() {
       $("#textarea_alias_goto").removeAttr('disabled');
     }
   });
+  // Local source mailbox needs no host, port and password
+  $("form[data-id='add_syncjob'] input[name='local1']").on('change', function() {
+    $(this).closest('form').find("input[name='host1'], input[name='port1'], input[name='password1']").prop('disabled', this.checked);
+  });
   // Log modal
   $('#syncjobLogModal').on('show.bs.modal', function(e) {
     var syncjob_id = $(e.relatedTarget).data('syncjob-id');

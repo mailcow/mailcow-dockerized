@@ -1561,6 +1561,9 @@ paths:
                 password:
                   description: the password of the mailbox
                   type: string
+                local1:
+                  description: user1 is a mailbox on this server, no host, port and password needed (admin and domain admin only)
+                  type: boolean
                 enc1:
                   description: the encryption method used to connect to the mailserver
                   type: string

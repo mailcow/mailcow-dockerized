@@ -356,6 +356,25 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mins_interval        = $_data['mins_interval'];
           $enc1                 = $_data['enc1'];
           $custom_params        = (empty(trim($_data['custom_params']))) ? '' : trim($_data['custom_params']);
+          $local1               = intval($_data['local1']);
+
+          // source is a mailbox on this server, imapsync will login as master user
+          if ($local1 == 1) {
+            if ($_SESSION['mailcow_cc_role'] == "user" ||
+              strtolower($user1) == strtolower($username) ||
+              !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $user1)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              return false;
+            }
+            $host1      = 'localhost';
+            $port1      = 143;
+            $enc1       = 'PLAIN';
+            $password1  = '';
+          }
 
           // validate custom params
           foreach (explode('-', $custom_params) as $param){
@@ -455,8 +474,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `dry`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `custom_params`, `active`)
-            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :dry, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :custom_params, :active)");
+          $stmt = $pdo->prepare("INSERT INTO `imapsync` (`user2`, `exclude`, `delete1`, `delete2`, `timeout1`, `timeout2`, `automap`, `skipcrossduplicates`, `maxbytespersecond`, `subscribeall`, `dry`, `maxage`, `subfolder2`, `host1`, `authmech1`, `user1`, `password1`, `mins_interval`, `port1`, `enc1`, `delete2duplicates`, `custom_params`, `local1`, `active`)
+            VALUES (:user2, :exclude, :delete1, :delete2, :timeout1, :timeout2, :automap, :skipcrossduplicates, :maxbytespersecond, :subscribeall, :dry, :maxage, :subfolder2, :host1, :authmech1, :user1, :password1, :mins_interval, :port1, :enc1, :delete2duplicates, :custom_params, :local1, :active)");
           $stmt->execute(array(
             ':user2' => $username,
             ':custom_params' => $custom_params,
@@ -480,6 +499,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':port1' => $port1,
             ':enc1' => $enc1,
             ':delete2duplicates' => $delete2duplicates,
+            ':local1' => $local1,
             ':active' => $active,
           ));
           $_SESSION['return'][] = array(
@@ -2300,7 +2320,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $is_now = mailbox('get', 'syncjob_details', $id, array('with_password'));
             if (!empty($is_now)) {
               $username = $is_now['user2'];
-              $user1 = (!empty($_data['user1'])) ? $_data['user1'] : $is_now['user1'];
+              // source mailbox of a local sync job can not be changed
+              $user1 = (!empty($_data['user1']) && $is_now['local1'] != 1) ? $_data['user1'] : $is_now['user1'];
               $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
               $last_run = (isset($_data['last_run'])) ? NULL : $is_now['last_run'];
               $success = (isset($_data['success'])) ? NULL : $is_now['success'];
@@ -2325,6 +2346,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $timeout2 = (isset($_data['timeout2']) && $_data['timeout2'] != "") ? intval($_data['timeout2']) : $is_now['timeout2'];
             }
             else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            // local sync jobs read the source mailbox without password, only its admins may change them
+            if ($is_now['local1'] == 1 && ($_SESSION['mailcow_cc_role'] == "user" ||
+              !hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $is_now['user1']))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
