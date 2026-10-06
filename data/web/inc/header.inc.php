@@ -79,6 +79,7 @@ $globalVariables = [
   'css_path' => '/cache/'.basename($CSSPath),
   'logo' => customize('get', 'main_logo'),
   'logo_dark' => customize('get', 'main_logo_dark'),
+  'ui_background' => customize('get', 'ui_background'),
   'available_languages' => $AVAILABLE_LANGUAGES,
   'lang' => $lang,
   'skip_sogo' => (getenv('SKIP_SOGO') == 'y'),

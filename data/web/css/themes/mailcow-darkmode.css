@@ -455,3 +455,7 @@ input::placeholder {
 .btn-light, .btn-light:hover {
     background-image: none;
 }
+body.has-custom-bg {
+  --mc-bg-veil-rgb: 0, 0, 0;
+  --mc-bg-surface: #1c1c1e;
+}

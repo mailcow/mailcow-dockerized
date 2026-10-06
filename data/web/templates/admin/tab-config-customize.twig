@@ -37,6 +37,51 @@
           </div>
         </div>
       {% endif %}
+      <legend style="padding-top:20px"><i class="bi bi-image"></i> {{ lang.admin.ui_background }}</legend><hr />
+      <p class="text-muted">{{ lang.admin.ui_background_info }}</p>
+      {% if ui_background.url %}
+        <div class="thumbnail mb-3">
+          <img class="img-thumbnail mb-2" style="max-height: 220px;" src="{{ ui_background.url }}" alt="">
+          <div class="caption">
+            <span class="badge fs-6 bg-info">{{ ui_background.width }}x{{ ui_background.height }} px</span>
+            <span class="badge fs-6 bg-info">image/webp</span>
+            <span class="badge fs-6 bg-info">{{ (ui_background.size / 1024)|round }} KB</span>
+          </div>
+        </div>
+      {% endif %}
+      <form class="form" role="form" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="ui_background_input" class="form-label">{{ lang.admin.ui_background_upload }}</label>
+          <input class="form-control" id="ui_background_input" type="file" name="ui_background" accept="image/jpeg, image/png, image/webp">
+          <div class="form-text">{{ lang.admin.ui_background_upload_info|format((ui_background_limits.max_size / 1048576)|round, ui_background_limits.max_edge) }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-lg-4 mb-3">
+            <label for="ui_background_blur" class="form-label">{{ lang.admin.ui_background_blur }}: <span id="ui_background_blur_value">{{ ui_background.blur }}</span> px</label>
+            <input type="range" class="form-range" min="0" max="{{ ui_background_limits.max_blur }}" name="blur" id="ui_background_blur" value="{{ ui_background.blur }}">
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <label for="ui_background_veil" class="form-label">{{ lang.admin.ui_background_veil }}: <span id="ui_background_veil_value">{{ ui_background.veil }}</span> %</label>
+            <input type="range" class="form-range" min="0" max="{{ ui_background_limits.max_veil }}" name="veil" id="ui_background_veil" value="{{ ui_background.veil }}">
+            <div class="form-text">{{ lang.admin.ui_background_veil_info }}</div>
+          </div>
+        </div>
+        <p class="mb-1">{{ lang.admin.ui_background_scope }}</p>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="scope" id="ui_background_scope_login" value="login"{% if ui_background.scope != 'all' %} checked{% endif %}>
+          <label class="form-check-label" for="ui_background_scope_login">{{ lang.admin.ui_background_scope_login }}</label>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="radio" name="scope" id="ui_background_scope_all" value="all"{% if ui_background.scope == 'all' %} checked{% endif %}>
+          <label class="form-check-label" for="ui_background_scope_all">{{ lang.admin.ui_background_scope_all }}</label>
+        </div>
+        <button name="submit_ui_background" type="submit" class="btn btn-sm d-block d-sm-inline btn-success"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+      </form>
+      {% if ui_background.url %}
+        <form class="form-inline mt-2" role="form" method="post">
+          <button name="reset_ui_background" type="submit" class="btn btn-sm d-block d-sm-inline btn-secondary">{{ lang.admin.reset_default }}</button>
+        </form>
+      {% endif %}
       <legend style="padding-top:20px" unselectable="on">{{ lang.admin.ip_check }}</legend><hr />
       <div id="ip_check">
         <form class="form" data-id="ip_check" role="form" method="post">

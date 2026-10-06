@@ -95,6 +95,12 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     customize('delete', 'main_logo');
     customize('delete', 'main_logo_dark');
 	}
+  if (isset($_POST["submit_ui_background"])) {
+    customize('edit', 'ui_background', array_merge($_POST, array('file' => isset($_FILES['ui_background']) ? $_FILES['ui_background'] : null)));
+  }
+  if (isset($_POST["reset_ui_background"])) {
+    customize('delete', 'ui_background');
+  }
   // Some actions will not be available via API
 	if (isset($_POST["license_validate_now"])) {
 		license('verify');
