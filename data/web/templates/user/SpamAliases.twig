@@ -9,6 +9,11 @@
     <div id="collapse-tab-SpamAliases" class="card-body collapse" data-bs-parent="#user-content">
       <div class="row">
         <p>{{ lang.user.spam_aliases_info|raw }}</p>
+        {% if not user_domains %}
+          <div class="alert alert-warning">
+            {{ lang.user.temporary_alias_domain_inactive }}
+          </div>
+        {% endif %}
         <div class="col-md-12 col-sm-12 col-12">
           <table id="tla_table" class="table table-striped dt-responsive w-100"></table>
         </div>
@@ -31,16 +36,20 @@
             </ul>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm d-block d-sm-inline btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</a>
-            <ul class="dropdown-menu">
-              {% for domain in user_domains %}
-                <li>
-                  <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#tempAliasModal" onclick='$("#tempAliasModal #temp_alias_domain").val("{{ domain }}")' href="#">
-                    @ {{ domain }}
-                  </a>
-                </li>
-              {% endfor %}
-            </ul>
+            {% if user_domains %}
+              <a class="btn btn-sm d-block d-sm-inline btn-success dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</a>
+              <ul class="dropdown-menu">
+                {% for domain in user_domains %}
+                  <li>
+                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#tempAliasModal" onclick='$("#tempAliasModal #temp_alias_domain").val("{{ domain }}")' href="#">
+                      @ {{ domain }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <button class="btn btn-sm d-block d-sm-inline btn-success" type="button" disabled><i class="bi bi-plus-lg"></i> {{ lang.user.alias_create_random }}, 1 {{ lang.user.year }}</button>
+            {% endif %}
           </div>
         </div>
       </div>
