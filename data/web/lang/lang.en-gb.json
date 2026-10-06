@@ -780,6 +780,8 @@
         "spam_filter": "Spam filter",
         "spam_policy": "Add or remove items to allow-/denylist",
         "spam_score": "Set a custom spam score",
+        "sso_access": "Allow SSO login",
+        "sso_access_info": "Adds sign-in through the configured identity provider as an additional login flow for this mailbox. The mailbox keeps its own login and password; this does not change how the password is verified.",
         "subfolder2": "Sync into subfolder on destination<br><small>(empty = do not use subfolder)</small>",
         "syncjob": "Edit sync job",
         "target_address": "Goto address/es <small>(comma-separated)</small>",

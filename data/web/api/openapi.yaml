@@ -3531,6 +3531,9 @@ paths:
                     sogo_access:
                       description: is access to SOGo webmail active or not
                       type: boolean
+                    sso_access:
+                      description: may this mailbox sign in through the configured identity provider (SSO), in addition to its local password
+                      type: boolean
                   type: object
                 items:
                   description: contains list of mailboxes you want update
