@@ -735,6 +735,23 @@ function hasAliasObjectAccess($username, $role, $object) {
   }
   return false;
 }
+// Plus addressing governance ("user+tag@"). Dots are not handled here: per RFC 5321 section 2.3.11 the
+// local part is interpreted only by the receiving host, and "u.s.er@" and "user@" are distinct local parts.
+// Effective behaviour = domain switch AND mailbox switch, per direction (in = receive, out = send as).
+function addressing_domain_defaults() {
+  return array(
+    'plus_addressing_in' => 1,
+    'plus_addressing_out' => 1
+  );
+}
+function addressing_mailbox_defaults() {
+  global $MAILBOX_DEFAULT_ATTRIBUTES;
+  $defaults = array();
+  foreach (array('plus_addressing_in', 'plus_addressing_out') as $key) {
+    $defaults[$key] = (isset($MAILBOX_DEFAULT_ATTRIBUTES[$key])) ? intval($MAILBOX_DEFAULT_ATTRIBUTES[$key]) : 1;
+  }
+  return $defaults;
+}
 function hasACLAccess($type) {
   if (isset($_SESSION['access_all_exception']) && $_SESSION['access_all_exception'] == "1") {
     return true;

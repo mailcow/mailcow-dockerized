@@ -10,6 +10,8 @@
     <input type="hidden" value="0" name="force_pw_update">
     <input type="hidden" value="0" name="force_tfa">
     <input type="hidden" value="0" name="sogo_access">
+    <input type="hidden" value="0" name="plus_addressing_in">
+    <input type="hidden" value="0" name="plus_addressing_out">
     <input type="hidden" value="0" name="protocol_access">
 
     <div class="row mb-4">
@@ -35,6 +37,18 @@
       <div class="col-sm-10">
         <input type="number" name="quota" class="w-100 form-control" min="0" value="{{ template.attributes.quota / 1048576 }}">
         <small class="text-muted">0 = ∞</small>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <label class="control-label col-sm-2">{{ lang.edit.address_variants }}</label>
+      <div class="col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_in"{% if template.attributes.plus_addressing_in == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_in }}</label>
+          <br>
+          <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_out"{% if template.attributes.plus_addressing_out == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_out }}</label>
+          <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
+          <p class="text-muted"><small>{{ lang.edit.addressing_mailbox_info }}</small></p>
+        </div>
       </div>
     </div>
     <div class="row mb-2">

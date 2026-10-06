@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "18082026_1200";
+    $db_version = "10092026_1200";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -264,6 +264,8 @@ function init_db_schema()
           "gal" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "relay_unknown_only" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "plus_addressing_in" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "plus_addressing_out" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -1407,6 +1409,8 @@ function init_db_schema()
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.mailbox_format', \"maildir:\") WHERE JSON_VALUE(`attributes`, '$.mailbox_format') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.quarantine_notification', \"never\") WHERE JSON_VALUE(`attributes`, '$.quarantine_notification') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.quarantine_category', \"reject\") WHERE JSON_VALUE(`attributes`, '$.quarantine_category') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.plus_addressing_in', \"1\") WHERE JSON_VALUE(`attributes`, '$.plus_addressing_in') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.plus_addressing_out', \"1\") WHERE JSON_VALUE(`attributes`, '$.plus_addressing_out') IS NULL;");
     foreach ($tls_options as $tls_user => $tls_options) {
       $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
         `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
@@ -1440,6 +1444,8 @@ function init_db_schema()
         "backupmx" => 0,
         "relay_all_recipients" => 0,
         "relay_unknown_only" => 0,
+        "plus_addressing_in" => 1,
+        "plus_addressing_out" => 1,
         "dkim_selector" => "dkim",
         "key_size" => 2048,
         "max_quota_for_domain" => 10240 * 1048576,
@@ -1467,6 +1473,8 @@ function init_db_schema()
         "sieve_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sieve_access']),
         "eas_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['eas_access']),
         "dav_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['dav_access']),
+        "plus_addressing_in" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['plus_addressing_in']),
+        "plus_addressing_out" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['plus_addressing_out']),
         "acl_spam_alias" => 1,
         "acl_tls_policy" => 1,
         "acl_spam_score" => 1,

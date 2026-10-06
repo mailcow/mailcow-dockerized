@@ -26,6 +26,8 @@
                   <input type="hidden" value="0" name="force_pw_update">
                   <input type="hidden" value="0" name="force_tfa">
                   <input type="hidden" value="0" name="sogo_access">
+                  <input type="hidden" value="0" name="plus_addressing_in">
+                  <input type="hidden" value="0" name="plus_addressing_out">
                   <input type="hidden" value="0" name="protocol_access">
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.admin.iam }}</label>
@@ -143,6 +145,18 @@
                     </div>
                   </div>
                   {% endif %}
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.address_variants }}</label>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_in"{% if result.attributes.plus_addressing_in == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_in }}</label>{% if result.addressing_domain.plus_addressing_in != 1 %} <span class="badge bg-secondary">{{ lang.edit.addressing_disabled_by_domain }}</span>{% endif %}
+                        <br>
+                        <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_out"{% if result.attributes.plus_addressing_out == '1' %} checked{% endif %}> {{ lang.edit.plus_addressing_out }}</label>{% if result.addressing_domain.plus_addressing_out != 1 %} <span class="badge bg-secondary">{{ lang.edit.addressing_disabled_by_domain }}</span>{% endif %}
+                        <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
+                        <p class="text-muted"><small>{{ lang.edit.addressing_mailbox_info }}</small></p>
+                      </div>
+                    </div>
+                  </div>
                   <div class="row mb-2">
                     <label class="control-label col-sm-2">{{ lang.user.tag_handling }}</label>
                     <div class="col-sm-10">
