@@ -63,6 +63,7 @@ require_once __DIR__ . '/../web/inc/functions.acl.inc.php';
 $_SESSION['mailcow_cc_username'] = "admin";
 $_SESSION['mailcow_cc_role'] = "admin";
 $_SESSION['acl']['tls_policy'] = "1";
+$_SESSION['acl']['save_sent_copy'] = "1";
 $_SESSION['acl']['quarantine_notification'] = "1";
 $_SESSION['acl']['quarantine_category'] = "1";
 $_SESSION['acl']['ratelimit'] = "1";

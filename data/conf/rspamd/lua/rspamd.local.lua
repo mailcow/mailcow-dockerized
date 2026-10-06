@@ -683,6 +683,108 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
+  name = 'SAVE_SENT_COPY',
+  type = 'postfilter',
+  flags = 'ignore_passthrough',
+  callback = function(task)
+    local rspamd_http = require "rspamd_http"
+    local rspamd_logger = require "rspamd_logger"
+    local redis_params = rspamd_parse_redis_server('sent_copy')
+
+    -- Only handle mail submitted by an authenticated mailcow user
+    local uname = task:get_user()
+    if not uname then
+      return
+    end
+    uname = uname:lower()
+
+    if task:has_symbol('ENCRYPTED_CHAT') then
+      return
+    end
+
+    -- SOGo (and ActiveSync via SOGo) stores sent mail by itself
+    local ip = task:get_from_ip()
+    if ip and ip:is_valid() and tostring(ip) == os.getenv("IPV4_NETWORK") .. '.248' then
+      return
+    end
+
+    local action = task:get_metric_action('default')
+    local allow_copy = false
+    if task.has_pre_result then
+      local has_pre, pre_action = task:has_pre_result()
+      if has_pre and pre_action == 'accept' then
+        allow_copy = true
+      end
+    end
+    if not allow_copy and action ~= 'no action' and action ~= 'add header' and action ~= 'rewrite subject' then
+      rspamd_logger.infox("SAVE_SENT_COPY: skipping for action: %s", action)
+      return
+    end
+
+    local send_copy = function(rcpt, token)
+      local lua_smtp = require "lua_smtp"
+      local function sendmail_cb(ret, err)
+        if not ret then
+          rspamd_logger.errx(task, 'SAVE_SENT_COPY SMTP ERROR: %s', err)
+        else
+          rspamd_logger.infox(rspamd_config, "SAVE_SENT_COPY: stored copy for %s", rcpt)
+        end
+      end
+      -- The header is checked and removed by Dovecot (global sieve) before the copy is filed into Sent
+      local email_content = 'X-Mailcow-Sent-Copy: ' .. token .. '\r\n' .. tostring(task:get_content())
+      -- dot stuff content before sending (works for CRLF and LF line endings)
+      email_content = string.gsub(email_content, "\n%.", "\n..")
+      lua_smtp.sendmail({
+        task = task,
+        host = os.getenv("IPV4_NETWORK") .. '.253',
+        port = 591,
+        -- null sender: never bounce the copy (and its token) anywhere
+        from = '',
+        recipients = rcpt,
+        helo = 'sentcopy',
+        timeout = 20,
+      }, email_content, sendmail_cb)
+    end
+
+    local function http_callback(err_message, code, body, headers)
+      if err_message ~= nil or code ~= 201 or body == nil or body == '' then
+        return
+      end
+      local rcpt = tostring(body)
+      local function token_callback(err, data)
+        if err or type(data) ~= 'string' or data == '' then
+          rspamd_logger.errx(task, "SAVE_SENT_COPY: cannot read SENT_COPY_TOKEN from redis (\"%s\"), not storing copy for %s", err, rcpt)
+          return
+        end
+        send_copy(rcpt, data)
+      end
+      local redis_ret = rspamd_redis_make_request(task,
+        redis_params, -- connect params
+        'SENT_COPY_TOKEN', -- hash key
+        false, -- is write
+        token_callback, --callback
+        'GET', -- command
+        {'SENT_COPY_TOKEN'} -- arguments
+      )
+      if not redis_ret then
+        rspamd_logger.errx(task, "SAVE_SENT_COPY: cannot make request to load SENT_COPY_TOKEN")
+      end
+    end
+
+    rspamd_http.request({
+      task=task,
+      url='http://nginx:8081/sent_copy.php',
+      body='',
+      callback=http_callback,
+      headers={Username=uname},
+    })
+
+    -- Don't return true to avoid symbol being logged
+  end,
+  priority = 20
+})
+
+rspamd_config:register_symbol({
   name = 'DYN_RL_CHECK',
   type = 'prefilter',
   callback = function(task)

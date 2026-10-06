@@ -233,6 +233,12 @@ $MAILBOX_DEFAULT_ATTRIBUTES['dav_access'] = true;
 // "all" - mail that was rejected and put into the Junk folder
 $MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category'] = 'reject';
 
+// Save a copy of mail sent via authenticated SMTP to the Sent folder of the mailbox
+// Clients which already store sent mail themselves (e.g. via IMAP) will create duplicates, SOGo is excluded automatically
+$MAILBOX_DEFAULT_ATTRIBUTES['save_sent_copy'] = false;
+// Mailbox user may change the above setting by default (used when a mailbox is added without an explicit ACL list)
+$MAILBOX_DEFAULT_ATTRIBUTES['acl_save_sent_copy'] = true;
+
 // Default mailbox format, should not be changed unless you know exactly, what you do, keep the trailing ":"
 // Check dovecot.conf for further changes (e.g. shared namespace)
 $MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format'] = 'maildir:';
