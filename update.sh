@@ -374,10 +374,12 @@ if ! $COMPOSE_COMMAND config -q; then
 fi
 
 echo -e "\e[32mChecking for conflicting bridges...\e[0m"
-MAILCOW_BRIDGE=$($COMPOSE_COMMAND config | grep -i com.docker.network.bridge.name | cut -d':' -f2)
-while read NAT_ID; do
-  iptables -t nat -D POSTROUTING "$NAT_ID"
-done < <(iptables -L -vn -t nat --line-numbers | grep "$IPV4_NETWORK" | grep -E 'MASQUERADE.*all' | grep -v "${MAILCOW_BRIDGE}" | cut -d' ' -f1)
+MAILCOW_BRIDGE=$($COMPOSE_COMMAND config | grep -i com.docker.network.bridge.name | cut -d':' -f2 | tr -d "[:space:]\"'")
+if [[ -n "${MAILCOW_BRIDGE}" ]]; then
+  while read NAT_ID; do
+    iptables -t nat -D POSTROUTING "$NAT_ID"
+  done < <(iptables -L -vn -t nat --line-numbers | grep "$IPV4_NETWORK" | grep -E 'MASQUERADE.*all' | grep -vE "[[:space:]]!?${MAILCOW_BRIDGE}[[:space:]]" | cut -d' ' -f1)
+fi
 
 DIFF_DIRECTORY=update_diffs
 DIFF_FILE=${DIFF_DIRECTORY}/diff_before_update_$(date +"%Y-%m-%d-%H-%M-%S")
