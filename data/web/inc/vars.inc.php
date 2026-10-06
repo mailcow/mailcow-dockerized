@@ -145,6 +145,14 @@ $LOGO_LIMITS['max_width'] = 1920;
 // Logo max height in pixels
 $LOGO_LIMITS['max_height'] = 1920;
 
+// UI background: max upload size in bytes, max pixels of the upload (protects Imagick from huge images),
+// max length of the longest edge after scaling, max blur in px and max veil in percent
+$BACKGROUND_LIMITS['max_size'] = 15 * 1024 * 1024; // 15MB
+$BACKGROUND_LIMITS['max_pixels'] = 60 * 1000 * 1000;
+$BACKGROUND_LIMITS['max_edge'] = 2560;
+$BACKGROUND_LIMITS['max_blur'] = 30;
+$BACKGROUND_LIMITS['max_veil'] = 70;
+
 // Rows until pagination begins
 $PAGINATION_SIZE = 25;
 

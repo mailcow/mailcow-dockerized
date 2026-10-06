@@ -3,6 +3,7 @@ function customize($_action, $_item, $_data = null) {
 	global $redis;
 	global $lang;
   global $LOGO_LIMITS;
+  global $BACKGROUND_LIMITS;
 
   switch ($_action) {
     case 'add':
@@ -233,6 +234,80 @@ function customize($_action, $_item, $_data = null) {
             'msg' => 'custom_login_modified'
           );
         break;
+        case 'ui_background':
+          // optional upload of a new image, blur, veil and scope are saved in any case
+          $upload = isset($_data['file']) ? $_data['file'] : null;
+          $image = false;
+          if (!empty($upload) && $upload['error'] != UPLOAD_ERR_NO_FILE) {
+            if (in_array($upload['error'], array(UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE)) || $upload['size'] > $BACKGROUND_LIMITS['max_size']) {
+              $msg = 'img_size_exceeded';
+            }
+            elseif ($upload['error'] != UPLOAD_ERR_OK || file_exists($upload['tmp_name']) !== true) {
+              $msg = 'img_tmp_missing';
+            }
+            elseif (!in_array($upload['type'], array('image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png', 'image/webp'))) {
+              $msg = 'invalid_mime_type';
+            }
+            else {
+              $image = ui_background_process_image(file_get_contents($upload['tmp_name']));
+              $msg = is_array($image) ? null : $image;
+            }
+            if ($msg !== null) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_item, $_data),
+                'msg' => $msg
+              );
+              return false;
+            }
+          }
+          $settings = customize('get', 'ui_background');
+          if ($settings === false) {
+            return false;
+          }
+          if ($settings['url'] === false && $image === false) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => 'ui_background_no_image'
+            );
+            return false;
+          }
+          unset($settings['url']);
+          if (isset($_data['blur'])) {
+            $settings['blur'] = max(0, min(intval($_data['blur']), $BACKGROUND_LIMITS['max_blur']));
+          }
+          if (isset($_data['veil'])) {
+            $settings['veil'] = max(0, min(intval($_data['veil']), $BACKGROUND_LIMITS['max_veil']));
+          }
+          if (isset($_data['scope']) && in_array($_data['scope'], array('login', 'all'))) {
+            $settings['scope'] = $_data['scope'];
+          }
+          try {
+            if ($image !== false) {
+              $data = 'data:' . $image['mime'] . ';base64,' . base64_encode($image['blob']);
+              $redis->set('UI_BACKGROUND_IMAGE', $data);
+              $settings['hash'] = sha1($data);
+              $settings['width'] = $image['width'];
+              $settings['height'] = $image['height'];
+              $settings['size'] = strlen($image['blob']);
+            }
+            $redis->set('UI_BACKGROUND', json_encode($settings));
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_item, $_data),
+            'msg' => 'ui_background_saved'
+          );
+        break;
       }
     break;
     case 'delete':
@@ -274,6 +349,25 @@ function customize($_action, $_item, $_data = null) {
             );
             return false;
           }
+        break;
+        case 'ui_background':
+          try {
+            $redis->del('UI_BACKGROUND', 'UI_BACKGROUND_IMAGE');
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_item, $_data),
+            'msg' => 'ui_background_reset'
+          );
+          return true;
         break;
       }
     break;
@@ -402,7 +496,76 @@ function customize($_action, $_item, $_data = null) {
             return false;
           }
         break;
+        case 'ui_background':
+          // settings incl. defaults, 'url' is false as long as no image was uploaded
+          try {
+            $settings = json_decode((string)$redis->get('UI_BACKGROUND'), true);
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $settings = array_merge(array('blur' => 8, 'veil' => 20, 'scope' => 'login', 'hash' => ''), is_array($settings) ? $settings : array());
+          $settings['url'] = preg_match('/^[a-f0-9]{40}$/', $settings['hash']) ? '/background.php?v=' . $settings['hash'] : false;
+          return $settings;
+        break;
       }
     break;
+  }
+}
+
+// Validates an uploaded UI background and re-encodes it: EXIF orientation applied, metadata stripped,
+// scaled down to $BACKGROUND_LIMITS['max_edge'] and saved as WebP.
+// Returns array(mime, blob, width, height) or the lang key of the error.
+function ui_background_process_image($blob) {
+  global $BACKGROUND_LIMITS;
+  try {
+    $image = new Imagick();
+    $image->pingImageBlob($blob);
+    if (!in_array(strtolower($image->getImageFormat()), array('jpeg', 'png', 'webp'))) {
+      return 'invalid_mime_type';
+    }
+    if ($image->getImageWidth() * $image->getImageHeight() > $BACKGROUND_LIMITS['max_pixels']) {
+      return 'img_dimensions_exceeded';
+    }
+    $image->clear();
+    $image->readImageBlob($blob);
+    if ($image->valid() !== true) {
+      return 'img_invalid';
+    }
+    if ($image->getNumberImages() > 1) {
+      $image->setIteratorIndex(0);
+      $image = $image->getImage();
+    }
+    switch ($image->getImageOrientation()) {
+      case Imagick::ORIENTATION_TOPRIGHT: $image->flopImage(); break;
+      case Imagick::ORIENTATION_BOTTOMRIGHT: $image->rotateImage('#000', 180); break;
+      case Imagick::ORIENTATION_BOTTOMLEFT: $image->flipImage(); break;
+      case Imagick::ORIENTATION_LEFTTOP: $image->transposeImage(); break;
+      case Imagick::ORIENTATION_RIGHTTOP: $image->rotateImage('#000', 90); break;
+      case Imagick::ORIENTATION_RIGHTBOTTOM: $image->transverseImage(); break;
+      case Imagick::ORIENTATION_LEFTBOTTOM: $image->rotateImage('#000', -90); break;
+    }
+    $image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+    $image->transformImageColorspace(Imagick::COLORSPACE_SRGB);
+    if (max($image->getImageWidth(), $image->getImageHeight()) > $BACKGROUND_LIMITS['max_edge']) {
+      $image->thumbnailImage($BACKGROUND_LIMITS['max_edge'], $BACKGROUND_LIMITS['max_edge'], true);
+    }
+    $image->stripImage();
+    $image->setImageFormat('webp');
+    $image->setImageCompressionQuality(80);
+    return array(
+      'mime' => 'image/webp',
+      'blob' => $image->getImageBlob(),
+      'width' => $image->getImageWidth(),
+      'height' => $image->getImageHeight()
+    );
+  }
+  catch (ImagickException $e) {
+    return 'img_invalid';
   }
 }

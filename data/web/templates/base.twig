@@ -25,8 +25,17 @@
 
   <link rel="shortcut icon" href="/favicon.png" type="image/png">
   <link rel="icon" href="/favicon.png" type="image/png">
+  {% if ui_background.url %}
+  <style>
+    :root {
+      --mc-bg-image: url("{{ ui_background.url }}");
+      --mc-bg-blur: {{ ui_background.blur }}px;
+      --mc-bg-veil: {{ ui_background.veil / 100 }};
+    }
+  </style>
+  {% endif %}
 </head>
-<body>
+<body{% if ui_background.url and (ui_background.scope == 'all' or not mailcow_cc_role) %} class="has-custom-bg"{% endif %}>
 <div class="overlay"></div>
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top p-0">

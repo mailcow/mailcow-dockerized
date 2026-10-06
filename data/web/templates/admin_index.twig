@@ -91,7 +91,7 @@
     </div>
 
     {% if custom_login.hide_user_quicklink != 1 or custom_login.hide_domainadmin_quicklink != 1 %}
-    <p class="text-center mt-3 text-muted" style="font-size: 0.9rem;">
+    <p class="login-hint text-center mt-3 text-muted" style="font-size: 0.9rem;">
       {{ lang.login.login_linkstext }}<br>
       {% if custom_login.hide_user_quicklink != 1 %}<a href="/">{{ lang.login.login_usertext }}</a>{% endif %}
       {% if custom_login.hide_user_quicklink != 1 and custom_login.hide_domainadmin_quicklink != 1 %}|{% endif %}

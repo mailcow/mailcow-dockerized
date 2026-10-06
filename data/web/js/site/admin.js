@@ -760,6 +760,22 @@ jQuery(function($){
   $('#add_f2b_regex_row').click(function() {
     add_table_row($('#f2b_regex_table'), "f2b_regex");
   });
+  // UI background: live preview of the chosen image and the sliders before saving
+  function ui_background_preview(image_url) {
+    var root = document.documentElement;
+    if (image_url) root.style.setProperty('--mc-bg-image', 'url("' + image_url + '")');
+    if (!getComputedStyle(root).getPropertyValue('--mc-bg-image')) return;
+    root.style.setProperty('--mc-bg-blur', $('#ui_background_blur').val() + 'px');
+    root.style.setProperty('--mc-bg-veil', $('#ui_background_veil').val() / 100);
+    $('body').addClass('has-custom-bg');
+  }
+  $('#ui_background_blur, #ui_background_veil').on('input', function() {
+    $('#' + this.id + '_value').text(this.value);
+    ui_background_preview();
+  });
+  $('#ui_background_input').on('change', function() {
+    if (this.files && this.files[0]) ui_background_preview(URL.createObjectURL(this.files[0]));
+  });
   // IAM test connection
   $('.iam_test_connection').click(async function(e){
     e.preventDefault();

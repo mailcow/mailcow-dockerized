@@ -433,3 +433,49 @@ button[aria-expanded='true'] > .caret {
 .hr-title:not(:empty)::after {
   margin-left: 10px;
 }
+/* UI background image, see Admin > Configuration > Customize */
+body.has-custom-bg {
+  --mc-bg-veil-rgb: 255, 255, 255;
+  --mc-bg-surface: #fff;
+}
+body.has-custom-bg::before,
+body.has-custom-bg::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+body.has-custom-bg::before {
+  /* oversized, so the blur does not fade out at the viewport edges */
+  inset: calc(var(--mc-bg-blur, 0px) * -2);
+  background: var(--mc-bg-image) center / cover no-repeat;
+  filter: blur(var(--mc-bg-blur, 0px));
+}
+body.has-custom-bg::after {
+  inset: 0;
+  background: rgba(var(--mc-bg-veil-rgb), var(--mc-bg-veil, 0));
+}
+/* elements without an own background would be unreadable on the image */
+body.has-custom-bg .nav-tabs .nav-link,
+body.has-custom-bg .login-hint,
+body.has-custom-bg .debug-log-info,
+body.has-custom-bg .footer .rot-enc,
+body.has-custom-bg .footer .version {
+  background-color: var(--mc-bg-surface);
+}
+body.has-custom-bg .login-hint,
+body.has-custom-bg .debug-log-info,
+body.has-custom-bg .footer .rot-enc,
+body.has-custom-bg .footer .version {
+  padding: .5rem .75rem;
+  border-radius: .25rem;
+}
+body.has-custom-bg .footer hr {
+  display: none;
+}
+@media (min-width: 768px) {
+  /* let the tab content stick to the tabs, the gap would show the image */
+  body.has-custom-bg .tab-content {
+    padding-top: 0 !important;
+  }
+}
