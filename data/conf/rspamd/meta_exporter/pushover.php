@@ -139,12 +139,12 @@ foreach ($rcpts as $rcpt) {
 
       // Loop through all found gotos
       foreach ($gotos_array as $index => &$goto) {
-        error_log("RCPT RESOVLER: http pipe: query " . $goto . " as username from mailbox" . PHP_EOL);
+        error_log("RCPT RESOLVER: http pipe: query " . $goto . " as username from mailbox" . PHP_EOL);
         $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND (`active`= '1' OR `active`= '2');");
         $stmt->execute(array(':goto' => $goto));
         $username = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
         if (!empty($username)) {
-          error_log("RCPT RESOVLER: http pipe: mailbox found: " . $username . PHP_EOL);
+          error_log("RCPT RESOLVER: http pipe: mailbox found: " . $username . PHP_EOL);
           // Current goto is a mailbox, save to rcpt_final_mailboxes if not a duplicate
           if (!in_array($username, $rcpt_final_mailboxes)) {
             $rcpt_final_mailboxes[] = $username;
@@ -153,21 +153,21 @@ foreach ($rcpts as $rcpt) {
         else {
           $parsed_goto = parse_email($goto);
           if (!$redis->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
-            error_log("RCPT RESOVLER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
+            error_log("RCPT RESOLVER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
           }
           else {
             $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
             if ($goto_branch) {
-              error_log("RCPT RESOVLER: http pipe: goto address " . $goto . " is an alias branch for " . $goto_branch . PHP_EOL);
+              error_log("RCPT RESOLVER: http pipe: goto address " . $goto . " is an alias branch for " . $goto_branch . PHP_EOL);
               $goto_branch_array = explode(',', $goto_branch);
             } else {
               $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain AND `active` = '1'");
               $stmt->execute(array(':domain' => $parsed_goto['domain']));
               $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['target_domain'];
               if ($goto_branch) {
-                error_log("RCPT RESOVLER: http pipe: goto domain " . $parsed_goto['domain'] . " is a domain alias branch for " . $goto_branch . PHP_EOL);
+                error_log("RCPT RESOLVER: http pipe: goto domain " . $parsed_goto['domain'] . " is a domain alias branch for " . $goto_branch . PHP_EOL);
                 $goto_branch_array = array($parsed_goto['local'] . '@' . $goto_branch);
               }
             }
@@ -189,11 +189,11 @@ foreach ($rcpts as $rcpt) {
       // Force exit if loop cannot be solved
       // Postfix does not allow for alias loops, so this should never happen.
       $loop_c++;
-      error_log("RCPT RESOVLER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
+      error_log("RCPT RESOLVER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
     }
   }
   catch (PDOException $e) {
-    error_log("RCPT RESOVLER: " . $e->getMessage() . PHP_EOL);
+    error_log("RCPT RESOLVER: " . $e->getMessage() . PHP_EOL);
     http_response_code(502);
     exit;
   }
