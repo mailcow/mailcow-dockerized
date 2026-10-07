@@ -47,6 +47,15 @@ $has_iam_sso = false;
 if ($iam_provider){
   $iam_redirect_url = identity_provider("get-redirect");
   $has_iam_sso = $iam_redirect_url ? true : false;
+
+  // Automatically redirect to the identity provider when enabled, unless the
+  // user explicitly asked for the local login form (?nosso=1) or there is a
+  // flash message to show (e.g. a failed SSO login attempt), to avoid an
+  // admin/user being locked out or stuck in a redirect loop.
+  if ($has_iam_sso && !empty($iam_settings['auto_redirect']) && !isset($_GET['nosso']) && empty($_SESSION['return'])) {
+    header('Location: ' . $iam_redirect_url);
+    exit();
+  }
 }
 $custom_login = customize('get', 'custom_login');
 
