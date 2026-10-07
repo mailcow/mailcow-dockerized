@@ -5817,6 +5817,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             try {
               $redis->hDel('DOMAIN_MAP', $domain);
               $redis->hDel('RL_VALUE', $domain);
+              $redis->hDel('RL_MBX_VALUE', $domain);
             }
             catch (RedisException $e) {
               $_SESSION['return'][] = array(
