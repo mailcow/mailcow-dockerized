@@ -272,22 +272,25 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      order: [[3, 'asc']],
       ajax: {
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         dataSrc: function(data){
           $.each(data, function (i, item) {
             item.user1 = escapeHtml(item.user1);
-            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
               item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
-            item.server_w_port = escapeHtml(item.user1 + '@' + item.host1 + ':' + item.port1);
+            item.server_w_port = escapeHtml(item.user1 + '@' + (item.source_name || '?') + ' (' + (item.source_host || '?') + ':' + (item.source_port || '?') + ')');
+            var tokenBadge = imapsyncJobTokenBadge(item);
+            if (tokenBadge) item.server_w_port += '<div class="mt-1">' + tokenBadge + '</div>';
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group">' +
                 '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '" class="btn btn-xs btn-xs-half btn-info"><i class="bi bi-card-list"></i> ' + lang.open_logs + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
@@ -310,10 +313,10 @@ jQuery(function($){
             } else {
               item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
             }
-            if (lang['syncjob_'+item.exit_status]) {
-              item.exit_status = lang['syncjob_'+item.exit_status];
+            if (lang.syncjobs['syncjob_'+item.exit_status]) {
+              item.exit_status = lang.syncjobs['syncjob_'+item.exit_status];
             } else if (item.success != '-') {
-              item.exit_status = lang.syncjob_check_log;
+              item.exit_status = lang.syncjobs.syncjob_check_log;
             }
             item.exit_status = item.success + ' ' + item.exit_status;
           });
@@ -346,6 +349,12 @@ jQuery(function($){
           responsivePriority: 3
         },
         {
+          title: lang.syncjobs.prio,
+          data: 'prio',
+          defaultContent: '',
+          responsivePriority: 3
+        },
+        {
           title: 'Server',
           data: 'server_w_port',
           defaultContent: ''
@@ -362,13 +371,8 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: lang.syncjob_last_run_result,
+          title: lang.syncjobs.syncjob_last_run_result,
           data: 'exit_status',
-          defaultContent: ''
-        },
-        {
-          title: 'Log',
-          data: 'log',
           defaultContent: ''
         },
         {
@@ -694,11 +698,62 @@ jQuery(function($){
     });
   }
 
+  function draw_imapsync_source_table() {
+    if ($.fn.DataTable.isDataTable('#imapsync_source_table')) {
+      $('#imapsync_source_table').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+    $('#imapsync_source_table').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" + "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/syncjob_source/all",
+        dataSrc: function(json) {
+          $.each(json, function(i, item) {
+            item.endpoint = escapeHtml(item.host1 + ':' + item.port1 + ' (' + item.enc1 + ')');
+            item.auth_display = imapsyncAuthDisplay(item);
+            item.visibility_display = imapsyncScopeDisplay(item);
+            if (acl_data.syncjobs === 1 && item.can_edit) {
+              item.action = '<div class="btn-group">' +
+                '<a href="/edit/syncjob_source/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#" data-action="delete_selected" data-id="single-syncjob_source" data-api-url="delete/syncjob_source" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+                '</div>';
+            } else {
+              item.action = '<span class="text-muted">-</span>';
+            }
+          });
+          return json;
+        }
+      },
+      columns: [
+        { title: 'ID', data: 'id', defaultContent: '' },
+        { title: lang.syncjobs.source_name, data: 'name', defaultContent: '', render: (d) => escapeHtml(d || '') },
+        { title: lang.syncjobs.source_scope, data: 'visibility_display', defaultContent: '' },
+        { title: 'Endpoint', data: 'endpoint', defaultContent: '' },
+        { title: lang.syncjobs.source_auth_type, data: 'auth_display', defaultContent: '' },
+        { title: lang.active, data: 'active', defaultContent: '',
+          render: function(d) { return d == 1 ? '<i class="bi bi-check-lg"></i>' : '<i class="bi bi-x-lg"></i>'; }},
+        { title: lang.action, data: 'action', defaultContent: '', className: 'dt-text-right' }
+      ]
+    });
+  }
+
+  // Shared imapsync helpers + delegated listeners live in js/build/013-mailcow.js
+  // (draw_imapsync_source_table stays per-page and calls the global imapsyncScopeDisplay).
+
   // Load only if the tab is visible
   onVisible("[id^=tla_table]", () => draw_tla_table());
   onVisible("[id^=bl_policy_mailbox_table]", () => draw_bl_policy_mailbox_table());
   onVisible("[id^=wl_policy_mailbox_table]", () => draw_wl_policy_mailbox_table());
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
+  onVisible("[id^=imapsync_source_table]", () => draw_imapsync_source_table());
   onVisible("[id^=app_passwd_table]", () => draw_app_passwd_table());
   onVisible("[id^=recent-logins]", () => last_logins('get'));
 });

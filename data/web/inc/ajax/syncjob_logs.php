@@ -6,7 +6,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
 }
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-  if ($details = mailbox('get', 'syncjob_details', intval($_GET['id']))) {
+  if ($details = syncjob('get', 'job', intval($_GET['id']))) {
     echo (empty($details['log'])) ? '-' : $details['log'];
   }
 }

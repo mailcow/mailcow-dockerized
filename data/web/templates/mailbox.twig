@@ -33,7 +33,7 @@
         <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-domain-aliases" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domain-aliases">{{ lang.mailbox.domain_aliases }}</button></li>
       </ul>
     </li>
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#tab-syncjobs">{{ lang.mailbox.sync_jobs }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#tab-syncjobs">{{ lang.syncjobs.sync_jobs }}</button></li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-filters" role="tab" data-bs-toggle="tab" data-bs-target="#tab-filters">{{ lang.mailbox.filters }}</button></li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-bcc" role="tab" data-bs-toggle="tab" data-bs-target="#tab-bcc">{{ lang.mailbox.address_rewriting }}</button></li>
     <li class="nav-item" role="presentation"{% if mailcow_cc_role != 'admin' %} class="d-none"{% endif %}><button class="nav-link" aria-selected="false" aria-controls="tab-tls-policy" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tls-policy">{{ lang.mailbox.tls_policy_maps }}</button></li>
@@ -67,6 +67,7 @@
 <script type='text/javascript'>
   var acl = '{{ acl_json|raw }}';
   var lang = {{ lang_mailbox|raw }};
+  lang.syncjobs = {{ lang_syncjobs|raw }};
   var lang_rl = {{ lang_rl|raw }};
   var lang_edit = {{ lang_edit|raw }};
   var lang_datatables = {{ lang_datatables|raw }};

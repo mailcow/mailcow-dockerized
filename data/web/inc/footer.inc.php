@@ -33,11 +33,11 @@ if (array_key_exists('pending_tfa_methods', $_SESSION)) {
   if (isset($pending_tfa_authmechs['webauthn'])) {
     $pending_tfa_authmechs['webauthn'] = true;
   }
-  if (!isset($pending_tfa_authmechs['webauthn']) 
+  if (!isset($pending_tfa_authmechs['webauthn'])
       && isset($pending_tfa_authmechs['yubi_otp'])) {
     $pending_tfa_authmechs['yubi_otp'] = true;
   }
-  if (!isset($pending_tfa_authmechs['webauthn']) 
+  if (!isset($pending_tfa_authmechs['webauthn'])
       && !isset($pending_tfa_authmechs['yubi_otp'])
       && isset($pending_tfa_authmechs['totp'])) {
     $pending_tfa_authmechs['totp'] = true;
@@ -72,6 +72,7 @@ $globalVariables = [
   'lang_fido2' => json_encode($lang['fido2']),
   'lang_success' => json_encode($lang['success']),
   'lang_danger' => json_encode($lang['danger']),
+  'lang_syncjobs' => json_encode($lang['syncjobs']),
   'docker_timeout' => $DOCKER_TIMEOUT,
   'session_lifetime' => (int)$SESSION_LIFETIME,
   'csrf_token' => $_SESSION['CSRF']['TOKEN'],

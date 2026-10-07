@@ -204,9 +204,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     if (isset($_GET['syncjob']) &&
       is_numeric($_GET['syncjob'])) {
         $id = $_GET["syncjob"];
-        $result = mailbox('get', 'syncjob_details', $id);
+        $result = syncjob('get', 'job', $id);
         $template = 'edit/syncjob.twig';
       }
+    elseif (isset($_GET['syncjob_source']) &&
+      is_numeric($_GET['syncjob_source'])) {
+        $id = $_GET["syncjob_source"];
+        $result = syncjob('get', 'source', array('id' => $id, 'with_secret' => true));
+        $template = 'edit/imapsync_source.twig';
+    }
     elseif (isset($_GET['filter']) &&
       is_numeric($_GET['filter'])) {
         $id = $_GET["filter"];
