@@ -47,6 +47,51 @@ function api_log($_data) {
   }
 }
 
+function restart_api_response($status, $code, $msg, $extra = array()) {
+  http_response_code($status);
+  echo json_encode(array_merge(array(
+    'type' => $status >= 400 ? 'error' : 'success',
+    'msg' => $msg,
+    'code' => $code
+  ), $extra));
+  exit;
+}
+
+function restart_api_log($event, $service, $code) {
+  error_log('mailcow API restart: event=' . $event . ' service=' . $service . ' code=' . $code);
+}
+
+function restart_api_lock_seconds() {
+  $configured = getenv('RESTART_API_TRIGGER_LOCK');
+  if ($configured === false || trim($configured) === '') {
+    return 300;
+  }
+  $configured = trim($configured);
+  if (preg_match('/^0+$/', $configured)) {
+    return 0;
+  }
+  if (!preg_match('/^[0-9]+$/', $configured) || strlen($configured) > 4) {
+    error_log('mailcow API restart: invalid RESTART_API_TRIGGER_LOCK, using 300 seconds');
+    return 300;
+  }
+  $seconds = (int)$configured;
+  if ($seconds < 30 || $seconds > 3600) {
+    error_log('mailcow API restart: invalid RESTART_API_TRIGGER_LOCK, using 300 seconds');
+    return 300;
+  }
+  return $seconds;
+}
+
+function restart_api_release_lock($key, $token) {
+  global $redis;
+  try {
+    $redis->eval("if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end", array($key, $token), 1);
+  }
+  catch (RedisException $e) {
+    error_log('mailcow API restart: unable to release cooldown lock');
+  }
+}
+
 // Block requests not intended for direct API use by checking the 'Sec-Fetch-Dest' header.
 if (isset($_SERVER['HTTP_SEC_FETCH_DEST']) && $_SERVER['HTTP_SEC_FETCH_DEST'] !== 'empty') {
   header('HTTP/1.1 403 Forbidden');
@@ -97,7 +142,11 @@ if (isset($_GET['query'])) {
       // placeholder for search, as the request body is already decoded and available in $requestDecoded
     }
   }
-  api_log($_POST);
+  // Restart requests log their outcome below. In particular, a disabled
+  // restart endpoint must not contact Redis merely to create an API log entry.
+  if ($action != 'restart') {
+    api_log($_POST);
+  }
 
 
   $request_incomplete = json_encode(array(
@@ -106,6 +155,92 @@ if (isset($_GET['query'])) {
   ));
 
   switch ($action) {
+    case "restart":
+      $allowed_restart_services = array(
+        'acme-mailcow', 'clamd-mailcow', 'dockerapi-mailcow', 'dovecot-mailcow',
+        'memcached-mailcow', 'mysql-mailcow', 'netfilter-mailcow', 'nginx-mailcow',
+        'olefy-mailcow', 'php-fpm-mailcow', 'postfix-mailcow', 'redis-mailcow',
+        'rspamd-mailcow', 'sogo-mailcow', 'unbound-mailcow', 'watchdog-mailcow'
+      );
+
+      if ($object !== null || $extra !== null || !in_array($category, $allowed_restart_services, true)) {
+        restart_api_response(400, 'invalid_container', 'Container is not allowed for restart');
+      }
+
+      $is_api_request = isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true;
+      if ($is_api_request) {
+        if (!isset($_SESSION['mailcow_cc_api_access']) || $_SESSION['mailcow_cc_api_access'] !== 'rw') {
+          restart_api_response(403, 'write_access_required', 'API read/write access denied');
+        }
+      }
+      else {
+        if (!isset($_SESSION['mailcow_cc_username'])) {
+          restart_api_response(401, 'authentication_required', 'Authentication required');
+        }
+        if (isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] !== 'admin') {
+          restart_api_response(403, 'admin_access_required', 'Global administrator access required');
+        }
+      }
+
+      if (!empty($_POST)) {
+        restart_api_response(400, 'invalid_request', 'This endpoint does not accept request parameters or a request body');
+      }
+
+      $lock_seconds = restart_api_lock_seconds();
+      if ($lock_seconds === 0) {
+        restart_api_log('rejected', $category, 'restart_api_disabled');
+        restart_api_response(503, 'restart_api_disabled', 'The restart API endpoint is disabled');
+      }
+
+      $project = getenv('COMPOSE_PROJECT_NAME');
+      $lock_key = 'RESTART_API_TRIGGER_LOCK:' . ($project === false ? 'mailcow' : $project) . ':' . $category;
+      try {
+        $lock_token = bin2hex(random_bytes(32));
+        $lock_acquired = $redis->set($lock_key, $lock_token, array('nx', 'ex' => $lock_seconds));
+        if (!$lock_acquired) {
+          $ttl = $redis->ttl($lock_key);
+          if ($ttl === -2) {
+            $lock_acquired = $redis->set($lock_key, $lock_token, array('nx', 'ex' => $lock_seconds));
+            $ttl = $lock_acquired ? $lock_seconds : $redis->ttl($lock_key);
+          }
+          if (!$lock_acquired) {
+            if (!is_int($ttl) || $ttl <= 0) {
+              restart_api_log('failed', $category, 'lock_state_error');
+              restart_api_response(503, 'cooldown_state_error', 'Restart cooldown state is unavailable');
+            }
+            header('Retry-After: ' . $ttl);
+            restart_api_log('rejected', $category, 'cooldown_active');
+            restart_api_response(429, 'cooldown_active', 'A restart request is already in the cooldown period', array('retry_after' => $ttl));
+          }
+        }
+      }
+      catch (Exception $e) {
+        restart_api_log('failed', $category, 'redis_failure');
+        restart_api_response(503, 'redis_failure', 'Restart cooldown is unavailable');
+      }
+
+      $restart_result = docker('restart', $category);
+      switch ($restart_result['status']) {
+        case 'success':
+          restart_api_log('accepted', $category, 'restart_requested');
+          restart_api_response(200, 'restart_requested', 'Container restart requested', array('container' => $category));
+        case 'missing':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'container_missing');
+          restart_api_response(503, 'container_missing', 'Container is not available');
+        case 'rejected':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'docker_rejected');
+          restart_api_response(502, 'docker_rejected', 'Container restart was rejected');
+        case 'backend_failure':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'docker_unavailable');
+          restart_api_response(503, 'docker_unavailable', 'Docker control service is unavailable');
+        default:
+          restart_api_log('uncertain', $category, 'docker_timeout');
+          restart_api_response(504, 'restart_uncertain', 'Restart request outcome is uncertain');
+      }
+    break;
     case "add":
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
         http_response_code(403);

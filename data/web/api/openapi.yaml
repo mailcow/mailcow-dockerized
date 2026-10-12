@@ -49,6 +49,110 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  /api/v1/restart/{container-name}:
+    post:
+      tags:
+        - Restart
+      summary: Request a container restart
+      operationId: Restart container
+      description: >-
+        Requests a restart through mailcow's internal Docker control service.
+        API-key calls accept no request body or query parameters and do not
+        wait for the restarted service to become ready. A read-write API key
+        and its configured source-IP restriction are required for automation.
+        Retries are owned by the caller. The cooldown is per container,
+        configured by RESTART_API_TRIGGER_LOCK; setting it to 0 disables this
+        endpoint. Restarting nginx-mailcow, php-fpm-mailcow, dockerapi-mailcow,
+        or dependencies can interrupt this response or active mailcow work.
+      parameters:
+        - in: path
+          name: container-name
+          required: true
+          description: The Compose service to restart. Only listed values are accepted.
+          schema:
+            type: string
+            enum:
+              - acme-mailcow
+              - clamd-mailcow
+              - dockerapi-mailcow
+              - dovecot-mailcow
+              - memcached-mailcow
+              - mysql-mailcow
+              - netfilter-mailcow
+              - nginx-mailcow
+              - olefy-mailcow
+              - php-fpm-mailcow
+              - postfix-mailcow
+              - redis-mailcow
+              - rspamd-mailcow
+              - sogo-mailcow
+              - unbound-mailcow
+              - watchdog-mailcow
+      responses:
+        "200":
+          description: Docker confirmed the restart request. This does not mean the service is ready or work has completed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [type, msg, code, container]
+                properties:
+                  type:
+                    type: string
+                    example: success
+                  msg:
+                    type: string
+                    example: Container restart requested
+                  code:
+                    type: string
+                    example: restart_requested
+                  container:
+                    type: string
+                    example: acme-mailcow
+        "400":
+          description: Unsupported container name, body, query parameter, or route shape.
+        "401":
+          description: Authentication failed, source IP is not allowed, or no authenticated session exists.
+        "403":
+          description: A read-only key or non-admin session attempted the operation.
+        "405":
+          description: Only POST is allowed.
+        "429":
+          description: A cooldown is active for this container. The Retry-After header and retry_after field give remaining seconds.
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 1
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [type, msg, code, retry_after]
+                properties:
+                  type:
+                    type: string
+                    example: error
+                  msg:
+                    type: string
+                  code:
+                    type: string
+                    example: cooldown_active
+                  retry_after:
+                    type: integer
+                    example: 300
+        "502":
+          description: Docker explicitly rejected the restart request.
+        "503":
+          description: The endpoint is disabled, Redis is unavailable, the cooldown state is invalid, the service is absent, or Docker control is unavailable.
+        "504":
+          description: Docker communication timed out or otherwise had an uncertain outcome; the cooldown remains until expiry.
+      x-codeSamples:
+        - lang: cURL
+          source: |-
+            curl --request POST \\
+              --header 'X-API-Key: YOUR_READ_WRITE_API_KEY' \\
+              https://mailcow.example/api/v1/restart/acme-mailcow
   /api/v1/add/alias:
     post:
       responses:

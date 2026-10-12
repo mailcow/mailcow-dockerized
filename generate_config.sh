@@ -414,6 +414,10 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 #API_KEY_READ_ONLY=
 #API_ALLOW_FROM=172.22.1.1,127.0.0.1
 
+# Minimum interval between API-triggered container restart requests, in seconds.
+# Set to 0 to disable the restart API endpoint. Valid nonzero values are 30-3600.
+RESTART_API_TRIGGER_LOCK=0
+
 # mail_home is ~/Maildir
 MAILDIR_SUB=Maildir
 

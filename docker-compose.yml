@@ -173,6 +173,7 @@ services:
         - API_KEY=${API_KEY:-invalid}
         - API_KEY_READ_ONLY=${API_KEY_READ_ONLY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
+        - RESTART_API_TRIGGER_LOCK=${RESTART_API_TRIGGER_LOCK:-0}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
         - SKIP_FTS=${SKIP_FTS:-y}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}

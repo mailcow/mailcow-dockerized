@@ -33,6 +33,7 @@ adapt_new_options() {
   "API_KEY"
   "API_KEY_READ_ONLY"
   "API_ALLOW_FROM"
+  "RESTART_API_TRIGGER_LOCK"
   "MAILDIR_GC_TIME"
   "MAILDIR_SUB"
   "ACL_ANYONE"
@@ -61,6 +62,13 @@ adapt_new_options() {
   "ACME_DNS_PROVIDER"
   "ACME_ACCOUNT_EMAIL"
   )
+
+  # Preserve the old ACME-only setting when upgrading to the generalized
+  # restart endpoint, without overwriting an explicitly configured new value.
+  if ! grep -q "^#\\?RESTART_API_TRIGGER_LOCK=" mailcow.conf && grep -q "^ACME_API_TRIGGER_LOCK=" mailcow.conf; then
+    echo '# Migrated from ACME_API_TRIGGER_LOCK; controls all restart API requests.' >> mailcow.conf
+    grep "^ACME_API_TRIGGER_LOCK=" mailcow.conf | sed 's/^ACME_API_TRIGGER_LOCK=/RESTART_API_TRIGGER_LOCK=/' >> mailcow.conf
+  fi
 
   sed -i --follow-symlinks '$a\' mailcow.conf
   for option in ${CONFIG_ARRAY[@]}; do
@@ -122,6 +130,11 @@ adapt_new_options() {
             echo '# Must be set for API_KEY to be active' >> mailcow.conf
             echo '# IPs only, no networks (networks can be set via UI)' >> mailcow.conf
             echo "#API_ALLOW_FROM=" >> mailcow.conf
+            ;;
+        RESTART_API_TRIGGER_LOCK)
+            echo '# Minimum interval between API-triggered container restart requests, in seconds.' >> mailcow.conf
+            echo '# Set to 0 to disable the restart API endpoint. Valid nonzero values are 30-3600.' >> mailcow.conf
+            echo 'RESTART_API_TRIGGER_LOCK=0' >> mailcow.conf
             ;;
         SNAT_TO_SOURCE)
             echo '# Use this IPv4 for outgoing connections (SNAT)' >> mailcow.conf
