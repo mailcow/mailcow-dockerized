@@ -102,7 +102,7 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
             }
           }
           else {
-            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project']) 
+            if (isset($decoded_response['Config']['Labels']['com.docker.compose.project'])
               && strtolower($decoded_response['Config']['Labels']['com.docker.compose.project']) == strtolower(getenv('COMPOSE_PROJECT_NAME'))) {
               unset($container['Config']['Env']);
               $out[$decoded_response['Config']['Labels']['com.docker.compose.service']]['State'] = $decoded_response['State'];
@@ -150,6 +150,28 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           }
         }
       }
+    break;
+    case 'restart':
+      $container_id = docker('get_id', $service_name);
+      if ($container_id === false) {
+        return array('status' => 'missing');
+      }
+      if (!is_string($container_id) || !ctype_xdigit($container_id)) {
+        return array('status' => 'backend_failure');
+      }
+      curl_setopt($curl, CURLOPT_URL, 'https://dockerapi:443/containers/' . $container_id . '/restart');
+      curl_setopt($curl, CURLOPT_POST, 1);
+      curl_setopt($curl, CURLOPT_TIMEOUT, $DOCKER_TIMEOUT);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+      $response = curl_exec($curl);
+      if ($response === false) {
+        $errno = curl_errno($curl);
+        curl_close($curl);
+        return array('status' => $errno === CURLE_OPERATION_TIMEDOUT ? 'timeout' : 'uncertain');
+      }
+      $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      curl_close($curl);
+      return array('status' => ($http_code >= 200 && $http_code < 300) ? 'success' : 'rejected');
     break;
     case 'container_stats':
       if (empty($service_name)){

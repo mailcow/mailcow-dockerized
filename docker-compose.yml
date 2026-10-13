@@ -157,6 +157,7 @@ services:
         - API_KEY=${API_KEY:-invalid}
         - API_KEY_READ_ONLY=${API_KEY_READ_ONLY:-invalid}
         - API_ALLOW_FROM=${API_ALLOW_FROM:-invalid}
+        - RESTART_API_TRIGGER_LOCK=${RESTART_API_TRIGGER_LOCK:-0}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
         - SKIP_SOLR=${SKIP_SOLR:-y}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
@@ -551,7 +552,7 @@ services:
           aliases:
             - dockerapi
 
-    
+
     ##### Will be removed soon #####
     solr-mailcow:
       image: mailcow/solr:1.8.3

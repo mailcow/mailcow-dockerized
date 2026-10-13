@@ -47,6 +47,51 @@ function api_log($_data) {
   }
 }
 
+function restart_api_response($status, $code, $msg, $extra = array()) {
+  http_response_code($status);
+  echo json_encode(array_merge(array(
+    'type' => $status >= 400 ? 'error' : 'success',
+    'msg' => $msg,
+    'code' => $code
+  ), $extra));
+  exit;
+}
+
+function restart_api_log($event, $service, $code) {
+  error_log('mailcow API restart: event=' . $event . ' service=' . $service . ' code=' . $code);
+}
+
+function restart_api_lock_seconds() {
+  $configured = getenv('RESTART_API_TRIGGER_LOCK');
+  if ($configured === false || trim($configured) === '') {
+    return 300;
+  }
+  $configured = trim($configured);
+  if (preg_match('/^0+$/', $configured)) {
+    return 0;
+  }
+  if (!preg_match('/^[0-9]+$/', $configured) || strlen($configured) > 4) {
+    error_log('mailcow API restart: invalid RESTART_API_TRIGGER_LOCK, using 300 seconds');
+    return 300;
+  }
+  $seconds = (int)$configured;
+  if ($seconds < 30 || $seconds > 3600) {
+    error_log('mailcow API restart: invalid RESTART_API_TRIGGER_LOCK, using 300 seconds');
+    return 300;
+  }
+  return $seconds;
+}
+
+function restart_api_release_lock($key, $token) {
+  global $redis;
+  try {
+    $redis->eval("if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end", array($key, $token), 1);
+  }
+  catch (RedisException $e) {
+    error_log('mailcow API restart: unable to release cooldown lock');
+  }
+}
+
 // Block requests not intended for direct API use by checking the 'Sec-Fetch-Dest' header.
 if (isset($_SERVER['HTTP_SEC_FETCH_DEST']) && $_SERVER['HTTP_SEC_FETCH_DEST'] !== 'empty') {
   header('HTTP/1.1 403 Forbidden');
@@ -91,8 +136,13 @@ if (isset($_GET['query'])) {
     if ($action == 'delete') {
       $_POST['items'] = $request;
     }
+    }
   }
-  api_log($_POST);
+  // Restart requests log their outcome below. In particular, a disabled
+  // restart endpoint must not contact Redis merely to create an API log entry.
+  if ($action != 'restart') {
+    api_log($_POST);
+  }
 
 
   $request_incomplete = json_encode(array(
@@ -101,6 +151,92 @@ if (isset($_GET['query'])) {
   ));
 
   switch ($action) {
+    case "restart":
+      $allowed_restart_services = array(
+        'acme-mailcow', 'clamd-mailcow', 'dockerapi-mailcow', 'dovecot-mailcow',
+        'memcached-mailcow', 'mysql-mailcow', 'netfilter-mailcow', 'nginx-mailcow',
+        'olefy-mailcow', 'php-fpm-mailcow', 'postfix-mailcow', 'redis-mailcow',
+        'rspamd-mailcow', 'sogo-mailcow', 'unbound-mailcow', 'watchdog-mailcow'
+      );
+
+      if ($object !== null || $extra !== null || !in_array($category, $allowed_restart_services, true)) {
+        restart_api_response(400, 'invalid_container', 'Container is not allowed for restart');
+      }
+
+      $is_api_request = isset($_SESSION['mailcow_cc_api']) && $_SESSION['mailcow_cc_api'] === true;
+      if ($is_api_request) {
+        if (!isset($_SESSION['mailcow_cc_api_access']) || $_SESSION['mailcow_cc_api_access'] !== 'rw') {
+          restart_api_response(403, 'write_access_required', 'API read/write access denied');
+        }
+      }
+      else {
+        if (!isset($_SESSION['mailcow_cc_username'])) {
+          restart_api_response(401, 'authentication_required', 'Authentication required');
+        }
+        if (isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] !== 'admin') {
+          restart_api_response(403, 'admin_access_required', 'Global administrator access required');
+        }
+      }
+
+      if (!empty($_POST)) {
+        restart_api_response(400, 'invalid_request', 'This endpoint does not accept request parameters or a request body');
+      }
+
+      $lock_seconds = restart_api_lock_seconds();
+      if ($lock_seconds === 0) {
+        restart_api_log('rejected', $category, 'restart_api_disabled');
+        restart_api_response(503, 'restart_api_disabled', 'The restart API endpoint is disabled');
+      }
+
+      $project = getenv('COMPOSE_PROJECT_NAME');
+      $lock_key = 'RESTART_API_TRIGGER_LOCK:' . ($project === false ? 'mailcow' : $project) . ':' . $category;
+      try {
+        $lock_token = bin2hex(random_bytes(32));
+        $lock_acquired = $redis->set($lock_key, $lock_token, array('nx', 'ex' => $lock_seconds));
+        if (!$lock_acquired) {
+          $ttl = $redis->ttl($lock_key);
+          if ($ttl === -2) {
+            $lock_acquired = $redis->set($lock_key, $lock_token, array('nx', 'ex' => $lock_seconds));
+            $ttl = $lock_acquired ? $lock_seconds : $redis->ttl($lock_key);
+          }
+          if (!$lock_acquired) {
+            if (!is_int($ttl) || $ttl <= 0) {
+              restart_api_log('failed', $category, 'lock_state_error');
+              restart_api_response(503, 'cooldown_state_error', 'Restart cooldown state is unavailable');
+            }
+            header('Retry-After: ' . $ttl);
+            restart_api_log('rejected', $category, 'cooldown_active');
+            restart_api_response(429, 'cooldown_active', 'A restart request is already in the cooldown period', array('retry_after' => $ttl));
+          }
+        }
+      }
+      catch (Exception $e) {
+        restart_api_log('failed', $category, 'redis_failure');
+        restart_api_response(503, 'redis_failure', 'Restart cooldown is unavailable');
+      }
+
+      $restart_result = docker('restart', $category);
+      switch ($restart_result['status']) {
+        case 'success':
+          restart_api_log('accepted', $category, 'restart_requested');
+          restart_api_response(200, 'restart_requested', 'Container restart requested', array('container' => $category));
+        case 'missing':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'container_missing');
+          restart_api_response(503, 'container_missing', 'Container is not available');
+        case 'rejected':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'docker_rejected');
+          restart_api_response(502, 'docker_rejected', 'Container restart was rejected');
+        case 'backend_failure':
+          restart_api_release_lock($lock_key, $lock_token);
+          restart_api_log('failed', $category, 'docker_unavailable');
+          restart_api_response(503, 'docker_unavailable', 'Docker control service is unavailable');
+        default:
+          restart_api_log('uncertain', $category, 'docker_timeout');
+          restart_api_response(504, 'restart_uncertain', 'Restart request outcome is uncertain');
+      }
+    break;
     case "add":
       if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
         http_response_code(403);
@@ -334,81 +470,6 @@ if (isset($_GET['query'])) {
           exit();
       }
     break;
-    case "process":
-      // only allow POST requests to process API endpoints
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        http_response_code(405);
-        echo json_encode(array(
-            'type' => 'error',
-            'msg' => 'only POST method is allowed'
-        ));
-        exit();
-      }
-      switch ($category) {
-        case "fido2-args":
-          header('Content-Type: application/json');
-          $post = trim(file_get_contents('php://input'));
-          if ($post) {
-            $post = json_decode($post);
-          }
-          $clientDataJSON = base64_decode($post->clientDataJSON);
-          $authenticatorData = base64_decode($post->authenticatorData);
-          $signature = base64_decode($post->signature);
-          $id = base64_decode($post->id);
-          $challenge = $_SESSION['challenge'];
-          $process_fido2 = fido2(array("action" => "get_by_b64cid", "cid" => $post->id));
-          if ($process_fido2['pub_key'] === false) {
-            $return = new stdClass();
-            $return->success = false;
-            echo json_encode($return);
-            exit;
-          }
-          try {
-            $WebAuthn->processGet($clientDataJSON, $authenticatorData, $signature, $process_fido2['pub_key'], $challenge, null, $GLOBALS['FIDO2_UV_FLAG_LOGIN'], $GLOBALS['FIDO2_USER_PRESENT_FLAG']);
-          }
-          catch (Throwable $ex) {
-            unset($process_fido2);
-            $return = new stdClass();
-            $return->success = false;
-            echo json_encode($return);
-            exit;
-          }
-          $return = new stdClass();
-          $return->success = true;
-          $stmt = $pdo->prepare("SELECT `superadmin` FROM `admin` WHERE `username` = :username");
-          $stmt->execute(array(':username' => $process_fido2['username']));
-          $obj_props = $stmt->fetch(PDO::FETCH_ASSOC);
-          if ($obj_props['superadmin'] === 1) {
-            $_SESSION["mailcow_cc_role"] = "admin";
-          }
-          elseif ($obj_props['superadmin'] === 0) {
-            $_SESSION["mailcow_cc_role"] = "domainadmin";
-          }
-          else {
-            $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :username");
-            $stmt->execute(array(':username' => $process_fido2['username']));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row['username'] == $process_fido2['username']) {
-              $_SESSION["mailcow_cc_role"] = "user";
-            }
-          }
-          if (empty($_SESSION["mailcow_cc_role"])) {
-            session_unset();
-            session_destroy();
-            exit;
-          }
-          $_SESSION["mailcow_cc_username"] = $process_fido2['username'];
-          $_SESSION["fido2_cid"] = $process_fido2['cid'];
-          unset($_SESSION["challenge"]);
-          $_SESSION['return'][] =  array(
-            'type' => 'success',
-            'log' => array("fido2_login"),
-            'msg' => array('logged_in_as', $process_fido2['username'])
-          );
-          echo json_encode($return);
-        break;
-      }
-    break;
     case "get":
       function process_get_return($data, $object = true) {
         if ($object === true) {
@@ -509,16 +570,6 @@ if (isset($_GET['query'])) {
           print(json_encode($getArgs));
           $_SESSION['challenge'] = $WebAuthn->getChallenge();
           return;
-        break;          
-        case "fail2ban":
-          if (!isset($_SESSION['mailcow_cc_role'])){
-            switch ($object) {
-              case 'banlist':
-                header('Content-Type: text/plain');
-                echo fail2ban('banlist', 'get', $extra);
-              break;
-            }
-          }
         break;
       }
       if (isset($_SESSION['mailcow_cc_role'])) {
@@ -539,47 +590,6 @@ if (isset($_GET['query'])) {
 
           case "domain":
             switch ($object) {
-              case "datatables":
-                $table = ['domain', 'd'];
-                $primaryKey = 'domain';
-                $columns = [
-                  ['db' => 'domain', 'dt' => 2],
-                  ['db' => 'aliases', 'dt' => 3, 'order_subquery' => "SELECT COUNT(*) FROM `alias` WHERE (`domain`= `d`.`domain` OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `target_domain` = `d`.`domain`)) AND `address` NOT IN (SELECT `username` FROM `mailbox`)"],
-                  ['db' => 'mailboxes', 'dt' => 4, 'order_subquery' => "SELECT COUNT(*) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
-                  ['db' => 'quota', 'dt' => 5, 'order_subquery' => "SELECT COALESCE(SUM(`mailbox`.`quota`), 0) FROM `mailbox` WHERE `mailbox`.`domain` = `d`.`domain` AND (`mailbox`.`kind` = '' OR `mailbox`.`kind` = NULL)"],
-                  ['db' => 'stats', 'dt' => 6, 'dummy' => true, 'order_subquery' => "SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` IN (SELECT `username` FROM `mailbox` WHERE `domain` = `d`.`domain`)"],
-                  ['db' => 'defquota', 'dt' => 7],
-                  ['db' => 'maxquota', 'dt' => 8],
-                  ['db' => 'backupmx', 'dt' => 10],
-                  ['db' => 'tags', 'dt' => 14, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_domain` AS `td` ON `td`.`domain` = `d`.`domain`', 'where_column' => '`td`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 15],
-                ];
-
-                require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
-                global $pdo;
-                if($_SESSION['mailcow_cc_role'] === 'admin') {
-                  $data = SSP::simple($_GET, $pdo, $table, $primaryKey, $columns);
-                } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns,
-                    'INNER JOIN domain_admins as da ON da.domain = d.domain',
-                    [
-                      'condition' => 'da.active = 1 and da.username = :username',
-                      'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
-                    ]);
-                }
-
-                if (!empty($data['data'])) {
-                  $domainsData = [];
-                  foreach ($data['data'] as $domain) {
-                    if ($details = mailbox('get', 'domain_details', $domain[2])) {
-                      $domainsData[] = $details;
-                    }
-                  }
-                  $data['data'] = $domainsData;
-                }
-
-                process_get_return($data);
-              break;
               case "all":
                 $tags = null;
                 if (isset($_GET['tags']) && $_GET['tags'] != '')
@@ -1068,45 +1078,6 @@ if (isset($_GET['query'])) {
           break;
           case "mailbox":
             switch ($object) {
-              case "datatables":
-                $table = ['mailbox', 'm'];
-                $primaryKey = 'username';
-                $columns = [
-                  ['db' => 'username', 'dt' => 2],
-                  ['db' => 'quota', 'dt' => 3],
-                  ['db' => 'last_mail_login', 'dt' => 4, 'dummy' => true, 'order_subquery' => "SELECT MAX(`datetime`) FROM `sasl_log` WHERE `service` != 'SSO' AND `username` = `m`.`username`"],
-                  ['db' => 'last_pw_change', 'dt' => 5, 'dummy' => true, 'order_subquery' => "JSON_EXTRACT(attributes, '$.passwd_update')"],
-                  ['db' => 'in_use', 'dt' => 6, 'dummy' => true, 'order_subquery' => "(SELECT SUM(bytes) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`) / `m`.`quota`"],
-                  ['db' => 'messages', 'dt' => 17, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
-                  ['db' => 'tags', 'dt' => 20, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
-                  ['db' => 'active', 'dt' => 21]
-                ];
-
-                require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/ssp.class.php';
-                global $pdo;
-                if($_SESSION['mailcow_cc_role'] === 'admin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns, null, "(`m`.`kind` = '' OR `m`.`kind` = NULL)");
-                } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
-                  $data = SSP::complex($_GET, $pdo, $table, $primaryKey, $columns,
-                    'INNER JOIN domain_admins as da ON da.domain = m.domain',
-                    [
-                      'condition' => "(`m`.`kind` = '' OR `m`.`kind` = NULL) AND `da`.`active` = 1 AND `da`.`username` = :username",
-                      'bindings' => ['username' => $_SESSION['mailcow_cc_username']]
-                    ]);
-                }
-
-                if (!empty($data['data'])) {
-                  $mailboxData = [];
-                  foreach ($data['data'] as $mailbox) {
-                    if ($details = mailbox('get', 'mailbox_details', $mailbox[2])) {
-                      $mailboxData[] = $details;
-                    }
-                  }
-                  $data['data'] = $mailboxData;
-                }
-
-                process_get_return($data);
-              break;
               case "all":
               case "reduced":
                 $tags = null;
@@ -1420,10 +1391,6 @@ if (isset($_GET['query'])) {
           break;
           case "fail2ban":
             switch ($object) {
-              case 'banlist':
-                header('Content-Type: text/plain');
-                echo fail2ban('banlist', 'get', $extra);
-              break;
               default:
                 $data = fail2ban('get');
                 process_get_return($data);
@@ -1640,23 +1607,6 @@ if (isset($_GET['query'])) {
                     'used_percent' => $vmail_df[4]
                   );
                   echo json_encode($temp, JSON_UNESCAPED_SLASHES);
-                break;
-                case "solr":
-                  $solr_status = solr_status();
-                  $solr_size = ($solr_status['status']['dovecot-fts']['index']['size']);
-                  $solr_documents = ($solr_status['status']['dovecot-fts']['index']['numDocs']);
-                  if (strtolower(getenv('SKIP_SOLR')) != 'n') {
-                    $solr_enabled = false;
-                  }
-                  else {
-                    $solr_enabled = true;
-                  }
-                  echo json_encode(array(
-                    'type' => 'info',
-                    'solr_enabled' => $solr_enabled,
-                    'solr_size' => $solr_size,
-                    'solr_documents' => $solr_documents
-                  ));
                 break;
                 case "host":
                   if (!$extra){
@@ -1972,7 +1922,6 @@ if (isset($_GET['query'])) {
         break;
         case "quota_notification_bcc":
           process_edit_return(quota_notification_bcc('edit', $attr));
-        break;
         break;
         case "mailq":
           process_edit_return(mailq('edit', array_merge(array('qid' => $items), $attr)));
