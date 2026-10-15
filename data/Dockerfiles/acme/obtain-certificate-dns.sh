@@ -22,8 +22,7 @@ fi
 
 TYPE=${1}
 PREFIX=""
-# only support rsa certificates for now
-if [[ "${TYPE}" != "rsa" ]]; then
+if [[ "${TYPE}" != "rsa" && "${TYPE}" != "ecdsa" ]]; then
   log_f "Unknown certificate type '${TYPE}' requested"
   exit 5
 fi
@@ -58,9 +57,16 @@ else
   ACME_SH_SERVER_ARGS=("--server" "letsencrypt")
 fi
 
+EXISTING_KEY_TYPE=""
+if [[ -f "${KEY}" ]]; then
+  EXISTING_KEY_TYPE="$(get_private_key_type "${KEY}" 2>/dev/null || true)"
+fi
+
 if [[ -f ${DOMAINS_FILE} && "$(cat ${DOMAINS_FILE})" ==  "${CERT_DOMAINS[*]}" ]]; then
   if [[ ! -f ${CERT} || ! -f "${KEY}" || -f "${ACME_BASE}/force_renew" ]]; then
     log_f "Certificate ${CERT} doesn't exist yet or forced renewal - start obtaining"
+  elif [[ "${EXISTING_KEY_TYPE}" != "${TYPE}" ]]; then
+    log_f "Existing certificate key type '${EXISTING_KEY_TYPE:-unknown}' does not match requested type '${TYPE}' - start obtaining"
   elif ! openssl x509 -checkend 2592000 -noout -in ${CERT} > /dev/null; then
     log_f "Certificate ${CERT} is due for renewal (< 30 days) - start renewing"
   else
@@ -84,6 +90,16 @@ if [[ -f ${CERT} ]]; then
 fi
 
 mkdir -p ${ACME_BASE}/${CERT_DOMAIN}
+
+if [[ -f "${KEY}" ]]; then
+  EXISTING_KEY_TYPE="$(get_private_key_type "${KEY}" 2>/dev/null || true)"
+  if [[ "${EXISTING_KEY_TYPE}" != "${TYPE}" ]]; then
+    KEY_BACKUP="${KEY}.$(date +%Y-%m-%d_%H_%M_%S).bak"
+    log_f "Existing certificate key type ${EXISTING_KEY_TYPE:-unknown} does not match requested type ${TYPE}, backing up to ${KEY_BACKUP}"
+    mv "${KEY}" "${KEY_BACKUP}"
+  fi
+fi
+
 if [[ ! -f ${KEY} ]]; then
   log_f "Copying shared private key for this certificate..."
   cp ${SHARED_KEY} ${KEY}
@@ -131,7 +147,14 @@ TMP_FULLCHAIN=$(mktemp /tmp/acme-fullchain.XXXXXX)
 
 ACME_CMD=("${ACME_SH_BIN_PATH}" "--home" "${ACME_SH_WORK_HOME}" "--config-home" "${ACME_SH_WORK_HOME}" "--cert-home" "${ACME_SH_WORK_HOME}")
 ACME_CMD+=("${ACME_SH_SERVER_ARGS[@]}")
-ACME_CMD+=("--issue" "--dns" "${ACME_DNS_PROVIDER}" "--key-file" "${KEY}" "--cert-file" "${TMP_CERT}" "--fullchain-file" "${TMP_FULLCHAIN}" "--force")
+
+if [[ "${TYPE}" == "ecdsa" ]]; then
+  ACME_KEY_LENGTH="ec-256"
+else
+  ACME_KEY_LENGTH="4096"
+fi
+
+ACME_CMD+=("--issue" "--dns" "${ACME_DNS_PROVIDER}" "--keylength" "${ACME_KEY_LENGTH}" "--key-file" "${KEY}" "--cert-file" "${TMP_CERT}" "--fullchain-file" "${TMP_FULLCHAIN}" "--force")
 for domain in "${CERT_DOMAINS[@]}"; do
   ACME_CMD+=("-d" "${domain}")
 done
@@ -164,12 +187,20 @@ case "$SUCCESS" in
       exit ${RETURN}
     else
       log_f "Certificate was requested, but key and certificate hashes do not match"
+      if [[ -n "${KEY_BACKUP:-}" && -f "${KEY_BACKUP}" ]]; then
+        log_f "Restoring previous certificate key from ${KEY_BACKUP}"
+        mv -f "${KEY_BACKUP}" "${KEY}"
+      fi
       rm -f ${TMP_CERT} ${TMP_FULLCHAIN}
       exit 4
     fi
     ;;
   *)
     log_f "Failed to obtain certificate ${CERT} for domains '${CERT_DOMAINS[*]}' via DNS challenge"
+    if [[ -n "${KEY_BACKUP:-}" && -f "${KEY_BACKUP}" ]]; then
+      log_f "Restoring previous certificate key from ${KEY_BACKUP}"
+      mv -f "${KEY_BACKUP}" "${KEY}"
+    fi
     redis-cli -h redis -a ${REDISPASS} --no-auth-warning SET ACME_FAIL_TIME "$(date +%s)"
     rm -f ${TMP_CERT} ${TMP_FULLCHAIN}
     exit 100${SUCCESS}

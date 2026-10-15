@@ -298,6 +298,10 @@ SKIP_LETS_ENCRYPT=n
 ACME_DNS_CHALLENGE=n
 ACME_DNS_PROVIDER=dns_xxx
 ACME_ACCOUNT_EMAIL=me@example.com
+
+# Certificate key type for ACME certificates: rsa or ecdsa
+# RSA uses 4096 bit, ECDSA uses P-256
+ACME_CERT_KEY_TYPE=rsa
 # You will need to pass provider-specific environment variables to the acme-mailcow container.
 # See the dns-01 provider documentation for more information.
 # for example for Azure DNS:
