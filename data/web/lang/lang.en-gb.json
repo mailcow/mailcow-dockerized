@@ -407,7 +407,7 @@
         "ui_texts": "UI labels and texts",
         "ui_theme": "Theme",
         "ui_theme_dark": "Includes a dark mode variant",
-        "ui_theme_default": "Default (mailcow)",
+        "ui_theme_default": "Default",
         "ui_theme_info": "Themes are folders in <code>data/web/css/themes/&lt;name&gt;/</code> containing a <code>theme.css</code>. Optional: <code>dark.css</code> (dark mode), <code>bootstrap.css</code> (replaces the Bootstrap base theme) and <code>theme.json</code> (<code>name</code>, <code>description</code>).",
         "ui_theme_none": "No themes found.",
         "unban_pending": "unban pending",

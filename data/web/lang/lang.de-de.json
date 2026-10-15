@@ -397,7 +397,7 @@
         "ui_texts": "UI-Label und Texte",
         "ui_theme": "Theme",
         "ui_theme_dark": "Enthält eine Darkmode-Variante",
-        "ui_theme_default": "Standard (mailcow)",
+        "ui_theme_default": "Standard",
         "ui_theme_info": "Themes sind Ordner in <code>data/web/css/themes/&lt;name&gt;/</code> mit einer <code>theme.css</code>. Optional: <code>dark.css</code> (Darkmode), <code>bootstrap.css</code> (ersetzt das Bootstrap-Basistheme) und <code>theme.json</code> (<code>name</code>, <code>description</code>).",
         "ui_theme_none": "Keine Themes gefunden.",
         "unban_pending": "ausstehend",
