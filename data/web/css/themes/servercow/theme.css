@@ -116,6 +116,9 @@
   --mc-dtr-color: var(--sc-brown);
   --mc-dtr-hover-bg: var(--sc-brown-tint);
   --mc-dtr-active-bg: var(--sc-brown-soft);
+  --mc-login-user: var(--sc-green);
+  --mc-login-domainadmin: #f5c400;
+  --mc-login-admin: var(--sc-danger);
 }
 
 /* base */
@@ -571,10 +574,6 @@ table.dataTable.table-hover > tbody > tr:hover > * {
   background-color: var(--sc-warning) !important;
 }
 
-/* login pages (no navbar), green line on top */
-body:not(:has(> .navbar)) {
-  border-top: 5px solid var(--sc-green);
-}
 
 /* footer */
 .footer, .footer a {

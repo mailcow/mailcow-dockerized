@@ -62,6 +62,9 @@
   --mc-dtr-color: #fff;
   --mc-dtr-hover-bg: #5e5e5e;
   --mc-dtr-active-bg: #979797;
+  --mc-login-user: #28b62c;
+  --mc-login-domainadmin: #ffc107;
+  --mc-login-admin: #ff4136;
 }
 
 body {
@@ -437,6 +440,26 @@ button[aria-expanded='true'] > .caret {
 .badge.bg-danger > a {
     color: #fff !important;
     text-decoration: none;
+}
+
+/* role marker on login pages, header icons differ too (color blindness) */
+.login-card::before {
+  content: "";
+  display: block;
+  height: 5px;
+  background: var(--mc-login-color);
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.login-user {
+  --mc-login-color: var(--mc-login-user);
+}
+.login-domainadmin {
+  --mc-login-color: var(--mc-login-domainadmin);
+}
+.login-admin {
+  --mc-login-color: var(--mc-login-admin);
 }
 
 .hr-title {
