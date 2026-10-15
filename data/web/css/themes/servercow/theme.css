@@ -345,6 +345,15 @@ hr {
   border-color: var(--sc-focus-border);
   box-shadow: 0 0 0 .25rem var(--sc-focus);
 }
+.form-control::file-selector-button {
+  color: var(--sc-ink);
+  background-color: var(--sc-addon);
+  border-color: var(--sc-line);
+}
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+  color: var(--sc-brown);
+  background-color: var(--sc-brown-soft);
+}
 .input-group-text {
   color: var(--sc-ink);
   background-color: var(--sc-addon);

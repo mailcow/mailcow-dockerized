@@ -408,7 +408,7 @@
         "ui_theme": "Theme",
         "ui_theme_dark": "Includes a dark mode variant",
         "ui_theme_default": "Default",
-        "ui_theme_info": "Themes are folders in <code>data/web/css/themes/&lt;name&gt;/</code> containing a <code>theme.css</code>. Optional: <code>dark.css</code> (dark mode), <code>bootstrap.css</code> (replaces the Bootstrap base theme) and <code>theme.json</code> (<code>name</code>, <code>description</code>).",
+        "ui_theme_info": "Themes are folders in <code>data/web/css/themes/&lt;name&gt;/</code> with the following files:<ul class=\"mb-0\"><li><code>theme.css</code> (required)</li><li><code>dark.css</code> (optional, dark mode)</li><li><code>bootstrap.css</code> (optional, replaces the Bootstrap base theme)</li><li><code>theme.json</code> (optional, <code>name</code> and <code>description</code>)</li></ul>",
         "ui_theme_none": "No themes found.",
         "unban_pending": "unban pending",
         "unchanged_if_empty": "If unchanged leave blank",

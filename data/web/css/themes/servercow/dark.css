@@ -107,6 +107,15 @@
 .input-group-text {
   background-color: var(--sc-addon);
 }
+.form-control::file-selector-button {
+  color: var(--sc-ink);
+  background-color: var(--sc-cap);
+  border-color: var(--sc-line);
+}
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+  color: var(--sc-link);
+  background-color: var(--sc-line);
+}
 .form-check-input:not(:checked) {
   background-color: var(--sc-bg);
   border-color: var(--sc-line);
