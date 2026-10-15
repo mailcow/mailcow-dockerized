@@ -10,6 +10,7 @@
 
   <link rel="stylesheet" href="{{ css_path }}">
   <script>
+    var mailcow_dark_css = '{{ dark_css_path }}';
     // check if darkmode is preferred by OS or set by localStorage
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem("mailcow_theme") !== "light" ||
         localStorage.getItem("mailcow_theme") === "dark") {
@@ -18,7 +19,7 @@
       link.id   = 'dark-mode-theme';
       link.rel  = 'stylesheet';
       link.type = 'text/css';
-      link.href = '/css/themes/mailcow-darkmode.css';
+      link.href = mailcow_dark_css;
       head.appendChild(link);
     }
   </script>
