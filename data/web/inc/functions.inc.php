@@ -1389,6 +1389,18 @@ function set_tfa($_data) {
     case "webauthn":
         $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
 
+        // Refuse incomplete WebAuthn registrations. Without this guard a request
+        // that does not contain the parsed credential data (e.g. a plain form
+        // POST) would silently insert an empty keyHandle while reporting success.
+        if (empty($_data['registration']) || empty($_data['registration']->credentialId)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data_log),
+            'msg' => 'webauthn_registration_failed'
+          );
+          return false;
+        }
+
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`)
         VALUES (?, ?, 'webauthn', ?, ?, ?, ?, '1')");
         $stmt->execute(array(
