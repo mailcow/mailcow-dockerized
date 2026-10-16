@@ -56,6 +56,21 @@
           <p class="text-muted">{{ lang.user.tls_policy_warning|raw }}</p>
         </div>
       </div>
+      {# Show sent copy option #}
+      <div class="row">
+        <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.save_sent_copy }}:</div>
+        <div class="col-sm-9 col-12">
+          <div class="btn-group" data-acl="{{ acl.save_sent_copy }}">
+            <button type="button" class="btn btn-sm d-block d-sm-inline{% if get_save_sent_copy.save_sent_copy == '1' %} btn-dark{% else %} btn-light{% endif %}"
+            data-action="edit_selected"
+            data-item="{{ mailcow_cc_username }}"
+            data-id="save_sent_copy"
+            data-api-url='edit/save_sent_copy'
+            data-api-attr='{"save_sent_copy": {% if get_save_sent_copy.save_sent_copy == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.save_sent_copy_enable }}</button>
+          </div>
+          <p class="text-muted">{{ lang.user.save_sent_copy_info|raw }}</p>
+        </div>
+      </div>
       {# Show quarantine_notification options #}
       <div class="row">
         <div class="col-sm-3 col-12 text-sm-end text-start text-xs-bold mb-4">{{ lang.user.quarantine_notification }}:</div>

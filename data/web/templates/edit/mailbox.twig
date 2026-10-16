@@ -247,6 +247,20 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row mb-4">
+                    <label class="control-label col-sm-2">{{ lang.user.save_sent_copy }}</label>
+                    <div class="col-sm-10">
+                      <div class="btn-group" data-acl="{{ acl.save_sent_copy }}">
+                        <button type="button" class="btn btn-sm d-block d-sm-inline{% if get_save_sent_copy.save_sent_copy == '1' %} btn-dark{% else %} btn-light{% endif %}"
+                          data-action="edit_selected"
+                          data-item="{{ mailbox }}"
+                          data-id="save_sent_copy"
+                          data-api-url='edit/save_sent_copy'
+                          data-api-attr='{"save_sent_copy": {% if get_save_sent_copy.save_sent_copy == '1' %}0{% else %}1{% endif %} }'>{{ lang.user.save_sent_copy_enable }}</button>
+                      </div>
+                      <p class="text-muted"><small>{{ lang.user.save_sent_copy_info|raw }}</small></p>
+                    </div>
+                  </div>
                   {% if not result.authsource or result.authsource == 'mailcow' %}
                   <div class="row">
                     <label class="control-label col-sm-2" for="password">{{ lang.edit.password }} (<a href="#" class="generate_password">{{ lang.edit.generate }}</a>)</label>

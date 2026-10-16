@@ -10,6 +10,7 @@
     <input type="hidden" value="0" name="force_pw_update">
     <input type="hidden" value="0" name="force_tfa">
     <input type="hidden" value="0" name="sogo_access">
+    <input type="hidden" value="0" name="save_sent_copy">
     <input type="hidden" value="0" name="protocol_access">
 
     <div class="row mb-4">
@@ -133,6 +134,7 @@
           <option value="quarantine_category" {% if template.attributes.acl_quarantine_category == '1' %} selected{% endif %}>{{ lang.acl["quarantine_category"] }}</option>
           <option value="app_passwds" {% if template.attributes.acl_app_passwds == '1' %} selected{% endif %}>{{ lang.acl["app_passwds"] }}</option>
           <option value="pw_reset" {% if template.attributes.acl_pw_reset == '1' %} selected{% endif %}>{{ lang.acl["pw_reset"] }}</option>
+          <option value="save_sent_copy" {% if template.attributes.acl_save_sent_copy == '1' %} selected{% endif %}>{{ lang.acl["save_sent_copy"] }}</option>
         </select>
       </div>
     </div>
@@ -184,6 +186,14 @@
       </div>
     </div>
     {% endif %}
+    <div class="row">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="save_sent_copy"{% if template.attributes.save_sent_copy == '1' %} checked{% endif %}> {{ lang.user.save_sent_copy_enable }}</label>
+          <small class="text-muted">{{ lang.user.save_sent_copy_info|raw }}</small>
+        </div>
+      </div>
+    </div>
     <div class="row my-2">
       <div class="offset-sm-2 col-sm-10">
         <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="editmailbox_template" data-item="{{ template.id }}" data-api-url='edit/mailbox/template' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>

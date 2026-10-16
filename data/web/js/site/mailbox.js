@@ -406,6 +406,9 @@ $(document).ready(function() {
     if (template.acl_pw_reset == 1){
       acl.push("pw_reset");
     }
+    if (template.acl_save_sent_copy == 1){
+      acl.push("save_sent_copy");
+    }
     $('#user_acl').selectpicker('val', acl);
 
     $('#rl_value').val(template.rl_value);
@@ -433,6 +436,11 @@ $(document).ready(function() {
       $('#sogo_access').prop('checked', true);
     } else {
       $('#sogo_access').prop('checked', false);
+    }
+    if (template.save_sent_copy == 1){
+      $('#save_sent_copy').prop('checked', true);
+    } else {
+      $('#save_sent_copy').prop('checked', false);
     }
 
     // load tags
