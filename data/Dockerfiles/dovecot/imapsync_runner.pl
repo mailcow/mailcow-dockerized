@@ -117,51 +117,77 @@ while ($row = $sth->fetchrow_arrayref()) {
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
-  my $passfile1 = File::Temp->new(TEMPLATE => $template);
   my $passfile2 = File::Temp->new(TEMPLATE => $template);
   
-  binmode( $passfile1, ":utf8" );
-  
-  print $passfile1 "$password1\n";
   print $passfile2 trim($master_pass) . "\n";
 
   my @custom_params_a = qqw($custom_params);
   my $custom_params_ref = \@custom_params_a;
 
-  my $generated_cmds = [ "/usr/local/bin/imapsync",
-  "--tmpdir", "/tmp",
-  "--nofoldersizes",
-  "--addheader",
-  ($timeout1 le "0" ? () : ('--timeout1', $timeout1)),
-  ($timeout2 le "0" ? () : ('--timeout2', $timeout2)),
-  ($exclude eq "" ? () : ("--exclude", $exclude)),
-  ($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
-  ($maxage eq "0" ? () : ('--maxage', $maxage)),
-  ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
-  ($delete2duplicates ne "1" ? () : ('--delete2duplicates')),
-  ($subscribeall  ne "1" ? () : ('--subscribeall')),
-  ($delete1 ne "1" ? () : ('--delete')),
-  ($delete2 ne "1" ? () : ('--delete2')),
-  ($automap ne "1" ? () : ('--automap')),
-  ($skipcrossduplicates ne "1" ? () : ('--skipcrossduplicates')),
-  (!defined($enc1) ? () : ($enc1)),
-  "--host1", $host1,
-  "--user1", $user1,
-  "--passfile1", $passfile1->filename,
-  "--port1", $port1,
-  "--host2", "localhost",
-  "--user2", $user2 . '*' . trim($master_user),
-  "--passfile2", $passfile2->filename,
-  ($dry eq "1" ? ('--dry') : ()),
-  '--no-modulesversion',
-  '--noreleasecheck'];
+  # Helper function to run imapsync with a specific encoding for password1
+  my $run_imapsync = sub {
+    my ($encoding) = @_;
+    
+    my $passfile1 = File::Temp->new(TEMPLATE => $template);
+    
+    if ($encoding eq 'utf8') {
+      binmode( $passfile1, ":utf8" );
+    } elsif ($encoding eq 'latin1') {
+      binmode( $passfile1, ":encoding(iso-8859-1)" );
+    }
+    
+    print $passfile1 "$password1\n";
+    $passfile1->flush();
+
+    my $generated_cmds = [ "/usr/local/bin/imapsync",
+    "--tmpdir", "/tmp",
+    "--nofoldersizes",
+    "--addheader",
+    ($timeout1 le "0" ? () : ('--timeout1', $timeout1)),
+    ($timeout2 le "0" ? () : ('--timeout2', $timeout2)),
+    ($exclude eq "" ? () : ("--exclude", $exclude)),
+    ($subfolder2 eq "" ? () : ('--subfolder2', $subfolder2)),
+    ($maxage eq "0" ? () : ('--maxage', $maxage)),
+    ($maxbytespersecond eq "0" ? () : ('--maxbytespersecond', $maxbytespersecond)),
+    ($delete2duplicates ne "1" ? () : ('--delete2duplicates')),
+    ($subscribeall  ne "1" ? () : ('--subscribeall')),
+    ($delete1 ne "1" ? () : ('--delete')),
+    ($delete2 ne "1" ? () : ('--delete2')),
+    ($automap ne "1" ? () : ('--automap')),
+    ($skipcrossduplicates ne "1" ? () : ('--skipcrossduplicates')),
+    (!defined($enc1) ? () : ($enc1)),
+    "--host1", $host1,
+    "--user1", $user1,
+    "--passfile1", $passfile1->filename,
+    "--port1", $port1,
+    "--host2", "localhost",
+    "--user2", $user2 . '*' . trim($master_user),
+    "--passfile2", $passfile2->filename,
+    ($dry eq "1" ? ('--dry') : ()),
+    '--no-modulesversion',
+    '--noreleasecheck'];
+
+    my $stdout;
+    run [@$generated_cmds, @$custom_params_ref], '&>', \$stdout;
+    
+    return $stdout;
+  };
 
   try {
     $is_running = $dbh->prepare("UPDATE imapsync SET is_running = 1, success = NULL, exit_status = NULL WHERE id = ?");
     $is_running->bind_param( 1, ${id} );
     $is_running->execute();
 
-    run [@$generated_cmds, @$custom_params_ref], '&>', \my $stdout;
+    # First attempt with UTF-8 encoding (default behavior)
+    my $stdout = $run_imapsync->('utf8');
+
+    # Check if authentication failed
+    my $auth_failed = ($stdout =~ /\b(LOGIN failed|authentication failed|AUTHENTICATIONFAILED)\b/i);
+    
+    # If authentication failed with UTF-8, retry with Latin-1 encoding for legacy passwords
+    if ($auth_failed) {
+      $stdout = $run_imapsync->('latin1');
+    }
 
     # check exit code and status
     ($exit_code, $exit_status) = ($stdout =~ m/Exiting\swith\sreturn\svalue\s(\d+)\s\(([^:)]+)/);
