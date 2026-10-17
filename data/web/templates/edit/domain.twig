@@ -185,11 +185,32 @@
                         {% include 'mailbox/rl-frame.twig' %}
                         </select>
                       </div>
+                      <p class="help-block text-muted"><small>{{ lang.edit.ratelimit_domain_info }}</small></p>
                     </div>
                   </div>
                   <div class="row mb-2">
                     <div class="offset-sm-2 col-sm-10">
                       <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimit" data-item="{{ domain }}" data-api-url='edit/rl-domain' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
+                    </div>
+                  </div>
+                </form>
+                <hr>
+                <form data-id="domratelimitmbxdefault" class="well" method="post">
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.ratelimit_mbox }}</label>
+                    <div class="col-sm-10">
+                      <div class="input-group">
+                        <input name="rl_value" type="number" value="{{ rl_mbox.value }}" autocomplete="off" class="form-control" placeholder="{{ lang.ratelimit.disabled }}">
+                        <select name="rl_frame" class="form-control">
+                        {% include 'mailbox/rl-frame.twig' with {'rl': rl_mbox} %}
+                        </select>
+                      </div>
+                      <p class="help-block text-muted"><small>{{ lang.edit.ratelimit_mbox_info }}</small></p>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <button data-acl="{{ acl.ratelimit }}" class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="domratelimitmbxdefault" data-item="{{ domain }}" data-api-url='edit/rl-mbox-default' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
                     </div>
                   </div>
                 </form>

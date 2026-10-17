@@ -134,6 +134,68 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
             );
           }
         break;
+        case 'mailbox_default':
+          // Per-mailbox default ratelimit configured on a domain: stored in RL_MBX_VALUE
+          // (keyed by domain) and applied individually to every mailbox of that domain.
+          if (!is_array($_data['object'])) {
+            $objects = array();
+            $objects[] = $_data['object'];
+          }
+          else {
+            $objects = $_data['object'];
+          }
+          foreach ($objects as $object) {
+            $rl_value = intval($_data['rl_value']);
+            $rl_frame = $_data['rl_frame'];
+            if (!in_array($rl_frame, array('s', 'm', 'h', 'd'))) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+                'msg' => 'rl_timeframe'
+              );
+              continue;
+            }
+            if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $object)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            if (empty($rl_value)) {
+              try {
+                $redis->hDel('RL_MBX_VALUE', $object);
+              }
+              catch (RedisException $e) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+                  'msg' => array('redis_error', $e)
+                );
+                continue;
+              }
+            }
+            else {
+              try {
+                $redis->hSet('RL_MBX_VALUE', $object, $rl_value . ' / 1' . $rl_frame);
+              }
+              catch (RedisException $e) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+                  'msg' => array('redis_error', $e)
+                );
+                continue;
+              }
+            }
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+              'msg' => array('rl_saved', $object)
+            );
+          }
+        break;
       }
     break;
     case 'get':
@@ -144,6 +206,31 @@ function ratelimit($_action, $_scope, $_data = null, $_extra = null) {
           }
           try {
             if ($rl_value = $redis->hGet('RL_VALUE', $_data)) {
+              $rl = explode(' / 1', $rl_value);
+              $data['value'] = $rl[0];
+              $data['frame'] = $rl[1];
+              return $data;
+            }
+            else {
+              return false;
+            }
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_scope, $_data_log),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          return false;
+        break;
+        case 'mailbox_default':
+          if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+            return false;
+          }
+          try {
+            if ($rl_value = $redis->hGet('RL_MBX_VALUE', $_data)) {
               $rl = explode(' / 1', $rl_value);
               $data['value'] = $rl[0];
               $data['frame'] = $rl[1];

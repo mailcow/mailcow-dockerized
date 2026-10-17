@@ -718,16 +718,41 @@ rspamd_config:register_symbol({
           end
         end
 
-        local redis_ret_domain = rspamd_redis_make_request(task,
+        -- No per-mailbox override for this user: try the domain's per-mailbox default
+        -- (RL_MBX_VALUE). If set, apply it with the user as bucket key so every mailbox
+        -- of the domain is limited individually. Otherwise fall back to the shared
+        -- domain-wide ratelimit (RL_VALUE[domain]).
+        local function redis_key_cb_mbx_default(err, data)
+          if err or type(data) ~= 'string' then
+            rspamd_logger.infox(rspamd_config, "no per-mailbox default ratelimit for domain %s (\"%s\") - trying shared domain ratelimit...", env_from_domain, err)
+
+            local redis_ret_domain = rspamd_redis_make_request(task,
+              redis_params, -- connect params
+              env_from_domain, -- hash key
+              false, -- is write
+              redis_key_cb_domain, --callback
+              'HGET', -- command
+              {'RL_VALUE', env_from_domain} -- arguments
+            )
+            if not redis_ret_domain then
+              rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for domain")
+            end
+          else
+            rspamd_logger.infox(rspamd_config, "found per-mailbox default ratelimit for domain %s with value %s, applying per-mailbox to user %s", env_from_domain, data, uname)
+            task:insert_result('DYN_RL', 0.0, data, uname)
+          end
+        end
+
+        local redis_ret_mbx_default = rspamd_redis_make_request(task,
           redis_params, -- connect params
           env_from_domain, -- hash key
           false, -- is write
-          redis_key_cb_domain, --callback
+          redis_key_cb_mbx_default, --callback
           'HGET', -- command
-          {'RL_VALUE', env_from_domain} -- arguments
+          {'RL_MBX_VALUE', env_from_domain} -- arguments
         )
-        if not redis_ret_domain then
-          rspamd_logger.infox(rspamd_config, "cannot make request to load ratelimit for domain")
+        if not redis_ret_mbx_default then
+          rspamd_logger.infox(rspamd_config, "cannot make request to load per-mailbox default ratelimit for domain")
         end
       else
         rspamd_logger.infox(rspamd_config, "found dynamic ratelimit in redis for user %s with value %s", uname, data)
