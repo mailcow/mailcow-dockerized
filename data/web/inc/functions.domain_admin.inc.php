@@ -156,7 +156,7 @@ function domain_admin($_action, $_data = null) {
               }
             }
           }
-          if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
+          if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new)) || $username_new == 'API') {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -183,6 +183,9 @@ function domain_admin($_action, $_data = null) {
             ':username_new' => $username_new,
             ':username' => $username
           ));
+          if ($username_new != $username) {
+            \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username, $username_new);
+          }
           if (!empty($domains)) {
             foreach ($domains as $domain) {
               $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
@@ -331,6 +334,8 @@ function domain_admin($_action, $_data = null) {
         $stmt->execute(array(
           ':username' => $username,
         ));
+        // sync sources created by this account must not pass to a re-created account of the same name
+        \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username);
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),

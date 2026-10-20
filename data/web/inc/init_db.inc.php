@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "18082026_1200";
+    $db_version = "16102026_1200";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -755,35 +755,153 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "imapsync_source" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "name" => "VARCHAR(100) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created_by" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "scope" => "ENUM('all','domain','user') NOT NULL DEFAULT 'user'",
+          "host1" => "VARCHAR(255) NOT NULL",
+          "port1" => "SMALLINT UNSIGNED NOT NULL",
+          "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
+          "auth_type" => "ENUM('PLAIN','LOGIN','CRAM-MD5','XOAUTH2') DEFAULT 'PLAIN'",
+          "oauth_flow" => "ENUM('client_credentials','authorization_code') NOT NULL DEFAULT 'client_credentials'",
+          "oauth_token_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_authorize_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_userinfo_endpoint" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_client_id" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_client_secret" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_scope" => "VARCHAR(500) DEFAULT NULL",
+          "oauth_extra_params" => "TEXT DEFAULT NULL",
+          "oauth_access_token" => "TEXT DEFAULT NULL",
+          "oauth_token_expires" => "BIGINT UNSIGNED DEFAULT NULL",
+          "oauth_last_refresh_error" => "TEXT DEFAULT NULL",
+          "oauth_last_refresh_attempt" => "DATETIME NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "uniq_creator_name" => array("created_by", "name")
+          ),
+          "key" => array(
+            "idx_created_by" => array("created_by"),
+            "idx_scope" => array("scope")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_domain" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "domain")
+          ),
+          "key" => array(
+            "idx_domain" => array("domain")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_domain" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_user" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "username")
+          ),
+          "key" => array(
+            "idx_username" => array("username")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_user" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_source_oauth_token" => array(
+        "cols" => array(
+          "source_id" => "INT NOT NULL",
+          "owner" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "access_token" => "TEXT DEFAULT NULL",
+          "refresh_token" => "TEXT DEFAULT NULL",
+          "token_expires" => "BIGINT UNSIGNED DEFAULT NULL",
+          "last_refresh_error" => "TEXT DEFAULT NULL",
+          "oauth_last_refresh_attempt" => "DATETIME NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("source_id", "owner", "username")
+          ),
+          "key" => array(
+            "idx_owner" => array("owner")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source_oauth_token" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "imapsync" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
           "user2" => "VARCHAR(255) NOT NULL",
-          "host1" => "VARCHAR(255) NOT NULL",
-          "authmech1" => "ENUM('PLAIN','LOGIN','CRAM-MD5') DEFAULT 'PLAIN'",
+          "source_id" => "INT NOT NULL",
           "regextrans2" => "VARCHAR(255) DEFAULT ''",
           "authmd51" => "TINYINT(1) NOT NULL DEFAULT 0",
           "domain2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "subfolder2" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "user1" => "VARCHAR(255) NOT NULL",
-          "password1" => "VARCHAR(255) NOT NULL",
+          "password1" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "exclude" => "VARCHAR(500) NOT NULL DEFAULT ''",
           "maxage" => "SMALLINT NOT NULL DEFAULT '0'",
           "mins_interval" => "SMALLINT UNSIGNED NOT NULL DEFAULT '0'",
           "maxbytespersecond" => "VARCHAR(50) NOT NULL DEFAULT '0'",
-          "port1" => "SMALLINT UNSIGNED NOT NULL",
-          "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
           "delete2duplicates" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "delete1" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "delete2" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "automap" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "skipcrossduplicates" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "custom_params" => "VARCHAR(512) NOT NULL DEFAULT ''",
+          "custom_params" => "TEXT",
+          // original legacy custom_params string, only set when options were dropped during migration (never used by the runner)
+          "custom_params_legacy" => "TEXT DEFAULT NULL",
           "timeout1" => "SMALLINT NOT NULL DEFAULT '600'",
           "timeout2" => "SMALLINT NOT NULL DEFAULT '600'",
           "subscribeall" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "dry" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "is_running" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "prio" => "INT NOT NULL DEFAULT 0",
           "returned_text" => "LONGTEXT",
           "last_run" => "TIMESTAMP NULL DEFAULT NULL",
           "success" => "TINYINT(1) UNSIGNED DEFAULT NULL",
@@ -795,6 +913,32 @@ function init_db_schema()
         "keys" => array(
           "primary" => array(
             "" => array("id")
+          ),
+          "key" => array(
+            "idx_source_id" => array("source_id"),
+            "idx_prio" => array("prio")
+          ),
+          "fkey" => array(
+            "fk_imapsync_source" => array(
+              "col" => "source_id",
+              "ref" => "imapsync_source.id",
+              "delete" => "RESTRICT",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "imapsync_settings" => array(
+        "cols" => array(
+          "name" => "VARCHAR(64) NOT NULL",
+          "value" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("name")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -1184,11 +1328,128 @@ function init_db_schema()
         }
       }
 
+      // Migrate legacy imapsync jobs (host/port/enc per job) to domain-scoped legacy sources
+      // Re-entrant: only rows with source_id IS NULL are migrated, the legacy columns are kept while any are left
+      if ($table == 'imapsync') {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'imapsync'");
+        if (count($stmt->fetchAll(PDO::FETCH_ASSOC)) != 0) {
+          $imapsync_cols = array_column($pdo->query("SHOW COLUMNS FROM `imapsync`")->fetchAll(PDO::FETCH_ASSOC), 'Field', 'Field');
+          if (isset($imapsync_cols['host1'])) {
+            if (!isset($imapsync_cols['source_id'])) {
+              $pdo->exec("ALTER TABLE `imapsync` ADD COLUMN `source_id` INT DEFAULT NULL");
+            }
+            if (!isset($imapsync_cols['custom_params_legacy'])) {
+              $pdo->exec("ALTER TABLE `imapsync` ADD COLUMN `custom_params_legacy` TEXT DEFAULT NULL");
+            }
+            // Converted JSON may not fit into the old VARCHAR(512)
+            $pdo->exec("ALTER TABLE `imapsync` MODIFY COLUMN `custom_params` TEXT");
+            $imapsync_allow = \Mailcow\Imapsync\Model\CustomParams::allowlist($GLOBALS['IMAPSYNC_OPTIONS'] ?? [], $GLOBALS['IMAPSYNC_OPTIONS_DEFAULT'] ?? []);
+            $source_sel = $pdo->prepare("SELECT `id` FROM `imapsync_source` WHERE `created_by` = '' AND `name` = :name");
+            $source_ins = $pdo->prepare("INSERT IGNORE INTO `imapsync_source` (`name`, `description`, `created_by`, `scope`, `host1`, `port1`, `enc1`, `auth_type`, `active`)
+              VALUES (:name, '', '', 'domain', :host, :port, :enc, :auth, 1)");
+            $source_domain_ins = $pdo->prepare("INSERT IGNORE INTO `imapsync_source_domain` (`source_id`, `domain`) VALUES (:id, :domain)");
+            $job_upd = $pdo->prepare("UPDATE `imapsync` SET `source_id` = :source_id, `custom_params` = :cp, `custom_params_legacy` = :cp_legacy,
+              `dry` = GREATEST(`dry`, :dry) WHERE `id` = :id AND `source_id` IS NULL");
+            $stmt = $pdo->query("SELECT `id`, `user2`, `host1`, `port1`, `enc1`, `custom_params` FROM `imapsync` WHERE `source_id` IS NULL");
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+              // Parse the legacy custom_params string like the old runner did (all tokens up to the next option are its value)
+              // into pairs valid under $IMAPSYNC_OPTIONS, a token after a flag is never its value.
+              // --authmech1 PLAIN|LOGIN|CRAM-MD5 becomes the source auth type, --dry the job's dry flag (never run a simulation for real).
+              // Anything else that does not fit is dropped, the original string is then kept in custom_params_legacy.
+              $pairs = array();
+              $auth = null;
+              $dry = false;
+              $dropped = false;
+              $tokens = preg_split('/\s+/', trim((string)$row['custom_params']), -1, PREG_SPLIT_NO_EMPTY);
+              for ($i = 0, $n = count($tokens); $i < $n; $i++) {
+                if ($tokens[$i][0] !== '-') {
+                  // stray value without option
+                  $dropped = true;
+                  continue;
+                }
+                @list($opt, $val) = explode('=', ltrim($tokens[$i], '-'), 2);
+                $opt = strtolower($opt);
+                $inline = ($val !== null);
+                $rest = array();
+                while ($i + 1 < $n && $tokens[$i + 1][0] !== '-') {
+                  $rest[] = $tokens[++$i];
+                }
+                $rule = ($opt === 'authmech1') ? true : ($imapsync_allow[$opt] ?? null);
+                if ($opt === 'dry' || $rule === false) {
+                  if ($inline || !empty($rest)) $dropped = true;
+                  if ($opt === 'dry') {
+                    $dry = true;
+                  } elseif (!$inline) {
+                    $pairs[] = array('o' => $opt, 'v' => '');
+                  }
+                  continue;
+                }
+                // unknown option, or "--opt=a b" (the old runner cut the value at the first space)
+                if ($rule === null || ($inline && !empty($rest))) {
+                  $dropped = true;
+                  continue;
+                }
+                $val = $inline ? $val : implode(' ', $rest);
+                if ($opt === 'authmech1' && $auth === null && in_array(strtoupper($val), array('PLAIN', 'LOGIN', 'CRAM-MD5'), true)) {
+                  $auth = strtoupper($val);
+                } elseif ($opt === 'authmech1' || trim($val) === ''
+                  || (is_string($rule) && preg_match('~^(?:' . str_replace('~', '\~', $rule) . ')$~D', $val) !== 1)) {
+                  $dropped = true;
+                } else {
+                  $pairs[] = array('o' => $opt, 'v' => $val);
+                }
+              }
+              // Old runner ignored the authmech1 column, only a custom --authmech1 was effective
+              $auth = $auth ?? 'PLAIN';
+              $host = strtolower(trim((string)$row['host1']));
+              $port = (intval($row['port1']) >= 1 && intval($row['port1']) <= 65535) ? intval($row['port1']) : 143;
+              $enc = in_array($row['enc1'], array('TLS', 'SSL', 'PLAIN'), true) ? $row['enc1'] : 'TLS';
+              $at = strrchr((string)$row['user2'], '@');
+              $domain = ($at === false) ? '' : strtolower(substr($at, 1));
+              // One source per (host, port, enc, auth, domain), name always unique and <= 100 chars
+              $name = 'legacy-' . mb_substr($host, 0, 60) . '-' . $port . '-' . substr(sha1($host . '|' . $port . '|' . $enc . '|' . $auth . '|' . $domain), 0, 8);
+              $source_sel->execute(array(':name' => $name));
+              if (($source_id = $source_sel->fetchColumn()) === false) {
+                $source_ins->execute(array(':name' => $name, ':host' => $host, ':port' => $port, ':enc' => $enc, ':auth' => $auth));
+                $source_sel->execute(array(':name' => $name));
+                if (($source_id = $source_sel->fetchColumn()) === false) continue;
+              }
+              if ($domain !== '') {
+                $source_domain_ins->execute(array(':id' => $source_id, ':domain' => $domain));
+              }
+              $job_upd->execute(array(
+                ':source_id' => $source_id,
+                ':cp' => json_encode($pairs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                ':cp_legacy' => $dropped ? $row['custom_params'] : null,
+                ':dry' => $dry ? 1 : 0,
+                ':id' => $row['id']
+              ));
+            }
+
+            // Never throw on leftovers: keep source_id nullable and the legacy columns, retried with the next db_version
+            $pending = intval($pdo->query("SELECT COUNT(*) FROM `imapsync` WHERE `source_id` IS NULL")->fetchColumn());
+            if ($pending > 0) {
+              $properties['cols']['source_id'] = "INT DEFAULT NULL";
+              $legacy_col_types = array(
+                'host1' => "VARCHAR(255) DEFAULT NULL",
+                'port1' => "SMALLINT UNSIGNED DEFAULT NULL",
+                'enc1' => "ENUM('TLS','SSL','PLAIN') DEFAULT NULL",
+                'authmech1' => "ENUM('PLAIN','LOGIN','CRAM-MD5') DEFAULT NULL"
+              );
+              foreach ($legacy_col_types as $col => $type) {
+                if (isset($imapsync_cols[$col])) $properties['cols'][$col] = $type;
+              }
+              error_log('mailcow: imapsync migration: ' . $pending . ' sync job(s) could not be assigned to a source and will not run');
+            }
+          }
+        }
+      }
+
       $stmt = $pdo->query("SHOW TABLES LIKE '" . $table . "'");
       $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
       if ($num_results != 0) {
         $stmt = $pdo->prepare("SELECT CONCAT('ALTER TABLE `', `table_schema`, '`.', `table_name`, ' DROP FOREIGN KEY ', `constraint_name`, ';') AS `FKEY_DROP` FROM `information_schema`.`table_constraints`
-          WHERE `constraint_type` = 'FOREIGN KEY' AND `table_name` = :table;");
+          WHERE `constraint_type` = 'FOREIGN KEY' AND `table_schema` = DATABASE() AND `table_name` = :table;");
         $stmt->execute(array(':table' => $table));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         while ($row = array_shift($rows)) {
@@ -1349,19 +1610,28 @@ function init_db_schema()
         AND (JSON_CONTAINS_PATH(`call`, 'one', '$[2].password')
           OR JSON_CONTAINS_PATH(`call`, 'one', '$[2].password2'));");
 
-    // Mitigate imapsync argument injection issue
-    $pdo->query("UPDATE `imapsync` SET `custom_params` = ''
-      WHERE `custom_params` LIKE '%pipemess%'
-        OR custom_params LIKE '%skipmess%'
-        OR custom_params LIKE '%delete2foldersonly%'
-        OR custom_params LIKE '%delete2foldersbutnot%'
-        OR custom_params LIKE '%regexflag%'
-        OR custom_params LIKE '%pipemess%'
-        OR custom_params LIKE '%regextrans2%'
-        OR custom_params LIKE '%maxlinelengthcmd%';");
+    // Mask syncjob secrets in old log entries (data and attr arguments of the logged call)
+    $mask_paths = array();
+    $unmasked = array();
+    foreach (array(3, 4) as $idx) {
+      foreach (array('password1', 'password2', 'oauth_client_secret', 'oauth_extra_params') as $key) {
+        $mask_paths[] = "'$[" . $idx . "]." . $key . "'";
+        // only rows still holding a value other than the string '*' (objects/arrays/numbers included), missing paths are NULL
+        $unmasked[] = "JSON_UNQUOTE(JSON_EXTRACT(`call`, '$[" . $idx . "]." . $key . "')) <> '*'";
+      }
+    }
+    $pdo->exec("UPDATE `logs` SET `call` = JSON_REPLACE(`call`, " . implode(", '*', ", $mask_paths) . ", '*')
+      WHERE JSON_VALID(`call`)
+        AND (JSON_VALUE(`call`, '$[0]') = 'syncjob'
+          OR JSON_VALUE(`call`, '$[0]') LIKE 'imapsync%'
+          OR (JSON_VALUE(`call`, '$[0]') = 'mailbox' AND JSON_VALUE(`call`, '$[2]') = 'syncjob'))
+        AND (" . implode(" OR ", $unmasked) . ");");
 
     // Migrate webauthn tfa
     $stmt = $pdo->query("ALTER TABLE `tfa` MODIFY COLUMN `authmech` ENUM('yubi_otp', 'u2f', 'hotp', 'totp', 'webauthn')");
+
+    // Syncjobs: seed global settings
+    $pdo->query("INSERT IGNORE INTO `imapsync_settings` (`name`, `value`) VALUES ('max_parallel', '1')");
 
     // Inject admin if not exists
     $stmt = $pdo->query("SELECT NULL FROM `admin`");
@@ -1544,6 +1814,10 @@ function init_db_schema()
 }
 if (php_sapi_name() == "cli") {
   include '/web/inc/vars.inc.php';
+  if (file_exists('/web/inc/vars.local.inc.php')) {
+    include '/web/inc/vars.local.inc.php';
+  }
+  require_once '/web/inc/lib/vendor/autoload.php';
   include '/web/inc/functions.inc.php';
   include '/web/inc/functions.docker.inc.php';
   // $now = new DateTime();
@@ -1561,7 +1835,7 @@ if (php_sapi_name() == "cli") {
     //PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '" . $offset . "', group_concat_max_len = 3423543543;",
   ];
   $pdo = new PDO($dsn, $database_user, $database_pass, $opt);
-  $stmt = $pdo->query("SELECT COUNT('OK') AS OK_C FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'sogo_view' OR TABLE_NAME = '_sogo_static_view';");
+  $stmt = $pdo->query("SELECT COUNT('OK') AS OK_C FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND (TABLE_NAME = 'sogo_view' OR TABLE_NAME = '_sogo_static_view');");
   $res = $stmt->fetch(PDO::FETCH_ASSOC);
   if (intval($res['OK_C']) === 2) {
     // Be more precise when replacing into _sogo_static_view, col orders may change
