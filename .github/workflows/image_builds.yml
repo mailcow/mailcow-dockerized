@@ -37,6 +37,18 @@ jobs:
           cp helper-scripts/docker-compose.override.yml.d/BUILD_FLAGS/docker-compose.override.yml docker-compose.override.yml
       - name: Build Docker Images
         run: |
-          docker compose build ${image}
+          docker compose build "${image}"
         env:
           image: ${{ matrix.images }}
+      - name: Check PHP-FPM image version
+        if: matrix.images == 'php-fpm-mailcow'
+        run: |
+          image=$(docker compose config --format json | jq -r '.services["php-fpm-mailcow"].image')
+          expected=${image##*:}
+          expected=${expected%-*}
+          docker run --rm --network none --entrypoint php "$image" -r '
+            if (PHP_VERSION !== $argv[1]) {
+              fwrite(STDERR, "Expected PHP " . $argv[1] . ", got " . PHP_VERSION . PHP_EOL);
+              exit(1);
+            }
+          ' "$expected"

@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.24
+FROM php:8.2.35-fpm-alpine3.24
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
