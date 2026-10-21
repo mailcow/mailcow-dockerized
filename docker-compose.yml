@@ -117,7 +117,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.2.29-3
+      image: ghcr.io/mailcow/phpfpm:8.2.35-1
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -200,7 +200,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.11-1
+      image: ghcr.io/mailcow/sogo:5.12.12-1
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -419,7 +419,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.4-1
+      image: ghcr.io/mailcow/nginx:1.30.6-1
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

@@ -413,7 +413,12 @@
         "task": "Naloga",
         "user_link": "Uporabniška povezava",
         "iam_realm": "Realm",
-        "needs_restart": "potreben je ponovni zagon"
+        "needs_restart": "potreben je ponovni zagon",
+        "ui_theme": "Tema",
+        "ui_theme_dark": "Vključuje različico s temnim načinom",
+        "ui_theme_default": "Privzeto",
+        "ui_theme_info": "Teme so mape v <code>data/web/css/themes/&lt;name&gt;/</code>, ki vsebujejo naslednje datoteke:<ul class=\"mb-0\"><li><code>theme.css</code> (obvezna)</li><li><code>dark.css</code> (neobvezna, temni način)</li><li><code>bootstrap.css</code> (neobvezna, nadomesti osnovno temo Bootstrap)</li><li><code>theme.json</code> (neobvezna, <code>name</code> in <code>description</code>)</li></ul>",
+        "ui_theme_none": "Tem ni bilo mogoče najti."
     },
     "danger": {
         "alias_goto_identical": "Vzdevek in ciljni naslov se ne smeta ujemati",
@@ -561,7 +566,8 @@
         "version_invalid": "Različica %s je neveljavna",
         "tfa_removal_blocked": "Dvofaktorske avtentikacije ni mogoče odstraniti, ker je obvezna za vaš račun.",
         "quarantine_category_invalid": "Kategorija karantene mora biti ena od: add_header, reject, all",
-        "external_goto_denied": "Zunanji naslov goto %s ni dovoljen"
+        "external_goto_denied": "Zunanji naslov goto %s ni dovoljen",
+        "ui_theme_invalid": "Tema ni najdena"
     },
     "debug": {
         "containers_info": "Informacije o zabojniku",
@@ -1206,7 +1212,8 @@
         "cors_headers_edited": "Nastavitve CORS so bile shranjene",
         "item_released": "Izdan je bil element %s",
         "saved_settings": "Shranjene nastavitve",
-        "learned_ham": "Uspešno naučen ID %s kot zaželjen"
+        "learned_ham": "Uspešno naučen ID %s kot zaželjen",
+        "ui_theme_modified": "Tema je bila uspešno shranjena"
     },
     "start": {
         "imap_smtp_server_auth_info": "Prosimo, uporabite svoj celoten e-poštni naslov in mehanizem za preverjanje pristnosti PLAIN.<br>\nVaši podatki za prijavo bodo šifrirani z obveznim šifriranjem na strani strežnika.",

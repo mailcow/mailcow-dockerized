@@ -17,15 +17,15 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
 }
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
-    background-color: #5e5e5e;
+    background-color: var(--mc-dtr-hover-bg);
 }
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before,
 table.dataTable td.dt-control:before {
-    background-color: #979797 !important;
-    border: 1.5px solid #616161 !important;
+    background-color: var(--mc-dtr-bg) !important;
+    border: 1.5px solid var(--mc-dtr-border) !important;
     border-radius: 2px !important;
-    color: #fff;
+    color: var(--mc-dtr-color);
     height: 1em;
     width: 1em;
     line-height: 1.25em;
@@ -37,7 +37,7 @@ table.dataTable td.dt-control:before {
 table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, 
 table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
 table.dataTable td.dt-control:before {
-    background-color: #979797 !important;
+    background-color: var(--mc-dtr-active-bg) !important;
 }
 table.dataTable.table-striped>tbody>tr>td {
     vertical-align: middle;

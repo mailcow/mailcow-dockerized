@@ -121,6 +121,8 @@ $AVAILABLE_LANGUAGES = array(
 // default theme is lumen
 // additional themes can be found here: https://bootswatch.com/
 // copy them to data/web/css/themes/{THEME-NAME}-bootstrap.css
+// or use a theme folder data/web/css/themes/{THEME-NAME}/ (theme.css, optional dark.css, bootstrap.css, theme.json)
+// theme folders can be selected in System > Configuration > Customize, which overrides $UI_THEME
 $UI_THEME = "lumen";
 
 // Show DKIM private keys - false by default

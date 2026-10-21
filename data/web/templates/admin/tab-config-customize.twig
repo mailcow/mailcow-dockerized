@@ -7,7 +7,33 @@
       <span class="d-none d-md-block">{{ lang.admin.customize }}</span>
     </div>
     <div id="collapse-tab-config-customize" class="card-body collapse" data-bs-parent="#admin-content">
-      <legend><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend><hr />
+      <legend><i class="bi bi-palette"></i> {{ lang.admin.ui_theme }}</legend><hr />
+      <div class="text-muted mb-3">{{ lang.admin.ui_theme_info|raw }}</div>
+      <form class="form" data-id="ui_theme" role="form" method="post">
+        <div class="row">
+          <div class="col-12 col-md-6 col-lg-4">
+            <p><select data-width="100%" id="ui_theme" name="ui_theme" class="selectpicker show-tick">
+              <option value="" {% if not ui_theme %}selected{% endif %}>{{ lang.admin.ui_theme_default }}</option>
+              {% for key, theme in ui_themes %}
+                <option value="{{ key }}" {% if ui_theme == key %}selected{% endif %}>{{ theme.name }}</option>
+              {% endfor %}
+            </select></p>
+          </div>
+        </div>
+        {% if ui_themes %}
+          <ul class="list-unstyled text-muted small mb-4">
+            {% for key, theme in ui_themes %}
+              <li><b>{{ theme.name }}</b> <code>{{ key }}</code>{% if theme.dark %} <i class="bi bi-moon-fill" title="{{ lang.admin.ui_theme_dark }}"></i>{% endif %}{% if theme.description %} - {{ theme.description }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted small mb-4">{{ lang.admin.ui_theme_none }}</p>
+        {% endif %}
+        <p><div class="btn-group">
+          <button class="btn btn-sm btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-item="admin" data-id="ui_theme" data-api-url='edit/ui_theme' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+        </div></p>
+      </form>
+      <legend style="padding-top:20px"><i class="bi bi-file-image"></i> {{ lang.admin.change_logo }}</legend><hr />
       <p class="text-muted">{{ lang.admin.logo_info }}</p>
       <form class="form-inline" role="form" method="post" enctype="multipart/form-data">
         <div class="mb-4">

@@ -2038,6 +2038,9 @@ if (isset($_GET['query'])) {
         case "custom_login":
           process_edit_return(customize('edit', 'custom_login', $attr));
         break;
+        case "ui_theme":
+          process_edit_return(customize('edit', 'ui_theme', $attr));
+        break;
         case "self":
           if ($_SESSION['mailcow_cc_role'] == "domainadmin") {
             process_edit_return(domain_admin('edit', $attr));
