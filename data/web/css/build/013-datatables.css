@@ -15,6 +15,10 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     border-bottom: 1px solid rgba(0, 0, 0, 0.129);
     padding: 0.5em 0;
 }
+/* like the first entry has no top padding, the last one needs no bottom padding */
+table.dataTable>tbody>tr.child ul.dtr-details>li:last-child {
+    padding-bottom: 0;
+}
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
     background-color: var(--mc-dtr-hover-bg);
@@ -28,7 +32,8 @@ table.dataTable td.dt-control:before {
     color: var(--mc-dtr-color);
     height: 1em;
     width: 1em;
-    line-height: 1.25em;
+    line-height: 1em;
+    margin-top: calc(-0.5em - 1.5px);
     border-radius: 0px;
     box-shadow: none;
     font-size: 14px;
@@ -39,11 +44,29 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before,
 table.dataTable td.dt-control:before {
     background-color: var(--mc-dtr-active-bg) !important;
 }
+/* The default initial order targets column 0, which is usually the non-orderable expand column */
+table.dataTable thead > tr > th.sorting_disabled.sorting_asc,
+table.dataTable thead > tr > th.sorting_disabled.sorting_desc {
+    padding-right: 0.5rem;
+    cursor: auto;
+}
+table.dataTable thead > tr > th.sorting_disabled.sorting_asc:before,
+table.dataTable thead > tr > th.sorting_disabled.sorting_asc:after,
+table.dataTable thead > tr > th.sorting_disabled.sorting_desc:before,
+table.dataTable thead > tr > th.sorting_disabled.sorting_desc:after {
+    display: none;
+}
 table.dataTable.table-striped>tbody>tr>td {
     vertical-align: middle;
 }
 table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
-    margin-top: 7px;
+    /* centers the 1em checkbox in the 1.5em line, level with the expand control */
+    margin-top: 0.25em;
+}
+/* the vertical margin is meant for the tag editor in edit forms, in tables it only adds height */
+table.dataTable .tag-badge {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 td.dtr-col-lg {
     min-width: 350px;

@@ -959,7 +959,7 @@
         "mailbox_defaults_info": "Define default settings for new mailboxes.",
         "mailbox_defquota": "Default mailbox size",
         "mailbox_templates": "Mailbox Templates",
-        "mailbox_quota": "Max. size of a mailbox",
+        "mailbox_quota": "Max. mailbox size",
         "mailboxes": "Mailboxes",
         "max_aliases": "Max. aliases",
         "max_mailboxes": "Max. possible mailboxes",
