@@ -15,6 +15,10 @@ table.dataTable>tbody>tr.child ul.dtr-details>li {
     border-bottom: 1px solid rgba(0, 0, 0, 0.129);
     padding: 0.5em 0;
 }
+/* like the first entry has no top padding, the last one needs no bottom padding */
+table.dataTable>tbody>tr.child ul.dtr-details>li:last-child {
+    padding-bottom: 0;
+}
 table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before:hover, 
 table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before:hover {
     background-color: var(--mc-dtr-hover-bg);
