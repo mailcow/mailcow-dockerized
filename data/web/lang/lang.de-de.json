@@ -144,6 +144,7 @@
         "api_info": "Die API befindet sich noch in Entwicklung, die Dokumentation kann unter <a href=\"/api\">/api</a> abgerufen werden.",
         "api_key": "API-Key",
         "api_skip_ip_check": "IP-Check für API nicht ausführen",
+        "app_admin_only": "Nur für Admins",
         "app_hide": "Für Login verstecken",
         "app_links": "App-Links",
         "app_name": "App-Name",

@@ -94,7 +94,7 @@
           {% endfor %}
           {% for row in app_links %}
             {% for key, val in row %}
-            {% if not val.hide %}
+            {% if not val.hide and not val.admin_only %}
               <div class="m-2">
                 <a href="{{ val.link }}" role="button" class="btn btn-primary btn-block">{{ key }}</a>
               </div>

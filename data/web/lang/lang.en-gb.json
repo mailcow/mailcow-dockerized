@@ -148,6 +148,7 @@
         "api_read_only": "Read-Only Access",
         "api_read_write": "Read-Write Access",
         "api_skip_ip_check": "Skip IP check for API",
+        "app_admin_only": "Admins only",
         "app_hide": "Hide for login",
         "app_links": "App links",
         "app_name": "App name",
