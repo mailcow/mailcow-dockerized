@@ -610,7 +610,7 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: 'RL',
+          title: lang_edit.ratelimit,
           data: 'rl',
           searchable: false,
           orderable: false,
