@@ -44,6 +44,7 @@ table.dataTable td.dt-control:before {
 table.dataTable thead > tr > th.sorting_disabled.sorting_asc,
 table.dataTable thead > tr > th.sorting_disabled.sorting_desc {
     padding-right: 0.5rem;
+    cursor: auto;
 }
 table.dataTable thead > tr > th.sorting_disabled.sorting_asc:before,
 table.dataTable thead > tr > th.sorting_disabled.sorting_asc:after,
@@ -57,6 +58,11 @@ table.dataTable.table-striped>tbody>tr>td {
 table.dataTable.table-striped>tbody>tr>td>input[type="checkbox"] {
     /* centers the 1em checkbox in the 1.5em line, level with the expand control */
     margin-top: 0.25em;
+}
+/* the vertical margin is meant for the tag editor in edit forms, in tables it only adds height */
+table.dataTable .tag-badge {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 td.dtr-col-lg {
     min-width: 350px;
