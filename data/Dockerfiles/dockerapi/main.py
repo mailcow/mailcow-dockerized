@@ -115,7 +115,15 @@ async def get_containers(all: bool = False):
 
   containers = {}
   try:
-    for container in (await dockerapi.async_docker_client.containers.list(all=all)):
+    container_list_options = {"all": all}
+    compose_project_name = os.environ.get('COMPOSE_PROJECT_NAME')
+    if compose_project_name:
+      # Filter before inspecting containers so unrelated projects cannot delay
+      # mailcow operations when their container metadata is unavailable.
+      container_list_options["filters"] = json.dumps({
+        "label": [f"com.docker.compose.project={compose_project_name}"]
+      })
+    for container in (await dockerapi.async_docker_client.containers.list(**container_list_options)):
       container_info = await container.show()
       containers.update({container_info['Id']: container_info})
     return Response(content=json.dumps(containers, indent=4), media_type="application/json")

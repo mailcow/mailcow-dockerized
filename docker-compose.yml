@@ -601,7 +601,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.12
+      image: ghcr.io/mailcow/dockerapi:2.12a
       security_opt:
         - label=disable
       restart: always
@@ -610,6 +610,7 @@ services:
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
