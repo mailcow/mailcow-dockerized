@@ -22,10 +22,12 @@ use PDOException;
  */
 class OAuthService
 {
-    /** Tokens expiring within this many seconds are refreshed */
-    private const REFRESH_AHEAD = 300;
+    /** Tokens expiring within this many seconds are refreshed (the runner starts jobs with >= 15 min left) */
+    private const REFRESH_AHEAD = 1200;
     /** A token whose last refresh failed is retried after this many seconds */
-    private const RETRY_AFTER = 900;
+    private const RETRY_AFTER = 180;
+    /** Extra params that belong to the browser sign-in; all others go to the token request */
+    private const AUTHORIZE_PARAMS = ['prompt', 'access_type', 'login_hint', 'domain_hint', 'hd'];
     /** Per-user tokens that no job uses are kept this long (time to save the job after signing in) */
     private const UNUSED_TOKEN_GRACE = 86400;
 
@@ -106,9 +108,11 @@ class OAuthService
         if (!$this->endpointAllowed($endpoint, $source->createdBy)) {
             return null;
         }
-        return $endpoint . (str_contains($endpoint, '?') ? '&' : '?') . http_build_query(['client_id' => $source->clientId,
+        // select_account: never sign in silently with the account the browser already uses (often the admin's)
+        $params = array_merge(['prompt' => 'select_account'], $this->extraParamsFor($source, true), ['client_id' => $source->clientId,
             'response_type' => 'code', 'redirect_uri' => $this->redirectUri(), 'response_mode' => 'query',
             'scope' => $source->oauthScope, 'state' => $state]);
+        return $endpoint . (str_contains($endpoint, '?') ? '&' : '?') . http_build_query($params);
     }
 
     /**
@@ -248,9 +252,17 @@ class OAuthService
         return $value ?? throw new UserError('imapsync_source_oauth_invalid');
     }
 
+    /** Stored extra params of the browser sign-in ($authorize) or of the token request */
+    private function extraParamsFor(Source $source, bool $authorize): array
+    {
+        $extra = json_decode((string)$source->extraParams, true);
+        return array_filter(is_array($extra) ? $extra : [],
+            fn($key): bool => in_array($key, self::AUTHORIZE_PARAMS, true) === $authorize, ARRAY_FILTER_USE_KEY);
+    }
+
     /**
-     * Extra token request parameters: a JSON object with scalar values, as string or as array
-     * (after 011-api.js auto-parsing). Returns the JSON to store, null for none.
+     * Extra parameters: a JSON object with scalar values, as string or as array (after 011-api.js
+     * auto-parsing). Returns the JSON to store, null for none.
      */
     private function extraParams(mixed $extra): ?string
     {
@@ -277,8 +289,7 @@ class OAuthService
      */
     private function requestToken(Source $source, array $grant): array
     {
-        $extra = json_decode((string)$source->extraParams, true);
-        $post = array_merge(is_array($extra) ? $extra : [],
+        $post = array_merge($this->extraParamsFor($source, false),
             ['client_id' => $source->clientId, 'client_secret' => $source->clientSecret, 'scope' => $source->oauthScope], $grant);
         $token = $this->client->request((string)$source->tokenEndpoint, $this->isStrict($source->createdBy), $post);
         if (empty($token['access_token']) || !is_string($token['access_token'])) {

@@ -7,6 +7,7 @@ namespace Mailcow\Imapsync\Controller;
 use Mailcow\Core\AccessDenied;
 use Mailcow\Core\ApiResponse;
 use Mailcow\Core\UserError;
+use Mailcow\Imapsync\Model\Source;
 use Mailcow\Imapsync\Service\JobService;
 use Mailcow\Imapsync\Service\SourceService;
 use PDOException;
@@ -37,8 +38,11 @@ class ImapsyncApiController
     /** POST add/syncjob_source */
     public function addSource(array $attr): bool
     {
-        return $this->handle('add', 'source', $attr,
-            fn(array $log): bool => $this->response->success(['imapsync_source_added', $this->sources->create($attr)->name], $log));
+        return $this->handle('add', 'source', $attr, function (array $log) use ($attr): bool {
+            $source = $this->sources->create($attr);
+            $this->tokenFailure($source, $log);
+            return $this->response->success(['imapsync_source_added', $source->name], $log);
+        });
     }
 
     /** POST edit/syncjob: one message per id; `id` in $attr wins over $items (array_merge like before) */
@@ -70,8 +74,11 @@ class ImapsyncApiController
         $data = array_merge(['id' => $items], $attr);
         return $this->handle('edit', 'source', $data, function (array $log) use ($data): bool {
             $this->sources->requireEditor();
-            return $this->batch(array_filter((array)($data['id'] ?? []), 'is_numeric'), $log,
-                fn(int $id): array => ['imapsync_source_modified', $this->sources->update($id, $data)->name]);
+            return $this->batch(array_filter((array)($data['id'] ?? []), 'is_numeric'), $log, function (int $id) use ($data, $log): array {
+                $source = $this->sources->update($id, $data);
+                $this->tokenFailure($source, $log);
+                return ['imapsync_source_modified', $source->name];
+            });
         });
     }
 
@@ -199,6 +206,14 @@ class ImapsyncApiController
             $this->response->danger(['mysql_error', $e->getMessage()], ['imapsync_account_changed', $old, $new]);
         }
         $this->response->flush();
+    }
+
+    /** The token fetched when saving a client_credentials source failed: the source is saved, report the error */
+    private function tokenFailure(Source $source, array $log): void
+    {
+        if ($source->usesClientCredentials() && $source->active === 1 && $source->lastRefreshError !== null) {
+            $this->response->danger(['imapsync_source_token_refresh_failed', $source->name . ' (' . $source->lastRefreshError . ')'], $log);
+        }
     }
 
     /**

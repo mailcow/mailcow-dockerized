@@ -83,6 +83,7 @@ RUN addgroup -g 5000 vmail \
   perl-test-warn \
   perl-try-tiny \
   perl-unicode-string \
+  perl-proc-processtable \
   perl-app-cpanminus \
   procps \
   python3 \

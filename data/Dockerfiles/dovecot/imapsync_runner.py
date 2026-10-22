@@ -16,29 +16,41 @@ run_dir = '/tmp'
 # Max size of imapsync output stored in returned_text (the tail holds the summary)
 max_output = 16 * 1024 * 1024
 lock_file = run_dir + '/imapsync_busy.lock'
+# An OAuth run needs a token valid this long at start (half the lifetime for short-lived tokens)
+token_min_valid = 900
+# Refreshed tokens are written to the token files of running jobs this often, imapsync re-reads them on reconnect
+token_sync_interval = 60
 
 # Next due job: higher prio first, never-run jobs first, then oldest run
 next_sql = """SELECT i.id, i.user1, i.user2, i.password1, i.exclude, i.delete2duplicates, i.maxage,
   i.subfolder2, i.delete1, i.delete2, i.automap, i.skipcrossduplicates, i.maxbytespersecond, i.custom_params,
   i.subscribeall, i.timeout1, i.timeout2, i.dry, i.source_id,
-  s.host1, s.port1, s.enc1, s.auth_type, s.oauth_flow, s.oauth_access_token, s.oauth_token_expires
+  s.host1, s.port1, s.enc1, s.auth_type, s.oauth_flow
     FROM imapsync i JOIN imapsync_source s ON i.source_id = s.id
       WHERE i.active = 1
         AND s.active = 1
         AND i.is_running = 0
         AND (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(i.last_run) > i.mins_interval * 60 OR i.last_run IS NULL)
+        {skip}
   ORDER BY i.prio DESC, i.last_run IS NOT NULL, i.last_run ASC, i.id ASC
   LIMIT 1"""
 # Atomic claim, a job is only started when this flips is_running 0 -> 1
 claim_sql = """UPDATE imapsync SET is_running = 1, success = NULL, exit_status = NULL
   WHERE id = %s AND is_running = 0 AND active = 1"""
-# Token of authorization_code sources: source + local mailbox (user2) + remote user (user1)
-token_sql = """SELECT access_token, token_expires FROM imapsync_source_oauth_token
+# Access token: client_credentials share the source token, authorization_code use the token of
+# source + local mailbox (user2) + remote user (user1). issued/error describe the last refresh.
+source_token_sql = """SELECT oauth_access_token AS access_token, oauth_token_expires AS token_expires,
+  UNIX_TIMESTAMP(oauth_last_refresh_attempt) AS issued, oauth_last_refresh_error AS error
+  FROM imapsync_source WHERE id = %s"""
+user_token_sql = """SELECT access_token, token_expires, UNIX_TIMESTAMP(oauth_last_refresh_attempt) AS issued,
+  last_refresh_error AS error FROM imapsync_source_oauth_token
   WHERE source_id = %s AND owner = %s AND username = %s"""
 
 conn = None
 # Popen => job of running workers
 running = {}
+# Jobs released without a run (token not ready), skipped for the rest of this runner round
+deferred = set()
 stopping = False
 
 def num(value):
@@ -88,6 +100,41 @@ def finish_job(job_id, text, success, exit_status):
   except MySQLdb.Error:
     query("UPDATE imapsync SET success = 0, last_run = NOW(), is_running = 0 WHERE id = %s", (job_id,))
 
+# Release a job without a run; last_run stays, so the next runner round retries it
+def defer_job(job_id, text, exit_status):
+  query("UPDATE imapsync SET returned_text = %s, success = 0, exit_status = %s, is_running = 0 WHERE id = %s",
+    (text, exit_status, job_id))
+  deferred.add(job_id)
+
+def oauth_token(j):
+  if j['oauth_flow'] == 'authorization_code':
+    return query(user_token_sql, (j['source_id'], j['user2'], j['user1'])).fetchone() or {}
+  return query(source_token_sql, (j['source_id'],)).fetchone() or {}
+
+# Valid for token_min_valid, or half the lifetime of a short-lived token (known when its last refresh succeeded)
+def token_ready(row):
+  token, expires, issued = row.get('access_token'), row.get('token_expires'), row.get('issued')
+  if not token or expires is None:
+    return False
+  need = token_min_valid
+  if issued and not row.get('error') and expires > int(issued):
+    need = min(need, (expires - int(issued)) // 2)
+  return expires - time.time() >= need
+
+# Write a refreshed token over the token file of a running job (atomic, same path)
+def sync_token_file(oauth):
+  token = oauth_token(oauth['job']).get('access_token')
+  if not token or token == oauth['token']:
+    return
+  fd, tmp = tempfile.mkstemp(prefix='imapsync.', dir=run_dir)
+  try:
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
+      f.write(token + '\n')
+    os.replace(tmp, oauth['file'])
+    oauth['token'] = token
+  except OSError:
+    unlink([tmp])
+
 # Max concurrent imapsync processes and global per-process bandwidth cap in bytes/s (0 = off),
 # re-read before every claim round so changes apply to long runs
 def read_settings():
@@ -104,18 +151,15 @@ def prepare_job(j, global_bw, files):
     return path
 
   auth_type = j['auth_type'] or 'PLAIN'
+  oauth = None
   if auth_type == 'XOAUTH2':
-    # authorization_code: token of this local mailbox + remote user, client_credentials: shared source token
-    token, expires = j['oauth_access_token'], j['oauth_token_expires']
-    if j['oauth_flow'] == 'authorization_code':
-      row = query(token_sql, (j['source_id'], j['user2'], j['user1'])).fetchone() or {}
-      token, expires = row.get('access_token'), row.get('token_expires')
-    # Skip sync if the cached token is missing or about to expire (<2 min)
-    if not token or expires is None or expires - time.time() < 120:
-      finish_job(j['id'], "OAuth access token for the configured source is missing or expires too soon; refresh cron will retry.",
-        0, 'OAUTH_TOKEN_NOT_READY')
+    row = oauth_token(j)
+    if not token_ready(row):
+      defer_job(j['id'], "OAuth access token for the configured source is missing or expires too soon; refresh cron will retry.",
+        'OAUTH_TOKEN_NOT_READY')
       return None
-    auth_args = ['--authmech1', 'XOAUTH2', '--oauthaccesstoken1', tmpfile(token + '\n')]
+    oauth = {'job': j, 'token': row['access_token'], 'file': tmpfile(row['access_token'] + '\n')}
+    auth_args = ['--authmech1', 'XOAUTH2', '--oauthaccesstoken1', oauth['file']]
   else:
     auth_args = ['--passfile1', tmpfile(j['password1'] + '\n')]
     # imapsync auto-picks PLAIN, only pass --authmech1 for LOGIN/CRAM-MD5
@@ -140,7 +184,8 @@ def prepare_job(j, global_bw, files):
   if global_bw > 0 and (eff_bw <= 0 or eff_bw > global_bw):
     eff_bw = global_bw
 
-  cmd = ['/usr/local/bin/imapsync', '--tmpdir', '/tmp', '--nofoldersizes', '--addheader']
+  # --nolog: the output is stored in returned_text, imapsync's own log dir would be the (read-only) cwd
+  cmd = ['/usr/local/bin/imapsync', '--tmpdir', '/tmp', '--nolog', '--nofoldersizes', '--addheader']
   if num(j['timeout1']) > 0:
     cmd += ['--timeout1', str(j['timeout1'])]
   if num(j['timeout2']) > 0:
@@ -154,7 +199,7 @@ def prepare_job(j, global_bw, files):
   if eff_bw > 0:
     cmd += ['--maxbytespersecond', str(eff_bw)]
   for col, opt in (('delete2duplicates', '--delete2duplicates'), ('subscribeall', '--subscribeall'),
-      ('delete1', '--delete'), ('delete2', '--delete2'), ('automap', '--automap'),
+      ('delete1', '--delete1'), ('delete2', '--delete2'), ('automap', '--automap'),
       ('skipcrossduplicates', '--skipcrossduplicates')):
     if j[col] == 1:
       cmd.append(opt)
@@ -167,7 +212,7 @@ def prepare_job(j, global_bw, files):
     cmd.append('--dry')
   cmd += ['--no-modulesversion', '--noreleasecheck'] + custom_params
 
-  return {'id': j['id'], 'files': files, 'outfile': tmpfile(''), 'cmd': cmd}
+  return {'id': j['id'], 'files': files, 'outfile': tmpfile(''), 'cmd': cmd, 'oauth': oauth}
 
 # Worker: imapsync with output to a file, no inherited fds (DB socket, lock)
 def start_job(job):
@@ -225,6 +270,7 @@ with open('/etc/sogo/sieve.creds') as f:
 
 # Worker pool: keep up to max_parallel workers busy, claim the next due job whenever a slot is free
 # (after every worker exit and at least every 10 seconds while workers run)
+last_token_sync = time.monotonic()
 try:
   while True:
     for proc, job in list(running.items()):
@@ -232,14 +278,25 @@ try:
         del running[proc]
         reap_job(job)
 
+    if time.monotonic() - last_token_sync >= token_sync_interval:
+      last_token_sync = time.monotonic()
+      for job in running.values():
+        if job['oauth']:
+          try:
+            sync_token_file(job['oauth'])
+          except MySQLdb.Error as e:
+            print('imapsync job %d: %s' % (job['id'], e), file=sys.stderr)
+
     max_parallel, global_bw = read_settings()
-    attempts = 0
-    while not stopping and len(running) < max_parallel and attempts < 100:
-      attempts += 1
-      j = query(next_sql).fetchone()
+    # Deferred and finished jobs drop out of next_sql, only failed claims are capped
+    failed_claims = 0
+    while not stopping and len(running) < max_parallel and failed_claims < 100:
+      skip = ('AND i.id NOT IN (%s)' % ', '.join(['%s'] * len(deferred))) if deferred else ''
+      j = query(next_sql.format(skip=skip), tuple(deferred) or None).fetchone()
       if not j:
         break
       if query(claim_sql, (j['id'],)).rowcount != 1:
+        failed_claims += 1
         continue
 
       files = []

@@ -37,7 +37,7 @@ class Source
     public ?string $clientId = null;
     public ?string $clientSecret = null;
     public ?string $oauthScope = null;
-    /** Extra token request parameters, JSON object text */
+    /** Extra OAuth parameters (sign-in or token request, see OAuthService), JSON object text */
     public ?string $extraParams = null;
     /** Shared token of a client_credentials source */
     public ?string $accessToken = null;

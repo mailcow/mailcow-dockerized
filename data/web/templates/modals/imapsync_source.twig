@@ -9,6 +9,29 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_imapsync_source">
           <input type="hidden" value="0" name="active">
+          <div class="row mb-3">
+            <label class="control-label col-sm-2 text-sm-end">{{ lang.syncjobs.source_presets }}</label>
+            <div class="col-sm-10 small">
+              {% if mailcow_cc_role != 'user' %}
+              <div class="d-flex flex-wrap column-gap-3">
+                <a href="#" class="imapsync-source-preset" data-preset="m365_app">Microsoft 365 ({{ lang.syncjobs.source_flow_badge_app }})</a>
+                <a href="#" class="imapsync-source-preset" data-preset="m365_user">Microsoft 365 ({{ lang.syncjobs.source_flow_badge_user }})</a>
+                <a href="#" class="imapsync-source-preset" data-preset="google_user">Google ({{ lang.syncjobs.source_flow_badge_user }})</a>
+              </div>
+              {% endif %}
+              <div class="d-flex flex-wrap column-gap-3">
+                <a href="#" class="imapsync-source-preset" data-preset="gmail">Gmail</a>
+                <a href="#" class="imapsync-source-preset" data-preset="gmx">GMX</a>
+                <a href="#" class="imapsync-source-preset" data-preset="webde">WEB.DE</a>
+                <a href="#" class="imapsync-source-preset" data-preset="tonline">T-Online</a>
+                <a href="#" class="imapsync-source-preset" data-preset="icloud">iCloud</a>
+                <a href="#" class="imapsync-source-preset" data-preset="yahoo">Yahoo</a>
+                <a href="#" class="imapsync-source-preset" data-preset="ionos">IONOS</a>
+                <a href="#" class="imapsync-source-preset" data-preset="strato">STRATO</a>
+              </div>
+              <span class="text-muted">{{ lang.syncjobs.source_presets_hint }}</span>
+            </div>
+          </div>
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end" for="addsrc_name">{{ lang.syncjobs.source_name }}</label>
             <div class="col-sm-10">
@@ -99,6 +122,13 @@
                   <option value="client_credentials" selected>{{ lang.syncjobs.source_oauth_flow_app }}</option>
                   <option value="authorization_code">{{ lang.syncjobs.source_oauth_flow_user }}</option>
                 </select>
+              </div>
+            </div>
+            <div class="row mb-2 imapsync-source-tenant-row" style="display:none;">
+              <label class="control-label col-sm-2 text-sm-end" for="addsrc_tenant">{{ lang.syncjobs.source_tenant }}</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control imapsync-source-tenant" id="addsrc_tenant" placeholder="contoso.onmicrosoft.com">
+                <small class="text-muted">{{ lang.syncjobs.source_tenant_hint }}</small>
               </div>
             </div>
             <div class="row mb-2 imapsync-source-authcode-block" style="display:none;">

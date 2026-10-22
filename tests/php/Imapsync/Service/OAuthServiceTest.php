@@ -75,10 +75,27 @@ class OAuthServiceTest extends TestCase
         $this->client->method('isAllowed')->willReturnOnConsecutiveCalls(true, false);
         $source = self::source(['oauth_flow' => 'authorization_code']);
 
-        $this->assertSame('https://login.example.org/authorize?tenant=x&client_id=client&response_type=code'
+        $this->assertSame('https://login.example.org/authorize?tenant=x&prompt=select_account&client_id=client&response_type=code'
             . '&redirect_uri=https%3A%2F%2Fmail.example.org%2Fsyncjob-oauth&response_mode=query&scope=scope&state=abc',
             $this->service()->authorizeUrl($source, 'abc'));
         $this->assertNull($this->service()->authorizeUrl($source, 'abc'));
+    }
+
+    public function testSignInParamsGoToTheAuthorizeUrlOnly(): void
+    {
+        $this->client->method('isAllowed')->willReturn(true);
+        $this->client->expects($this->once())->method('request')->with(
+            'https://login.example.org/token',
+            true,
+            ['resource' => 'r', 'client_id' => 'client', 'client_secret' => 'secret', 'scope' => 'scope', 'grant_type' => 'client_credentials']
+        )->willReturn(['access_token' => 'new']);
+        $extra = '{"prompt":"consent select_account","access_type":"offline","resource":"r"}';
+
+        // prompt overrides the default; sign-in params never reach the token endpoint and vice versa
+        $this->assertSame('https://login.example.org/authorize?tenant=x&prompt=consent+select_account&access_type=offline&client_id=client'
+            . '&response_type=code&redirect_uri=https%3A%2F%2Fmail.example.org%2Fsyncjob-oauth&response_mode=query&scope=scope&state=abc',
+            $this->service()->authorizeUrl(self::source(['oauth_flow' => 'authorization_code', 'oauth_extra_params' => $extra]), 'abc'));
+        $this->assertNull($this->service()->refreshSourceToken(self::source(['oauth_extra_params' => $extra])));
     }
 
     public function testClientCredentialsRefreshStoresToken(): void
@@ -152,12 +169,13 @@ class OAuthServiceTest extends TestCase
 
     public function testRefreshDueAppliesExpiryAndRetryRules(): void
     {
-        $soon = time() + 60;
+        // due 20 min ahead, retried 3 min after a failure
+        $soon = time() + 1100;
         $this->tokens->method('refreshableSources')->willReturn([
             self::source(['id' => 1, 'name' => 'no token']),
-            self::source(['id' => 2, 'name' => 'valid', 'oauth_token_expires' => time() + 3600]),
-            self::source(['id' => 3, 'name' => 'failed recently', 'oauth_token_expires' => $soon, 'oauth_last_refresh_error' => 'HTTP 500', 'refresh_attempt_age' => 900]),
-            self::source(['id' => 4, 'name' => 'failed long ago', 'oauth_token_expires' => $soon, 'oauth_last_refresh_error' => 'HTTP 500', 'refresh_attempt_age' => 901]),
+            self::source(['id' => 2, 'name' => 'valid', 'oauth_token_expires' => time() + 1300]),
+            self::source(['id' => 3, 'name' => 'failed recently', 'oauth_token_expires' => $soon, 'oauth_last_refresh_error' => 'HTTP 500', 'refresh_attempt_age' => 180]),
+            self::source(['id' => 4, 'name' => 'failed long ago', 'oauth_token_expires' => $soon, 'oauth_last_refresh_error' => 'HTTP 500', 'refresh_attempt_age' => 181]),
         ]);
         $this->tokens->method('deleteUnusedOlderThan')->with(86400)->willReturn(0);
         $this->tokens->method('refreshableUserTokens')->willReturn([]);

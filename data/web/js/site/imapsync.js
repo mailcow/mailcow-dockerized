@@ -588,6 +588,74 @@ var mailcowImapsync = (function($) {
     }
   }
 
+  // ===== Provider presets (add source modal) =====
+
+  // Server and OAuth settings of well-known providers; fields a preset leaves out get the defaults of applyPreset
+  var m365 = 'https://login.microsoftonline.com/{tenant}/oauth2/v2.0/';
+  var presets = {
+    m365_app: {host: 'outlook.office365.com', auth_type: 'XOAUTH2', oauth_token_endpoint: m365 + 'token',
+      oauth_scope: 'https://outlook.office365.com/.default'},
+    m365_user: {host: 'outlook.office365.com', auth_type: 'XOAUTH2', oauth_flow: 'authorization_code',
+      oauth_authorize_endpoint: m365 + 'authorize', oauth_token_endpoint: m365 + 'token',
+      oauth_scope: 'https://outlook.office.com/IMAP.AccessAsUser.All offline_access openid email profile'},
+    // Google issues a refresh token only for offline access, and again only after consent
+    google_user: {host: 'imap.gmail.com', auth_type: 'XOAUTH2', oauth_flow: 'authorization_code',
+      oauth_authorize_endpoint: 'https://accounts.google.com/o/oauth2/v2/auth', oauth_token_endpoint: 'https://oauth2.googleapis.com/token',
+      oauth_scope: 'https://mail.google.com/ openid email', oauth_extra_params: '{"access_type":"offline","prompt":"consent select_account"}'},
+    gmail: {host: 'imap.gmail.com'},
+    gmx: {host: 'imap.gmx.net'},
+    webde: {host: 'imap.web.de'},
+    tonline: {host: 'secureimap.t-online.de'},
+    icloud: {host: 'imap.mail.me.com'},
+    yahoo: {host: 'imap.mail.yahoo.com'},
+    ionos: {host: 'imap.ionos.de'},
+    strato: {host: 'imap.strato.de'}
+  };
+
+  // The name follows the preset until it is changed by hand; client ID and secret are kept
+  function applyPreset($link) {
+    var $form = $link.closest('form');
+    var preset = $.extend({port: 993, enc: 'SSL', auth_type: 'PLAIN', oauth_flow: 'client_credentials', oauth_authorize_endpoint: '',
+      oauth_token_endpoint: '', oauth_userinfo_endpoint: '', oauth_scope: '', oauth_extra_params: ''}, presets[$link.data('preset')]);
+    var $name = $form.find('input[name="name"]');
+    var names = $form.find('.imapsync-source-preset').map(function() { return $.trim($(this).text()); }).get();
+    if (!$name.val() || names.indexOf($name.val()) !== -1) $name.val($.trim($link.text()));
+    // bootstrap-select 1.14 duplicates the button label on refresh after .val(), use its own setter
+    $.each(preset, function(field, value) {
+      var $f = $form.find('[name="' + field + '"]');
+      if ($f.data('selectpicker')) {
+        $f.selectpicker('val', value);
+      } else {
+        $f.val(value);
+      }
+    });
+    var needsTenant = preset.oauth_token_endpoint.indexOf('{tenant}') !== -1;
+    $form.find('.imapsync-source-tenant-row').toggle(needsTenant);
+    applyTenant($form);
+    sourceFormToggle($form);
+    if (needsTenant) $form.find('.imapsync-source-tenant').trigger('focus');
+  }
+
+  // M365: the tenant (ID or domain) is part of the endpoint URLs
+  function applyTenant($form) {
+    var tenant = encodeURIComponent($.trim($form.find('.imapsync-source-tenant').val() || '')) || '{tenant}';
+    $form.find('input[name="oauth_authorize_endpoint"], input[name="oauth_token_endpoint"]').val(function(_, url) {
+      return url.replace(/^(https:\/\/login\.microsoftonline\.com\/)[^\/]*/, function(_, base) { return base + tenant; });
+    });
+  }
+
+  // A visible endpoint must not keep the {tenant} placeholder; checked before the form is posted
+  function tenantValid($form) {
+    var missing = $form.find('input[name="oauth_authorize_endpoint"]:visible, input[name="oauth_token_endpoint"]:visible')
+      .filter(function() { return this.value.indexOf('{tenant}') !== -1; }).length > 0;
+    $form.find('.imapsync-source-tenant').toggleClass('inputMissingAttr', missing);
+    if (missing) {
+      $form.find('.imapsync-source-tenant-row').show();
+      mailcow_alert_box(lang_danger.imapsync_source_tenant_missing, 'danger');
+    }
+    return !missing;
+  }
+
   // ===== Wiring =====
 
   function bind() {
@@ -659,11 +727,19 @@ var mailcowImapsync = (function($) {
       sourceScopeToggle($(this).closest('form'));
     });
     $('[data-action="add_item"][data-id="add_imapsync_source"], [data-action="edit_selected"][data-id="edit_imapsync_source"]').on('click', function(e) {
-      if (!extraParamsValid($(this).closest('form'))) {
+      var $form = $(this).closest('form');
+      if (!extraParamsValid($form) || !tenantValid($form)) {
         e.preventDefault();
         e.stopImmediatePropagation();
         return false;
       }
+    });
+    $(document).on('click', '.imapsync-source-preset', function(e) {
+      e.preventDefault();
+      applyPreset($(this));
+    });
+    $(document).on('input', '.imapsync-source-tenant', function() {
+      applyTenant($(this).closest('form'));
     });
     $(document).on('click', '.imapsync-copy-btn', function(e) {
       e.preventDefault();

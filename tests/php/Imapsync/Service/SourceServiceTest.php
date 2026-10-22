@@ -429,6 +429,23 @@ class SourceServiceTest extends TestCase
         $this->assertSame('src', $service->refreshToken(7)->name);
     }
 
+    public function testSavedClientCredentialsSourcesFetchTheirFirstToken(): void
+    {
+        $this->repo->method('findVisible')->willReturnOnConsecutiveCalls(self::oauthSource(), self::oauthSource(['active' => 0]));
+        $this->client->expects($this->exactly(2))->method('request')->willReturnOnConsecutiveCalls(
+            ['access_token' => 'first', 'expires_in' => 3600],
+            $this->throwException(new OAuthException('HTTP 401: invalid_client'))
+        );
+        $this->tokens->expects($this->once())->method('storeSourceToken');
+        $this->tokens->expects($this->once())->method('storeSourceError')->with(7, 'HTTP 401: invalid_client');
+        $service = $this->service(FakeContext::admin());
+
+        $this->assertNull($service->create($this->oauthInput())->lastRefreshError);
+        $this->assertSame('HTTP 401: invalid_client', $service->update(7, ['oauth_scope' => 'new-scope'])->lastRefreshError);
+        // inactive sources get no token
+        $service->update(7, ['oauth_scope' => 'other-scope']);
+    }
+
     public function testConnectableSourceIsActiveAuthorizationCode(): void
     {
         $this->repo->method('findVisible')->willReturnOnConsecutiveCalls(

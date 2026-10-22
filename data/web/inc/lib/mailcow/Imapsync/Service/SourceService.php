@@ -97,6 +97,7 @@ class SourceService
             throw new UserError('object_exists', [htmlspecialchars($source->name)]);
         }
         $this->repo->insert($source);
+        $this->fetchToken($source);
         return $source;
     }
 
@@ -121,6 +122,7 @@ class SourceService
             $this->applyScope($source, $input['scope'] ?? $current->scope, $input['domains'] ?? [], $input['users'] ?? []);
         }
         $this->repo->update($source, $writeTargets, self::connection($current) !== self::connection($source));
+        $this->fetchToken($source);
         return $source;
     }
 
@@ -336,6 +338,14 @@ class SourceService
             }
         }
         return array_values(array_unique($clean));
+    }
+
+    /** A saved, active client_credentials source gets its token now instead of at the next cron run (error in lastRefreshError) */
+    private function fetchToken(Source $source): void
+    {
+        if ($source->usesClientCredentials() && $source->active === 1) {
+            $source->lastRefreshError = $this->oauth->refreshSourceToken($source);
+        }
     }
 
     /** Tokens never follow a source to another OAuth client or IMAP server, so these values reset them */

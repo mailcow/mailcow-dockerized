@@ -85,6 +85,20 @@ class ApiControllerTest extends TestCase
         $this->assertSame('*', $_SESSION['return'][0]['log'][3]['oauth_client_secret']);
     }
 
+    public function testSavingAClientCredentialsSourceReportsAFailedFirstToken(): void
+    {
+        $source = Source::fromRow(['id' => 5, 'name' => 'm365', 'auth_type' => 'XOAUTH2', 'oauth_last_refresh_error' => 'HTTP 401: invalid_client']);
+        $this->sources->method('create')->willReturn($source);
+        $this->sources->method('update')->willReturn($source);
+
+        $this->assertTrue($this->api->addSource(['name' => 'm365']));
+        $this->assertTrue($this->api->editSources([5], ['name' => 'm365']));
+
+        $failed = ['danger', ['imapsync_source_token_refresh_failed', 'm365 (HTTP 401: invalid_client)']];
+        $this->assertSame([$failed, ['success', ['imapsync_source_added', 'm365']], $failed, ['success', ['imapsync_source_modified', 'm365']]],
+            $this->messages());
+    }
+
     public function testEditJobsKeepsBatchMessageOrder(): void
     {
         $this->jobs->method('update')->willReturnCallback(function (int $id, array $data): Job {
