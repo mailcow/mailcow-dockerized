@@ -176,6 +176,9 @@ def ban(address):
 
     logdebug("Updating F2B_ACTIVE_BANS[%s]=%d" %
               (net, cur_time + NET_BAN_TIME))
+    # Store the triggering IP before recording the active ban so watchdog
+    # can use it for WHOIS lookups.
+    r.hset('F2B_ACTIVE_BAN_SOURCE_IP_ADDRESS', '%s' % net, address)
     r.hset('F2B_ACTIVE_BANS', '%s' % net, cur_time + NET_BAN_TIME)
   else:
     logger.logWarn('%d more attempts in the next %d seconds until %s is banned' % (
@@ -199,6 +202,7 @@ def unban(net):
       logdebug("Calling tables.unbanIPv6(%s)" % net)
       tables.unbanIPv6(net)
   r.hdel('F2B_ACTIVE_BANS', '%s' % net)
+  r.hdel('F2B_ACTIVE_BAN_SOURCE_IP_ADDRESS', '%s' % net)
   r.hdel('F2B_QUEUE_UNBAN', '%s' % net)
   if net in bans:
     logdebug("Unban for %s, setting attempts=0, ban_counter+=1" % net)
@@ -245,9 +249,10 @@ def clear():
     try:
       if r is not None:
         r.delete('F2B_ACTIVE_BANS')
+        r.delete('F2B_ACTIVE_BAN_SOURCE_IP_ADDRESS')
         r.delete('F2B_PERM_BANS')
     except Exception as ex:
-      logger.logWarn('Error clearing redis keys F2B_ACTIVE_BANS and F2B_PERM_BANS: %s' % ex)
+      logger.logWarn('Error clearing Redis ban keys: %s' % ex)
 
 def watch():
   global pubsub
@@ -495,6 +500,7 @@ if __name__ == '__main__':
     logdebug("Renaming F2B_LOG to NETFILTER_LOG")
     r.rename('F2B_LOG', 'NETFILTER_LOG')
   r.delete('F2B_ACTIVE_BANS')
+  r.delete('F2B_ACTIVE_BAN_SOURCE_IP_ADDRESS')
   r.delete('F2B_PERM_BANS')
 
   refreshF2boptions()
