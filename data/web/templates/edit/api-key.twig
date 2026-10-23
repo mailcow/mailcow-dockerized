@@ -1,0 +1,71 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+{% set locked = result.service == 1 %}
+<h4>{{ lang.admin.api_key }}</h4>
+{% if locked %}
+<div class="alert alert-secondary" role="alert"><i class="bi bi-lock-fill"></i> {{ lang.admin.api_service_key_info }}</div>
+{% endif %}
+<form data-id="edit_api_key" class="form-horizontal" role="form" method="post" autocapitalize="none" autocorrect="off">
+  <input type="hidden" value="0" name="skip_ip_check">
+  <input type="hidden" value="0" name="active">
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="api_key">{{ lang.admin.api_key }}</label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="text" class="form-control textarea-code" id="api_key" value="{{ result.api_key }}" readonly>
+        <button type="button" class="btn btn-secondary api-key-copy" data-key="{{ result.api_key }}"><i class="bi bi-clipboard"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="description">{{ lang.admin.description }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="description" id="description" value="{{ result.description }}" maxlength="255"{% if locked %} disabled{% endif %}>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="access">{{ lang.admin.access }}</label>
+    <div class="col-sm-10">
+      <select class="form-control" name="access" id="access"{% if locked %} disabled{% endif %}>
+        <option value="ro"{% if result.access == 'ro' %} selected{% endif %}>{{ lang.admin.api_read_only }}</option>
+        <option value="rw"{% if result.access == 'rw' %} selected{% endif %}>{{ lang.admin.api_read_write }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="allow_from">{{ lang.admin.api_allow_from }}</label>
+    <div class="col-sm-10">
+      <textarea class="form-control textarea-code" rows="5" name="allow_from" id="allow_from"{% if locked or result.skip_ip_check == 1 %} disabled{% endif %}>{{ result.allow_from|join("\n") }}</textarea>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input api-skip-ip-check" value="1" name="skip_ip_check" data-target="#allow_from"{% if result.skip_ip_check == 1 %} checked{% endif %}{% if locked %} disabled{% endif %}> {{ lang.admin.api_skip_ip_check }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-4">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == 1 %} checked{% endif %}{% if locked %} disabled{% endif %}> {{ lang.edit.active }}</label>
+      </div>
+    </div>
+  </div>
+  {% if not locked %}
+  <div class="row">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="btn-group">
+        <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-success" data-action="edit_selected" data-id="edit_api_key" data-item="{{ result.id }}" data-api-url='edit/api-key' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+        <button class="btn btn-xs-lg btn-xs-half d-block d-sm-inline btn-secondary api-key-regen" data-action="edit_selected" data-id="regen_api_key" data-item="{{ result.id }}" data-api-url='edit/api-key' data-api-attr='{"regen_key":"1"}' href="#"><i class="bi bi-arrow-repeat"></i> {{ lang.admin.regen_api_key }}</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

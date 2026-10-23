@@ -93,10 +93,6 @@ $template_data = [
   'tfa_id' => @$_SESSION['tfa_id'],
   'fido2_cid' => @$_SESSION['fido2_cid'],
   'fido2_data' => $fido2_data,
-  'api' => [
-    'ro' => admin_api('ro', 'get'),
-    'rw' => admin_api('rw', 'get'),
-  ],
   'dkim_domains' => $dkim_domains,
   'dkim_domains_with_keys' => $dkim_domains_with_keys,
   'dkim_blind_domains' => $dkim_blind_domains,

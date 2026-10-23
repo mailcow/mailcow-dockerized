@@ -403,8 +403,8 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 # Use this IPv6 for outgoing connections (SNAT)
 #SNAT6_TO_SOURCE=
 
-# Create or override an API key for the web UI
-# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+# Service API keys: shown in the web UI, but can only be changed here (more keys can be added in the UI)
+# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs/networks
 # An API key defined as API_KEY has read-write access
 # An API key defined as API_KEY_READ_ONLY has read-only access
 # Allowed chars for API_KEY and API_KEY_READ_ONLY: a-z, A-Z, 0-9, -
