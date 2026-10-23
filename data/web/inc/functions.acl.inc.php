@@ -193,6 +193,10 @@ function acl($_action, $_scope = null, $_data = null, $_extra = null) {
         while ($row = array_shift($acl_all)) {
           $acl['acl'][$row['Field']] = 1;
         }
+        // Read-only API keys must not log in as other accounts (SOGo SSO, dual login)
+        if (!empty($_SESSION['mailcow_cc_api']) && ($_SESSION['mailcow_cc_api_access'] ?? '') != 'rw') {
+          $acl['acl']['login_as'] = 0;
+        }
       }
       elseif ($_SESSION['mailcow_cc_role'] == 'domainadmin' ||
         (isset($_SESSION["dual-login"]["role"]) && $_SESSION["dual-login"]["role"] == 'domainadmin')) {
