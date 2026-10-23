@@ -97,7 +97,6 @@
     "admin": {
         "access": "Åtkomst",
         "action": "Åtgärd",
-        "activate_api": "Aktivera API:et",
         "activate_send": "Aktivera skicka-knappen",
         "active": "Aktiv",
         "active_rspamd_settings_map": "Nuvarande inställningsprofil",
@@ -818,7 +817,6 @@
     "success": {
         "acl_saved": "Åtkomstlistan för objektet %s har sparats",
         "admin_added": "Administratören %s har lagts till",
-        "admin_api_modified": "Ändringarna på API:et har sparats",
         "admin_modified": "Ändringarna för administratören har sparats",
         "admin_removed": "Administratören %s har tagits bort",
         "alias_added": "Aliasadressen %s (%d) har lagts till",

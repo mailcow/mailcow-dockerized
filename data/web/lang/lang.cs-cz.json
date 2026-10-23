@@ -102,7 +102,6 @@
     "admin": {
         "access": "Přístupy",
         "action": "Akce",
-        "activate_api": "Zapnout API",
         "activate_send": "Povolit tlačítko \"Odeslat\"",
         "active": "Aktivní",
         "active_rspamd_settings_map": "Aktivní nastavení",
@@ -1087,7 +1086,6 @@
     "success": {
         "acl_saved": "ACL pro objekt %s uloženo",
         "admin_added": "Správce %s přidán",
-        "admin_api_modified": "Změna API uložena",
         "admin_modified": "Změny správce uloženy",
         "admin_removed": "Správce %s odebrán",
         "alias_added": "Byl přidán alias %s (%d)",

@@ -19,7 +19,6 @@
         "upload": "Feltöltés",
         "username": "Felhasználónév",
         "verify": "Ellenőrzés",
-        "activate_api": "API aktiválása",
         "activate_send": "Küldés gomb aktiválása",
         "add": "Hozzáad",
         "active": "Aktív",
@@ -727,7 +726,6 @@
     },
     "success": {
         "admin_added": "Adminisztrátor %s hozzáadva",
-        "admin_api_modified": "APImódosítások mentve",
         "admin_modified": "Adminisztrátor módosításai mentve",
         "admin_removed": "Adminisztrátor %s eltávolítva",
         "alias_added": "Alias cím %s (%d) hozzáadva",

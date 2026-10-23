@@ -102,7 +102,6 @@
     "admin": {
         "access": "Truy cập",
         "action": "Hành động",
-        "activate_api": "Kích hoạt API",
         "activate_send": "Kích hoạt nút gửi",
         "active": "Đang hoạt động",
         "active_rspamd_settings_map": "Ánh xạ cài đặt đang hoạt động",

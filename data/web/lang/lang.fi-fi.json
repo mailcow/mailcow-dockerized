@@ -81,7 +81,6 @@
     "admin": {
         "access": "Hallinta",
         "action": "Toiminnot",
-        "activate_api": "Aktivoi API",
         "activate_send": "Aktivoi Lähetä-painike",
         "active": "Aktiivinen",
         "active_rspamd_settings_map": "Aktiiviset asetukset",
@@ -668,7 +667,6 @@
     "success": {
         "acl_saved": "Objektin ACL %s tallenettu",
         "admin_added": "Järjestelmänvalvoja %s on lisätty",
-        "admin_api_modified": "API-muutokset on tallennettu",
         "admin_modified": "Järjestelmänvalvojan muutokset on tallennettu",
         "admin_removed": "Ylläpitäjä %s on poistettu",
         "alias_added": "Alias osoite %s (%d) on lisätty",

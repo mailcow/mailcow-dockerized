@@ -27,7 +27,6 @@
         "access": "Tilgang",
         "add_domain_admin": "Legg til domeneadministrator",
         "add_forwarding_host": "Legg til videresendingsvert",
-        "activate_api": "Aktivér API",
         "add_relayhost_hint": "Vennligst vær oppmerksom på at autentiseringsdata, om noe, vil bli lagret i klartekst.",
         "app_links": "App-lenker",
         "app_name": "App-navn",

@@ -102,7 +102,6 @@
     "admin": {
         "access": "Kirish",
         "action": "Amal",
-        "activate_api": "API ni faollashtirish",
         "activate_send": "Joʻnatish tugmasini faollashtirish",
         "active": "Faol",
         "active_rspamd_settings_map": "Faol sozlamalar xaritasi",
@@ -1090,7 +1089,6 @@
     "success": {
         "acl_saved": "%s obyekti uchun ACL saqlandi",
         "admin_added": "Administrator %s qoʻshildi",
-        "admin_api_modified": "API ga oʻzgarishlar saqlandi",
         "admin_modified": "Administrator oʻzgarishlari saqlandi",
         "admin_removed": "Administrator %s olib tashlandi",
         "alias_added": "Taxallus manzili %s (%d) qoʻshildi",

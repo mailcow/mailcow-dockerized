@@ -103,7 +103,6 @@
     "admin": {
         "access": "Accedi",
         "action": "Azione",
-        "activate_api": "Attiva API",
         "activate_send": "Attiva bottone di invio",
         "active": "Attiva",
         "active_rspamd_settings_map": "Mappa delle impostazioni attive",
@@ -979,7 +978,6 @@
     "success": {
         "acl_saved": "ACL for object %s saved",
         "admin_added": "L'amministratore %s è stato aggiunto",
-        "admin_api_modified": "Le modifiche alle API sono state salvate",
         "admin_modified": "I cambiamenti all'amministratore sono stati salvati",
         "admin_removed": "L'amministratore %s è stato rimosso",
         "alias_added": "Uno o più alias sono stati correttamente aggiunti",

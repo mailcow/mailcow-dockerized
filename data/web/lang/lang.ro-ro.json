@@ -98,7 +98,6 @@
     "admin": {
         "access": "Acces",
         "action": "Acțiune",
-        "activate_api": "Activează API",
         "activate_send": "Activează butonul de trimitere",
         "active": "Activ",
         "active_rspamd_settings_map": "Harta setărilor active",
@@ -889,7 +888,6 @@
     "success": {
         "acl_saved": "ACL pentru obiectul %s a fost salvat",
         "admin_added": "Administratorul %s a fost adăugat",
-        "admin_api_modified": "Modificările API-ului au fost salvate",
         "admin_modified": "Modificările administratorului au fost salvate",
         "admin_removed": "Administratorul %s a fost eliminat",
         "alias_added": "Adresa alias %s a fost adăugată",
