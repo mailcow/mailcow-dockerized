@@ -30,7 +30,7 @@ function relayhost($_action, $_data = null) {
         $stmt->execute(array(
           ':hostname' => $hostname,
           ':username' => $username,
-          ':password' => str_replace(':', '\:', $password),
+          ':password' => $password,
           ':active' => '1'
         ));
       }
@@ -291,7 +291,7 @@ function transport($_action, $_data = null) {
           ':destination' => $insert_dest,
           ':is_mx_based' => $is_mx_based,
           ':username' => $username,
-          ':password' => str_replace(':', '\:', $password),
+          ':password' => $password,
           ':active' => $active
         ));
       }
