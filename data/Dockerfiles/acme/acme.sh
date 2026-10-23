@@ -253,7 +253,7 @@ while true; do
   unset MTA_STS_ACTIVE_DOMAINS
   declare -A MTA_STS_ACTIVE_DOMAINS
   if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
-    SQL_MTA_STS_DOMAINS=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM mta_sts WHERE active = 1" -Bs)
+    SQL_MTA_STS_DOMAINS=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT domain FROM mta_sts WHERE active = 1" -Bs)
     if [[ $? -eq 0 ]]; then
       while read mta_sts_domain; do
         if [[ -z "${mta_sts_domain}" ]]; then
@@ -295,7 +295,7 @@ while true; do
 
   # Fetch alias domains where target domain has MTA-STS enabled
   if [[ ${AUTODISCOVER_SAN} == "y" ]]; then
-    SQL_ALIAS_DOMAINS=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT ad.alias_domain FROM alias_domain ad INNER JOIN mta_sts m ON ad.target_domain = m.domain WHERE ad.active = 1 AND m.active = 1" -Bs)
+    SQL_ALIAS_DOMAINS=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT ad.alias_domain FROM alias_domain ad INNER JOIN mta_sts m ON ad.target_domain = m.domain WHERE ad.active = 1 AND m.active = 1" -Bs)
     if [[ $? -eq 0 ]]; then
       while read alias_domain; do
         if [[ -z "${alias_domain}" ]]; then
