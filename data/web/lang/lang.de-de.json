@@ -105,6 +105,7 @@
         "subscribeall": "Alle synchronisierten Ordner abonnieren",
         "syncjob": "Sync-Job hinzufügen",
         "syncjob_hint": "Passwörter werden unverschlüsselt abgelegt!",
+        "syncjob_local1": "Quelle ist eine Mailbox auf diesem Server (kein Passwort nötig)",
         "target_address": "Ziel-Adresse(n)",
         "target_address_info": "<small>Vollständige E-Mail-Adresse(n). Getrennt durch Komma.</small>",
         "target_domain": "Ziel-Domain",

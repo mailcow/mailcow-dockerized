@@ -76,7 +76,8 @@ my $sth = $dbh->prepare("SELECT id,
   subscribeall,
   timeout1,
   timeout2,
-  dry
+  dry,
+  local1
     FROM imapsync
       WHERE active = 1
         AND is_running = 0
@@ -113,8 +114,18 @@ while ($row = $sth->fetchrow_arrayref()) {
   $timeout1            = @$row[19];
   $timeout2            = @$row[20];
   $dry                 = @$row[21];
+  $local1              = @$row[22];
 
   if ($enc1 eq "TLS") { $enc1 = "--tls1"; } elsif ($enc1 eq "SSL") { $enc1 = "--ssl1"; } else { undef $enc1; }
+
+  # Source is a mailbox on this server, login as master user
+  if ($local1 eq "1") {
+    $host1 = "localhost";
+    $port1 = 143;
+    undef $enc1;
+    $user1 = $user1 . '*' . trim($master_user);
+    $password1 = trim($master_pass);
+  }
 
   my $template = $run_dir . '/imapsync.XXXXXXX';
   my $passfile1 = File::Temp->new(TEMPLATE => $template);
