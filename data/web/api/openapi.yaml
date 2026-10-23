@@ -1465,31 +1465,15 @@ paths:
                 response:
                   value:
                     - log:
-                        - mailbox
-                        - add
                         - syncjob
-                        - active: "1"
-                          automap: "1"
-                          custom_params: ""
-                          delete1: "0"
-                          delete2: "0"
-                          delete2duplicates: "1"
-                          enc1: SSL
-                          exclude: (?i)spam|(?i)junk
-                          host1: imap.server.tld
-                          maxage: "0"
-                          maxbytespersecond: "0"
-                          mins_interval: "20"
-                          password1: supersecret
-                          port1: 993
-                          skipcrossduplicates: "0"
-                          subfolder2: External
-                          subscribeall: "1"
-                          timeout1: "600"
-                          timeout2: "600"
+                        - add
+                        - job
+                        - username: mailbox@domain.tld
+                          source_id: "3"
                           user1: username
-                          username: mailbox@domain.tld
-                        - null
+                          password1: "*"
+                          mins_interval: "20"
+                          active: "1"
                       msg:
                         - mailbox_modified
                         - mailbox@domain.tld
@@ -1497,7 +1481,7 @@ paths:
               schema:
                 properties:
                   log:
-                    description: contains request object
+                    description: contains request object (secrets are masked as "*")
                     items: {}
                     type: array
                   msg:
@@ -1515,8 +1499,10 @@ paths:
       tags:
         - Sync jobs
       description: >-
-        You can create new sync job using this action. It takes a JSON object
-        containing a domain informations.
+        Create a sync job for a local mailbox. Connection data (host, port,
+        encryption, authentication) comes from the sync source referenced by
+        `source_id`. Requires the `syncjobs` ACL (user ACL for mailbox users,
+        domain admin ACL for domain admins).
       operationId: Create sync job
       summary: Create sync job
       requestBody:
@@ -1525,11 +1511,9 @@ paths:
             schema:
               example:
                 username: lisa@mailcow.tld
-                host1: mail.mailcow.tld
-                port1: "143"
-                user1: demo@mailcow.tld
+                source_id: "3"
+                user1: demo@remote.tld
                 password1: supersecretpw
-                enc1: TLS
                 mins_interval: "20"
                 subfolder2: "/SyncIntoSubfolder"
                 maxage: "0"
@@ -1537,44 +1521,47 @@ paths:
                 timeout1: "600"
                 timeout2: "600"
                 exclude: "(?i)spam|(?i)junk"
-                custom_params: "--dry"
+                custom_params:
+                  - {o: folder, v: INBOX}
+                  - {o: syncinternaldates, v: ""}
                 delete2duplicates: "1"
-                delete1: "1"
+                delete1: "0"
                 delete2: "0"
                 automap: "1"
                 skipcrossduplicates: "0"
-                subscribeall: "0"
+                subscribeall: "1"
+                dry: "0"
                 active: "1"
               properties:
-                parameters:
-                  description: your local mailcow mailbox
+                username:
+                  description: local mailcow mailbox (destination, user2); users always create jobs for their own mailbox
                   type: string
-                host1:
-                  description: the smtp server where mails should be synced from
-                  type: string
-                port1:
-                  description: the smtp port of the target mail server
-                  type: string
+                source_id:
+                  description: >-
+                    id of a sync source visible to the caller (`GET /api/v1/get/syncjob_source/all`).
+                  type: integer
                 user1:
-                  description: the username of the mailbox
+                  description: >-
+                    remote username at the source. For XOAUTH2 authorization_code sources
+                    a token for (source_id, local mailbox, user1) must exist, i.e. the
+                    mailbox owner must have signed in via `/syncjob-oauth` first
+                    (`imapsync_source_oauth_connect_required` otherwise).
                   type: string
-                password:
-                  description: the password of the mailbox
+                password1:
+                  description: >-
+                    remote password, required unless the source uses XOAUTH2 (ignored then)
                   type: string
-                enc1:
-                  description: the encryption method used to connect to the mailserver
-                  type: string
-                mins_internal:
-                  description: the interval in which messages should be syned
+                mins_interval:
+                  description: sync interval in minutes (1-43800)
                   type: number
                 subfolder2:
                   description: sync into subfolder on destination (empty = do not use subfolder)
                   type: string
                 maxage:
-                  description: only sync messages up to this age in days
+                  description: only sync messages up to this age in days (0 = ignore age)
                   type: number
                 maxbytespersecond:
-                  description: max speed transfer limit for the sync
+                  description: per-job bandwidth limit in bytes/s (0 = unlimited, capped by the global limit)
                   type: number
                 timeout1:
                   description: timeout for connection to remote host
@@ -1586,8 +1573,22 @@ paths:
                   description: exclude objects (regex)
                   type: string
                 custom_params:
-                  description: custom parameters
-                  type: string
+                  description: >-
+                    Allowlisted imapsync options as a list of option/value pairs (must be
+                    an array).
+                    `o` is the option name without leading dashes (see `GET
+                    /api/v1/get/syncjob_options`), `v` the value. The allowlist decides
+                    per option: `true` = a non-empty value is required, `false` = flag
+                    without value (`v` must be empty), string = regular expression the
+                    whole value must match. Values are passed to imapsync as a single argument.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      o:
+                        type: string
+                      v:
+                        type: string
                 delete2duplicates:
                   description: delete duplicates on destination (--delete2duplicates)
                   type: boolean
@@ -1606,8 +1607,214 @@ paths:
                 subscribeall:
                   description: subscribe all folders (--subscribeall)
                   type: boolean
+                dry:
+                  description: dry run, nothing is changed (--dry)
+                  type: boolean
                 active:
                   description: enables or disables the sync job
+                  type: boolean
+                host1:
+                  description: >-
+                    Removed. Host, port, encryption and authentication now come from
+                    the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                    The attribute is ignored.
+                  deprecated: true
+                  type: string
+                port1:
+                  description: >-
+                    Removed. Host, port, encryption and authentication now come from
+                    the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                    The attribute is ignored.
+                  deprecated: true
+                  type: string
+                enc1:
+                  description: >-
+                    Removed. Host, port, encryption and authentication now come from
+                    the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                    The attribute is ignored.
+                  deprecated: true
+                  type: string
+                authmech1:
+                  description: >-
+                    Removed. Host, port, encryption and authentication now come from
+                    the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                    The attribute is ignored.
+                  deprecated: true
+                  type: string
+              type: object
+  /api/v1/add/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - add
+                        - source
+                        - name: Example import
+                          host: imap.example.org
+                          port: "993"
+                          enc: SSL
+                          auth_type: PLAIN
+                          scope: all
+                      msg:
+                        - imapsync_source_added
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object (secrets are masked as "*")
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Create a reusable IMAP sync source. A sync job binds to a source by id;
+        the source carries host/port/encryption and either static credentials
+        (PLAIN/LOGIN/CRAM-MD5 — the password is supplied per job) or an OAuth2
+        configuration (XOAUTH2). Requires the `syncjobs` ACL. Validation errors
+        are returned as translated `danger` messages, nothing is written then.
+      operationId: Create sync job source
+      summary: Create sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                name: Example import
+                description: ""
+                host: imap.example.org
+                port: "993"
+                enc: SSL
+                auth_type: PLAIN
+                active: "1"
+                scope: domain
+                domains:
+                  - example.org
+              properties:
+                name:
+                  description: >-
+                    source name, max. 100 characters, unique per creator
+                  type: string
+                description:
+                  description: >-
+                    free text shown in the UI, max. 255 characters
+                  type: string
+                host:
+                  description: >-
+                    remote IMAP host (hostname or IP, max. 253 characters).
+                    `host1` is accepted as an alias.
+                  type: string
+                port:
+                  description: >-
+                    remote IMAP port (1-65535). `port1` is accepted as an alias.
+                  type: integer
+                enc:
+                  description: >-
+                    TLS (STARTTLS) / SSL / PLAIN. `enc1` is accepted as an alias.
+                  type: string
+                  enum:
+                    - TLS
+                    - SSL
+                    - PLAIN
+                auth_type:
+                  description: >-
+                    authentication mechanism; PLAIN/LOGIN/CRAM-MD5 use the per-job
+                    password, XOAUTH2 uses OAuth2 tokens. XOAUTH2 sources can only be created
+                    and edited by admins and domain admins (`access_denied` for users); users
+                    can use XOAUTH2 sources visible to them in their sync jobs.
+                  type: string
+                  enum:
+                    - PLAIN
+                    - LOGIN
+                    - CRAM-MD5
+                    - XOAUTH2
+                oauth_flow:
+                  description: >-
+                    XOAUTH2 grant type (default client_credentials). client_credentials
+                    sources are always private to their creator (scope is forced to `user`
+                    without targets).
+                  type: string
+                  enum:
+                    - client_credentials
+                    - authorization_code
+                oauth_authorize_endpoint:
+                  description: >-
+                    authorize URL, required for authorization_code. Must be an https:// URL
+                    without credentials and with a valid hostname
+                  type: string
+                oauth_token_endpoint:
+                  description: >-
+                    token URL, required for XOAUTH2. Must be an https:// URL without credentials and with a valid hostname
+                  type: string
+                oauth_userinfo_endpoint:
+                  description: >-
+                    optional identity endpoint for authorization_code (used when the token
+                    response has no usable id_token). Must be an https:// URL without credentials and with a valid hostname
+                  type: string
+                oauth_client_id:
+                  description: >-
+                    OAuth2 client id, required for XOAUTH2
+                  type: string
+                oauth_client_secret:
+                  description: >-
+                    OAuth2 client secret, required for XOAUTH2. Never returned by GET.
+                  type: string
+                oauth_scope:
+                  description: >-
+                    OAuth2 scope, required for XOAUTH2
+                  type: string
+                oauth_extra_params:
+                  description: >-
+                    optional extra token request parameters: a JSON object with scalar values,
+                    sent either as object or as JSON string (empty = none). They never
+                    override the grant fields.
+                  oneOf:
+                    - type: object
+                      additionalProperties: true
+                    - type: string
+                scope:
+                  description: >-
+                    visibility: `all` (admins only), `domain` (needs `domains`) or `user`
+                    (listed `users`; no targets = private to the creator). Users always
+                    create private sources.
+                  type: string
+                  enum:
+                    - all
+                    - domain
+                    - user
+                domains:
+                  description: target domains when scope is domain
+                  type: array
+                  items:
+                    type: string
+                users:
+                  description: target mailboxes when scope is user
+                  type: array
+                  items:
+                    type: string
+                active:
+                  description: >-
+                    enables or disables the source
                   type: boolean
               type: object
   /api/v1/add/tls-policy-map:
@@ -2782,6 +2989,62 @@ paths:
                   type: object
               type: object
       summary: Delete sync job
+  /api/v1/delete/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - delete
+                        - source
+                        - id:
+                            - "3"
+                      msg:
+                        - imapsync_source_deleted
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Delete one or more sync job sources by id. Sources still referenced by
+        a sync job cannot be deleted. Delete or
+        repoint the dependent jobs first.
+      operationId: Delete sync job source
+      summary: Delete sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "3"
+              items:
+                type: string
+              type: array
   /api/v1/delete/tls-policy-map:
     post:
       responses:
@@ -3813,18 +4076,21 @@ paths:
               examples:
                 response:
                   value:
-                    log:
-                      - entity
-                      - action
-                      - object
-                    msg:
-                      - message
-                      - entity name
-                    type: success
+                    - log:
+                        - syncjob
+                        - edit
+                        - job
+                        - id:
+                            - "1"
+                          active: "0"
+                      msg:
+                        - mailbox_modified
+                        - mailbox@domain.tld
+                      type: success
               schema:
                 properties:
                   log:
-                    description: contains request object
+                    description: contains request object (secrets are masked as "*")
                     items: {}
                     type: array
                   msg:
@@ -3842,8 +4108,8 @@ paths:
       tags:
         - Sync jobs
       description: >-
-        You can update one or more sync jobs per request. You can also send just
-        attributes you want to change.
+        Update one or more sync jobs per request. Only send the attributes you
+        want to change. Requires the `syncjobs` ACL.
       operationId: Update sync job
       requestBody:
         content:
@@ -3852,107 +4118,526 @@ paths:
               example:
                 attr:
                   active: "1"
-                  automap: "1"
-                  custom_params: ""
-                  delete1: "0"
-                  delete2: "0"
-                  delete2duplicates: "1"
-                  enc1: SSL
-                  exclude: (?i)spam|(?i)junk
-                  host1: imap.server.tld
-                  maxage: "0"
-                  maxbytespersecond: "0"
-                  mins_interval: "20"
-                  password1: supersecret
-                  port1: "993"
-                  skipcrossduplicates: "0"
-                  subfolder2: External
-                  subscribeall: "1"
-                  timeout1: "600"
-                  timeout2: "600"
+                  source_id: "3"
                   user1: username
-                items: "1"
+                  mins_interval: "20"
+                  custom_params:
+                    - {o: folder, v: INBOX}
+                items:
+                  - "1"
               properties:
                 attr:
                   properties:
-                    active:
-                      description: Is sync job active
-                      type: boolean
-                    automap:
+                    source_id:
                       description: >-
-                        Try to automap folders ("Sent items", "Sent" => "Sent"
-                        etc.)
-                      type: boolean
-                    custom_params:
-                      description: Custom parameters passed to imapsync command
+                        id of a sync source visible to the caller (`GET /api/v1/get/syncjob_source/all`).
+                        Visibility is only checked when the source changes.
+                      type: integer
+                    user1:
+                      description: >-
+                        remote username at the source. For XOAUTH2 authorization_code sources
+                        a token for (source_id, local mailbox, user1) must exist, i.e. the
+                        mailbox owner must have signed in via `/syncjob-oauth` first
+                        (`imapsync_source_oauth_connect_required` otherwise). For XOAUTH2
+                        client_credentials sources user1 may only be changed by callers who can
+                        see the source (`access_denied` otherwise); the other fields stay editable.
                       type: string
+                    password1:
+                      description: >-
+                        remote password; empty keeps the stored one. Required when the job
+                        is moved to a non-XOAUTH2 source and no password is stored.
+                      type: string
+                    mins_interval:
+                      description: sync interval in minutes (1-43800)
+                      type: number
+                    subfolder2:
+                      description: sync into subfolder on destination (empty = do not use subfolder)
+                      type: string
+                    maxage:
+                      description: only sync messages up to this age in days (0 = ignore age)
+                      type: number
+                    maxbytespersecond:
+                      description: per-job bandwidth limit in bytes/s (0 = unlimited, capped by the global limit)
+                      type: number
+                    timeout1:
+                      description: timeout for connection to remote host
+                      type: number
+                    timeout2:
+                      description: timeout for connection to local host
+                      type: number
+                    exclude:
+                      description: exclude objects (regex)
+                      type: string
+                    custom_params:
+                      description: >-
+                        Allowlisted imapsync options as a list of option/value pairs (must be
+                        an array).
+                        `o` is the option name without leading dashes (see `GET
+                        /api/v1/get/syncjob_options`), `v` the value. The allowlist decides
+                        per option: `true` = a non-empty value is required, `false` = flag
+                        without value (`v` must be empty), string = regular expression the
+                        whole value must match. Options taking file paths are never allowed.
+                        Values are passed to imapsync as a single argument.
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          o:
+                            type: string
+                          v:
+                            type: string
+                    prio:
+                      description: >-
+                        priority (admin only, ignored otherwise). Due jobs run ordered by
+                        prio DESC, never-run first, last_run ASC, id ASC.
+                      type: number
+                    last_run:
+                      description: any value resets last_run (job becomes due)
+                      type: string
+                    success:
+                      description: any value resets the last result
+                      type: string
+                    delete2duplicates:
+                      description: delete duplicates on destination (--delete2duplicates)
+                      type: boolean
                     delete1:
-                      description: Delete from source when completed
+                      description: delete from source when completed (--delete1)
                       type: boolean
                     delete2:
-                      description: Delete messages on destination that are not on source
+                      description: delete messages on destination that are not on source (--delete2)
                       type: boolean
-                    delete2duplicates:
-                      description: Delete duplicates on destination
+                    automap:
+                      description: try to automap folders ("Sent items", "Sent" => "Sent" etc.) (--automap)
                       type: boolean
+                    skipcrossduplicates:
+                      description: skip duplicate messages across folders (first come, first serve) (--skipcrossduplicates)
+                      type: boolean
+                    subscribeall:
+                      description: subscribe all folders (--subscribeall)
+                      type: boolean
+                    dry:
+                      description: dry run, nothing is changed (--dry)
+                      type: boolean
+                    active:
+                      description: enables or disables the sync job
+                      type: boolean
+                    host1:
+                      description: >-
+                        Removed. Host, port, encryption and authentication now come from
+                        the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                        The attribute is ignored.
+                      deprecated: true
+                      type: string
+                    port1:
+                      description: >-
+                        Removed. Host, port, encryption and authentication now come from
+                        the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                        The attribute is ignored.
+                      deprecated: true
+                      type: string
                     enc1:
-                      description: Encryption
+                      description: >-
+                        Removed. Host, port, encryption and authentication now come from
+                        the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                        The attribute is ignored.
+                      deprecated: true
+                      type: string
+                    authmech1:
+                      description: >-
+                        Removed. Host, port, encryption and authentication now come from
+                        the sync source (`source_id`, see `/api/v1/add/syncjob_source`).
+                        The attribute is ignored.
+                      deprecated: true
+                      type: string
+                    order_id:
+                      description: Removed, use `prio` (admin) or `/api/v1/edit/syncjob/run_next`. Ignored.
+                      deprecated: true
+                      type: number
+                  type: object
+                items:
+                  description: list of sync job ids to update
+                  type: array
+                  items:
+                    type: string
+              type: object
+      summary: Update sync job
+  /api/v1/edit/syncjob/run_next:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - run_next
+                        - id:
+                            - "1"
+                      msg:
+                        - imapsync_run_next_done
+                        - 1
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object (secrets are masked as "*")
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Admin only. Moves the given jobs to the front of the queue: `prio` is set
+        above the current maximum and `last_run` is cleared, so the runner picks
+        them next. Jobs that are currently running are rejected with
+        `imapsync_job_running` (one message per job), the others are moved.
+        The jobs are locked while they are moved, so a job the runner claims at
+        the same time is reported as running instead of being counted.
+      operationId: Run sync job next
+      summary: Run sync job next
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "1"
+                attr: {}
+              properties:
+                items:
+                  description: list of sync job ids
+                  type: array
+                  items:
+                    type: string
+                attr:
+                  description: unused, send an empty object
+                  type: object
+              type: object
+  /api/v1/edit/syncjob_source:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - source
+                        - id:
+                            - "3"
+                          name: Example import
+                          oauth_client_secret: "*"
+                      msg:
+                        - imapsync_source_modified
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object (secrets are masked as "*")
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Update one or more sync sources (creator, admins, and domain admins for
+        sources created by mailboxes of their domains). Fields not provided are
+        left unchanged. All checks run before anything is written; a rejected
+        edit changes nothing. Requires the `syncjobs` ACL.
+      operationId: Update sync job source
+      summary: Update sync job source
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "3"
+                attr:
+                  name: Example import
+                  host: imap.example.org
+                  port: "993"
+                  enc: SSL
+                  auth_type: PLAIN
+                  active: "1"
+              properties:
+                attr:
+                  properties:
+                    name:
+                      description: >-
+                        source name, max. 100 characters, unique per creator
+                      type: string
+                    description:
+                      description: >-
+                        free text shown in the UI, max. 255 characters
+                      type: string
+                    host:
+                      description: >-
+                        remote IMAP host (hostname or IP, max. 253 characters).
+                        `host1` is accepted as an alias. Host, port and enc are only validated
+                        when they change (migrated legacy values stay editable).
+                      type: string
+                    port:
+                      description: >-
+                        remote IMAP port (1-65535). `port1` is accepted as an alias.
+                      type: integer
+                    enc:
+                      description: >-
+                        TLS (STARTTLS) / SSL / PLAIN. `enc1` is accepted as an alias.
+                      type: string
                       enum:
                         - TLS
                         - SSL
                         - PLAIN
-                      type: string
-                    exclude:
-                      description: Exclude objects (regex)
-                      type: string
-                    host1:
-                      description: Hostname
-                      type: string
-                    maxage:
+                    auth_type:
                       description: >-
-                        Maximum age of messages in days that will be polled from
-                        remote (0 = ignore age)
-                      type: number
-                    maxbytespersecond:
-                      description: Max. bytes per second (0 = unlimited)
-                      type: number
-                    mins_interval:
-                      description: Interval (min)
-                      type: number
-                    password1:
-                      description: Password
+                        authentication mechanism; PLAIN/LOGIN/CRAM-MD5 use the per-job
+                        password, XOAUTH2 uses OAuth2 tokens. XOAUTH2 sources can only be created
+                        and edited by admins and domain admins (`access_denied` for users); users
+                        can use XOAUTH2 sources visible to them in their sync jobs.
                       type: string
-                    port1:
-                      description: Port
-                      type: string
-                    skipcrossduplicates:
+                      enum:
+                        - PLAIN
+                        - LOGIN
+                        - CRAM-MD5
+                        - XOAUTH2
+                    oauth_flow:
                       description: >-
-                        Skip duplicate messages across folders (first come,
-                        first serve)
+                        XOAUTH2 grant type (default client_credentials). client_credentials
+                        sources are always private to their creator (scope is forced to `user`
+                        without targets).
+                      type: string
+                      enum:
+                        - client_credentials
+                        - authorization_code
+                    oauth_authorize_endpoint:
+                      description: >-
+                        authorize URL, required for authorization_code. Must be an https:// URL
+                        without credentials and with a valid hostname
+                      type: string
+                    oauth_token_endpoint:
+                      description: >-
+                        token URL, required for XOAUTH2. Must be an https:// URL without credentials and with a valid hostname
+                      type: string
+                    oauth_userinfo_endpoint:
+                      description: >-
+                        optional identity endpoint for authorization_code (used when the token
+                        response has no usable id_token). Must be an https:// URL without credentials and with a valid hostname
+                      type: string
+                    oauth_client_id:
+                      description: >-
+                        OAuth2 client id, required for XOAUTH2
+                      type: string
+                    oauth_client_secret:
+                      description: >-
+                        OAuth2 client secret; empty keeps the stored one. Changing auth_type,
+                        oauth_flow, oauth_token_endpoint, oauth_client_id, host, port or enc drops
+                        the cached source token and all per-user tokens of the source (users have
+                        to sign in again).
+                      type: string
+                    oauth_scope:
+                      description: >-
+                        OAuth2 scope, required for XOAUTH2
+                      type: string
+                    oauth_extra_params:
+                      description: >-
+                        optional extra token request parameters: a JSON object with scalar values,
+                        sent either as object or as JSON string (empty = none). They never
+                        override the grant fields.
+                      oneOf:
+                        - type: object
+                          additionalProperties: true
+                        - type: string
+                    scope:
+                      description: >-
+                        visibility: `all` (admins only), `domain` (needs `domains`) or `user`
+                        (listed `users`; no targets = private to the creator). Users always
+                        create private sources. Targets are only rewritten when `scope` is sent.
+                      type: string
+                      enum:
+                        - all
+                        - domain
+                        - user
+                    domains:
+                      description: target domains when scope is domain
+                      type: array
+                      items:
+                        type: string
+                    users:
+                      description: target mailboxes when scope is user
+                      type: array
+                      items:
+                        type: string
+                    active:
+                      description: >-
+                        enables or disables the source
                       type: boolean
-                    subfolder2:
-                      description: >-
-                        Sync into subfolder on destination (empty = do not use
-                        subfolder)
-                      type: string
-                    subscribeall:
-                      description: Subscribe all folders
-                      type: boolean
-                    timeout1:
-                      description: Timeout for connection to remote host
-                      type: number
-                    timeout2:
-                      description: Timeout for connection to local host
-                      type: number
-                    user1:
-                      description: Username
-                      type: string
                   type: object
                 items:
-                  description: contains list of aliases you want update
+                  description: list of source ids to update
+                  type: array
+                  items:
+                    type: string
+              type: object
+  /api/v1/edit/syncjob_source/refresh_token:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - refresh_token
+                        - id:
+                            - "3"
+                      msg:
+                        - imapsync_source_token_refreshed
+                        - Example import
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object (secrets are masked as "*")
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Force an OAuth2 access-token refresh for a XOAUTH2 client_credentials
+        source (other sources: `imapsync_source_refresh_unsupported`). Requires
+        edit rights on the source and the `syncjobs` ACL.
+      operationId: Refresh sync job source token
+      summary: Refresh sync job source token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "3"
+              properties:
+                items:
+                  description: source id (only the first one is used)
+                  type: array
+                  items:
+                    type: string
+              type: object
+  /api/v1/edit/imapsync_settings:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - syncjob
+                        - edit
+                        - settings
+                        - max_parallel: "4"
+                          max_kb_per_second: "2000"
+                      msg: max_parallel_saved
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object (secrets are masked as "*")
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Update global sync job settings (admin only). `max_parallel` is the
+        number of imapsync processes that may run concurrently (1-32);
+        `max_kb_per_second` is a per-process bandwidth cap in KB/s (0 =
+        unlimited, max. 10485760 = 10 GiB/s), stored internally in bytes/s.
+      operationId: Update sync job settings
+      summary: Update sync job settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                attr:
+                  max_parallel: "4"
+                  max_kb_per_second: "2000"
+              properties:
+                attr:
+                  properties:
+                    max_parallel:
+                      description: max. concurrent sync processes (1-32)
+                      type: number
+                    max_kb_per_second:
+                      description: bandwidth limit per process in KB/s (0 = unlimited, max. 10485760)
+                      type: number
                   type: object
               type: object
-      summary: Update sync job
   /api/v1/edit/user-acl:
     post:
       responses:
@@ -5607,6 +6292,14 @@ paths:
       summary: Get version status
   /api/v1/get/syncjobs/all/no_log:
     get:
+      parameters:
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
       responses:
         "401":
           $ref: "#/components/responses/Unauthorized"
@@ -5616,43 +6309,196 @@ paths:
               examples:
                 response:
                   value:
-                    - active: "1"
-                      authmd51: 0
-                      authmech1: PLAIN
+                    - id: 1
+                      user2: mailbox@domain.tld
+                      source_id: 3
+                      user1: username
+                      active: 1
                       automap: 1
-                      created: "2019-05-22 11:37:25"
-                      custom_params: ""
+                      custom_params: '[{"o":"folder","v":"INBOX"}]'
+                      custom_params_legacy: null
                       delete1: 0
                       delete2: 0
                       delete2duplicates: 1
-                      domain2: ""
-                      enc1: TLS
+                      dry: 0
                       exclude: (?i)spam|(?i)junk
-                      host1: imap.server.tld
-                      id: 1
+                      exit_status: EX_OK
                       is_running: 0
-                      last_run: "2019-05-22 11:40:02"
+                      last_run: "2026-10-15 11:40:02"
+                      success: 1
                       log: ""
                       maxage: 0
                       maxbytespersecond: "0"
-                      mins_interval: "20"
-                      modified: "2019-05-22 11:40:02"
-                      port1: 993
-                      regextrans2: ""
+                      mins_interval: 20
+                      prio: 0
                       skipcrossduplicates: 0
                       subfolder2: External
                       subscribeall: 1
                       timeout1: 600
                       timeout2: 600
-                      user1: username
-                      user2: mailbox@domain.tld
+                      created: "2026-10-01 11:37:25"
+                      modified: "2026-10-15 11:40:02"
+                      source_name: Example import
+                      source_description: ""
+                      source_host: imap.example.org
+                      source_port: 993
+                      source_enc: SSL
+                      source_auth_type: PLAIN
+                      source_oauth_flow: client_credentials
+                      source_created_by: ""
+                      source_scope: all
+                      source_active: 1
+                      source_oauth_token_expires: null
+                      source_oauth_last_refresh_error: null
+                      user_token_exists: 0
+                      user_token_expires: null
+                      user_token_error: null
           description: OK
           headers: {}
       tags:
         - Sync jobs
-      description: You can list all syn jobs existing in system.
+      description: >-
+        Lists all sync jobs the caller may access (`/api/v1/get/syncjobs/all`
+        includes the log, `/api/v1/get/syncjobs/<mailbox>[/no_log]` filters by
+        mailbox). Jobs are ordered by prio DESC, never-run first, last_run ASC,
+        id ASC.
+        `custom_params_legacy` holds options of migrated jobs that could not be
+        converted (informational, not used). The removed fields `host1`,
+        `port1`, `enc1` and `authmech1` are no longer part of a job.
       operationId: Get sync jobs
       summary: Get sync jobs
+  "/api/v1/get/syncjob_source/{id}":
+    get:
+      parameters:
+        - description: source id, or `all` to list every source visible to the session (sorted by name)
+          example: all
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 3
+                      name: Example import
+                      description: ""
+                      created_by: ""
+                      scope: domain
+                      domains:
+                        - example.org
+                      users: []
+                      host: imap.example.org
+                      port: 993
+                      enc: SSL
+                      host1: imap.example.org
+                      port1: 993
+                      enc1: SSL
+                      auth_type: XOAUTH2
+                      oauth_flow: authorization_code
+                      oauth_token_endpoint: https://login.example.org/token
+                      oauth_authorize_endpoint: https://login.example.org/authorize
+                      oauth_userinfo_endpoint: null
+                      oauth_client_id: 0000-1111
+                      oauth_scope: https://outlook.office.com/IMAP.AccessAsUser.All offline_access
+                      oauth_extra_params: null
+                      oauth_redirect_uri: https://mail.example.org/syncjob-oauth
+                      oauth_token_expires: null
+                      oauth_last_refresh_error: null
+                      oauth_last_refresh_attempt: null
+                      has_client_secret: true
+                      has_access_token: false
+                      can_edit: true
+                      active: 1
+                      created: "2026-10-01 09:00:00"
+                      modified: "2026-10-01 09:00:00"
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Returns a single sync source by id, or all sources visible to the caller
+        when `id` is `all`. `can_edit` tells whether the caller may edit/delete
+        the source.
+      operationId: Get sync job sources
+      summary: Get sync job sources
+  /api/v1/get/syncjob_options:
+    get:
+      parameters:
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    dry: false
+                    folder: true
+                    maxsize: true
+                    sslargs1: ^SSL_verify_mode=[01]$
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Returns the allowlist of imapsync options accepted in a sync job's
+        `custom_params` as option => rule: `true` = requires a non-empty value,
+        `false` = flag without value, string = regular expression the whole
+        value must match.
+      operationId: Get sync job options
+      summary: Get sync job options
+  /api/v1/get/imapsync_settings:
+    get:
+      parameters:
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    max_parallel: 4
+                    max_bytes_per_second: 2048000
+                    max_kb_per_second: 2000
+          description: OK
+          headers: {}
+      tags:
+        - Sync jobs
+      description: >-
+        Admin only. Returns the global sync job settings (`{}` for other roles).
+      operationId: Get sync job settings
+      summary: Get sync job settings
   "/api/v1/get/tls-policy-map/{id}":
     get:
       parameters:
