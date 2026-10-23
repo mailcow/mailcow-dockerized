@@ -166,12 +166,40 @@ while true; do
   POSTFIX_CERT_SERIAL_NEW="$(echo | openssl s_client -connect postfix:25 -starttls smtp 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
   DOVECOT_CERT_SERIAL_NEW="$(echo | openssl s_client -connect dovecot:143 -starttls imap 2>/dev/null | openssl x509 -inform pem -noout -serial | cut -d "=" -f 2)"
   # Re-using previous acme-mailcow account and domain keys
-  if [[ ! -f ${ACME_BASE}/acme/key.pem ]]; then
-    log_f "Generating missing domain private rsa key..."
-    openssl genrsa 4096 > ${ACME_BASE}/acme/key.pem
-  else
-    log_f "Using existing domain rsa key ${ACME_BASE}/acme/key.pem"
-  fi
+  ACME_CERT_KEY_TYPE="${ACME_CERT_KEY_TYPE:-rsa}"
+
+  case "${ACME_CERT_KEY_TYPE}" in
+    rsa|ecdsa)
+      if [[ -f ${ACME_BASE}/acme/key.pem ]]; then
+        EXISTING_KEY_TYPE="$(get_private_key_type "${ACME_BASE}/acme/key.pem" 2>/dev/null || true)"
+      else
+        EXISTING_KEY_TYPE=""
+      fi
+
+      if [[ -f ${ACME_BASE}/acme/key.pem && "${EXISTING_KEY_TYPE}" != "${ACME_CERT_KEY_TYPE}" ]]; then
+        KEY_BACKUP="${ACME_BASE}/acme/key.pem.$(date +%Y-%m-%d_%H_%M_%S).bak"
+        log_f "Existing domain key type ${EXISTING_KEY_TYPE:-unknown} does not match requested type ${ACME_CERT_KEY_TYPE}, backing up to ${KEY_BACKUP}"
+        mv "${ACME_BASE}/acme/key.pem" "${KEY_BACKUP}"
+        EXISTING_KEY_TYPE=""
+      fi
+
+      if [[ -z "${EXISTING_KEY_TYPE}" ]]; then
+        if [[ "${ACME_CERT_KEY_TYPE}" == "rsa" ]]; then
+          log_f "Generating missing domain private RSA key..."
+          openssl genrsa 4096 > ${ACME_BASE}/acme/key.pem
+        else
+          log_f "Generating missing domain private ECDSA P-256 key..."
+          openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 > ${ACME_BASE}/acme/key.pem
+        fi
+      else
+        log_f "Using existing ${EXISTING_KEY_TYPE} domain key ${ACME_BASE}/acme/key.pem"
+      fi
+      ;;
+    *)
+      log_f "Unknown ACME_CERT_KEY_TYPE '${ACME_CERT_KEY_TYPE}'"
+      exit 5
+      ;;
+  esac
   if [[ ! -f ${ACME_BASE}/acme/account.pem ]]; then
     log_f "Generating missing Lets Encrypt account key..."
     openssl genrsa 4096 > ${ACME_BASE}/acme/account.pem
@@ -373,7 +401,7 @@ while true; do
     VALIDATED_CERTIFICATES+=("${CERT_NAME}")
 
     # obtain server certificate if required
-    DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh rsa
+    DOMAINS=${SERVER_SAN_VALIDATED[@]} /srv/obtain-certificate.sh "${ACME_CERT_KEY_TYPE:-rsa}"
     RETURN="$?"
     if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
       CERT_AMOUNT_CHANGED=1
@@ -415,7 +443,7 @@ while true; do
       CERT_NAME=${VALIDATED_DOMAINS_SORTED[0]}
       VALIDATED_CERTIFICATES+=("${CERT_NAME}")
       # obtain certificate if required
-      DOMAINS=${VALIDATED_DOMAINS_SORTED[@]} /srv/obtain-certificate.sh rsa
+      DOMAINS=${VALIDATED_DOMAINS_SORTED[@]} /srv/obtain-certificate.sh "${ACME_CERT_KEY_TYPE:-rsa}"
       RETURN="$?"
       if [[ "$RETURN" == "0" ]]; then # 0 = cert created successfully
         CERT_AMOUNT_CHANGED=1
