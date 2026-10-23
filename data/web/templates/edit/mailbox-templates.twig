@@ -8,6 +8,7 @@
 
     <input type="hidden" value="default" name="sender_acl">
     <input type="hidden" value="0" name="force_pw_update">
+    <input type="hidden" value="0" name="force_tfa">
     <input type="hidden" value="0" name="sogo_access">
     <input type="hidden" value="0" name="protocol_access">
 
@@ -108,6 +109,8 @@
           <option value="pop3"{% if template.attributes.pop3_access == '1' %} selected{% endif %}>POP3</option>
           <option value="smtp"{% if template.attributes.smtp_access == '1' %} selected{% endif %}>SMTP</option>
           <option value="sieve"{% if template.attributes.sieve_access == '1' %} selected{% endif %}>Sieve</option>
+          <option value="eas"{% if template.attributes.eas_access == '1' %} selected{% endif %}>ActiveSync</option>
+          <option value="dav"{% if template.attributes.dav_access == '1' %} selected{% endif %}>CalDAV/CardDAV</option>
         </select>
       </div>
     </div>
@@ -160,6 +163,14 @@
         <div class="form-check">
           <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update"{% if template.attributes.force_pw_update == '1' %} checked{% endif %}> {{ lang.edit.force_pw_update }}</label>
           <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="force_tfa" id="force_tfa"{% if template.attributes.force_tfa == '1' %} checked{% endif %}> {{ lang.tfa.force_tfa }}</label>
+          <small class="text-muted">{{ lang.tfa.force_tfa_info }}</small>
         </div>
       </div>
     </div>

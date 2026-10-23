@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 

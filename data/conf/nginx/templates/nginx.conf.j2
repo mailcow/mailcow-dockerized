@@ -42,12 +42,19 @@ http {
         https https;
     }
 
+    map $server_port $sogo_auth_internal {
+        65510   "1";
+        default "";
+    }
+
     {% if HTTP_REDIRECT %}
     # HTTP to HTTPS redirect
     server {
         root /web;
         listen {{ HTTP_PORT }} default_server;
+        {% if ENABLE_IPV6 %}
         listen [::]:{{ HTTP_PORT }} default_server;
+        {%endif%}
 
         server_name {{ MAILCOW_HOSTNAME }} autodiscover.* autoconfig.* mta-sts.* {{ ADDITIONAL_SERVER_NAMES | join(' ') }};
 

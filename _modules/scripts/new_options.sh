@@ -57,11 +57,14 @@ adapt_new_options() {
   "DISABLE_NETFILTER_ISOLATION_RULE"
   "HTTP_REDIRECT"
   "ENABLE_IPV6"
+  "ACME_DNS_CHALLENGE"
+  "ACME_DNS_PROVIDER"
+  "ACME_ACCOUNT_EMAIL"
   )
 
   sed -i --follow-symlinks '$a\' mailcow.conf
   for option in ${CONFIG_ARRAY[@]}; do
-    if grep -q "${option}" mailcow.conf; then
+    if grep -q "^#\?${option}=" mailcow.conf; then
       continue
     fi
 
@@ -291,6 +294,20 @@ adapt_new_options() {
             echo '# SOGo URL encryption key (exactly 16 characters, limited to A–Z, a–z, 0–9)' >> mailcow.conf
             echo '# This key is used to encrypt email addresses within SOGo URLs' >> mailcow.conf
             echo "SOGO_URL_ENCRYPTION_KEY=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2>/dev/null | head -c 16)" >> mailcow.conf
+            ;;
+        ACME_DNS_CHALLENGE)
+            echo '# Enable DNS-01 challenge for ACME (acme-mailcow) - y/n' >> mailcow.conf
+            echo '# This requires you to set ACME_DNS_PROVIDER and ACME_ACCOUNT_EMAIL below' >> mailcow.conf
+            echo 'ACME_DNS_CHALLENGE=n' >> mailcow.conf
+            ;;
+        ACME_DNS_PROVIDER)
+            echo '# DNS provider for DNS-01 challenge (e.g. dns_cf, dns_azure, dns_gd, etc.)' >> mailcow.conf
+            echo '# See the dns-01 provider documentation for more information.' >> mailcow.conf
+            echo 'ACME_DNS_PROVIDER=dns_xxx' >> mailcow.conf
+            ;;
+        ACME_ACCOUNT_EMAIL)
+            echo '# Account email for ACME DNS-01 challenge registration' >> mailcow.conf
+            echo 'ACME_ACCOUNT_EMAIL=me@example.com' >> mailcow.conf
             ;;
         *)
             echo "${option}=" >> mailcow.conf

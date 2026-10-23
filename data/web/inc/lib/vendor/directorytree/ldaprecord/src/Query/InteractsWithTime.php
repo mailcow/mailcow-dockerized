@@ -15,11 +15,8 @@ trait InteractsWithTime
 {
     /**
      * Get the number of seconds until the given DateTime.
-     *
-     * @param  DateTimeInterface|DateInterval|int  $delay
-     * @return int
      */
-    protected function secondsUntil($delay)
+    protected function secondsUntil(DateTimeInterface|DateInterval|int|null $delay = null): int
     {
         $delay = $this->parseDateInterval($delay);
 
@@ -30,11 +27,8 @@ trait InteractsWithTime
 
     /**
      * Get the "available at" UNIX timestamp.
-     *
-     * @param  DateTimeInterface|DateInterval|int  $delay
-     * @return int
      */
-    protected function availableAt($delay = 0)
+    protected function availableAt(DateTimeInterface|DateInterval|int $delay = 0): int
     {
         $delay = $this->parseDateInterval($delay);
 
@@ -45,11 +39,8 @@ trait InteractsWithTime
 
     /**
      * If the given value is an interval, convert it to a DateTime instance.
-     *
-     * @param  DateTimeInterface|DateInterval|int  $delay
-     * @return DateTimeInterface|int
      */
-    protected function parseDateInterval($delay)
+    protected function parseDateInterval(DateTimeInterface|DateInterval|int|null $delay = null): DateTimeInterface|int|null
     {
         if ($delay instanceof DateInterval) {
             $delay = Carbon::now()->add($delay);
@@ -60,10 +51,8 @@ trait InteractsWithTime
 
     /**
      * Get the current system time as a UNIX timestamp.
-     *
-     * @return int
      */
-    protected function currentTime()
+    protected function currentTime(): int
     {
         return Carbon::now()->getTimestamp();
     }

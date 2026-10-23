@@ -7,6 +7,12 @@ if [[ -z ${DBUSER} ]] || [[ -z ${DBPASS} ]] || [[ -z ${DBNAME} ]]; then
 	exit 1
 fi
 
+SKIP_CONFIRM=false
+if [[ "${1:-}" == "-y" || "${1:-}" == "--yes" ]]; then
+    SKIP_CONFIRM=true
+    shift # prevent $1 from bleeding into head -c${1:-16} below
+fi
+
 echo -n "Checking MySQL service... "
 if [[ -z $(docker ps -qf name=mysql-mailcow) ]]; then
 	echo "failed"
@@ -15,8 +21,12 @@ if [[ -z $(docker ps -qf name=mysql-mailcow) ]]; then
 fi
 
 echo "OK"
-read -r -p "Are you sure you want to reset the mailcow administrator account? [y/N] " response
-response=${response,,}    # tolower
+if [[ "$SKIP_CONFIRM" == "true" ]]; then
+    response="yes"
+else
+    read -r -p "Are you sure you want to reset the mailcow administrator account? [y/N] " response
+    response=${response,,}
+fi
 if [[ "$response" =~ ^(yes|y)$ ]]; then
 	echo -e "\nWorking, please wait..."
   random=$(</dev/urandom tr -dc _A-Z-a-z-0-9 2> /dev/null | head -c${1:-16})

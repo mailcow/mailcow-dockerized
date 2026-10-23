@@ -6,24 +6,18 @@ abstract class Node
 {
     /**
      * The raw value of the node.
-     *
-     * @var string
      */
-    protected $raw;
+    protected string $raw;
 
     /**
      * Create a new filter node.
-     *
-     * @param  string  $filter
      */
-    abstract public function __construct($filter);
+    abstract public function __construct(string $filter);
 
     /**
      * Get the raw value of the node.
-     *
-     * @return string
      */
-    public function getRaw()
+    public function getRaw(): string
     {
         return $this->raw;
     }

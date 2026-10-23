@@ -7,30 +7,22 @@ use LdapRecord\LdapRecordException;
 class ModelDoesNotExistException extends LdapRecordException
 {
     /**
-     * The class name of the model that does not exist.
-     *
-     * @var Model
+     * The instance of the model that does not exist.
      */
-    protected $model;
+    protected Model $model;
 
     /**
      * Create a new exception for the given model.
-     *
-     * @param  Model  $model
-     * @return ModelDoesNotExistException
      */
-    public static function forModel(Model $model)
+    public static function forModel(Model $model): static
     {
-        return (new static())->setModel($model);
+        return (new static)->setModel($model);
     }
 
     /**
-     * Set the model that does not exist.
-     *
-     * @param  Model  $model
-     * @return ModelDoesNotExistException
+     * Set the model instance that does not exist.
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): static
     {
         $this->model = $model;
 
@@ -39,5 +31,13 @@ class ModelDoesNotExistException extends LdapRecordException
         $this->message = "Model [{$class}] does not exist.";
 
         return $this;
+    }
+
+    /**
+     * Get the instance of the model that does not exist.
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
     }
 }

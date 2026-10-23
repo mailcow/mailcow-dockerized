@@ -5,19 +5,49 @@ namespace LdapRecord\Support;
 class Str
 {
     /**
-     * Return the remainder of a string after the last occurrence of a given value.
-     *
-     * @param  string  $subject
-     * @param  string  $search
-     * @return string
+     * Determine if a given string matches a given pattern.
      */
-    public static function afterLast($subject, $search)
+    public static function is(string|iterable $pattern, string $value): bool
+    {
+        if (! is_iterable($pattern)) {
+            $pattern = [$pattern];
+        }
+
+        foreach ($pattern as $pattern) {
+            $pattern = (string) $pattern;
+
+            // If the given value is an exact match we can of course return true right
+            // from the beginning. Otherwise, we will translate asterisks and do an
+            // actual pattern match against the two strings to see if they match.
+            if ($pattern === $value) {
+                return true;
+            }
+
+            $pattern = preg_quote($pattern, '#');
+
+            // Asterisks are translated into zero-or-more regular expression wildcards
+            // to make it convenient to check if the strings starts with the given
+            // pattern such as "library/*", making any string check convenient.
+            $pattern = str_replace('\*', '.*', $pattern);
+
+            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the remainder of a string after the last occurrence of a given value.
+     */
+    public static function afterLast(string $subject, string $search): string
     {
         if ($search === '') {
             return $subject;
         }
 
-        $position = strrpos($subject, (string) $search);
+        $position = strrpos($subject, $search);
 
         if ($position === false) {
             return $subject;
@@ -28,12 +58,8 @@ class Str
 
     /**
      * Determine if a given string starts with a given substring.
-     *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
-     * @return bool
      */
-    public static function startsWith($haystack, $needles)
+    public static function startsWith(string $haystack, array|string $needles): bool
     {
         foreach ((array) $needles as $needle) {
             if ((string) $needle !== '' && str_starts_with($haystack, $needle)) {
@@ -46,12 +72,8 @@ class Str
 
     /**
      * Determine if a given string ends with a given substring.
-     *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
-     * @return bool
      */
-    public static function endsWith($haystack, $needles)
+    public static function endsWith(string $haystack, array|string $needles): bool
     {
         foreach ((array) $needles as $needle) {
             if (
@@ -67,14 +89,8 @@ class Str
 
     /**
      * Execute a callback when a needle is found in the haystack.
-     *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
-     * @param  \Closure|mixed  $callback
-     * @param  \Closure|mixed  $default
-     * @return mixed
      */
-    public static function whenContains($haystack, $needles, $callback, $default = null)
+    public static function whenContains(string $haystack, array|string $needles, mixed $callback, mixed $default = null): mixed
     {
         foreach ((array) $needles as $needle) {
             if (static::contains($haystack, $needle)) {
@@ -87,13 +103,8 @@ class Str
 
     /**
      * Determine if a given string contains a given substring.
-     *
-     * @param  string  $haystack
-     * @param  string|string[]  $needles
-     * @param  bool  $ignoreCase
-     * @return bool
      */
-    public static function contains($haystack, $needles, $ignoreCase = false)
+    public static function contains(string $haystack, array|string $needles, bool $ignoreCase = false): bool
     {
         if ($ignoreCase) {
             $haystack = mb_strtolower($haystack);
@@ -110,15 +121,9 @@ class Str
     }
 
     /**
-     * Returns the number of substring occurrences.
-     *
-     * @param  string  $haystack
-     * @param  string  $needle
-     * @param  int  $offset
-     * @param  int|null  $length
-     * @return int
+     * Get the number of substring occurrences.
      */
-    public static function substrCount($haystack, $needle, $offset = 0, $length = null)
+    public static function substrCount(string $haystack, string $needle, int $offset = 0, ?int $length = null): int
     {
         if (! is_null($length)) {
             return substr_count($haystack, $needle, $offset, $length);

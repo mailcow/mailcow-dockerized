@@ -8,11 +8,6 @@ class AuthGuardFake extends Guard
 {
     /**
      * Always allow binding as configured user.
-     *
-     * @return bool
      */
-    public function bindAsConfiguredUser()
-    {
-        return true;
-    }
+    public function bindAsConfiguredUser(): void {}
 }

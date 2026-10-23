@@ -110,12 +110,12 @@ async def get_container(container_id : str):
     return Response(content=json.dumps(res, indent=4), media_type="application/json")
 
 @app.get("/containers/json")
-async def get_containers():
+async def get_containers(all: bool = False):
   global dockerapi
 
   containers = {}
   try:
-    for container in (await dockerapi.async_docker_client.containers.list()):
+    for container in (await dockerapi.async_docker_client.containers.list(all=all)):
       container_info = await container.show()
       containers.update({container_info['Id']: container_info})
     return Response(content=json.dumps(containers, indent=4), media_type="application/json")

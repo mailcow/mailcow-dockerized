@@ -130,18 +130,22 @@ chmod 600 /var/lib/sogo/GNUstep/Defaults/sogod.plist
 # Patch ACLs
 #if [[ ${ACL_ANYONE} == 'allow' ]]; then
 #  #enable any or authenticated targets for ACL
-#  if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-#    patch -R /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+#  if patch -R -sfN --dry-run /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+#    patch -R /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
 #  fi
 #else
 #  #disable any or authenticated targets for ACL
-#  if patch -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
-#    patch /usr/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
+#  if patch -sfN --dry-run /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff > /dev/null; then
+#    patch /usr/local/lib/GNUstep/SOGo/Templates/UIxAclEditor.wox < /acl.diff;
 #  fi
 #fi
 
-if patch -R -sfN --dry-run /usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox < /navMailcowBtns.diff > /dev/null; then
-  patch -R /usr/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox < /navMailcowBtns.diff;
+# Apply custom UI patch (reverse patch to ADD buttons)
+if patch -R -sfN --dry-run /usr/local/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox < /navMailcowBtns.diff > /dev/null; then
+  echo "Applying navMailcowBtns patch (reverse to add buttons)..."
+  patch -R /usr/local/lib/GNUstep/SOGo/Templates/UIxTopnavToolbar.wox < /navMailcowBtns.diff;
+else
+  echo "navMailcowBtns patch already applied or cannot be applied"
 fi
 
 # Rename custom logo, if any
@@ -149,7 +153,7 @@ fi
 
 # Rsync web content
 echo "Syncing web content with named volume"
-rsync -a /usr/lib/GNUstep/SOGo/. /sogo_web/
+rsync -a /usr/local/lib/GNUstep/SOGo/. /sogo_web/
 
 # Chown backup path
 chown -R sogo:sogo /sogo_backup

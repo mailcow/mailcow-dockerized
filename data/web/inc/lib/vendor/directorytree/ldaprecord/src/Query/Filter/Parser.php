@@ -10,12 +10,11 @@ class Parser
     /**
      * Parse an LDAP filter into nodes.
      *
-     * @param  string  $string
      * @return (ConditionNode|GroupNode)[]
      *
      * @throws ParserException
      */
-    public static function parse($string)
+    public static function parse(string $string): array
     {
         [$open, $close] = static::countParenthesis($string);
 
@@ -34,11 +33,8 @@ class Parser
 
     /**
      * Perform a match for all filters in the string.
-     *
-     * @param  string  $string
-     * @return array
      */
-    protected static function match($string)
+    protected static function match(string $string): array
     {
         preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", trim($string), $matches);
 
@@ -49,22 +45,18 @@ class Parser
      * Assemble the parsed nodes into a single filter.
      *
      * @param  Node|Node[]  $nodes
-     * @return string
      */
-    public static function assemble($nodes = [])
+    public static function assemble(Node|array $nodes = []): string
     {
-        return array_reduce(Arr::wrap($nodes), function ($carry, Node $node) {
-            return $carry .= static::compileNode($node);
-        });
+        return array_reduce(Arr::wrap($nodes), fn ($carry, Node $node) => (
+            $carry .= static::compileNode($node)
+        ));
     }
 
     /**
      * Assemble the node into its string based format.
-     *
-     * @param  GroupNode|ConditionNode  $node
-     * @return string
      */
-    protected static function compileNode(Node $node)
+    protected static function compileNode(Node $node): string
     {
         switch (true) {
             case $node instanceof GroupNode:
@@ -84,7 +76,7 @@ class Parser
      *
      * @throws ParserException
      */
-    protected static function buildNodes(array $filters = [])
+    protected static function buildNodes(array $filters = []): array
     {
         return array_map(function ($filter) {
             if (static::isWrapped($filter)) {
@@ -103,33 +95,24 @@ class Parser
 
     /**
      * Count the open and close parenthesis of the sting.
-     *
-     * @param  string  $string
-     * @return array
      */
-    protected static function countParenthesis($string)
+    protected static function countParenthesis(string $string): array
     {
         return [Str::substrCount($string, '('), Str::substrCount($string, ')')];
     }
 
     /**
      * Wrap the value in parentheses.
-     *
-     * @param  string  $value
-     * @return string
      */
-    protected static function wrap($value)
+    protected static function wrap(string $value): string
     {
         return "($value)";
     }
 
     /**
      * Recursively unwrwap the value from its parentheses.
-     *
-     * @param  string  $value
-     * @return string
      */
-    protected static function unwrap($value)
+    protected static function unwrap(string $value): string
     {
         $nodes = static::parse($value);
 
@@ -140,22 +123,16 @@ class Parser
 
     /**
      * Determine if the filter is wrapped.
-     *
-     * @param  string  $filter
-     * @return bool
      */
-    protected static function isWrapped($filter)
+    protected static function isWrapped(string $filter): bool
     {
         return Str::startsWith($filter, '(') && Str::endsWith($filter, ')');
     }
 
     /**
      * Determine if the filter is a group.
-     *
-     * @param  string  $filter
-     * @return bool
      */
-    protected static function isGroup($filter)
+    protected static function isGroup(string $filter): bool
     {
         return Str::startsWith($filter, ['&', '|', '!']);
     }

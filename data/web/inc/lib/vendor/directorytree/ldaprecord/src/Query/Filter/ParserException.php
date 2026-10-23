@@ -4,6 +4,4 @@ namespace LdapRecord\Query\Filter;
 
 use LdapRecord\LdapRecordException;
 
-class ParserException extends LdapRecordException
-{
-}
+class ParserException extends LdapRecordException {}

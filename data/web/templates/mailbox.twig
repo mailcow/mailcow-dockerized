@@ -7,12 +7,12 @@
     <li class="nav-item dropdown" role="presentation">
       <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.domains }}</a>
       <ul class="dropdown-menu">
-        <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
+        <li><button class="dropdown-item active" aria-selected="true" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
         <li><button class="dropdown-item" aria-selected="false" aria-controls="tab-templates-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-templates-domains">{{ lang.mailbox.templates }}</button></li>
       </ul>
     </li>
     {% else %}
-    <li class="nav-item" role="presentation"><button class="nav-link" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link active" aria-selected="true" aria-controls="tab-domains" role="tab" data-bs-toggle="tab" data-bs-target="#tab-domains">{{ lang.mailbox.domains }}</button></li>
     {% endif %}
     {% if mailcow_cc_role == 'admin' %}
     <li class="nav-item dropdown" role="presentation">

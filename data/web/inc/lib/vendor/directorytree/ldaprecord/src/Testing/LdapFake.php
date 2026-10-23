@@ -3,78 +3,62 @@
 namespace LdapRecord\Testing;
 
 use Closure;
-use Exception;
 use LdapRecord\DetailedError;
 use LdapRecord\DetectsErrors;
 use LdapRecord\HandlesConnection;
 use LdapRecord\LdapInterface;
+use LdapRecord\LdapResultResponse;
 use LdapRecord\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use PHPUnit\Framework\Constraint\Constraint;
 
 class LdapFake implements LdapInterface
 {
-    use HandlesConnection, DetectsErrors;
+    use DetectsErrors;
+    use HandlesConnection;
 
     /**
      * The expectations of the LDAP fake.
      *
-     * @var array
+     * @var array<string,LdapExpectation[]>
      */
-    protected $expectations = [];
+    protected array $expectations = [];
 
     /**
      * The default fake error number.
-     *
-     * @var int
      */
-    protected $errNo = 1;
+    protected int $errNo = 1;
 
     /**
      * The default fake last error string.
-     *
-     * @var string
      */
-    protected $lastError = '';
+    protected string $lastError = 'Unknown error';
 
     /**
      * The default fake diagnostic message string.
-     *
-     * @var string
      */
-    protected $diagnosticMessage = '';
+    protected ?string $diagnosticMessage = null;
 
     /**
      * Create a new expected operation.
-     *
-     * @param  string  $method
-     * @return LdapExpectation
      */
-    public static function operation($method)
+    public static function operation(string $method): LdapExpectation
     {
         return new LdapExpectation($method);
     }
 
     /**
-     * Set the user that will pass binding.
-     *
-     * @param  string  $dn
-     * @return $this
+     * Set the fake LDAP host.
      */
-    public function shouldAuthenticateWith($dn)
+    public function setHost(string $host): void
     {
-        return $this->expect(
-            static::operation('bind')->with($dn, PHPUnit::anything())->andReturn(true)
-        );
+        $this->host = $host;
     }
 
     /**
      * Add an LDAP method expectation.
-     *
-     * @param  LdapExpectation|array  $expectations
-     * @return $this
      */
-    public function expect($expectations = [])
+    public function expect(LdapExpectation|array $expectations = []): static
     {
         $expectations = Arr::wrap($expectations);
 
@@ -101,11 +85,8 @@ class LdapFake implements LdapInterface
 
     /**
      * Determine if the method has any expectations.
-     *
-     * @param  string  $method
-     * @return bool
      */
-    public function hasExpectations($method)
+    public function hasExpectations(string $method): bool
     {
         return count($this->getExpectations($method)) > 0;
     }
@@ -113,33 +94,55 @@ class LdapFake implements LdapInterface
     /**
      * Get expectations by method.
      *
-     * @param  string  $method
-     * @return LdapExpectation[]|mixed
+     * @return LdapExpectation[]
      */
-    public function getExpectations($method)
+    public function getExpectations(string $method): array
     {
         return $this->expectations[$method] ?? [];
     }
 
     /**
      * Remove an expectation by method and key.
-     *
-     * @param  string  $method
-     * @param  int  $key
-     * @return void
      */
-    public function removeExpectation($method, $key)
+    public function removeExpectation(string $method, int $key): void
     {
         unset($this->expectations[$method][$key]);
     }
 
     /**
-     * Set the error number of a failed bind attempt.
-     *
-     * @param  int  $number
-     * @return $this
+     * Set the fake to allow any bind attempt.
      */
-    public function shouldReturnErrorNumber($number = 1)
+    public function shouldAllowAnyBind(): static
+    {
+        return $this->expect(
+            static::operation('bind')->andReturnResponse()
+        );
+    }
+
+    /**
+     * Set the fake to allow any bind attempt with the given DN.
+     */
+    public function shouldAllowBindWith(string $dn): static
+    {
+        return $this->expect(
+            static::operation('bind')->with($dn, PHPUnit::anything())->andReturnResponse()
+        );
+    }
+
+    /**
+     * Set the user that will pass binding.
+     *
+     * @deprecated Use shouldAllowBindWith instead.
+     */
+    public function shouldAuthenticateWith(string $dn): static
+    {
+        return $this->shouldAllowBindWith($dn);
+    }
+
+    /**
+     * Set the error number of a failed bind attempt.
+     */
+    public function shouldReturnErrorNumber(int $number = 1): static
     {
         $this->errNo = $number;
 
@@ -148,11 +151,8 @@ class LdapFake implements LdapInterface
 
     /**
      * Set the last error of a failed bind attempt.
-     *
-     * @param  string  $message
-     * @return $this
      */
-    public function shouldReturnError($message = '')
+    public function shouldReturnError(string $message): static
     {
         $this->lastError = $message;
 
@@ -161,11 +161,8 @@ class LdapFake implements LdapInterface
 
     /**
      * Set the diagnostic message of a failed bind attempt.
-     *
-     * @param  string  $message
-     * @return $this
      */
-    public function shouldReturnDiagnosticMessage($message = '')
+    public function shouldReturnDiagnosticMessage(?string $message): static
     {
         $this->diagnosticMessage = $message;
 
@@ -174,38 +171,32 @@ class LdapFake implements LdapInterface
 
     /**
      * Return a fake error number.
-     *
-     * @return int
      */
-    public function errNo()
+    public function errNo(): int
     {
         return $this->errNo;
     }
 
     /**
      * Return a fake error.
-     *
-     * @return string
      */
-    public function getLastError()
+    public function getLastError(): string
     {
         return $this->lastError;
     }
 
     /**
-     * @inheritdoc
+     * Return a fake diagnostic message.
      */
-    public function getDiagnosticMessage()
+    public function getDiagnosticMessage(): ?string
     {
         return $this->diagnosticMessage;
     }
 
     /**
      * Return a fake detailed error.
-     *
-     * @return DetailedError
      */
-    public function getDetailedError()
+    public function getDetailedError(): DetailedError
     {
         return new DetailedError(
             $this->errNo(),
@@ -215,258 +206,309 @@ class LdapFake implements LdapInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getEntries($searchResults)
+    public function getEntries(mixed $result): array
     {
-        return $searchResults;
+        return $result;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
-    public function isUsingSSL()
+    public function getValuesLen(mixed $entry, string $attribute): array|false
     {
-        return $this->hasExpectations('isUsingSSL')
-            ? $this->resolveExpectation('isUsingSSL')
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function compare(string $dn, string $attribute, string $value, ?array $controls = null): bool|int
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setRebindCallback(callable $callback): bool
+    {
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFirstEntry(mixed $result): mixed
+    {
+        return $this->executeFailableOperation(function () use ($result) {
+            return ldap_first_entry($this->connection, $result);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getNextEntry(mixed $entry): mixed
+    {
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_next_entry($this->connection, $entry);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAttributes(mixed $entry): array|false
+    {
+        return $this->executeFailableOperation(function () use ($entry) {
+            return ldap_get_attributes($this->connection, $entry);
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function countEntries(mixed $result): int
+    {
+        return $this->executeFailableOperation(function () use ($result) {
+            return ldap_count_entries($this->connection, $result);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUsingSSL(): bool
+    {
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->useSSL;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function isUsingTLS()
+    public function isUsingTLS(): bool
     {
-        return $this->hasExpectations('isUsingTLS')
-            ? $this->resolveExpectation('isUsingTLS')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->useTLS;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function isBound()
+    public function isBound(): bool
     {
-        return $this->hasExpectations('isBound')
-            ? $this->resolveExpectation('isBound')
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : $this->bound;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getHost()
+    public function setOption(int $option, mixed $value): bool
     {
-        return $this->hasExpectations('getHost')
-            ? $this->resolveExpectation('getHost')
-            : $this->host;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setOption($option, $value)
-    {
-        return $this->hasExpectations('setOption')
-            ? $this->resolveExpectation('setOption', func_get_args())
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
             : true;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function getOption($option, &$value = null)
+    public function getOption(int $option, mixed &$value = null): mixed
     {
-        return $this->resolveExpectation('getOption', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function startTLS()
+    public function startTLS(): bool
     {
-        return $this->resolveExpectation('startTLS', func_get_args());
+        return $this->secure = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function connect($hosts = [], $port = 389)
+    public function connect(string|array $hosts = [], int $port = 389, ?string $protocol = null): bool
     {
         $this->bound = false;
-
+        $this->protocol = $protocol;
         $this->host = $this->makeConnectionUris($hosts, $port);
 
-        return $this->connection = $this->hasExpectations('connect')
-            ? $this->resolveExpectation('connect', func_get_args())
+        return $this->connection = $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
             : true;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function close()
+    public function close(): bool
     {
-        $this->connection = null;
         $this->bound = false;
-        $this->host = null;
+        $this->secure = false;
 
-        return $this->hasExpectations('close')
-            ? $this->resolveExpectation('close')
+        $this->host = null;
+        $this->protocol = null;
+        $this->connection = null;
+
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__)
             : true;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function bind($username, $password)
+    public function bind(?string $dn = null, ?string $password = null, ?array $controls = null): LdapResultResponse
     {
-        return $this->bound = $this->resolveExpectation('bind', func_get_args());
+        $result = $this->resolveExpectation(__FUNCTION__, func_get_args());
+
+        $this->handleBindResponse($result);
+
+        return $result;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
-    public function search($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function saslBind(?string $dn = null, ?string $password = null, ?array $options = null): bool
     {
-        return $this->resolveExpectation('search', func_get_args());
+        return $this->bound = $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function listing($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function search(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
-        return $this->resolveExpectation('listing', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function read($dn, $filter, array $fields, $onlyAttributes = false, $size = 0, $time = 0, $deref = LDAP_DEREF_NEVER, $serverControls = [])
+    public function list(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
-        return $this->resolveExpectation('read', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
+    public function read(string $dn, string $filter, array $fields, bool $onlyAttributes = false, int $size = 0, int $time = 0, int $deref = LDAP_DEREF_NEVER, ?array $controls = null): mixed
     {
-        return $this->resolveExpectation('parseResult', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function add($dn, array $entry)
+    public function parseResult(mixed $result, int &$errorCode = 0, ?string &$dn = null, ?string &$errorMessage = null, ?array &$referrals = null, ?array &$controls = null): LdapResultResponse|false
     {
-        return $this->resolveExpectation('add', func_get_args());
+        return $this->hasExpectations(__FUNCTION__)
+            ? $this->resolveExpectation(__FUNCTION__, func_get_args())
+            : new LdapResultResponse;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function delete($dn)
+    public function add(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('delete', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function rename($dn, $newRdn, $newParent, $deleteOldRdn = false)
+    public function delete(string $dn): bool
     {
-        return $this->resolveExpectation('rename', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function modify($dn, array $entry)
+    public function rename(string $dn, string $newRdn, string $newParent, bool $deleteOldRdn = false): bool
     {
-        return $this->resolveExpectation('modify', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function modifyBatch($dn, array $values)
+    public function modify(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modifyBatch', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function modAdd($dn, array $entry)
+    public function modifyBatch(string $dn, array $values): bool
     {
-        return $this->resolveExpectation('modAdd', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function modReplace($dn, array $entry)
+    public function modAdd(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modReplace', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function modDelete($dn, array $entry)
+    public function modReplace(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('modDelete', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '')
+    public function modDelete(string $dn, array $entry): bool
     {
-        return $this->resolveExpectation('controlPagedResult', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function controlPagedResultResponse($result, &$cookie)
+    public function freeResult(mixed $result): bool
     {
-        return $this->resolveExpectation('controlPagedResultResponse', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function freeResult($result)
+    public function err2Str(int $number): string
     {
-        return $this->resolveExpectation('freeResult', func_get_args());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function err2Str($number)
-    {
-        return $this->resolveExpectation('err2Str', func_get_args());
+        return $this->resolveExpectation(__FUNCTION__, func_get_args());
     }
 
     /**
      * Resolve the methods expectations.
      *
-     * @param  string  $method
-     * @param  array  $args
-     * @return mixed
-     *
-     * @throws Exception
+     * @throws LdapExpectationException
      */
-    protected function resolveExpectation($method, array $args = [])
+    protected function resolveExpectation(string $method, array $args = []): mixed
     {
         foreach ($this->getExpectations($method) as $key => $expectation) {
             $this->assertMethodArgumentsMatch($method, $expectation->getExpectedArgs(), $args);
 
-            $expectation->decrementCallCount();
+            $expectation->decrementExpectedCount();
 
             if ($expectation->getExpectedCount() === 0) {
                 $this->removeExpectation($method, $key);
@@ -483,16 +525,13 @@ class LdapFake implements LdapInterface
             return $expectation->getExpectedValue();
         }
 
-        throw new Exception("LDAP method [$method] was unexpected.");
+        throw new LdapExpectationException("LDAP method [$method] was unexpected.");
     }
 
     /**
      * Apply the expectation error to the fake.
-     *
-     * @param  LdapExpectation  $expectation
-     * @return void
      */
-    protected function applyExpectationError(LdapExpectation $expectation)
+    protected function applyExpectationError(LdapExpectation $expectation): void
     {
         $this->shouldReturnError($expectation->getExpectedErrorMessage());
         $this->shouldReturnErrorNumber($expectation->getExpectedErrorCode());
@@ -500,14 +539,29 @@ class LdapFake implements LdapInterface
     }
 
     /**
+     * Assert that the expectations have been called their minimum amount of times.
+     *
+     * @throws LdapExpectationException
+     */
+    public function assertMinimumExpectationCounts(): void
+    {
+        foreach ($this->expectations as $method => $expectations) {
+            foreach ($expectations as $expectation) {
+                if (! $expectation->isIndefinite() && $expectation->getExpectedCount()) {
+                    $remaining = ($original = $expectation->getOriginalExpectedCount()) - $expectation->getExpectedCount();
+
+                    throw new LdapExpectationException("Method [$method] should be called $original times but was called $remaining times.");
+                }
+            }
+        }
+    }
+
+    /**
      * Assert that the expected arguments match the operations arguments.
      *
-     * @param  string  $method
      * @param  Constraint[]  $expectedArgs
-     * @param  array  $methodArgs
-     * @return void
      */
-    protected function assertMethodArgumentsMatch($method, array $expectedArgs = [], array $methodArgs = [])
+    protected function assertMethodArgumentsMatch(string $method, array $expectedArgs = [], array $methodArgs = []): void
     {
         foreach ($expectedArgs as $key => $constraint) {
             $argNumber = $key + 1;
@@ -515,7 +569,7 @@ class LdapFake implements LdapInterface
             PHPUnit::assertArrayHasKey(
                 $key,
                 $methodArgs,
-                "LDAP method [$method] argument #{$argNumber} does not exist."
+                "LDAP method [$method] argument #$argNumber does not exist."
             );
 
             $constraint->evaluate(

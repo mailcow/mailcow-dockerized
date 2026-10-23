@@ -6,11 +6,8 @@ class MbString
 {
     /**
      * Get the integer value of a specific character.
-     *
-     * @param  $string
-     * @return int
      */
-    public static function ord($string)
+    public static function ord(string $string): int
     {
         if (static::isLoaded()) {
             $result = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
@@ -25,11 +22,8 @@ class MbString
 
     /**
      * Get the character for a specific integer value.
-     *
-     * @param  $int
-     * @return string
      */
-    public static function chr($int)
+    public static function chr(int $int): string
     {
         if (static::isLoaded()) {
             return mb_convert_encoding(pack('n', $int), 'UTF-8', 'UTF-16BE');
@@ -40,36 +34,28 @@ class MbString
 
     /**
      * Split a string into its individual characters and return it as an array.
-     *
-     * @param  string  $value
-     * @return string[]
      */
-    public static function split($value)
+    public static function split(string $value): array
     {
         return preg_split('/(?<!^)(?!$)/u', $value);
     }
 
     /**
      * Detects if the given string is UTF 8.
-     *
-     * @param  $string
-     * @return string|false
      */
-    public static function isUtf8($string)
+    public static function isUtf8(string $string): bool
     {
         if (static::isLoaded()) {
-            return mb_detect_encoding($string, 'UTF-8', $strict = true);
+            return mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8';
         }
 
-        return $string;
+        return false;
     }
 
     /**
      * Checks if the mbstring extension is enabled in PHP.
-     *
-     * @return bool
      */
-    public static function isLoaded()
+    public static function isLoaded(): bool
     {
         return extension_loaded('mbstring');
     }

@@ -8,38 +8,26 @@ class ObjectNotFoundException extends LdapRecordException
 {
     /**
      * The query filter that was used.
-     *
-     * @var string
      */
-    protected $query;
+    protected string $query;
 
     /**
      * The base DN of the query that was used.
-     *
-     * @var string
      */
-    protected $baseDn;
+    protected ?string $baseDn;
 
     /**
      * Create a new exception for the executed filter.
-     *
-     * @param  string  $query
-     * @param  ?string  $baseDn
-     * @return static
      */
-    public static function forQuery($query, $baseDn = null)
+    public static function forQuery(string $query, ?string $baseDn = null): static
     {
-        return (new static())->setQuery($query, $baseDn);
+        return (new static)->setQuery($query, $baseDn);
     }
 
     /**
      * Set the query that was used.
-     *
-     * @param  string  $query
-     * @param  string|null  $baseDn
-     * @return $this
      */
-    public function setQuery($query, $baseDn = null)
+    public function setQuery(string $query, ?string $baseDn = null): static
     {
         $this->query = $query;
         $this->baseDn = $baseDn;

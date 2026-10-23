@@ -8,30 +8,21 @@ class LdapRecordException extends Exception
 {
     /**
      * The detailed LDAP error (if available).
-     *
-     * @var DetailedError|null
      */
-    protected $detailedError;
+    protected ?DetailedError $detailedError = null;
 
     /**
      * Create a new Bind Exception with a detailed connection error.
-     *
-     * @param  Exception  $e
-     * @param  DetailedError|null  $error
-     * @return $this
      */
-    public static function withDetailedError(Exception $e, DetailedError $error = null)
+    public static function withDetailedError(Exception $e, ?DetailedError $error = null): static
     {
         return (new static($e->getMessage(), $e->getCode(), $e))->setDetailedError($error);
     }
 
     /**
      * Set the detailed error.
-     *
-     * @param  DetailedError|null  $error
-     * @return $this
      */
-    public function setDetailedError(DetailedError $error = null)
+    public function setDetailedError(?DetailedError $error = null): static
     {
         $this->detailedError = $error;
 
@@ -39,11 +30,9 @@ class LdapRecordException extends Exception
     }
 
     /**
-     * Returns the detailed error.
-     *
-     * @return DetailedError|null
+     * Get the detailed error.
      */
-    public function getDetailedError()
+    public function getDetailedError(): ?DetailedError
     {
         return $this->detailedError;
     }

@@ -5,34 +5,24 @@ namespace LdapRecord\Models\Types;
 interface ActiveDirectory extends TypeInterface
 {
     /**
-     * Returns the models object SID key.
-     *
-     * @return string
+     * Get the models object SID key.
      */
-    public function getObjectSidKey();
+    public function getObjectSidKey(): string;
 
     /**
-     * Returns the model's hex object SID.
+     * Get the model's hex object SID.
      *
      * @see https://msdn.microsoft.com/en-us/library/ms679024(v=vs.85).aspx
-     *
-     * @return string
      */
-    public function getObjectSid();
+    public function getObjectSid(): ?string;
 
     /**
-     * Returns the model's SID.
-     *
-     * @param  string|null  $sid
-     * @return string|null
+     * Get the model's SID.
      */
-    public function getConvertedSid($sid = null);
+    public function getConvertedSid(?string $sid = null): ?string;
 
     /**
-     * Returns the model's binary SID.
-     *
-     * @param  string|null  $sid
-     * @return string|null
+     * Get the model's binary SID.
      */
-    public function getBinarySid($sid = null);
+    public function getBinarySid(?string $sid = null): ?string;
 }

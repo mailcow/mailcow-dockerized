@@ -20,6 +20,10 @@ if [[ "${TYPE}" != "rsa" ]]; then
   log_f "Unknown certificate type '${TYPE}' requested"
   exit 5
 fi
+
+if [[ "${ACME_DNS_CHALLENGE}" == "y" ]]; then
+  exec /srv/obtain-certificate-dns.sh "$@"
+fi
 DOMAINS_FILE=${ACME_BASE}/${CERT_DOMAIN}/domains
 CERT=${ACME_BASE}/${CERT_DOMAIN}/${PREFIX}cert.pem
 SHARED_KEY=${ACME_BASE}/acme/${PREFIX}key.pem  # must already exist
