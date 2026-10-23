@@ -184,6 +184,12 @@ location /sogo-auth-verify {
 }
 
 location ^~ /Microsoft-Server-ActiveSync {
+    # Outlook for iOS/Android (Microsoft's sync service) sends EAS commands without credentials
+    # and only authenticates after a 401 Basic challenge. SOGo answers those with 403, so challenge here.
+    if ($http_authorization = "") {
+        add_header WWW-Authenticate 'Basic realm="SOGo"' always;
+        return 401;
+    }
     auth_request /sogo-auth-verify;
     auth_request_set $user $upstream_http_x_user;
     auth_request_set $auth $upstream_http_x_auth;
