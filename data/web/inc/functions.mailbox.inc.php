@@ -552,6 +552,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $relay_unknown_only = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_unknown_only'];
           $backupmx = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $DOMAIN_DEFAULT_ATTRIBUTES['backupmx'];
           $gal = (isset($_data['gal'])) ? intval($_data['gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['gal'];
+          $addressing = array();
+          foreach (addressing_domain_defaults() as $addr_key => $addr_default) {
+            $addressing[$addr_key] = (isset($_data[$addr_key])) ? intval($_data[$addr_key]) : (isset($DOMAIN_DEFAULT_ATTRIBUTES[$addr_key]) ? intval($DOMAIN_DEFAULT_ATTRIBUTES[$addr_key]) : $addr_default);
+          }
           if ($relay_all_recipients == 1) {
             $backupmx = '1';
           }
@@ -607,8 +611,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':domain' => '%@' . $domain
           ));
           // save domain
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`,
+            `plus_addressing_in`, `plus_addressing_out`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients,
+            :plus_addressing_in, :plus_addressing_out)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
@@ -621,7 +627,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':gal' => $gal,
             ':active' => $active,
             ':relay_unknown_only' => $relay_unknown_only,
-            ':relay_all_recipients' => $relay_all_recipients
+            ':relay_all_recipients' => $relay_all_recipients,
+            ':plus_addressing_in' => $addressing['plus_addressing_in'],
+            ':plus_addressing_out' => $addressing['plus_addressing_out']
           ));
           // save tags
           foreach($tags as $index => $tag){
@@ -1124,6 +1132,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $eas_access = (isset($_data['eas_access'])) ? intval($_data['eas_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
           $dav_access = (isset($_data['dav_access'])) ? intval($_data['dav_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
+          $addressing = array();
+          foreach (addressing_mailbox_defaults() as $addr_key => $addr_default) {
+            $addressing[$addr_key] = (isset($_data[$addr_key])) ? intval($_data[$addr_key]) : (isset($MAILBOX_DEFAULT_ATTRIBUTES[$addr_key]) ? intval($MAILBOX_DEFAULT_ATTRIBUTES[$addr_key]) : $addr_default);
+          }
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           // Validate quarantine_category
@@ -1157,6 +1169,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'eas_access' => strval($eas_access),
               'dav_access' => strval($dav_access),
               'relayhost' => strval($relayhost),
+              'plus_addressing_in' => strval($addressing['plus_addressing_in']),
+              'plus_addressing_out' => strval($addressing['plus_addressing_out']),
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
               'quarantine_notification' => strval($quarantine_notification),
@@ -1695,6 +1709,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
           $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
           $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+          foreach (addressing_domain_defaults() as $addr_key => $addr_default) {
+            $attr[$addr_key]                  = (isset($_data[$addr_key])) ? intval($_data[$addr_key]) : $addr_default;
+          }
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -1774,6 +1791,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
           $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out']);
+          foreach (addressing_mailbox_defaults() as $addr_key => $addr_default) {
+            $attr[$addr_key]                   = isset($_data[$addr_key]) ? intval($_data[$addr_key]) : $addr_default;
+          }
           if (isset($_data['protocol_access'])) {
             $_data['protocol_access'] = (array)$_data['protocol_access'];
             $attr['imap_access'] = (in_array('imap', $_data['protocol_access'])) ? 1 : 0;
@@ -2893,6 +2913,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients'];
                 $relay_unknown_only   = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $is_now['relay_unknown_only'];
+                $addressing           = array();
+                foreach (addressing_domain_defaults() as $addr_key => $addr_default) {
+                  $addressing[$addr_key] = (isset($_data[$addr_key])) ? intval($_data[$addr_key]) : intval($is_now[$addr_key]);
+                }
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
                 $aliases              = (!empty($_data['aliases'])) ? $_data['aliases'] : $is_now['max_num_aliases_for_domain'];
                 $mailboxes            = (isset($_data['mailboxes']) && $_data['mailboxes'] != '') ? intval($_data['mailboxes']) : $is_now['max_num_mboxes_for_domain'];
@@ -3003,6 +3027,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `relay_all_recipients` = :relay_all_recipients,
               `relay_unknown_only` = :relay_unknown_only,
+              `plus_addressing_in` = :plus_addressing_in,
+              `plus_addressing_out` = :plus_addressing_out,
               `backupmx` = :backupmx,
               `gal` = :gal,
               `active` = :active,
@@ -3017,6 +3043,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $stmt->execute(array(
                 ':relay_all_recipients' => $relay_all_recipients,
                 ':relay_unknown_only' => $relay_unknown_only,
+                ':plus_addressing_in' => $addressing['plus_addressing_in'],
+                ':plus_addressing_out' => $addressing['plus_addressing_out'],
                 ':backupmx' => $backupmx,
                 ':gal' => $gal,
                 ':active' => $active,
@@ -3106,6 +3134,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
             $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
             $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+            foreach (addressing_domain_defaults() as $addr_key => $addr_default) {
+              $attr[$addr_key]                  = (isset($_data[$addr_key])) ? intval($_data[$addr_key]) : $addr_default;
+            }
             $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
             $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -3167,6 +3198,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$eas_access     = (isset($_data['eas_access']) && hasACLAccess("protocol_access")) ? intval($_data['eas_access']) : intval($is_now['attributes']['eas_access']);
               (int)$dav_access    = (isset($_data['dav_access']) && hasACLAccess("protocol_access")) ? intval($_data['dav_access']) : intval($is_now['attributes']['dav_access']);
               (int)$relayhost       = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              // Plus addressing switches are governed by admins and domain admins only
+              $addressing           = array();
+              foreach (addressing_mailbox_defaults() as $addr_key => $addr_default) {
+                $addressing[$addr_key] = (isset($_data[$addr_key]) && $_SESSION['mailcow_cc_role'] != 'user') ? intval($_data[$addr_key]) : (isset($is_now['attributes'][$addr_key]) ? intval($is_now['attributes'][$addr_key]) : $addr_default);
+              }
               (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain               = $is_now['domain'];
@@ -3465,6 +3501,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
                   `attributes` = JSON_SET(`attributes`, '$.eas_access', :eas_access),
                   `attributes` = JSON_SET(`attributes`, '$.dav_access', :dav_access),
+                  `attributes` = JSON_SET(`attributes`, '$.plus_addressing_in', :plus_addressing_in),
+                  `attributes` = JSON_SET(`attributes`, '$.plus_addressing_out', :plus_addressing_out),
                   `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email),
                   `attributes` = JSON_SET(`attributes`, '$.attribute_hash', :attribute_hash)
                     WHERE `username` = :username");
@@ -3482,6 +3520,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':smtp_access' => $smtp_access,
                 ':eas_access' => $eas_access,
                 ':dav_access' => $dav_access,
+                ':plus_addressing_in' => strval($addressing['plus_addressing_in']),
+                ':plus_addressing_out' => strval($addressing['plus_addressing_out']),
                 ':recovery_email' => $pw_recovery_email,
                 ':relayhost' => $relayhost,
                 ':username' => $username,
@@ -3860,6 +3900,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : $is_now['active'];
             $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
             $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : $is_now['tls_enforce_out'];
+            foreach (addressing_mailbox_defaults() as $addr_key => $addr_default) {
+              $attr[$addr_key]                   = isset($_data[$addr_key]) ? intval($_data[$addr_key]) : (isset($is_now[$addr_key]) ? intval($is_now[$addr_key]) : $addr_default);
+            }
             if (isset($_data['protocol_access'])) {
               $_data['protocol_access'] = (array)$_data['protocol_access'];
               $attr['imap_access'] = (in_array('imap', $_data['protocol_access'])) ? 1 : 0;
@@ -5057,6 +5100,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relayhost`,
               `relay_all_recipients`,
               `relay_unknown_only`,
+              `plus_addressing_in`,
+              `plus_addressing_out`,
               `backupmx`,
               `gal`,
               `active`
@@ -5126,6 +5171,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['relay_all_recipients_int'] = $row['relay_all_recipients'];
           $domaindata['relay_unknown_only'] = $row['relay_unknown_only'];
           $domaindata['relay_unknown_only_int'] = $row['relay_unknown_only'];
+          foreach (array_keys(addressing_domain_defaults()) as $addr_key) {
+            $domaindata[$addr_key] = $row[$addr_key];
+            $domaindata[$addr_key . '_int'] = $row[$addr_key];
+          }
           $domaindata['created'] = $row['created'];
           $domaindata['modified'] = $row['modified'];
           $stmt = $pdo->prepare("SELECT COUNT(`address`) AS `alias_count` FROM `alias`
@@ -5206,6 +5255,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (preg_match('/y|yes/i', getenv('MASTER'))) {
             $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
+              `domain`.`plus_addressing_in` AS `d_plus_addressing_in`,
+              `domain`.`plus_addressing_out` AS `d_plus_addressing_out`,
               `mailbox`.`username`,
               `mailbox`.`name`,
               `mailbox`.`active`,
@@ -5228,6 +5279,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
+              `domain`.`plus_addressing_in` AS `d_plus_addressing_in`,
+              `domain`.`plus_addressing_out` AS `d_plus_addressing_out`,
               `mailbox`.`username`,
               `mailbox`.`name`,
               `mailbox`.`active`,
@@ -5262,6 +5315,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['messages'] = $row['messages'];
           $mailboxdata['attributes'] = json_decode($row['attributes'], true);
           $mailboxdata['custom_attributes'] = json_decode($row['custom_attributes'], true);
+          // Effective plus addressing: domain policy AND mailbox switch
+          $mailboxdata['addressing_domain'] = array();
+          $mailboxdata['addressing_effective'] = array();
+          foreach (addressing_mailbox_defaults() as $addr_key => $addr_default) {
+            $mailboxdata['addressing_domain'][$addr_key] = intval($row['d_' . $addr_key]);
+            $mbox_flag = (isset($mailboxdata['attributes'][$addr_key])) ? intval($mailboxdata['attributes'][$addr_key]) : $addr_default;
+            $mailboxdata['addressing_effective'][$addr_key] = ($mailboxdata['addressing_domain'][$addr_key] == 1 && $mbox_flag == 1) ? 1 : 0;
+          }
           $mailboxdata['quota_used'] = intval($row['bytes']);
           $mailboxdata['percent_in_use'] = ($row['quota'] == 0) ? '- ' : round((intval($row['bytes']) / intval($row['quota'])) * 100);
           $mailboxdata['created'] = $row['created'];

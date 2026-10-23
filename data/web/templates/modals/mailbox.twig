@@ -11,6 +11,8 @@
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="plus_addressing_in">
+          <input type="hidden" value="0" name="plus_addressing_out">
           <input type="hidden" value="0" name="protocol_access">
           <input type="hidden" value="mailcow" name="authsource">
 
@@ -75,6 +77,18 @@
               <input type="text" class="form-control" name="quota" min="0" max="" id="addInputQuota" disabled value="{{ lang.add.select_domain }}" required>
               <small class="text-muted">0 = ∞</small>
               <div class="badge fs-5 bg-warning addInputQuotaExhausted" style="display:none;">{{ lang.warning.quota_exceeded_scope }}</div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.add.address_variants }}</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addMailbox_plus_addressing_in" value="1" name="plus_addressing_in" checked> {{ lang.add.plus_addressing_in }}</label>
+                <br>
+                <label><input type="checkbox" class="form-check-input" id="addMailbox_plus_addressing_out" value="1" name="plus_addressing_out" checked> {{ lang.add.plus_addressing_out }}</label>
+                <p class="text-muted"><small>{{ lang.add.addressing_info|raw }}</small></p>
+                <p class="text-muted"><small>{{ lang.add.addressing_mailbox_info }}</small></p>
+              </div>
             </div>
           </div>
           <div class="row mb-2">
@@ -248,6 +262,8 @@
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="force_tfa">
           <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="plus_addressing_in">
+          <input type="hidden" value="0" name="plus_addressing_out">
           <input type="hidden" value="0" name="protocol_access">
 
           <div class="row mb-4">
@@ -273,6 +289,18 @@
             <div class="col-sm-10">
               <input type="number" name="quota" style="width:100%" min="0" value="" class="form-control">
               <small class="text-muted">0 = ∞</small>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.add.address_variants }}</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="template_plus_addressing_in" value="1" name="plus_addressing_in" checked> {{ lang.add.plus_addressing_in }}</label>
+                <br>
+                <label><input type="checkbox" class="form-check-input" id="template_plus_addressing_out" value="1" name="plus_addressing_out" checked> {{ lang.add.plus_addressing_out }}</label>
+                <p class="text-muted"><small>{{ lang.add.addressing_info|raw }}</small></p>
+                <p class="text-muted"><small>{{ lang.add.addressing_mailbox_info }}</small></p>
+              </div>
             </div>
           </div>
           <div class="row mb-2">
@@ -447,6 +475,8 @@
           <input type="hidden" value="0" name="backupmx">
           <input type="hidden" value="0" name="relay_all_recipients">
           <input type="hidden" value="0" name="relay_unknown_only">
+          <input type="hidden" value="0" name="plus_addressing_in">
+          <input type="hidden" value="0" name="plus_addressing_out">
 
           <div class="row mb-2">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="domain">{{ lang.add.domain }}</label>
@@ -566,6 +596,18 @@
                 <label><input type="checkbox" class="form-check-input" id="addDomain_relay_unknown_only" value="1" name="relay_unknown_only"> {{ lang.add.relay_unknown_only }}</label>
                 <br>
                 <p>{{ lang.add.relay_transport_info|raw }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.add.address_variants }}</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" id="addDomain_plus_addressing_in" value="1" name="plus_addressing_in" checked> {{ lang.add.plus_addressing_in }}</label>
+                <br>
+                <label><input type="checkbox" class="form-check-input" id="addDomain_plus_addressing_out" value="1" name="plus_addressing_out" checked> {{ lang.add.plus_addressing_out }}</label>
+                <p class="text-muted"><small>{{ lang.add.addressing_info|raw }}</small></p>
+                <p class="text-muted"><small>{{ lang.add.addressing_domain_info }}</small></p>
               </div>
             </div>
           </div>
@@ -706,6 +748,18 @@
                 <label><input type="checkbox" class="form-check-input" value="1" name="relay_unknown_only"> {{ lang.edit.relay_unknown_only }}</label>
                 <br>
                 <p>{{ lang.edit.relay_transport_info|raw }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.address_variants }}</label>
+            <div class="col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_in" checked> {{ lang.edit.plus_addressing_in }}</label>
+                <br>
+                <label><input type="checkbox" class="form-check-input" value="1" name="plus_addressing_out" checked> {{ lang.edit.plus_addressing_out }}</label>
+                <p class="text-muted"><small>{{ lang.edit.addressing_info|raw }}</small></p>
+                <p class="text-muted"><small>{{ lang.edit.addressing_domain_info }}</small></p>
               </div>
             </div>
           </div>

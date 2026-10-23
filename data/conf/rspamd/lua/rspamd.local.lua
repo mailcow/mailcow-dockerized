@@ -419,7 +419,7 @@ rspamd_config:register_symbol({
     local tag = nil
     if tagged_rcpt ~= nil then
       tag = tagged_rcpt
-      rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
+      rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (user: %s, tag: %s)", rcpt_addr, rcpt_user, tag)
     end
 
     if not tag then

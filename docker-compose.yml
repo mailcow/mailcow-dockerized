@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:3.10.12-1
+      image: ghcr.io/mailcow/postfix:3.10.12-2
       depends_on:
         mysql-mailcow:
           condition: service_started
