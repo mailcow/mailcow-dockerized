@@ -100,10 +100,18 @@ class NFTables:
         self.logger.logInfo(f"Clear completed: {_family}")
 
   def banIPv4(self, source):
+    # nft insert rule has no dedup: a second ban() call for a net that's
+    # already banned would add a second identical DROP rule, which unban()
+    # (single-match delete) can never fully clear -- an orphaned rule.
+    if self.is_already_banned(source, "ip"):
+      return False
     ban_dict = self.get_ban_ip_dict(source, "ip")
     return self.nft_exec_dict(ban_dict)
 
   def banIPv6(self, source):
+    # See banIPv4() -- same duplicate-insert/orphaned-rule risk applies.
+    if self.is_already_banned(source, "ip6"):
+      return False
     ban_dict = self.get_ban_ip_dict(source, "ip6")
     return self.nft_exec_dict(ban_dict)
 
@@ -436,6 +444,34 @@ class NFTables:
     json_command["nftables"].append(base_dict)
 
     return json_command
+
+  def is_already_banned(self, ipaddr: str, _family: str):
+    _chain_opts = {'family': _family, 'table': 'filter', 'name': self.chain_name}
+    command = self.get_base_dict()
+    command['nftables'].append({'list': {'chain': _chain_opts} })
+    kernel_ruleset = self.nft_exec_dict(command)
+    if not kernel_ruleset:
+      return False
+
+    candidate_net = ipaddress.ip_network(ipaddr, strict=False)
+    for _object in kernel_ruleset["nftables"]:
+      if not _object.get("rule"):
+        continue
+      rule = _object["rule"]["expr"][0]["match"]
+      if not "payload" in rule["left"]:
+        continue
+      left_opt = rule["left"]["payload"]
+      if left_opt["protocol"] != _family or left_opt["field"] != "saddr":
+        continue
+      rule_right = rule["right"]
+      if isinstance(rule_right, dict):
+        current_rule_ip = rule_right["prefix"]["addr"] + '/' + str(rule_right["prefix"]["len"])
+      else:
+        current_rule_ip = rule_right
+      if ipaddress.ip_network(current_rule_ip) == candidate_net:
+        return True
+
+    return False
 
   def get_unban_ip_dict(self, ipaddr:str, _family: str):
     json_command = self.get_base_dict()
