@@ -15,6 +15,10 @@ info:
       - The read only key can only be used for all get endpoints
       - The read write key can be used for all endpoints
 
+    You can create as many keys of both types as you need. Service keys
+    defined in mailcow.conf (API_KEY, API_KEY_READ_ONLY, API_ALLOW_FROM) are
+    shown in the UI, but can only be changed in mailcow.conf.
+
   title: mailcow API
   version: "1.0.0"
 
@@ -206,6 +210,88 @@ paths:
                   type: boolean
               type: object
       summary: Create time limited alias
+  /api/v1/add/api-key:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - api
+                        - add
+                        - key
+                        - description: provisioning
+                          access: rw
+                          allow_from: "192.0.2.10, 2001:db8::/64"
+                          skip_ip_check: "0"
+                          active: "1"
+                      msg:
+                        - api_key_added
+                        - provisioning
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - API Keys
+      description: >-
+        Create an API key with a random value (admin only, not with a read-only
+        API key). Get the key value with the GET method. Without
+        `skip_ip_check` at least one IP/network in `allow_from` is required.
+      operationId: Create API key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                description: provisioning
+                access: rw
+                allow_from: "192.0.2.10, 2001:db8::/64"
+                skip_ip_check: "0"
+                active: "1"
+              properties:
+                description:
+                  description: free text, max. 255 characters
+                  type: string
+                access:
+                  description: "ro (read-only, GET endpoints only) or rw (read-write), required"
+                  enum:
+                    - ro
+                    - rw
+                  type: string
+                allow_from:
+                  description: >-
+                    IPs/CIDR networks the key may be used from, separated by
+                    commas, spaces or newlines (or an array)
+                  type: string
+                skip_ip_check:
+                  description: allow the key from any IP
+                  type: boolean
+                active:
+                  description: is key active or not
+                  type: boolean
+              type: object
+      summary: Create API key
   /api/v1/add/app-passwd:
     post:
       responses:
@@ -2034,6 +2120,63 @@ paths:
                 type: string
               type: array
       summary: Delete alias
+  /api/v1/delete/api-key:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - api
+                        - delete
+                        - key
+                        - id:
+                            - "3"
+                      msg:
+                        - api_key_deleted
+                        - provisioning
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - API Keys
+      description: >-
+        Delete API keys by ID. Service keys from mailcow.conf cannot be
+        deleted (`api_key_service_locked`).
+      operationId: Delete API keys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "3"
+              properties:
+                items:
+                  description: contains list of API key IDs you want to delete
+                  type: object
+              type: object
+      summary: Delete API keys
   /api/v1/delete/app-passwd:
     post:
       responses:
@@ -3389,6 +3532,94 @@ paths:
                   type: object
               type: object
       summary: Update alias
+  /api/v1/edit/api-key:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - api
+                        - edit
+                        - key
+                        - id:
+                            - "3"
+                          regen_key: "1"
+                      msg:
+                        - api_key_modified
+                        - provisioning
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - API Keys
+      description: >-
+        Update API keys. Attributes you do not send keep their value,
+        `regen_key` replaces the key value with a new random one. Service keys
+        from mailcow.conf cannot be changed (`api_key_service_locked`).
+      operationId: Update API keys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "3"
+                attr:
+                  description: provisioning
+                  access: ro
+                  allow_from: "192.0.2.10"
+                  skip_ip_check: "0"
+                  active: "1"
+                  regen_key: "0"
+              properties:
+                attr:
+                  properties:
+                    description:
+                      description: free text, max. 255 characters
+                      type: string
+                    access:
+                      enum:
+                        - ro
+                        - rw
+                      type: string
+                    allow_from:
+                      description: IPs/CIDR networks, separated by commas, spaces or newlines (or an array)
+                      type: string
+                    skip_ip_check:
+                      type: boolean
+                    active:
+                      type: boolean
+                    regen_key:
+                      description: issue a new key value
+                      type: boolean
+                  type: object
+                items:
+                  description: contains list of API key IDs you want to update
+                  type: object
+              type: object
+      summary: Update API keys
   /api/v1/edit/domain:
     post:
       responses:
@@ -4827,6 +5058,57 @@ paths:
       description: You can list time limited mailbox aliases existing in system.
       operationId: Get time limited aliases
       summary: Get time limited aliases
+  "/api/v1/get/api-key/{id}":
+    get:
+      parameters:
+        - description: id of entry you want to get
+          example: all
+          in: path
+          name: id
+          required: true
+          schema:
+            enum:
+              - all
+              - "1"
+              - "2"
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 1
+                      description: API_KEY
+                      access: rw
+                      api_key: 1A2B3C-4D5E6F-7A8B9C-0D1E2F-3A4B5C
+                      allow_from:
+                        - 192.0.2.10
+                      skip_ip_check: 0
+                      service: 1
+                      active: 1
+                      created: "2026-10-22 12:00:00"
+                      modified: null
+          description: OK
+          headers: {}
+      tags:
+        - API Keys
+      description: >-
+        Admin only, not with a read-only API key (`{}` otherwise). Returns all
+        API keys incl. their values, service keys from mailcow.conf
+        (`service: 1`) first.
+      operationId: Get API keys
+      summary: Get API keys
   "/api/v1/get/app-passwd/all/{mailbox}":
     get:
       parameters:
@@ -7036,6 +7318,8 @@ tags:
     description: Force global TLS policys
   - name: oAuth Clients
     description: Use mailcow as a oAuth server
+  - name: API Keys
+    description: Manage API keys
   - name: Routing
     description: Define your own email routes
   - name: Resources
