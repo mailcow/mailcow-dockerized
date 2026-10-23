@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "18082026_1200";
+    $db_version = "26092026_1200";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -514,6 +514,7 @@ function init_db_schema()
           "quarantine_category" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "pw_reset" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "save_sent_copy" => "TINYINT(1) NOT NULL DEFAULT '1'",
         ),
         "keys" => array(
           "primary" => array(
@@ -1407,6 +1408,7 @@ function init_db_schema()
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.mailbox_format', \"maildir:\") WHERE JSON_VALUE(`attributes`, '$.mailbox_format') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.quarantine_notification', \"never\") WHERE JSON_VALUE(`attributes`, '$.quarantine_notification') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.quarantine_category', \"reject\") WHERE JSON_VALUE(`attributes`, '$.quarantine_category') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.save_sent_copy', \"0\") WHERE JSON_VALUE(`attributes`, '$.save_sent_copy') IS NULL;");
     foreach ($tls_options as $tls_user => $tls_options) {
       $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.tls_enforce_in', :tls_enforce_in),
         `attributes` = JSON_SET(`attributes`, '$.tls_enforce_out', :tls_enforce_out)
@@ -1467,6 +1469,7 @@ function init_db_schema()
         "sieve_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sieve_access']),
         "eas_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['eas_access']),
         "dav_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['dav_access']),
+        "save_sent_copy" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['save_sent_copy']),
         "acl_spam_alias" => 1,
         "acl_tls_policy" => 1,
         "acl_spam_score" => 1,
@@ -1481,6 +1484,7 @@ function init_db_schema()
         "acl_quarantine_notification" => 1,
         "acl_quarantine_category" => 1,
         "acl_app_passwds" => 1,
+        "acl_save_sent_copy" => 1,
       )
     );
     $stmt = $pdo->prepare("SELECT id FROM `templates` WHERE `type` = :type AND `template` = :template");

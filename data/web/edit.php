@@ -134,6 +134,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'quarantine_notification' => $quarantine_notification,
           'quarantine_category' => $quarantine_category,
           'get_tls_policy' => $get_tls_policy,
+          'get_save_sent_copy' => mailbox('get', 'save_sent_copy', $mailbox),
           'rlyhosts' => $rlyhosts,
           'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
           'user_acls' => acl('get', 'user', $mailbox),

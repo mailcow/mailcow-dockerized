@@ -1123,6 +1123,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $sieve_access = (isset($_data['sieve_access'])) ? intval($_data['sieve_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sieve_access']);
           $eas_access = (isset($_data['eas_access'])) ? intval($_data['eas_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
           $dav_access = (isset($_data['dav_access'])) ? intval($_data['dav_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
+          $save_sent_copy = (isset($_data['save_sent_copy'])) ? intval($_data['save_sent_copy']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['save_sent_copy']);
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
@@ -1156,6 +1157,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'sieve_access' => strval($sieve_access),
               'eas_access' => strval($eas_access),
               'dav_access' => strval($dav_access),
+              'save_sent_copy' => strval($save_sent_copy),
               'relayhost' => strval($relayhost),
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
@@ -1347,6 +1349,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $_data['app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
             $_data['pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
+            $_data['save_sent_copy'] = (in_array('save_sent_copy', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['spam_alias'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_spam_alias']);
             $_data['tls_policy'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_tls_policy']);
@@ -1363,14 +1366,15 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $_data['quarantine_category'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_quarantine_category']);
             $_data['app_passwds'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_app_passwds']);
             $_data['pw_reset'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_pw_reset']);
+            $_data['save_sent_copy'] = intval($MAILBOX_DEFAULT_ATTRIBUTES['acl_save_sent_copy']);
           }
 
           try {
             $stmt = $pdo->prepare("INSERT INTO `user_acl`
               (`username`, `spam_alias`, `tls_policy`, `spam_score`, `spam_policy`, `delimiter_action`, `syncjobs`, `eas_reset`, `sogo_profile_reset`,
-                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`, `pw_reset`)
+                `pushover`, `quarantine`, `quarantine_attachments`, `quarantine_notification`, `quarantine_category`, `app_passwds`, `pw_reset`, `save_sent_copy`)
               VALUES (:username, :spam_alias, :tls_policy, :spam_score, :spam_policy, :delimiter_action, :syncjobs, :eas_reset, :sogo_profile_reset,
-                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds, :pw_reset) ");
+                :pushover, :quarantine, :quarantine_attachments, :quarantine_notification, :quarantine_category, :app_passwds, :pw_reset, :save_sent_copy) ");
             $stmt->execute(array(
               ':username' => $username,
               ':spam_alias' => $_data['spam_alias'],
@@ -1387,7 +1391,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':quarantine_notification' => $_data['quarantine_notification'],
               ':quarantine_category' => $_data['quarantine_category'],
               ':app_passwds' => $_data['app_passwds'],
-              ':pw_reset' => $_data['pw_reset']
+              ':pw_reset' => $_data['pw_reset'],
+              ':save_sent_copy' => $_data['save_sent_copy']
             ));
           }
           catch (PDOException $e) {
@@ -1774,6 +1779,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
           $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_out']);
+          $attr["save_sent_copy"]              = isset($_data['save_sent_copy']) ? intval($_data['save_sent_copy']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['save_sent_copy']);
           if (isset($_data['protocol_access'])) {
             $_data['protocol_access'] = (array)$_data['protocol_access'];
             $attr['imap_access'] = (in_array('imap', $_data['protocol_access'])) ? 1 : 0;
@@ -1808,6 +1814,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
             $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
             $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
+            $attr['acl_save_sent_copy'] = (in_array('save_sent_copy', $_data['acl'])) ? 1 : 0;
           } else {
             $_data['acl'] = (array)$_data['acl'];
             $attr['acl_spam_alias'] = 0;
@@ -1824,6 +1831,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['acl_quarantine_notification'] = 0;
             $attr['acl_quarantine_category'] = 0;
             $attr['acl_app_passwds'] = 0;
+            $attr['acl_save_sent_copy'] = 0;
           }
 
 
@@ -1951,6 +1959,57 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':tls_out' => intval($tls_enforce_out),
               ':tls_in' => intval($tls_enforce_in),
+              ':username' => $username
+            ));
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('mailbox_modified', $username)
+            );
+          }
+        break;
+        case 'save_sent_copy':
+          if (!is_array($_data['username'])) {
+            $usernames = array();
+            $usernames[] = $_data['username'];
+          }
+          else {
+            $usernames = $_data['username'];
+          }
+          if (!hasACLAccess("save_sent_copy")) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          foreach ($usernames as $username) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $username)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            $is_now = mailbox('get', 'save_sent_copy', $username, $_extra);
+            if (!empty($is_now)) {
+              $save_sent_copy = (isset($_data['save_sent_copy'])) ? intval($_data['save_sent_copy']) : intval($is_now['save_sent_copy']);
+            }
+            else {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'access_denied'
+              );
+              continue;
+            }
+            $stmt = $pdo->prepare("UPDATE `mailbox`
+              SET `attributes` = JSON_SET(`attributes`, '$.save_sent_copy', :save_sent_copy)
+                WHERE `username` = :username");
+            $stmt->execute(array(
+              ':save_sent_copy' => ($save_sent_copy == 1) ? '1' : '0',
               ':username' => $username
             ));
             $_SESSION['return'][] = array(
@@ -3757,6 +3816,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mbox_template_data['name'] = $name;
           $quarantine_attributes = array('username' => $_data['username']);
           $tls_attributes = array('username' => $_data['username']);
+          $save_sent_copy_attributes = array('username' => $_data['username']);
           $ratelimit_attributes = array('object' => $_data['username']);
           $acl_attributes = array('username' => $_data['username'], 'user_acl' => array());
           $mailbox_attributes = array('username' => $_data['username']);
@@ -3769,6 +3829,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 if ($value == null)
                   $value = 0;
                 $tls_attributes[$key] = $value;
+              break;
+              case ($key == 'save_sent_copy'):
+                $save_sent_copy_attributes[$key] = intval($value);
               break;
               case (strpos($key, 'rl_') === 0):
                 $ratelimit_attributes[$key] = $value;
@@ -3787,6 +3850,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($result === false) return $result;
           $result = mailbox('edit', 'tls_policy', $tls_attributes);
           if ($result === false) return $result;
+          // Templates created before save_sent_copy existed do not carry the attribute, keep the current value then
+          if (isset($save_sent_copy_attributes['save_sent_copy'])) {
+            $result = mailbox('edit', 'save_sent_copy', $save_sent_copy_attributes);
+            if ($result === false) return $result;
+          }
           $result = mailbox('edit', 'quarantine_notification', $quarantine_attributes);
           if ($result === false) return $result;
           $result = mailbox('edit', 'quarantine_category', $quarantine_attributes);
@@ -3860,6 +3928,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : $is_now['active'];
             $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
             $attr["tls_enforce_out"]             = isset($_data['tls_enforce_out']) ? intval($_data['tls_enforce_out']) : $is_now['tls_enforce_out'];
+            $attr["save_sent_copy"]              = isset($_data['save_sent_copy']) ? intval($_data['save_sent_copy']) : intval($is_now['save_sent_copy']);
             if (isset($_data['protocol_access'])) {
               $_data['protocol_access'] = (array)$_data['protocol_access'];
               $attr['imap_access'] = (in_array('imap', $_data['protocol_access'])) ? 1 : 0;
@@ -3891,6 +3960,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $attr['acl_quarantine_category'] = (in_array('quarantine_category', $_data['acl'])) ? 1 : 0;
               $attr['acl_app_passwds'] = (in_array('app_passwds', $_data['acl'])) ? 1 : 0;
               $attr['acl_pw_reset'] = (in_array('pw_reset', $_data['acl'])) ? 1 : 0;
+              $attr['acl_save_sent_copy'] = (in_array('save_sent_copy', $_data['acl'])) ? 1 : 0;
             } else {
               foreach ($is_now as $key => $value){
                 $attr[$key] = $is_now[$key];
@@ -4490,6 +4560,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           return array(
             'tls_enforce_in' => $attrs['tls_enforce_in'],
             'tls_enforce_out' => $attrs['tls_enforce_out']
+          );
+        break;
+        case 'save_sent_copy':
+          $attrs = array();
+          if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
+            if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {
+              return false;
+            }
+          }
+          else {
+            $_data = $_SESSION['mailcow_cc_username'];
+          }
+          $stmt = $pdo->prepare("SELECT `attributes` FROM `mailbox` WHERE `username` = :username");
+          $stmt->execute(array(':username' => $_data));
+          $attrs = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (empty($attrs)) {
+            return false;
+          }
+          $attrs = json_decode($attrs['attributes'], true);
+          return array(
+            'save_sent_copy' => (isset($attrs['save_sent_copy']) && $attrs['save_sent_copy'] == '1') ? '1' : '0'
           );
         break;
         case 'quarantine_notification':
