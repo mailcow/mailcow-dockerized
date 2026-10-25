@@ -894,6 +894,16 @@ jQuery(function($){
       return;
     }
 
+    // Tag filter change handler
+    $('#mailboxTagFilter').on('change', function() {
+      var selected = $(this).val();
+      if (selected && selected.length && selected[0] !== '') {
+        table.search(selected.join(' ')).draw();
+      } else {
+        table.search('').draw();
+      }
+    });
+
     var table = $('#mailbox_table').DataTable({
       responsive: true,
       processing: true,
@@ -1000,8 +1010,17 @@ jQuery(function($){
 
             if (Array.isArray(item.tags)){
               var tags = '';
-              for (var i = 0; i < item.tags.length; i++)
+              for (var i = 0; i < item.tags.length; i++) {
                 tags += '<span class="badge bg-primary tag-badge"><i class="bi bi-tag-fill"></i> ' + escapeHtml(item.tags[i]) + '</span>';
+                // Collect unique tags for filter
+                if (typeof window._mailboxUniqueTags === 'undefined') window._mailboxUniqueTags = new Set();
+                if (!window._mailboxUniqueTags.has(item.tags[i])) {
+                  window._mailboxUniqueTags.add(item.tags[i]);
+                  if ($('#mailboxTagFilter option[value="' + item.tags[i] + '"]').length === 0) {
+                    $('#mailboxTagFilter').append($('<option>').val(item.tags[i]).text(item.tags[i]));
+                  }
+                }
+              }
               item.tags = tags;
             } else {
               item.tags = '';
@@ -1168,7 +1187,7 @@ jQuery(function($){
           data: 'tags',
           searchable: true,
           defaultContent: '',
-          className: 'none'
+          responsivePriority: 10
         },
         {
           title: lang.active,
