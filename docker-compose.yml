@@ -252,7 +252,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.3.21.1-2
+      image: ghcr.io/mailcow/dovecot:2.3.21.1-3
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -339,7 +339,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:3.10.12-1
+      image: ghcr.io/mailcow/postfix:3.10.13
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -506,7 +506,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.64
+      image: ghcr.io/mailcow/netfilter:1.64a
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -526,7 +526,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.11
+      image: ghcr.io/mailcow/watchdog:2.11a
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -601,7 +601,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.12
+      image: ghcr.io/mailcow/dockerapi:2.12a
       security_opt:
         - label=disable
       restart: always
@@ -621,7 +621,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.15
+      image: ghcr.io/mailcow/olefy:1.15a
       restart: always
       environment:
         - TZ=${TZ}
