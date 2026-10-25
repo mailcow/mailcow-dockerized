@@ -1,1 +1,36 @@
-PLACEHOLDER_WILL_REPLACE
+{
+    "acl": {
+        "alias_domains": "Add alias domains",
+        "alias_external_goto": "Allow aliases with external goto domains",
+        "app_passwds": "Manage app passwords",
+        "bcc_maps": "BCC maps",
+        "delimiter_action": "Delimiter action",
+        "domain_desc": "Change domain description",
+        "domain_relayhost": "Change relayhost for a domain",
+        "eas_reset": "Reset EAS devices",
+        "extend_sender_acl": "Allow to extend sender ACL by external addresses",
+        "filters": "Filters",
+        "login_as": "Login as mailbox user",
+        "sogo_login_as": "Login as mailbox user in SOGo",
+        "mailbox_relayhost": "Change relayhost for a mailbox",
+        "prohibited": "Prohibited by ACL",
+        "protocol_access": "Change protocol access",
+        "pushover": "Pushover",
+        "pw_reset": "Allow to reset mailcow user password",
+        "quarantine": "Quarantine actions",
+        "quarantine_attachments": "Quarantine attachments",
+        "quarantine_category": "Change quarantine notification category",
+        "quarantine_notification": "Change quarantine notifications",
+        "ratelimit": "Rate limit",
+        "recipient_maps": "Recipient maps",
+        "smtp_ip_access": "Change allowed hosts for SMTP",
+        "sogo_access": "Allow management of SOGo access",
+        "sogo_profile_reset": "Reset SOGo profile",
+        "spam_alias": "Temporary aliases",
+        "spam_policy": "Denylist/Allowlist",
+        "spam_score": "Spam score",
+        "syncjobs": "Sync jobs",
+        "tls_policy": "TLS policy",
+        "unlimited_quota": "Unlimited quota for mailboxes"
+    }
+}
