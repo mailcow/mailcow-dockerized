@@ -11,6 +11,7 @@
         "extend_sender_acl": "Allow to extend sender ACL by external addresses",
         "filters": "Filters",
         "login_as": "Login as mailbox user",
+        "sogo_login_as": "Login as mailbox user in SOGo",
         "mailbox_relayhost": "Change relayhost for a mailbox",
         "prohibited": "Prohibited by ACL",
         "protocol_access": "Change protocol access",

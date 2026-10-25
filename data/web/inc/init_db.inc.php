@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "18082026_1200";
+    $db_version = "25102026_1000";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -705,6 +705,7 @@ function init_db_schema()
           "syncjobs" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "quarantine" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "sogo_login_as" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "sogo_access" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "app_passwds" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "bcc_maps" => "TINYINT(1) NOT NULL DEFAULT '1'",
