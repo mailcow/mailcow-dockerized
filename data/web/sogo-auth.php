@@ -50,8 +50,15 @@ elseif (isset($_GET['login'])) {
   $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
   // check permissions (if dual_login is active, deny sso when acl is not given)
   $login = html_entity_decode(rawurldecode($_GET["login"]));
+  // SOGo impersonation requires the dedicated sogo_login_as ACL (separate from backend login_as)
+  // Superadmins always have all ACLs set to 1 via acl('to_session')
+  $can_sogo_login_as = (
+    isset($_SESSION['acl']['sogo_login_as']) &&
+    $_SESSION['acl']['sogo_login_as'] == "1" &&
+    $ALLOW_ADMIN_EMAIL_LOGIN !== 0
+  );
   if (isset($_SESSION['mailcow_cc_role']) &&
-    (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
+    (($can_sogo_login_as) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (user_get_alias_details($login) !== false) {
         // enforce tenant boundary
@@ -66,8 +73,8 @@ elseif (isset($_GET['login'])) {
         }
         // register username in session
         $_SESSION[$session_var_user_allowed][] = $login;
-        // set dual login
-        if ($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0 && $is_dual === false && $_SESSION['mailcow_cc_role'] != "user"){
+        // set dual login only when performing impersonation
+        if ($can_sogo_login_as && $is_dual === false && $_SESSION['mailcow_cc_role'] != "user"){
           $_SESSION["dual-login"]["username"] = $_SESSION['mailcow_cc_username'];
           $_SESSION["dual-login"]["role"]     = $_SESSION['mailcow_cc_role'];
           $_SESSION['mailcow_cc_username']    = $login;
