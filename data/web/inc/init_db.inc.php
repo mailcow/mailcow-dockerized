@@ -4,7 +4,7 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "16102026_1200";
+    $db_version = "22102026_1200";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -204,18 +204,25 @@ function init_db_schema()
       ),
       "api" => array(
         "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
           "api_key" => "VARCHAR(255) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "allow_from" => "VARCHAR(512) NOT NULL",
           "skip_ip_check" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE NOW(0)",
           "access" => "ENUM('ro', 'rw') NOT NULL DEFAULT 'rw'",
+          // 1 = defined in mailcow.conf, read-only in UI and API
+          "service" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
           "primary" => array(
-            "" => array("api_key")
+            "" => array("id")
           ),
+          "unique" => array(
+            "api_key" => array("api_key")
+          )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
@@ -1855,4 +1862,13 @@ if (php_sapi_name() == "cli") {
     // Dunno
   }
   init_db_schema();
+  // Service API keys from mailcow.conf (API_KEY, API_KEY_READ_ONLY, API_ALLOW_FROM)
+  try {
+    $api_keys = \Mailcow\ApiKey\ApiKeyModule::create($pdo, \Mailcow\Core\Context::system())->keys;
+    foreach ($api_keys->syncServiceKeys(getenv()) as $warning) {
+      echo "API service keys: " . $warning . PHP_EOL;
+    }
+  } catch (PDOException $e) {
+    echo "API service keys: sync failed: " . $e->getMessage() . PHP_EOL;
+  }
 }

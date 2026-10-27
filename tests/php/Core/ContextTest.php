@@ -58,6 +58,22 @@ class ContextTest extends TestCase
         $this->assertFalse(Context::fromSession(['acl' => 'not an array'])->hasAcl('syncjobs'));
     }
 
+    public function testApiAccessComesFromTheApiKeySession(): void
+    {
+        $ro = Context::fromSession(['mailcow_cc_role' => 'admin', 'mailcow_cc_api' => true, 'mailcow_cc_api_access' => 'ro']);
+        $rw = Context::fromSession(['mailcow_cc_role' => 'admin', 'mailcow_cc_api' => true, 'mailcow_cc_api_access' => 'rw']);
+        $login = Context::fromSession(['mailcow_cc_role' => 'admin', 'mailcow_cc_api_access' => 'ro']);
+
+        $this->assertSame('ro', $ro->apiAccess);
+        $this->assertTrue($ro->isReadOnlyApi());
+        $this->assertSame('rw', $rw->apiAccess);
+        $this->assertFalse($rw->isReadOnlyApi());
+        $this->assertNull($login->apiAccess);
+        $this->assertFalse($login->isReadOnlyApi());
+        // Unknown access values are read-only
+        $this->assertTrue(Context::fromSession(['mailcow_cc_api' => true, 'mailcow_cc_api_access' => 'x'])->isReadOnlyApi());
+    }
+
     public function testSystemContextIsNoAccount(): void
     {
         $context = Context::system();

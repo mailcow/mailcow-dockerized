@@ -103,7 +103,6 @@
     "admin": {
         "access": "权限管理",
         "action": "操作",
-        "activate_api": "启用 API",
         "activate_send": "启用发送按钮",
         "active": "启用",
         "active_rspamd_settings_map": "启用的规则",
@@ -1067,7 +1066,6 @@
     "success": {
         "acl_saved": "已保存对象 %s 的 ACL 设置",
         "admin_added": "已添加管理员 %s",
-        "admin_api_modified": "已保存 API 的更改",
         "admin_modified": "已保存管理员更改",
         "admin_removed": "已删除管理员 %s",
         "alias_added": "已添加别名地址 %s (%d)",

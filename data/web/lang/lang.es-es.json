@@ -101,7 +101,6 @@
     "admin": {
         "access": "Acceso",
         "action": "Acción",
-        "activate_api": "Activar API",
         "activate_send": "Activar botón de envío",
         "active": "Activo",
         "active_rspamd_settings_map": "Reglas de ajustes activos",

@@ -93,7 +93,6 @@
     "admin": {
         "access": "Accés",
         "action": "Acció",
-        "activate_api": "Activar API",
         "active": "Actiu",
         "add": "Afegir",
         "add_domain_admin": "Afegir Administrador del dominio",

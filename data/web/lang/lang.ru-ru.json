@@ -102,7 +102,6 @@
     "admin": {
         "access": "Настройки доступа",
         "action": "Действия",
-        "activate_api": "Включить API",
         "activate_send": "Активировать кнопку отправки",
         "active": "Активный",
         "active_rspamd_settings_map": "Отобразить текущие правила",
@@ -1088,7 +1087,6 @@
     "success": {
         "acl_saved": "ACL для %s сохранено",
         "admin_added": "Администратор %s добавлен",
-        "admin_api_modified": "Изменения в API сохранены",
         "admin_modified": "Изменения администратора сохранены",
         "admin_removed": "Администратор %s удалён",
         "alias_added": "Псевдоним %s (%d) добавлен",

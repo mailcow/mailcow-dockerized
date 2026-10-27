@@ -255,6 +255,9 @@ if (isset($_GET['query'])) {
         case "oauth2-client":
           process_add_return(oauth2('add', 'client', $attr));
         break;
+        case "api-key":
+          process_add_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->addKey($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -801,6 +804,18 @@ if (isset($_GET['query'])) {
               default:
                 $data = oauth2('details', 'client', $object);
                 process_get_return($data);
+              break;
+            }
+          break;
+
+          case "api-key":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKeys());
+              break;
+
+              default:
+                process_get_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($object));
               break;
             }
           break;
@@ -1708,6 +1723,9 @@ if (isset($_GET['query'])) {
         case "oauth2-client":
           process_delete_return(oauth2('delete', 'client', array('id' => $items)));
         break;
+        case "api-key":
+          process_delete_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->deleteKeys($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -1872,6 +1890,9 @@ if (isset($_GET['query'])) {
         break;
         case "oauth2-client":
           process_edit_return(oauth2('edit', 'client', array_merge(array('id' => $items), $attr)));
+        break;
+        case "api-key":
+          process_edit_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->editKeys($items, $attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

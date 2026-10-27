@@ -14,25 +14,32 @@ namespace Mailcow\Core;
 class Context
 {
     /**
-     * @param array $acl      ACL flags of the session (user_acl / da_acl, always set for admins)
-     * @param bool $accessAll the session may ignore object ownership (`access_all_exception`)
+     * @param array $acl          ACL flags of the session (user_acl / da_acl, always set for admins)
+     * @param bool $accessAll     the session may ignore object ownership (`access_all_exception`)
+     * @param ?string $apiAccess  'ro' / 'rw' when the request authenticated with an X-API-Key, else null
      */
     public function __construct(
         public readonly string $role,
         public readonly ?string $username,
         private readonly array $acl = [],
-        public readonly bool $accessAll = false
+        public readonly bool $accessAll = false,
+        public readonly ?string $apiAccess = null
     ) {
     }
 
     public static function fromSession(array $session): self
     {
         $username = $session['mailcow_cc_username'] ?? null;
+        $apiAccess = null;
+        if (($session['mailcow_cc_api'] ?? false) === true) {
+            $apiAccess = (($session['mailcow_cc_api_access'] ?? null) === 'rw') ? 'rw' : 'ro';
+        }
         return new self(
             (string)($session['mailcow_cc_role'] ?? ''),
             is_scalar($username) ? (string)$username : null,
             is_array($session['acl'] ?? null) ? $session['acl'] : [],
-            ($session['access_all_exception'] ?? null) == '1'
+            ($session['access_all_exception'] ?? null) == '1',
+            $apiAccess
         );
     }
 
@@ -55,6 +62,12 @@ class Context
     public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    /** Request with a read-only API key (role admin, but no write access) */
+    public function isReadOnlyApi(): bool
+    {
+        return $this->apiAccess === 'ro';
     }
 
     public function hasAcl(string $name): bool
