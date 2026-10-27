@@ -1295,6 +1295,8 @@
     "success": {
         "acl_saved": "ACL for object %s saved",
         "admin_added": "Administrator %s has been added",
+        "admin_api_modified": "Changes to API have been saved",
+        "user_api_modified": "Changes to user API have been saved",
         "admin_modified": "Changes to administrator have been saved",
         "admin_removed": "Administrator %s has been removed",
         "alias_added": "Alias address %s (%d) has been added",
@@ -1559,6 +1561,9 @@
         "active": "Active",
         "active_sieve": "Active filter",
         "advanced_settings": "Advanced settings",
+        "api_key_simplelogin": "API Key for Bitwarden / SimpleLogin",
+        "api_key_simplelogin_info": "Use this API key in tools like Bitwarden or Vaultwarden to automatically generate email aliases. Enter your mailcow host URL as the server URL.",
+        "no_api_key": "No API key generated yet",
         "alias": "Alias",
         "alias_create_random": "Generate random alias",
         "alias_extend_all": "Extend aliases by 1 hour",

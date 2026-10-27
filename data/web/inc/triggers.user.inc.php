@@ -180,4 +180,10 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		unset($_SESSION['mailcow_cc_role']);
 	}
 }
+if (isset($_POST["user_api"])) {
+  user_api('edit', $_POST);
+}
+if (isset($_POST["user_api_regen_key"])) {
+  user_api('regen_key', $_POST);
+}
 ?>
