@@ -376,7 +376,6 @@
         "iam_version": "Versie",
         "ignore_ssl_error": "Negeer SSL foutmeldingen",
         "ip_check_opt_in": "Kies ervoor om de externe diensten <strong>ipv4.mailcow.email</strong> en <strong>ipv6.mailcow.email</strong> te gebruiken om externe IP-adressen te bepalen.",
-        "needs_restart": "vereist een herstart",
         "no": "&#10005;",
         "password_reset_info": "Als er geen herstel-e-mailadres is opgegeven, kan deze functie niet worden gebruikt.",
         "password_reset_settings": "Instellingen voor wachtwoordherstel",

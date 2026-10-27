@@ -60,13 +60,14 @@ function fail2ban($_action, $_data = null, $_extra = null) {
         $queue_unban = $redis->hGetAll('F2B_QUEUE_UNBAN');
         if (is_array($active_bans)) {
           foreach ($active_bans as $network => $banned_until) {
-            $queued_for_unban = (isset($queue_unban[$network]) && $queue_unban[$network] == 1) ? 1 : 0;
-            $difference = $banned_until - time();
+            // Expired bans are lifted by netfilter within seconds
+            $difference = max(0, intval($banned_until) - time());
+            $queued_for_unban = ($difference == 0 || (isset($queue_unban[$network]) && $queue_unban[$network] == 1)) ? 1 : 0;
             $f2b_options['active_bans'][] = array(
               'queued_for_unban' => $queued_for_unban,
               'network' => $network,
               'ip' => strtok($network,'/'),
-              'banned_until' => sprintf('%02dh %02dm %02ds', ($difference/3600), ($difference/60%60), $difference%60)
+              'banned_until' => sprintf('%02dh %02dm %02ds', intdiv($difference, 3600), intdiv($difference, 60) % 60, $difference % 60)
             );
           }
         }
@@ -108,16 +109,15 @@ function fail2ban($_action, $_data = null, $_extra = null) {
             );
             return false;
           }
-          // Rules will also be recreated on log events, but rules may seem empty for a second in the UI
-          docker('post', 'netfilter-mailcow', 'restart');
+          // netfilter recreates the default rules within 10 seconds
           $fail_count = 0;
           $regex_result = json_decode($redis->Get('F2B_REGEX'), true);
-          while (empty($regex_result) && $fail_count < 10) {
+          while (empty($regex_result) && $fail_count < 15) {
             $regex_result = json_decode($redis->Get('F2B_REGEX'), true);
             $fail_count++;
             sleep(1);
           }
-          if ($fail_count >= 10) {
+          if (empty($regex_result)) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -141,7 +141,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
           $_SESSION['return'][] = array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_action, $_data_log),
-            'msg' => array('object_modified', htmlspecialchars($network))
+            'msg' => 'f2b_modified'
           );
           return true;
         }
@@ -172,7 +172,7 @@ function fail2ban($_action, $_data = null, $_extra = null) {
               if (valid_network($network)) {
                 try {
                   $redis->hSet('F2B_WHITELIST', $network, 1);
-                  $redis->hDel('F2B_BLACKLIST', $network, 1);
+                  $redis->hDel('F2B_BLACKLIST', $network);
                   $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
                 }
                 catch (RedisException $e) {
@@ -199,14 +199,13 @@ function fail2ban($_action, $_data = null, $_extra = null) {
               if (valid_network($network) && !in_array($network, array(
                 '0.0.0.0',
                 '0.0.0.0/0',
-                getenv('IPV4_NETWORK') . '0/24',
-                getenv('IPV4_NETWORK') . '0',
+                getenv('IPV4_NETWORK') . '.0/24',
+                getenv('IPV4_NETWORK') . '.0',
                 getenv('IPV6_NETWORK')
               ))) {
                 try {
                   $redis->hSet('F2B_BLACKLIST', $network, 1);
-                  $redis->hDel('F2B_WHITELIST', $network, 1);
-                  //$response = docker('post', 'netfilter-mailcow', 'restart');
+                  $redis->hDel('F2B_WHITELIST', $network);
                 }
                 catch (RedisException $e) {
                   $_SESSION['return'][] = array(
@@ -261,62 +260,60 @@ function fail2ban($_action, $_data = null, $_extra = null) {
       $f2b_options['ban_time'] = ($ban_time < 60) ? 60 : $ban_time;
       $f2b_options['ban_time_increment'] = ($ban_time_increment == 1) ? true : false;
       $f2b_options['max_ban_time'] = ($max_ban_time < 60) ? 60 : $max_ban_time;
-      $f2b_options['netban_ipv4'] = ($netban_ipv4 < 8) ? 8 : $netban_ipv4;
-      $f2b_options['netban_ipv6'] = ($netban_ipv6 < 8) ? 8 : $netban_ipv6;
-      $f2b_options['netban_ipv4'] = ($netban_ipv4 > 32) ? 32 : $netban_ipv4;
-      $f2b_options['netban_ipv6'] = ($netban_ipv6 > 128) ? 128 : $netban_ipv6;
+      $f2b_options['netban_ipv4'] = min(32, max(8, $netban_ipv4));
+      $f2b_options['netban_ipv6'] = min(128, max(8, $netban_ipv6));
       $f2b_options['max_attempts'] = ($max_attempts < 1) ? 1 : $max_attempts;
       $f2b_options['retry_window'] = ($retry_window < 1) ? 1 : $retry_window;
-      $f2b_options['banlist_id'] = $is_now['banlist_id'];
+      $f2b_options['banlist_id'] = (!empty($is_now['banlist_id'])) ? $is_now['banlist_id'] : uuid4();
       $f2b_options['manage_external'] = ($manage_external > 0) ? 1 : 0;
+      $wl_items = array();
+      if (!empty($wl)) {
+        foreach (array_filter(array_map('trim', preg_split("/( |,|;|\n)/", $wl))) as $wl_item) {
+          if (valid_network($wl_item) || valid_hostname($wl_item)) {
+            $wl_items[$wl_item] = 1;
+          }
+          else {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('network_host_invalid', $wl_item)
+            );
+          }
+        }
+      }
+      $bl_items = array();
+      if (!empty($bl)) {
+        foreach (array_filter(array_map('trim', preg_split("/( |,|;|\n)/", $bl))) as $bl_item) {
+          if (valid_network($bl_item) && !in_array($bl_item, array(
+            '0.0.0.0',
+            '0.0.0.0/0',
+            getenv('IPV4_NETWORK') . '.0/24',
+            getenv('IPV4_NETWORK') . '.0',
+            getenv('IPV6_NETWORK')
+          ))) {
+            $bl_items[$bl_item] = 1;
+          }
+          else {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('network_host_invalid', $bl_item)
+            );
+          }
+        }
+      }
       try {
+        // One transaction, netfilter must never see empty lists in between
+        $redis->multi();
         $redis->Set('F2B_OPTIONS', json_encode($f2b_options));
-        $redis->Del('F2B_WHITELIST');
-        $redis->Del('F2B_BLACKLIST');
-        if(!empty($wl)) {
-          $wl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $wl));
-          $wl_array = array_filter($wl_array);
-          if (is_array($wl_array)) {
-            foreach ($wl_array as $wl_item) {
-              if (valid_network($wl_item) || valid_hostname($wl_item)) {
-                $redis->hSet('F2B_WHITELIST', $wl_item, 1);
-              }
-              else {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_data_log),
-                  'msg' => array('network_host_invalid', $wl_item)
-                );
-                continue;
-              }
-            }
-          }
+        $redis->Del('F2B_WHITELIST', 'F2B_BLACKLIST');
+        if (!empty($wl_items)) {
+          $redis->hMSet('F2B_WHITELIST', $wl_items);
         }
-        if(!empty($bl)) {
-          $bl_array = array_map('trim', preg_split( "/( |,|;|\n)/", $bl));
-          $bl_array = array_filter($bl_array);
-          if (is_array($bl_array)) {
-            foreach ($bl_array as $bl_item) {
-              if (valid_network($bl_item) && !in_array($bl_item, array(
-                '0.0.0.0',
-                '0.0.0.0/0',
-                getenv('IPV4_NETWORK') . '0/24',
-                getenv('IPV4_NETWORK') . '0',
-                getenv('IPV6_NETWORK')
-              ))) {
-                $redis->hSet('F2B_BLACKLIST', $bl_item, 1);
-              }
-              else {
-                $_SESSION['return'][] = array(
-                  'type' => 'danger',
-                  'log' => array(__FUNCTION__, $_action, $_data_log),
-                  'msg' => array('network_host_invalid', $bl_item)
-                );
-                continue;
-              }
-            }
-          }
+        if (!empty($bl_items)) {
+          $redis->hMSet('F2B_BLACKLIST', $bl_items);
         }
+        $redis->exec();
       }
       catch (RedisException $e) {
         $_SESSION['return'][] = array(
@@ -348,7 +345,9 @@ function fail2ban($_action, $_data = null, $_extra = null) {
       if (is_array($_extra)) {
         $_extra = $_extra[0];
       }
-      if ($_extra != $f2b_options['banlist_id']){
+      // Timing safe, a missing or empty id never matches
+      $banlist_id = (string)($f2b_options['banlist_id'] ?? '');
+      if ($banlist_id === '' || !is_string($_extra) || !hash_equals($banlist_id, $_extra)) {
         http_response_code(404);
         return false;
       }

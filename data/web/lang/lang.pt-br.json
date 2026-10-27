@@ -392,7 +392,6 @@
         "iam_use_tls_info": "Se habilitar TLS, você deve usar a porta padrão para seu servidor LDAP (389). Portas SSL não podem ser usadas.",
         "iam_version": "Versão",
         "ignore_ssl_error": "Ignorar erros SSL",
-        "needs_restart": "precisa reiniciar",
         "quicklink_text": "Mostrar ou ocultar links rápidos para outras páginas de login abaixo do formulário de login",
         "task": "Tarefa",
         "user_link": "Link do usuário",

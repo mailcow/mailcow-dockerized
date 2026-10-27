@@ -340,7 +340,6 @@
         "iam_host_info": "Introduzca uno o más hosts de LDAP, separados por comas.",
         "iam_import_users": "Importar usuarios",
         "iam_mapping": "Equivalencias de atributos",
-        "needs_restart": "necesita reinicio",
         "oauth2_apps": "Aplicaciones OAuth2",
         "oauth2_add_client": "Añadir cliente OAuth2",
         "oauth2_renew_secret": "Generar nuevo secreto de cliente",

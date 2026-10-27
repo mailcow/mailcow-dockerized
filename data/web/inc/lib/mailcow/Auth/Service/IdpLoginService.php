@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Mailcow\Auth\Service;
 
+use LdapRecord\Auth\BindException;
+use LdapRecord\Connection;
+use LdapRecord\LdapRecordException;
+use Mailcow\Auth\IdpUnavailable;
 use Mailcow\Identity\Model\Settings;
 use Mailcow\Identity\Service\LinkService;
 use Mailcow\MailboxGroup\Service\TemplateService;
@@ -17,6 +21,37 @@ class IdpLoginService
 {
     public function __construct(private Settings $settings, private LinkService $links, private TemplateService $templates)
     {
+    }
+
+    /**
+     * Binds as the user to check the password, then again as the configured user. False for wrong credentials,
+     * IdpUnavailable when the server cannot answer (client side codes are negative: server down, timeout, ...).
+     */
+    public function verifyLdapPassword(Connection $ldap, string $dn, string $password): bool
+    {
+        // an empty password would be an unauthenticated bind, which succeeds
+        if ($dn === '' || $password === '') {
+            return false;
+        }
+        $guard = $ldap->auth();
+        try {
+            $guard->bind($dn, $password);
+            $bound = true;
+        } catch (BindException $e) {
+            $code = $e->getDetailedError()?->getErrorCode();
+            if ($code !== null && ($code < 0 || in_array($code, [51, 52], true))) {
+                throw new IdpUnavailable('LDAP bind failed: ' . $e->getMessage(), 0, $e);
+            }
+            $bound = false;
+        } catch (LdapRecordException $e) {
+            throw new IdpUnavailable('LDAP bind failed: ' . $e->getMessage(), 0, $e);
+        }
+        try {
+            $guard->bindAsConfiguredUser();
+        } catch (LdapRecordException $e) {
+            // the login needs no further LDAP access
+        }
+        return $bound;
     }
 
     /** Template of the first attribute mapping matching one of the IdP attribute values, null if none */
