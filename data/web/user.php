@@ -64,6 +64,7 @@ $template_data = [
   'mailboxdata' => $mailboxdata,
   'clientconfigstr' => $clientconfigstr,
   'user_get_alias_details' => $user_get_alias_details,
+  'mailbox_groups' => \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships($username),
   'get_tagging_options' => mailbox('get', 'delimiter_action', $username),
   'get_tls_policy' => mailbox('get', 'tls_policy', $username),
   'quarantine_notification' => mailbox('get', 'quarantine_notification', $username),

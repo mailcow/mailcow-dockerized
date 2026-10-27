@@ -30,9 +30,7 @@ class ApiKeyService
     /** @throws AccessDenied unless an admin (login or read-write API key) */
     public function requireAdmin(): void
     {
-        if (!$this->context->isAdmin() || $this->context->isReadOnlyApi()) {
-            throw new AccessDenied();
-        }
+        $this->context->requireAdmin();
     }
 
     /** @return ApiKey[] all keys, service keys first; [] for other callers */
@@ -146,7 +144,7 @@ class ApiKeyService
 
     private function canRead(): bool
     {
-        return $this->context->isAdmin() && !$this->context->isReadOnlyApi();
+        return $this->context->hasAdminRights() && !$this->context->isReadOnlyApi();
     }
 
     /** @throws AccessDenied when missing, UserError api_key_service_locked for service keys */

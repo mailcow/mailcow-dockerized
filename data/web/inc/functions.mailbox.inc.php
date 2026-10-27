@@ -938,6 +938,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $eas_access = (isset($_data['eas_access'])) ? intval($_data['eas_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['eas_access']);
           $dav_access = (isset($_data['dav_access'])) ? intval($_data['dav_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['dav_access']);
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
+          // Shared mailbox: no login of its own, members open it through group shares
+          $shared = (isset($_data['shared'])) ? intval($_data['shared']) : 0;
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           // Validate quarantine_category
@@ -971,6 +973,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'eas_access' => strval($eas_access),
               'dav_access' => strval($dav_access),
               'relayhost' => strval($relayhost),
+              'shared' => strval($shared),
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
               'quarantine_notification' => strval($quarantine_notification),
@@ -1050,7 +1053,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if ($authsource == 'mailcow'){
+          if ($authsource == 'mailcow' && $shared == 1 && empty($password) && empty($password2)) {
+            // Nobody logs in to a shared mailbox, a random password keeps it unusable
+            $password_hashed = hash_password(bin2hex(random_bytes(32)));
+          }
+          elseif ($authsource == 'mailcow'){
             if (password_check($password, $password2) !== true) {
               return false;
             }
@@ -1268,7 +1275,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             }
           }
 
-          return mailbox('add', 'mailbox', $mailbox_attributes);
+          $result = mailbox('add', 'mailbox', $mailbox_attributes);
+          if ($result !== false) {
+            // Remember the applied template, see edit mailbox_from_template
+            $stmt = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.template', :template) WHERE `username` = :username");
+            $stmt->execute(array(
+              ':template' => $_data['template'],
+              ':username' => strtolower(trim($_data['local_part'])) . '@' . idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46)
+            ));
+          }
+          return $result;
         break;
         case 'mta_sts':
           $domain       = idn_to_ascii(strtolower(trim($_data['domain'])), 0, INTL_IDNA_VARIANT_UTS46);
@@ -2208,6 +2224,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            if (!empty($is_now['group_id'])) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('alias_group_managed', htmlspecialchars($is_now['address']))
+              );
+              continue;
+            }
             if ($_data['expand_alias'] === true || $_data['expand_alias'] == 1) {
               $stmt = $pdo->prepare("SELECT `address` FROM `alias`
                 WHERE `address` = :address
@@ -2370,7 +2394,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 // Delete from sender_acl to prevent duplicates
                 $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE
                   `logged_in_as` = :goto AND
-                  `send_as` = :address");
+                  `send_as` = :address AND
+                  `group_id` IS NULL");
                 $stmt->execute(array(
                   ':goto' => $goto,
                   ':address' => $address
@@ -2404,6 +2429,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':active' => $active,
                 ':id' => $is_now['id']
               ));
+              if ($address != $is_now['address']) {
+                // Send-as grants of groups follow the address
+                \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addressRenamed($is_now['address'], $address);
+              }
             }
             $_SESSION['return'][] = array(
               'type' => 'success',
@@ -2785,6 +2814,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$eas_access     = (isset($_data['eas_access']) && hasACLAccess("protocol_access")) ? intval($_data['eas_access']) : intval($is_now['attributes']['eas_access']);
               (int)$dav_access    = (isset($_data['dav_access']) && hasACLAccess("protocol_access")) ? intval($_data['dav_access']) : intval($is_now['attributes']['dav_access']);
               (int)$relayhost       = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              (int)$shared          = (isset($_data['shared'])) ? intval($_data['shared']) : intval($is_now['attributes']['shared'] ?? 0);
               (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
               $domain               = $is_now['domain'];
@@ -3007,7 +3037,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $sender_acl_merged = array_merge($sender_acl_domain_admin, $sender_acl_admin);
                 // If merged array still contains "*", set it as only value
                 !in_array('*', $sender_acl_merged) ?: $sender_acl_merged = array('*');
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `group_id` IS NULL AND `logged_in_as` = :username");
                 $stmt->execute(array(
                   ':username' => $username
                 ));
@@ -3039,7 +3069,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 }
               }
               else {
-                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `logged_in_as` = :username");
+                $stmt = $pdo->prepare("DELETE FROM `sender_acl` WHERE `external` = 0 AND `group_id` IS NULL AND `logged_in_as` = :username");
                 $stmt->execute(array(
                   ':username' => $username
                 ));
@@ -3080,6 +3110,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `attributes` = JSON_SET(`attributes`, '$.sieve_access', :sieve_access),
                   `attributes` = JSON_SET(`attributes`, '$.pop3_access', :pop3_access),
                   `attributes` = JSON_SET(`attributes`, '$.relayhost', :relayhost),
+                  `attributes` = JSON_SET(`attributes`, '$.shared', :shared),
                   `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
                   `attributes` = JSON_SET(`attributes`, '$.eas_access', :eas_access),
                   `attributes` = JSON_SET(`attributes`, '$.dav_access', :dav_access),
@@ -3102,6 +3133,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':dav_access' => $dav_access,
                 ':recovery_email' => $pw_recovery_email,
                 ':relayhost' => $relayhost,
+                ':shared' => strval($shared),
                 ':username' => $username,
                 ':authsource' => $authsource
               ));
@@ -3258,7 +3290,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               "imapsync" => ['user2'],
               'bcc_maps' => ['local_dest', 'bcc_dest'],
               'recipient_maps' => ['old_dest', 'new_dest'],
-              'sender_acl' => ['logged_in_as', 'send_as']
+              'sender_acl' => ['logged_in_as', 'send_as'],
+              'identity_link' => ['username'],
+              'mailbox_group_imap_grant' => ['owner'],
+              'mailbox_group_sogo_grant' => ['owner'],
+              'mailbox_group_sogo_acl' => ['c_uid'],
+              'mailbox_group_subscription' => ['username', 'owner']
             ];
             foreach ($tables as $table => $columns) {
               foreach ($columns as $column) {
@@ -3272,6 +3309,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
             // Sync sources created by / targeting the mailbox and its OAuth tokens (owner); a PDOException rolls back below
             \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->sources->onAccountRenamed($old_username, $new_username);
+            // Group memberships and send-as grants follow, group aliases are rebuilt
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->hooks->onMailboxRenamed($old_username, $new_username);
 
             // Update c_uid, c_name and mail in _sogo_static_view table
             $pdo->prepare("UPDATE _sogo_static_view SET c_uid = :new_username, c_name = :new_username2, mail = :new_username3 WHERE c_uid = :old_username")
@@ -3370,10 +3409,27 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attribute_hash = sha1(json_encode($mbox_template_data["attributes"]));
           $is_now = mailbox('get', 'mailbox_details', $_data['username']);
           $name = ltrim(rtrim($_data['name'], '>'), '<');
-          if ($is_now['attributes']['attribute_hash'] == $attribute_hash && $is_now['name'] == $name)
+          // Last applied template, null for mailboxes created before it was recorded
+          $applied_template = $is_now['attributes']['template'] ?? null;
+          $stmt_template = $pdo->prepare("UPDATE `mailbox` SET `attributes` = JSON_SET(`attributes`, '$.template', :template) WHERE `username` = :username");
+          if ($is_now['attributes']['attribute_hash'] == $attribute_hash && $is_now['name'] == $name) {
+            if ($applied_template === null) {
+              $stmt_template->execute(array(':template' => $_data['template'], ':username' => $_data['username']));
+            }
             return true;
+          }
 
           $mbox_template_data = json_decode($mbox_template_data["attributes"], true);
+          // Any manual edit clears attribute_hash: re-applying the same template must not undo a manual (de)activation
+          if ($applied_template === null || $applied_template === $_data['template']) {
+            unset($mbox_template_data['active']);
+          }
+          // Login disabled by the IdP sync is only lifted by the sync
+          $stmt = $pdo->prepare("SELECT `idp_disabled` FROM `identity_link` WHERE `username` = :username");
+          $stmt->execute(array(':username' => $_data['username']));
+          if (intval($stmt->fetchColumn()) == 1) {
+            unset($mbox_template_data['active']);
+          }
           $mbox_template_data['attribute_hash'] = $attribute_hash;
           $mbox_template_data['name'] = $name;
           $quarantine_attributes = array('username' => $_data['username']);
@@ -3416,6 +3472,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($result === false) return $result;
           $result = acl('edit', 'user', $acl_attributes);
           if ($result === false) return $result;
+          $stmt_template->execute(array(':template' => $_data['template'], ':username' => $_data['username']));
 
           $_SESSION['return'] = array();
           return true;
@@ -3528,6 +3585,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ":template" => $_data["template"] ,
               ":attributes" => json_encode($attr)
             ));
+            // Mailboxes with this effective group template get the new settings
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->templateChanged((int)$id);
           }
 
 
@@ -3959,7 +4018,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           // Return array $data['sender_acl_domains/addresses']['ro'] with read-only objects
           // Return array $data['sender_acl_domains/addresses']['rw'] with read-write objects (can be deleted)
-          $stmt = $pdo->prepare("SELECT REPLACE(`send_as`, '@', '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND (`send_as` LIKE '@%' OR `send_as` = '*')");
+          $stmt = $pdo->prepare("SELECT REPLACE(`send_as`, '@', '') AS `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND `group_id` IS NULL AND (`send_as` LIKE '@%' OR `send_as` = '*')");
           $stmt->execute(array(':logged_in_as' => $_data));
           $domain_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($domain_row = array_shift($domain_rows)) {
@@ -3978,7 +4037,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $data['sender_acl_domains']['rw'][] = $domain_row['send_as'];
             }
           }
-          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND (`send_as` NOT LIKE '@%' AND `send_as` != '*')");
+          $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :logged_in_as AND `external` = '0' AND `group_id` IS NULL AND (`send_as` NOT LIKE '@%' AND `send_as` != '*')");
           $stmt->execute(array(':logged_in_as' => $_data));
           $address_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($address_row = array_shift($address_rows)) {
@@ -4436,7 +4495,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             `sogo_visible`,
             `sender_allowed`,
             `created`,
-            `modified`
+            `modified`,
+            `group_id`,
+            (SELECT `name` FROM `mailbox_group` WHERE `mailbox_group`.`id` = `alias`.`group_id`) AS `group_name`
               FROM `alias`
                   WHERE (`id` = :id OR `address` = :address) AND `address` != `goto`");
           $stmt->execute(array(
@@ -4469,6 +4530,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $aliasdata['sogo_visible'] = $row['sogo_visible'];
           $aliasdata['sogo_visible_int'] = $row['sogo_visible'];
           $aliasdata['sender_allowed'] = $row['sender_allowed'];
+          // Distribution address of a mailbox group, read-only here
+          $aliasdata['group_id'] = $row['group_id'];
+          $aliasdata['group_name'] = $row['group_name'];
           $aliasdata['created'] = $row['created'];
           $aliasdata['modified'] = $row['modified'];
           if (!hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $aliasdata['domain'])) {
@@ -4909,7 +4973,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $mailboxdata['is_relayed'] = $row['backupmx'];
             // Internal send-as ACL for this mailbox, mirrors the sender_acl field accepted by edit/mailbox
             $mailboxdata['sender_acl'] = array();
-            $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '0'");
+            $stmt = $pdo->prepare("SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :username AND `external` = '0' AND `group_id` IS NULL");
             $stmt->execute(array(':username' => $_data));
             $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($sender_acl_rows as $sender_acl_row) {
@@ -5283,6 +5347,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':domain' => $domain,
             ));
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->domainDeleted($domain);
             $stmt = $pdo->prepare("DELETE FROM `imapsync_source_domain` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,
@@ -5410,6 +5475,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               );
               continue;
             }
+            if (!empty($alias_data['group_id'])) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('alias_group_managed', htmlspecialchars($alias_data['address']))
+              );
+              continue;
+            }
 
             // Track affected mailboxes for SOGo update (capture before deletion)
             if (!empty($alias_data['goto'])) {
@@ -5430,6 +5503,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':alias_address' => $alias_data['address']
             ));
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addressDeleted($alias_data['address']);
             $_SESSION['return'][] = array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -5470,6 +5544,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(
               ':alias_domain' => $alias_domain,
             ));
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->domainDeleted($alias_domain);
             $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `domain` = :alias_domain");
             $stmt->execute(array(
               ':alias_domain' => $alias_domain,
@@ -5552,7 +5627,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 'msg' => 'Could not move maildir to garbage collector: variables local_part and/or domain empty'
               );
             }
-            $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username");
+            \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->mailboxDeleted($username);
+            $stmt = $pdo->prepare("DELETE FROM `alias` WHERE `goto` = :username AND `group_id` IS NULL");
             $stmt->execute(array(
               ':username' => $username
             ));

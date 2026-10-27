@@ -99,6 +99,22 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template = 'edit/oauth2client.twig';
         $template_data = ['oauth2client' => $oauth2client];
     }
+    elseif (isset($_GET['mailbox-group']) &&
+      is_numeric($_GET['mailbox-group'])) {
+        $result = \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroup($_GET['mailbox-group']);
+        $template = 'edit/mailbox-group.twig';
+        // Member candidates: mailboxes of the domains the caller manages
+        $mailboxes = [];
+        foreach (mailbox('get', 'domains') as $domain) {
+          foreach (mailbox('get', 'mailboxes', $domain) as $mailbox) {
+            $mailboxes[] = $mailbox;
+          }
+        }
+        $template_data = [
+          'mailboxes' => $mailboxes,
+          'mbox_templates' => ($_SESSION['mailcow_cc_role'] == 'admin') ? mailbox('get', 'mailbox_templates') : [],
+        ];
+    }
     elseif (isset($_GET['api-key']) &&
       is_numeric($_GET['api-key'])) {
         $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);
@@ -141,6 +157,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'get_tls_policy' => $get_tls_policy,
           'rlyhosts' => $rlyhosts,
           'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
+          'mailbox_groups' => \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships($mailbox),
+          'identity_link' => \Mailcow\Identity\IdentityModule::fromGlobals()->api->getLink($mailbox),
           'user_acls' => acl('get', 'user', $mailbox),
           'mailbox_details' => $result,
           'iam_settings' => $iam_settings,
@@ -237,6 +255,7 @@ else {
 }
 
 $js_minifier->add('/web/js/site/imapsync.js');
+$js_minifier->add('/web/js/site/groups.js');
 $js_minifier->add('/web/js/site/edit.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 

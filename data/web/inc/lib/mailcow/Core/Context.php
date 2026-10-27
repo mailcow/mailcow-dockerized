@@ -70,6 +70,24 @@ class Context
         return $this->apiAccess === 'ro';
     }
 
+    /** An admin, or a legacy call that may ignore ownership (access_all_exception) */
+    public function hasAdminRights(): bool
+    {
+        return $this->isAdmin() || $this->accessAll;
+    }
+
+    /**
+     * Admin rights; a write also needs more than a read-only API key.
+     *
+     * @throws AccessDenied
+     */
+    public function requireAdmin(bool $write = true): void
+    {
+        if (!$this->hasAdminRights() || ($write && $this->isReadOnlyApi())) {
+            throw new AccessDenied();
+        }
+    }
+
     public function hasAcl(string $name): bool
     {
         return isset($this->acl[$name]) && $this->acl[$name] == '1';

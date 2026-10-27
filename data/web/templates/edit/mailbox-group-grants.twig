@@ -1,0 +1,24 @@
+{# Shares of a group (edit page, add modal): kind = imap|sogo, grants, id = table id, ro; rows go to the hidden JSON field #}
+{% set field = kind ~ '_grants' %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class|default('') }}">{{ attribute(lang.groups, field) }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}
+    <input type="hidden" name="{{ field }}" value="{{ grants|json_encode }}">
+    {% endif %}
+    <table class="table table-sm align-middle group-grants mb-1" id="{{ id }}" data-field="{{ field }}">
+      <tbody>
+        {% for grant in grants %}
+        {% include 'edit/mailbox-group-grant.twig' with {'kind': kind, 'grant': grant} %}
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if not ro %}
+    <template id="{{ id }}_template">
+      {% include 'edit/mailbox-group-grant.twig' with {'kind': kind, 'grant': {}} %}
+    </template>
+    <button class="btn btn-sm btn-secondary group-grant-add" data-table="{{ id }}"><i class="bi bi-plus-lg"></i> {{ lang.groups.grant_add }}</button>
+    {% endif %}
+    <small class="text-muted d-block">{{ attribute(lang.groups, field ~ '_hint') }}</small>
+  </div>
+</div>

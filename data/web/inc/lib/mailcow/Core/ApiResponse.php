@@ -38,6 +38,12 @@ class ApiResponse
         return $this->danger($error->msg(), $log);
     }
 
+    /** Something went partly wrong, but the call itself succeeded */
+    public function warning(string|array $msg, array $log): void
+    {
+        $this->add('warning', $msg, $log);
+    }
+
     /** Messages collected since the last flush() */
     public function messages(): array
     {

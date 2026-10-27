@@ -1,0 +1,49 @@
+{# One share row of the group edit page: kind = imap|sogo, grant = {} for the add template #}
+{% set level_key = kind == 'imap' ? 'rights' : 'access' %}
+{# new IMAP shares are subscribed by default, like automapping in Exchange #}
+{% set subscribed = grant.owner is defined ? grant.subscribe|default(0) == 1 : kind == 'imap' %}
+<tr class="group-grant">
+  <td class="{{ kind == 'imap' ? 'w-50' : 'w-25' }}">
+    <select data-grant="owner" data-live-search="true" data-width="100%" class="form-control" title="{{ lang.groups.grant_owner }}"{% if ro %} disabled{% endif %}>
+      {% for mailbox in mailboxes %}
+      <option{% if mailbox == grant.owner %} selected{% endif %}>{{ mailbox }}</option>
+      {% endfor %}
+      {% if grant.owner and grant.owner not in mailboxes %}
+      <option selected>{{ grant.owner }}</option>
+      {% endif %}
+    </select>
+  </td>
+  {% if kind == 'sogo' %}
+  <td>
+    <select data-grant="type" data-width="100%" class="form-control"{% if ro %} disabled{% endif %}>
+      <option value="Calendar"{% if grant.type == 'Calendar' %} selected{% endif %}>{{ lang.groups.type_calendar }}</option>
+      <option value="Contacts"{% if grant.type == 'Contacts' %} selected{% endif %}>{{ lang.groups.type_contacts }}</option>
+    </select>
+  </td>
+  <td class="w-25">
+    <input type="text" data-grant="folder" class="form-control" value="{{ grant.folder ?? 'personal' }}" maxlength="100" title="{{ lang.groups.grant_folder }}"{% if ro %} disabled{% endif %}>
+  </td>
+  {% endif %}
+  <td class="{{ kind == 'imap' ? 'w-25' : '' }}">
+    <select data-grant="{{ level_key }}" data-width="100%" class="form-control"{% if ro %} disabled{% endif %}>
+      {% for level in (kind == 'imap' ? ['read', 'write', 'full'] : ['read', 'write']) %}
+      <option value="{{ level }}"{% if level == attribute(grant, level_key)|default('read') %} selected{% endif %}>{{ attribute(lang.groups, 'rights_' ~ level) }}</option>
+      {% endfor %}
+    </select>
+  </td>
+  <td class="text-nowrap">
+    <div class="form-check mb-0" title="{{ attribute(lang.groups, 'grant_subscribe_' ~ kind ~ '_hint') }}">
+      <label><input type="checkbox" class="form-check-input" data-grant="subscribe" value="1"{% if subscribed %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.groups.grant_subscribe }}</label>
+    </div>
+  </td>
+  <td>
+    {% if grant.state %}
+    <span class="badge {{ grant.state == 'applied' ? 'bg-success' : (grant.state == 'failed' ? 'bg-danger' : 'bg-secondary') }}"{% if grant.last_error %} title="{{ grant.last_error }}"{% endif %}>{{ attribute(lang.groups, 'grant_state_' ~ grant.state) }}</span>
+    {% endif %}
+  </td>
+  <td class="text-end">
+    {% if not ro %}
+    <button class="btn btn-sm btn-secondary group-grant-del" title="{{ lang.mailbox.remove }}"><i class="bi bi-x-lg"></i></button>
+    {% endif %}
+  </td>
+</tr>
