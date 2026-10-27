@@ -47,7 +47,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/CSSminifierExtended.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/array_merge_real.php';
 
 // T/HOTP API
-$qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
+$qrprovider = new RobThree\Auth\Providers\Qr\BaconQrCodeProvider();
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // FIDO2
@@ -105,11 +105,11 @@ http_response_code(500);
 <?php
 exit;
 }
-// Stop when controller is not available
-if (fsockopen("tcp://controller", 443, $errno, $errstr) === false) {
+// Stop when dockerapi is not available
+if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
   http_response_code(500);
 ?>
-<center style='font-family:sans-serif;'>Connection to controller container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
+<center style='font-family:sans-serif;'>Connection to dockerapi container failed.<br /><br />The following error was reported:<br/><?=$errno;?> - <?=$errstr;?></center>
 <?php
 exit;
 }
@@ -165,6 +165,14 @@ if(!$DEV_MODE) {
   set_exception_handler('exception_handler');
 }
 
+// TODO: Move function
+function get_remote_ip() {
+  $remote = $_SERVER['REMOTE_ADDR'];
+  if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
+    return '0.0.0.0';
+  }
+  return $remote;
+}
 
 // Load core functions first
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
@@ -311,10 +319,16 @@ $css_minifier = new CSSminifierExtended();
 $css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
 // get customized ui data
 $UI_TEXTS = customize('get', 'ui_texts');
+// theme selected in admin UI overrides $UI_THEME
+if ($ui_theme_selected = customize('get', 'ui_theme')) {
+  $UI_THEME = $ui_theme_selected;
+}
 
 
 // minify bootstrap theme
-if (file_exists('/web/css/themes/'.$UI_THEME.'-bootstrap.css'))
+if (file_exists('/web/css/themes/'.$UI_THEME.'/bootstrap.css'))
+  $css_minifier->add('/web/css/themes/'.$UI_THEME.'/bootstrap.css');
+elseif (file_exists('/web/css/themes/'.$UI_THEME.'-bootstrap.css'))
   $css_minifier->add('/web/css/themes/'.$UI_THEME.'-bootstrap.css');
 else
   $css_minifier->add('/web/css/themes/lumen-bootstrap.css');

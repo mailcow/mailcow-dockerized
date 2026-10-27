@@ -7,12 +7,8 @@ trait SerializesAndRestoresPropertyValues
 {
     /**
      * Get the property value prepared for serialization.
-     *
-     * @param  string  $property
-     * @param  mixed  $value
-     * @return mixed
      */
-    protected function getSerializedPropertyValue($property, $value)
+    protected function getSerializedPropertyValue(string $property, mixed $value): mixed
     {
         if ($property === 'original') {
             return $this->originalToArray();
@@ -27,12 +23,8 @@ trait SerializesAndRestoresPropertyValues
 
     /**
      * Get the unserialized property value after deserialization.
-     *
-     * @param  string  $property
-     * @param  mixed  $value
-     * @return mixed
      */
-    protected function getUnserializedPropertyValue($property, $value)
+    protected function getUnserializedPropertyValue(string $property, mixed $value): mixed
     {
         if ($property === 'original') {
             return $this->arrayToOriginal($value);

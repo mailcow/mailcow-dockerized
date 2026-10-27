@@ -8,8 +8,12 @@ $ALLOW_ADMIN_EMAIL_LOGIN = (preg_match(
 $session_var_user_allowed = 'sogo-sso-user-allowed';
 $session_var_pass = 'sogo-sso-pass';
 
+// only the internal nginx auth_request loopback (127.0.0.1:65510) sets this;
+// external clients can never supply it (bare fastcgi param, not an HTTP header)
+$is_internal_auth = (($_SERVER['SOGO_AUTH_INTERNAL'] ?? '') === '1');
+
 // validate credentials for basic auth requests
-if (isset($_SERVER['PHP_AUTH_USER'])) {
+if ($is_internal_auth && isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 
@@ -25,16 +29,8 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
   elseif (preg_match('/^(\/SOGo|)\/Microsoft-Server-ActiveSync.*/', $original_uri) === 1) {
     $service = 'EAS';
   }
-  if (empty($password)) {
-    $remote = get_remote_ip();
-    $docker_ipv4_network = getenv('IPV4_NETWORK');
-    if ($remote == "{$docker_ipv4_network}.246") {
-      $login_check = 'user';
-      $password = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
-    }
-  } else {
-    $login_check = check_login($username, $password, array('service' => $service));
-  }
+
+  $login_check = check_login($username, $password, array('service' => $service));
   if ($login_check === 'user') {
     header("X-User: $username");
     header("X-Auth: Basic ".base64_encode("$username:$password"));
@@ -58,6 +54,16 @@ elseif (isset($_GET['login'])) {
     (($_SESSION['acl']['login_as'] == "1" && $ALLOW_ADMIN_EMAIL_LOGIN !== 0) || ($is_dual === false && $login == $_SESSION['mailcow_cc_username']))) {
     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
       if (user_get_alias_details($login) !== false) {
+        // enforce tenant boundary
+        if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $login)) {
+          header("Location: /");
+          exit;
+        }
+        // Block SOGo access if pending actions (2FA setup, password update)
+        if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+          header("Location: /");
+          exit;
+        }
         // register username in session
         $_SESSION[$session_var_user_allowed][] = $login;
         // set dual login
@@ -83,13 +89,12 @@ elseif (isset($_GET['login'])) {
   exit;
 }
 // only check for admin-login on sogo GUI requests
-elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
+elseif ($is_internal_auth && isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HTTP_X_ORIGINAL_URI'], 0, 9), "/SOGo/so/") === 0) {
   // this is an nginx auth_request call, we check for existing sogo-sso session variables
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
   if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php')) {
     include_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.local.inc.php';
   }
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
   $email_list = array(
@@ -103,7 +108,8 @@ elseif (isset($_SERVER['HTTP_X_ORIGINAL_URI']) && strcasecmp(substr($_SERVER['HT
         filter_var($email, FILTER_VALIDATE_EMAIL) &&
         is_array($_SESSION[$session_var_user_allowed]) &&
         in_array($email, $_SESSION[$session_var_user_allowed]) &&
-        !$_SESSION['pending_pw_update']
+        !$_SESSION['pending_pw_update'] &&
+        !$_SESSION['pending_tfa_setup']
     ) {
       $username = $email;
       $password = file_get_contents("/etc/sogo-sso/sogo-sso.pass");

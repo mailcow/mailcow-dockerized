@@ -124,6 +124,9 @@ $(document).ready(function() {
         var lastTab = localStorage.getItem(key);
         if (lastTab) {
           $('[data-bs-target="#' + lastTab + '"]').click();
+          var dropdown = $('[data-bs-target="#' + lastTab + '"]').closest('.dropdown');
+          dropdown.find('.dropdown-menu').removeClass('show');
+          dropdown.find('.dropdown-toggle').attr('aria-expanded', 'false');
           var tab = $('[id^="' + lastTab + '"]');
           $(tab).find('.card-body.collapse:first').collapse('show');
         }
@@ -345,15 +348,15 @@ $(document).ready(function() {
       $('.main-logo-dark').addClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_dark.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_dark.png');
-      localStorage.setItem('theme', 'light');
+      localStorage.setItem('mailcow_theme', 'light');
     }else{
-      $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="/css/themes/mailcow-darkmode.css">');
+      $('head').append('<link id="dark-mode-theme" rel="stylesheet" type="text/css" href="' + mailcow_dark_css + '">');
       $('#dark-mode-toggle').prop('checked', true);
       $('.main-logo').addClass('d-none');
       $('.main-logo-dark').removeClass('d-none');
       if ($('#rspamd_logo').length) $('#rspamd_logo').attr('src', '/img/rspamd_logo_light.png');
       if ($('#rspamd_logo_sm').length) $('#rspamd_logo_sm').attr('src', '/img/rspamd_logo_light.png');
-      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('mailcow_theme', 'dark');
     }
   }
 

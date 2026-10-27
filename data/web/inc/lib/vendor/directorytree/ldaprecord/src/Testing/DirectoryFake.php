@@ -7,44 +7,50 @@ use LdapRecord\Container;
 class DirectoryFake
 {
     /**
-     * Setup the fake connection.
+     * The LDAP connections that were replaced with fakes.
      *
-     * @param  string|null  $name
-     * @return ConnectionFake
+     * @var \LdapRecord\Connection[]
+     */
+    protected static array $replaced = [];
+
+    /**
+     * Replace a connection a fake.
      *
      * @throws \LdapRecord\ContainerException
      */
-    public static function setup($name = null)
+    public static function setup(?string $name = null): ConnectionFake
     {
-        $connection = Container::getConnection($name);
+        $name = $name ?? Container::getDefaultConnectionName();
+
+        $connection = static::$replaced[$name] = Container::getConnection($name);
 
         $fake = static::makeConnectionFake(
             $connection->getConfiguration()->all()
         );
 
-        // Replace the connection with a fake.
         Container::addConnection($fake, $name);
 
         return $fake;
     }
 
     /**
-     * Reset the container.
-     *
-     * @return void
+     * Replace all faked connections with their original.
      */
-    public static function tearDown()
+    public static function tearDown(): void
     {
-        Container::reset();
+        foreach (static::$replaced as $name => $connection) {
+            Container::getConnection($name)->tearDown();
+        }
+
+        Container::flush();
+
+        static::$replaced = [];
     }
 
     /**
      * Make a connection fake.
-     *
-     * @param  array  $config
-     * @return ConnectionFake
      */
-    public static function makeConnectionFake(array $config = [])
+    public static function makeConnectionFake(array $config = []): ConnectionFake
     {
         return ConnectionFake::make($config)->shouldBeConnected();
     }

@@ -7,60 +7,58 @@ trait CanAuthenticate
 {
     /**
      * Get the name of the unique identifier for the user.
-     *
-     * @return string
      */
-    public function getAuthIdentifierName()
+    public function getAuthIdentifierName(): string
     {
         return $this->guidKey;
     }
 
     /**
      * Get the unique identifier for the user.
-     *
-     * @return string
      */
-    public function getAuthIdentifier()
+    public function getAuthIdentifier(): string
     {
-        return $this->getConvertedGuid();
+        return $this->getConvertedGuid(
+            $this->getFirstAttribute($this->getAuthIdentifierName())
+        );
     }
 
     /**
      * Get the password for the user.
-     *
-     * @return string
      */
-    public function getAuthPassword()
+    public function getAuthPassword(): string
     {
         return '';
     }
 
     /**
-     * Get the token value for the "remember me" session.
-     *
-     * @return string
+     * Get the name of the password attribute for the user.
      */
-    public function getRememberToken()
+    public function getAuthPasswordName(): string
+    {
+        return 'password';
+    }
+
+    /**
+     * Get the token value for the "remember me" session.
+     */
+    public function getRememberToken(): string
     {
         return '';
     }
 
     /**
      * Set the token value for the "remember me" session.
-     *
-     * @param  string  $value
-     * @return void
      */
-    public function setRememberToken($value)
+    public function setRememberToken($value): void
     {
+        // Do nothing.
     }
 
     /**
      * Get the column name for the "remember me" token.
-     *
-     * @return string
      */
-    public function getRememberTokenName()
+    public function getRememberTokenName(): string
     {
         return '';
     }

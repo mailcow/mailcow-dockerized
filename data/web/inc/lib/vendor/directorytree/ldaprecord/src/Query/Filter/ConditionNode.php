@@ -8,38 +8,28 @@ class ConditionNode extends Node
 {
     /**
      * The condition's attribute.
-     *
-     * @var string
      */
-    protected $attribute;
+    protected string $attribute;
 
     /**
      * The condition's operator.
-     *
-     * @var string
      */
-    protected $operator;
+    protected string $operator;
 
     /**
      * The condition's value.
-     *
-     * @var string
      */
-    protected $value;
+    protected string $value;
 
     /**
      * The available condition operators.
-     *
-     * @var array
      */
-    protected $operators = ['>=', '<=', '~=', '='];
+    protected array $operators = ['>=', '<=', '~=', '='];
 
     /**
      * Constructor.
-     *
-     * @param  string  $filter
      */
-    public function __construct($filter)
+    public function __construct(string $filter)
     {
         $this->raw = $filter;
 
@@ -48,51 +38,38 @@ class ConditionNode extends Node
 
     /**
      * Get the condition's attribute.
-     *
-     * @return string
      */
-    public function getAttribute()
+    public function getAttribute(): string
     {
         return $this->attribute;
     }
 
     /**
      * Get the condition's operator.
-     *
-     * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
 
     /**
      * Get the condition's value.
-     *
-     * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
      * Extract the condition components from the filter.
-     *
-     * @param  string  $filter
-     * @return array
      */
-    protected function extractComponents($filter)
+    protected function extractComponents(string $filter): array
     {
         $components = Str::whenContains(
             $filter,
             $this->operators,
-            function ($operator, $filter) {
-                return explode($this->operator = $operator, $filter, 2);
-            },
-            function ($filter) {
-                throw new ParserException("Invalid query condition. No operator found in [$filter]");
-            },
+            fn ($operator, $filter) => explode($this->operator = $operator, $filter, 2),
+            fn ($filter) => throw new ParserException("Invalid query condition. No operator found in [$filter]"),
         );
 
         return $components;

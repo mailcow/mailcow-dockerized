@@ -424,6 +424,11 @@ $(document).ready(function() {
     } else {
       $('#force_pw_update').prop('checked', false);
     }
+    if (template.force_tfa == 1){
+      $('#force_tfa').prop('checked', true);
+    } else {
+      $('#force_tfa').prop('checked', false);
+    }
     if (template.sogo_access == 1){
       $('#sogo_access').prop('checked', true);
     } else {
@@ -471,8 +476,13 @@ jQuery(function($){
         hideTableExpandCollapseBtn('#tab-domains', '#domain_table');
       },
       ajax: {
-        type: "GET",
-        url: "/api/v1/get/domain/datatables",
+        type: "POST",
+        url: "/api/v1/search/domain",
+        contentType: "application/json",
+        processData: false,
+        data: function(d) {
+          return JSON.stringify(d);
+        },
         dataSrc: function(json){
           $.each(json.data, function(i, item) {
             item.domain_name = escapeHtml(item.domain_name);
@@ -898,8 +908,13 @@ jQuery(function($){
         hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
       },
       ajax: {
-        type: "GET",
-        url: "/api/v1/get/mailbox/datatables",
+        type: "POST",
+        url: "/api/v1/search/mailbox",
+        contentType: "application/json",
+        processData: false,
+        data: function(d) {
+          return JSON.stringify(d);
+        },
         dataSrc: function(json){
           $.each(json.data, function (i, item) {
             item.quota = {
@@ -981,6 +996,7 @@ jQuery(function($){
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
             };
             item.username = escapeHtml(item.username);
+            item.name = escapeHtml(item.name);
 
             if (Array.isArray(item.tags)){
               var tags = '';
@@ -1232,6 +1248,7 @@ jQuery(function($){
             item.attributes.eas_access = '<i class="text-' + (item.attributes.eas_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.eas_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.eas_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.dav_access = '<i class="text-' + (item.attributes.dav_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.dav_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.dav_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.force_tfa = '<i class="text-' + (item.attributes.force_tfa == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.force_tfa == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.force_tfa == 1 ? '1' : '0') + '</span></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.attributes.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -1374,6 +1391,11 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
           }
+        },
+        {
+          title: lang.force_tfa,
+          data: 'attributes.force_tfa',
+          defaultContent: ''
         },
         {
           title: lang_edit.ratelimit,

@@ -53,6 +53,39 @@ function valid_network($network) {
 function valid_hostname($hostname) {
   return filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
 }
+// Validates a browser-style Origin: scheme://host[:port], no path/query/fragment/credentials
+function valid_origin($origin) {
+  $parts = parse_url($origin);
+  if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+    return false;
+  }
+  if (!in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+    return false;
+  }
+  if (isset($parts['user']) || isset($parts['pass']) || isset($parts['path']) || isset($parts['query']) || isset($parts['fragment'])) {
+    return false;
+  }
+  $host = $parts['host'];
+  $host_without_brackets = trim($host, '[]');
+  if (!valid_hostname($host_without_brackets) && !filter_var($host_without_brackets, FILTER_VALIDATE_IP)) {
+    return false;
+  }
+  // Reject anything that doesn't round-trip to the exact same origin (e.g. stray trailing slash)
+  $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+  $rebuilt = strtolower($parts['scheme']) . '://' . strtolower($host) . $port;
+  return strtolower($origin) === $rebuilt;
+}
+// Bring an origin into the exact form a browser sends it (scheme://host[:port], lowercase).
+function normalize_cors_origin($origin) {
+  $origin = trim($origin);
+  if ($origin === '*') {
+    return '*';
+  }
+  if ($origin !== '' && !preg_match('~^[a-z][a-z0-9+.-]*://~i', $origin)) {
+    $origin = 'https://' . $origin;
+  }
+  return valid_origin($origin) ? strtolower($origin) : false;
+}
 // Thanks to https://stackoverflow.com/a/49373789
 // Validates exact ip matches and ip-in-cidr, ipv4 and ipv6
 function ip_acl($ip, $networks) {
@@ -524,16 +557,6 @@ function sys_mail($_data) {
     'msg' => 'Mass mail job completed, sent ' . count($rcpts) . ' mails'
   );
 }
-function get_remote_ip($use_x_real_ip = true) {
-    $remote = $_SERVER['REMOTE_ADDR'];
-    if ($use_x_real_ip && !empty($_SERVER['HTTP_X_REAL_IP'])) {
-      $remote = $_SERVER['HTTP_X_REAL_IP'];
-    }
-    if (filter_var($remote, FILTER_VALIDATE_IP) === false) {
-      $remote = '0.0.0.0';
-    }
-    return $remote;
-}
 function logger($_data = false) {
   /*
   logger() will be called as last function
@@ -568,7 +591,7 @@ function logger($_data = false) {
       $type = $return['type'];
       $msg = null;
       if (isset($return['msg'])) {
-        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE);
+        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
       }
       $call = null;
       if (isset($return['log'])) {
@@ -609,6 +632,18 @@ function logger($_data = false) {
   else {
     return true;
   }
+}
+function is_local_mailcow_domain($domain) {
+  // True if domain is a locally managed, active primary or alias domain
+  global $pdo;
+  $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+  if (empty($domain)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = 1
+    UNION SELECT 1 FROM `alias_domain` WHERE `alias_domain` = :d2 AND `active` = 1 LIMIT 1");
+  $stmt->execute(array(':d' => $domain, ':d2' => $domain));
+  return (bool)$stmt->fetchColumn();
 }
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
@@ -1043,20 +1078,24 @@ function edit_user_account($_data) {
   }
 
   // edit password
-  if (!empty($password_old) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2'])) {
-    $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
-        WHERE `kind` NOT REGEXP 'location|thing|group'
-          AND `username` = :user AND authsource = 'mailcow'");
-    $stmt->execute(array(':user' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  $is_forced_pw_update = !empty($_SESSION['pending_pw_update']);
+  if (((!empty($password_old) || $is_forced_pw_update) && !empty($_data['user_new_pass']) && !empty($_data['user_new_pass2']))) {
+    // Only verify old password if this is NOT a forced password update
+    if (!$is_forced_pw_update) {
+      $stmt = $pdo->prepare("SELECT `password` FROM `mailbox`
+          WHERE `kind` NOT REGEXP 'location|thing|group'
+            AND `username` = :user AND authsource = 'mailcow'");
+      $stmt->execute(array(':user' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!verify_hash($row['password'], $password_old)) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $_data_log),
-        'msg' => 'access_denied'
-      );
-      return false;
+      if (!verify_hash($row['password'], $password_old)) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data_log),
+          'msg' => 'access_denied'
+        );
+        return false;
+      }
     }
 
     $password_new = $_data['user_new_pass'];
@@ -1220,50 +1259,52 @@ function set_tfa($_data) {
   global $iam_settings;
 
   $_data_log = $_data;
-  $access_denied = null;
   !isset($_data_log['confirm_password']) ?: $_data_log['confirm_password'] = '*';
-  $username = $_SESSION['mailcow_cc_username'];
 
-  // check for empty user and role
-  if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) $access_denied = true;
-
-  // check admin confirm password
-  if ($access_denied === null) {
-    $stmt = $pdo->prepare("SELECT `password` FROM `admin`
-        WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-      if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
-      else $access_denied = false;
+  // skip password check if this is a forced TFA enrollment after login
+  if (!empty($_SESSION['pending_tfa_setup'])) {
+    $username = $_SESSION['mailcow_cc_username'];
+    if (empty($username) || !isset($_SESSION['mailcow_cc_role'])) {
+      $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log), 'msg' => 'access_denied');
+      return false;
     }
-  }
+  } else {
+    $username = $_SESSION['mailcow_cc_username'];
+    $access_denied = null;
 
-  // check mailbox confirm password
-  if ($access_denied === null) {
-    $stmt = $pdo->prepare("SELECT `password`, `authsource` FROM `mailbox`
-        WHERE `username` = :username");
-    $stmt->execute(array(':username' => $username));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-      if ($row['authsource'] == 'ldap'){
-        if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
-        else $access_denied = false;
-      } else {
+    if (!isset($_SESSION['mailcow_cc_role']) || empty($username)) $access_denied = true;
+
+    // check admin password
+    if ($access_denied === null) {
+      $stmt = $pdo->prepare("SELECT `password` FROM `admin` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
         if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
         else $access_denied = false;
       }
     }
-  }
 
-  // set access_denied error
-  if ($access_denied){
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $_data_log),
-      'msg' => 'access_denied'
-    );
-    return false;
+    // check mailbox password
+    if ($access_denied === null) {
+      $stmt = $pdo->prepare("SELECT `password`, `authsource` FROM `mailbox` WHERE `username` = :username");
+      $stmt->execute(array(':username' => $username));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
+        if ($row['authsource'] == 'ldap'){
+          if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
+          else $access_denied = false;
+        } else {
+          if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
+          else $access_denied = false;
+        }
+      }
+    }
+
+    if ($access_denied) {
+      $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log), 'msg' => 'access_denied');
+      return false;
+    }
   }
 
   switch ($_data["tfa_method"]) {
@@ -1316,6 +1357,7 @@ function set_tfa($_data) {
         );
         return false;
       }
+      unset($_SESSION['pending_tfa_setup']);
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_data_log),
@@ -1329,6 +1371,7 @@ function set_tfa($_data) {
         //$stmt->execute(array(':username' => $username));
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `secret`, `active`) VALUES (?, ?, 'totp', ?, '1')");
         $stmt->execute(array($username, $key_id, $_POST['totp_secret']));
+        unset($_SESSION['pending_tfa_setup']);
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_data_log),
@@ -1357,6 +1400,7 @@ function set_tfa($_data) {
             0
         ));
 
+        unset($_SESSION['pending_tfa_setup']);
         $_SESSION['return'][] =  array(
             'type' => 'success',
             'log' => array(__FUNCTION__, $_data_log),
@@ -1364,6 +1408,25 @@ function set_tfa($_data) {
         );
     break;
     case "none":
+      // Block TFA removal if force_tfa policy is active
+      $is_forced_tfa = false;
+      if ($_SESSION['mailcow_cc_role'] === 'user') {
+        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+        $stmt_check->execute(array($username));
+        $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+      } else {
+        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+        $stmt_check->execute(array($username));
+        $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+      }
+      if ($is_forced_tfa) {
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_data_log),
+          'msg' => 'tfa_removal_blocked'
+        );
+        return false;
+      }
       $stmt = $pdo->prepare("DELETE FROM `tfa` WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $_SESSION['return'][] =  array(
@@ -1616,6 +1679,26 @@ function unset_tfa_key($_data) {
       return false;
     }
 
+    // Block key removal if force_tfa policy is active
+    $is_forced_tfa = false;
+    if ($_SESSION['mailcow_cc_role'] === 'user') {
+      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+      $stmt_check->execute(array($username));
+      $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+    } else {
+      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+      $stmt_check->execute(array($username));
+      $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
+    }
+    if ($is_forced_tfa) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $_data_log),
+        'msg' => 'tfa_removal_blocked'
+      );
+      return false;
+    }
+
     // check if it's last key
     $stmt = $pdo->prepare("SELECT COUNT(*) AS `keys` FROM `tfa`
       WHERE `username` = :username AND `active` = '1'");
@@ -1647,6 +1730,15 @@ function unset_tfa_key($_data) {
     );
     return false;
   }
+}
+function tfa_exists($username) {
+  global $pdo;
+  if (empty($username)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM `tfa` WHERE `username` = :username");
+  $stmt->execute(array(':username' => $username));
+  return $stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
 }
 function get_tfa($username = null, $id = null) {
   global $pdo;
@@ -2236,10 +2328,13 @@ function cors($action, $data = null) {
         return false;
       }
 
-      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array(getBaseURL());
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
-      foreach ($allowed_origins as $origin) {
-        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+      foreach ($allowed_origins as &$origin) {
+        if ($origin === '*') {
+          continue;
+        }
+        if (!valid_origin($origin)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $action, $data),
@@ -2247,7 +2342,10 @@ function cors($action, $data = null) {
           );
           return false;
         }
+        // browsers always send a lowercase scheme/host in the Origin header, so normalize to match
+        $origin = strtolower($origin);
       }
+      unset($origin);
 
       $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
       $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
@@ -2295,26 +2393,35 @@ function cors($action, $data = null) {
         );
       }
 
-      $cors_settings                    = !$cors_settings ? array('allowed_origins' => $_SERVER['SERVER_NAME'], 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
-      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? $_SERVER['SERVER_NAME'] : $cors_settings['allowed_origins'];
+      $cors_settings                    = !$cors_settings ? array('allowed_origins' => getBaseURL(), 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
+      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? getBaseURL() : $cors_settings['allowed_origins'];
       $cors_settings['allowed_methods'] = empty($cors_settings['allowed_methods']) ? 'GET, POST, PUT, DELETE, OPTION' : $cors_settings['allowed_methods'];
 
       return $cors_settings;
     break;
     case "set_headers":
       $cors_settings = cors('get');
+      // normalize the stored list; it may still hold bare hostnames written before origins were validated as origins
+      $allowed_origins = array_filter(array_map('normalize_cors_origin', explode(',', $cors_settings['allowed_origins'])));
+      $origin = isset($_SERVER['HTTP_ORIGIN']) ? normalize_cors_origin($_SERVER['HTTP_ORIGIN']) : false;
       // check if requested origin is in allowed origins
-      $allowed_origins = explode(', ', $cors_settings['allowed_origins']);
-      $cors_settings['allowed_origins'] = $allowed_origins[0];
-      if (in_array('*', $allowed_origins)){
-        $cors_settings['allowed_origins'] = '*';
-      } else if (array_key_exists('HTTP_ORIGIN', $_SERVER) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-        $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
+      $allow_origin = null;
+      if (in_array('*', $allowed_origins, true)) {
+        $allow_origin = '*';
+      } else if ($origin !== false && in_array($origin, $allowed_origins, true)) {
+        $allow_origin = $origin;
       }
       // always allow OPTIONS for preflight request
       $cors_settings["allowed_methods"] = empty($cors_settings["allowed_methods"]) ? 'OPTIONS' : $cors_settings["allowed_methods"] . ', ' . 'OPTIONS';
 
-      header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
+      // a disallowed origin gets no Access-Control-Allow-Origin at all; echoing a different origin than the requesting one tells a browser nothing
+      if ($allow_origin !== null) {
+        header('Access-Control-Allow-Origin: ' . $allow_origin);
+      }
+      if ($allow_origin !== '*') {
+        // the response depends on the request origin, keep caches from mixing them up
+        header('Vary: Origin', false);
+      }
       header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
       header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
 
@@ -3449,6 +3556,58 @@ function set_user_loggedin_session($user) {
   unset($_SESSION['pending_mailcow_cc_username']);
   unset($_SESSION['pending_mailcow_cc_role']);
   unset($_SESSION['pending_tfa_methods']);
+}
+function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redirects = []) {
+  // Check if user is authenticated
+  if (!isset($_SESSION['mailcow_cc_role'])) {
+    if (isset($redirects['unauthenticated'])) {
+      header('Location: ' . $redirects['unauthenticated']);
+    } else {
+      // Send a deep link to the login page for its area instead of the user login at /,
+      // e.g. /admin/dashboard -> /admin rather than /
+      $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin');
+      } elseif (strpos($request_uri, '/domainadmin/') === 0) {
+        header('Location: /domainadmin');
+      } else {
+        header('Location: /');
+      }
+    }
+    exit();
+  }
+
+  // Check for pending actions (2FA setup, password update)
+  if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+    $pending_redirect = '/';
+    if ($_SESSION['mailcow_cc_role'] === 'admin') {
+      $pending_redirect = '/admin';
+    } elseif ($_SESSION['mailcow_cc_role'] === 'domainadmin') {
+      $pending_redirect = '/domainadmin';
+    }
+    header('Location: ' . $pending_redirect);
+    exit();
+  }
+
+  // Check if user's role is in the allowed roles for the route
+  if (!in_array($_SESSION['mailcow_cc_role'], $allowed_roles)) {
+    if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'admin') {
+      header('Location: /admin/dashboard');
+      exit();
+    }
+    elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
+      header('Location: /domainadmin/mailbox');
+      exit();
+    }
+    elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
+      header('Location: /user');
+      exit();
+    }
+    else {
+      header('Location: /');
+      exit();
+    }
+  }
 }
 function get_logs($application, $lines = false) {
   if ($lines === false) {

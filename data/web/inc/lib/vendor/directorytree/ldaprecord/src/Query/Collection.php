@@ -2,25 +2,23 @@
 
 namespace LdapRecord\Query;
 
+use Illuminate\Support\Collection as BaseCollection;
 use LdapRecord\Models\Model;
-use Tightenco\Collect\Support\Collection as BaseCollection;
 
 class Collection extends BaseCollection
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    protected function valueRetriever($value)
+    protected function valueRetriever(mixed $value): callable
     {
         if ($this->useAsCallable($value)) {
             /** @var callable $value */
             return $value;
         }
 
-        return function ($item) use ($value) {
-            return $item instanceof Model
+        return fn ($item) => $item instanceof Model
                 ? $item->getFirstAttribute($value)
                 : data_get($item, $value);
-        };
     }
 }

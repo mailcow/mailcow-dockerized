@@ -185,6 +185,9 @@ paths:
               example:
                 username: info@domain.tld
                 domain: domain.tld
+                description: my time limited alias
+                validity: 8760
+                permanent: false
               properties:
                 username:
                   description: 'the mailbox an alias should be created for'
@@ -192,6 +195,15 @@ paths:
                 domain:
                   description: "the domain"
                   type: string
+                description:
+                  description: "a description for the alias, defaults to an empty string"
+                  type: string
+                validity:
+                  description: "how many hours the alias stays valid, 1 to 87600, defaults to 8760 (one year)"
+                  type: integer
+                permanent:
+                  description: "keep the alias after it expired, defaults to false"
+                  type: boolean
               type: object
       summary: Create time limited alias
   /api/v1/add/app-passwd:
@@ -1072,6 +1084,7 @@ paths:
                           password2: "*"
                           quota: "3072"
                           force_pw_update: "1"
+                          force_tfa: "1"
                           tls_enforce_in: "1"
                           tls_enforce_out: "1"
                           tags: ["tag1", "tag2"]
@@ -1118,6 +1131,7 @@ paths:
                 password2: atedismonsin
                 quota: "3072"
                 force_pw_update: "1"
+                force_tfa: "1"
                 tls_enforce_in: "1"
                 tls_enforce_out: "1"
                 tags: ["tag1", "tag2"]
@@ -1150,6 +1164,9 @@ paths:
                   type: number
                 force_pw_update:
                   description: forces the user to update its password on first login
+                  type: boolean
+                force_tfa:
+                  description: force 2FA enrollment at login
                   type: boolean
                 tls_enforce_in:
                   description: force inbound email tls encryption
@@ -2454,6 +2471,90 @@ paths:
                   type: object
               type: object
       summary: Delete mails in Quarantine
+  /api/v1/edit/qitem:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                release:
+                  value:
+                    - log:
+                        - quarantine
+                        - edit
+                        - id:
+                            - "33"
+                          action: release
+                      msg:
+                        - item_released
+                        - "33"
+                      type: success
+                learnham:
+                  value:
+                    - log:
+                        - quarantine
+                        - edit
+                        - id:
+                            - "34"
+                          action: learnham
+                      msg:
+                        - item_learned
+                        - "34"
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Quarantine
+      description: >-
+        Using this endpoint you can perform actions on quarantine items. It is possible to release
+        emails from quarantine into to the inbox, or learn them as ham to improve Rspamd filtering.
+        You must provide the quarantine item IDs. You can get the IDs using the GET method.
+      operationId: Edit mails in Quarantine
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "33"
+                  - "34"
+                attr:
+                  action: release
+              properties:
+                items:
+                  description: contains list of quarantine item IDs to release or learn as ham
+                  type: object
+                attr:
+                  description: attributes for the action
+                  type: object
+                  properties:
+                    action:
+                      type: string
+                      enum:
+                        - release
+                        - learnham
+                      description: "release - return email to inbox; learnham - learn as ham to improve filtering"
+              type: object
+      summary: Edit mails in Quarantine
   /api/v1/delete/recipient_map:
     post:
       responses:
@@ -3330,6 +3431,7 @@ paths:
                         - mailbox
                         - active: "1"
                           force_pw_update: "0"
+                          force_tfa: "0"
                           name: Full name
                           password: "*"
                           password2: "*"
@@ -3380,6 +3482,7 @@ paths:
                 attr:
                   active: "1"
                   force_pw_update: "0"
+                  force_tfa: "0"
                   name: Full name
                   authsource: mailcow
                   password: ""
@@ -3402,6 +3505,9 @@ paths:
                       type: boolean
                     force_pw_update:
                       description: force user to change password on next login
+                      type: boolean
+                    force_tfa:
+                      description: force 2FA enrollment at login
                       type: boolean
                     name:
                       description: Full name of the mailbox user
@@ -4797,6 +4903,7 @@ paths:
                     - active: "1"
                       attributes:
                         force_pw_update: "0"
+                        force_tfa: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
                         sogo_access: "1"
@@ -4813,6 +4920,7 @@ paths:
                       quota: 3221225472
                       quota_used: 0
                       rl: false
+                      sender_acl: ["otherbox@doman3.tld", "@aliasdomain.tld"]
                       spam_aliases: 0
                       username: info@doman3.tld
                       tags: ["tag1", "tag2"]
@@ -5352,9 +5460,9 @@ paths:
                       started_at: "2019-12-22T21:00:01.622856172Z"
                       state: running
                       type: info
-                    controller-mailcow:
-                      container: controller-mailcow
-                      image: "mailcow/controller:1.36"
+                    dockerapi-mailcow:
+                      container: dockerapi-mailcow
+                      image: "mailcow/dockerapi:1.36"
                       started_at: "2019-12-22T20:59:59.984797808Z"
                       state: running
                       type: info
@@ -5721,6 +5829,7 @@ paths:
                     - active: "1"
                       attributes:
                         force_pw_update: "0"
+                        force_tfa: "0"
                         mailbox_format: "maildir:"
                         quarantine_notification: never
                         sogo_access: "1"
@@ -5738,6 +5847,7 @@ paths:
                       quota: 3221225472
                       quota_used: 0
                       rl: false
+                      sender_acl: ["otherbox@domain3.tld", "@aliasdomain.tld"]
                       spam_aliases: 0
                       username: info@domain3.tld
                       tags: ["tag1", "tag2"]
@@ -5760,7 +5870,7 @@ paths:
                 response:
                   value:
                     - type: "success"
-                      log: ["cors", "edit", {"allowed_origins": ["*", "mail.mailcow.tld"], "allowed_methods": ["POST", "GET", "DELETE", "PUT"]}]
+                      log: ["cors", "edit", {"allowed_origins": ["*", "https://mail.mailcow.tld"], "allowed_methods": ["POST", "GET", "DELETE", "PUT"]}]
                       msg: "cors_headers_edited"
           description: OK
           headers: { }
@@ -5777,7 +5887,7 @@ paths:
             schema:
               example:
                 attr:
-                  allowed_origins: ["*", "mail.mailcow.tld"]
+                  allowed_origins: ["*", "https://mail.mailcow.tld"]
                   allowed_methods: ["POST", "GET", "DELETE", "PUT"]
               properties:
                 attr:

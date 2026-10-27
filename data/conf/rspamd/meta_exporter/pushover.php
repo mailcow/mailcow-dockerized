@@ -32,50 +32,46 @@ function parse_email($email) {
   $a = strrpos($email, '@');
   return array('local' => substr($email, 0, $a), 'domain' => substr(substr($email, $a), 1));
 }
-if (!function_exists('getallheaders'))  {
-  function getallheaders() {
-    if (!is_array($_SERVER)) {
-      return array();
-    }
-    $headers = array();
-    foreach ($_SERVER as $name => $value) {
-      if (substr($name, 0, 5) == 'HTTP_') {
-        $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-      }
-    }
-    return $headers;
-  }
+// rspamd metadata_exporter (multipart formatter): metadata JSON arrives as $_POST['metadata'].
+if (empty($_POST['metadata'])) {
+  error_log("NOTIFY: missing metadata part from rspamd" . PHP_EOL);
+  http_response_code(400);
+  exit;
 }
 
-$headers = getallheaders();
-$json_body = json_decode(file_get_contents('php://input'));
+$meta = json_decode($_POST['metadata'], true);
+if (!is_array($meta)) {
+  error_log("NOTIFY: cannot decode metadata JSON" . PHP_EOL);
+  http_response_code(400);
+  exit;
+}
 
-$qid      = $headers['X-Rspamd-Qid'];
-$rcpts    = $headers['X-Rspamd-Rcpt'];
-$sender   = $headers['X-Rspamd-From'];
-$ip       = $headers['X-Rspamd-Ip'];
-$subject  = iconv_mime_decode($headers['X-Rspamd-Subject']);
-$messageid= $json_body->message_id;
+$qid      = $meta['qid']    ?? 'unknown';
+$rcpts    = $meta['rcpt']   ?? array();
+$sender   = $meta['from']   ?? '';
+$ip       = $meta['ip']     ?? 'unknown';
+$subject  = $meta['subject'] ?? '';
+$messageid= $meta['message_id'] ?? '';
 $priority = 0;
 
-$symbols_array = json_decode($headers['X-Rspamd-Symbols'], true);
+$symbols_array = $meta['symbols'] ?? array();
 if (is_array($symbols_array)) {
   foreach ($symbols_array as $symbol) {
-    if ($symbol['name'] == 'HAS_X_PRIO_ONE') {
+    if (($symbol['name'] ?? null) == 'HAS_X_PRIO_ONE') {
       $priority = 1;
       break;
     }
   }
 }
 
-$sender_address = $json_body->header_from[0];
+$sender_address = $meta['header_from'][0] ?? '';
 $sender_name = '-';
 if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $sender_address, $matches)) {
 	$sender_address = $matches['address'];
   $sender_name =  trim($matches['name'], '"\' ');
 }
 
-$to_address = $json_body->header_to[0];
+$to_address = $meta['header_to'][0] ?? '';
 $to_name = '-';
 if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
 	$to_address = $matches['address'];
@@ -85,7 +81,7 @@ if (preg_match('/(?<name>.*?)<(?<address>.*?)>/i', $to_address, $matches)) {
 $rcpt_final_mailboxes = array();
 
 // Loop through all rcpts
-foreach (json_decode($rcpts, true) as $rcpt) {
+foreach ($rcpts as $rcpt) {
   // Remove tag
   $rcpt = preg_replace('/^(.*?)\+.*(@.*)$/', '$1$2', $rcpt);
 
@@ -143,12 +139,12 @@ foreach (json_decode($rcpts, true) as $rcpt) {
 
       // Loop through all found gotos
       foreach ($gotos_array as $index => &$goto) {
-        error_log("RCPT RESOVLER: http pipe: query " . $goto . " as username from mailbox" . PHP_EOL);
+        error_log("RCPT RESOLVER: http pipe: query " . $goto . " as username from mailbox" . PHP_EOL);
         $stmt = $pdo->prepare("SELECT `username` FROM `mailbox` WHERE `username` = :goto AND (`active`= '1' OR `active`= '2');");
         $stmt->execute(array(':goto' => $goto));
         $username = $stmt->fetch(PDO::FETCH_ASSOC)['username'];
         if (!empty($username)) {
-          error_log("RCPT RESOVLER: http pipe: mailbox found: " . $username . PHP_EOL);
+          error_log("RCPT RESOLVER: http pipe: mailbox found: " . $username . PHP_EOL);
           // Current goto is a mailbox, save to rcpt_final_mailboxes if not a duplicate
           if (!in_array($username, $rcpt_final_mailboxes)) {
             $rcpt_final_mailboxes[] = $username;
@@ -157,21 +153,21 @@ foreach (json_decode($rcpts, true) as $rcpt) {
         else {
           $parsed_goto = parse_email($goto);
           if (!$redis->hGet('DOMAIN_MAP', $parsed_goto['domain'])) {
-            error_log("RCPT RESOVLER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
+            error_log("RCPT RESOLVER:" . $goto . " is not a mailcow handled mailbox or alias address" . PHP_EOL);
           }
           else {
             $stmt = $pdo->prepare("SELECT `goto` FROM `alias` WHERE `address` = :goto AND `active` = '1'");
             $stmt->execute(array(':goto' => $goto));
             $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['goto'];
             if ($goto_branch) {
-              error_log("RCPT RESOVLER: http pipe: goto address " . $goto . " is an alias branch for " . $goto_branch . PHP_EOL);
+              error_log("RCPT RESOLVER: http pipe: goto address " . $goto . " is an alias branch for " . $goto_branch . PHP_EOL);
               $goto_branch_array = explode(',', $goto_branch);
             } else {
               $stmt = $pdo->prepare("SELECT `target_domain` FROM `alias_domain` WHERE `alias_domain` = :domain AND `active` = '1'");
               $stmt->execute(array(':domain' => $parsed_goto['domain']));
               $goto_branch = $stmt->fetch(PDO::FETCH_ASSOC)['target_domain'];
               if ($goto_branch) {
-                error_log("RCPT RESOVLER: http pipe: goto domain " . $parsed_goto['domain'] . " is a domain alias branch for " . $goto_branch . PHP_EOL);
+                error_log("RCPT RESOLVER: http pipe: goto domain " . $parsed_goto['domain'] . " is a domain alias branch for " . $goto_branch . PHP_EOL);
                 $goto_branch_array = array($parsed_goto['local'] . '@' . $goto_branch);
               }
             }
@@ -193,11 +189,11 @@ foreach (json_decode($rcpts, true) as $rcpt) {
       // Force exit if loop cannot be solved
       // Postfix does not allow for alias loops, so this should never happen.
       $loop_c++;
-      error_log("RCPT RESOVLER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
+      error_log("RCPT RESOLVER: http pipe: goto array count on loop #". $loop_c . " is " . count($gotos_array) . PHP_EOL);
     }
   }
   catch (PDOException $e) {
-    error_log("RCPT RESOVLER: " . $e->getMessage() . PHP_EOL);
+    error_log("RCPT RESOLVER: " . $e->getMessage() . PHP_EOL);
     http_response_code(502);
     exit;
   }

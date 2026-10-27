@@ -340,7 +340,7 @@
                   <div class="row mb-4">
                     <div class="offset-sm-2 col-sm-10">
                       <div class="form-check">
-                        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if mta_sts.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
+                        <label><i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill m-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.edit.mta_sts_active_info|raw }}"></i><input type="checkbox" class="form-check-input" value="1" name="active"{% if mta_sts.active == '1' %} checked{% endif %}> {{ lang.edit.active }}</label>
                       </div>
                     </div>
                   </div>

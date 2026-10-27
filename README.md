@@ -23,10 +23,15 @@ A big thank you to everyone supporting us on GitHub Sponsors—your contribution
   <a href="https://www.maehdros.com/" target=_blank><img
     src="https://avatars.githubusercontent.com/u/173894712" height="58"
   /></a>
+  <a href="https://garske-systems.de/" target=_blank><img
+    src="https://garske-systems.de/img/logo_min.png" height="58"
+  /></a>
 
 ### 50$/Month Sponsors
   <a href="https://github.com/vnukhr" target=_blank><img
     src="https://avatars.githubusercontent.com/u/7805987?s=52&v=4" height="58"
+  /></a><a href="https://github.com/humiico" target=_blank><img
+    src="https://avatars.githubusercontent.com/u/110134705?s=52&v=4" height="58"
   /></a>
 
 ## Info, documentation and support

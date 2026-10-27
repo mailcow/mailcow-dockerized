@@ -80,6 +80,11 @@ check_domain(){
         return 1
       fi
     fi
+
+    if [[ ${ACME_DNS_CHALLENGE} == "y" ]]; then
+      log_f "ACME_DNS_CHALLENGE=y - skipping IP and HTTP validation for ${DOMAIN}"
+      return 0
+    fi
     # Check if CNAME without v6 enabled target
     if [[ ! -z ${AAAA_DOMAIN} ]] && [[ -z $(echo ${AAAA_DOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
       AAAA_DOMAIN=
@@ -129,4 +134,33 @@ verify_challenge_path(){
     rm /var/www/acme/${RANDOM_N}
     return 1
   fi
+}
+
+# Check if a domain is covered by a wildcard (*.example.com) in ADDITIONAL_SAN
+# Usage: is_covered_by_wildcard "subdomain.example.com"
+# Returns: 0 if covered, 1 if not covered
+# Note: Only returns 0 (covered) when DNS-01 challenge is enabled,
+#       as wildcards cannot be validated with HTTP-01 challenge
+is_covered_by_wildcard() {
+  local DOMAIN=$1
+
+  # Only skip if DNS challenge is enabled (wildcards require DNS-01)
+  if [[ ${ACME_DNS_CHALLENGE} != "y" ]]; then
+    return 1
+  fi
+
+  # Return early if no ADDITIONAL_SAN is set
+  if [[ -z ${ADDITIONAL_SAN} ]]; then
+    return 1
+  fi
+
+  # Extract parent domain (e.g., mail.example.com -> example.com)
+  local PARENT_DOMAIN=$(echo ${DOMAIN} | cut -d. -f2-)
+
+  # Check if ADDITIONAL_SAN contains a wildcard for this parent domain
+  if [[ "${ADDITIONAL_SAN}" == *"*.${PARENT_DOMAIN}"* ]]; then
+    return 0  # Covered by wildcard
+  fi
+
+  return 1  # Not covered
 }

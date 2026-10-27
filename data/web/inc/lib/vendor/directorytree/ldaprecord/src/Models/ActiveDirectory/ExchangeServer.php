@@ -5,18 +5,18 @@ namespace LdapRecord\Models\ActiveDirectory;
 class ExchangeServer extends Entry
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public static $objectClasses = ['msExchExchangeServer'];
+    public static array $objectClasses = ['msExchExchangeServer'];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
-        static::addGlobalScope(new Scopes\HasServerRoleAttribute());
-        static::addGlobalScope(new Scopes\InConfigurationContext());
+        static::addGlobalScope(new Scopes\HasServerRoleAttribute);
+        static::addGlobalScope(new Scopes\InConfigurationContext);
     }
 }

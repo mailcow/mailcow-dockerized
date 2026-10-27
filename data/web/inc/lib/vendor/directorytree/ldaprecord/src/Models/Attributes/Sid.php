@@ -3,36 +3,29 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
+use Stringable;
 
-class Sid
+class Sid implements Stringable
 {
     /**
      * The string SID value.
-     *
-     * @var string
      */
-    protected $value;
+    protected string $value;
 
     /**
-     * Determines if the specified SID is valid.
-     *
-     * @param  string  $sid
-     * @return bool
+     * Determine if the specified SID is valid.
      */
-    public static function isValid($sid)
+    public static function isValid(string $sid): bool
     {
-        return Utilities::isValidSid($sid);
+        return (bool) preg_match("/^S-\d(-\d{1,10}){1,16}$/i", $sid);
     }
 
     /**
      * Constructor.
      *
-     * @param  mixed  $value
-     *
      * @throws InvalidArgumentException
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (static::isValid($value)) {
             $this->value = $value;
@@ -44,31 +37,25 @@ class Sid
     }
 
     /**
-     * Returns the string value of the SID.
-     *
-     * @return string
+     * Get the string value of the SID.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getValue();
     }
 
     /**
-     * Returns the string value of the SID.
-     *
-     * @return string
+     * Get the string value of the SID.
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
-     * Returns the binary variant of the SID.
-     *
-     * @return string
+     * Get the binary variant of the SID.
      */
-    public function getBinary()
+    public function getBinary(): string
     {
         $sid = explode('-', ltrim($this->value, 'S-'));
 
@@ -87,13 +74,50 @@ class Sid
     }
 
     /**
-     * Returns the string variant of a binary SID.
-     *
-     * @param  string  $binary
-     * @return string|null
+     * Get the string variant of a binary SID.
      */
-    protected function binarySidToString($binary)
+    protected function binarySidToString(string $binary): ?string
     {
-        return Utilities::binarySidToString($binary);
+        if (trim($binary) === '') {
+            return null;
+        }
+
+        // Revision - 8bit unsigned int (C1)
+        // Count - 8bit unsigned int (C1)
+        // 2 null bytes
+        // ID - 32bit unsigned long, big-endian order
+        $sid = @unpack('C1rev/C1count/x2/N1id', $binary);
+
+        if (! isset($sid['id']) || ! isset($sid['rev'])) {
+            return null;
+        }
+
+        $revisionLevel = $sid['rev'];
+
+        $identifierAuthority = $sid['id'];
+
+        $subs = $sid['count'] ?? 0;
+
+        $sidHex = $subs ? bin2hex($binary) : '';
+
+        $subAuthorities = [];
+
+        // The sub-authorities depend on the count, so only get as
+        // many as the count, regardless of data beyond it.
+        for ($i = 0; $i < $subs; $i++) {
+            $data = implode(array_reverse(
+                str_split(
+                    substr($sidHex, 16 + ($i * 8), 8),
+                    2
+                )
+            ));
+
+            $subAuthorities[] = hexdec($data);
+        }
+
+        // Tack on the 'S-' and glue it all together...
+        return 'S-'.$revisionLevel.'-'.$identifierAuthority.implode(
+            preg_filter('/^/', '-', $subAuthorities)
+        );
     }
 }

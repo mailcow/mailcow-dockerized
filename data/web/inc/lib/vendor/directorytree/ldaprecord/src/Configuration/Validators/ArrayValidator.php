@@ -6,15 +6,13 @@ class ArrayValidator extends Validator
 {
     /**
      * The validation exception message.
-     *
-     * @var string
      */
-    protected $message = 'Option [:option] must be an array.';
+    protected string $message = 'Option [:option] must be an array.';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function passes()
+    public function passes(): bool
     {
         return is_array($this->value);
     }

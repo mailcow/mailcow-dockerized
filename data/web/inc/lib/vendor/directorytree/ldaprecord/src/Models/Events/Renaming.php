@@ -8,26 +8,18 @@ class Renaming extends Event
 {
     /**
      * The models RDN.
-     *
-     * @var string
      */
-    protected $rdn;
+    protected string $rdn;
 
     /**
      * The models new parent DN.
-     *
-     * @var string
      */
-    protected $newParentDn;
+    protected string $newParentDn;
 
     /**
      * Constructor.
-     *
-     * @param  Model  $model
-     * @param  string  $rdn
-     * @param  string  $newParentDn
      */
-    public function __construct(Model $model, $rdn, $newParentDn)
+    public function __construct(Model $model, string $rdn, string $newParentDn)
     {
         parent::__construct($model);
 
@@ -37,20 +29,16 @@ class Renaming extends Event
 
     /**
      * Get the models RDN.
-     *
-     * @return string
      */
-    public function getRdn()
+    public function getRdn(): string
     {
         return $this->rdn;
     }
 
     /**
      * Get the models parent DN.
-     *
-     * @return string
      */
-    public function getNewParentDn()
+    public function getNewParentDn(): string
     {
         return $this->newParentDn;
     }

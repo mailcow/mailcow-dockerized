@@ -70,7 +70,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     }
     else {
       $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
-      error_log("mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+      error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
       http_response_code(401);
       echo json_encode(array(
         'type' => 'error',
@@ -82,7 +82,7 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
   }
   else {
     $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
-    error_log("mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
     http_response_code(401);
     echo json_encode(array(
       'type' => 'error',
@@ -90,16 +90,6 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     ));
     unset($_POST);
     exit();
-  }
-}
-else {
-  $remote = get_remote_ip(false);
-  $docker_ipv4_network = getenv('IPV4_NETWORK');
-  if ($remote == "{$docker_ipv4_network}.246") {
-      $_SESSION['mailcow_cc_username'] = 'Controller';
-      $_SESSION['mailcow_cc_role'] = 'admin';
-      $_SESSION['mailcow_cc_api'] = true;
-      $_SESSION['mailcow_cc_api_access'] = 'rw';
   }
 }
 
@@ -150,17 +140,32 @@ function session_check() {
     );
     return false;
   }
-  if (!empty($_POST)) {
-    if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
-      $_SESSION['return'][] = array(
-        'type' => 'warning',
-        'msg' => 'session_token'
-      );
-      return false;
+  // Check if this is a POST request (form-encoded or JSON)
+  $is_post_request = !empty($_POST) || (
+    isset($_SERVER['CONTENT_TYPE']) &&
+    strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false
+  );
+
+  if ($is_post_request) {
+    // Skip CSRF check for DataTables server-side processing endpoints
+    // These are read-only operations (equivalent to GET) authenticated by session
+    $is_search_endpoint = (
+      isset($_GET['query']) &&
+      preg_match('#^search/(domain|mailbox)$#', $_GET['query'])
+    );
+
+    if (!$is_search_endpoint && !empty($_POST)) {
+      if ($_SESSION['CSRF']['TOKEN'] != $_POST['csrf_token']) {
+        $_SESSION['return'][] = array(
+          'type' => 'warning',
+          'msg' => 'session_token'
+        );
+        return false;
+      }
+      unset($_POST['csrf_token']);
+      $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
+      $_SESSION['CSRF']['TIME'] = time();
     }
-    unset($_POST['csrf_token']);
-    $_SESSION['CSRF']['TOKEN'] = bin2hex(random_bytes(32));
-    $_SESSION['CSRF']['TIME'] = time();
   }
   return true;
 }

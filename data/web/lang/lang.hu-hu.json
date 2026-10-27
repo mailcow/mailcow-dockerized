@@ -1144,7 +1144,8 @@
         "subscribeall": "Feliratkozás minden mappára",
         "syncjob": "Szinkronizálási feladat hozzáadása",
         "internal": "Belső",
-        "internal_info": "Belső álnevek csak a saját domain vagy domain álnév számára elérhető."
+        "internal_info": "Belső álnevek csak a saját domain vagy domain álnév számára elérhető.",
+        "sender_allowed": "Küldés engedélyezése ezzel az aliasszal"
     },
     "danger": {
         "access_denied": "Hozzáférés megtagatva vagy nem megfelelő űrlap adat",
@@ -1245,6 +1246,21 @@
         "pushover_key": "A pushover kulcs rossz formátumú",
         "pushover_token": "A Pushover token rossz formátumú",
         "quota_not_0_not_numeric": "A kvótának numerikusnak és >= 0-nak kell lennie.",
-        "recipient_map_entry_exists": "Létezik egy \"%s\" címzett-térkép bejegyzés"
+        "recipient_map_entry_exists": "Létezik egy \"%s\" címzett-térkép bejegyzés",
+        "redis_error": "Redis hiba lépett fel: %s",
+        "relayhost_invalid": "A(z) %s elem érvénytelen a leképezésben.",
+        "release_send_failed": "Az üzenet felszabadítása sikertelen: %s",
+        "reset_f2b_regex": "A regex-szűrő időtúllépés miatt nem állt le. Próbálja újra, vagy várjon egy kicsit, és töltse újra az oldalt.",
+        "resource_invalid": "A(z) %s erőforrásnév érvénytelen",
+        "rl_timeframe": "Érvénytelen időkeret a lekérdezési korláthoz",
+        "rspamd_ui_pw_length": "A Rspamd UI jelszónak legalább 6 karakter hosszúnak kell lennie.",
+        "script_empty": "A szkript nem lehet üres",
+        "sender_acl_invalid": "A küldőhöz tartozó ACL-érték (%s) érvénytelen",
+        "set_acl_failed": "Az ACL beállítása meghiúsult",
+        "settings_map_invalid": "Érvénytelen beállítás-leképezési azonosító: %s",
+        "recovery_email_failed": "A helyreállítási email kiküldése sikertelen. Kérlek, lépj kapcsolatba az adminisztrátorral!",
+        "reset_token_limit_exceeded": "Túl sok visszaállítási kísérlet. Kérjük, várjon, mielőtt újra próbálkozna.",
+        "required_data_missing": "Hiányzik a(z) szükséges %s adat",
+        "tfa_removal_blocked": "A kétfaktoros hitelesítés nem távolítható el, mert elengedhetetlen a fiókod használatához."
     }
 }

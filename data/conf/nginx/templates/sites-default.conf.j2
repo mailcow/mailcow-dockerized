@@ -116,6 +116,9 @@ location ~ \.php$ {
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param HTTP_X_REAL_IP $remote_addr;
+    # trusted internal-auth marker; empty for external clients (see nginx.conf map)
+    fastcgi_param SOGO_AUTH_INTERNAL $sogo_auth_internal;
     fastcgi_read_timeout 3600;
     fastcgi_send_timeout 3600;
 }
@@ -185,7 +188,6 @@ location ^~ /Microsoft-Server-ActiveSync {
     auth_request_set $user $upstream_http_x_user;
     auth_request_set $auth $upstream_http_x_auth;
     auth_request_set $auth_type $upstream_http_x_auth_type;
-    auth_request_set $real_ip $remote_addr;
     proxy_set_header x-webobjects-remote-user "$user";
     proxy_set_header Authorization "$auth";
     proxy_set_header x-webobjects-auth-type "$auth_type";
@@ -211,7 +213,6 @@ location ^~ /SOGo {
         auth_request_set $user $upstream_http_x_user;
         auth_request_set $auth $upstream_http_x_auth;
         auth_request_set $auth_type $upstream_http_x_auth_type;
-        auth_request_set $real_ip $remote_addr;
         proxy_set_header x-webobjects-remote-user "$user";
         proxy_set_header Authorization "$auth";
         proxy_set_header x-webobjects-auth-type "$auth_type";
@@ -234,7 +235,6 @@ location ^~ /SOGo {
     auth_request_set $user $upstream_http_x_user;
     auth_request_set $auth $upstream_http_x_auth;
     auth_request_set $auth_type $upstream_http_x_auth_type;
-    auth_request_set $real_ip $remote_addr;
     proxy_set_header x-webobjects-remote-user "$user";
     proxy_set_header Authorization "$auth";
     proxy_set_header x-webobjects-auth-type "$auth_type";
@@ -264,19 +264,19 @@ location ~* /sogo$ {
 }
 
 location /SOGo.woa/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location /.woa/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location /SOGo/WebServerResources/ {
-    alias /usr/lib/GNUstep/SOGo/WebServerResources/;
+    alias /usr/local/lib/GNUstep/SOGo/WebServerResources/;
 }
 
 location (^/SOGo/so/ControlPanel/Products/[^/]*UI/Resources/.*\.(jpg|png|gif|css|js)$) {
-    alias /usr/lib/GNUstep/SOGo/$1.SOGo/Resources/$2;
+    alias /usr/local/lib/GNUstep/SOGo/$1.SOGo/Resources/$2;
 }
 {% endif %}
 

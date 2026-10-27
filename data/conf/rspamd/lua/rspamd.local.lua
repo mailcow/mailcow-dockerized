@@ -392,6 +392,7 @@ rspamd_config:register_symbol({
     local rspamd_http = require "rspamd_http"
     local rcpts = task:get_recipients('smtp')
     local lua_util = require "lua_util"
+    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
 
     local function remove_moo_tag()
       local moo_tag_header = task:get_header('X-Moo-Tag', false)
@@ -416,12 +417,9 @@ rspamd_config:register_symbol({
 
     -- Check if recipient has a tag (contains '+')
     local tag = nil
-    if rcpt_user:find('%+') then
-      local base_user, tag_part = rcpt_user:match('^(.-)%+(.+)$')
-      if base_user and tag_part then
-        tag = tag_part
-        rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
-      end
+    if tagged_rcpt ~= nil then
+      tag = tagged_rcpt
+      rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
     end
 
     if not tag then
@@ -500,7 +498,8 @@ rspamd_config:register_symbol({
           else
             rspamd_logger.infox("TAG_MOO: user wants subject modified for tagged mail")
             local sbj = task:get_header('Subject') or ''
-            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
+            local tag_value = tag[1] and tag[1].options and tag[1].options[1] or ''
+            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag_value .. '] ' .. sbj)) .. '?='
             task:set_milter_reply({
               remove_headers = {
                 ['Subject'] = 1,
@@ -857,6 +856,8 @@ rspamd_config:register_symbol({
 
             local seen_cte
             local newline_s = newline(task)
+            -- use the CTE add_text_footer actually applied
+            local new_cte = rewrite.new_cte or 'quoted-printable'
 
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
@@ -878,13 +879,13 @@ rspamd_config:register_symbol({
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
-                      'Content-Transfer-Encoding', 'quoted-printable')
+                      'Content-Transfer-Encoding', new_cte)
                   -- update Content-Transfer-Encoding header
                   task:set_milter_reply({
                     remove_headers = {['Content-Transfer-Encoding'] = 0},
                   })
                   task:set_milter_reply({
-                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                    add_headers = {['Content-Transfer-Encoding'] = new_cte}
                   })
                   seen_cte = true
                   return
@@ -896,7 +897,7 @@ rspamd_config:register_symbol({
             task:headers_foreach(rewrite_ct_cb, {full = true})
 
             if not seen_cte and rewrite.need_rewrite_ct then
-              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', new_cte)
             end
 
             -- End of headers
@@ -915,7 +916,7 @@ rspamd_config:register_symbol({
                 out_parts[#out_parts + 1] = o
                 out_parts[#out_parts + 1] = newline_s
               else
-                local removePrefix = "--\x0D\x0AContent-Type"
+                local removePrefix = "--\x0D\x0AContent-"
                 if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
                   o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
                 end

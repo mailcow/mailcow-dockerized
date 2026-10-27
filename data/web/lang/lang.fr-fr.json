@@ -111,7 +111,8 @@
         "app_passwd_protocols": "Protocoles autorisés pour le mot de passe de l'application",
         "dry": "Simuler la synchronisation",
         "internal": "Interne",
-        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine."
+        "internal_info": "Les alias internes sont accessibles uniquement depuis le domaine ou les alias du domaine.",
+        "sender_allowed": "Autoriser l'envoi sous cet alias"
     },
     "admin": {
         "access": "Accès",
@@ -556,7 +557,9 @@
         "max_age_invalid": "L'âge maximum %s est invalide",
         "mode_invalid": "Le mode %s est invalide",
         "mx_invalid": "L'enregistrement MX %s est invalide",
-        "version_invalid": "La version %s est invalide"
+        "version_invalid": "La version %s est invalide",
+        "tfa_removal_blocked": "L’authentification à deux facteurs ne peut pas être supprimée, car elle est requise pour votre compte.",
+        "quarantine_category_invalid": "La catégorie de quarantaine doit être l’une des suivantes : add_header, reject, all\""
     },
     "debug": {
         "chart_this_server": "Graphique (ce serveur)",
@@ -755,7 +758,9 @@
         "mta_sts_info": "<a href='https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_MTA_Strict_Transport_Security' target='_blank'>MTA-STS</a> est un standard qui oblige la délivrance des courriels entre les serveurs de courriels à utiliser TLS avec des certificats valides. <br>Il est utilisé quand <a target='_blank' href='https://en.wikipedia.org/wiki/DNS-based_Authentication_of_Named_Entities'>DANE</a> n'est pas possible à cause d'un manque ou d'un non support de DNSSEC.<br><b>Note</b> : Si le domaine du destinataire supporte DANE avec DNSSEC, DANE est <b>toujours</b> préféré – MTA-STS sert seulement en secours.",
         "mta_sts_mode_info": "Il y a trois modes parmi lesquels choisir :<ul><li><em>testing</em> – la politique est seulement surveillée, les violations n'ont pas d'impact.</li><li><em>enforce</em> – la politique est appliquée strictement, les connexions sans TLS valide sont rejetées.</li><li><em>none</em> – la politique est publiée mais non appliquée.</li></ul>",
         "mta_sts_max_age_info": "Durée en secondes pendant laquelle les serveurs de courriel peuvent mettre en cache cette politique avant de revérifier.",
-        "mta_sts_mx_info": "Autoriser l'envoi uniquement aux noms d'hôtes des serveurs de courriels indiqués explicitement ; le MTA émetteur vérifie si le nom d'hôte DNS du MX correspond à la liste de la politique, et autorise la délivrance seulement avec un certificat TLS valide (protège contre le MITM)."
+        "mta_sts_mx_info": "Autoriser l'envoi uniquement aux noms d'hôtes des serveurs de courriels indiqués explicitement ; le MTA émetteur vérifie si le nom d'hôte DNS du MX correspond à la liste de la politique, et autorise la délivrance seulement avec un certificat TLS valide (protège contre le MITM).",
+        "sender_allowed": "Autoriser l'envoi sous cet alias",
+        "sender_allowed_info": "Si cette option est désactivée, cet alias peut uniquement recevoir des courriels. Utilisez les ACL d’expéditeur pour autoriser certaines boîtes aux lettres à envoyer des messages via cet alias."
     },
     "footer": {
         "cancel": "Annuler",
@@ -988,7 +993,8 @@
         "recipient": "Destinataire",
         "open_logs": "Afficher les journaux",
         "iam": "Fournisseur d'identité",
-        "internal": "Interne"
+        "internal": "Interne",
+        "force_tfa": "TFA"
     },
     "oauth2": {
         "access_denied": "Veuillez vous connecter en tant que propriétaire de la boîte de réception pour accorder l’accès via Oauth2.",
@@ -1189,7 +1195,11 @@
         "yubi_otp": "Authentification OTP Yubico",
         "authenticators": "Authentificateurs",
         "u2f_deprecated_important": "Veuillez enregistrer votre clé dans le panneau d'administration avec la nouvelle méthode WebAuthn.",
-        "u2f_deprecated": "Il semble que votre clé ait été enregistrée à l'aide de la méthode U2F obsolète. Nous allons désactiver l'authentification à deux facteurs pour vous et supprimer votre clé."
+        "u2f_deprecated": "Il semble que votre clé ait été enregistrée à l'aide de la méthode U2F obsolète. Nous allons désactiver l'authentification à deux facteurs pour vous et supprimer votre clé.",
+        "force_tfa": "Imposer l'authentification à deux facteurs lors de la connexion",
+        "force_tfa_info": "L’utilisateur doit configurer l’authentification à deux facteurs avant de pouvoir accéder à l’interface.",
+        "setup_title": "Authentification à deux facteurs requise",
+        "setup_required": "Votre compte nécessite l’authentification à deux facteurs. Veuillez configurer une méthode 2FA pour continuer."
     },
     "fido2": {
         "set_fn": "Définir un nom",
@@ -1378,7 +1388,8 @@
         "forever": "Pour toujours",
         "spam_aliases_info": "Un alias de spam est une adresse de courriel temporaire qui peut être utilisée pour protéger les véritables adresses de courriel. <br> De manière optionnelle, une durée d'expiration peut être définie afin que l'alias soit automatiquement désactivé après la période définie, éliminant ainsi les adresses étant abusées ou ayant fuité.",
         "authentication": "Authentification",
-        "protocols": "Protocoles"
+        "protocols": "Protocoles",
+        "pw_update_required": "Votre compte nécessite un changement de mot de passe. Veuillez définir un nouveau mot de passe pour continuer."
     },
     "warning": {
         "cannot_delete_self": "Impossible de supprimer l’utilisateur connecté",

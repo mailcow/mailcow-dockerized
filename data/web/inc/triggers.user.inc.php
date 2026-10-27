@@ -76,6 +76,11 @@ if (isset($_POST["verify_tfa_login"])) {
 
         $user_details = mailbox("get", "mailbox_details", $_SESSION['mailcow_cc_username']);
         $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+        // If pending actions exist, redirect to / to show modal
+        if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+          header("Location: /");
+          die();
+        }
         if (intval($user_details['attributes']['sogo_access']) == 1 &&
             intval($user_details['attributes']['force_pw_update']) != 1 &&
             getenv('SKIP_SOGO') != "y" &&
@@ -117,6 +122,15 @@ if (isset($_GET["cancel_tfa_login"])) {
   header("Location: /");
 }
 
+if (isset($_GET["cancel_tfa_setup"])) {
+  session_regenerate_id(true);
+  session_unset();
+  session_destroy();
+  session_write_close();
+  header("Location: /");
+  exit();
+}
+
 if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
   $login_user = strtolower(trim($_POST["login_user"]));
   $as = check_login($login_user, $_POST["pass_user"], array("role" => "user", "service" => "MAILCOWUI"));
@@ -142,6 +156,11 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 
     $user_details = mailbox("get", "mailbox_details", $login_user);
     $is_dual = (!empty($_SESSION["dual-login"]["username"])) ? true : false;
+    // If pending actions exist, redirect to / to show modal
+    if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+      header("Location: /");
+      die();
+    }
     if (intval($user_details['attributes']['sogo_access']) == 1 &&
         intval($user_details['attributes']['force_pw_update']) != 1 &&
         getenv('SKIP_SOGO') != "y" &&

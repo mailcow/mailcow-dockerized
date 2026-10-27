@@ -2,18 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.admin.inc.php';
 
-if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'domainadmin') {
-  header('Location: /domainadmin/mailbox');
-  exit();
-}
-elseif (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == 'user') {
-  header('Location: /user');
-  exit();
-}
-elseif (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != "admin") {
-  header('Location: /admin');
-  exit();
-}
+protect_route(['admin']);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
@@ -126,6 +115,8 @@ $template_data = [
   'logo_dark_specs' => customize('get', 'main_logo_dark_specs'),
   'ip_check' => customize('get', 'ip_check'),
   'custom_login' => customize('get', 'custom_login'),
+  'ui_themes' => customize('get', 'ui_themes'),
+  'ui_theme' => customize('get', 'ui_theme'),
   'password_complexity' => password_complexity('get'),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,

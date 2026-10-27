@@ -51,6 +51,7 @@ data/conf/sogo/cron.creds
 data/conf/sogo/custom-fulllogo.svg
 data/conf/sogo/custom-shortlogo.svg
 data/conf/sogo/custom-fulllogo.png
+data/conf/acme/dns-01.conf
 data/gitea/
 data/gogs/
 data/hooks/dovecot/*
@@ -63,6 +64,8 @@ data/web/templates/cache/*
 !data/web/templates/cache/.gitkeep
 data/web/.well-known/acme-challenge
 data/web/css/build/0081-custom-mailcow.css
+data/web/css/themes/*/
+!data/web/css/themes/servercow/
 data/web/inc/vars.local.inc.php
 data/web/inc/app_info.inc.php
 data/web/nextcloud*/

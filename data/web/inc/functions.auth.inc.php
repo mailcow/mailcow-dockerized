@@ -82,7 +82,7 @@ function admin_login($user, $pass){
   }
 
   $user = strtolower(trim($user));
-  $stmt = $pdo->prepare("SELECT `password` FROM `admin`
+  $stmt = $pdo->prepare("SELECT `password`, `attributes` FROM `admin`
       WHERE `superadmin` = '1'
       AND `active` = '1'
       AND `username` = :user");
@@ -91,6 +91,13 @@ function admin_login($user, $pass){
 
   // verify password
   if (verify_hash($row['password'], $pass)) {
+    $admin_attrs = json_decode($row['attributes'], true) ?? [];
+
+    // Check force_pw_update
+    if (intval($admin_attrs['force_pw_update'] ?? 0) == 1) {
+      $_SESSION['pending_pw_update'] = true;
+    }
+
     // check for tfa authenticators
     $authenticators = get_tfa($user);
     if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
@@ -110,6 +117,10 @@ function admin_login($user, $pass){
       // Reactivate TFA if it was set to "deactivate TFA for next login"
       $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
       $stmt->execute(array(':user' => $user));
+      // Check force_tfa: only force setup if NO TFA exists at all
+      if (intval($admin_attrs['force_tfa'] ?? 0) == 1 && !tfa_exists($user)) {
+        $_SESSION['pending_tfa_setup'] = true;
+      }
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $user, '*'),
@@ -135,7 +146,7 @@ function domainadmin_login($user, $pass){
     return false;
   }
 
-  $stmt = $pdo->prepare("SELECT `password` FROM `admin`
+  $stmt = $pdo->prepare("SELECT `password`, `attributes` FROM `admin`
       WHERE `superadmin` = '0'
       AND `active`='1'
       AND `username` = :user");
@@ -144,6 +155,13 @@ function domainadmin_login($user, $pass){
 
   // verify password
   if (verify_hash($row['password'], $pass) !== false) {
+    $admin_attrs = json_decode($row['attributes'], true) ?? [];
+
+    // Check force_pw_update
+    if (intval($admin_attrs['force_pw_update'] ?? 0) == 1) {
+      $_SESSION['pending_pw_update'] = true;
+    }
+
     // check for tfa authenticators
     $authenticators = get_tfa($user);
     if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0) {
@@ -163,6 +181,10 @@ function domainadmin_login($user, $pass){
       // Reactivate TFA if it was set to "deactivate TFA for next login"
       $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
       $stmt->execute(array(':user' => $user));
+      // Check force_tfa: only force setup if NO TFA exists at all
+      if (intval($admin_attrs['force_tfa'] ?? 0) == 1 && !tfa_exists($user)) {
+        $_SESSION['pending_tfa_setup'] = true;
+      }
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $user, '*'),
@@ -265,6 +287,8 @@ function user_login($user, $pass, $extra = null){
             return false;
           }
 
+          $row['attributes'] = json_decode($row['attributes'], true);
+
           // check for tfa authenticators
           $authenticators = get_tfa($user);
           if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -286,6 +310,10 @@ function user_login($user, $pass, $extra = null){
               // Reactivate TFA if it was set to "deactivate TFA for next login"
               $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
               $stmt->execute(array(':user' => $user));
+              // Check force_tfa: only force setup if NO TFA exists at all
+              if (intval($row['attributes']['force_tfa']) == 1 && !tfa_exists($user)) {
+                $_SESSION['pending_tfa_setup'] = true;
+              }
               $_SESSION['return'][] =  array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $user, '*', 'Provider: Keycloak'),
@@ -317,6 +345,8 @@ function user_login($user, $pass, $extra = null){
           return false;
         }
 
+        $row['attributes'] = json_decode($row['attributes'], true);
+
         // check for tfa authenticators
         $authenticators = get_tfa($user);
         if (isset($authenticators['additional']) && is_array($authenticators['additional']) && count($authenticators['additional']) > 0 && !$is_internal) {
@@ -338,6 +368,10 @@ function user_login($user, $pass, $extra = null){
             // Reactivate TFA if it was set to "deactivate TFA for next login"
             $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
             $stmt->execute(array(':user' => $user));
+            // Check force_tfa: only force setup if NO TFA exists at all
+            if (intval($row['attributes']['force_tfa']) == 1 && !tfa_exists($user)) {
+              $_SESSION['pending_tfa_setup'] = true;
+            }
             $_SESSION['return'][] =  array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $user, '*', 'Provider: LDAP'),
@@ -381,6 +415,10 @@ function user_login($user, $pass, $extra = null){
             // Reactivate TFA if it was set to "deactivate TFA for next login"
             $stmt = $pdo->prepare("UPDATE `tfa` SET `active`='1' WHERE `username` = :user");
             $stmt->execute(array(':user' => $user));
+            // Check force_tfa: only force setup if NO TFA exists at all
+            if (intval($row['attributes']['force_tfa']) == 1 && !tfa_exists($user)) {
+              $_SESSION['pending_tfa_setup'] = true;
+            }
             $_SESSION['return'][] =  array(
               'type' => 'success',
               'log' => array(__FUNCTION__, $user, '*', 'Provider: mailcow'),

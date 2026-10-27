@@ -22,6 +22,9 @@ if (preg_match("/debug/i", $_SERVER['REQUEST_URI'])) {
 if ($_SERVER['REQUEST_URI'] == '/') {
   $css_minifier->add('/web/css/site/index.css');
 }
+if (file_exists('/web/css/themes/'.$UI_THEME.'/theme.css')) {
+  $css_minifier->add('/web/css/themes/'.$UI_THEME.'/theme.css');
+}
 
 $hash = $css_minifier->getDataHash();
 $CSSPath = '/tmp/' . $hash . '.css';
@@ -29,6 +32,17 @@ if(!file_exists($CSSPath)) {
   $css_minifier->minify($CSSPath);
   cleanupCSS($hash);
 }
+
+// dark mode bundle, core dark mode + theme dark.css
+$dark_minifier = new CSSminifierExtended('/web/css/themes/mailcow-darkmode.css');
+if (file_exists('/web/css/themes/'.$UI_THEME.'/dark.css')) {
+  $dark_minifier->add('/web/css/themes/'.$UI_THEME.'/dark.css');
+}
+$DarkCSSPath = '/tmp/' . $hash . '-' . $dark_minifier->getDataHash() . '.css';
+if(!file_exists($DarkCSSPath)) {
+  $dark_minifier->minify($DarkCSSPath);
+}
+$dark_css_path = '/cache/' . basename($DarkCSSPath);
 
 $mailcow_apps_processed = $MAILCOW_APPS;
 $app_links = customize('get', 'app_links');
@@ -77,6 +91,7 @@ $globalVariables = [
   'dual_login' => @$_SESSION['dual-login'],
   'ui_texts' => $UI_TEXTS,
   'css_path' => '/cache/'.basename($CSSPath),
+  'dark_css_path' => $dark_css_path,
   'logo' => customize('get', 'main_logo'),
   'logo_dark' => customize('get', 'main_logo_dark'),
   'available_languages' => $AVAILABLE_LANGUAGES,
@@ -89,7 +104,7 @@ $globalVariables = [
   'app_links' => $app_links,
   'app_links_processed' => $app_links_processed,
   'is_root_uri' => (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) == '/'),
-  'uri' => $_SERVER['REQUEST_URI'],
+  'uri' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/',
 ];
 
 foreach ($globalVariables as $globalVariableName => $globalVariableValue) {

@@ -1,4 +1,4 @@
-FROM alpine:3.21
+FROM alpine:3.23
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -37,5 +37,6 @@ RUN apk add --update \
 COPY watchdog.sh /watchdog.sh
 COPY check_mysql_slavestatus.sh /usr/lib/nagios/plugins/check_mysql_slavestatus.sh
 COPY check_dns.sh /usr/lib/mailcow/check_dns.sh
+COPY client.cnf /etc/my.cnf.d/client.cnf
 
 CMD ["/watchdog.sh"]

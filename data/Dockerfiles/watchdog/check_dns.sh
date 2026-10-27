@@ -19,19 +19,19 @@ if [ -z "$HOST" ]; then
 fi
 
 # run dig and measure the time it takes to run
-START_TIME=$(date +%s%3N)
+START_TIME=$(perl -MTime::HiRes -e 'print Time::HiRes::time')
 dig_output=$(dig +short +timeout=2 +tries=1 "$HOST" @"$SERVER" 2>/dev/null)
 dig_rc=$?
+END_TIME=$(perl -MTime::HiRes -e 'print Time::HiRes::time')
 dig_output_ips=$(echo "$dig_output" | grep -E '^[0-9.]+$' | sort | paste -sd ',' -)
-END_TIME=$(date +%s%3N)
-ELAPSED_TIME=$((END_TIME - START_TIME))
+ELAPSED_TIME=$(perl -e "printf('%.3f', $END_TIME - $START_TIME)")
 
 # validate and perform nagios like output and exit codes
 if [ $dig_rc -ne 0 ] || [ -z "$dig_output" ]; then
   echo "Domain $HOST was not found by the server"
   exit 2
 elif [ $dig_rc -eq 0 ]; then
-  echo "DNS OK: $ELAPSED_TIME ms response time. $HOST returns $dig_output_ips"
+  echo "DNS OK: $ELAPSED_TIME seconds response time. $HOST returns $dig_output_ips"
   exit 0
 else
   echo "Unknown error"

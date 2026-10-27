@@ -65,6 +65,7 @@ if (isset($_GET['app_password'])) {
       $attr['protocols'][] = 'dav_access';
   }
   app_passwd("add", $attr);
+  $password = htmlspecialchars($password, ENT_NOQUOTES);
 } else {
   $app_password = false;
 }

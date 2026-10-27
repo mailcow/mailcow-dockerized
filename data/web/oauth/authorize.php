@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 if (!isset($_SESSION['mailcow_cc_role'])) {
   $_SESSION['oauth2_request'] = $_SERVER['REQUEST_URI'];
   header('Location: /?oauth');
+  exit;
 }
 
 $request = OAuth2\Request::createFromGlobals();
@@ -21,6 +22,11 @@ if (!isset($_POST['authorized'])) {
   $template_data = [];
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
+  exit;
+}
+
+if (empty($_SESSION['mailcow_cc_username'])) {
+  header('Location: /?oauth');
   exit;
 }
 

@@ -2,20 +2,19 @@
 
 namespace LdapRecord\Models\Relations;
 
+use LdapRecord\Models\Collection;
 use LdapRecord\Models\Model;
 
 class HasOne extends Relation
 {
     /**
      * Get the results of the relationship.
-     *
-     * @return \LdapRecord\Query\Collection
      */
-    public function getResults()
+    public function getResults(): Collection
     {
-        $model = $this->getForeignModelByValue(
-            $this->getFirstAttributeValue($this->parent, $this->relationKey)
-        );
+        $relationValue = $this->getFirstAttributeValue($this->parent, $this->relationKey);
+
+        $model = $relationValue ? $this->getForeignModelByValue($relationValue) : null;
 
         return $this->transformResults(
             $this->parent->newCollection($model ? [$model] : null)
@@ -24,31 +23,20 @@ class HasOne extends Relation
 
     /**
      * Attach a model instance to the parent model.
-     *
-     * @param  Model|string  $model
-     * @return Model|string
-     *
-     * @throws \LdapRecord\LdapRecordException
      */
-    public function attach($model)
+    public function attach(Model|string $model): void
     {
         $foreign = $model instanceof Model
             ? $this->getForeignValueFromModel($model)
             : $model;
 
         $this->parent->setAttribute($this->relationKey, $foreign)->save();
-
-        return $model;
     }
 
     /**
      * Detach the related model from the parent.
-     *
-     * @return void
-     *
-     * @throws \LdapRecord\LdapRecordException
      */
-    public function detach()
+    public function detach(): void
     {
         $this->parent->setAttribute($this->relationKey, null)->save();
     }

@@ -121,34 +121,56 @@ function admin($_action, $_data = null) {
             continue;
           }
         }
-        if (!empty($password)) {
-          if (password_check($password, $password2) !== true) {
-            return false;
+        // Check if this is a self password change via forced update
+        if ($username == $_SESSION['mailcow_cc_username'] && !empty($_SESSION['pending_pw_update'])) {
+          // Forced password update: only change password and clear force_pw_update flag
+          if (!empty($password)) {
+            if (password_check($password, $_data['password2']) !== true) {
+              return false;
+            }
+            $password_hashed = hash_password($password);
+            $stmt = $pdo->prepare("UPDATE `admin` SET `password` = :password_hashed,
+              `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_pw_update', '0')
+              WHERE `username` = :username");
+            $stmt->execute(array(
+              ':password_hashed' => $password_hashed,
+              ':username' => $username
+            ));
+            unset($_SESSION['pending_pw_update']);
           }
-          $password_hashed = hash_password($password);
-          $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed WHERE `username` = :username");
-          $stmt->execute(array(
-            ':password_hashed' => $password_hashed,
-            ':username_new' => $username_new,
-            ':username' => $username,
-            ':active' => $active
-          ));
-          if (isset($_data['disable_tfa'])) {
-            $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
-            $stmt->execute(array(':username' => $username));
+        } else {
+          // Normal admin edit: update all attributes
+          $force_tfa = intval($_data['force_tfa'] ?? 0) ? 1 : 0;
+          $force_pw_update = intval($_data['force_pw_update'] ?? 0) ? 1 : 0;
+          if (!empty($password)) {
+            if (password_check($password, $password2) !== true) {
+              return false;
+            }
+            $password_hashed = hash_password($password);
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active, `password` = :password_hashed,
+              `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_tfa', :force_tfa, '$.force_pw_update', :force_pw_update)
+              WHERE `username` = :username");
+            $stmt->execute(array(
+              ':password_hashed' => $password_hashed,
+              ':username_new' => $username_new,
+              ':username' => $username,
+              ':active' => $active,
+              ':force_tfa' => strval($force_tfa),
+              ':force_pw_update' => strval($force_pw_update)
+            ));
           }
           else {
-            $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
-            $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
+            $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active,
+              `attributes` = JSON_SET(COALESCE(`attributes`, '{}'), '$.force_tfa', :force_tfa, '$.force_pw_update', :force_pw_update)
+              WHERE `username` = :username");
+            $stmt->execute(array(
+              ':username_new' => $username_new,
+              ':username' => $username,
+              ':active' => $active,
+              ':force_tfa' => strval($force_tfa),
+              ':force_pw_update' => strval($force_pw_update)
+            ));
           }
-        }
-        else {
-          $stmt = $pdo->prepare("UPDATE `admin` SET `username` = :username_new, `active` = :active WHERE `username` = :username");
-          $stmt->execute(array(
-            ':username_new' => $username_new,
-            ':username' => $username,
-            ':active' => $active
-          ));
           if (isset($_data['disable_tfa'])) {
             $stmt = $pdo->prepare("UPDATE `tfa` SET `active` = '0' WHERE `username` = :username");
             $stmt->execute(array(':username' => $username));
@@ -223,7 +245,8 @@ function admin($_action, $_data = null) {
         `tfa`.`active` AS `tfa_active`,
         `admin`.`username`,
         `admin`.`created`,
-        `admin`.`active` AS `active`
+        `admin`.`active` AS `active`,
+        `admin`.`attributes` AS `attributes`
           FROM `admin`
           LEFT OUTER JOIN `tfa` ON `tfa`.`username`=`admin`.`username`
             WHERE `admin`.`username`= :admin AND `superadmin` = '1'");
@@ -240,6 +263,7 @@ function admin($_action, $_data = null) {
       $admindata['active'] = $row['active'];
       $admindata['active_int'] = $row['active'];
       $admindata['created'] = $row['created'];
+      $admindata['attributes'] = json_decode($row['attributes'], true) ?? array('force_tfa' => '0', 'force_pw_update' => '0');
       return $admindata;
     break;
   }

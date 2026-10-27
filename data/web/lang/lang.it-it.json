@@ -109,7 +109,10 @@
         "bcc_dest_format": "Il destinatario in copia nascosta deve essere un singolo indirizzo email.<br>Se si vuole spedire una copia del messaggio a più destinatari, bisogna creare un alias ed utilizzarlo per questa opzione.",
         "app_passwd_protocols": "Protocolli consentiti per la password dell'app",
         "tags": "Tag",
-        "dry": "Simula sincronizzazione"
+        "dry": "Simula sincronizzazione",
+        "internal": "Interno",
+        "internal_info": "Gli alias interni sono accessibili solo dal proprio dominio o dai domini alias.",
+        "sender_allowed": "Consenti l'invio con questo alias"
     },
     "admin": {
         "access": "Accedi",
@@ -131,7 +134,7 @@
         "additional_rows": " righe aggiuntive inserite",
         "admin": "Amministratore",
         "admin_details": "Modifica impostazioni amministratore",
-        "admin_domains": "Assengazioni di dominio",
+        "admin_domains": "Assegnazioni di dominio",
         "admins": "Amministratori",
         "admins_ldap": "Amministratori LDAP",
         "advanced_settings": "Impostazioni avanzate",

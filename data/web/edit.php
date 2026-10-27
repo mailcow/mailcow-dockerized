@@ -1,10 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
-$AuthUsers = array("admin", "domainadmin", "user");
-if (!isset($_SESSION['mailcow_cc_role']) OR !in_array($_SESSION['mailcow_cc_role'], $AuthUsers)) {
-  header('Location: /');
-  exit();
-}
+
+protect_route();
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 
 $template = 'edit.twig';

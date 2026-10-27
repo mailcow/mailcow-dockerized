@@ -3,33 +3,14 @@
 namespace LdapRecord\Models\Attributes;
 
 use InvalidArgumentException;
-use LdapRecord\Utilities;
+use Stringable;
 
-class Guid
+class Guid implements Stringable
 {
     /**
      * The string GUID value.
-     *
-     * @var string
      */
-    protected $value;
-
-    /**
-     * The guid structure in order by section to parse using substr().
-     *
-     * @author Chad Sikorra <Chad.Sikorra@gmail.com>
-     *
-     * @see https://github.com/ldaptools/ldaptools
-     *
-     * @var array
-     */
-    protected $guidSections = [
-        [[-26, 2], [-28, 2], [-30, 2], [-32, 2]],
-        [[-22, 2], [-24, 2]],
-        [[-18, 2], [-20, 2]],
-        [[-16, 4]],
-        [[-12, 12]],
-    ];
+    protected ?string $value = null;
 
     /**
      * The hexadecimal octet order based on string position.
@@ -37,10 +18,8 @@ class Guid
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
      * @see https://github.com/ldaptools/ldaptools
-     *
-     * @var array
      */
-    protected $octetSections = [
+    protected array $octetSections = [
         [6, 4, 2, 0],
         [10, 8],
         [14, 12],
@@ -48,24 +27,19 @@ class Guid
     ];
 
     /**
-     * Determines if the specified GUID is valid.
-     *
-     * @param  string  $guid
-     * @return bool
+     * Determine if the specified GUID is valid.
      */
-    public static function isValid($guid)
+    public static function isValid(string $guid): bool
     {
-        return Utilities::isValidGuid($guid);
+        return (bool) preg_match('/^([0-9a-fA-F]){8}(-([0-9a-fA-F]){4}){3}-([0-9a-fA-F]){12}$/', $guid);
     }
 
     /**
      * Constructor.
      *
-     * @param  mixed  $value
-     *
      * @throws InvalidArgumentException
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (static::isValid($value)) {
             $this->value = $value;
@@ -77,66 +51,83 @@ class Guid
     }
 
     /**
-     * Returns the string value of the GUID.
-     *
-     * @return string
+     * Get the string value of the GUID.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getValue();
     }
 
     /**
-     * Returns the string value of the SID.
-     *
-     * @return string
+     * Get the string value of the GUID.
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /**
      * Get the binary representation of the GUID string.
-     *
-     * @return string
      */
-    public function getBinary()
+    public function getBinary(): string
     {
         return hex2bin($this->getHex());
     }
 
     /**
-     * Get the hexadecimal representation of the GUID string.
-     *
-     * @return string
+     * Get the encoded hexadecimal representation of the GUID string.
      */
-    public function getHex()
+    public function getEncodedHex(): string
     {
-        $data = '';
+        return '\\'.implode('\\', str_split($this->getHex(), 2));
+    }
+
+    /**
+     * Get the hexadecimal representation of the GUID string.
+     */
+    public function getHex(): string
+    {
+        return implode($this->getOctetSections());
+    }
+
+    /**
+     * Get the octect sections of the GUID.
+     */
+    protected function getOctetSections(): array
+    {
+        $sections = [];
 
         $guid = str_replace('-', '', $this->value);
 
         foreach ($this->octetSections as $section) {
-            $data .= $this->parseSection($guid, $section, $octet = true);
+            $sections[] = $this->parseSection($guid, $section, true);
         }
 
-        return $data;
+        return $sections;
     }
 
     /**
-     * Returns the string variant of a binary GUID.
-     *
-     * @param  string  $binary
-     * @return string|null
+     * Get the string variant of a binary GUID.
      */
-    protected function binaryGuidToString($binary)
+    protected function binaryGuidToString(string $binary): ?string
     {
-        return Utilities::binaryGuidToString($binary);
+        if (trim($binary) === '') {
+            return null;
+        }
+
+        $hex = unpack('H*hex', $binary)['hex'];
+
+        $hex1 = substr($hex, -26, 2).substr($hex, -28, 2).substr($hex, -30, 2).substr($hex, -32, 2);
+        $hex2 = substr($hex, -22, 2).substr($hex, -24, 2);
+        $hex3 = substr($hex, -18, 2).substr($hex, -20, 2);
+        $hex4 = substr($hex, -16, 4);
+        $hex5 = substr($hex, -12, 12);
+
+        return sprintf('%s-%s-%s-%s-%s', $hex1, $hex2, $hex3, $hex4, $hex5);
     }
 
     /**
-     * Return the specified section of the hexadecimal string.
+     * Get the specified section of the hexadecimal string.
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
      *
@@ -147,7 +138,7 @@ class Guid
      * @param  bool  $octet  Whether this is for octet string form.
      * @return string The concatenated sections in upper-case.
      */
-    protected function parseSection($hex, array $sections, $octet = false)
+    protected function parseSection(string $hex, array $sections, bool $octet = false): string
     {
         $parsedString = '';
 
