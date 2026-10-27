@@ -395,8 +395,7 @@
         "iam_host": "Hostitel",
         "iam_host_info": "Zadejte jeden či více hostitelů, oddělte čárkou.",
         "iam_import_users": "Importovat uživatele",
-        "iam_auth_flow": "Proces autentizace",
-        "needs_restart": "potřebuje restart"
+        "iam_auth_flow": "Proces autentizace"
     },
     "danger": {
         "access_denied": "Přístup odepřen nebo jsou neplatná data ve formuláři",
