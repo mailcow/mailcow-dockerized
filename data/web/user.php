@@ -73,8 +73,10 @@ $template_data = [
   'lang_user' => json_encode($lang['user']),
   'number_of_app_passwords' => $number_of_app_passwords,
   'lang_datatables' => json_encode($lang['datatables']),
+  'imapsync_redirect_uri' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri(),
 ];
 
+$js_minifier->add('/web/js/site/imapsync.js');
 $js_minifier->add('/web/js/site/user.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 

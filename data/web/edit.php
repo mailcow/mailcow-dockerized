@@ -204,9 +204,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     if (isset($_GET['syncjob']) &&
       is_numeric($_GET['syncjob'])) {
         $id = $_GET["syncjob"];
-        $result = mailbox('get', 'syncjob_details', $id);
+        $result = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getJob($id);
         $template = 'edit/syncjob.twig';
       }
+    elseif (isset($_GET['syncjob_source']) &&
+      is_numeric($_GET['syncjob_source'])) {
+        $id = $_GET["syncjob_source"];
+        $result = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSource($id);
+        $template = 'edit/imapsync_source.twig';
+    }
     elseif (isset($_GET['filter']) &&
       is_numeric($_GET['filter'])) {
         $id = $_GET["filter"];
@@ -225,6 +231,7 @@ else {
   $template_data['access_denied'] = true;
 }
 
+$js_minifier->add('/web/js/site/imapsync.js');
 $js_minifier->add('/web/js/site/edit.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 
@@ -233,5 +240,6 @@ $template_data['return_to'] = $_SESSION['return_to'];
 $template_data['lang_user'] = json_encode($lang['user']);
 $template_data['lang_admin'] = json_encode($lang['admin']);
 $template_data['lang_datatables'] = json_encode($lang['datatables']);
+$template_data['imapsync_redirect_uri'] = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri();
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
