@@ -1260,9 +1260,123 @@ paths:
                 tls_enforce_out:
                   description: force oubound tmail tls encryption
                   type: boolean
+                shared:
+                  description: >-
+                    shared mailbox: no login of its own, members of groups open it through shares;
+                    password and password2 may be empty (a random password is set)
+                  type: boolean
               type: object
       summary: Create mailbox
 
+  /api/v1/add/mailbox-group:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox_group
+                        - add
+                        - group
+                        - domain: example.org
+                          name: Sales
+                          local_part: sales
+                          members:
+                            - alice@example.org
+                      msg:
+                        - group_added
+                        - Sales
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Groups
+      description: >-
+        Create a mailbox group (admins; domain admins with the "mailbox_groups"
+        ACL for their domains). With an address the group is a distribution
+        list; its alias is maintained by the group and read-only in the alias
+        API.
+      operationId: Create group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                domain: example.org
+                name: Sales
+                local_part: sales
+                members:
+                  - alice@example.org
+                  - bob@example.org
+                send_as:
+                  - shared@example.org
+                sender_allowed: "1"
+                active: "1"
+              properties:
+                domain:
+                  description: domain of the group (required)
+                  type: string
+                name:
+                  description: unique per domain, max. 100 characters
+                  type: string
+                description:
+                  description: max. 255 characters
+                  type: string
+                local_part:
+                  description: local part of the group address (domain of the group), empty = no address
+                  type: string
+                address:
+                  description: full group address instead of local_part, empty = no address
+                  type: string
+                members:
+                  description: >-
+                    mailboxes (array or list separated by commas, spaces or
+                    newlines); replaces the manual members you may access
+                  type: array
+                send_as:
+                  description: addresses (mailbox or alias) or @domain the members may send as
+                  type: array
+                sender_allowed:
+                  description: members may send as the group address
+                  type: boolean
+                sogo_visible:
+                  description: show the group address as SOGo identity (needs sender_allowed)
+                  type: boolean
+                internal:
+                  description: only accept mail from senders of the domain
+                  type: boolean
+                template_id:
+                  description: mailbox template applied to the members (admin only), empty = none
+                  type: number
+                priority:
+                  description: highest priority wins if a mailbox is in several groups with a template (admin only)
+                  type: number
+                active:
+                  type: boolean
+              type: object
+      summary: Create group
   /api/v1/add/oauth2-client:
     post:
       responses:
@@ -2673,6 +2787,103 @@ paths:
                   type: object
               type: object
       summary: Delete mailbox
+  /api/v1/delete/mailbox-group:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox_group
+                        - delete
+                        - group
+                        - id:
+                            - "7"
+                      msg:
+                        - group_removed
+                        - Sales
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Groups
+      description: >-
+        Delete groups by ID. Members keep their settings; their group alias and
+        send-as rights of the group are removed.
+      operationId: Delete groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - "7"
+              properties:
+                items:
+                  description: contains list of group IDs you want to delete
+                  type: object
+              type: object
+      summary: Delete groups
+  /api/v1/delete/identity-link:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - identity_provider
+                        - delete
+                        - link
+                        - - alice@example.org
+                      msg:
+                        - iam_link_removed
+                        - alice@example.org
+                      type: success
+          description: OK
+          headers: {}
+      tags:
+        - Identity Provider
+      description: >-
+        Removes the link between mailboxes and their Identity Provider users (admins only). The mailbox is
+        linked again by email on the next sync run or login, e.g. after its address was given to another
+        Identity Provider user.
+      operationId: Delete identity links
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - alice@example.org
+              items:
+                type: string
+              type: array
+      summary: Delete identity links
   /api/v1/delete/mailq:
     post:
       responses:
@@ -4025,6 +4236,9 @@ paths:
                     sogo_access:
                       description: is access to SOGo webmail active or not
                       type: boolean
+                    shared:
+                      description: shared mailbox, no login of its own (IMAP, SMTP, SOGo, app passwords, mailcow UI)
+                      type: boolean
                   type: object
                 items:
                   description: contains list of mailboxes you want update
@@ -4111,6 +4325,219 @@ paths:
                   type: object
               type: object
       summary: Update mailbox custom attributes
+  /api/v1/edit/mailbox-group:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - mailbox_group
+                        - edit
+                        - group
+                        - id:
+                            - "7"
+                          add_members:
+                            - carol@example.org
+                      msg:
+                        - group_modified
+                        - Sales
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Groups
+      description: >-
+        Update groups. Attributes you do not send keep their value. Members
+        synced from the identity provider cannot be removed here
+        (group_member_idp).
+      operationId: Update groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - "7"
+                attr:
+                  add_members:
+                    - carol@example.org
+              properties:
+                attr:
+                  properties:
+                    name:
+                      description: unique per domain, max. 100 characters
+                      type: string
+                    description:
+                      description: max. 255 characters
+                      type: string
+                    local_part:
+                      description: local part of the group address (domain of the group), empty = no address
+                      type: string
+                    address:
+                      description: full group address instead of local_part, empty = no address
+                      type: string
+                    members:
+                      description: >-
+                        mailboxes (array or list separated by commas, spaces or
+                        newlines); replaces the manual members you may access
+                      type: array
+                    send_as:
+                      description: addresses (mailbox or alias) or @domain the members may send as
+                      type: array
+                    sender_allowed:
+                      description: members may send as the group address
+                      type: boolean
+                    sogo_visible:
+                      description: show the group address as SOGo identity (needs sender_allowed)
+                      type: boolean
+                    internal:
+                      description: only accept mail from senders of the domain
+                      type: boolean
+                    template_id:
+                      description: mailbox template applied to the members (admin only), empty = none
+                      type: number
+                    priority:
+                      description: highest priority wins if a mailbox is in several groups with a template (admin only)
+                      type: number
+                    active:
+                      type: boolean
+                    add_members:
+                      description: mailboxes to add
+                      type: array
+                    remove_members:
+                      description: manual members to remove
+                      type: array
+                    reapply_template:
+                      description: apply the effective templates to all members again (admin only)
+                      type: boolean
+                    imap_grants:
+                      description: >-
+                        replaces the mailbox access of the members (Dovecot ACL on every folder of the
+                        mailbox, shown as Shared/<mailbox>); rights read, write or full; you need access
+                        to each mailbox; subscribe = the group-grants cron subscribes the folders for every
+                        member once (within 15 minutes)
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          owner:
+                            type: string
+                          rights:
+                            type: string
+                            enum: [read, write, full]
+                          subscribe:
+                            type: boolean
+                            default: false
+                      example:
+                        - owner: shared@example.org
+                          rights: write
+                          subscribe: true
+                    sogo_grants:
+                      description: >-
+                        replaces the SOGo folders shared with the members; folder = SOGo folder ID
+                        (default personal); pending until the mailbox opened SOGo once; subscribe = the
+                        group-grants cron subscribes every member once (within 15 minutes)
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          owner:
+                            type: string
+                          type:
+                            type: string
+                            enum: [Calendar, Contacts]
+                          folder:
+                            type: string
+                            default: personal
+                          access:
+                            type: string
+                            enum: [read, write]
+                          subscribe:
+                            type: boolean
+                            default: false
+                      example:
+                        - owner: shared@example.org
+                          type: Calendar
+                          access: write
+                          subscribe: true
+                  type: object
+                items:
+                  description: contains list of group IDs you want to update
+                  type: object
+              type: object
+      summary: Update groups
+  /api/v1/edit/identity-provider-sync:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - identity_provider
+                        - edit
+                        - sync
+                        - mode: preview
+                      msg: iam_sync_requested
+                      type: success
+          description: OK
+          headers: {}
+      tags:
+        - Identity Provider
+      description: >-
+        Queues a sync run of the Identity Provider (Keycloak and LDAP, admins only). The identity-sync cron
+        starts it within a minute. `preview` lists the changes without applying them, `run` applies them,
+        `force` applies them without the change limit (offboarding_limit).
+      operationId: Request identity sync run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - sync
+                attr:
+                  mode: preview
+              properties:
+                items:
+                  type: array
+                  default: ["sync"]
+                attr:
+                  type: object
+                  properties:
+                    mode:
+                      type: string
+                      enum: [preview, run, force]
+                      default: run
+              type: object
+      summary: Request identity sync run
   /api/v1/edit/mailq:
     post:
       responses:
@@ -5898,6 +6325,203 @@ paths:
       description: You can list all mailboxes existing in system.
       operationId: Get mailboxes
       summary: Get mailboxes
+  "/api/v1/get/mailbox-group/{id}":
+    get:
+      parameters:
+        - description: id of the group, or "all" (optionally followed by /domain1,domain2)
+          example: all
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 7
+                      domain: example.org
+                      name: Sales
+                      description: Sales team
+                      address: sales@example.org
+                      sender_allowed: 1
+                      sogo_visible: 0
+                      internal: 0
+                      template_id: 3
+                      template: Staff
+                      priority: 10
+                      idp_ref: null
+                      members:
+                        - username: alice@example.org
+                          source: manual
+                        - username: bob@example.org
+                          source: idp
+                      send_as:
+                        - shared@example.org
+                      imap_grants:
+                        - owner: shared@example.org
+                          rights: write
+                          subscribe: 1
+                          state: applied
+                          last_error: null
+                      sogo_grants:
+                        - owner: shared@example.org
+                          type: Calendar
+                          folder: personal
+                          access: write
+                          subscribe: 1
+                          state: applied
+                          last_error: null
+                      active: 1
+                      created: "2026-10-25 12:00:00"
+                      modified: null
+                      can_edit: true
+          description: OK
+          headers: {}
+      tags:
+        - Groups
+      description: >-
+        Groups visible to the caller (admins all, domain admins their domains).
+      operationId: Get groups
+      summary: Get groups
+  "/api/v1/get/mailbox-group/member/{username}":
+    get:
+      parameters:
+        - description: mailbox
+          example: alice@example.org
+          in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    groups:
+                      - id: 7
+                        domain: example.org
+                        name: Sales
+                        address: sales@example.org
+                        sender_allowed: 1
+                        active: 1
+                        priority: 10
+                        template: Staff
+                        source: manual
+                    template: Staff
+                    send_as:
+                      - sales@example.org
+                      - shared@example.org
+          description: OK
+          headers: {}
+      tags:
+        - Groups
+      description: >-
+        Groups of a mailbox, its effective group template and the addresses it
+        may send as through groups.
+      operationId: Get group memberships
+      summary: Get group memberships
+  /api/v1/get/identity-provider/sync-status:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    provider: keycloak
+                    can_sync: true
+                    sync_enabled: true
+                    counts:
+                      accounts: 120
+                      linked: 118
+                      idp_disabled: 2
+                      missing: 1
+                    runs:
+                      - id: 42
+                        provider: keycloak
+                        mode: run
+                        status: ok
+                        requested_by: ""
+                        created: "2026-10-25 12:00:00"
+                        started: "2026-10-25 12:00:01"
+                        finished: "2026-10-25 12:00:03"
+                        summary:
+                          counts:
+                            creates: 1
+                            deactivate: 1
+                            memberships: 2
+                          details:
+                            creates:
+                              - new@example.org
+                            deactivate:
+                              - left@example.org
+                            conflicts: []
+                          errors: []
+                          blocked: false
+                          mode: run
+          description: OK
+          headers: {}
+      tags:
+        - Identity Provider
+      description: >-
+        Sync status (admins only): mailboxes of the Identity Provider and their links, and the last sync runs
+        with their summary. Run status: pending, running, ok, blocked (change limit), error (listing failed,
+        nothing was changed).
+      operationId: Get identity sync status
+      summary: Get identity sync status
+  "/api/v1/get/identity-link/{username}":
+    get:
+      parameters:
+        - description: mailbox
+          example: alice@example.org
+          in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    provider: keycloak
+                    external_id: 8d5da28d-7541-428b-8356-a9704f73e7f4
+                    idp_disabled: 0
+                    missing_since: null
+          description: OK
+          headers: {}
+      tags:
+        - Identity Provider
+      description: >-
+        Identity Provider user a mailbox is linked to (admins, and domain admins for their mailboxes).
+        `idp_disabled` = login was disabled by the sync, `missing_since` = not listed by the Identity Provider.
+      operationId: Get identity link
+      summary: Get identity link
   /api/v1/get/mailq/all:
     get:
       responses:
@@ -7199,7 +7823,7 @@ paths:
                       description: An optional LDAP search filter to refine which users can authenticate.
                       type: string
                     attribute_field:
-                      description: Specifies an LDAP attribute that holds a specific value which can be mapped to a mailbox template using the Attribute Mapping section. Required if `authsource` is ldap.
+                      description: (Optional) Specifies an LDAP attribute that holds a specific value which can be mapped to a mailbox template using the Attribute Mapping section.
                       type: string
                     binddn:
                       description: The Distinguished Name (DN) of the LDAP user that will be used to authenticate and perform LDAP searches. This account should have sufficient permissions to read the required attributes. Required if `authsource` is ldap.
@@ -7220,6 +7844,53 @@ paths:
                       description: Specifies the OIDC scopes requested during authentication.
                       type: string
                       default: "openid profile email mailcow_template"
+                    offboarding:
+                      description: (Keycloak, LDAP) Users disabled in the Identity Provider, or missing in two complete sync runs, get login disabled (mailbox active = 2, mail is still received). Only mailboxes disabled by the sync are enabled again.
+                      type: boolean
+                      default: false
+                    offboarding_limit:
+                      description: (Keycloak, LDAP) Sync runs that would disable more mailboxes or remove more group memberships than this share in percent (at least 5) are blocked.
+                      type: number
+                      default: 10
+                    group_sync:
+                      description: (Keycloak, LDAP) Syncs the members of Identity Provider groups to mailbox groups. Members added in mailcow stay.
+                      type: boolean
+                      default: false
+                    group_autocreate:
+                      description: (Keycloak, LDAP) Creates a mailbox group for every Identity Provider group without one. The group mail becomes its address if it is free.
+                      type: boolean
+                      default: false
+                    group_default_domain:
+                      description: (Keycloak, LDAP) Domain of new groups whose mail is not in a mailcow domain.
+                      type: string
+                    group_paths:
+                      description: (Keycloak) Comma-separated group paths, e.g. `/Sales` or `/mailcow/*` (all groups below /mailcow). Needs the `query-groups` permission.
+                      type: string
+                    id_attribute:
+                      description: (LDAP) Attribute with a stable user id. Empty = objectGUID, entryUUID, nsUniqueId or ipaUniqueID. Changing it links all mailboxes again by email.
+                      type: string
+                    disabled_filter:
+                      description: (LDAP) Filter for disabled users. Active Directory accounts with ACCOUNTDISABLE in userAccountControl are always disabled.
+                      type: string
+                    group_basedn:
+                      description: (LDAP) Base DN of the group search, default `basedn`.
+                      type: string
+                    group_filter:
+                      description: (LDAP) Filter for the synced groups, required for group sync.
+                      type: string
+                    group_name_attribute:
+                      description: (LDAP) Attribute with the group name.
+                      type: string
+                      default: cn
+                    group_member_mode:
+                      description: "(LDAP) Source of the memberships: memberof (memberOf of the users), member (member attribute of the groups) or ad_chain (Active Directory incl. nested groups)."
+                      type: string
+                      enum: [memberof, member, ad_chain]
+                      default: memberof
+                    group_member_attribute:
+                      description: (LDAP) Member attribute for group_member_mode member, e.g. member or uniqueMember.
+                      type: string
+                      default: member
             examples:
               keycloak:
                 value:
@@ -7320,6 +7991,8 @@ tags:
     description: Use mailcow as a oAuth server
   - name: API Keys
     description: Manage API keys
+  - name: Groups
+    description: Mailbox groups (distribution lists, send-as rights, templates)
   - name: Routing
     description: Define your own email routes
   - name: Resources

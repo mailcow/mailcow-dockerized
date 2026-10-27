@@ -200,6 +200,14 @@
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="shared" id="add_mailbox_shared"> {{ lang.mailbox.shared_mailbox }}</label>
+                <small class="text-muted">{{ lang.mailbox.shared_mailbox_info }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update" id="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
                 <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
               </div>
@@ -1351,3 +1359,6 @@
 </div><!-- DNS info modal -->
 
 {% include "modals/imapsync_source.twig" %}
+{% if acl.mailbox_groups == 1 %}
+{% include "modals/mailbox_group.twig" %}
+{% endif %}

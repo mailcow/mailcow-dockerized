@@ -2360,6 +2360,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
   $data_log = $_data;
   if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
   if (isset($data_log['access_token'])) $data_log['access_token'] = '*';
+  if (isset($data_log['bindpass'])) $data_log['bindpass'] = '*';
 
   switch ($_action) {
     case 'get':
@@ -2370,9 +2371,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       foreach($rows as $row){
         switch ($row["key"]) {
           case "redirect_url_extra":
+            $settings[$row["key"]] = json_decode($row["value"]);
+          break;
           case "mappers":
           case "templates":
-            $settings[$row["key"]] = json_decode($row["value"]);
+            // Parallel lists; older rows can be JSON objects, decode as arrays to keep the keys aligned
+            $settings[$row["key"]] = (array)json_decode($row["value"], true);
           break;
           case "use_ssl":
           case "use_tls":
@@ -2455,6 +2459,13 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       $_data['ignore_ssl_error']    = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
       $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
+      // Identity sync: offboarding and groups (Keycloak and LDAP)
+      $sync_settings = array('offboarding', 'offboarding_limit', 'group_sync', 'group_autocreate', 'group_default_domain');
+      $_data['offboarding']          = isset($_data['offboarding']) ? intval($_data['offboarding']) : 0;
+      $_data['offboarding_limit']    = isset($_data['offboarding_limit']) && is_numeric($_data['offboarding_limit']) ? min(100, max(0, intval($_data['offboarding_limit']))) : 10;
+      $_data['group_sync']           = isset($_data['group_sync']) ? intval($_data['group_sync']) : 0;
+      $_data['group_autocreate']     = isset($_data['group_autocreate']) ? intval($_data['group_autocreate']) : 0;
+      $_data['group_default_domain'] = isset($_data['group_default_domain']) ? strtolower(trim($_data['group_default_domain'])) : "";
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
@@ -2463,7 +2474,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
+          $_data['group_paths']       = isset($_data['group_paths']) ? trim($_data['group_paths']) : "";
+          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'group_paths'), $sync_settings);
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
@@ -2484,7 +2496,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning');
+          $_data['id_attribute']      = isset($_data['id_attribute']) ? strtolower(trim($_data['id_attribute'])) : "";
+          $_data['disabled_filter']   = isset($_data['disabled_filter']) ? trim($_data['disabled_filter']) : "";
+          $_data['group_basedn']      = isset($_data['group_basedn']) ? trim($_data['group_basedn']) : "";
+          $_data['group_filter']      = isset($_data['group_filter']) ? trim($_data['group_filter']) : "";
+          $_data['group_name_attribute'] = (!empty($_data['group_name_attribute'])) ? strtolower(trim($_data['group_name_attribute'])) : "cn";
+          $_data['group_member_mode'] = isset($_data['group_member_mode']) && in_array($_data['group_member_mode'], array('memberof', 'member', 'ad_chain')) ? $_data['group_member_mode'] : "memberof";
+          $_data['group_member_attribute'] = (!empty($_data['group_member_attribute'])) ? strtolower(trim($_data['group_member_attribute'])) : "member";
+          $required_settings          = array_merge(array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning', 'id_attribute', 'disabled_filter', 'group_basedn', 'group_filter', 'group_name_attribute', 'group_member_mode', 'group_member_attribute'), $sync_settings);
         break;
       }
 
@@ -2505,6 +2524,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $stmt->bindParam(':key', $setting);
         $stmt->bindParam(':value', $_data[$setting]);
         $stmt->execute();
+      }
+      // Stored LDAP ids of another id attribute never match again, the mailboxes are linked by email again
+      if ($_data['authsource'] == 'ldap' && ($iam_settings['id_attribute'] ?? '') != $_data['id_attribute']) {
+        $pdo->query("UPDATE `identity_link` SET `external_id` = NULL WHERE `provider` = 'ldap'");
       }
       $pdo->commit();
 
@@ -2533,19 +2556,26 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_data['mappers'] = (!is_array($_data['mappers'])) ? array($_data['mappers']) : $_data['mappers'];
         $_data['templates'] = (!is_array($_data['templates'])) ? array($_data['templates']) : $_data['templates'];
 
-        $mappers = array_filter($_data['mappers']);
-        $templates = array_filter($_data['templates']);
-        if (count($mappers) == count($templates)){
-          $mappers = json_encode($mappers);
-          $templates = json_encode($templates);
-
-          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('mappers', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-          $stmt->bindParam(':value', $mappers);
-          $stmt->execute();
-          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-          $stmt->bindParam(':value', $templates);
-          $stmt->execute();
+        // Keep mapper/template pairs together, incomplete rows are dropped
+        $mappers = array();
+        $templates = array();
+        $template_values = array_values($_data['templates']);
+        foreach (array_values($_data['mappers']) as $i => $mapper) {
+          if ((string)$mapper === '' || (string)($template_values[$i] ?? '') === '') {
+            continue;
+          }
+          $mappers[] = $mapper;
+          $templates[] = $template_values[$i];
         }
+        $mappers = json_encode($mappers);
+        $templates = json_encode($templates);
+
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('mappers', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $mappers);
+        $stmt->execute();
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $templates);
+        $stmt->execute();
       }
 
       // delete old access_token
@@ -2670,6 +2700,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       $stmt = $pdo->query("DELETE FROM identity_provider;");
+      $stmt = $pdo->query("DELETE FROM identity_link;");
+      $stmt = $pdo->query("DELETE FROM identity_sync_run;");
 
       $_SESSION['return'][] =  array(
         'type' => 'success',
@@ -2790,8 +2822,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       // get mapped template
-      $user_template = $info['mailcow_template'];
-      $mapper_key = array_search($user_template, $iam_settings['mappers']);
+      $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
+      $mapped_template = $idp_login->mappedTemplate($info['mailcow_template'] ?? array());
 
       // token valid, get mailbox
       $stmt = $pdo->prepare("SELECT
@@ -2813,13 +2845,23 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           );
           return false;
         }
-        if ($mapper_key !== false) {
+        if (!$idp_login->verifyLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+          clear_session();
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], 'The mailbox is linked to another IdP user'),
+            'msg' => 'login_failed'
+          );
+          return false;
+        }
+        $update_template = $idp_login->templateFor($info['email'], $mapped_template);
+        if ($update_template !== null) {
           // update user
           $_SESSION['access_all_exception'] = '1';
           mailbox('edit', 'mailbox_from_template', array(
             'username' => $info['email'],
             'name' => $info['name'],
-            'template' => $iam_settings['templates'][$mapper_key]
+            'template' => $update_template
           ));
           $_SESSION['access_all_exception'] = '0';
 
@@ -2834,11 +2876,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $stmt->execute(array(':user' => $info['email']));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        if ($row['active'] != 1 || $row['d_active'] != 1) {
+        if ($row['active'] != 1 || $row['d_active'] != 1 || (json_decode($row['attributes'], true)['shared'] ?? '0') == '1') {
           clear_session();
           $_SESSION['return'][] =  array(
             'type' => 'danger',
-            'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive'),
+            'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive or shared'),
             'msg' => 'login_failed'
           );
           return false;
@@ -2864,7 +2906,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
-      if (empty($iam_settings['mappers']) || empty($user_template) || $mapper_key === false){
+      if ($mapped_template === null){
         if (!empty($iam_settings['default_template'])) {
           $mbox_template = $iam_settings['default_template'];
         } else {
@@ -2877,7 +2919,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           return false;
         }
       } else {
-        $mbox_template = $iam_settings['templates'][$mapper_key];
+        $mbox_template = $mapped_template;
+      }
+
+      if (!$idp_login->mayCreate($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'The IdP user is linked to another mailbox'),
+          'msg' => 'login_failed'
+        );
+        return false;
       }
 
       // create mailbox
@@ -2899,6 +2951,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
+      $idp_login->storeLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''));
 
       // double check if mailbox and domain is active
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
@@ -2950,6 +3003,26 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+
+      // The mailbox may have been deleted or deactivated since the login
+      $stmt = $pdo->prepare("SELECT `mailbox`.`authsource` FROM `mailbox`
+        INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active` = '1'
+          AND `domain`.`active` = '1'
+          AND COALESCE(JSON_UNQUOTE(JSON_VALUE(`mailbox`.`attributes`, '$.shared')), '0') != '1'
+          AND `username` = :user");
+      $stmt->execute(array(':user' => $info['email']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (!$row || !in_array($row['authsource'], array('keycloak', 'generic-oidc'))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'Mailbox or domain is inactive or not of type OIDC'),
           'msg' => 'refresh_login_failed'
         );
         return false;

@@ -4,7 +4,20 @@ function init_db_schema()
   try {
     global $pdo;
 
-    $db_version = "22102026_1200";
+    // Defined once as DB_VERSION in docker-compose.yml
+    $db_version = (string)getenv('DB_VERSION');
+    if ($db_version === '') {
+      if (php_sapi_name() == "cli") {
+        echo "DB initialization failed: DB_VERSION is not set" . PHP_EOL;
+      } else {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__),
+          'msg' => 'Database not initialized: DB_VERSION is not set.'
+        );
+      }
+      return false;
+    }
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -174,34 +187,6 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
-      "alias" => array(
-        "cols" => array(
-          "id" => "INT NOT NULL AUTO_INCREMENT",
-          "address" => "VARCHAR(255) NOT NULL",
-          "goto" => "TEXT NOT NULL",
-          "domain" => "VARCHAR(255) NOT NULL",
-          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
-          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
-          "private_comment" => "TEXT",
-          "public_comment" => "TEXT",
-          "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "internal" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "sender_allowed" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("id")
-          ),
-          "unique" => array(
-            "address" => array("address")
-          ),
-          "key" => array(
-            "domain" => array("domain")
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
       "api" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
@@ -222,20 +207,6 @@ function init_db_schema()
           ),
           "unique" => array(
             "api_key" => array("api_key")
-          )
-        ),
-        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
-      ),
-      "sender_acl" => array(
-        "cols" => array(
-          "id" => "INT NOT NULL AUTO_INCREMENT",
-          "logged_in_as" => "VARCHAR(255) NOT NULL",
-          "send_as" => "VARCHAR(255) NOT NULL",
-          "external" => "TINYINT(1) NOT NULL DEFAULT '0'"
-        ),
-        "keys" => array(
-          "primary" => array(
-            "" => array("id")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -414,6 +385,360 @@ function init_db_schema()
           ),
           "unique" => array(
             "tag_name" => array("tag_name", "username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox_group" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(100) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          // distribution address, maintained as alias row with group_id
+          "address" => "VARCHAR(255) NULL DEFAULT NULL",
+          // members may send as the address
+          "sender_allowed" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "internal" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "template_id" => "INT NULL DEFAULT NULL",
+          // highest priority wins when a mailbox is in several groups with a template
+          "priority" => "INT NOT NULL DEFAULT '0'",
+          // IdP group id: set = memberships are synced from the IdP
+          "idp_ref" => "VARCHAR(255) NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "domain_name" => array("domain", "name"),
+            "address" => array("address"),
+            "idp_ref" => array("idp_ref")
+          ),
+          "fkey" => array(
+            "fk_mailbox_group_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mailbox_group_template" => array(
+              "col" => "template_id",
+              "ref" => "templates.id",
+              "delete" => "SET NULL",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox_group_member" => array(
+        "cols" => array(
+          "group_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "source" => "ENUM('manual', 'idp') NOT NULL DEFAULT 'manual'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("group_id", "username")
+          ),
+          "key" => array(
+            "username" => array("username")
+          ),
+          "fkey" => array(
+            "fk_mailbox_group_member_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mailbox_group_member_mailbox" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox_group_send_as" => array(
+        "cols" => array(
+          "group_id" => "INT NOT NULL",
+          // address or @domain the members may send as
+          "address" => "VARCHAR(255) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("group_id", "address")
+          ),
+          "key" => array(
+            "address" => array("address")
+          ),
+          "fkey" => array(
+            "fk_mailbox_group_send_as_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox_group_imap_grant" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "group_id" => "INT NOT NULL",
+          // mailbox whose folders the members may access
+          "owner" => "VARCHAR(255) NOT NULL",
+          "rights" => "ENUM('read', 'write', 'full') NOT NULL DEFAULT 'read'",
+          // 1 = the group-grants cron subscribes the members to the folders (once per member)
+          "subscribe" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          // removing = the ACL is deleted in Dovecot, then the row
+          "state" => "ENUM('pending', 'applied', 'failed', 'removing') NOT NULL DEFAULT 'pending'",
+          "last_error" => "TEXT",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "group_owner" => array("group_id", "owner")
+          ),
+          "key" => array(
+            "owner" => array("owner")
+          ),
+          "fkey" => array(
+            "fk_mailbox_group_imap_grant_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mailbox_group_imap_grant_owner" => array(
+              "col" => "owner",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "mailbox_group_sogo_grant" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "group_id" => "INT NOT NULL",
+          "owner" => "VARCHAR(255) NOT NULL",
+          "folder_type" => "ENUM('Calendar', 'Contacts') NOT NULL DEFAULT 'Calendar'",
+          "folder" => "VARCHAR(255) NOT NULL DEFAULT 'personal'",
+          "access" => "ENUM('read', 'write') NOT NULL DEFAULT 'read'",
+          // 1 = the group-grants cron subscribes the members to the folder (once per member)
+          "subscribe" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          // pending = the owner has not opened SOGo yet, the folder does not exist
+          "state" => "ENUM('pending', 'applied', 'failed') NOT NULL DEFAULT 'pending'",
+          "last_error" => "TEXT",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "group_folder" => array("group_id", "owner", "folder_type", "folder")
+          ),
+          "key" => array(
+            "owner" => array("owner")
+          ),
+          "fkey" => array(
+            "fk_mailbox_group_sogo_grant_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mailbox_group_sogo_grant_owner" => array(
+              "col" => "owner",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // sogo_acl rows written for a grant, so only those are ever removed again. No FK: rows of grants
+      // removed by a cascade stay until their sogo_acl rows are deleted (GroupRepository::cleanupSogoAcl())
+      "mailbox_group_sogo_acl" => array(
+        "cols" => array(
+          "acl_id" => "INT NOT NULL",
+          "grant_id" => "INT NOT NULL",
+          "c_uid" => "VARCHAR(255) NOT NULL",
+          "c_role" => "VARCHAR(80) NOT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("acl_id")
+          ),
+          "key" => array(
+            "grant_id" => array("grant_id")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // IMAP and SOGo subscriptions made by the group-grants cron. No FK: rows of grants removed by a cascade stay
+      // until the members are unsubscribed again
+      "mailbox_group_subscription" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "kind" => "ENUM('imap', 'sogo') NOT NULL",
+          // mailbox_group_imap_grant.id or mailbox_group_sogo_grant.id
+          "grant_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "owner" => "VARCHAR(255) NOT NULL",
+          // SOGo: Calendar/<id> or Contacts/<id>, IMAP: empty (all folders of the owner)
+          "folder" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "grant_username" => array("kind", "grant_id", "username")
+          ),
+          "key" => array(
+            "username" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "identity_link" => array(
+        "cols" => array(
+          "username" => "VARCHAR(255) NOT NULL",
+          "provider" => "VARCHAR(20) NOT NULL",
+          // Keycloak user id (= OIDC sub), LDAP objectGUID/entryUUID/... or dn:<dn>, OIDC sub; NULL = not linked yet
+          "external_id" => "VARCHAR(255) NULL DEFAULT NULL",
+          // 1 = the sync set the mailbox to login disabled (active = 2)
+          "idp_disabled" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          // first complete sync run that did not list the user
+          "missing_since" => "DATETIME NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("username")
+          ),
+          "unique" => array(
+            "provider_external_id" => array("provider", "external_id")
+          ),
+          "fkey" => array(
+            "fk_identity_link_mailbox" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "identity_sync_run" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "provider" => "VARCHAR(20) NOT NULL DEFAULT ''",
+          // run = scheduled or requested, preview = dry run, force = without the deactivation limit
+          "mode" => "ENUM('run', 'preview', 'force') NOT NULL DEFAULT 'run'",
+          "status" => "ENUM('pending', 'running', 'ok', 'blocked', 'error') NOT NULL DEFAULT 'pending'",
+          "requested_by" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "started" => "DATETIME NULL DEFAULT NULL",
+          "finished" => "DATETIME NULL DEFAULT NULL",
+          "summary" => "MEDIUMTEXT"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "status" => array("status")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // alias and sender_acl come after mailbox_group (foreign keys)
+      "alias" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "address" => "VARCHAR(255) NOT NULL",
+          "goto" => "TEXT NOT NULL",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "private_comment" => "TEXT",
+          "public_comment" => "TEXT",
+          "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "internal" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "sender_allowed" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          // set = distribution address of a mailbox group, read-only in the alias UI
+          "group_id" => "INT NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "address" => array("address"),
+            "group_id" => array("group_id")
+          ),
+          "key" => array(
+            "domain" => array("domain")
+          ),
+          "fkey" => array(
+            "fk_alias_mailbox_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "sender_acl" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "logged_in_as" => "VARCHAR(255) NOT NULL",
+          "send_as" => "VARCHAR(255) NOT NULL",
+          "external" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          // set = granted through a mailbox group, rebuilt by the group module
+          "group_id" => "INT NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "group_id" => array("group_id")
+          ),
+          "fkey" => array(
+            "fk_sender_acl_mailbox_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -727,7 +1052,8 @@ function init_db_schema()
           "mailbox_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
-          "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "mailbox_groups" => "TINYINT(1) NOT NULL DEFAULT '1'"
         ),
         "keys" => array(
           "primary" => array(
@@ -1806,6 +2132,18 @@ function init_db_schema()
 
     // fill quarantine.qhash
     $pdo->query("UPDATE `quarantine` SET `qhash` = SHA2(CONCAT(`id`, `qid`), 256) WHERE ISNULL(`qhash`)");
+
+    // Group rows that lost their group_id (init_db of an older version ran) belong to their group again, so the
+    // group can update its alias and revokes send-as rights of former members. An active group without rows of its
+    // own for a grant only exists after such a downgrade; manual rows next to group rows stay manual.
+    $pdo->query("UPDATE `alias` a JOIN `mailbox_group` g ON g.`address` = a.`address` SET a.`group_id` = g.`id` WHERE a.`group_id` IS NULL");
+    $pdo->query("UPDATE `sender_acl` s
+      JOIN `mailbox_group_member` m ON m.`username` = s.`logged_in_as`
+      JOIN `mailbox_group` g ON g.`id` = m.`group_id` AND g.`active` = 1
+      JOIN `mailbox_group_send_as` ga ON ga.`group_id` = m.`group_id` AND ga.`address` = s.`send_as`
+      SET s.`group_id` = m.`group_id`
+      WHERE s.`group_id` IS NULL AND s.`external` = 0
+        AND NOT EXISTS (SELECT 1 FROM (SELECT `group_id` FROM `sender_acl` WHERE `group_id` IS NOT NULL) own WHERE own.`group_id` = m.`group_id`)");
 
   } catch (PDOException $e) {
     if (php_sapi_name() == "cli") {

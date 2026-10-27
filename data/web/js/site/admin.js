@@ -934,6 +934,12 @@ jQuery(function($){
       $('#keycloak_settings').addClass('d-none');
     }
   });
+  // LDAP: one select for the excluding use_ssl and use_tls (select only, bootstrap-select copies the class to its wrapper)
+  $('select.iam_ldap_encryption').on('change', function() {
+    var $form = $(this).closest('form');
+    $form.find('input[name="use_ssl"]').val(this.value === 'ssl' ? 1 : 0);
+    $form.find('input[name="use_tls"]').val(this.value === 'tls' ? 1 : 0);
+  });
   function addAttributeMappingRow(list_id, del_class, e) {
     e.preventDefault();
 

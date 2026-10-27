@@ -30,6 +30,15 @@ Core/                     shared by all modules
 
 Example: `Imapsync/` (sync jobs, sync sources, OAuth). Use it as the template for new modules.
 `ApiKey/` (API keys incl. the service keys of mailcow.conf) is a small module with the same layout.
+`MailboxGroup/` (mailbox groups) keeps its own tables as source of truth and maintains rows the legacy code and
+Postfix read (`alias`, `sender_acl`, tagged with `group_id`); calls into procedural code go through `Legacy/`.
+Shares become Dovecot ACLs on `group=mcg_<id>` (userdb `acl_groups`) and `sogo_acl` rows tracked in a ledger.
+`Dovecot/` (doveadm through dockerapi: ACLs, subscriptions, auth cache) and `Sogo/` (user view, cache, sogo-tool
+through dockerapi) are used by other modules instead of calling `docker()` or the SOGo functions themselves.
+`Identity/` (IdP links, sync runs, offboarding) lists Keycloak/LDAP through `Directory/` adapters, decides in the
+side-effect free `SyncPlanner` and is run by the `identity-sync.php` cron.
+`Auth/` (logins) holds for now the IdP login steps the legacy login flows call (link checks fail closed, group
+template before the attribute mapping); the auth logic of the function files moves here step by step.
 
 ## Layers and rules
 

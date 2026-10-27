@@ -24,6 +24,7 @@
                 <form class="form-horizontal" data-id="editmailbox" role="form" method="post">
                   <input type="hidden" value="default" name="sender_acl">
                   <input type="hidden" value="0" name="force_pw_update">
+                  <input type="hidden" value="0" name="shared">
                   <input type="hidden" value="0" name="force_tfa">
                   <input type="hidden" value="0" name="sogo_access">
                   <input type="hidden" value="0" name="protocol_access">
@@ -46,6 +47,20 @@
                       </select>
                     </div>
                   </div>
+                  {% if result.authsource != 'mailcow' and identity_link %}
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.edit.iam_link }}</label>
+                    <div class="col-sm-10">
+                      {% if identity_link.external_id %}<code>{{ identity_link.external_id }}</code>{% else %}<span class="text-muted">{{ lang.edit.iam_not_linked }}</span>{% endif %}
+                      {% if identity_link.idp_disabled == 1 %}<span class="badge bg-warning text-dark">{{ lang.edit.iam_idp_disabled }}</span>{% endif %}
+                      {% if identity_link.missing_since %}<span class="badge bg-danger">{{ lang.edit.iam_missing_since }} {{ identity_link.missing_since }}</span>{% endif %}
+                      {% if mailcow_cc_role == 'admin' and identity_link.external_id %}
+                      <a href="#" class="btn btn-sm btn-secondary ms-2" data-action="delete_selected" data-id="identity_link" data-item="{{ mailbox }}" data-api-url="delete/identity-link"><i class="bi bi-link-45deg"></i> {{ lang.edit.iam_unlink }}</a>
+                      {% endif %}
+                      <small class="text-muted d-block">{{ lang.edit.iam_link_info }}</small>
+                    </div>
+                  </div>
+                  {% endif %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="name">{{ lang.edit.full_name }}</label>
                     <div class="col-sm-10">
@@ -121,6 +136,22 @@
                       <small class="text-muted d-block">{{ lang.edit.sender_acl_info|raw }}</small>
                     </div>
                   </div>
+                  {% if mailbox_groups.groups %}
+                  <div class="row mb-2">
+                    <label class="control-label col-sm-2">{{ lang.groups.memberships }}</label>
+                    <div class="col-sm-10">
+                      {% for group in mailbox_groups.groups %}
+                      <a href="/edit/mailbox-group/{{ group.id }}" class="badge bg-secondary text-decoration-none">{% if group.source == 'idp' %}<i class="bi bi-cloud" title="{{ lang.groups.idp_member }}"></i> {% endif %}{{ group.name }}{% if group.address %} &lt;{{ group.address }}&gt;{% endif %}</a>
+                      {% endfor %}
+                      {% if mailbox_groups.template %}
+                      <small class="text-muted d-block">{{ lang.groups.effective_template }}: {{ mailbox_groups.template }}</small>
+                      {% endif %}
+                      {% if mailbox_groups.send_as %}
+                      <small class="text-muted d-block">{{ lang.groups.send_as_groups }}: {{ mailbox_groups.send_as|join(', ') }}</small>
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% endif %}
                   {% if acl.mailbox_relayhost == '1' %}
                   <div class="row mb-2">
                     <label class="control-label col-sm-2" for="relayhost">{{ lang.edit.relayhost }}</label>
@@ -308,6 +339,14 @@
                         <option value="2"{% if result.active == '2' %} selected{% endif %}>{{ lang.edit.disable_login }}</option>
                         <option value="0"{% if result.active == '0' %} selected{% endif %}>{{ lang.edit.inactive }}</option>
                       </select>
+                    </div>
+                  </div>
+                  <div class="row mt-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div class="form-check">
+                        <label><input type="checkbox" class="form-check-input" value="1" name="shared"{% if result.attributes.shared == '1' %} checked{% endif %}> {{ lang.mailbox.shared_mailbox }}</label>
+                        <small class="text-muted">{{ lang.mailbox.shared_mailbox_info }}</small>
+                      </div>
                     </div>
                   </div>
                   <div class="row mt-2">

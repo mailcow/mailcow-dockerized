@@ -120,6 +120,10 @@ $(document).ready(function() {
       }
     });
   });
+  // Shared mailboxes need no password, the server sets a random one
+  $('#add_mailbox_shared').on('change', function() {
+    $(this).closest('form').find('input[name="password"], input[name="password2"]').prop('required', !this.checked);
+  });
   // @Open Mailbox add modal
   $('#addMailboxModal').on('show.bs.modal', function(e) {
     $.ajax({
@@ -996,6 +1000,9 @@ jQuery(function($){
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
             };
             item.username = escapeHtml(item.username);
+            if (item.attributes && item.attributes.shared == '1') {
+              item.username += ' <span class="badge bg-secondary">' + escapeHtml(lang.shared_mailbox) + '</span>';
+            }
             item.name = escapeHtml(item.name);
 
             if (Array.isArray(item.tags)){
@@ -1926,6 +1933,12 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            if (item.group_id) {
+              // Distribution address of a group: changed through the group
+              item.action = '<a href="/edit/mailbox-group/' + encodeURIComponent(item.group_id) + '" class="btn btn-sm btn-xs-lg btn-secondary"><i class="bi bi-people"></i> ' +
+                escapeHtml((lang.groups && lang.groups.managed_alias ? lang.groups.managed_alias : '%s').replace('%s', item.group_name)) + '</a>';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
+            }
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
             if (item.public_comment !== null) {
               item.public_comment = escapeHtml(item.public_comment);
@@ -2479,6 +2492,7 @@ jQuery(function($){
   onVisible("[id^=aliasdomain_table]", () => draw_aliasdomain_table());
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
   onVisible("[id^=imapsync_source_table]", () => mailcowImapsync.drawSourceTable(role === 'admin' || acl_data.syncjobs === 1));
+  onVisible("[id^=mailbox_group_table]", () => mailcowGroups.drawTable());
   onVisible("[id^=filter_table]", () => draw_filter_table());
   onVisible("[id^=bcc_table]", () => draw_bcc_table());
   onVisible("[id^=recipient_map_table]", () => draw_recipient_map_table());
