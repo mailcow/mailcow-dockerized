@@ -36,7 +36,18 @@ function check_login($user, $pass, $extra = null) {
 
   // Try validate user
   if (!isset($role) || $role == "user") {
-    $result = user_login($user, $pass, $extra);
+    try {
+      $result = user_login($user, $pass, $extra);
+    } catch (\Mailcow\Auth\IdpUnavailable $e) {
+      // no failed login, netfilter must not count it
+      error_log("mailcow UI: Identity provider unavailable for " . $user . " by " . $_SERVER['REMOTE_ADDR'] . ": " . $e->getMessage());
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
+        'msg' => 'iam_unavailable'
+      );
+      return false;
+    }
     if ($result !== false) {
       $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
       set_sasl_log($user, $real_rip, $extra['service']);
@@ -516,11 +527,14 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     return false;
   }
   if (!$iam_provider) {
-    return false;
+    throw new \Mailcow\Auth\IdpUnavailable('Keycloak is not configured completely');
   }
 
   // get access_token for service account of mailcow client
   $admin_token = identity_provider("get-keycloak-admin-token");
+  if (!$admin_token) {
+    throw new \Mailcow\Auth\IdpUnavailable('Could not get an admin token from Keycloak');
+  }
 
   // get the mailcow_password attribute from keycloak user
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
@@ -541,13 +555,9 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   $users = json_decode(curl_exec($curl), true);
   $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
+  // the password is checked below, a failed request is never a wrong password
   if ($code != 200) {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', 'Identity Provider returned HTTP ' . $code),
-      'msg' => 'generic_server_error'
-    );
-    return false;
+    throw new \Mailcow\Auth\IdpUnavailable('Keycloak returned HTTP ' . $code);
   }
   // exact=true can still return several users with that email
   if (!is_array($users) || count($users) != 1) {
@@ -687,7 +697,8 @@ function ldap_mbox_login($user, $pass, $extra = null){
     return false;
   }
   if (!$iam_provider) {
-    return false;
+    // identity_provider('init') could not connect
+    throw new \Mailcow\Auth\IdpUnavailable('No connection to the LDAP server');
   }
 
   try {
@@ -700,33 +711,17 @@ function ldap_mbox_login($user, $pass, $extra = null){
         \Mailcow\Identity\Directory\LdapDirectory::idAttributes($iam_settings['id_attribute'] ?? '')))));
 
     $user_res = $ldap_query->firstOrFail();
-  } catch (Exception $e) {
-    // clear $_SESSION['return'] to not leak data
-    $_SESSION['return'] = array();
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
-      'msg' => 'generic_server_error'
-    );
+  } catch (\LdapRecord\Query\ObjectNotFoundException $e) {
     return false;
-  }
-  try {
-    if (!$iam_provider->auth()->attempt($user_res['dn'], $pass)) {
-      return false;
-    }
   } catch (Exception $e) {
-    // clear $_SESSION['return'] to not leak data
-    $_SESSION['return'] = array();
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__, $user, '*', $e->getMessage()),
-      'msg' => 'generic_server_error'
-    );
+    throw new \Mailcow\Auth\IdpUnavailable('LDAP search failed: ' . $e->getMessage(), 0, $e);
+  }
+  $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
+  if (!$idp_login->verifyLdapPassword($iam_provider, (string)$user_res['dn'], (string)$pass)) {
     return false;
   }
 
   // get mapped template
-  $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
   $mapped_template = $idp_login->mappedTemplate($user_res[$iam_settings['attribute_field']] ?? array());
   $external_id = \Mailcow\Identity\Directory\LdapDirectory::entryId($user_res, $iam_settings['id_attribute'] ?? '');
 

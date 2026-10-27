@@ -41,6 +41,12 @@ function auth_password_verify(request, password)
     return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream unreachable"
   end
 
+  -- 5xx: the backend or the identity provider cannot answer, a temporary failure and no failed login
+  if c >= 500 then
+    dovecot.i_info("HTTP request to auth backend failed with " .. tostring(c) .. " for user " .. request.user)
+    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream unavailable"
+  end
+
   if c ~= 200 and c ~= 401 then
     dovecot.i_info("HTTP request failed with " .. tostring(c) .. " for user " .. request.user)
     return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Upstream error"

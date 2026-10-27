@@ -101,7 +101,16 @@ if ($result === false){
   // Init Identity Provider
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');
-  $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']));
+  try {
+    $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']));
+  } catch (\Mailcow\Auth\IdpUnavailable $e) {
+    // temporary failure for Dovecot, no failed login
+    error_log("MAILCOWAUTH: Identity provider unavailable for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip'] . ": " . $e->getMessage());
+    http_response_code(503); // Service Unavailable
+    echo json_encode($return);
+    session_destroy();
+    exit;
+  }
   if ($result) {
     error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
     set_sasl_log($post['username'], $post['real_rip'], $post['service']);
