@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mailcow\Tests\Core;
 
+use Mailcow\Core\AccessDenied;
 use Mailcow\Core\Context;
 use Mailcow\Tests\Support\LegacyAclCalls;
 use PHPUnit\Framework\TestCase;
@@ -82,6 +83,30 @@ class ContextTest extends TestCase
         $this->assertNull($context->username);
         $this->assertFalse($context->isAdmin());
         $this->assertFalse($context->hasAcl('syncjobs'));
+    }
+
+    public function testAdminRightsComeFromTheRoleOrAccessAll(): void
+    {
+        $this->assertTrue((new Context('admin', 'admin'))->hasAdminRights());
+        $this->assertTrue((new Context('user', 'user@example.org', [], true))->hasAdminRights());
+        $this->assertFalse((new Context('domainadmin', 'da'))->hasAdminRights());
+        $this->assertFalse(Context::system()->hasAdminRights());
+    }
+
+    public function testReadOnlyApiKeysMayOnlyRead(): void
+    {
+        $readOnly = new Context('admin', 'admin', [], false, 'ro');
+        $readOnly->requireAdmin(false);
+        (new Context('admin', 'admin', [], false, 'rw'))->requireAdmin();
+
+        $this->expectException(AccessDenied::class);
+        $readOnly->requireAdmin();
+    }
+
+    public function testRequireAdminDeniesOtherRoles(): void
+    {
+        $this->expectException(AccessDenied::class);
+        (new Context('domainadmin', 'da'))->requireAdmin(false);
     }
 
     public function testBridgePassesUsernameAndRoleToTheLegacyFunctions(): void
