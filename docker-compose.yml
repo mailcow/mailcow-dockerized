@@ -1,3 +1,6 @@
+# Version of the database schema
+x-db-version: &db_version DB_VERSION=26102026_1200
+
 services:
 
     unbound-mailcow:
@@ -150,6 +153,7 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - *db_version
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
@@ -188,12 +192,12 @@ services:
       restart: always
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "0 * * * * *"
-        ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
-        ofelia.job-exec.phpfpm_ldap_sync.schedule: "0 * * * * *"
-        ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_identity_sync.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_identity_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_identity_sync.command: "/bin/bash -c \"php /crons/identity-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_group_grants.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_group_grants.no-overlap: "true"
+        ofelia.job-exec.phpfpm_group_grants.command: "/bin/bash -c \"php /crons/group-grants.php || exit 0\""
         ofelia.job-exec.phpfpm_imapsync_oauth_refresh.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_imapsync_oauth_refresh.no-overlap: "true"
         ofelia.job-exec.phpfpm_imapsync_oauth_refresh.command: "/bin/bash -c \"php /crons/imapsync-oauth-refresh.php || exit 0\""
@@ -205,6 +209,7 @@ services:
     sogo-mailcow:
       image: ghcr.io/mailcow/sogo:5.12.12-1
       environment:
+        - *db_version
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -227,7 +232,6 @@ services:
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-shortlogo.svg:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
         - ./data/conf/sogo/custom-fulllogo.svg:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg:z
@@ -278,6 +282,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
+        - *db_version
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}

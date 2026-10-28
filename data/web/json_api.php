@@ -258,6 +258,9 @@ if (isset($_GET['query'])) {
         case "api-key":
           process_add_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->addKey($attr));
         break;
+        case "mailbox-group":
+          process_add_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addGroup($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -816,6 +819,22 @@ if (isset($_GET['query'])) {
 
               default:
                 process_get_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($object));
+              break;
+            }
+          break;
+
+          case "mailbox-group":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroups($extra));
+              break;
+
+              case "member":
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships((string)$extra));
+              break;
+
+              default:
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroup($object));
               break;
             }
           break;
@@ -1527,11 +1546,16 @@ if (isset($_GET['query'])) {
             process_get_return($score);
           break;
           case "identity-provider":
-            if($_SESSION['mailcow_cc_role'] === 'admin') {
+            if ($object == "sync-status") {
+              process_get_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->getStatus());
+            } elseif($_SESSION['mailcow_cc_role'] === 'admin') {
               process_get_return($iam_settings);
             } else {
               process_get_return(null);
             }
+          break;
+          case "identity-link":
+            process_get_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->getLink((string)$object));
           break;
         break;
         // return no route found if no case is matched
@@ -1726,6 +1750,9 @@ if (isset($_GET['query'])) {
         case "api-key":
           process_delete_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->deleteKeys($items));
         break;
+        case "mailbox-group":
+          process_delete_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->deleteGroups($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -1825,6 +1852,9 @@ if (isset($_GET['query'])) {
         case "identity-provider":
           process_delete_return(identity_provider('delete'));
         break;
+        case "identity-link":
+          process_delete_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->unlink($items));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -1893,6 +1923,9 @@ if (isset($_GET['query'])) {
         break;
         case "api-key":
           process_edit_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->editKeys($items, $attr));
+        break;
+        case "mailbox-group":
+          process_edit_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->editGroups($items, $attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
@@ -2080,6 +2113,9 @@ if (isset($_GET['query'])) {
         break;
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
+        break;
+        case "identity-provider-sync":
+          process_edit_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->requestRun($attr));
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));

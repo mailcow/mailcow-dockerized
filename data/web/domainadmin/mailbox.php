@@ -10,6 +10,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 
 
 $js_minifier->add('/web/js/site/imapsync.js');
+$js_minifier->add('/web/js/site/groups.js');
 $js_minifier->add('/web/js/site/mailbox.js');
 $js_minifier->add('/web/js/presets/sieveMailbox.js');
 $js_minifier->add('/web/js/site/pwgen.js');

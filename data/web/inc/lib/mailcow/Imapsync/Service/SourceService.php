@@ -66,7 +66,7 @@ class SourceService
 
     public function canEdit(Source $source): bool
     {
-        if ($this->context->accessAll || $this->context->isAdmin() || $source->createdBy === $this->context->username) {
+        if ($this->context->hasAdminRights() || $source->createdBy === $this->context->username) {
             return true;
         }
         // A domain admin may manage sources created by mailboxes of his domains

@@ -1,0 +1,142 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+{% set ro = not result.can_edit %}
+{% set editable_members = [] %}
+{% set fixed_members = [] %}
+{% for member in result.members %}
+  {% if member.source == 'idp' or member.username not in mailboxes %}
+    {% set fixed_members = fixed_members|merge([member]) %}
+  {% else %}
+    {% set editable_members = editable_members|merge([member.username]) %}
+  {% endif %}
+{% endfor %}
+<h4>{{ lang.groups.group }}: {{ result.name }}</h4>
+{% if result.idp_ref %}
+<div class="alert alert-secondary" role="alert"><span class="badge bg-info">{{ lang.groups.idp }}</span> {{ lang.groups.idp_ref }}: <code>{{ result.idp_ref }}</code></div>
+{% endif %}
+<form data-id="edit_mailbox_group" class="form-horizontal" role="form" method="post" autocapitalize="none" autocorrect="off">
+  <input type="hidden" value="0" name="active">
+  <input type="hidden" value="0" name="sender_allowed">
+  <input type="hidden" value="0" name="sogo_visible">
+  <input type="hidden" value="0" name="internal">
+  <input type="hidden" value="0" name="reapply_template">
+  {% if not ro %}
+  {# an empty selection still sends the field, so all editable members can be removed #}
+  <input type="hidden" value="" name="members">
+  {% endif %}
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_domain">{{ lang.groups.domain }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="group_domain" value="{{ result.domain }}" disabled>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_name">{{ lang.groups.name }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="name" id="group_name" value="{{ result.name }}" maxlength="100" required{% if ro %} disabled{% endif %}>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_description">{{ lang.groups.description }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="description" id="group_description" value="{{ result.description }}" maxlength="255"{% if ro %} disabled{% endif %}>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_address">{{ lang.groups.address }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="address" id="group_address" value="{{ result.address }}" placeholder="name@{{ result.domain }}"{% if ro %} disabled{% endif %}>
+      <small class="text-muted">{{ lang.groups.address_hint }}</small>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_members">{{ lang.groups.members }}</label>
+    <div class="col-sm-10">
+      <select data-live-search="true" data-width="100%" name="members" id="group_members" class="form-control" multiple{% if ro %} disabled{% endif %}>
+        {% for mailbox in mailboxes %}
+        <option{% if mailbox in editable_members %} selected{% endif %}>{{ mailbox }}</option>
+        {% endfor %}
+      </select>
+      {% if fixed_members %}
+      <div class="mt-2">
+        {% for member in fixed_members %}
+        <span class="badge bg-secondary"{% if member.source == 'idp' %} title="{{ lang.groups.idp_member }}"{% endif %}>{% if member.source == 'idp' %}<i class="bi bi-cloud"></i> {% endif %}{{ member.username }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_send_as">{{ lang.groups.send_as }}</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" rows="3" name="send_as" id="group_send_as"{% if ro %} disabled{% endif %}>{{ result.send_as|join("\n") }}</textarea>
+      <small class="text-muted">{{ lang.groups.send_as_hint }}</small>
+    </div>
+  </div>
+  {% include 'edit/mailbox-group-grants.twig' with {'kind': 'imap', 'grants': result.imap_grants, 'id': 'group_imap_grants'} %}
+  {% if not skip_sogo %}
+  {% include 'edit/mailbox-group-grants.twig' with {'kind': 'sogo', 'grants': result.sogo_grants, 'id': 'group_sogo_grants'} %}
+  {% endif %}
+  <div class="row mb-2">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="sender_allowed"{% if result.sender_allowed == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.groups.sender_allowed }}</label>
+      </div>
+      {% if not skip_sogo %}
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="sogo_visible"{% if result.sogo_visible == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.groups.sogo_visible }}</label>
+      </div>
+      {% endif %}
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="internal"{% if result.internal == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.groups.internal }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="group_template">{{ lang.groups.template }}</label>
+    {% if mailcow_cc_role == 'admin' %}
+    <div class="col-sm-6">
+      <select name="template_id" id="group_template" class="form-control">
+        <option value="">{{ lang.groups.template_none }}</option>
+        {% for template in mbox_templates %}
+        <option value="{{ template.id }}"{% if template.id == result.template_id %} selected{% endif %}>{{ template.template }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <label class="control-label col-sm-2" for="group_priority">{{ lang.groups.priority }}</label>
+    <div class="col-sm-2">
+      <input type="number" class="form-control" name="priority" id="group_priority" value="{{ result.priority }}">
+    </div>
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="reapply_template"> {{ lang.groups.reapply_template }}</label>
+      </div>
+      <small class="text-muted">{{ lang.groups.template_hint }}</small>
+    </div>
+    {% else %}
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="group_template" value="{% if result.template %}{{ result.template }} ({{ lang.groups.priority }} {{ result.priority }}){% else %}{{ lang.groups.template_none }}{% endif %}" disabled>
+    </div>
+    {% endif %}
+  </div>
+  <div class="row mb-4">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.groups.active }}</label>
+      </div>
+    </div>
+  </div>
+  {% if not ro %}
+  <div class="row">
+    <div class="offset-sm-2 col-sm-10">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="edit_mailbox_group" data-item="{{ result.id }}" data-api-url='edit/mailbox-group' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+    </div>
+  </div>
+  {% endif %}
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

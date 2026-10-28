@@ -262,11 +262,19 @@ function user_login($user, $pass, $extra = null){
 
   // check if user has access to service (imap, smtp, pop3, sieve) if service is set
   $row['attributes'] = json_decode($row['attributes'], true);
+  // Shared mailboxes have no login of their own, members open them through group shares
+  if (($row['attributes']['shared'] ?? '0') == '1') {
+    return false;
+  }
   if ($extra['service'] != 'NONE') {
     $key = strtolower($extra['service']) . "_access";
     if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
       return false;
     }
+  }
+  // IdP accounts: refuse inactive mailboxes and domains before asking the IdP (no template side effects)
+  if ($row['authsource'] != 'mailcow' && ($row['active'] != '1' || $row['d_active'] != '1')) {
+    return false;
   }
   switch ($row['authsource']) {
     case 'keycloak':
@@ -462,6 +470,7 @@ function apppass_login($user, $pass, $extra = null){
       AND `mailbox`.`active` = '1'
       AND `domain`.`active` = '1'
       AND `app_passwd`.`active` = '1'
+      AND COALESCE(JSON_UNQUOTE(JSON_VALUE(`mailbox`.`attributes`, '$.shared')), '0') != '1'
       AND `app_passwd`.`mailbox` = :user"
   );
   // fetch password data
@@ -525,7 +534,11 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
       'Authorization: Bearer ' . $admin_token,
       'Content-Type: application/json'
   ));
-  $user_res = json_decode(curl_exec($curl), true)[0];
+  if (intval($iam_settings['ignore_ssl_error']) == 1) {
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+  }
+  $users = json_decode(curl_exec($curl), true);
   $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
   curl_close($curl);
   if ($code != 200) {
@@ -534,6 +547,14 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
       'log' => array(__FUNCTION__, $user, '*', 'Identity Provider returned HTTP ' . $code),
       'msg' => 'generic_server_error'
     );
+    return false;
+  }
+  // exact=true can still return several users with that email
+  if (!is_array($users) || count($users) != 1) {
+    return false;
+  }
+  $user_res = $users[0];
+  if (empty($user_res['enabled'])) {
     return false;
   }
   if (!isset($user_res['attributes']['mailcow_password']) || !is_array($user_res['attributes']['mailcow_password'])){
@@ -560,18 +581,28 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   }
 
   // get mapped template
-  $user_template = $user_res['attributes']['mailcow_template'][0];
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  $name = trim(($user_res['firstName'] ?? '') . ' ' . ($user_res['lastName'] ?? ''));
+  $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
+  $mapped_template = $idp_login->mappedTemplate($user_res['attributes']['mailcow_template'] ?? array());
 
   if (!$create) {
+    if (!$idp_login->verifyLink('keycloak', $user, (string)($user_res['id'] ?? ''))) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', 'The mailbox is linked to another IdP user'),
+        'msg' => 'generic_server_error'
+      );
+      return false;
+    }
     // login success
-    if ($mapper_key !== false) {
+    $update_template = $idp_login->templateFor($user, $mapped_template);
+    if ($update_template !== null) {
       // update user
       $_SESSION['access_all_exception'] = '1';
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user,
-        'name' => $user_res['name'],
-        'template' => $iam_settings['templates'][$mapper_key]
+        'name' => $name,
+        'template' => $update_template
       ));
       $_SESSION['access_all_exception'] = '0';
     }
@@ -590,7 +621,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     return false;
   }
   // check if matching attribute exist
-  if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
+  if ($mapped_template === null) {
     if (!empty($iam_settings['default_template'])) {
       $mbox_template = $iam_settings['default_template'];
     } else {
@@ -602,7 +633,16 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
       return false;
     }
   } else {
-    $mbox_template = $iam_settings['templates'][$mapper_key];
+    $mbox_template = $mapped_template;
+  }
+
+  if (!$idp_login->mayCreate('keycloak', $user, (string)($user_res['id'] ?? ''))) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'The IdP user is linked to another mailbox'),
+      'msg' => 'generic_server_error'
+    );
+    return false;
   }
 
   // create mailbox
@@ -610,7 +650,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   $create_res = mailbox('add', 'mailbox_from_template', array(
     'domain' => explode('@', $user)[1],
     'local_part' => explode('@', $user)[0],
-    'name' => $user_res['name'],
+    'name' => $name,
     'authsource' => 'keycloak',
     'template' => $mbox_template
   ));
@@ -624,6 +664,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
     );
     return false;
   }
+  $idp_login->storeLink('keycloak', $user, (string)($user_res['id'] ?? ''));
 
   return 'user';
 }
@@ -655,7 +696,8 @@ function ldap_mbox_login($user, $pass, $extra = null){
       $ldap_query = $ldap_query->rawFilter($iam_settings['filter']);
     }
     $ldap_query = $ldap_query->where($iam_settings['username_field'], '=', $user)
-      ->select([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname', 'dn']);
+      ->select(array_values(array_filter(array_merge([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname', 'dn'],
+        \Mailcow\Identity\Directory\LdapDirectory::idAttributes($iam_settings['id_attribute'] ?? '')))));
 
     $user_res = $ldap_query->firstOrFail();
   } catch (Exception $e) {
@@ -684,18 +726,28 @@ function ldap_mbox_login($user, $pass, $extra = null){
   }
 
   // get mapped template
-  $user_template = $user_res[$iam_settings['attribute_field']][0];
-  $mapper_key = array_search($user_template, $iam_settings['mappers']);
+  $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
+  $mapped_template = $idp_login->mappedTemplate($user_res[$iam_settings['attribute_field']] ?? array());
+  $external_id = \Mailcow\Identity\Directory\LdapDirectory::entryId($user_res, $iam_settings['id_attribute'] ?? '');
 
   if (!$create) {
+    if (!$idp_login->verifyLink('ldap', $user, $external_id)) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $user, '*', 'The mailbox is linked to another IdP user'),
+        'msg' => 'generic_server_error'
+      );
+      return false;
+    }
     // login success
-    if ($mapper_key !== false) {
+    $update_template = $idp_login->templateFor($user, $mapped_template);
+    if ($update_template !== null) {
       // update user
       $_SESSION['access_all_exception'] = '1';
       mailbox('edit', 'mailbox_from_template', array(
         'username' => $user,
         'name' => $user_res['displayname'][0],
-        'template' => $iam_settings['templates'][$mapper_key]
+        'template' => $update_template
       ));
       $_SESSION['access_all_exception'] = '0';
     }
@@ -714,7 +766,7 @@ function ldap_mbox_login($user, $pass, $extra = null){
     return false;
   }
   // check if matching attribute exist
-  if (empty($iam_settings['mappers']) || !$user_template || $mapper_key === false) {
+  if ($mapped_template === null) {
     if (!empty($iam_settings['default_template'])) {
       $mbox_template = $iam_settings['default_template'];
     } else {
@@ -726,7 +778,16 @@ function ldap_mbox_login($user, $pass, $extra = null){
       return false;
     }
   } else {
-    $mbox_template = $iam_settings['templates'][$mapper_key];
+    $mbox_template = $mapped_template;
+  }
+
+  if (!$idp_login->mayCreate('ldap', $user, $external_id)) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $user, '*', 'The IdP user is linked to another mailbox'),
+      'msg' => 'generic_server_error'
+    );
+    return false;
   }
 
   // create mailbox
@@ -748,6 +809,7 @@ function ldap_mbox_login($user, $pass, $extra = null){
     );
     return false;
   }
+  $idp_login->storeLink('ldap', $user, $external_id);
 
   return 'user';
 }

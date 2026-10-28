@@ -412,6 +412,63 @@ class DockerApi:
 
         sogo_return = container.exec_run(["/bin/bash", "-c", f"sogo-tool rename-user '{old_username}' '{new_username}'"], user='sogo')
         return self.exec_run_handler('generic', sogo_return)
+  # api call: container_post - post_action: exec - cmd: sogo - task: subscribe
+  # Subscribes users to a folder of the owner, or unsubscribes them; values are passed as environment and
+  # arguments, never through the shell
+  def container_post__exec__sogo__subscribe(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      owner = str(request_json.get('owner', ''))
+      folder = str(request_json.get('folder', ''))
+      users = [str(user) for user in request_json.get('users', []) if str(user)]
+      if not owner or not users or not re.match(r'^(Calendar|Contacts)/[A-Za-z0-9._-]+$', folder):
+        return Response(content=json.dumps({ 'type': 'danger', 'msg': 'owner, folder and users required' }, indent=4), media_type="application/json")
+      script = 'for user in "$@"; do sogo-tool manage-acl "$SOGO_ACTION" "$SOGO_OWNER" "$SOGO_FOLDER" "$user" || exit 1; done'
+      subscribe_return = container.exec_run(["/bin/bash", "-c", script, "subscribe"] + users, user='sogo',
+        environment={ 'SOGO_ACTION': 'unsubscribe' if request_json.get('unsubscribe') else 'subscribe', 'SOGO_OWNER': owner, 'SOGO_FOLDER': folder })
+      return self.exec_run_handler('generic', subscribe_return)
+  # api call: container_post - post_action: exec - cmd: sogo - task: init_user
+  # Creates the personal folders of users that never logged in to SOGo (e.g. shared mailboxes)
+  def container_post__exec__sogo__init_user(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      users = [str(user) for user in request_json.get('users', []) if str(user)]
+      if not users:
+        return Response(content=json.dumps({ 'type': 'danger', 'msg': 'users required' }, indent=4), media_type="application/json")
+      init_return = container.exec_run(["/bin/bash", "-c", 'for user in "$@"; do sogo-tool init-user "$user" || exit 1; done', "init_user"] + users, user='sogo')
+      return self.exec_run_handler('generic', init_return)
+  # api call: container_post - post_action: exec - cmd: doveadm - task: subscribe_shared
+  # Subscribes users to every folder of a mailbox shared with them (Shared/<owner>/...), or unsubscribes them
+  def container_post__exec__doveadm__subscribe_shared(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      owner = str(request_json.get('owner', ''))
+      users = [str(user) for user in request_json.get('users', []) if str(user)]
+      if not owner or not users or any(c in owner for c in '/*%'):
+        return Response(content=json.dumps({ 'type': 'danger', 'msg': 'owner and users required' }, indent=4), media_type="application/json")
+      if request_json.get('unsubscribe'):
+        # Without access the user no longer sees the folders, their names come from the owner
+        script = ('set -o pipefail; for user in "$@"; do doveadm mailbox list -u "$SUB_OWNER" | while IFS= read -r folder; do '
+          'case "$folder" in Shared|Shared/*) continue;; esac; doveadm mailbox unsubscribe -u "$user" "Shared/$SUB_OWNER/$folder" || exit 1; '
+          'done || exit 1; done')
+      else:
+        # No visible folder means no access yet (ACL, auth cache): fail, so the subscription is retried
+        script = ('for user in "$@"; do folders=$(doveadm mailbox list -u "$user" "Shared/$SUB_OWNER/*") && [ -n "$folders" ] || exit 1; '
+          'while IFS= read -r folder; do doveadm mailbox subscribe -u "$user" "$folder" || exit 1; done <<< "$folders"; done')
+      subscribe_return = container.exec_run(["/bin/bash", "-c", script, "subscribe_shared"] + users, environment={ 'SUB_OWNER': owner })
+      return self.exec_run_handler('generic', subscribe_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: get_acl
   def container_post__exec__doveadm__get_acl(self, request_json, **kwargs):
     if 'container_id' in kwargs:
@@ -439,7 +496,8 @@ class DockerApi:
           if len(acls) >= 2:
             for acl in acls[1:]:
               user_id, rights = acl.split(maxsplit=1)
-              user_id = user_id.split('=')[1]
+              # user=<name> as plain name, other identifiers (group=...) keep their type
+              user_id = user_id.split('=', 1)[1] if user_id.startswith('user=') else user_id
               mailbox_seen.append(mailbox)
               formatted_acls.append({ 'user': id, 'id': user_id, 'mailbox': mailbox, 'rights': rights.split() })
         elif "Shared" in shared_folder and "/" in shared_folder:
@@ -476,7 +534,7 @@ class DockerApi:
       id = request_json['id'].replace("'", "'\\''")
 
       if user and mailbox and id:
-        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' '{mailbox}' 'user={id}'"])
+        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' '{mailbox}' '{self.acl_identifier(id)}'"])
         return self.exec_run_handler('generic', acl_delete_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl
   def container_post__exec__doveadm__set_acl(self, request_json, **kwargs):
@@ -510,8 +568,50 @@ class DockerApi:
           rights += right + " "
 
       if user and mailbox and id and rights:
-        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' '{mailbox}' 'user={id}' {rights}"])
+        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' '{mailbox}' '{self.acl_identifier(id)}' {rights}"])
         return self.exec_run_handler('generic', acl_set_return)
+  # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl_all
+  # Sets the rights of an identifier on every folder of a mailbox, no rights = delete; values are passed as
+  # environment, never through the shell
+  def container_post__exec__doveadm__set_acl_all(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      user = request_json.get('user', '')
+      id = self.acl_identifier(request_json.get('id', ''))
+      rights = [right.lower() for right in request_json.get('rights', []) if right.lower() in self.acl_rights]
+      if not user or id in ('user=', 'group='):
+        return Response(content=json.dumps({ 'type': 'danger', 'msg': 'user and id required' }, indent=4), media_type="application/json")
+      action = 'doveadm acl set -u "$ACL_USER" "$folder" "$ACL_ID" $ACL_RIGHTS' if rights else 'doveadm acl delete -u "$ACL_USER" "$folder" "$ACL_ID"'
+      script = ('set -o pipefail; doveadm mailbox list -u "$ACL_USER" | while IFS= read -r folder; do '
+        'case "$folder" in Shared/*) continue;; esac; ' + action + ' || exit 1; done && doveadm acl recalc -u "$ACL_USER"')
+      acl_return = container.exec_run(["/bin/bash", "-c", script],
+        environment={ 'ACL_USER': user, 'ACL_ID': id, 'ACL_RIGHTS': ' '.join(rights) })
+      return self.exec_run_handler('generic', acl_return)
+  # api call: container_post - post_action: exec - cmd: doveadm - task: auth_cache_flush
+  # Drops cached userdb results (e.g. acl_groups) of the given users, all users if none are given
+  def container_post__exec__doveadm__auth_cache_flush(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    for container in self.sync_docker_client.containers.list(filters=filters):
+      users = [str(user) for user in request_json.get('users', []) if str(user)]
+      flush_return = container.exec_run(["doveadm", "auth", "cache", "flush"] + users)
+      return self.exec_run_handler('generic', flush_return)
+
+  # Rights doveadm acl set accepts from the API
+  acl_rights = ["admin", "create", "delete", "expunge", "insert", "lookup", "post", "read", "write", "write-deleted", "write-seen"]
+
+  # ACL identifier for doveadm: "user=<name>" for a plain name, "user=..." / "group=..." as given
+  def acl_identifier(self, id):
+    if id.startswith('user=') or id.startswith('group='):
+      return id
+    return 'user=' + id
 
 
   # Collect host stats

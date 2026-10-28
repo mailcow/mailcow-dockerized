@@ -29,6 +29,17 @@ class ApiResponseTest extends TestCase
         ], $response->messages());
     }
 
+    public function testWarningsKeepTheCallSuccessful(): void
+    {
+        $response = new ApiResponse();
+
+        $response->warning(['group_template_failed', 'Staff', 'a@example.org'], ['mailbox_group', 'edit', 'group', []]);
+
+        $this->assertSame([
+            ['type' => 'warning', 'log' => ['mailbox_group', 'edit', 'group', []], 'msg' => ['group_template_failed', 'Staff', 'a@example.org']],
+        ], $response->messages());
+    }
+
     public function testSecretsAreMaskedInArrayLogParts(): void
     {
         $response = new ApiResponse(['password1', 'oauth_client_secret']);
