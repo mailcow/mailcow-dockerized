@@ -641,6 +641,7 @@
         "temp_error": "Temporärer Fehler",
         "text_empty": "Text darf nicht leer sein",
         "tfa_token_invalid": "TFA-Token ungültig",
+        "tfa_login_locked": "Zu viele fehlgeschlagene Zwei-Faktor-Anmeldungen, bitte später erneut versuchen",
         "tfa_removal_blocked": "Zwei-Faktor-Authentifizierung kann nicht entfernt werden, da sie für Ihr Konto erforderlich ist.",
         "tls_policy_map_dest_invalid": "Ziel ist ungültig",
         "tls_policy_map_entry_exists": "Eine TLS-Richtlinie \"%s\" existiert bereits",

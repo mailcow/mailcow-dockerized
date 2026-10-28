@@ -169,6 +169,12 @@ $SESSION_NAME = "MCSESSID";
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 
+// Failed second factor logins (TOTP, Yubico OTP, WebAuthn) of an account before its second factor is locked
+$TFA_MAX_FAILS = 10;
+
+// Time (in s) from the first failed second factor login until the counter and the lock are reset
+$TFA_FAIL_WINDOW = 900;
+
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
 

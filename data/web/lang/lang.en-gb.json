@@ -517,6 +517,7 @@
         "group_send_as_invalid": "Send-as address %s is invalid or unknown",
         "iam_sync_mode_invalid": "Invalid sync mode",
         "iam_sync_unavailable": "The identity provider cannot be synced (Keycloak and LDAP only)",
+        "tfa_login_locked": "Too many failed two-factor logins, please try again later",
         "tfa_removal_blocked": "Two-factor authentication cannot be removed because it is required for your account.",
         "alias_domain_invalid": "Alias domain %s is invalid",
         "alias_empty": "Alias address must not be empty",
