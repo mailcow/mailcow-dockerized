@@ -11,9 +11,9 @@ class EncryptionConfigurationException extends Exception
      *
      * @return \Stevenmaguire\OAuth2\Client\Provider\Exception\EncryptionConfigurationException
      */
-    public static function undeterminedEncryption()
+    public static function undeterminedEncryption(): self
     {
-        return new static(
+        return new self(
             'The given response may be encrypted and sufficient '.
             'encryption configuration has not been provided.',
             400

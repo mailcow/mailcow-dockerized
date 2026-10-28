@@ -32,11 +32,38 @@ abstract class AbstractTwigCallable implements TwigCallableInterface
             'needs_environment' => false,
             'needs_context' => false,
             'needs_charset' => false,
+            'needs_is_sandboxed' => false,
             'is_variadic' => false,
+            'always_allowed_in_sandbox' => false,
+            'deprecation_info' => null,
             'deprecated' => false,
             'deprecating_package' => '',
             'alternative' => null,
         ], $options);
+
+        if ($this->options['deprecation_info'] && !$this->options['deprecation_info'] instanceof DeprecatedCallableInfo) {
+            throw new \LogicException(\sprintf('The "deprecation_info" option must be an instance of "%s".', DeprecatedCallableInfo::class));
+        }
+
+        if ($this->options['deprecated']) {
+            if ($this->options['deprecation_info']) {
+                throw new \LogicException('When setting the "deprecation_info" option, you need to remove the obsolete deprecated options.');
+            }
+
+            trigger_deprecation('twig/twig', '3.15', 'Using the "deprecated", "deprecating_package", and "alternative" options is deprecated, pass a "deprecation_info" one instead.');
+
+            $this->options['deprecation_info'] = new DeprecatedCallableInfo(
+                $this->options['deprecating_package'],
+                $this->options['deprecated'],
+                null,
+                $this->options['alternative'],
+            );
+        }
+
+        if ($this->options['deprecation_info']) {
+            $this->options['deprecation_info']->setName($name);
+            $this->options['deprecation_info']->setType($this->getType());
+        }
     }
 
     public function __toString(): string
@@ -54,6 +81,9 @@ abstract class AbstractTwigCallable implements TwigCallableInterface
         return $this->dynamicName;
     }
 
+    /**
+     * @return callable|array{class-string, string}|null
+     */
     public function getCallable()
     {
         return $this->callable;
@@ -79,6 +109,19 @@ abstract class AbstractTwigCallable implements TwigCallableInterface
         return $this->options['needs_context'];
     }
 
+    public function needsIsSandboxed(): bool
+    {
+        return $this->options['needs_is_sandboxed'];
+    }
+
+    public function isAlwaysAllowedInSandbox(): bool
+    {
+        return $this->options['always_allowed_in_sandbox'];
+    }
+
+    /**
+     * @return static
+     */
     public function withDynamicArguments(string $name, string $dynamicName, array $arguments): self
     {
         $new = clone $this;
@@ -111,26 +154,46 @@ abstract class AbstractTwigCallable implements TwigCallableInterface
 
     public function isDeprecated(): bool
     {
-        return (bool) $this->options['deprecated'];
+        return (bool) $this->options['deprecation_info'];
     }
 
+    public function triggerDeprecation(?string $file = null, ?int $line = null): void
+    {
+        $this->options['deprecation_info']->triggerDeprecation($file, $line);
+    }
+
+    /**
+     * @deprecated since Twig 3.15
+     */
     public function getDeprecatingPackage(): string
     {
+        trigger_deprecation('twig/twig', '3.15', 'The "%s" method is deprecated, use "%s::triggerDeprecation()" instead.', __METHOD__, static::class);
+
         return $this->options['deprecating_package'];
     }
 
+    /**
+     * @deprecated since Twig 3.15
+     */
     public function getDeprecatedVersion(): string
     {
+        trigger_deprecation('twig/twig', '3.15', 'The "%s" method is deprecated, use "%s::triggerDeprecation()" instead.', __METHOD__, static::class);
+
         return \is_bool($this->options['deprecated']) ? '' : $this->options['deprecated'];
     }
 
+    /**
+     * @deprecated since Twig 3.15
+     */
     public function getAlternative(): ?string
     {
+        trigger_deprecation('twig/twig', '3.15', 'The "%s" method is deprecated, use "%s::triggerDeprecation()" instead.', __METHOD__, static::class);
+
         return $this->options['alternative'];
     }
 
     public function getMinimalNumberOfRequiredArguments(): int
     {
-        return ($this->options['needs_charset'] ? 1 : 0) + ($this->options['needs_environment'] ? 1 : 0) + ($this->options['needs_context'] ? 1 : 0) + \count($this->arguments);
+        return ($this->options['needs_charset'] ? 1 : 0) + ($this->options['needs_environment'] ? 1 : 0) + ($this->options['needs_context'] ? 1 : 0) + ($this->options['needs_is_sandboxed'] ? 1 : 0) + \count($this->arguments);
     }
 }

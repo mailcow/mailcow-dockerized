@@ -34,7 +34,7 @@ class Request implements RequestInterface
      *
      * @api
      */
-    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null, array $headers = null)
+    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null, ?array $headers = null)
     {
         $this->initialize($query, $request, $attributes, $cookies, $files, $server, $content, $headers);
     }
@@ -55,7 +55,7 @@ class Request implements RequestInterface
      *
      * @api
      */
-    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null, array $headers = null)
+    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null, ?array $headers = null)
     {
         $this->request = $request;
         $this->query = $query;

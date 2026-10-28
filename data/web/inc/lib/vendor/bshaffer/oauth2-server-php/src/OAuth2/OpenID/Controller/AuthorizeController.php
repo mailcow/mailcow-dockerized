@@ -17,6 +17,16 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
     private $nonce;
 
     /**
+     * @var mixed
+     */
+    protected $code_challenge;
+
+    /**
+     * @var mixed
+     */
+    protected $code_challenge_method;
+
+    /**
      * Set not authorized response
      *
      * @param RequestInterface  $request
@@ -65,6 +75,10 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
         // add the nonce to return with the redirect URI
         $params['nonce'] = $this->nonce;
 
+        // Add PKCE code challenge.
+        $params['code_challenge'] = $this->code_challenge;
+        $params['code_challenge_method'] = $this->code_challenge_method;
+
         return $params;
     }
 
@@ -89,6 +103,32 @@ class AuthorizeController extends BaseAuthorizeController implements AuthorizeCo
         }
 
         $this->nonce = $nonce;
+
+        $code_challenge = $request->query('code_challenge');
+        $code_challenge_method = $request->query('code_challenge_method');
+
+        if ($this->config['enforce_pkce']) {
+            if (!$code_challenge) {
+                $response->setError(400, 'missing_code_challenge', 'This application requires you provide a PKCE code challenge');
+
+                return false;
+            }
+
+            if (preg_match('/^[A-Za-z0-9-._~]{43,128}$/', $code_challenge) !== 1) {
+            $response->setError(400, 'invalid_code_challenge', 'The PKCE code challenge supplied is invalid');
+
+            return false;
+          }
+
+            if (!in_array($code_challenge_method, array('plain', 'S256'), true)) {
+                $response->setError(400, 'missing_code_challenge_method', 'This application requires you specify a PKCE code challenge method');
+
+                return false;
+            }
+        }
+
+        $this->code_challenge = $code_challenge;
+        $this->code_challenge_method = $code_challenge_method;
 
         return true;
     }

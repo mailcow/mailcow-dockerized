@@ -99,7 +99,7 @@ return [
         'nextDay' => '[jutri ob] LT',
         'nextWeek' => 'dddd [ob] LT',
         'lastDay' => '[včeraj ob] LT',
-        'lastWeek' => function (CarbonInterface $date) {
+        'lastWeek' => static function (CarbonInterface $date) {
             switch ($date->dayOfWeek) {
                 case 0:
                     return '[preteklo] [nedeljo] [ob] LT';
@@ -119,8 +119,10 @@ return [
         },
         'sameElse' => 'L',
     ],
-    'months' => ['januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust', 'september', 'oktober', 'november', 'december'],
+    'months' => ['januarja', 'februarja', 'marca', 'aprila', 'maja', 'junija', 'julija', 'avgusta', 'septembra', 'oktobra', 'novembra', 'decembra'],
+    'months_standalone' => ['januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust', 'september', 'oktober', 'november', 'december'],
     'months_short' => ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec'],
+    'months_regexp' => '/(DD?o?\.?(\[[^\[\]]*\]|\s)+MMMM?|L{2,4}|l{2,4})/',
     'weekdays' => ['nedelja', 'ponedeljek', 'torek', 'sreda', 'četrtek', 'petek', 'sobota'],
     'weekdays_short' => ['ned', 'pon', 'tor', 'sre', 'čet', 'pet', 'sob'],
     'weekdays_min' => ['ne', 'po', 'to', 'sr', 'če', 'pe', 'so'],

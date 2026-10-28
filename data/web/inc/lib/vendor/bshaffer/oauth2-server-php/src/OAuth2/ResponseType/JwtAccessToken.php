@@ -26,7 +26,7 @@ class JwtAccessToken extends AccessToken
      *                                                        or just the token ID is stored
      * @param EncryptionInterface         $encryptionUtil   -
      */
-    public function __construct(PublicKeyInterface $publicKeyStorage = null, AccessTokenStorageInterface $tokenStorage = null, RefreshTokenInterface $refreshStorage = null, array $config = array(), EncryptionInterface $encryptionUtil = null)
+    public function __construct(?PublicKeyInterface $publicKeyStorage = null, ?AccessTokenStorageInterface $tokenStorage = null, ?RefreshTokenInterface $refreshStorage = null, array $config = array(), ?EncryptionInterface $encryptionUtil = null)
     {
         $this->publicKeyStorage = $publicKeyStorage;
         $config = array_merge(array(

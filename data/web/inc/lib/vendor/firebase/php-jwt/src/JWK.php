@@ -27,8 +27,23 @@ class JWK
     private const EC_CURVES = [
         'P-256' => '1.2.840.10045.3.1.7', // Len: 64
         'secp256k1' => '1.3.132.0.10', // Len: 64
-        // 'P-384' => '1.3.132.0.34', // Len: 96 (not yet supported)
+        'P-384' => '1.3.132.0.34', // Len: 96
         // 'P-521' => '1.3.132.0.35', // Len: 132 (not supported)
+    ];
+
+    // Known standard curves from the IANA JOSE registry which are not supported
+    private const KNOWN_UNSUPPORTED_EC_CURVES = [
+        'P-521',   // RFC 7518
+        'Ed25519', // RFC 8037
+        'Ed448',   // RFC 8037
+        'X25519',  // RFC 8037
+        'X448'     // RFC 8037
+    ];
+
+    // For keys with "kty" equal to "OKP" (Octet Key Pair), the "crv" parameter must contain the key subtype.
+    // This library supports the following subtypes:
+    private const OKP_SUBTYPES = [
+        'Ed25519' => true, // RFC 8037
     ];
 
     /**
@@ -46,7 +61,7 @@ class JWK
      *
      * @uses parseKey
      */
-    public static function parseKeySet(array $jwks, string $defaultAlg = null): array
+    public static function parseKeySet(#[\SensitiveParameter] array $jwks, ?string $defaultAlg = null): array
     {
         $keys = [];
 
@@ -87,7 +102,7 @@ class JWK
      *
      * @uses createPemFromModulusAndExponent
      */
-    public static function parseKey(array $jwk, string $defaultAlg = null): ?Key
+    public static function parseKey(#[\SensitiveParameter] array $jwk, ?string $defaultAlg = null): ?Key
     {
         if (empty($jwk)) {
             throw new InvalidArgumentException('JWK must not be empty');
@@ -136,7 +151,10 @@ class JWK
                 }
 
                 if (!isset(self::EC_CURVES[$jwk['crv']])) {
-                    throw new DomainException('Unrecognised or unsupported EC curve');
+                    if (!\in_array($jwk['crv'], self::KNOWN_UNSUPPORTED_EC_CURVES)) {
+                        throw new DomainException('Unrecognised EC curve');
+                    }
+                    return null;
                 }
 
                 if (empty($jwk['x']) || empty($jwk['y'])) {
@@ -145,8 +163,34 @@ class JWK
 
                 $publicKey = self::createPemFromCrvAndXYCoordinates($jwk['crv'], $jwk['x'], $jwk['y']);
                 return new Key($publicKey, $jwk['alg']);
+            case 'OKP':
+                if (isset($jwk['d'])) {
+                    // The key is actually a private key
+                    throw new UnexpectedValueException('Key data must be for a public key');
+                }
+
+                if (!isset($jwk['crv'])) {
+                    throw new UnexpectedValueException('crv not set');
+                }
+
+                if (empty(self::OKP_SUBTYPES[$jwk['crv']])) {
+                    throw new DomainException('Unrecognised or unsupported OKP key subtype');
+                }
+
+                if (empty($jwk['x'])) {
+                    throw new UnexpectedValueException('x not set');
+                }
+
+                // This library works internally with EdDSA keys (Ed25519) encoded in standard base64.
+                $publicKey = JWT::convertBase64urlToBase64($jwk['x']);
+                return new Key($publicKey, $jwk['alg']);
+            case 'oct':
+                if (!isset($jwk['k'])) {
+                    throw new UnexpectedValueException('k not set');
+                }
+
+                return new Key(JWT::urlsafeB64Decode($jwk['k']), $jwk['alg']);
             default:
-                // Currently only RSA is supported
                 break;
         }
 
@@ -156,7 +200,7 @@ class JWK
     /**
      * Converts the EC JWK values to pem format.
      *
-     * @param   string  $crv The EC curve (only P-256 is supported)
+     * @param   string  $crv The EC curve (only P-256 & P-384 is supported)
      * @param   string  $x   The EC x-coordinate
      * @param   string  $y   The EC y-coordinate
      *
@@ -186,7 +230,7 @@ class JWK
                 )
             );
 
-        return sprintf(
+        return \sprintf(
             "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n",
             wordwrap(base64_encode($pem), 64, "\n", true)
         );
@@ -208,6 +252,14 @@ class JWK
     ): string {
         $mod = JWT::urlsafeB64Decode($n);
         $exp = JWT::urlsafeB64Decode($e);
+        // Correct encoding for ASN1, as ints are represented as unsigned in jwk
+        // but signed in ASN1. Prepending null byte makes it unsigned.
+        if (\strlen($mod) > 0 && \ord($mod[0]) >= 128) {
+            $mod = \chr(0) . $mod;
+        }
+        if (\strlen($exp) > 0 && \ord($exp[0]) >= 128) {
+            $exp = \chr(0) . $exp;
+        }
 
         $modulus = \pack('Ca*a*', 2, self::encodeLength(\strlen($mod)), $mod);
         $publicExponent = \pack('Ca*a*', 2, self::encodeLength(\strlen($exp)), $exp);
@@ -241,7 +293,8 @@ class JWK
      * DER-encode the length
      *
      * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
-     * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3} for more information.
+     * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3}
+     * for more information.
      *
      * @param int $length
      * @return string

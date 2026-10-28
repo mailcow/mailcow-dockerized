@@ -4,6 +4,7 @@ namespace Stevenmaguire\OAuth2\Client\Provider;
 
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
@@ -37,43 +38,43 @@ class Keycloak extends AbstractProvider
      * https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40
      * for a list of spec-compliant algorithms.
      *
-     * @var string
+     * @var string|null
      */
     public $encryptionAlgorithm = null;
 
     /**
      * Encryption key.
      *
-     * @var string
+     * @var string|null
      */
     public $encryptionKey = null;
 
     /**
-      * Keycloak version.
-      *
-      * @var string
-      */
+     * Keycloak version.
+     *
+     * @var string|null
+     */
     public $version = null;
 
     /**
      * Constructs an OAuth 2.0 service provider.
      *
-     * @param array $options An array of options to set on this provider.
+     * @param array<string, mixed> $options An array of options to set on this provider.
      *     Options include `clientId`, `clientSecret`, `redirectUri`, and `state`.
      *     Individual providers may introduce more options, as needed.
-     * @param array $collaborators An array of collaborators that may be used to
+     * @param array<string, mixed> $collaborators An array of collaborators that may be used to
      *     override this provider's default behavior. Collaborators include
      *     `grantFactory`, `requestFactory`, `httpClient`, and `randomFactory`.
      *     Individual providers may introduce more collaborators, as needed.
      */
     public function __construct(array $options = [], array $collaborators = [])
     {
-        if (isset($options['encryptionKeyPath'])) {
+        if (isset($options['encryptionKeyPath']) && is_string($options['encryptionKeyPath'])) {
             $this->setEncryptionKeyPath($options['encryptionKeyPath']);
             unset($options['encryptionKeyPath']);
         }
 
-        if (isset($options['version'])) {
+        if (isset($options['version']) && is_string($options['version'])) {
             $this->setVersion($options['version']);
         }
 
@@ -83,27 +84,39 @@ class Keycloak extends AbstractProvider
     /**
      * Attempts to decrypt the given response.
      *
-     * @param  string|array|null $response
+     * @param string|array<string, mixed>|null $response
      *
-     * @return string|array|null
+     * @return string|array<string, mixed>|null
+     * @throws EncryptionConfigurationException
      */
-    public function decryptResponse($response)
+    public function decryptResponse($response): array|string|null
     {
         if (!is_string($response)) {
             return $response;
         }
 
         if ($this->usesEncryption()) {
-            return json_decode(
-                json_encode(
-                    JWT::decode(
-                        $response,
-                        $this->encryptionKey,
-                        array($this->encryptionAlgorithm)
-                    )
-                ),
-                true
+            if (!is_string($this->encryptionKey) || !is_string($this->encryptionAlgorithm)) {
+                throw EncryptionConfigurationException::undeterminedEncryption();
+            }
+
+            $tokenData = JWT::decode(
+                $response,
+                new Key(
+                    $this->encryptionKey,
+                    $this->encryptionAlgorithm
+                )
             );
+            $tokenJson = json_encode($tokenData);
+            if (!is_string($tokenJson)) {
+                throw EncryptionConfigurationException::undeterminedEncryption();
+            }
+            $decodedToken = json_decode($tokenJson, true);
+            if (!is_array($decodedToken)) {
+                throw EncryptionConfigurationException::undeterminedEncryption();
+            }
+
+            return $decodedToken;
         }
 
         throw EncryptionConfigurationException::undeterminedEncryption();
@@ -114,7 +127,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string
      */
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl(): string
     {
         return $this->getBaseUrlWithRealm().'/protocol/openid-connect/auth';
     }
@@ -122,11 +135,11 @@ class Keycloak extends AbstractProvider
     /**
      * Get access token url to retrieve token
      *
-     * @param  array $params
+     * @param  array<string, mixed> $params
      *
      * @return string
      */
-    public function getBaseAccessTokenUrl(array $params)
+    public function getBaseAccessTokenUrl(array $params): string
     {
         return $this->getBaseUrlWithRealm().'/protocol/openid-connect/token';
     }
@@ -138,7 +151,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string
      */
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
         return $this->getBaseUrlWithRealm().'/protocol/openid-connect/userinfo';
     }
@@ -146,10 +159,10 @@ class Keycloak extends AbstractProvider
     /**
      * Builds the logout URL.
      *
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return string Authorization URL
      */
-    public function getLogoutUrl(array $options = [])
+    public function getLogoutUrl(array $options = []): string
     {
         $base = $this->getBaseLogoutUrl();
         $params = $this->getAuthorizationParameters($options);
@@ -158,10 +171,13 @@ class Keycloak extends AbstractProvider
         // As of this version the parameter is called post_logout_redirect_uri. In addition to this
         // a parameter id_token_hint has to be provided.
         if ($this->validateGteVersion('18.0.0')) {
-            if (isset($options['access_token']) === true) {
+            if (isset($options['access_token']) === true && $options['access_token'] instanceof AccessToken) {
                 $accessToken = $options['access_token'];
+                $values = $accessToken->getValues();
 
-                $params['id_token_hint'] = $accessToken->getValues()['id_token'];
+                if (isset($values['id_token']) && is_string($values['id_token'])) {
+                    $params['id_token_hint'] = $values['id_token'];
+                }
                 $params['post_logout_redirect_uri'] = $params['redirect_uri'];
             }
 
@@ -177,7 +193,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string
      */
-    private function getBaseLogoutUrl()
+    private function getBaseLogoutUrl(): string
     {
         return $this->getBaseUrlWithRealm() . '/protocol/openid-connect/logout';
     }
@@ -187,7 +203,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string
      */
-    protected function getBaseUrlWithRealm()
+    protected function getBaseUrlWithRealm(): string
     {
         return $this->authServerUrl.'/realms/'.$this->realm;
     }
@@ -200,7 +216,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string[]
      */
-    protected function getDefaultScopes()
+    protected function getDefaultScopes(): array
     {
         $scopes = [
             'profile',
@@ -218,7 +234,7 @@ class Keycloak extends AbstractProvider
      *
      * @return string Scope separator, defaults to ','
      */
-    protected function getScopeSeparator()
+    protected function getScopeSeparator(): string
     {
         return ' ';
     }
@@ -229,28 +245,32 @@ class Keycloak extends AbstractProvider
      *
      * @throws IdentityProviderException
      * @param  ResponseInterface $response
-     * @param  string $data Parsed response data
+     * @param  mixed $data Parsed response data
      * @return void
      */
-    protected function checkResponse(ResponseInterface $response, $data)
+    protected function checkResponse(ResponseInterface $response, $data): void
     {
+        if (!is_array($data)) {
+            return;
+        }
+
         if (!empty($data['error'])) {
             $error = $data['error'];
             if (isset($data['error_description'])) {
-                $error.=': '.$data['error_description'];
+                $error .= ': '.$data['error_description'];
             }
-            throw new IdentityProviderException($error, 0, $data);
+            throw new IdentityProviderException($error, $response->getStatusCode(), $data);
         }
     }
 
     /**
      * Generate a user object from a successful user details request.
      *
-     * @param array $response
+     * @param array<string, mixed> $response
      * @param AccessToken $token
      * @return KeycloakResourceOwner
      */
-    protected function createResourceOwner(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token): KeycloakResourceOwner
     {
         return new KeycloakResourceOwner($response);
     }
@@ -262,9 +282,12 @@ class Keycloak extends AbstractProvider
      * @return KeycloakResourceOwner
      * @throws EncryptionConfigurationException
      */
-    public function getResourceOwner(AccessToken $token)
+    public function getResourceOwner(AccessToken $token): KeycloakResourceOwner
     {
         $response = $this->fetchResourceOwnerDetails($token);
+        if (!is_array($response)) {
+            throw new UnexpectedValueException('Expected resource owner details to be an array.');
+        }
 
         // We are always getting an array. We have to check if it is
         // the array we created
@@ -273,6 +296,9 @@ class Keycloak extends AbstractProvider
         }
 
         $response = $this->decryptResponse($response);
+        if (!is_array($response)) {
+            throw new UnexpectedValueException('Expected decrypted resource owner details to be an array.');
+        }
 
         return $this->createResourceOwner($response, $token);
     }
@@ -284,7 +310,7 @@ class Keycloak extends AbstractProvider
      *
      * @return Keycloak
      */
-    public function setEncryptionAlgorithm($encryptionAlgorithm)
+    public function setEncryptionAlgorithm(string $encryptionAlgorithm): self
     {
         $this->encryptionAlgorithm = $encryptionAlgorithm;
 
@@ -298,7 +324,7 @@ class Keycloak extends AbstractProvider
      *
      * @return Keycloak
      */
-    public function setEncryptionKey($encryptionKey)
+    public function setEncryptionKey(string $encryptionKey): self
     {
         $this->encryptionKey = $encryptionKey;
 
@@ -313,10 +339,13 @@ class Keycloak extends AbstractProvider
      *
      * @return Keycloak
      */
-    public function setEncryptionKeyPath($encryptionKeyPath)
+    public function setEncryptionKeyPath(string $encryptionKeyPath): self
     {
         try {
-            $this->encryptionKey = file_get_contents($encryptionKeyPath);
+            $encryptionKey = file_get_contents($encryptionKeyPath);
+            if (is_string($encryptionKey)) {
+                $this->encryptionKey = $encryptionKey;
+            }
         } catch (Exception $e) {
             // Not sure how to handle this yet.
         }
@@ -331,7 +360,7 @@ class Keycloak extends AbstractProvider
       *
       * @return Keycloak
       */
-    public function setVersion($version)
+    public function setVersion(string $version): self
     {
         $this->version = $version;
 
@@ -343,7 +372,7 @@ class Keycloak extends AbstractProvider
      *
      * @return bool
      */
-    public function usesEncryption()
+    public function usesEncryption(): bool
     {
         return (bool) $this->encryptionAlgorithm && $this->encryptionKey;
     }
@@ -353,16 +382,15 @@ class Keycloak extends AbstractProvider
      *
      * @throws UnexpectedValueException
      * @param  ResponseInterface $response
-     * @return array
+     * @return string|array<string, mixed>
      */
-    protected function parseResponse(ResponseInterface $response)
+    protected function parseResponse(ResponseInterface $response): string|array
     {
         // We have a problem with keycloak when the userinfo responses
         // with a jwt token
         // Because it just return a jwt as string with the header
         // application/jwt
         // This can't be parsed to a array
-        // Dont know why this function only allow an array as return value...
         $content = (string) $response->getBody();
         $type = $this->getContentType($response);
 
@@ -380,8 +408,8 @@ class Keycloak extends AbstractProvider
      * @param string $version
      * @return bool
      */
-    private function validateGteVersion($version)
+    private function validateGteVersion(string $version): bool
     {
-        return (isset($this->version) && version_compare($this->version, $version, '>='));
+        return is_string($this->version) && version_compare($this->version, $version, '>=');
     }
 }

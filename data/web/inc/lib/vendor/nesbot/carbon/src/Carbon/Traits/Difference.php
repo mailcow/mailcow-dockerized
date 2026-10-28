@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -16,11 +18,13 @@ use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
-use Carbon\Translator;
+use Carbon\DurationConverter;
+use Carbon\Exceptions\UnknownUnitException;
+use Carbon\Unit;
 use Closure;
 use DateInterval;
 use DateTimeInterface;
-use ReturnTypeWillChange;
+use Time\Duration;
 
 /**
  * Trait Difference.
@@ -30,86 +34,9 @@ use ReturnTypeWillChange;
  * @method bool lessThan($date)
  * @method static copy()
  * @method static resolveCarbon($date = null)
- * @method static Translator translator()
  */
 trait Difference
 {
-    /**
-     * @codeCoverageIgnore
-     *
-     * @param CarbonInterval $diff
-     */
-    protected static function fixNegativeMicroseconds(CarbonInterval $diff)
-    {
-        if ($diff->s !== 0 || $diff->i !== 0 || $diff->h !== 0 || $diff->d !== 0 || $diff->m !== 0 || $diff->y !== 0) {
-            $diff->f = (round($diff->f * 1000000) + 1000000) / 1000000;
-            $diff->s--;
-
-            if ($diff->s < 0) {
-                $diff->s += 60;
-                $diff->i--;
-
-                if ($diff->i < 0) {
-                    $diff->i += 60;
-                    $diff->h--;
-
-                    if ($diff->h < 0) {
-                        $diff->h += 24;
-                        $diff->d--;
-
-                        if ($diff->d < 0) {
-                            $diff->d += 30;
-                            $diff->m--;
-
-                            if ($diff->m < 0) {
-                                $diff->m += 12;
-                                $diff->y--;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return;
-        }
-
-        $diff->f *= -1;
-        $diff->invert();
-    }
-
-    /**
-     * @param DateInterval $diff
-     * @param bool         $absolute
-     *
-     * @return CarbonInterval
-     */
-    protected static function fixDiffInterval(DateInterval $diff, $absolute, array $skip = [])
-    {
-        $diff = CarbonInterval::instance($diff, $skip);
-
-        // Work-around for https://bugs.php.net/bug.php?id=77145
-        // @codeCoverageIgnoreStart
-        if ($diff->f > 0 && $diff->y === -1 && $diff->m === 11 && $diff->d >= 27 && $diff->h === 23 && $diff->i === 59 && $diff->s === 59) {
-            $diff->y = 0;
-            $diff->m = 0;
-            $diff->d = 0;
-            $diff->h = 0;
-            $diff->i = 0;
-            $diff->s = 0;
-            $diff->f = (1000000 - round($diff->f * 1000000)) / 1000000;
-            $diff->invert();
-        } elseif ($diff->f < 0) {
-            static::fixNegativeMicroseconds($diff);
-        }
-        // @codeCoverageIgnoreEnd
-
-        if ($absolute && $diff->invert) {
-            $diff->invert();
-        }
-
-        return $diff;
-    }
-
     /**
      * Get the difference as a DateInterval instance.
      * Return relative interval (negative if $absolute flag is not set to true and the given date is before
@@ -120,8 +47,7 @@ trait Difference
      *
      * @return DateInterval
      */
-    #[ReturnTypeWillChange]
-    public function diff($date = null, $absolute = false)
+    public function diffAsDateInterval($date = null, bool $absolute = false): DateInterval
     {
         $other = $this->resolveCarbon($date);
 
@@ -129,13 +55,41 @@ trait Difference
         // It was initially introduced for https://bugs.php.net/bug.php?id=80998
         // The very specific case of 80998 was fixed in PHP 8.1beta3, but it introduced 81458
         // So we still need to keep this for now
-        // @codeCoverageIgnoreStart
-        if (version_compare(PHP_VERSION, '8.1.0-dev', '>=') && $other->tz !== $this->tz) {
-            $other = $other->avoidMutation()->tz($this->tz);
+        if ($other->tz !== $this->tz) {
+            $other = $other->avoidMutation()->setTimezone($this->tz);
         }
-        // @codeCoverageIgnoreEnd
 
-        return parent::diff($other, (bool) $absolute);
+        return parent::diff($other, $absolute);
+    }
+
+    /**
+     * Get the difference as a \Time\Duration instance.
+     * Return relative interval (negative if $absolute flag is not set to true and the given date is before
+     * current one).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return Duration
+     */
+    public function diffAsDuration($date = null, bool $absolute = false): Duration
+    {
+        $other = $this->resolveCarbon($date);
+
+        // Work-around for https://bugs.php.net/bug.php?id=81458
+        // It was initially introduced for https://bugs.php.net/bug.php?id=80998
+        // The very specific case of 80998 was fixed in PHP 8.1beta3, but it introduced 81458
+        // So we still need to keep this for now
+        if ($other->tz !== $this->tz) {
+            $other = $other->avoidMutation()->setTimezone($this->tz);
+        }
+
+        $duration = DurationConverter::createDurationFromSeconds(
+            $other->getTimestamp() - $this->getTimestamp(),
+            ($other->microsecond - $this->microsecond) * 1000,
+        );
+
+        return $absolute && $duration->negative ? $duration->negate() : $duration;
     }
 
     /**
@@ -148,9 +102,49 @@ trait Difference
      *
      * @return CarbonInterval
      */
-    public function diffAsCarbonInterval($date = null, $absolute = true, array $skip = [])
+    public function diffAsCarbonInterval($date = null, bool $absolute = false, array $skip = []): CarbonInterval
     {
-        return static::fixDiffInterval($this->diff($this->resolveCarbon($date), $absolute), $absolute, $skip);
+        return CarbonInterval::diff($this, $this->resolveCarbon($date), $absolute, $skip)
+            ->setLocalTranslator($this->getLocalTranslator());
+    }
+
+    /**
+     * @alias diffAsCarbonInterval
+     *
+     * Get the difference as a CarbonInterval instance.
+     * Return relative interval (negative if $absolute flag is not set to true and the given date is before
+     * current one).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return CarbonInterval
+     */
+    public function diff($date = null, bool $absolute = false, array $skip = []): CarbonInterval
+    {
+        return $this->diffAsCarbonInterval($date, $absolute, $skip);
+    }
+
+    /**
+     * @param Unit|string                                            $unit     microsecond, millisecond, second, minute,
+     *                                                                         hour, day, week, month, quarter, year,
+     *                                                                         century, millennium
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
+     *
+     * @return float
+     */
+    public function diffInUnit(Unit|string $unit, $date = null, bool $absolute = false, bool $utc = false): float
+    {
+        $unit = static::pluralUnit($unit instanceof Unit ? $unit->value : rtrim($unit, 'z'));
+        $method = 'diffIn'.$unit;
+
+        if (!method_exists($this, $method)) {
+            throw new UnknownUnitException($unit);
+        }
+
+        return $this->$method($date, $absolute, $utc);
     }
 
     /**
@@ -158,82 +152,165 @@ trait Difference
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
      *
-     * @return int
+     * @return float
      */
-    public function diffInYears($date = null, $absolute = true)
+    public function diffInYears($date = null, bool $absolute = false, bool $utc = false): float
     {
-        return (int) $this->diff($this->resolveCarbon($date), $absolute)->format('%r%y');
-    }
+        $start = $this;
+        $end = $this->resolveCarbon($date);
 
-    /**
-     * Get the difference in quarters rounded down.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInQuarters($date = null, $absolute = true)
-    {
-        return (int) ($this->diffInMonths($date, $absolute) / static::MONTHS_PER_QUARTER);
-    }
-
-    /**
-     * Get the difference in months rounded down.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInMonths($date = null, $absolute = true)
-    {
-        $date = $this->resolveCarbon($date)->avoidMutation()->tz($this->tz);
-
-        [$yearStart, $monthStart, $dayStart] = explode('-', $this->format('Y-m-dHisu'));
-        [$yearEnd, $monthEnd, $dayEnd] = explode('-', $date->format('Y-m-dHisu'));
-
-        $diff = (((int) $yearEnd) - ((int) $yearStart)) * static::MONTHS_PER_YEAR +
-            ((int) $monthEnd) - ((int) $monthStart);
-
-        if ($diff > 0) {
-            $diff -= ($dayStart > $dayEnd ? 1 : 0);
-        } elseif ($diff < 0) {
-            $diff += ($dayStart < $dayEnd ? 1 : 0);
+        if ($utc) {
+            $start = $start->avoidMutation()->utc();
+            $end = $end->avoidMutation()->utc();
         }
 
-        return $absolute ? abs($diff) : $diff;
+        $ascending = ($start <= $end);
+        $sign = $absolute || $ascending ? 1 : -1;
+
+        if (!$ascending) {
+            [$start, $end] = [$end, $start];
+        }
+
+        $yearsDiff = (int) $start->diff($end, $absolute)->format('%r%y');
+        /** @var Carbon|CarbonImmutable $floorEnd */
+        $floorEnd = $start->avoidMutation()->addYears($yearsDiff);
+
+        if ($floorEnd >= $end) {
+            return $sign * $yearsDiff;
+        }
+
+        /** @var Carbon|CarbonImmutable $ceilEnd */
+        $ceilEnd = $start->avoidMutation()->addYears($yearsDiff + 1);
+
+        $daysToFloor = $floorEnd->diffInDays($end);
+        $daysToCeil = $end->diffInDays($ceilEnd);
+
+        return $sign * ($yearsDiff + $daysToFloor / ($daysToCeil + $daysToFloor));
     }
 
     /**
-     * Get the difference in weeks rounded down.
+     * Get the difference in quarters.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
      *
-     * @return int
+     * @return float
      */
-    public function diffInWeeks($date = null, $absolute = true)
+    public function diffInQuarters($date = null, bool $absolute = false, bool $utc = false): float
     {
-        return (int) ($this->diffInDays($date, $absolute) / static::DAYS_PER_WEEK);
+        return $this->diffInMonths($date, $absolute, $utc) / static::MONTHS_PER_QUARTER;
     }
 
     /**
-     * Get the difference in days rounded down.
+     * Get the difference in months.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
      *
-     * @return int
+     * @return float
      */
-    public function diffInDays($date = null, $absolute = true)
+    public function diffInMonths($date = null, bool $absolute = false, bool $utc = false): float
     {
-        return $this->getIntervalDayDiff($this->diff($this->resolveCarbon($date), $absolute));
+        $start = $this;
+        $end = $this->resolveCarbon($date);
+
+        // Compare using UTC
+        if ($utc || ($end->timezoneName !== $start->timezoneName)) {
+            $start = $start->avoidMutation()->utc();
+            $end = $end->avoidMutation()->utc();
+        }
+
+        [$yearStart, $monthStart, $dayStart] = explode('-', $start->format('Y-m-dHisu'));
+        [$yearEnd, $monthEnd, $dayEnd] = explode('-', $end->format('Y-m-dHisu'));
+
+        $monthsDiff = (((int) $yearEnd) - ((int) $yearStart)) * static::MONTHS_PER_YEAR +
+            ((int) $monthEnd) - ((int) $monthStart);
+
+        if ($monthsDiff > 0) {
+            $monthsDiff -= ($dayStart > $dayEnd ? 1 : 0);
+        } elseif ($monthsDiff < 0) {
+            $monthsDiff += ($dayStart < $dayEnd ? 1 : 0);
+        }
+
+        $ascending = ($start <= $end);
+        $sign = $absolute || $ascending ? 1 : -1;
+        $monthsDiff = abs($monthsDiff);
+
+        if (!$ascending) {
+            [$start, $end] = [$end, $start];
+        }
+
+        /** @var Carbon|CarbonImmutable $floorEnd */
+        $floorEnd = $start->avoidMutation()->addMonths($monthsDiff);
+
+        if ($floorEnd >= $end) {
+            return $sign * $monthsDiff;
+        }
+
+        /** @var Carbon|CarbonImmutable $ceilEnd */
+        $ceilEnd = $start->avoidMutation()->addMonths($monthsDiff + 1);
+
+        $daysToFloor = $floorEnd->diffInDays($end);
+        $daysToCeil = $end->diffInDays($ceilEnd);
+
+        return $sign * ($monthsDiff + $daysToFloor / ($daysToCeil + $daysToFloor));
     }
 
     /**
-     * Get the difference in days using a filter closure rounded down.
+     * Get the difference in weeks.
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
+     *
+     * @return float
+     */
+    public function diffInWeeks($date = null, bool $absolute = false, bool $utc = false): float
+    {
+        return $this->diffInDays($date, $absolute, $utc) / static::DAYS_PER_WEEK;
+    }
+
+    /**
+     * Get the difference in days.
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     * @param bool                                                   $utc      Always convert dates to UTC before comparing (if not set, it will do it only if timezones are different)
+     *
+     * @return float
+     */
+    public function diffInDays($date = null, bool $absolute = false, bool $utc = false): float
+    {
+        $date = $this->resolveCarbon($date);
+        $current = $this;
+
+        // Compare using UTC
+        if ($utc || ($date->timezoneName !== $current->timezoneName)) {
+            $date = $date->avoidMutation()->utc();
+            $current = $current->avoidMutation()->utc();
+        }
+
+        $negative = ($date < $current);
+        [$start, $end] = $negative ? [$date, $current] : [$current, $date];
+        $interval = $start->diffAsDateInterval($end);
+        $daysA = $this->getIntervalDayDiff($interval);
+        $floorEnd = $start->avoidMutation()->addDays($daysA);
+        $daysB = $daysA + ($floorEnd <= $end ? 1 : -1);
+        $ceilEnd = $start->avoidMutation()->addDays($daysB);
+        $microsecondsBetween = $floorEnd->diffInMicroseconds($ceilEnd);
+        $microsecondsToEnd = $floorEnd->diffInMicroseconds($end);
+
+        return ($negative && !$absolute ? -1 : 1)
+            * ($daysA * ($microsecondsBetween - $microsecondsToEnd) + $daysB * $microsecondsToEnd)
+            / $microsecondsBetween;
+    }
+
+    /**
+     * Get the difference in days using a filter closure.
      *
      * @param Closure                                                $callback
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
@@ -241,13 +318,13 @@ trait Difference
      *
      * @return int
      */
-    public function diffInDaysFiltered(Closure $callback, $date = null, $absolute = true)
+    public function diffInDaysFiltered(Closure $callback, $date = null, bool $absolute = false): int
     {
         return $this->diffFiltered(CarbonInterval::day(), $callback, $date, $absolute);
     }
 
     /**
-     * Get the difference in hours using a filter closure rounded down.
+     * Get the difference in hours using a filter closure.
      *
      * @param Closure                                                $callback
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
@@ -255,7 +332,7 @@ trait Difference
      *
      * @return int
      */
-    public function diffInHoursFiltered(Closure $callback, $date = null, $absolute = true)
+    public function diffInHoursFiltered(Closure $callback, $date = null, bool $absolute = false): int
     {
         return $this->diffFiltered(CarbonInterval::hour(), $callback, $date, $absolute);
     }
@@ -270,7 +347,7 @@ trait Difference
      *
      * @return int
      */
-    public function diffFiltered(CarbonInterval $ci, Closure $callback, $date = null, $absolute = true)
+    public function diffFiltered(CarbonInterval $ci, Closure $callback, $date = null, bool $absolute = false): int
     {
         $start = $this;
         $end = $this->resolveCarbon($date);
@@ -289,109 +366,76 @@ trait Difference
     }
 
     /**
-     * Get the difference in weekdays rounded down.
+     * Get the difference in weekdays.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
      * @return int
      */
-    public function diffInWeekdays($date = null, $absolute = true)
+    public function diffInWeekdays($date = null, bool $absolute = false): int
     {
-        return $this->diffInDaysFiltered(static function (CarbonInterface $date) {
-            return $date->isWeekday();
-        }, $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')), $absolute);
+        return $this->diffInDaysFiltered(
+            static fn (CarbonInterface $date) => $date->isWeekday(),
+            $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')),
+            $absolute,
+        );
     }
 
     /**
-     * Get the difference in weekend days using a filter rounded down.
+     * Get the difference in weekend days using a filter.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
      * @return int
      */
-    public function diffInWeekendDays($date = null, $absolute = true)
+    public function diffInWeekendDays($date = null, bool $absolute = false): int
     {
-        return $this->diffInDaysFiltered(static function (CarbonInterface $date) {
-            return $date->isWeekend();
-        }, $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')), $absolute);
+        return $this->diffInDaysFiltered(
+            static fn (CarbonInterface $date) => $date->isWeekend(),
+            $this->resolveCarbon($date)->avoidMutation()->modify($this->format('H:i:s.u')),
+            $absolute,
+        );
     }
 
     /**
-     * Get the difference in hours rounded down.
+     * Get the difference in hours.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
-     * @return int
+     * @return float
      */
-    public function diffInHours($date = null, $absolute = true)
+    public function diffInHours($date = null, bool $absolute = false): float
     {
-        return (int) ($this->diffInSeconds($date, $absolute) / static::SECONDS_PER_MINUTE / static::MINUTES_PER_HOUR);
+        return $this->diffInMinutes($date, $absolute) / static::MINUTES_PER_HOUR;
     }
 
     /**
-     * Get the difference in hours rounded down using timestamps.
+     * Get the difference in minutes.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
-     * @return int
+     * @return float
      */
-    public function diffInRealHours($date = null, $absolute = true)
+    public function diffInMinutes($date = null, bool $absolute = false): float
     {
-        return (int) ($this->diffInRealSeconds($date, $absolute) / static::SECONDS_PER_MINUTE / static::MINUTES_PER_HOUR);
+        return $this->diffInSeconds($date, $absolute) / static::SECONDS_PER_MINUTE;
     }
 
     /**
-     * Get the difference in minutes rounded down.
+     * Get the difference in seconds.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
-     * @return int
+     * @return float
      */
-    public function diffInMinutes($date = null, $absolute = true)
+    public function diffInSeconds($date = null, bool $absolute = false): float
     {
-        return (int) ($this->diffInSeconds($date, $absolute) / static::SECONDS_PER_MINUTE);
-    }
-
-    /**
-     * Get the difference in minutes rounded down using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInRealMinutes($date = null, $absolute = true)
-    {
-        return (int) ($this->diffInRealSeconds($date, $absolute) / static::SECONDS_PER_MINUTE);
-    }
-
-    /**
-     * Get the difference in seconds rounded down.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInSeconds($date = null, $absolute = true)
-    {
-        $diff = $this->diff($date);
-
-        if ($diff->days === 0) {
-            $diff = static::fixDiffInterval($diff, $absolute);
-        }
-
-        $value = (((($diff->m || $diff->y ? $diff->days : $diff->d) * static::HOURS_PER_DAY) +
-            $diff->h) * static::MINUTES_PER_HOUR +
-            $diff->i) * static::SECONDS_PER_MINUTE +
-            $diff->s;
-
-        return $absolute || !$diff->invert ? $value : -$value;
+        return $this->diffInMilliseconds($date, $absolute) / static::MILLISECONDS_PER_SECOND;
     }
 
     /**
@@ -400,58 +444,9 @@ trait Difference
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
-     * @return int
+     * @return float
      */
-    public function diffInMicroseconds($date = null, $absolute = true)
-    {
-        $diff = $this->diff($date);
-        $value = (int) round(((((($diff->m || $diff->y ? $diff->days : $diff->d) * static::HOURS_PER_DAY) +
-            $diff->h) * static::MINUTES_PER_HOUR +
-            $diff->i) * static::SECONDS_PER_MINUTE +
-            ($diff->f + $diff->s)) * static::MICROSECONDS_PER_SECOND);
-
-        return $absolute || !$diff->invert ? $value : -$value;
-    }
-
-    /**
-     * Get the difference in milliseconds rounded down.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInMilliseconds($date = null, $absolute = true)
-    {
-        return (int) ($this->diffInMicroseconds($date, $absolute) / static::MICROSECONDS_PER_MILLISECOND);
-    }
-
-    /**
-     * Get the difference in seconds using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInRealSeconds($date = null, $absolute = true)
-    {
-        /** @var CarbonInterface $date */
-        $date = $this->resolveCarbon($date);
-        $value = $date->getTimestamp() - $this->getTimestamp();
-
-        return $absolute ? abs($value) : $value;
-    }
-
-    /**
-     * Get the difference in microseconds using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInRealMicroseconds($date = null, $absolute = true)
+    public function diffInMicroseconds($date = null, bool $absolute = false): float
     {
         /** @var CarbonInterface $date */
         $date = $this->resolveCarbon($date);
@@ -462,319 +457,36 @@ trait Difference
     }
 
     /**
-     * Get the difference in milliseconds rounded down using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return int
-     */
-    public function diffInRealMilliseconds($date = null, $absolute = true)
-    {
-        return (int) ($this->diffInRealMicroseconds($date, $absolute) / static::MICROSECONDS_PER_MILLISECOND);
-    }
-
-    /**
-     * Get the difference in seconds as float (microsecond-precision).
+     * Get the difference in milliseconds.
      *
      * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
      * @param bool                                                   $absolute Get the absolute of the difference
      *
      * @return float
      */
-    public function floatDiffInSeconds($date = null, $absolute = true)
+    public function diffInMilliseconds($date = null, bool $absolute = false): float
     {
-        return (float) ($this->diffInMicroseconds($date, $absolute) / static::MICROSECONDS_PER_SECOND);
-    }
-
-    /**
-     * Get the difference in minutes as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInMinutes($date = null, $absolute = true)
-    {
-        return $this->floatDiffInSeconds($date, $absolute) / static::SECONDS_PER_MINUTE;
-    }
-
-    /**
-     * Get the difference in hours as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInHours($date = null, $absolute = true)
-    {
-        return $this->floatDiffInMinutes($date, $absolute) / static::MINUTES_PER_HOUR;
-    }
-
-    /**
-     * Get the difference in days as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInDays($date = null, $absolute = true)
-    {
-        $hoursDiff = $this->floatDiffInHours($date, $absolute);
-        $interval = $this->diff($date, $absolute);
-
-        if ($interval->y === 0 && $interval->m === 0 && $interval->d === 0) {
-            return $hoursDiff / static::HOURS_PER_DAY;
-        }
-
-        $daysDiff = $this->getIntervalDayDiff($interval);
-
-        return $daysDiff + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
-    }
-
-    /**
-     * Get the difference in weeks as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInWeeks($date = null, $absolute = true)
-    {
-        return $this->floatDiffInDays($date, $absolute) / static::DAYS_PER_WEEK;
-    }
-
-    /**
-     * Get the difference in months as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInMonths($date = null, $absolute = true)
-    {
-        $start = $this;
-        $end = $this->resolveCarbon($date);
-        $ascending = ($start <= $end);
-        $sign = $absolute || $ascending ? 1 : -1;
-        if (!$ascending) {
-            [$start, $end] = [$end, $start];
-        }
-        $monthsDiff = $start->diffInMonths($end);
-        /** @var Carbon|CarbonImmutable $floorEnd */
-        $floorEnd = $start->avoidMutation()->addMonths($monthsDiff);
-
-        if ($floorEnd >= $end) {
-            return $sign * $monthsDiff;
-        }
-
-        /** @var Carbon|CarbonImmutable $startOfMonthAfterFloorEnd */
-        $startOfMonthAfterFloorEnd = $floorEnd->avoidMutation()->addMonth()->startOfMonth();
-
-        if ($startOfMonthAfterFloorEnd > $end) {
-            return $sign * ($monthsDiff + $floorEnd->floatDiffInDays($end) / $floorEnd->daysInMonth);
-        }
-
-        return $sign * ($monthsDiff + $floorEnd->floatDiffInDays($startOfMonthAfterFloorEnd) / $floorEnd->daysInMonth + $startOfMonthAfterFloorEnd->floatDiffInDays($end) / $end->daysInMonth);
-    }
-
-    /**
-     * Get the difference in year as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInYears($date = null, $absolute = true)
-    {
-        $start = $this;
-        $end = $this->resolveCarbon($date);
-        $ascending = ($start <= $end);
-        $sign = $absolute || $ascending ? 1 : -1;
-        if (!$ascending) {
-            [$start, $end] = [$end, $start];
-        }
-        $yearsDiff = $start->diffInYears($end);
-        /** @var Carbon|CarbonImmutable $floorEnd */
-        $floorEnd = $start->avoidMutation()->addYears($yearsDiff);
-
-        if ($floorEnd >= $end) {
-            return $sign * $yearsDiff;
-        }
-
-        /** @var Carbon|CarbonImmutable $startOfYearAfterFloorEnd */
-        $startOfYearAfterFloorEnd = $floorEnd->avoidMutation()->addYear()->startOfYear();
-
-        if ($startOfYearAfterFloorEnd > $end) {
-            return $sign * ($yearsDiff + $floorEnd->floatDiffInDays($end) / $floorEnd->daysInYear);
-        }
-
-        return $sign * ($yearsDiff + $floorEnd->floatDiffInDays($startOfYearAfterFloorEnd) / $floorEnd->daysInYear + $startOfYearAfterFloorEnd->floatDiffInDays($end) / $end->daysInYear);
-    }
-
-    /**
-     * Get the difference in seconds as float (microsecond-precision) using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealSeconds($date = null, $absolute = true)
-    {
-        return $this->diffInRealMicroseconds($date, $absolute) / static::MICROSECONDS_PER_SECOND;
-    }
-
-    /**
-     * Get the difference in minutes as float (microsecond-precision) using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealMinutes($date = null, $absolute = true)
-    {
-        return $this->floatDiffInRealSeconds($date, $absolute) / static::SECONDS_PER_MINUTE;
-    }
-
-    /**
-     * Get the difference in hours as float (microsecond-precision) using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealHours($date = null, $absolute = true)
-    {
-        return $this->floatDiffInRealMinutes($date, $absolute) / static::MINUTES_PER_HOUR;
-    }
-
-    /**
-     * Get the difference in days as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealDays($date = null, $absolute = true)
-    {
-        $date = $this->resolveUTC($date);
-        $utc = $this->avoidMutation()->utc();
-        $hoursDiff = $utc->floatDiffInRealHours($date, $absolute);
-
-        return ($hoursDiff < 0 ? -1 : 1) * $utc->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
-    }
-
-    /**
-     * Get the difference in weeks as float (microsecond-precision).
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealWeeks($date = null, $absolute = true)
-    {
-        return $this->floatDiffInRealDays($date, $absolute) / static::DAYS_PER_WEEK;
-    }
-
-    /**
-     * Get the difference in months as float (microsecond-precision) using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealMonths($date = null, $absolute = true)
-    {
-        $start = $this;
-        $end = $this->resolveCarbon($date);
-        $ascending = ($start <= $end);
-        $sign = $absolute || $ascending ? 1 : -1;
-        if (!$ascending) {
-            [$start, $end] = [$end, $start];
-        }
-        $monthsDiff = $start->diffInMonths($end);
-        /** @var Carbon|CarbonImmutable $floorEnd */
-        $floorEnd = $start->avoidMutation()->addMonths($monthsDiff);
-
-        if ($floorEnd >= $end) {
-            return $sign * $monthsDiff;
-        }
-
-        /** @var Carbon|CarbonImmutable $startOfMonthAfterFloorEnd */
-        $startOfMonthAfterFloorEnd = $floorEnd->avoidMutation()->addMonth()->startOfMonth();
-
-        if ($startOfMonthAfterFloorEnd > $end) {
-            return $sign * ($monthsDiff + $floorEnd->floatDiffInRealDays($end) / $floorEnd->daysInMonth);
-        }
-
-        return $sign * ($monthsDiff + $floorEnd->floatDiffInRealDays($startOfMonthAfterFloorEnd) / $floorEnd->daysInMonth + $startOfMonthAfterFloorEnd->floatDiffInRealDays($end) / $end->daysInMonth);
-    }
-
-    /**
-     * Get the difference in year as float (microsecond-precision) using timestamps.
-     *
-     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
-     * @param bool                                                   $absolute Get the absolute of the difference
-     *
-     * @return float
-     */
-    public function floatDiffInRealYears($date = null, $absolute = true)
-    {
-        $start = $this;
-        $end = $this->resolveCarbon($date);
-        $ascending = ($start <= $end);
-        $sign = $absolute || $ascending ? 1 : -1;
-        if (!$ascending) {
-            [$start, $end] = [$end, $start];
-        }
-        $yearsDiff = $start->diffInYears($end);
-        /** @var Carbon|CarbonImmutable $floorEnd */
-        $floorEnd = $start->avoidMutation()->addYears($yearsDiff);
-
-        if ($floorEnd >= $end) {
-            return $sign * $yearsDiff;
-        }
-
-        /** @var Carbon|CarbonImmutable $startOfYearAfterFloorEnd */
-        $startOfYearAfterFloorEnd = $floorEnd->avoidMutation()->addYear()->startOfYear();
-
-        if ($startOfYearAfterFloorEnd > $end) {
-            return $sign * ($yearsDiff + $floorEnd->floatDiffInRealDays($end) / $floorEnd->daysInYear);
-        }
-
-        return $sign * ($yearsDiff + $floorEnd->floatDiffInRealDays($startOfYearAfterFloorEnd) / $floorEnd->daysInYear + $startOfYearAfterFloorEnd->floatDiffInRealDays($end) / $end->daysInYear);
+        return $this->diffInMicroseconds($date, $absolute) / static::MICROSECONDS_PER_MILLISECOND;
     }
 
     /**
      * The number of seconds since midnight.
      *
-     * @return int
+     * @return float
      */
-    public function secondsSinceMidnight()
+    public function secondsSinceMidnight(): float
     {
-        return $this->diffInSeconds($this->avoidMutation()->startOfDay());
+        return $this->diffInSeconds($this->copy()->startOfDay(), true);
     }
 
     /**
      * The number of seconds until 23:59:59.
      *
-     * @return int
+     * @return float
      */
-    public function secondsUntilEndOfDay()
+    public function secondsUntilEndOfDay(): float
     {
-        return $this->diffInSeconds($this->avoidMutation()->endOfDay());
+        return $this->diffInSeconds($this->copy()->endOfDay(), true);
     }
 
     /**
@@ -790,41 +502,44 @@ trait Difference
      * echo Carbon::tomorrow()->diffForHumans(Carbon::yesterday(), ['short' => true]) . "\n";
      * ```
      *
-     * @param Carbon|\DateTimeInterface|string|array|null $other   if array passed, will be used as parameters array, see $syntax below;
-     *                                                             if null passed, now will be used as comparison reference;
-     *                                                             if any other type, it will be converted to date and used as reference.
-     * @param int|array                                   $syntax  if array passed, parameters will be extracted from it, the array may contains:
-     *                                                             - 'syntax' entry (see below)
-     *                                                             - 'short' entry (see below)
-     *                                                             - 'parts' entry (see below)
-     *                                                             - 'options' entry (see below)
-     *                                                             - 'skip' entry, list of units to skip (array of strings or a single string,
-     *                                                             ` it can be the unit name (singular or plural) or its shortcut
-     *                                                             ` (y, m, w, d, h, min, s, ms, µs).
-     *                                                             - 'aUnit' entry, prefer "an hour" over "1 hour" if true
-     *                                                             - 'join' entry determines how to join multiple parts of the string
-     *                                                             `  - if $join is a string, it's used as a joiner glue
-     *                                                             `  - if $join is a callable/closure, it get the list of string and should return a string
-     *                                                             `  - if $join is an array, the first item will be the default glue, and the second item
-     *                                                             `    will be used instead of the glue for the last item
-     *                                                             `  - if $join is true, it will be guessed from the locale ('list' translation file entry)
-     *                                                             `  - if $join is missing, a space will be used as glue
-     *                                                             - 'other' entry (see above)
-     *                                                             - 'minimumUnit' entry determines the smallest unit of time to display can be long or
-     *                                                             `  short form of the units, e.g. 'hour' or 'h' (default value: s)
-     *                                                             if int passed, it add modifiers:
-     *                                                             Possible values:
-     *                                                             - CarbonInterface::DIFF_ABSOLUTE          no modifiers
-     *                                                             - CarbonInterface::DIFF_RELATIVE_TO_NOW   add ago/from now modifier
-     *                                                             - CarbonInterface::DIFF_RELATIVE_TO_OTHER add before/after modifier
-     *                                                             Default value: CarbonInterface::DIFF_ABSOLUTE
-     * @param bool                                        $short   displays short format of time units
-     * @param int                                         $parts   maximum number of parts to display (default value: 1: single unit)
-     * @param int                                         $options human diff options
-     *
-     * @return string
+     * @param Carbon|DateTimeInterface|string|array|null $other   if array passed, will be used as parameters array, see $syntax below;
+     *                                                            if null passed, now will be used as comparison reference;
+     *                                                            if any other type, it will be converted to date and used as reference.
+     * @param int|array                                  $syntax  if array passed, parameters will be extracted from it, the array may contains:
+     *                                                            ⦿ 'syntax' entry (see below)
+     *                                                            ⦿ 'short' entry (see below)
+     *                                                            ⦿ 'parts' entry (see below)
+     *                                                            ⦿ 'options' entry (see below)
+     *                                                            ⦿ 'skip' entry, list of units to skip (array of strings or a single string,
+     *                                                            ` it can be the unit name (singular or plural) or its shortcut
+     *                                                            ` (y, m, w, d, h, min, s, ms, µs).
+     *                                                            ⦿ 'aUnit' entry, prefer "an hour" over "1 hour" if true
+     *                                                            ⦿ 'altNumbers' entry, use alternative numbers if available
+     *                                                            ` (from the current language if true is passed, from the given language(s)
+     *                                                            ` if array or string is passed)
+     *                                                            ⦿ 'join' entry determines how to join multiple parts of the string
+     *                                                            `  - if $join is a string, it's used as a joiner glue
+     *                                                            `  - if $join is a callable/closure, it get the list of string and should return a string
+     *                                                            `  - if $join is an array, the first item will be the default glue, and the second item
+     *                                                            `    will be used instead of the glue for the last item
+     *                                                            `  - if $join is true, it will be guessed from the locale ('list' translation file entry)
+     *                                                            `  - if $join is missing, a space will be used as glue
+     *                                                            ⦿ 'other' entry (see above)
+     *                                                            ⦿ 'minimumUnit' entry determines the smallest unit of time to display can be long or
+     *                                                            `  short form of the units, e.g. 'hour' or 'h' (default value: s)
+     *                                                            ⦿ 'locale' language in which the diff should be output (has no effect if 'translator' key is set)
+     *                                                            ⦿ 'translator' a custom translator to use to translator the output.
+     *                                                            if int passed, it adds modifiers:
+     *                                                            Possible values:
+     *                                                            - CarbonInterface::DIFF_ABSOLUTE          no modifiers
+     *                                                            - CarbonInterface::DIFF_RELATIVE_TO_NOW   add ago/from now modifier
+     *                                                            - CarbonInterface::DIFF_RELATIVE_TO_OTHER add before/after modifier
+     *                                                            Default value: CarbonInterface::DIFF_ABSOLUTE
+     * @param bool                                       $short   displays short format of time units
+     * @param int                                        $parts   maximum number of parts to display (default value: 1: single unit)
+     * @param int                                        $options human diff options
      */
-    public function diffForHumans($other = null, $syntax = null, $short = false, $parts = 1, $options = null)
+    public function diffForHumans($other = null, $syntax = null, $short = false, $parts = 1, $options = null): string
     {
         /* @var CarbonInterface $this */
         if (\is_array($other)) {
@@ -834,19 +549,22 @@ trait Difference
         }
 
         $intSyntax = &$syntax;
+
         if (\is_array($syntax)) {
             $syntax['syntax'] = $syntax['syntax'] ?? null;
             $intSyntax = &$syntax['syntax'];
         }
+
         $intSyntax = (int) ($intSyntax ?? static::DIFF_RELATIVE_AUTO);
         $intSyntax = $intSyntax === static::DIFF_RELATIVE_AUTO && $other === null ? static::DIFF_RELATIVE_TO_NOW : $intSyntax;
 
         $parts = min(7, max(1, (int) $parts));
         $skip = \is_array($syntax) ? ($syntax['skip'] ?? []) : [];
+        $options ??= $this->localHumanDiffOptions ?? $this->transmitFactory(
+            static fn () => static::getHumanDiffOptions(),
+        );
 
-        return $this->diffAsCarbonInterval($other, false, (array) $skip)
-            ->setLocalTranslator($this->getLocalTranslator())
-            ->forHumans($syntax, (bool) $short, $parts, $options ?? $this->localHumanDiffOptions ?? static::getHumanDiffOptions());
+        return $this->diff($other, skip: (array) $skip)->forHumans($syntax, (bool) $short, $parts, $options);
     }
 
     /**
@@ -1107,22 +825,21 @@ trait Difference
     }
 
     /**
-     * Get the difference in a human readable format in the current locale from current instance to an other
+     * Get the difference in a human-readable format in the current locale from current instance to another
      * instance given (or now if null given).
      *
      * @return string
      */
-    public function timespan($other = null, $timezone = null)
+    public function timespan($other = null, $timezone = null): string
     {
-        if (!$other instanceof DateTimeInterface) {
-            $other = static::parse($other, $timezone);
+        if (\is_string($other)) {
+            $other = $this->transmitFactory(static fn () => static::parse($other, $timezone));
         }
 
         return $this->diffForHumans($other, [
             'join' => ', ',
             'syntax' => CarbonInterface::DIFF_ABSOLUTE,
-            'options' => CarbonInterface::NO_ZERO_DIFF,
-            'parts' => -1,
+            'parts' => INF,
         ]);
     }
 
@@ -1144,12 +861,12 @@ trait Difference
         /** @var CarbonInterface $other */
         $other = $this->resolveCarbon($referenceTime)->avoidMutation()->setTimezone($this->getTimezone())->startOfDay();
         $diff = $other->diffInDays($current, false);
-        $format = $diff < -6 ? 'sameElse' : (
+        $format = $diff <= -static::DAYS_PER_WEEK ? 'sameElse' : (
             $diff < -1 ? 'lastWeek' : (
                 $diff < 0 ? 'lastDay' : (
                     $diff < 1 ? 'sameDay' : (
                         $diff < 2 ? 'nextDay' : (
-                            $diff < 7 ? 'nextWeek' : 'sameElse'
+                            $diff < static::DAYS_PER_WEEK ? 'nextWeek' : 'sameElse'
                         )
                     )
                 )
@@ -1165,18 +882,6 @@ trait Difference
 
     private function getIntervalDayDiff(DateInterval $interval): int
     {
-        $daysDiff = (int) $interval->format('%a');
-        $sign = $interval->format('%r') === '-' ? -1 : 1;
-
-        if (\is_int($interval->days) &&
-            $interval->y === 0 &&
-            $interval->m === 0 &&
-            version_compare(PHP_VERSION, '8.1.0-dev', '<') &&
-            abs($interval->d - $daysDiff) === 1
-        ) {
-            $daysDiff = abs($interval->d); // @codeCoverageIgnore
-        }
-
-        return $daysDiff * $sign;
+        return (int) $interval->format('%r%a');
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ddeboer\Imap\Search;
 
-use DateTimeInterface;
-
 /**
  * Represents a date condition.
  */
@@ -19,14 +17,14 @@ abstract class AbstractDate implements ConditionInterface
     /**
      * The date to be used for the condition.
      */
-    private DateTimeInterface $date;
+    private \DateTimeInterface $date;
 
     /**
      * Constructor.
      *
-     * @param DateTimeInterface $date optional date for the condition
+     * @param \DateTimeInterface $date optional date for the condition
      */
-    public function __construct(DateTimeInterface $date, string $dateFormat = 'j-M-Y')
+    public function __construct(\DateTimeInterface $date, string $dateFormat = 'j-M-Y')
     {
         $this->date       = $date;
         $this->dateFormat = $dateFormat;

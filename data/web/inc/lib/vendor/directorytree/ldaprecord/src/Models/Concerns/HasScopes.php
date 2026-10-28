@@ -2,9 +2,10 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use LdapRecord\Models\Model;
 use LdapRecord\Query\Model\Builder;
 
-/** @mixin \LdapRecord\Models\Model */
+/** @mixin Model */
 trait HasScopes
 {
     /**

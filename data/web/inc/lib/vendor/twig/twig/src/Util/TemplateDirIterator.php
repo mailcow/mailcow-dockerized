@@ -17,7 +17,7 @@ namespace Twig\Util;
 class TemplateDirIterator extends \IteratorIterator
 {
     /**
-     * @return mixed
+     * @return string
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -26,7 +26,7 @@ class TemplateDirIterator extends \IteratorIterator
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     #[\ReturnTypeWillChange]
     public function key()

@@ -2,21 +2,23 @@
 
 namespace LdapRecord\Testing;
 
+use LdapRecord\Connection;
 use LdapRecord\Container;
+use LdapRecord\ContainerException;
 
 class DirectoryFake
 {
     /**
      * The LDAP connections that were replaced with fakes.
      *
-     * @var \LdapRecord\Connection[]
+     * @var Connection[]
      */
     protected static array $replaced = [];
 
     /**
      * Replace a connection a fake.
      *
-     * @throws \LdapRecord\ContainerException
+     * @throws ContainerException
      */
     public static function setup(?string $name = null): ConnectionFake
     {
