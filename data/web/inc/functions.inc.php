@@ -2386,7 +2386,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_ssl":
           case "use_tls":
           case "login_provisioning":
-          case "ignore_ssl_errors":
+          case "ignore_ssl_error":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2410,7 +2410,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($settings["authsource"] == "ldap"){
         $settings['use_ssl'] = !isset($settings['use_ssl']) ? false : $settings['use_ssl'];
         $settings['use_tls'] = !isset($settings['use_tls']) ? false : $settings['use_tls'];
-        $settings['ignore_ssl_errors'] = !isset($settings['ignore_ssl_errors']) ? false : $settings['ignore_ssl_errors'];
+        $settings['ignore_ssl_error'] = !isset($settings['ignore_ssl_error']) ? false : $settings['ignore_ssl_error'];
       }
       return $settings;
     break;
