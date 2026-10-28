@@ -1,0 +1,3 @@
+[client]
+ssl = false
+ssl-verify-server-cert = false
