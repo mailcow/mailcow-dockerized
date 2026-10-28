@@ -49,7 +49,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
         $errorNumber  = 0;
         \set_error_handler(static function ($nr, $message) use (&$errorMessage, &$errorNumber): bool {
             $errorMessage = $message;
-            $errorNumber = $nr;
+            $errorNumber  = $nr;
 
             return true;
         });
@@ -80,7 +80,6 @@ final class Message extends Message\AbstractMessage implements MessageInterface
         }
         $this->messageNumberVerified = true;
 
-        $msgno = null;
         \set_error_handler(static function (): bool {
             return true;
         });
@@ -89,7 +88,7 @@ final class Message extends Message\AbstractMessage implements MessageInterface
 
         \restore_error_handler();
 
-        if (\is_numeric($msgno) && $msgno > 0) {
+        if ($msgno > 0) {
             $this->imapMsgNo = $msgno;
 
             return;
@@ -131,6 +130,14 @@ final class Message extends Message\AbstractMessage implements MessageInterface
         }
 
         return $this->rawMessage;
+    }
+
+    /**
+     * @param resource|string $file the path to the saved file as a string, or a valid file descriptor
+     */
+    public function saveRawMessage($file): void
+    {
+        $this->doSaveContent($file, '');
     }
 
     public function getHeaders(): Message\Headers
@@ -198,8 +205,6 @@ final class Message extends Message\AbstractMessage implements MessageInterface
 
     public function maskAsSeen(): bool
     {
-        \trigger_error(\sprintf('%s is deprecated and will be removed in 2.0. Use %s::markAsSeen instead.', __METHOD__, __CLASS__), \E_USER_DEPRECATED);
-
         return $this->markAsSeen();
     }
 

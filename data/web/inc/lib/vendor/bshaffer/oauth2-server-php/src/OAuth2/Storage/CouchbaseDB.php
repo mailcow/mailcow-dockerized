@@ -2,6 +2,7 @@
 
 namespace OAuth2\Storage;
 
+use Couchbase;
 use OAuth2\OpenID\Storage\AuthorizationCodeInterface as OpenIDAuthorizationCodeInterface;
 
 /**
@@ -27,14 +28,18 @@ class CouchbaseDB implements AuthorizationCodeInterface,
 
     public function __construct($connection, $config = array())
     {
-        if ($connection instanceof \Couchbase) {
+        if (!class_exists(Couchbase::class)) {
+            throw new \RuntimeException('Missing Couchbase');
+        }
+
+        if ($connection instanceof Couchbase) {
             $this->db = $connection;
         } else {
             if (!is_array($connection) || !is_array($connection['servers'])) {
                 throw new \InvalidArgumentException('First argument to OAuth2\Storage\CouchbaseDB must be an instance of Couchbase or a configuration array containing a server array');
             }
 
-            $this->db = new \Couchbase($connection['servers'], (!isset($connection['username'])) ? '' : $connection['username'], (!isset($connection['password'])) ? '' : $connection['password'], $connection['bucket'], false);
+            $this->db = new Couchbase($connection['servers'], (!isset($connection['username'])) ? '' : $connection['username'], (!isset($connection['password'])) ? '' : $connection['password'], $connection['bucket'], false);
         }
 
         $this->config = array_merge(array(
@@ -173,7 +178,7 @@ class CouchbaseDB implements AuthorizationCodeInterface,
         return is_null($code) ? false : $code;
     }
 
-    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
+    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null)
     {
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
@@ -185,6 +190,8 @@ class CouchbaseDB implements AuthorizationCodeInterface,
                 'expires' => $expires,
                 'scope' => $scope,
                 'id_token' => $id_token,
+                'code_challenge' => $code_challenge,
+                'code_challenge_method' => $code_challenge_method,
             ));
         } else {
             $this->setObjectByType('code_table',$code,array(
@@ -195,6 +202,8 @@ class CouchbaseDB implements AuthorizationCodeInterface,
                 'expires' => $expires,
                 'scope' => $scope,
                 'id_token' => $id_token,
+                'code_challenge' => $code_challenge,
+                'code_challenge_method' => $code_challenge_method,
             ));
         }
 

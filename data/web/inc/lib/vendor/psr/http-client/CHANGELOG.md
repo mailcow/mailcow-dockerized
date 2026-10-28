@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.3
+
+Add `source` link in composer.json. No code changes.
+
+## 1.0.2
+
+Allow PSR-7 (psr/http-message) 2.0. No code changes.
+
 ## 1.0.1
 
 Allow installation with PHP 8. No code changes.

@@ -5,8 +5,9 @@ namespace LdapRecord\Models\Concerns;
 use LdapRecord\ConnectionException;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Password;
+use LdapRecord\Models\Model;
 
-/** @mixin \LdapRecord\Models\Model */
+/** @mixin Model */
 trait HasPassword
 {
     /**

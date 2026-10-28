@@ -17,6 +17,7 @@ use Twig\Node\BodyNode;
 use Twig\Node\MacroNode;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
+use Twig\Node\Nodes;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\Profiler\Node\EnterProfileNode;
 use Twig\Profiler\Node\LeaveProfileNode;
@@ -43,8 +44,8 @@ final class ProfilerNodeVisitor implements NodeVisitorInterface
     public function leaveNode(Node $node, Environment $env): ?Node
     {
         if ($node instanceof ModuleNode) {
-            $node->setNode('display_start', new Node([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $this->varName), $node->getNode('display_start')]));
-            $node->setNode('display_end', new Node([new LeaveProfileNode($this->varName), $node->getNode('display_end')]));
+            $node->setNode('display_start', new Nodes([new EnterProfileNode($this->extensionName, Profile::TEMPLATE, $node->getTemplateName(), $this->varName), $node->getNode('display_start')]));
+            $node->setNode('display_end', new Nodes([new LeaveProfileNode($this->varName), $node->getNode('display_end')]));
         } elseif ($node instanceof BlockNode) {
             $node->setNode('body', new BodyNode([
                 new EnterProfileNode($this->extensionName, Profile::BLOCK, $node->getAttribute('name'), $this->varName),

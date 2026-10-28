@@ -29,7 +29,7 @@ class CodeIdTokenTest extends TestCase
 
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertArrayHasKey('query', $parts);
@@ -87,7 +87,7 @@ class CodeIdTokenTest extends TestCase
 
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertArrayHasKey('query', $parts);
@@ -133,7 +133,7 @@ class CodeIdTokenTest extends TestCase
 
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertArrayHasKey('query', $parts);

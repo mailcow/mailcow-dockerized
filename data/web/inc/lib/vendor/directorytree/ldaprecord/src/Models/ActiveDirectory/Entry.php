@@ -4,6 +4,7 @@ namespace LdapRecord\Models\ActiveDirectory;
 
 use InvalidArgumentException;
 use LdapRecord\Connection;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\Sid;
 use LdapRecord\Models\Entry as BaseEntry;
 use LdapRecord\Models\Events\Updated;
@@ -99,7 +100,7 @@ class Entry extends BaseEntry implements ActiveDirectory
     /**
      * Restore a deleted object.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function restore(?string $newParentDn = null): bool
     {

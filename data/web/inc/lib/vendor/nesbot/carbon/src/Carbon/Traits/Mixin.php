@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -19,6 +21,7 @@ use Generator;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionNamedType;
 use Throwable;
 
 /**
@@ -30,10 +33,8 @@ trait Mixin
 {
     /**
      * Stack of macro instance contexts.
-     *
-     * @var array
      */
-    protected static $macroContextStack = [];
+    protected static array $macroContextStack = [];
 
     /**
      * Mix another object into the class.
@@ -60,13 +61,9 @@ trait Mixin
      * echo "$previousBlackMoon\n";
      * ```
      *
-     * @param object|string $mixin
-     *
      * @throws ReflectionException
-     *
-     * @return void
      */
-    public static function mixin($mixin)
+    public static function mixin(object|string $mixin): void
     {
         \is_string($mixin) && trait_exists($mixin)
             ? self::loadMixinTrait($mixin)
@@ -74,31 +71,58 @@ trait Mixin
     }
 
     /**
-     * @param object|string $mixin
-     *
      * @throws ReflectionException
      */
-    private static function loadMixinClass($mixin)
+    private static function loadMixinClass(object|string $mixin): void
     {
         $methods = (new ReflectionClass($mixin))->getMethods(
-            ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED
+            ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED,
         );
 
         foreach ($methods as $method) {
-            if ($method->isConstructor() || $method->isDestructor()) {
+            if (self::cannotBeAMixinMethod($method)) {
                 continue;
             }
 
-            $method->setAccessible(true);
+            $macro = $method->invoke($method->isStatic() ? null : $mixin);
 
-            static::macro($method->name, $method->invoke($mixin));
+            if (\is_callable($macro)) {
+                static::macro($method->name, $macro);
+            }
         }
     }
 
-    /**
-     * @param string $trait
-     */
-    private static function loadMixinTrait($trait)
+    private static function cannotBeAMixinMethod(ReflectionMethod $method): bool
+    {
+        if ($method->isConstructor() || $method->isDestructor()) {
+            return true;
+        }
+
+        $returnType = $method->getReturnType();
+
+        if ($returnType instanceof ReflectionNamedType) {
+            $returnedTypeName = $returnType->getName();
+
+            if ($returnType->isBuiltin()) {
+                return !\in_array($returnedTypeName, [
+                    'callable',
+                    'object', // could have __invoke
+                    'array', // could be [MyClass::class, 'myMethod']
+                    'mixed', // could be one of the above
+                    // The other builtin types cannot be callable, so we can skip invoking them
+                ], true);
+            }
+
+            // If it returns a non-invokable object, it cannot be a mixin method
+            if (class_exists($returnedTypeName)) {
+                return !is_a($returnedTypeName, Closure::class, true) && !\is_callable([$returnedTypeName, '__invoke']);
+            }
+        }
+
+        return false;
+    }
+
+    private static function loadMixinTrait(string $trait): void
     {
         $context = eval(self::getAnonymousClassCodeForTrait($trait));
         $className = \get_class($context);
@@ -114,7 +138,7 @@ trait Mixin
                 try {
                     // @ is required to handle error if not converted into exceptions
                     $closure = @$closureBase->bindTo($context);
-                } catch (Throwable $throwable) { // @codeCoverageIgnore
+                } catch (Throwable) { // @codeCoverageIgnore
                     $closure = $closureBase; // @codeCoverageIgnore
                 }
 
@@ -167,7 +191,7 @@ trait Mixin
         }
     }
 
-    private static function getAnonymousClassCodeForTrait(string $trait)
+    private static function getAnonymousClassCodeForTrait(string $trait): string
     {
         return 'return new class() extends '.static::class.' {use '.$trait.';};';
     }
@@ -185,15 +209,8 @@ trait Mixin
 
     /**
      * Stack a Carbon context from inside calls of self::this() and execute a given action.
-     *
-     * @param static|null $context
-     * @param callable    $callable
-     *
-     * @throws Throwable
-     *
-     * @return mixed
      */
-    protected static function bindMacroContext($context, callable $callable)
+    protected static function bindMacroContext(?self $context, callable $callable): mixed
     {
         static::$macroContextStack[] = $context;
 
@@ -206,20 +223,16 @@ trait Mixin
 
     /**
      * Return the current context from inside a macro callee or a null if static.
-     *
-     * @return static|null
      */
-    protected static function context()
+    protected static function context(): ?static
     {
         return end(static::$macroContextStack) ?: null;
     }
 
     /**
      * Return the current context from inside a macro callee or a new one if static.
-     *
-     * @return static
      */
-    protected static function this()
+    protected static function this(): static
     {
         return end(static::$macroContextStack) ?: new static();
     }

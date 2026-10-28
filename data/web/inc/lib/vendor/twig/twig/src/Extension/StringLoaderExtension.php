@@ -29,6 +29,9 @@ final class StringLoaderExtension extends AbstractExtension
      *
      *     {{ include(template_from_string("Hello {{ name }}")) }}
      *
+     * Never expose `template_from_string` to untrusted template
+     * authors (like in a sandboxed environment). See the docs for more details.
+     *
      * @param string|null $name An optional name of the template to be used in error messages
      *
      * @internal

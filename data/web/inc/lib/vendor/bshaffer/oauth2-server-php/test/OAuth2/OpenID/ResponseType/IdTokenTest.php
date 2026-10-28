@@ -52,7 +52,7 @@ class IdTokenTest extends TestCase
 
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertArrayHasKey('fragment', $parts);
@@ -110,7 +110,7 @@ class IdTokenTest extends TestCase
     {
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertArrayHasKey('fragment', $parts);

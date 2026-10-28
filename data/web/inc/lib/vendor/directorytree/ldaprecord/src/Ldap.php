@@ -3,6 +3,8 @@
 namespace LdapRecord;
 
 use LDAP\Connection as RawLdapConnection;
+use Ldap\Result;
+use Ldap\ResultEntry;
 
 class Ldap implements LdapInterface
 {
@@ -24,7 +26,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-first-entry.php
      *
-     * @param  \Ldap\Result  $result
+     * @param  Result  $result
      */
     public function getFirstEntry(mixed $result): mixed
     {
@@ -38,7 +40,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-next-entry.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param  ResultEntry  $entry
      */
     public function getNextEntry(mixed $entry): mixed
     {
@@ -52,7 +54,7 @@ class Ldap implements LdapInterface
      *
      * @see http://php.net/manual/en/function.ldap-get-attributes.php
      *
-     * @param  \Ldap\ResultEntry  $entry
+     * @param  ResultEntry  $entry
      */
     public function getAttributes(mixed $entry): array|false
     {

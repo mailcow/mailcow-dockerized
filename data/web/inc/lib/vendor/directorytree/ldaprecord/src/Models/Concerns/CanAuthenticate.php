@@ -2,7 +2,9 @@
 
 namespace LdapRecord\Models\Concerns;
 
-/** @mixin \LdapRecord\Models\Model */
+use LdapRecord\Models\Model;
+
+/** @mixin Model */
 trait CanAuthenticate
 {
     /**
