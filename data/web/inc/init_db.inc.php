@@ -1604,7 +1604,9 @@ function init_db_schema()
           "redirect_uri" => "VARCHAR(2000)",
           "expires" => "TIMESTAMP NOT NULL",
           "scope" => "VARCHAR(4000)",
-          "id_token" => "VARCHAR(1000)"
+          "id_token" => "VARCHAR(1000)",
+          "code_challenge" => "VARCHAR(1000)",
+          "code_challenge_method" => "VARCHAR(20)"
         ),
         "keys" => array(
           "primary" => array(
