@@ -216,8 +216,9 @@ foreach ($rcpts as $rcpt) {
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
   error_log("QUARANTINE: quarantine pipe: processing quarantine message for rcpt " . $rcpt_final . PHP_EOL);
   try {
-    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`)
-      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes)");
+    // qhash is the secret of the release/delete links in notifications, so it must not be derivable
+    $stmt = $pdo->prepare("INSERT INTO `quarantine` (`qid`, `subject`, `score`, `sender`, `rcpt`, `symbols`, `user`, `ip`, `msg`, `action`, `fuzzy_hashes`, `qhash`)
+      VALUES (:qid, :subject, :score, :sender, :rcpt, :symbols, :user, :ip, :msg, :action, :fuzzy_hashes, :qhash)");
     $stmt->execute(array(
       ':qid' => $qid,
       ':subject' => $subject,
@@ -229,11 +230,9 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
       ':ip' => $ip,
       ':msg' => $raw_data,
       ':action' => $action,
-      ':fuzzy_hashes' => $fuzzy
+      ':fuzzy_hashes' => $fuzzy,
+      ':qhash' => bin2hex(random_bytes(32))
     ));
-    $lastId = $pdo->lastInsertId();
-    $stmt_update = $pdo->prepare("UPDATE `quarantine` SET `qhash` = SHA2(CONCAT(`id`, `qid`), 256) WHERE `id` = :id");
-    $stmt_update->execute(array(':id' => $lastId));
     $stmt = $pdo->prepare('DELETE FROM `quarantine` WHERE `rcpt` = :rcpt AND `id` NOT IN (
       SELECT `id`
       FROM (
