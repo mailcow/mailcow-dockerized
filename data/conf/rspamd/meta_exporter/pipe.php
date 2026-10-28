@@ -211,6 +211,24 @@ foreach ($rcpts as $rcpt) {
     http_response_code(502);
     exit;
   }
+
+  // relay-quarantine: if no mailbox resolved, quarantine for catch-all domains
+  if (empty($rcpt_final_mailboxes)) {
+    try {
+      $stmt = $pdo->prepare("SELECT `relay_all_recipients` FROM `domain` WHERE `domain` = :domain AND `relay_all_recipients` = '1'");
+      $stmt->execute(array(':domain' => $parsed_rcpt['domain']));
+      if ($stmt->fetch(PDO::FETCH_ASSOC)['relay_all_recipients'] == '1') {
+        if (!in_array($rcpt, $rcpt_final_mailboxes)) {
+          $rcpt_final_mailboxes[] = $rcpt;
+        }
+      }
+    }
+    catch (PDOException $e) {
+      error_log("DOMAIN CHECK: " . $e->getMessage() . PHP_EOL);
+      http_response_code(502);
+      exit;
+    }
+  }
 }
 
 foreach ($rcpt_final_mailboxes as $rcpt_final) {
