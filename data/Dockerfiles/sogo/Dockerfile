@@ -17,7 +17,7 @@ ARG SOPE_VERSION=SOPE-5.12.12
 # Security patches to apply (space-separated commit hashes)
 ARG SOGO_SECURITY_PATCHES=""
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.19
+ARG GOSU_VERSION=1.20
 ENV LC_ALL=C
 
 # Install dependencies, build SOPE and SOGo, then clean up (all in one layer to minimize image size)
