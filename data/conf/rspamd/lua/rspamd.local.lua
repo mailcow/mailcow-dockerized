@@ -765,13 +765,24 @@ rspamd_config:register_symbol({
   end
 })
 
+-- Expand a domain footer: replace only "{= key =}" placeholders with their values.
+-- Footer content is admin-controlled data, never a template, so it must not be run
+-- through the jinja/lua engine (that would execute code in the shared rspamd worker).
+-- Unknown placeholders render empty, matching the previous engine behaviour.
+local function expand_footer(template, replacements)
+  return (template:gsub('{=%s*([%w_]+)%s*=}', function(key)
+    local value = replacements[key]
+    if value == nil then return '' end
+    return tostring(value)
+  end))
+end
+
 rspamd_config:register_symbol({
   name = 'MOO_FOOTER',
   type = 'prefilter',
   callback = function(task)
     local cjson = require "cjson"
     local lua_mime = require "lua_mime"
-    local lua_util = require "lua_util"
     local rspamd_logger = require "rspamd_logger"
     local rspamd_http = require "rspamd_http"
     local envfrom = task:get_from(1)
@@ -844,10 +855,10 @@ rspamd_config:register_symbol({
               end
             end
             if footer.html and footer.html ~= "" then
-              footer.html = lua_util.jinja_template(footer.html, replacements, true)
+              footer.html = expand_footer(footer.html, replacements)
             end
             if footer.plain and footer.plain ~= "" then
-              footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
+              footer.plain = expand_footer(footer.plain, replacements)
             end
 
             -- add footer
