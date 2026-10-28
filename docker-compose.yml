@@ -4,7 +4,7 @@ x-db-version: &db_version DB_VERSION=28102026_1300
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.26.1-1
+      image: ghcr.io/mailcow/unbound:1.26.2-1
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -120,7 +120,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.2.35-1
+      image: ghcr.io/mailcow/phpfpm:8.2.35-2
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -207,7 +207,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.12-1
+      image: ghcr.io/mailcow/sogo:5.12.12-2
       environment:
         - *db_version
         - DBNAME=${DBNAME}
@@ -473,7 +473,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.98
+      image: ghcr.io/mailcow/acme:1.99
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -514,7 +514,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.65
+      image: ghcr.io/mailcow/netfilter:1.66
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -534,7 +534,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.11
+      image: ghcr.io/mailcow/watchdog:2.12
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -609,7 +609,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.12
+      image: ghcr.io/mailcow/dockerapi:2.14
       security_opt:
         - label=disable
       restart: always
@@ -629,7 +629,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.15
+      image: ghcr.io/mailcow/olefy:1.16
       restart: always
       environment:
         - TZ=${TZ}
