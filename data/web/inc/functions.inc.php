@@ -3060,7 +3060,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
       if ($iam_settings['authsource'] !== 'keycloak') return false;
-      if (isset($iam_settings['access_token'])) {
+      // only introspect a cached access_token that is not (about to be) expired,
+      // introspecting an expired token makes Keycloak log INTROSPECT_TOKEN_ERROR
+      $token_not_expired = false;
+      if (!empty($iam_settings['access_token'])) {
+        $token_parts = explode('.', $iam_settings['access_token']);
+        if (count($token_parts) === 3) {
+          $token_payload = json_decode(base64_decode(strtr($token_parts[1], '-_', '+/')), true);
+          $token_not_expired = is_array($token_payload) && isset($token_payload['exp']) && intval($token_payload['exp']) > time() + 30;
+        }
+      }
+      if ($token_not_expired) {
         // check if access_token is valid
         $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token/introspect";
         $req = http_build_query(array(
@@ -3111,6 +3121,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         ':key' => 'access_token',
         ':value' => $res['access_token']
       ));
+      // keep the cached token in sync, so subsequent calls in the same run reuse it
+      $iam_settings['access_token'] = $res['access_token'];
       return $res['access_token'];
     break;
   }
