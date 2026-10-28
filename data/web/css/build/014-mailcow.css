@@ -139,6 +139,13 @@ body {
   display: inline-block;
   font-size: inherit;
 }
+.badge .bi {
+  font-size: inherit;
+}
+/* keeps icons from making a badge taller than one with text only */
+.badge .bi::before {
+  line-height: 0;
+}
 .btn-group-xs > .btn, .btn-xs {
   padding: .25rem .4rem;
   font-size: .875rem;
@@ -343,6 +350,7 @@ code {
 }
 .tag-badge .bi {
   font-size: 12px;
+  line-height: 0;
 }
 .tag-badge.btn-badge:hover {
   filter: brightness(0.9);
