@@ -501,6 +501,7 @@ services:
         - ACME_DNS_CHALLENGE=${ACME_DNS_CHALLENGE:-n}
         - ACME_DNS_PROVIDER=${ACME_DNS_PROVIDER:-dns_xxx}
         - ACME_ACCOUNT_EMAIL=${ACME_ACCOUNT_EMAIL:-me@example.com}
+        - ACME_CERT_KEY_TYPE=${ACME_CERT_KEY_TYPE:-rsa}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:z
         - ./data/assets/ssl:/var/lib/acme/:z
