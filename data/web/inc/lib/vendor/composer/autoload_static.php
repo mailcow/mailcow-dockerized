@@ -58,6 +58,7 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             'MatthiasMullie\\PathConverter\\' => 29,
             'MatthiasMullie\\Minify\\' => 22,
+            'Mailcow\\' => 8,
         ),
         'L' => 
         array (
@@ -176,6 +177,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'MatthiasMullie\\Minify\\' => 
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
+        ),
+        'Mailcow\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/mailcow',
         ),
         'League\\OAuth2\\Client\\' => 
         array (

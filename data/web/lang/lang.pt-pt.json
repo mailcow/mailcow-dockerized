@@ -36,8 +36,6 @@
         "public_comment": "Comentário público",
         "sieve_desc": "Breve descrição",
         "sieve_type": "Tipo de filtro",
-        "subscribeall": "Subscrever todas as pastas",
-        "syncjob": "Adicionar sincronização",
         "validate": "Validar",
         "validation_success": "Validado com sucesso",
         "app_passwd_protocols": "Protocolos permitidos para senha de aplicação"
@@ -281,6 +279,10 @@
         "mailbox_modified": "A conta %s foi alterada com sucesso",
         "mailbox_removed": "Conta %s removida com sucesso",
         "resource_modified": "A conta %s foi alterada com sucesso"
+    },
+    "syncjobs": {
+        "add": "Adicionar sincronização",
+        "subscribeall": "Subscrever todas as pastas"
     },
     "user": {
         "action": "Ação",

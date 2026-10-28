@@ -105,7 +105,6 @@ RUN addgroup -g 5000 vmail \
   perl-package-stash-xs \
   perl-par-packer \
   perl-parse-recdescent \
-  perl-lockfile-simple \
   libproc2 \
   perl-readonly \
   perl-regexp-common \
@@ -150,7 +149,7 @@ COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
 COPY imapsync /usr/local/bin/imapsync
-COPY imapsync_runner.pl /usr/local/bin/imapsync_runner.pl
+COPY imapsync_runner.py /usr/local/bin/imapsync_runner.py
 COPY report-spam.sieve /usr/lib/dovecot/sieve/report-spam.sieve
 COPY report-ham.sieve /usr/lib/dovecot/sieve/report-ham.sieve
 COPY rspamd-pipe-ham /usr/lib/dovecot/sieve/rspamd-pipe-ham

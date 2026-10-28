@@ -118,6 +118,7 @@ $template_data = [
   'ui_themes' => customize('get', 'ui_themes'),
   'ui_theme' => customize('get', 'ui_theme'),
   'password_complexity' => password_complexity('get'),
+  'imapsync_settings' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSettings(),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
