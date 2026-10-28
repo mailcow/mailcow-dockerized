@@ -215,6 +215,10 @@ HTTPS_BIND=
 # Redirect HTTP connections to HTTPS - y/n
 HTTP_REDIRECT=y
 
+# Maximum request size for SOGo webmail, CalDAV/CardDAV and ActiveSync, e.g. 128m or 1g - 0 means unlimited
+# Keep it above the message size limit of Postfix (100 MB by default). The mailcow UI and API stay limited to 64m.
+NGINX_MAX_BODY_SIZE=128m
+
 # ------------------------------
 # Other bindings
 # ------------------------------
