@@ -78,7 +78,7 @@ class AuthorizeController implements AuthorizeControllerInterface
      *     );
      * @endcode
      */
-    public function __construct(ClientInterface $clientStorage, array $responseTypes = array(), array $config = array(), ScopeInterface $scopeUtil = null)
+    public function __construct(ClientInterface $clientStorage, array $responseTypes = array(), array $config = array(), ?ScopeInterface $scopeUtil = null)
     {
         $this->clientStorage = $clientStorage;
         $this->responseTypes = $responseTypes;
@@ -87,6 +87,7 @@ class AuthorizeController implements AuthorizeControllerInterface
             'enforce_state'  => true,
             'require_exact_redirect_uri' => true,
             'redirect_status_code' => 302,
+            'enforce_pkce' => false,
         ), $config);
 
         if (is_null($scopeUtil)) {

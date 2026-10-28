@@ -9,7 +9,7 @@ class FirebaseJwtTest extends TestCase
 {
     private $privateKey;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->privateKey = <<<EOD
 -----BEGIN RSA PRIVATE KEY-----

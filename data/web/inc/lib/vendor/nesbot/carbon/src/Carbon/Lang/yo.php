@@ -27,7 +27,7 @@ return [
     'a_hour' => '{1}wákati kan|wákati :count',
     'minute' => 'ìsẹjú :count',
     'a_minute' => '{1}ìsẹjú kan|ìsẹjú :count',
-    'second' => 'iaayá :count',
+    'second' => 'aayá :count',
     'a_second' => '{1}ìsẹjú aayá die|aayá :count',
     'ago' => ':time kọjá',
     'from_now' => 'ní :time',

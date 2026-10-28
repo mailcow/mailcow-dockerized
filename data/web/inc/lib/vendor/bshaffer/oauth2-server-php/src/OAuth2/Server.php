@@ -150,7 +150,7 @@ class Server implements ResourceControllerInterface,
      *
      * @ingroup oauth2_section_7
      */
-    public function __construct($storage = array(), array $config = array(), array $grantTypes = array(), array $responseTypes = array(), TokenTypeInterface $tokenType = null, ScopeInterface $scopeUtil = null, ClientAssertionTypeInterface $clientAssertionType = null)
+    public function __construct($storage = array(), array $config = array(), array $grantTypes = array(), array $responseTypes = array(), ?TokenTypeInterface $tokenType = null, ?ScopeInterface $scopeUtil = null, ?ClientAssertionTypeInterface $clientAssertionType = null)
     {
         $storage = is_array($storage) ? $storage : array($storage);
         $this->storages = array();
@@ -172,6 +172,7 @@ class Server implements ResourceControllerInterface,
             'enforce_state'            => true,
             'require_exact_redirect_uri' => true,
             'allow_implicit'           => false,
+            'enforce_pkce'             => false,
             'allow_credentials_in_request_body' => true,
             'allow_public_clients'     => true,
             'always_issue_new_refresh_token' => false,
@@ -288,7 +289,7 @@ class Server implements ResourceControllerInterface,
      *
      * @see http://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
-    public function handleUserInfoRequest(RequestInterface $request, ResponseInterface $response = null)
+    public function handleUserInfoRequest(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $this->getUserInfoController()->handleUserInfoRequest($request, $this->response);
@@ -314,7 +315,7 @@ class Server implements ResourceControllerInterface,
      *
      * @ingroup oauth2_section_4
      */
-    public function handleTokenRequest(RequestInterface $request, ResponseInterface $response = null)
+    public function handleTokenRequest(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $this->getTokenController()->handleTokenRequest($request, $this->response);
@@ -327,7 +328,7 @@ class Server implements ResourceControllerInterface,
      * @param ResponseInterface $response - Response object
      * @return mixed
      */
-    public function grantAccessToken(RequestInterface $request, ResponseInterface $response = null)
+    public function grantAccessToken(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getTokenController()->grantAccessToken($request, $this->response);
@@ -345,7 +346,7 @@ class Server implements ResourceControllerInterface,
      * @param ResponseInterface $response
      * @return Response|ResponseInterface
      */
-    public function handleRevokeRequest(RequestInterface $request, ResponseInterface $response = null)
+    public function handleRevokeRequest(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $this->getTokenController()->handleRevokeRequest($request, $this->response);
@@ -407,7 +408,7 @@ class Server implements ResourceControllerInterface,
      *
      * @ingroup oauth2_section_3
      */
-    public function validateAuthorizeRequest(RequestInterface $request, ResponseInterface $response = null)
+    public function validateAuthorizeRequest(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getAuthorizeController()->validateAuthorizeRequest($request, $this->response);
@@ -421,7 +422,7 @@ class Server implements ResourceControllerInterface,
      * @param string            $scope    - Scope
      * @return mixed
      */
-    public function verifyResourceRequest(RequestInterface $request, ResponseInterface $response = null, $scope = null)
+    public function verifyResourceRequest(RequestInterface $request, ?ResponseInterface $response = null, $scope = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getResourceController()->verifyResourceRequest($request, $this->response, $scope);
@@ -434,7 +435,7 @@ class Server implements ResourceControllerInterface,
      * @param ResponseInterface $response - Response object
      * @return mixed
      */
-    public function getAccessTokenData(RequestInterface $request, ResponseInterface $response = null)
+    public function getAccessTokenData(RequestInterface $request, ?ResponseInterface $response = null)
     {
         $this->response = is_null($response) ? new Response() : $response;
         $value = $this->getResourceController()->getAccessTokenData($request, $this->response);
@@ -577,7 +578,7 @@ class Server implements ResourceControllerInterface,
             }
         }
 
-        $config = array_intersect_key($this->config, array_flip(explode(' ', 'allow_implicit enforce_state require_exact_redirect_uri')));
+        $config = array_intersect_key($this->config, array_flip(explode(' ', 'allow_implicit enforce_state require_exact_redirect_uri enforce_pkce')));
 
         if ($this->config['use_openid_connect']) {
             return new OpenIDAuthorizeController($this->storages['client'], $this->responseTypes, $config, $this->getScopeUtil());

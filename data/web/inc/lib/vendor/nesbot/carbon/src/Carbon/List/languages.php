@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -594,7 +596,7 @@ return [
         'nativeName' => 'Slovenčina, Slovenský Jazyk',
     ],
     'sl' => [
-        'isoName' => 'Slovene',
+        'isoName' => 'Slovenian',
         'nativeName' => 'Slovenski Jezik, Slovenščina',
     ],
     'so' => [

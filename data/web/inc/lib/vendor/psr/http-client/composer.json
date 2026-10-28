@@ -7,12 +7,15 @@
     "authors": [
         {
             "name": "PHP-FIG",
-            "homepage": "http://www.php-fig.org/"
+            "homepage": "https://www.php-fig.org/"
         }
     ],
+    "support": {
+        "source": "https://github.com/php-fig/http-client"
+    },
     "require": {
         "php": "^7.0 || ^8.0",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.0 || ^2.0"
     },
     "autoload": {
         "psr-4": {

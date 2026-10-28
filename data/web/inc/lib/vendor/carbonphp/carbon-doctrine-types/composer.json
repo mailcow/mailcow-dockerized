@@ -32,5 +32,10 @@
             "email": "kylekatarnls@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-main": "3.x-dev"
+        }
+    }
 }

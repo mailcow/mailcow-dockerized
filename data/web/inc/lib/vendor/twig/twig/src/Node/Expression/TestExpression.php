@@ -13,15 +13,23 @@ namespace Twig\Node\Expression;
 
 use Twig\Attribute\FirstClassTwigCallableReady;
 use Twig\Compiler;
+use Twig\Node\CoercesChildrenToStringInterface;
 use Twig\Node\NameDeprecation;
 use Twig\Node\Node;
 use Twig\TwigTest;
 
-class TestExpression extends CallExpression
+class TestExpression extends CallExpression implements ReturnBoolInterface, CoercesChildrenToStringInterface
 {
     #[FirstClassTwigCallableReady]
+    /**
+     * @param AbstractExpression $node
+     */
     public function __construct(Node $node, string|TwigTest $test, ?Node $arguments, int $lineno)
     {
+        if (!$node instanceof AbstractExpression) {
+            trigger_deprecation('twig/twig', '3.15', 'Not passing a "%s" instance to the "node" argument of "%s" is deprecated ("%s" given).', AbstractExpression::class, static::class, $node::class);
+        }
+
         $nodes = ['node' => $node];
         if (null !== $arguments) {
             $nodes['arguments'] = $arguments;
@@ -62,5 +70,22 @@ class TestExpression extends CallExpression
         }
 
         $this->compileCallable($compiler);
+    }
+
+    public function getStringCoercedChildNames(): array
+    {
+        $names = [];
+
+        // the `empty` test triggers an implicit string coercion through `CoreExtension::testEmpty()`
+        if ('empty' === $this->getAttribute('name')) {
+            $names[] = 'node';
+        }
+
+        // a test may coerce its arguments to string (the host PHP code is opaque to Twig)
+        if ($this->hasNode('arguments')) {
+            $names[] = 'arguments';
+        }
+
+        return $names;
     }
 }

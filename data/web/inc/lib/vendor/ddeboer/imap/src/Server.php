@@ -67,7 +67,7 @@ final class Server implements ServerInterface
         $errorNumber  = 0;
         \set_error_handler(static function ($nr, $message) use (&$errorMessage, &$errorNumber): bool {
             $errorMessage = $message;
-            $errorNumber = $nr;
+            $errorNumber  = $nr;
 
             return true;
         });

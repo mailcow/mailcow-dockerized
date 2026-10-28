@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -25,47 +27,38 @@ trait Mutability
 
     /**
      * Returns true if the current class/instance is mutable.
-     *
-     * @return bool
      */
-    public static function isMutable()
+    public static function isMutable(): bool
     {
         return false;
     }
 
     /**
      * Returns true if the current class/instance is immutable.
-     *
-     * @return bool
      */
-    public static function isImmutable()
+    public static function isImmutable(): bool
     {
         return !static::isMutable();
     }
 
     /**
      * Return a mutable copy of the instance.
-     *
-     * @return Carbon
      */
-    public function toMutable()
+    public function toMutable(): Carbon
     {
-        /** @var Carbon $date */
-        $date = $this->cast(Carbon::class);
-
-        return $date;
+        return $this->cast(Carbon::class);
     }
 
     /**
-     * Return a immutable copy of the instance.
-     *
-     * @return CarbonImmutable
+     * Return an immutable copy of the instance.
      */
-    public function toImmutable()
+    public function toImmutable(): CarbonImmutable
     {
-        /** @var CarbonImmutable $date */
-        $date = $this->cast(CarbonImmutable::class);
+        // Immutable objects are fine as is (uncloned)
+        if ($this::class === CarbonImmutable::class) {
+            return $this;
+        }
 
-        return $date;
+        return $this->cast(CarbonImmutable::class);
     }
 }

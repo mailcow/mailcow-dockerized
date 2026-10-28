@@ -16,22 +16,22 @@ use Psr\Http\Message\StreamInterface;
  */
 final class BufferStream implements StreamInterface
 {
-    /** @var int */
-    private $hwm;
+    use NonSerializableStreamTrait;
 
-    /** @var string */
-    private $buffer = '';
+    private int $hwm;
+
+    private string $buffer = '';
 
     /**
      * @param int $hwm High water mark, representing the preferred maximum
-     *                 buffer size. If the size of the buffer exceeds the high
-     *                 water mark, then calls to write will continue to succeed
-     *                 but will return 0 to inform writers to slow down
+     *                 buffer size. If the size of the buffer reaches or exceeds
+     *                 the high water mark, then calls to write will continue to
+     *                 succeed but will return 0 to inform writers to slow down
      *                 until the buffer has been drained by reading from it.
      */
     public function __construct(int $hwm = 16384)
     {
-        $this->hwm = $hwm;
+        $this->hwm = Integers::assertNonNegativeInteger($hwm, 'High water mark');
     }
 
     public function __toString(): string
@@ -84,7 +84,7 @@ final class BufferStream implements StreamInterface
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET): void
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         throw new \RuntimeException('Cannot seek a BufferStream');
     }
@@ -102,8 +102,12 @@ final class BufferStream implements StreamInterface
     /**
      * Reads data from the buffer.
      */
-    public function read($length): string
+    public function read(int $length): string
     {
+        if ($length < 0) {
+            throw new \RuntimeException('Length parameter cannot be negative');
+        }
+
         $currentLength = strlen($this->buffer);
 
         if ($length >= $currentLength) {
@@ -122,7 +126,7 @@ final class BufferStream implements StreamInterface
     /**
      * Writes data to the buffer.
      */
-    public function write($string): int
+    public function write(string $string): int
     {
         $this->buffer .= $string;
 
@@ -134,16 +138,14 @@ final class BufferStream implements StreamInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return mixed
      */
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         if ($key === 'hwm') {
             return $this->hwm;
         }
 
-        return $key ? null : [];
+        return $key === null ? [] : null;
     }
 }

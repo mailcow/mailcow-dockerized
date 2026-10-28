@@ -13,12 +13,16 @@ namespace Twig\Node\Expression;
 
 use Twig\Attribute\FirstClassTwigCallableReady;
 use Twig\Compiler;
+use Twig\Node\CoercesChildrenToStringInterface;
 use Twig\Node\NameDeprecation;
 use Twig\Node\Node;
 use Twig\TwigFunction;
 
-class FunctionExpression extends CallExpression
+class FunctionExpression extends CallExpression implements SupportDefinedTestInterface, CoercesChildrenToStringInterface
 {
+    use SupportDefinedTestDeprecationTrait;
+    use SupportDefinedTestTrait;
+
     #[FirstClassTwigCallableReady]
     public function __construct(TwigFunction|string $function, Node $arguments, int $lineno)
     {
@@ -29,7 +33,7 @@ class FunctionExpression extends CallExpression
             trigger_deprecation('twig/twig', '3.12', 'Not passing an instance of "TwigFunction" when creating a "%s" function of type "%s" is deprecated.', $name, static::class);
         }
 
-        parent::__construct(['arguments' => $arguments], ['name' => $name, 'type' => 'function', 'is_defined_test' => false], $lineno);
+        parent::__construct(['arguments' => $arguments], ['name' => $name, 'type' => 'function'], $lineno);
 
         if ($function instanceof TwigFunction) {
             $this->setAttribute('twig_callable', $function);
@@ -44,6 +48,16 @@ class FunctionExpression extends CallExpression
         $this->deprecateAttribute('dynamic_name', new NameDeprecation('twig/twig', '3.12'));
     }
 
+    public function enableDefinedTest(): void
+    {
+        if ('constant' === $this->getAttribute('name')) {
+            $this->definedTest = true;
+        }
+    }
+
+    /**
+     * @return void
+     */
     public function compile(Compiler $compiler)
     {
         $name = $this->getAttribute('name');
@@ -59,10 +73,16 @@ class FunctionExpression extends CallExpression
             $this->setAttribute('twig_callable', $compiler->getEnvironment()->getFunction($name));
         }
 
-        if ('constant' === $name && $this->getAttribute('is_defined_test')) {
+        if ('constant' === $name && $this->isDefinedTestEnabled()) {
             $this->getNode('arguments')->setNode('checkDefined', new ConstantExpression(true, $this->getTemplateLine()));
         }
 
         $this->compileCallable($compiler);
+    }
+
+    public function getStringCoercedChildNames(): array
+    {
+        // a function may coerce its arguments to string (the host PHP code is opaque to Twig)
+        return ['arguments'];
     }
 }

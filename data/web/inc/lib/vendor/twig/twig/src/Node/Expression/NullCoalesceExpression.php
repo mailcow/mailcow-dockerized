@@ -12,23 +12,39 @@
 namespace Twig\Node\Expression;
 
 use Twig\Compiler;
+use Twig\Node\EmptyNode;
 use Twig\Node\Expression\Binary\AndBinary;
+use Twig\Node\Expression\Binary\NullCoalesceBinary;
 use Twig\Node\Expression\Test\DefinedTest;
 use Twig\Node\Expression\Test\NullTest;
 use Twig\Node\Expression\Unary\NotUnary;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\Node;
 use Twig\TwigTest;
 
 class NullCoalesceExpression extends ConditionalExpression
 {
+    /**
+     * @param AbstractExpression $left
+     * @param AbstractExpression $right
+     */
     public function __construct(Node $left, Node $right, int $lineno)
     {
-        $test = new DefinedTest(clone $left, new TwigTest('defined'), new Node(), $left->getTemplateLine());
+        trigger_deprecation('twig/twig', '3.17', \sprintf('"%s" is deprecated; use "%s" instead.', __CLASS__, NullCoalesceBinary::class));
+
+        if (!$left instanceof AbstractExpression) {
+            trigger_deprecation('twig/twig', '3.15', 'Not passing a "%s" instance to the "left" argument of "%s" is deprecated ("%s" given).', AbstractExpression::class, static::class, $left::class);
+        }
+        if (!$right instanceof AbstractExpression) {
+            trigger_deprecation('twig/twig', '3.15', 'Not passing a "%s" instance to the "right" argument of "%s" is deprecated ("%s" given).', AbstractExpression::class, static::class, $right::class);
+        }
+
+        $test = new DefinedTest(clone $left, new TwigTest('defined', null, ['always_allowed_in_sandbox' => true]), new EmptyNode(), $left->getTemplateLine());
         // for "block()", we don't need the null test as the return value is always a string
         if (!$left instanceof BlockReferenceExpression) {
             $test = new AndBinary(
                 $test,
-                new NotUnary(new NullTest($left, new TwigTest('null'), new Node(), $left->getTemplateLine()), $left->getTemplateLine()),
+                new NotUnary(new NullTest($left, new TwigTest('null', null, ['always_allowed_in_sandbox' => true]), new EmptyNode(), $left->getTemplateLine()), $left->getTemplateLine()),
                 $left->getTemplateLine()
             );
         }
@@ -45,7 +61,7 @@ class NullCoalesceExpression extends ConditionalExpression
          * cases might be implemented as an optimizer node visitor, but has not been done
          * as benefits are probably not worth the added complexity.
          */
-        if ($this->getNode('expr2') instanceof NameExpression) {
+        if ($this->getNode('expr2') instanceof ContextVariable) {
             $this->getNode('expr2')->setAttribute('always_defined', true);
             $compiler
                 ->raw('((')

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ddeboer\Imap;
 
-use DateTimeInterface;
 use Ddeboer\Imap\Message\PartInterface;
 use Ddeboer\Imap\Search\ConditionInterface;
 
@@ -19,6 +18,11 @@ interface MailboxInterface extends \Countable, \IteratorAggregate
      * Get mailbox decoded name.
      */
     public function getName(): string;
+
+    /**
+     * Set new mailbox name.
+     */
+    public function renameTo(string $name): bool;
 
     /**
      * Get mailbox encoded path.
@@ -92,7 +96,7 @@ interface MailboxInterface extends \Countable, \IteratorAggregate
     /**
      * Add a message to the mailbox.
      */
-    public function addMessage(string $message, string $options = null, DateTimeInterface $internalDate = null): bool;
+    public function addMessage(string $message, string $options = null, \DateTimeInterface $internalDate = null): bool;
 
     /**
      * Returns a tree of threaded message for the current Mailbox.

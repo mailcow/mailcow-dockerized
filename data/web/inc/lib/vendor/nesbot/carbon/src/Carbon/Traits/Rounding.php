@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -13,6 +15,9 @@ namespace Carbon\Traits;
 
 use Carbon\CarbonInterface;
 use Carbon\Exceptions\UnknownUnitException;
+use Carbon\WeekDay;
+use DateInterval;
+use Time\Duration;
 
 /**
  * Trait Rounding.
@@ -30,15 +35,12 @@ trait Rounding
 
     /**
      * Round the current instance at the given unit with given precision if specified and the given function.
-     *
-     * @param string    $unit
-     * @param float|int $precision
-     * @param string    $function
-     *
-     * @return CarbonInterface
      */
-    public function roundUnit($unit, $precision = 1, $function = 'round')
-    {
+    public function roundUnit(
+        string $unit,
+        DateInterval|Duration|string|float|int $precision = 1,
+        callable|string $function = 'round',
+    ): static {
         $metaUnits = [
             // @call roundUnit
             'millennium' => [static::YEARS_PER_MILLENNIUM, 'year'],
@@ -68,6 +70,38 @@ trait Rounding
         }
 
         $precision *= $factor;
+
+        // How many of each unit make up the next one up. Only the steps with a
+        // fixed size are listed: a month holds a varying number of days, so a
+        // day precision is never carried into a month.
+        $unitsPerNextUnit = [
+            // @call roundUnit
+            'microsecond' => [static::MICROSECONDS_PER_SECOND, 'second'],
+            // @call roundUnit
+            'second' => [static::SECONDS_PER_MINUTE, 'minute'],
+            // @call roundUnit
+            'minute' => [static::MINUTES_PER_HOUR, 'hour'],
+            // @call roundUnit
+            'hour' => [static::HOURS_PER_DAY, 'day'],
+            // @call roundUnit
+            'month' => [static::MONTHS_PER_YEAR, 'year'],
+        ];
+
+        // A numeric precision counts units of $normalizedUnit, and that unit has
+        // a range it cannot leave, so a precision spanning the next unit up has
+        // to be re-targeted there, the same way "week" becomes "day" above.
+        if (\is_int($precision) || \is_float($precision)) {
+            while (isset($unitsPerNextUnit[$normalizedUnit])) {
+                [$span, $nextUnit] = $unitsPerNextUnit[$normalizedUnit];
+
+                if ($precision < $span) {
+                    break;
+                }
+
+                $precision /= $span;
+                $normalizedUnit = $nextUnit;
+            }
+        }
 
         if (!isset($ranges[$normalizedUnit])) {
             throw new UnknownUnitException($unit);
@@ -113,7 +147,7 @@ trait Rounding
                 }
 
                 $changes[$unit] = round(
-                    $minimum + ($fraction ? $fraction * $function(($this->$unit - $minimum) / $fraction) : 0)
+                    $minimum + ($fraction ? $fraction * $function(($this->$unit - $minimum) / $fraction) : 0),
                 );
 
                 // Cannot use modulo as it lose double precision
@@ -140,63 +174,40 @@ trait Rounding
 
     /**
      * Truncate the current instance at the given unit with given precision if specified.
-     *
-     * @param string    $unit
-     * @param float|int $precision
-     *
-     * @return CarbonInterface
      */
-    public function floorUnit($unit, $precision = 1)
+    public function floorUnit(string $unit, DateInterval|Duration|string|float|int $precision = 1): static
     {
         return $this->roundUnit($unit, $precision, 'floor');
     }
 
     /**
      * Ceil the current instance at the given unit with given precision if specified.
-     *
-     * @param string    $unit
-     * @param float|int $precision
-     *
-     * @return CarbonInterface
      */
-    public function ceilUnit($unit, $precision = 1)
+    public function ceilUnit(string $unit, DateInterval|Duration|string|float|int $precision = 1): static
     {
         return $this->roundUnit($unit, $precision, 'ceil');
     }
 
     /**
      * Round the current instance second with given precision if specified.
-     *
-     * @param float|int|string|\DateInterval|null $precision
-     * @param string                              $function
-     *
-     * @return CarbonInterface
      */
-    public function round($precision = 1, $function = 'round')
+    public function round(DateInterval|string|float|int $precision = 1, callable|string $function = 'round'): static
     {
         return $this->roundWith($precision, $function);
     }
 
     /**
      * Round the current instance second with given precision if specified.
-     *
-     * @param float|int|string|\DateInterval|null $precision
-     *
-     * @return CarbonInterface
      */
-    public function floor($precision = 1)
+    public function floor(DateInterval|string|float|int $precision = 1): static
     {
         return $this->round($precision, 'floor');
     }
 
     /**
      * Ceil the current instance second with given precision if specified.
-     *
-     * @param float|int|string|\DateInterval|null $precision
-     *
-     * @return CarbonInterface
      */
-    public function ceil($precision = 1)
+    public function ceil(DateInterval|string|float|int $precision = 1): static
     {
         return $this->round($precision, 'ceil');
     }
@@ -204,26 +215,22 @@ trait Rounding
     /**
      * Round the current instance week.
      *
-     * @param int $weekStartsAt optional start allow you to specify the day of week to use to start the week
-     *
-     * @return CarbonInterface
+     * @param WeekDay|int|null $weekStartsAt optional start allow you to specify the day of week to use to start the week
      */
-    public function roundWeek($weekStartsAt = null)
+    public function roundWeek(WeekDay|int|null $weekStartsAt = null): static
     {
         return $this->closest(
             $this->avoidMutation()->floorWeek($weekStartsAt),
-            $this->avoidMutation()->ceilWeek($weekStartsAt)
+            $this->avoidMutation()->ceilWeek($weekStartsAt),
         );
     }
 
     /**
      * Truncate the current instance week.
      *
-     * @param int $weekStartsAt optional start allow you to specify the day of week to use to start the week
-     *
-     * @return CarbonInterface
+     * @param WeekDay|int|null $weekStartsAt optional start allow you to specify the day of week to use to start the week
      */
-    public function floorWeek($weekStartsAt = null)
+    public function floorWeek(WeekDay|int|null $weekStartsAt = null): static
     {
         return $this->startOfWeek($weekStartsAt);
     }
@@ -231,11 +238,9 @@ trait Rounding
     /**
      * Ceil the current instance week.
      *
-     * @param int $weekStartsAt optional start allow you to specify the day of week to use to start the week
-     *
-     * @return CarbonInterface
+     * @param WeekDay|int|null $weekStartsAt optional start allow you to specify the day of week to use to start the week
      */
-    public function ceilWeek($weekStartsAt = null)
+    public function ceilWeek(WeekDay|int|null $weekStartsAt = null): static
     {
         if ($this->isMutable()) {
             $startOfWeek = $this->avoidMutation()->startOfWeek($weekStartsAt);
