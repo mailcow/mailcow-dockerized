@@ -286,7 +286,6 @@
         "merged_vars_hint": "Wyszarzone wiersze zostały połączone z <code>vars. (local.) inc.php</code> i nie można ich modyfikować.",
         "message_size": "Rozmiar wiadomości",
         "nexthop": "Następny hop",
-        "needs_restart": "potrzebny restart",
         "no": "&#10005;",
         "no_active_bans": "Brak aktywnych banów",
         "no_new_rows": "Brak dostępnych kolejnych wierszy",

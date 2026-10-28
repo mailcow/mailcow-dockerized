@@ -1292,8 +1292,13 @@ function set_tfa($_data) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row) {
         if ($row['authsource'] == 'ldap'){
-          if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
-          else $access_denied = false;
+          try {
+            if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
+            else $access_denied = false;
+          } catch (\Mailcow\Auth\IdpUnavailable $e) {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log, $e->getMessage()), 'msg' => 'iam_unavailable');
+            return false;
+          }
         } else {
           if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
           else $access_denied = false;

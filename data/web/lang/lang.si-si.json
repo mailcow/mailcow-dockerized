@@ -397,7 +397,6 @@
         "task": "Naloga",
         "user_link": "Uporabniška povezava",
         "iam_realm": "Realm",
-        "needs_restart": "potreben je ponovni zagon",
         "ui_theme": "Tema",
         "ui_theme_dark": "Vključuje različico s temnim načinom",
         "ui_theme_default": "Privzeto",

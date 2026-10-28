@@ -17,8 +17,8 @@ if [ $nftables_found -gt $iptables_found ]; then
 fi
 
 if [ $nftables_found -eq 0 ] && [ $nftables_found -eq $iptables_found ]; then
-  nftables_lines=$(nft list ruleset | wc -l)
-  iptables_lines=$(iptables-save | wc -l)
+  nftables_lines=$(nft list ruleset 2>/dev/null | wc -l)
+  iptables_lines=$(iptables-save 2>/dev/null | wc -l)
   if [ $nftables_lines -gt $iptables_lines ]; then
     backend=nftables
   else

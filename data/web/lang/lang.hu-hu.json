@@ -295,8 +295,7 @@
         "validate_license_now": "GUID érvényesítése a licenszszerverrel szemben",
         "yes": "&#10003;",
         "success": "Siker",
-        "login_page": "Belépő oldal",
-        "needs_restart": "újraindítást igényel"
+        "login_page": "Belépő oldal"
     },
     "edit": {
         "active": "Aktív",

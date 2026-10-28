@@ -395,7 +395,6 @@
         "iam_host_info": "Saisissez un ou plusieurs hôtes LDAP, séparés par des virgules.",
         "iam_import_users": "Importer des utilisateurs",
         "filter": "Filtrer",
-        "needs_restart": "nécessite un redémarrage",
         "iam": "Fournisseur d'identité"
     },
     "danger": {
