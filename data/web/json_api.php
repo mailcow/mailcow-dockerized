@@ -107,7 +107,7 @@ if (isset($_GET['query'])) {
 
   switch ($action) {
     case "add":
-      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
+      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
             'type' => 'error',

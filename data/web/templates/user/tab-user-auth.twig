@@ -77,6 +77,7 @@
               {% endif %}
             </div>
           </div>
+          {% if acl.app_passwds == 1 %}
           <div class="row mt-2">
             <div class="col-12 col-md-3 d-flex">
               <span class="mt-2 w-100 text-md-end">{{ lang.user.apple_connection_profile }}<br>{{ lang.user.with_app_password }}:</span>
@@ -94,6 +95,7 @@
               {% endif %}
             </div>
           </div>
+          {% endif %}
           <div class="row">
             <div class="col-12 d-flex flex-column text-center align-items-center mt-4">
               <a target="_blank" href="https://mailcow.github.io/mailcow-dockerized-docs/client/client/#{{ clientconfigstr }}">{{ lang.user.client_configuration }}</a>

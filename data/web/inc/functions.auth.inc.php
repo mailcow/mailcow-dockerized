@@ -474,7 +474,7 @@ function apppass_login($user, $pass, $extra = null){
   }
 
   // fetch app password data
-  $stmt = $pdo->prepare("SELECT `app_passwd`.*, `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+  $stmt = $pdo->prepare("SELECT `app_passwd`.*, `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id`, `mailbox`.`attributes` as `mailbox_attributes` FROM `app_passwd`
     INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
     INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
     WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
@@ -491,8 +491,13 @@ function apppass_login($user, $pass, $extra = null){
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   foreach ($rows as $row) {
-    if ($extra['service'] != 'NONE' && $row[strtolower($extra['service']) . '_access'] != '1'){
-      continue;
+    if ($extra['service'] != 'NONE') {
+      $key = strtolower($extra['service']) . '_access';
+      // app passwords never grant a protocol the mailbox itself is denied
+      $mailbox_attributes = json_decode($row['mailbox_attributes'], true);
+      if ($row[$key] != '1' || (isset($mailbox_attributes[$key]) && $mailbox_attributes[$key] != '1')) {
+        continue;
+      }
     }
 
     // verify password

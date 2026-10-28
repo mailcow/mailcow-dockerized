@@ -39,7 +39,7 @@ if (isset($_GET['only_email'])) {
   $onlyEmailAccount = false;
   $description = 'IMAP, CalDAV, CardDAV';
 }
-if (isset($_GET['app_password'])) {
+if (isset($_GET['app_password']) && ($_SESSION['acl']['app_passwds'] ?? '0') == '1') {
   $app_password = true;
   $description .= ' with application password';
 
