@@ -11,6 +11,14 @@
       </div>
     </div>
     <div id="collapse-tab-mailboxes" class="card-body collapse" data-bs-parent="#mail-content">
+      <div class="mb-3">
+        <label for="mailboxTagFilter" class="form-label">Filter by Tag</label>
+        <select id="mailboxTagFilter" multiple class="form-select form-select-sm" style="max-width: 320px;">
+          <option value="">-- all --</option>
+        </select>
+      </div>
+      <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
+    <div id="collapse-tab-mailboxes" class="card-body collapse" data-bs-parent="#mail-content">
       <div class="mass-actions-mailbox mb-4 d-none d-sm-block">
         <div class="btn-group d-flex d-lg-none">
           <a class="btn btn-sm btn-xs-half btn-secondary" id="toggle_multi_select_all" data-id="mailbox" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
