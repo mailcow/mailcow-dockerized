@@ -100,7 +100,6 @@
     "admin": {
         "access": "Toegang",
         "action": "Handeling",
-        "activate_api": "Activeer API",
         "activate_send": "Bevestig bovenstaande gegevens",
         "active": "Actief",
         "active_rspamd_settings_map": "Huidige instellingen",
@@ -1035,7 +1034,6 @@
     "success": {
         "acl_saved": "Toegangscontrole voor object %s is opgeslagen",
         "admin_added": "Administrator %s is toegevoegd",
-        "admin_api_modified": "Wijzigingen aan de API zijn opgeslagen",
         "admin_modified": "Wijzigingen aan administrator zijn opgeslagen",
         "admin_removed": "Administrator %s is verwijderd",
         "alias_added": "Aliasadres %s (%d) is toegevoegd",

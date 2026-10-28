@@ -102,7 +102,6 @@
     "admin": {
         "access": "Accès",
         "action": "Action",
-        "activate_api": "Activer l'API",
         "activate_send": "Activer le bouton d'envoi",
         "active": "Actif",
         "active_rspamd_settings_map": "Paramètres de mappage actifs",
@@ -1043,7 +1042,6 @@
     "success": {
         "acl_saved": "ACL (Access Control List) pour l'objet %s enregistré",
         "admin_added": "Administrateur %s a été ajouté",
-        "admin_api_modified": "Les modifications apportées à l’API ont été enregistrées",
         "admin_modified": "Les modifications apportées à l’administrateur ont été enregistrées",
         "admin_removed": "Administrateur %s a été effacé",
         "alias_added": "L'adresse alias %s (%d) a été ajoutée",

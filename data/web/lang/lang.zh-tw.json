@@ -99,7 +99,6 @@
     "admin": {
         "access": "存取",
         "action": "動作",
-        "activate_api": "啟用 API",
         "activate_send": "啟用發送按鈕",
         "active": "啟用",
         "active_rspamd_settings_map": "啟用設定規則",
@@ -952,7 +951,6 @@
     "success": {
         "acl_saved": "%s 的存取權限表已儲存",
         "admin_added": "管理員 %s 已新增",
-        "admin_api_modified": "API 的更改已儲存",
         "admin_modified": "管理員更改已儲存",
         "admin_removed": "管理員 %s 已刪除",
         "alias_added": "別名地址 %s (%d) 已新增",

@@ -98,7 +98,6 @@
     "admin": {
         "access": "접근",
         "action": "동작",
-        "activate_api": "API 활성화",
         "activate_send": "발신 버튼 활성화",
         "active": "활성화",
         "active_rspamd_settings_map": "설정 맵 활성화",
@@ -854,7 +853,6 @@
     "success": {
         "acl_saved": "ACL for object %s saved",
         "admin_added": "Administrator %s has been added",
-        "admin_api_modified": "Changes to API have been saved",
         "admin_modified": "Changes to administrator have been saved",
         "admin_removed": "Administrator %s has been removed",
         "alias_added": "Alias address %s (%d) has been added",

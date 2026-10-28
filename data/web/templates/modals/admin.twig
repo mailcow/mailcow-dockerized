@@ -150,6 +150,63 @@
     </div>
   </div>
 </div><!-- add domain admin modal -->
+<!-- add api key modal -->
+<div class="modal fade" id="addApiKeyModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.admin.api_key_add }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-id="add_api_key" role="form" method="post" autocapitalize="none" autocorrect="off">
+          <input type="hidden" value="0" name="skip_ip_check">
+          <input type="hidden" value="0" name="active">
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_api_description">{{ lang.admin.description }}:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="description" id="add_api_description" maxlength="255">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_api_access">{{ lang.admin.access }}:</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="access" id="add_api_access">
+                <option value="ro">{{ lang.admin.api_read_only }}</option>
+                <option value="rw">{{ lang.admin.api_read_write }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_api_allow_from">{{ lang.admin.api_allow_from }}:</label>
+            <div class="col-sm-10">
+              <textarea class="form-control textarea-code" rows="5" name="allow_from" id="add_api_allow_from" required></textarea>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input api-skip-ip-check" value="1" name="skip_ip_check" data-target="#add_api_allow_from"> {{ lang.admin.api_skip_ip_check }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.admin.active }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_api_key" data-api-url='add/api-key' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- add api key modal -->
 <!-- add admin modal -->
 <div class="modal fade" id="addAdminModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-xl">

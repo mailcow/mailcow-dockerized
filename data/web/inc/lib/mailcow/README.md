@@ -29,6 +29,7 @@ Core/                     shared by all modules
 ```
 
 Example: `Imapsync/` (sync jobs, sync sources, OAuth). Use it as the template for new modules.
+`ApiKey/` (API keys incl. the service keys of mailcow.conf) is a small module with the same layout.
 
 ## Layers and rules
 

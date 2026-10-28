@@ -98,7 +98,6 @@
     "admin": {
         "access": "Prístup",
         "action": "Akcia",
-        "activate_api": "Aktivovať API",
         "activate_send": "Aktivovať tlačidlo odoslania",
         "active": "Aktívny",
         "active_rspamd_settings_map": "Aktívne nastavenia",
@@ -935,7 +934,6 @@
     "success": {
         "acl_saved": "ACL pre objekt %s uložený",
         "admin_added": "Administrátor %s pridaný",
-        "admin_api_modified": "Zmeny v API uložené",
         "admin_modified": "Zmeny v administrácii uložené",
         "admin_removed": "Administrátor %s odstránený ",
         "alias_added": "Alias adresa %s (%d) pridaná",

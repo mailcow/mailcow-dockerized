@@ -99,6 +99,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template = 'edit/oauth2client.twig';
         $template_data = ['oauth2client' => $oauth2client];
     }
+    elseif (isset($_GET['api-key']) &&
+      is_numeric($_GET['api-key'])) {
+        $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);
+        $template = 'edit/api-key.twig';
+    }
     elseif (isset($_GET['aliasdomain']) &&
       is_valid_domain_name(html_entity_decode(rawurldecode($_GET["aliasdomain"]))) &&
       !empty($_GET["aliasdomain"])) {

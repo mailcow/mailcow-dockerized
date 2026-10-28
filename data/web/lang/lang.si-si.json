@@ -103,7 +103,6 @@
     "admin": {
         "access": "Dostop",
         "action": "Dejanje",
-        "activate_api": "Aktiviraj API",
         "activate_send": "Aktiviraj gumb \"Pošlji\"",
         "active": "Aktivno",
         "active_rspamd_settings_map": "Aktivna preslikava nastavitev",
@@ -1100,7 +1099,6 @@
         "relayhost_removed": "Vnos na zemljevidu %s je bil odstranjen",
         "acl_saved": "ACL za objekt %s shranjen",
         "admin_added": "Dodan je bil skrbnik %s",
-        "admin_api_modified": "Spremembe API-ja so bile shranjene",
         "admin_modified": "Spremembe skrbnika so bile shranjene",
         "admin_removed": "Administrator %s je bil odstranjen",
         "alias_domain_removed": "Vzdevek domene %s je bil odstranjen",

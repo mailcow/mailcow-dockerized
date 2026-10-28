@@ -79,7 +79,6 @@
     "admin": {
         "access": "Pieeja",
         "action": "Rīcība",
-        "activate_api": "Aktivizēt API",
         "active": "Aktīvs",
         "add": "Pievienot",
         "add_domain_admin": "Pievienot domēna pārvaldītāju",

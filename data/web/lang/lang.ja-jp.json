@@ -99,7 +99,6 @@
     "admin": {
         "access": "アクセス",
         "action": "アクション",
-        "activate_api": "APIを有効化",
         "activate_send": "送信ボタンを有効化",
         "active": "アクティブ",
         "active_rspamd_settings_map": "アクティブな設定マップ",
@@ -1002,7 +1001,6 @@
     "success": {
         "acl_saved": "オブジェクト %s のACLを保存しました",
         "admin_added": "管理者 %s が追加されました",
-        "admin_api_modified": "APIの変更が保存されました",
         "admin_modified": "管理者の変更が保存されました",
         "admin_removed": "管理者 %s が削除されました",
         "alias_added": "エイリアスアドレス %s (%d) が追加されました",

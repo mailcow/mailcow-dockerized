@@ -99,7 +99,6 @@
     "admin": {
         "access": "Достъп",
         "action": "Действие",
-        "activate_api": "Активиране на API",
         "activate_send": "Активиране на бутона за изпращане",
         "active": "Активен",
         "active_rspamd_settings_map": "Активна карта с настройки",
@@ -1051,7 +1050,6 @@
     "success": {
         "acl_saved": "ACL за обект %s е запазен",
         "admin_added": "Администраторът %s е добавен",
-        "admin_api_modified": "Промените в API са запазени",
         "admin_modified": "Промените в администратора са запазени",
         "admin_removed": "Администраторът %s е премахнат",
         "alias_added": "Адресът на псевдонима %s (%d) е добавен",

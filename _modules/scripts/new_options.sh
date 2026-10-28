@@ -111,16 +111,16 @@ adapt_new_options() {
             echo "SQL_PORT=127.0.0.1:13306" >> mailcow.conf
             ;;
         API_KEY)
-            echo '# Create or override API key for web UI' >> mailcow.conf
+            echo '# Read-write service API key, shown read-only in the web UI' >> mailcow.conf
             echo "#API_KEY=" >> mailcow.conf
             ;;
         API_KEY_READ_ONLY)
-            echo '# Create or override read-only API key for web UI' >> mailcow.conf
+            echo '# Read-only service API key, shown read-only in the web UI' >> mailcow.conf
             echo "#API_KEY_READ_ONLY=" >> mailcow.conf
             ;;
         API_ALLOW_FROM)
-            echo '# Must be set for API_KEY to be active' >> mailcow.conf
-            echo '# IPs only, no networks (networks can be set via UI)' >> mailcow.conf
+            echo '# Must be set for API_KEY and API_KEY_READ_ONLY to be active' >> mailcow.conf
+            echo '# Comma separated list of IPs/networks' >> mailcow.conf
             echo "#API_ALLOW_FROM=" >> mailcow.conf
             ;;
         SNAT_TO_SOURCE)

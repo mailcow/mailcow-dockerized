@@ -67,6 +67,9 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
       else {
         $_SESSION['mailcow_cc_api_access'] = 'ro';
       }
+      // Bind the session to this key, see the check below
+      $_SESSION['mailcow_cc_api_key_id'] = $api_return['id'];
+      $_SESSION['mailcow_cc_api_key_hash'] = hash('sha256', $api_return['api_key']);
     }
     else {
       $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
@@ -90,6 +93,26 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     ));
     unset($_POST);
     exit();
+  }
+}
+elseif (!empty($_SESSION['mailcow_cc_api'])) {
+  // API session without header: end it when its key was deleted, deactivated, regenerated or its access changed
+  if (!isset($pdo)) {
+    // sogo-auth.php (nginx auth_request) loads no prerequisites
+    $pdo = new PDO($database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name, $database_user, $database_pass, array(
+      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+      PDO::ATTR_EMULATE_PREPARES => false,
+    ));
+  }
+  $stmt = $pdo->prepare("SELECT `api_key`, `access` FROM `api` WHERE `id` = :id AND `active` = '1';");
+  $stmt->execute(array(':id' => intval($_SESSION['mailcow_cc_api_key_id'] ?? 0)));
+  $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (empty($api_return['api_key']) ||
+    !hash_equals((string)($_SESSION['mailcow_cc_api_key_hash'] ?? ''), hash('sha256', $api_return['api_key'])) ||
+    $api_return['access'] != ($_SESSION['mailcow_cc_api_access'] ?? '')) {
+    session_unset();
+    session_destroy();
   }
 }
 

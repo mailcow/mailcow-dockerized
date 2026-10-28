@@ -98,7 +98,6 @@
     "admin": {
         "access": "Adgang",
         "action": "Handling",
-        "activate_api": "Aktivér API",
         "activate_send": "Aktivér send knap",
         "active": "Aktiv",
         "active_rspamd_settings_map": "Kort over aktive indstillinger",
@@ -799,7 +798,6 @@
     "success": {
         "acl_saved": "ACL til objekt %s gemt",
         "admin_added": "Administrator %s er tilføjet",
-        "admin_api_modified": "Ændringer i API er gemt",
         "admin_modified": "Ændringer til administrator er gemt",
         "admin_removed": "Administrator %s er blevet fjernet",
         "alias_added": "Alias-adresse %s (%d) er tilføjet",
