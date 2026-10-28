@@ -4,7 +4,7 @@ x-db-version: &db_version DB_VERSION=28102026_1300
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.26.1-1
+      image: ghcr.io/mailcow/unbound:1.26.2-1
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
