@@ -42,7 +42,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $username = $_SESSION['mailcow_cc_username'];
           }
           if (isset($_data["validity"])) {
-            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 87600)))) {
+            if (!filter_var($_data["validity"], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1, 'max_range' => 876600)))) {
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
@@ -57,9 +57,11 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           if (isset($_data["permanent"]) && filter_var($_data["permanent"], FILTER_VALIDATE_BOOL)) {
             $permanent = 1;
+            $validity = 0;
           }
           else {
             $permanent = 0;
+            $validity = strtotime("+" . $_data["validity"] . " hour");
           }
           $domain = $_data['domain'];
           // spamalias.description is NOT NULL, an absent description must not become a null insert
@@ -77,7 +79,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          $validity = strtotime("+" . $_data["validity"] . " hour");
+
           $stmt = $pdo->prepare("INSERT INTO `spamalias` (`address`, `description`, `goto`, `validity`, `permanent`) VALUES
             (:address, :description, :goto, :validity, :permanent)");
           $stmt->execute(array(
@@ -5663,6 +5665,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':username' => $username
             ));
             $stmt = $pdo->prepare("DELETE FROM `spamalias` WHERE `goto` = :username");
+            $stmt->execute(array(
+              ':username' => $username
+            ));
+            $stmt = $pdo->prepare("DELETE FROM `user_api` WHERE `username` = :username");
             $stmt->execute(array(
               ':username' => $username
             ));

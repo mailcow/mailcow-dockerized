@@ -60,6 +60,10 @@ if (isset($_GET['query'])) {
   $category =   (isset($query[1])) ? $query[1] : null;
   $object =     (isset($query[2])) ? $query[2] : null;
   $extra =      (isset($query[3])) ? $query[3] : null;
+  if (in_array($action, array('alias', 'aliases', 'user_info')) || preg_match('/^v[0-9]+$/', (string)$action)) {
+    require __DIR__ . '/simplelogin.php';
+    exit;
+  }
 
   // accept json in request body
   if(strpos($_SERVER['HTTP_CONTENT_TYPE'], 'application/json') !== false) {
@@ -232,6 +236,9 @@ if (isset($_GET['query'])) {
         break;
         case "time_limited_alias":
           process_add_return(mailbox('add', 'time_limited_alias', $attr));
+        break;
+        case "user_api":
+          process_add_return(user_api('regen_key', $attr));
         break;
         case "relayhost":
           process_add_return(relayhost('add', $attr));
@@ -1287,6 +1294,14 @@ if (isset($_GET['query'])) {
               break;
             }
           break;
+          case "user_api":
+            switch ($object) {
+              default:
+                $data = user_api('get', $object ? array('username' => $object) : null);
+                process_get_return($data);
+              break;
+            }
+          break;
           case "fail2ban":
             switch ($object) {
               default:
@@ -2104,6 +2119,9 @@ if (isset($_GET['query'])) {
           elseif ($_SESSION['mailcow_cc_role'] == "user") {
             process_edit_return(edit_user_account($attr));
           }
+        break;
+        case "user_api":
+          process_edit_return(user_api('edit', $attr));
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));

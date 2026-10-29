@@ -2059,6 +2059,276 @@ function verify_tfa_login($username, $_data) {
     return true;
   }
 }
+function admin_api($access, $action, $data = null) {
+  global $pdo;
+  if ($_SESSION['mailcow_cc_role'] != "admin") {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+  if ($access !== "ro" && $access !== "rw") {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__),
+      'msg' => 'invalid access type'
+    );
+    return false;
+  }
+  if ($action == "edit") {
+    $active = (!empty($data['active'])) ? 1 : 0;
+    $skip_ip_check = (isset($data['skip_ip_check'])) ? 1 : 0;
+    $allow_from = array();
+    if (isset($data['allow_from'])) {
+      $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $data['allow_from']));
+    }
+    foreach ($allow_from as $key => $val) {
+      if (empty($val)) {
+        unset($allow_from[$key]);
+        continue;
+      }
+      if (valid_network($val) !== true) {
+        $_SESSION['return'][] =  array(
+          'type' => 'warning',
+          'log' => array(__FUNCTION__, $data),
+          'msg' => array('ip_invalid', htmlspecialchars($allow_from[$key]))
+        );
+        unset($allow_from[$key]);
+        continue;
+      }
+    }
+    $allow_from = implode(',', array_unique(array_filter($allow_from)));
+    if (empty($allow_from) && $skip_ip_check == 0) {
+      $_SESSION['return'][] =  array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $data),
+        'msg' => 'ip_list_empty'
+      );
+      return false;
+    }
+    $api_key = implode('-', array(
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3)))
+    ));
+    $stmt = $pdo->query("SELECT `api_key` FROM `api` WHERE `access` = '" . $access . "'");
+    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if (empty($num_results)) {
+      $stmt = $pdo->prepare("INSERT INTO `api` (`api_key`, `skip_ip_check`, `active`, `allow_from`, `access`)
+        VALUES (:api_key, :skip_ip_check, :active, :allow_from, :access);");
+      $stmt->execute(array(
+        ':api_key' => $api_key,
+        ':skip_ip_check' => $skip_ip_check,
+        ':active' => $active,
+        ':allow_from' => $allow_from,
+        ':access' => $access
+      ));
+    }
+    else {
+      if ($skip_ip_check == 0) {
+        $stmt = $pdo->prepare("UPDATE `api` SET `skip_ip_check` = :skip_ip_check,
+          `active` = :active,
+          `allow_from` = :allow_from
+            WHERE `access` = :access;");
+        $stmt->execute(array(
+          ':active' => $active,
+          ':skip_ip_check' => $skip_ip_check,
+          ':allow_from' => $allow_from,
+          ':access' => $access
+        ));
+      }
+      else {
+        $stmt = $pdo->prepare("UPDATE `api` SET `skip_ip_check` = :skip_ip_check,
+          `active` = :active
+            WHERE `access` = :access;");
+        $stmt->execute(array(
+          ':active' => $active,
+          ':skip_ip_check' => $skip_ip_check,
+          ':access' => $access
+        ));
+      }
+    }
+  }
+  elseif ($action == "regen_key") {
+    $api_key = implode('-', array(
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3)))
+    ));
+    $stmt = $pdo->prepare("UPDATE `api` SET `api_key` = :api_key WHERE `access` = :access");
+    $stmt->execute(array(
+      ':api_key' => $api_key,
+      ':access' => $access
+    ));
+  }
+  elseif ($action == "get") {
+    $stmt = $pdo->query("SELECT * FROM `api` WHERE `access` = '" . $access . "'");
+    $apidata = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($apidata !== false) {
+      $apidata['allow_from'] = str_replace(',', PHP_EOL, $apidata['allow_from']);
+    }
+    return $apidata;
+  }
+  $_SESSION['return'][] =  array(
+    'type' => 'success',
+    'log' => array(__FUNCTION__, $data),
+    'msg' => 'admin_api_modified'
+  );
+}
+function user_api($action, $data = null) {
+  global $pdo;
+  if (!isset($_SESSION['mailcow_cc_role'])) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+  if ($_SESSION['mailcow_cc_role'] == 'user') {
+    $username = $_SESSION['mailcow_cc_username'];
+  } elseif (($_SESSION['mailcow_cc_role'] == 'admin' || $_SESSION['mailcow_cc_role'] == 'domainadmin') && !empty($data['username'])) {
+    if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $data['username'])) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__),
+        'msg' => 'access_denied'
+      );
+      return false;
+    }
+    $username = $data['username'];
+  } else {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
+
+  if ($action == "get") {
+    $stmt = $pdo->prepare("SELECT * FROM `user_api` WHERE `username` = :username LIMIT 1");
+    $stmt->execute(array(':username' => $username));
+    $apidata = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($apidata !== false) {
+      $apidata['allow_from'] = str_replace(',', PHP_EOL, $apidata['allow_from']);
+    }
+    return $apidata;
+  }
+  elseif ($action == "edit") {
+    $active = (!empty($data['active'])) ? 1 : 0;
+    $skip_ip_check = (!empty($data['skip_ip_check'])) ? 1 : 0;
+    $allow_from = (isset($data['allow_from'])) ? array_filter(array_map('trim', preg_split("/( |,|;|\n)/", $data['allow_from']))) : array();
+    $allow_from = implode(',', $allow_from);
+    if (empty($allow_from) && $skip_ip_check == 0) {
+      $_SESSION['return'][] = array(
+        'type' => 'danger',
+        'log' => array(__FUNCTION__, $data),
+        'msg' => 'ip_list_empty'
+      );
+      return false;
+    }
+    $stmt = $pdo->prepare("SELECT `api_key` FROM `user_api` WHERE `username` = :username");
+    $stmt->execute(array(':username' => $username));
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($existing)) {
+      $api_key = implode('-', array(
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3))),
+        strtoupper(bin2hex(random_bytes(3)))
+      ));
+      $stmt = $pdo->prepare("INSERT INTO `user_api` (`api_key`, `username`, `skip_ip_check`, `active`, `allow_from`)
+        VALUES (:api_key, :username, :skip_ip_check, :active, :allow_from)");
+      $stmt->execute(array(
+        ':api_key' => $api_key,
+        ':username' => $username,
+        ':skip_ip_check' => $skip_ip_check,
+        ':active' => $active,
+        ':allow_from' => $allow_from
+      ));
+    } else {
+      $stmt = $pdo->prepare("UPDATE `user_api` SET `skip_ip_check` = :skip_ip_check,
+        `active` = :active,
+        `allow_from` = :allow_from
+        WHERE `username` = :username");
+      $stmt->execute(array(
+        ':active' => $active,
+        ':skip_ip_check' => $skip_ip_check,
+        ':allow_from' => $allow_from,
+        ':username' => $username
+      ));
+    }
+  }
+  elseif ($action == "regen_key") {
+    $api_key = implode('-', array(
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3))),
+      strtoupper(bin2hex(random_bytes(3)))
+    ));
+    $stmt = $pdo->prepare("SELECT `api_key` FROM `user_api` WHERE `username` = :username");
+    $stmt->execute(array(':username' => $username));
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (empty($existing)) {
+      $stmt = $pdo->prepare("INSERT INTO `user_api` (`api_key`, `username`, `skip_ip_check`, `active`, `allow_from`)
+        VALUES (:api_key, :username, 1, 1, '')");
+      $stmt->execute(array(
+        ':api_key' => $api_key,
+        ':username' => $username
+      ));
+    } else {
+      $stmt = $pdo->prepare("UPDATE `user_api` SET `api_key` = :api_key WHERE `username` = :username");
+      $stmt->execute(array(
+        ':api_key' => $api_key,
+        ':username' => $username
+      ));
+    }
+  }
+  $_SESSION['return'][] = array(
+    'type' => 'success',
+    'log' => array(__FUNCTION__, $data),
+    'msg' => 'user_api_modified'
+  );
+  return true;
+}
+function format_simplelogin_alias($address, $description, $goto, $validity, $permanent, $created_time = null) {
+  $alias_id = sprintf('%u', crc32($address));
+  $is_enabled = ($permanent != 0 || (int)$validity >= time());
+  $timestamp = $created_time ? (is_numeric($created_time) ? intval($created_time) : strtotime($created_time)) : time();
+  return array(
+    'id' => intval($alias_id),
+    'email' => $address,
+    'alias' => $address,
+    'name' => null,
+    'enabled' => $is_enabled,
+    'creation_timestamp' => $timestamp,
+    'creation_date' => date('Y-m-d H:i:sP', $timestamp),
+    'mailboxes' => array(
+      array(
+        'id' => 1,
+        'email' => $goto
+      )
+    ),
+    'mailbox' => array(
+      'id' => 1,
+      'email' => $goto
+    ),
+    'nb_block' => 0,
+    'nb_forward' => 0,
+    'nb_reply' => 0,
+    'pinned' => false,
+    'note' => (string)$description
+  );
+}
 function license($action, $data = null) {
   global $pdo;
   global $redis;
