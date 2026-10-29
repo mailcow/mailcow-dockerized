@@ -2,7 +2,7 @@
 #########################################################################
 # Script:       check_mysql_slavestatus.sh                              #
 # Author:       Claudio Kuenzler www.claudiokuenzler.com                #
-# Purpose:      Monitor MySQL Replication status with Nagios            #
+# Purpose:      Monitor MariaDB Replication status with Nagios          #
 # Description:  Connects to given MySQL hosts and checks for running    #
 #               SLAVE state and delivers additional info                #
 # Original:     This script is a modified version of                    #
@@ -72,11 +72,11 @@ STATE_WARNING=1         # define the exit code if status is Warning (not really 
 STATE_CRITICAL=2        # define the exit code if status is Critical
 STATE_UNKNOWN=3         # define the exit code if status is Unknown
 export PATH=$PATH:/usr/local/bin:/usr/bin:/bin # Set path
-crit="No"               # what is the answer of MySQL Slave_SQL_Running for a Critical status?
-ok="Yes"                # what is the answer of MySQL Slave_SQL_Running for an OK status?
-port="-P 3306"          # on which tcp port is the target MySQL slave listening?
+crit="No"               # MariaDB reports replication thread status as Slave_SQL_Running.
+ok="Yes"                # MariaDB retains the MySQL-compatible Slave_* status fields.
+port="-P 3306"          # on which TCP port is the replication replica listening?
 
-for cmd in mysql awk grep expr [
+for cmd in mariadb awk grep expr [
 do
  if ! `which ${cmd} &>/dev/null`
  then
@@ -130,7 +130,8 @@ elif [[ -n "${socket}" && (-z "${user}" || -z "${password}") ]]; then
   echo -e "Missing required parameter(s)"; exit ${STATE_UNKNOWN}
 fi
 
-# Connect to the DB server and store output in vars
+# MariaDB 11.8 retains SHOW SLAVE STATUS and its Slave_* fields for compatibility.
+# Connect to the DB server and store output in vars.
 if [[ -n $socket ]]; then
   ConnectionResult=$(mariadb --skip-ssl ${optfile} ${socket} ${user} -e "show slave ${connection} status\G" 2>&1)
 else
