@@ -386,11 +386,11 @@ function restore() {
           --entrypoint= \
           -u mysql \
           -v ${RESTORE_LOCATION}:/backup:z \
-          ${SQLIMAGE} /bin/sh -c "mysqld --skip-grant-tables & \
-          until mysqladmin ping; do sleep 3; done && \
+          ${SQLIMAGE} /bin/sh -c "mariadbd --skip-grant-tables & \
+          until mariadb-admin ping; do sleep 3; done && \
           echo Restoring... && \
-          gunzip < backup/backup_mysql.gz | mysql -uroot && \
-          mysql -uroot -e SHUTDOWN;"
+          gunzip < backup/backup_mysql.gz | mariadb -uroot && \
+          mariadb -uroot -e SHUTDOWN;"
         else
           ARCHIVE_INFO=$(get_archive_info "backup_mariadb" "${RESTORE_LOCATION}")
           if [[ -n "${ARCHIVE_INFO}" ]]; then

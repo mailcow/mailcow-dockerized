@@ -152,11 +152,12 @@ async def post_containers(container_id : str, post_action : str, request: Reques
           }
           return Response(content=json.dumps(res, indent=4), media_type="application/json")
 
-        api_call_method_name = '__'.join(['container_post', str(post_action), str(request_json['cmd']), str(request_json['task']) ])
+        task_name = str(request_json['task']).replace('-', '_')
+        api_call_method_name = '__'.join(['container_post', str(post_action), str(request_json['cmd']), task_name ])
       else:
         api_call_method_name = '__'.join(['container_post', str(post_action) ])
 
-      api_call_method = getattr(dockerapi, api_call_method_name, lambda container_id: Response(content=json.dumps({'type': 'danger', 'msg':'container_post - unknown api call' }, indent=4), media_type="application/json"))
+      api_call_method = getattr(dockerapi, api_call_method_name, lambda request_json, **kwargs: Response(content=json.dumps({'type': 'danger', 'msg':'container_post - unknown api call' }, indent=4), media_type="application/json"))
 
       dockerapi.logger.info("api call: %s, container_id: %s" % (api_call_method_name, container_id))
       return api_call_method(request_json, container_id=container_id)
