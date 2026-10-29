@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.24
+FROM php:8.4-fpm-alpine3.24
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -16,24 +16,20 @@ ARG REDIS_PECL_VERSION=6.3.0
 ARG COMPOSER_VERSION=2.10.2
 
 RUN apk add -U --no-cache autoconf \
-  aspell-dev \
-  aspell-libs \
   bash \
-  c-client \
-  cyrus-sasl-dev \
   freetype \
   freetype-dev \
   g++ \
   git \
   gettext \
   gettext-dev \
+  gmp \
   gmp-dev \
   gnupg \
   icu-dev \
   icu-libs \
   imagemagick \
   imagemagick-dev \
-  imap-dev \
   jq \
   libavif \
   libavif-dev \
@@ -56,7 +52,7 @@ RUN apk add -U --no-cache autoconf \
   libzip-dev \
   linux-headers \
   make \
-  mysql-client \
+  mariadb-client \
   openldap-dev \
   pcre-dev \
   re2c \
@@ -76,27 +72,23 @@ RUN apk add -U --no-cache autoconf \
   && docker-php-ext-install -j 4 apcu imagick mailparse memcached redis \
   && docker-php-ext-configure intl \
   && docker-php-ext-configure exif \
-  && docker-php-ext-configure gd --with-freetype=/usr/include/ \  
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
-  && docker-php-ext-configure imap --with-imap --with-imap-ssl \
-  && docker-php-ext-install -j 4 imap \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
   && docker-php-source delete \
   && apk del --purge autoconf \
-    aspell-dev \
-    cyrus-sasl-dev \
     freetype-dev \
     g++ \
     gettext-dev \
+    gmp-dev \
     icu-dev \
     imagemagick-dev \
-    imap-dev \
     libavif-dev \
     libjpeg-turbo-dev \
     libmemcached-dev \
@@ -106,10 +98,12 @@ RUN apk add -U --no-cache autoconf \
     libxml2-dev \
     libxpm-dev \
     libzip-dev \
+    libtool \
     linux-headers \
     make \
     openldap-dev \
     pcre-dev \
+    re2c \
     zlib-dev
 
 COPY ./docker-entrypoint.sh /

@@ -20,7 +20,7 @@ services:
             - unbound
 
     mysql-mailcow:
-      image: mariadb:10.11
+      image: mariadb:11.8
       depends_on:
         - unbound-mailcow
         - netfilter-mailcow
@@ -120,7 +120,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.2.35-2
+      image: ghcr.io/mailcow/phpfpm:8.4.27-1
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -609,7 +609,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.14
+      image: ghcr.io/mailcow/dockerapi:2.15
       security_opt:
         - label=disable
       restart: always
