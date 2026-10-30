@@ -1,10 +1,10 @@
-FROM golang:1.26-trixie AS builder
+FROM golang:1.27-trixie AS builder
 WORKDIR /src
 
 ENV CGO_ENABLED=0 \
     GO111MODULE=on \
 		NOOPT=1 \
-    VERSION=1.14.0
+    VERSION=1.14.4
 
 RUN git clone --branch v${VERSION} https://github.com/Zuplu/postfix-tlspol && \
     cd /src/postfix-tlspol && \
