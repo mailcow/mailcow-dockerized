@@ -318,7 +318,7 @@ class DockerApi:
 
     if 'username' in request_json and 'script_name' in request_json:
       for container in self.sync_docker_client.containers.list(filters=filters):
-        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' '" + request_json['script_name'].replace("'", "'\\''") + "'"]
+        cmd = ["/bin/bash", "-c", "/usr/bin/doveadm sieve get -u '" + request_json['username'].replace("'", "'\\''") + "' -- '" + request_json['script_name'].replace("'", "'\\''") + "'"]
         sieve_return = container.exec_run(cmd)
         return self.exec_run_handler('utf8_text_only', sieve_return)
   # api call: container_post - post_action: exec - cmd: maildir - task: cleanup
@@ -491,7 +491,7 @@ class DockerApi:
           if mailbox in mailbox_seen:
             continue
 
-          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{id}' '{mailbox}'"])
+          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{id}' -- '{mailbox}'"])
           acls = acls.output.decode('utf-8').strip().splitlines()
           if len(acls) >= 2:
             for acl in acls[1:]:
@@ -510,7 +510,7 @@ class DockerApi:
           if mailbox in mailbox_seen:
             continue
 
-          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' '{mailbox}'"])
+          acls = container.exec_run(["/bin/bash", "-c", f"doveadm acl get -u '{user}' -- '{mailbox}'"])
           acls = acls.output.decode('utf-8').strip().splitlines()
           if len(acls) >= 2:
             for acl in acls[1:]:
@@ -534,7 +534,7 @@ class DockerApi:
       id = request_json['id'].replace("'", "'\\''")
 
       if user and mailbox and id:
-        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' '{mailbox}' '{self.acl_identifier(id)}'"])
+        acl_delete_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl delete -u '{user}' -- '{mailbox}' '{self.acl_identifier(id)}'"])
         return self.exec_run_handler('generic', acl_delete_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl
   def container_post__exec__doveadm__set_acl(self, request_json, **kwargs):
@@ -568,7 +568,7 @@ class DockerApi:
           rights += right + " "
 
       if user and mailbox and id and rights:
-        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' '{mailbox}' '{self.acl_identifier(id)}' {rights}"])
+        acl_set_return = container.exec_run(["/bin/bash", "-c", f"doveadm acl set -u '{user}' -- '{mailbox}' '{self.acl_identifier(id)}' {rights}"])
         return self.exec_run_handler('generic', acl_set_return)
   # api call: container_post - post_action: exec - cmd: doveadm - task: set_acl_all
   # Sets the rights of an identifier on every folder of a mailbox, no rights = delete; values are passed as
@@ -585,7 +585,7 @@ class DockerApi:
       rights = [right.lower() for right in request_json.get('rights', []) if right.lower() in self.acl_rights]
       if not user or id in ('user=', 'group='):
         return Response(content=json.dumps({ 'type': 'danger', 'msg': 'user and id required' }, indent=4), media_type="application/json")
-      action = 'doveadm acl set -u "$ACL_USER" "$folder" "$ACL_ID" $ACL_RIGHTS' if rights else 'doveadm acl delete -u "$ACL_USER" "$folder" "$ACL_ID"'
+      action = 'doveadm acl set -u "$ACL_USER" -- "$folder" "$ACL_ID" $ACL_RIGHTS' if rights else 'doveadm acl delete -u "$ACL_USER" -- "$folder" "$ACL_ID"'
       script = ('set -o pipefail; doveadm mailbox list -u "$ACL_USER" | while IFS= read -r folder; do '
         'case "$folder" in Shared/*) continue;; esac; ' + action + ' || exit 1; done && doveadm acl recalc -u "$ACL_USER"')
       acl_return = container.exec_run(["/bin/bash", "-c", script],
@@ -601,7 +601,7 @@ class DockerApi:
 
     for container in self.sync_docker_client.containers.list(filters=filters):
       users = [str(user) for user in request_json.get('users', []) if str(user)]
-      flush_return = container.exec_run(["doveadm", "auth", "cache", "flush"] + users)
+      flush_return = container.exec_run(["doveadm", "auth", "cache", "flush", "--"] + users)
       return self.exec_run_handler('generic', flush_return)
 
   # Rights doveadm acl set accepts from the API
