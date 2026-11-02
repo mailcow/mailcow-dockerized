@@ -132,6 +132,16 @@ class CustomParamsTest extends TestCase
         $this->assertSame(['default' => true], CustomParams::allowlist(['bad name' => true], ['default' => true]));
     }
 
+    public function testBlockedOptionsAreNeverAllowed(): void
+    {
+        $allowlist = CustomParams::allowlist(['tests' => false, 'pipemess' => true, 'folder' => true], ['abort' => false]);
+        $this->assertSame(['folder' => true], $allowlist);
+        $this->assertSame([], CustomParams::allowlist([], ['abort' => false, 'showpasswords' => false]));
+
+        $this->expectException(UserError::class);
+        CustomParams::toJson([['o' => '--tests', 'v' => '']], $allowlist);
+    }
+
     public function testOldWhitelistFormatIsIgnored(): void
     {
         $errorLog = ini_set('error_log', '/dev/null');

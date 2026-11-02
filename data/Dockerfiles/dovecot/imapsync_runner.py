@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
 import fcntl
+import ipaddress
 import json
 import os
 import re
 import signal
+import socket
 import subprocess
 import sys
 import tempfile
@@ -18,6 +20,15 @@ max_output = 16 * 1024 * 1024
 lock_file = run_dir + '/imapsync_busy.lock'
 # An OAuth run needs a token valid this long at start (half the lifetime for short-lived tokens)
 token_min_valid = 900
+# Custom params never passed, also when stored before (same list as CustomParams::BLOCKED in the web UI)
+blocked_params = {'abort', 'delete2foldersbutnot', 'delete2foldersonly', 'logdir', 'logfile', 'maxlinelengthcmd',
+  'oauthrefreshcmd1', 'oauthrefreshcmd2', 'passfile1', 'passfile2', 'pidfile', 'pipemess', 'regexflag', 'regexmess',
+  'regextrans2', 'showpasswords', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'}
+# imapsync only gets these variables, not the secrets of the container environment
+job_env_keys = ('PATH', 'LANG', 'LC_ALL', 'TZ')
+# A source must not point to mailcow itself (internal Docker network), host1 is checked before each run
+internal_nets = [ipaddress.ip_network(os.environ.get('IPV4_NETWORK', '172.22.1') + '.0/24', strict=False),
+  ipaddress.ip_network(os.environ.get('IPV6_NETWORK', 'fd4d:6169:6c63:6f77::/64'), strict=False)]
 # Refreshed tokens are written to the token files of running jobs this often, imapsync re-reads them on reconnect
 token_sync_interval = 60
 
@@ -106,6 +117,20 @@ def defer_job(job_id, text, exit_status):
     (text, exit_status, job_id))
   deferred.add(job_id)
 
+# True when host resolves to loopback, link-local or the internal network; unknown hosts are left to imapsync
+def internal_host(host):
+  try:
+    addrs = {a[4][0] for a in socket.getaddrinfo(host, None)}
+  except (socket.gaierror, UnicodeError):
+    return False
+  for addr in addrs:
+    ip = ipaddress.ip_address(addr.split('%')[0])
+    if ip.version == 6 and ip.ipv4_mapped:
+      ip = ip.ipv4_mapped
+    if ip.is_loopback or ip.is_unspecified or ip.is_link_local or any(ip in net for net in internal_nets):
+      return True
+  return False
+
 def oauth_token(j):
   if j['oauth_flow'] == 'authorization_code':
     return query(user_token_sql, (j['source_id'], j['user2'], j['user1'])).fetchone() or {}
@@ -150,6 +175,11 @@ def prepare_job(j, global_bw, files):
       f.write(content)
     return path
 
+  if internal_host(j['host1']):
+    finish_job(j['id'], 'Host1 %s is an address of mailcow itself, the sync job does not connect to it\n' % j['host1'], 0,
+      'EXIT_CONNECTION_FAILURE_HOST1')
+    return None
+
   auth_type = j['auth_type'] or 'PLAIN'
   oauth = None
   if auth_type == 'XOAUTH2':
@@ -174,7 +204,11 @@ def prepare_job(j, global_bw, files):
   except ValueError:
     pairs = []
   for p in pairs if isinstance(pairs, list) else []:
-    if not isinstance(p, dict) or not isinstance(p.get('o'), str) or not re.fullmatch(r'[a-z0-9]+', p['o']):
+    if not isinstance(p, dict) or not isinstance(p.get('o'), str) or not re.fullmatch(r'[a-z0-9]+', p['o']) \
+        or p['o'] in blocked_params:
+      continue
+    # The certificate check protects the OAuth token of the source, a job must not turn it off
+    if oauth and p['o'] == 'sslargs1':
       continue
     value = '' if p.get('v') is None else str(p['v'])
     custom_params.append('--' + p['o'] if value == '' else '--' + p['o'] + '=' + value)
@@ -205,7 +239,8 @@ def prepare_job(j, global_bw, files):
       cmd.append(opt)
   enc1 = {'TLS': '--tls1', 'SSL': '--ssl1'}.get(j['enc1'])
   if enc1:
-    cmd.append(enc1)
+    # Check the certificate of the source (imapsync does not by default), custom sslargs1 can turn it off
+    cmd += [enc1, '--sslargs1', 'SSL_verify_mode=1']
   cmd += ['--host1', j['host1'], '--user1', j['user1']] + auth_args + ['--port1', str(j['port1'])]
   cmd += ['--host2', 'localhost', '--user2', j['user2'] + '*' + master_user, '--passfile2', tmpfile(master_pass + '\n')]
   if j['dry'] == 1:
@@ -216,8 +251,10 @@ def prepare_job(j, global_bw, files):
 
 # Worker: imapsync with output to a file, no inherited fds (DB socket, lock)
 def start_job(job):
+  env = {k: os.environ[k] for k in job_env_keys if k in os.environ}
+  env['HOME'] = run_dir
   with open(job['outfile'], 'wb') as out:
-    return subprocess.Popen(job['cmd'], stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT)
+    return subprocess.Popen(job['cmd'], stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, env=env)
 
 # Store the result of a finished worker and remove its temp files
 def reap_job(job):

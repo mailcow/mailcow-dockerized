@@ -296,8 +296,8 @@ $RSPAMD_MAPS = array(
 // The old format $IMAPSYNC_OPTIONS['whitelist'] (list of names) is no longer supported and ignored (logged).
 // NEVER add (RCE): 'delete2foldersonly', 'delete2foldersbutnot', 'regexflag', 'regexmess', 'pipemess', 'regextrans2', 'maxlinelengthcmd', 'oauthrefreshcmd1', 'oauthrefreshcmd2'
 // NEVER add options taking local file paths (e.g. 'logfile', 'logdir', 'pidfile', 'passfile1', 'sslargs1' with SSL_ca_file)
+// These, the tests* options (print the environment), 'showpasswords' and 'abort' (stops other runs) are also blocked in code
 $IMAPSYNC_OPTIONS_DEFAULT = array(
-  'abort'                  => false,
   'authmd51'               => false,
   'authuser1'              => true,
   'debug'                  => false,
@@ -373,9 +373,6 @@ $IMAPSYNC_OPTIONS_DEFAULT = array(
   'syncduplicates'         => false,
   'syncinternaldates'      => false,
   'synclabels'             => false,
-  'tests'                  => false,
-  'testslive'              => false,
-  'testslive6'             => false,
   'truncmess'              => true,
   'usecache'               => false,
   'useheader'              => true,
