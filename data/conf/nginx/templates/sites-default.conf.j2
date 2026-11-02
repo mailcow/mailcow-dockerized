@@ -119,6 +119,7 @@ location ~ \.php$ {
     fastcgi_param HTTP_X_REAL_IP $remote_addr;
     # trusted internal-auth marker; empty for external clients (see nginx.conf map)
     fastcgi_param SOGO_AUTH_INTERNAL $sogo_auth_internal;
+    fastcgi_param SOGO_AUTH_CLIENT_IP $sogo_auth_client_ip;
     fastcgi_read_timeout 3600;
     fastcgi_send_timeout 3600;
 }

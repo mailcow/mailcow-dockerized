@@ -47,6 +47,12 @@ http {
         default "";
     }
 
+    # client of an internal auth request, X-Real-IP is set by /sogo-auth-verify
+    map $server_port $sogo_auth_client_ip {
+        65510   $http_x_real_ip;
+        default "";
+    }
+
     {% if HTTP_REDIRECT %}
     # HTTP to HTTPS redirect
     server {
