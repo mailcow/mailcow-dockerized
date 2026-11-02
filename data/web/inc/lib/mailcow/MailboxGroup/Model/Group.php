@@ -42,6 +42,8 @@ class Group
     public array $sendAs = [];
     /** @var array[] {owner, rights, subscribe, state, last_error}: members may open these mailboxes (ACL group=mcg_<id>) */
     public array $imapGrants = [];
+    /** @var string[] owners of removed IMAP grants whose ACL Dovecot still has, not part of the grants to write */
+    public array $removingImapOwners = [];
     /** @var array[] {owner, type, folder, access, subscribe, state, last_error}: SOGo folders shared with the members */
     public array $sogoGrants = [];
     /** @var array[] warnings of the last write (msg values), not stored */

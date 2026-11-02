@@ -79,6 +79,12 @@ class GroupService
                 return false;
             }
         }
+        // A removed grant still opens the mailbox until Dovecot dropped its ACL
+        foreach ($group->removingImapOwners as $owner) {
+            if (!$this->context->canAccessMailbox((string)$owner)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -113,7 +119,7 @@ class GroupService
         $current = $this->editable($id);
         $group = clone $current;
         $this->apply($group, $input, $current);
-        $snapshot = $this->effects->snapshot(array_merge($current->usernames(), $group->usernames()));
+        $snapshot = $this->effects->snapshot($this->inScope(array_merge($current->usernames(), $group->usernames())));
         $sogo = $this->repo->update($group);
         $group->warnings = array_merge($this->sizeWarnings($group), $this->effects->apply($sogo, $snapshot),
             $this->sharing->applyImap((int)$group->id), $this->sharing->applySogo((int)$group->id));
@@ -132,7 +138,7 @@ class GroupService
     {
         $this->requireEditor();
         $group = $this->editable($id);
-        $snapshot = $this->effects->snapshot($group->usernames());
+        $snapshot = $this->effects->snapshot($this->inScope($group->usernames()));
         $this->sharing->removeImap($group);
         $sogo = $this->repo->delete($id);
         $group->warnings = $this->effects->apply($sogo, $snapshot);
@@ -150,11 +156,28 @@ class GroupService
         if (!$own && !($this->canRead() && $this->context->canAccessMailbox($username))) {
             return [];
         }
+        $groups = $this->lookup->membershipsOf($username);
+        // Domain admins see the mailbox's groups in their domains, not those of other domains
+        if (!$own && !$this->context->hasAdminRights()) {
+            $groups = array_values(array_filter($groups, fn(array $group): bool => $this->context->canAccessDomain((string)$group['domain'])));
+        }
         return [
-            'groups' => $this->lookup->membershipsOf($username),
+            'groups' => $groups,
             'template' => $this->templates->effective([$username])[$username] ?? null,
             'send_as' => $this->lookup->sendAsOf($username),
         ];
+    }
+
+    /**
+     * Members whose templates a change of the caller may apply: a domain admin never changes mailboxes outside
+     * his domains, their new effective template applies with the next admin action or IdP login.
+     */
+    private function inScope(array $usernames): array
+    {
+        if ($this->context->hasAdminRights()) {
+            return $usernames;
+        }
+        return array_values(array_filter($usernames, fn(string $username): bool => $this->context->canAccessMailbox($username)));
     }
 
     /** @throws AccessDenied when the caller cannot see or edit the group */
