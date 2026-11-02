@@ -17,6 +17,8 @@ class RegexesTest(unittest.TestCase):
     '6': ("[6714]: SOGoRootPage Login from '203.0.113.11' for user 'nobody@example.org' might not have worked - "
           "password policy: 65535  grace: -1  expire: -1  bound: 0", '203.0.113.11'),
     '7': ('203.0.113.12 "GET /SOGo/so/ HTTP/1.1" 403 123 "-"', '203.0.113.12'),
+    '8': ('auth: passwd-file(master@mailcow.local,203.0.113.13,master,<qIIX9EZfYISsFgEB>): '
+          'Password mismatch (SHA1 of given password: 05d839)', '203.0.113.13'),
   }
   # Defaults of 2025-02 to 2026-10 and of 2022-11 to 2025-02
   FORMER = {
@@ -59,6 +61,18 @@ class RegexesTest(unittest.TestCase):
                  'method=PLAIN, rip=203.0.113.6, lip=172.22.1.250'):
       self.assertIsNone(self.regexes.match(line), line)
 
+  def test_failed_master_logins(self):
+    # Dovecot checks the master passdb itself, mailcowauth.php is not asked
+    self.regexes.refresh(self.r)
+    self.assertEqual(self.regexes.match('auth: passwd-file(x@mailcow.local,2001:db8::13,master,<dfbigUdfZJysFgEB>): '
+                                        'unknown user (SHA1 of given password: 6d0653)'), ('8', '2001:db8::13'))
+    # no session of Postfix
+    self.assertEqual(self.regexes.match('auth: passwd-file(x@mailcow.local,203.0.113.13,master): '
+                                        'Password mismatch (SHA1 of given password: 6d0653)'), ('8', '203.0.113.13'))
+    # without the client address (doveadm) or for the user of a master login
+    self.assertIsNone(self.regexes.match('auth: passwd-file(x@mailcow.local,master,<dfbigUdfZJysFgEB>): Password mismatch'))
+    self.assertIsNone(self.regexes.match('auth: lua(a@example.org,203.0.113.13,master,<dfbigUdfZJysFgEB>): unknown user'))
+
   def test_text_of_clients_does_not_match(self):
     # Login names, SMTP commands and addresses of other lines must not ban a foreign address
     self.regexes.refresh(self.r)
@@ -78,6 +92,9 @@ class RegexesTest(unittest.TestCase):
     # nginx appends the client to the X-Forwarded-For header a client sent
     self.assertEqual(self.regexes.match("[1]: SOGoRootPage Login from '203.0.113.1, 198.51.100.7' for user 'x' might not have worked"),
                      ('6', '198.51.100.7'))
+    # the address Dovecot adds follows the login name
+    self.assertEqual(self.regexes.match('auth: passwd-file(x,203.0.113.1,master,<a>): Password mismatch,198.51.100.7,master,<b>): '
+                                        'Password mismatch (SHA1 of given password: 6d0653)'), ('8', '198.51.100.7'))
     # lines of the web UI are not sanitized like syslog lines
     self.assertEqual(self.regexes.match('mailcow UI: Invalid password for admin\n by 203.0.113.5'), ('1', '203.0.113.5'))
 
@@ -85,11 +102,13 @@ class RegexesTest(unittest.TestCase):
     self.r.set('F2B_REGEX', json.dumps(self.FORMER))
     self.regexes.refresh(self.r)
     defaults = {str(rule_id): regex for rule_id, regex in Regexes.DEFAULTS.items()}
-    expected = dict(defaults, **{'8': defaults['6'], '9': defaults['7']})
-    del expected['6'], expected['7']
+    # the rule for failed Dovecot logins counts failed master logins now
+    expected = dict(defaults, **{'6': defaults['8'], '8': defaults['6'], '9': defaults['7']})
+    del expected['7']
     self.assertEqual(json.loads(self.r.get('F2B_REGEX')), expected)
     self.assertEqual(self.regexes.match(self.LINES['3'][0]), ('3', '203.0.113.6'))
     self.assertEqual(self.regexes.match(self.LINES['6'][0]), ('8', '203.0.113.11'))
+    self.assertEqual(self.regexes.match(self.LINES['8'][0]), ('6', '203.0.113.13'))
 
   def test_older_defaults_are_replaced(self):
     self.r.set('F2B_REGEX', json.dumps(self.OLDER))

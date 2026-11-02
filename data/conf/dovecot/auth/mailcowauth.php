@@ -68,7 +68,7 @@ require_once 'functions.acl.inc.php';
 
 
 $isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
-// real_rip is the address that connected to Dovecot (for proxied connections the proxy), client_ip the client
+// real_rip is the address that connected to Dovecot (for proxied connections the proxy), client_ip the client (for logs)
 $client_ip = filter_var($post['client_ip'] ?? '', FILTER_VALIDATE_IP) ? $post['client_ip'] : $post['real_rip'];
 $result = false;
 if ($isSOGoRequest) {
@@ -76,7 +76,7 @@ if ($isSOGoRequest) {
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
   if ($sogo_sso_pass === $post['password']){
     error_log('MAILCOWAUTH: SOGo SSO auth for user ' . $post['username']);
-    set_sasl_log($post['username'], $post['real_rip'], "SOGO");
+    set_sasl_log($post['username'], $client_ip, "SOGO");
     $result = true;
   }
 }
@@ -95,8 +95,8 @@ if ($result === false){
     'remote_addr' => $post['real_rip']
   ));
   if ($result) {
-    error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $service . " from IP " . $post['real_rip']);
-    set_sasl_log($post['username'], $post['real_rip'], $service);
+    error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $service . " from IP " . $client_ip);
+    set_sasl_log($post['username'], $client_ip, $service);
   }
 }
 if ($result === false){
@@ -107,15 +107,15 @@ if ($result === false){
     $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']));
   } catch (\Mailcow\Auth\IdpUnavailable $e) {
     // temporary failure for Dovecot, no failed login
-    error_log("MAILCOWAUTH: Identity provider unavailable for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip'] . ": " . $e->getMessage());
+    error_log("MAILCOWAUTH: Identity provider unavailable for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $client_ip . ": " . $e->getMessage());
     http_response_code(503); // Service Unavailable
     echo json_encode($return);
     session_destroy();
     exit;
   }
   if ($result) {
-    error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
-    set_sasl_log($post['username'], $post['real_rip'], $post['service']);
+    error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $client_ip);
+    set_sasl_log($post['username'], $client_ip, $post['service']);
   }
 }
 

@@ -291,7 +291,7 @@ $RSPAMD_MAPS = array(
 //   true   = option requires a non-empty value
 //   false  = pure flag, must NOT have a value
 //   string = PCRE (no delimiters) the whole non-empty value must match
-// Anything not listed here is rejected when a job is saved (the runner passes stored options as they are).
+// Anything not listed here is rejected when a job is saved; the runner passes stored options as they are, except the blocked ones below.
 // Override in vars.local.inc.php per option, e.g. $IMAPSYNC_OPTIONS['someoption'] = true; or unset($IMAPSYNC_OPTIONS['debug']);
 // The old format $IMAPSYNC_OPTIONS['whitelist'] (list of names) is no longer supported and ignored (logged).
 // NEVER add (RCE): 'delete2foldersonly', 'delete2foldersbutnot', 'regexflag', 'regexmess', 'pipemess', 'regextrans2', 'maxlinelengthcmd', 'oauthrefreshcmd1', 'oauthrefreshcmd2'

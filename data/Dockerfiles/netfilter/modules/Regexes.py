@@ -8,6 +8,7 @@ class Regexes:
 
   # Anchored to the line start: text clients control in other lines (login names, SMTP commands) must not match.
   # Failed IMAP, POP3, Sieve and SMTP logins are reported by mailcowauth.php (rule 3), not by Dovecot or Postfix.
+  # Only the master passdb is checked by Dovecot itself (rule 8); the last address is the one Dovecot added.
   DEFAULTS = {
     1: r'^mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)$',
     2: r'^Rspamd UI: Invalid password by ([0-9a-f\.:]+)$',
@@ -16,6 +17,7 @@ class Regexes:
     5: r'^NOQUEUE: reject: RCPT from \[([0-9a-f\.:]+)].+Protocol error.+',
     6: r'^(?:\[\d+\]: )?SOGo\w* Login from \'(?:[0-9a-f\.:]+, )*([0-9a-f\.:]+)\' for user .+ might not have worked',
     7: r'([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+',
+    8: r'^auth: passwd-file\(.*,([0-9a-f\.:]+),master(?:,<[^<>]*>)?\): (?:Password mismatch|unknown user)',
   }
   # Former default rules (with any rule id) => rule id of their replacement, None: the rule is removed.
   # Rules the admin changed are kept.
@@ -34,9 +36,9 @@ class Regexes:
     r'-login: Aborted login.+ \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+': None,
     r'-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+': None,
     r'-login: Aborted login.+ \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+': None,
-    r'auth: static\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': None,
-    r'auth: \w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': None,
-    r'\w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': None,
+    r'auth: static\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': 8,
+    r'auth: \w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': 8,
+    r'\w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): Password mismatch \(SHA1 of given password: [a-f0-9]+\)': 8,
     r'\w+\([^,]+,([0-9a-f\.:]+),<[^>]+>\): unknown user \(SHA1 of given password: [a-f0-9]+\)': None,
   }
   # Lines of the web UI are not sanitized like syslog lines: a newline in a login name must not hide the address
