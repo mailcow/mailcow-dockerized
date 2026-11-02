@@ -1549,7 +1549,14 @@ if (isset($_GET['query'])) {
             if ($object == "sync-status") {
               process_get_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->getStatus());
             } elseif($_SESSION['mailcow_cc_role'] === 'admin') {
-              process_get_return($iam_settings);
+              $iam_settings_out = $iam_settings;
+              // Read-only API keys never get the secrets of the identity provider
+              if (($_SESSION['mailcow_cc_api_access'] ?? '') == 'ro') {
+                foreach (array('client_secret', 'bindpass', 'access_token') as $iam_secret) {
+                  if (isset($iam_settings_out[$iam_secret])) $iam_settings_out[$iam_secret] = '*';
+                }
+              }
+              process_get_return($iam_settings_out);
             } else {
               process_get_return(null);
             }

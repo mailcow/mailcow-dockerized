@@ -35,7 +35,9 @@ if (empty($_SESSION['mailcow_cc_username']) || empty($_SESSION['mailcow_cc_role'
 }
 $context = \Mailcow\Core\Context::fromSession($_SESSION);
 $imapsync = \Mailcow\Imapsync\ImapsyncModule::fromGlobals($context);
-if (!$context->hasAcl('syncjobs')) {
+// Storing a token is a write: no read-only API keys, no session with pending 2FA setup or password update
+if (!$context->hasAcl('syncjobs') || $context->isReadOnlyApi()
+  || !empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
   syncjob_oauth_finish(false, array('error' => 'access_denied'));
 }
 
