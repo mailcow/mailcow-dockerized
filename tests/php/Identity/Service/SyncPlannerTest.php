@@ -26,6 +26,17 @@ class SyncPlannerTest extends TestCase
         $this->assertSame([], $plan->conflicts);
     }
 
+    public function testUnlinkedMailboxWithSeveralIdpUsersIsNeitherLinkedNorOffboarded(): void
+    {
+        $users = [self::user('u1', 'a@example.org'), self::user('u2', 'a@example.org', false), self::user('u3', 'a@example.org')];
+        $plan = $this->plan($users, [new Account('a@example.org', 'A', 1)]);
+
+        $this->assertSame([], $plan->links);
+        $this->assertSame(['Several IdP users have the email a@example.org'], $plan->conflicts);
+        $this->assertSame([], $plan->missing);
+        $this->assertSame([], $plan->deactivate);
+    }
+
     public function testLinkedUserWithNewEmailIsAConflictAndNotCreated(): void
     {
         $plan = $this->plan([self::user('u1', 'new@example.org')], [new Account('a@example.org', 'A', 1, 'u1')]);

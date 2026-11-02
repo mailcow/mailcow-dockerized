@@ -538,7 +538,8 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
 
   // get the mailcow_password attribute from keycloak user
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
-  $queryParams = array('email' => $user, 'exact' => true);
+  // as string, http_build_query() would send exact=1 and Keycloak would search for substrings
+  $queryParams = array('email' => $user, 'exact' => 'true');
   $queryString = http_build_query($queryParams);
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_TIMEOUT, 7);
@@ -559,7 +560,10 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   if ($code != 200) {
     throw new \Mailcow\Auth\IdpUnavailable('Keycloak returned HTTP ' . $code);
   }
-  // exact=true can still return several users with that email
+  // exact=true can still return several users with that email, only the exact address counts
+  if (is_array($users)) {
+    $users = array_values(array_filter($users, fn($u) => is_array($u) && strcasecmp((string)($u['email'] ?? ''), $user) === 0));
+  }
   if (!is_array($users) || count($users) != 1) {
     return false;
   }
@@ -710,12 +714,15 @@ function ldap_mbox_login($user, $pass, $extra = null){
       ->select(array_values(array_filter(array_merge([$iam_settings['username_field'], $iam_settings['attribute_field'], 'displayname', 'distinguishedname', 'dn'],
         \Mailcow\Identity\Directory\LdapDirectory::idAttributes($iam_settings['id_attribute'] ?? '')))));
 
-    $user_res = $ldap_query->firstOrFail();
-  } catch (\LdapRecord\Query\ObjectNotFoundException $e) {
-    return false;
+    $entries = $ldap_query->get();
   } catch (Exception $e) {
     throw new \Mailcow\Auth\IdpUnavailable('LDAP search failed: ' . $e->getMessage(), 0, $e);
   }
+  // the login name must identify exactly one entry, several matches are ambiguous
+  if (!is_array($entries) || count($entries) != 1) {
+    return false;
+  }
+  $user_res = reset($entries);
   $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
   if (!$idp_login->verifyLdapPassword($iam_provider, (string)$user_res['dn'], (string)$pass)) {
     return false;

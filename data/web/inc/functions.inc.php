@@ -3013,6 +3013,18 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
+      // A refresh keeps the logged-in mailbox: a changed IdP email or another IdP user ends the session
+      if (strtolower($info['email']) !== strtolower($_SESSION['mailcow_cc_username'] ?? '') ||
+        !\Mailcow\Auth\AuthModule::fromGlobals()->idp->verifyLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'The IdP user does not match the logged-in mailbox'),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+
       // The mailbox may have been deleted or deactivated since the login
       $stmt = $pdo->prepare("SELECT `mailbox`.`authsource` FROM `mailbox`
         INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
