@@ -666,6 +666,7 @@
         "version_invalid": "Version %s is invalid",
         "yotp_verification_failed": "Yubico OTP verification failed: %s",
         "imapsync_source_in_use": "Sync source %s is still used by a sync job and cannot be deleted",
+        "imapsync_source_used_by_others": "The server of sync source %s cannot be changed, sync jobs of other mailboxes use it",
         "imapsync_source_token_refresh_failed": "OAuth token refresh for %s failed",
         "imapsync_source_scope_empty": "Select at least one domain for the chosen visibility",
         "imapsync_source_unavailable": "The selected sync source is unavailable",

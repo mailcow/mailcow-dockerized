@@ -666,6 +666,7 @@
         "template_name_invalid": "Name der Vorlage ungültig",
         "required_data_missing": "Die benötigten Daten: %s fehlen",
         "imapsync_source_in_use": "Sync-Quelle %s wird noch von einem Sync-Job verwendet und kann nicht gelöscht werden",
+        "imapsync_source_used_by_others": "Der Server der Sync-Quelle %s kann nicht geändert werden, Sync-Jobs anderer Postfächer verwenden sie",
         "imapsync_source_token_refresh_failed": "OAuth-Token-Erneuerung für %s fehlgeschlagen",
         "imapsync_source_scope_empty": "Für die gewählte Sichtbarkeit mindestens eine Domain wählen",
         "imapsync_source_unavailable": "Die gewählte Sync-Quelle ist nicht verfügbar",

@@ -48,6 +48,12 @@ class SourceRepository extends Repository
         return (bool)$this->query("SELECT 1 FROM `imapsync` WHERE `source_id` = :id LIMIT 1", ['id' => $id])->fetchColumn();
     }
 
+    /** @return string[] mailboxes whose sync jobs use the source */
+    public function jobMailboxes(int $id): array
+    {
+        return $this->query("SELECT DISTINCT `user2` FROM `imapsync` WHERE `source_id` = :id", ['id' => $id])->fetchAll(PDO::FETCH_COLUMN);
+    }
+
     public function isSuperAdmin(string $username): bool
     {
         return (bool)$this->query("SELECT 1 FROM `admin` WHERE `username` = :username AND `superadmin` = '1'",

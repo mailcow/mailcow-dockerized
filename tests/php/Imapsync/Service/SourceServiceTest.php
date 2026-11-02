@@ -292,6 +292,20 @@ class SourceServiceTest extends TestCase
         $this->expectUserError('access_denied', fn() => $service->update(7, ['name' => 'b']));
     }
 
+    public function testServerOnlyChangesWhenAllJobsAreAccessible(): void
+    {
+        $this->repo->method('findVisible')->willReturn(self::source(['created_by' => 'u@example.org']));
+        $this->repo->expects($this->exactly(2))->method('jobMailboxes')
+            ->willReturnOnConsecutiveCalls(['u@example.org', 'other@example.org'], ['u@example.org']);
+        $this->repo->expects($this->exactly(2))->method('update');
+        $service = $this->service(FakeContext::user('u@example.org'));
+
+        $this->expectUserError(['imapsync_source_used_by_others', 'src'], fn() => $service->update(7, ['host' => 'other.example.org']));
+        $service->update(7, ['host' => 'new.example.org']);
+        // Name or description changes keep the server and need no check
+        $service->update(7, ['description' => 'x']);
+    }
+
     public function testUsersMayNotSwitchToXOAuth2(): void
     {
         $this->repo->method('findVisible')->willReturn(self::source(['created_by' => 'u@example.org']));
