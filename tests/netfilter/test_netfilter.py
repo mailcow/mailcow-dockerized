@@ -25,8 +25,8 @@ class NetfilterTest(unittest.TestCase):
     netfilter.regexes.refresh(self.r)
     return netfilter
 
-  def sasl(self, address):
-    return 'warning: unknown[%s]: SASL LOGIN authentication failed: UGFzc3dvcmQ6' % address
+  def failed(self, address):
+    return 'MAILCOWAUTH: Login failed for user a@example.org with service imap from IP %s' % address
 
   def test_setup_restores_bans_and_resets_the_firewall(self):
     self.r.hset('F2B_ACTIVE_BANS', '1.2.3.4/32', '9999999999')
@@ -49,8 +49,8 @@ class NetfilterTest(unittest.TestCase):
 
   def test_shutdown_keeps_the_active_bans(self):
     netfilter = self.create()
-    netfilter.handle_line(self.sasl('1.2.3.4'))
-    netfilter.handle_line(self.sasl('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
     self.r.hset('F2B_PERM_BANS', '198.51.100.1', '1')
     netfilter.shutdown()
     self.assertEqual(self.tables.rules, set())
@@ -59,52 +59,51 @@ class NetfilterTest(unittest.TestCase):
 
   def test_handle_line_bans(self):
     netfilter = self.create()
-    netfilter.handle_line(self.sasl('1.2.3.4'))
-    netfilter.handle_line(self.sasl('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
     self.assertEqual(self.tables.rules, {'1.2.3.4/32'})
-    self.assertIn('1.2.3.4 matched rule id 3 (%s)' % self.sasl('1.2.3.4'), self.logger.messages('warn'))
+    self.assertIn('1.2.3.4 matched rule id 3 (%s)' % self.failed('1.2.3.4'), self.logger.messages('warn'))
 
   def test_handle_line_with_trailing_colon(self):
     netfilter = self.create()
-    netfilter.handle_line(self.sasl('1.2.3.4:'))
-    netfilter.handle_line(self.sasl('1.2.3.4:'))
+    netfilter.handle_line(self.failed('1.2.3.4:'))
+    netfilter.handle_line(self.failed('1.2.3.4:'))
     self.assertEqual(self.tables.rules, {'1.2.3.4/32'})
 
   def test_handle_line_ignores_private_and_invalid_addresses(self):
     netfilter = self.create()
     for _ in range(3):
-      netfilter.handle_line(self.sasl('192.168.1.1'))
-      netfilter.handle_line(self.sasl('::1'))
-      netfilter.handle_line(self.sasl('1.2.3'))
+      netfilter.handle_line(self.failed('192.168.1.1'))
+      netfilter.handle_line(self.failed('::1'))
+      netfilter.handle_line(self.failed('1.2.3'))
     self.assertEqual(self.tables.rules, set())
     self.assertTrue(any('invalid address 1.2.3' in message for message in self.logger.messages('warn')))
 
   def test_handle_line_with_replaced_characters(self):
     netfilter = self.create()
-    line = b'warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: \xff\xfe'.decode('utf-8', 'replace')
+    line = b'MAILCOWAUTH: Login failed for user \xff\xfe with service imap from IP 1.2.3.4'.decode('utf-8', 'replace')
     netfilter.handle_line(line)
     netfilter.handle_line(line)
     self.assertEqual(self.tables.rules, {'1.2.3.4/32'})
 
-  def test_unavailable_auth_backend_is_no_failed_login(self):
-    # Dovecot logs the temporary failure, Postfix then the failed SASL login like for a wrong password
+  def test_postfix_and_dovecot_lines_are_no_failed_logins(self):
+    # mailcowauth.php reports failed logins, not when the auth backend was unavailable
     netfilter = self.create()
-    netfilter.handle_line('auth-worker(1): Error: conn unix:auth-worker (pid=2,uid=401): auth-worker<4>: '
-                          'lua(a@example.org,1.2.3.4): passdb-lua: Upstream unavailable')
     for _ in range(3):
       netfilter.handle_line('warning: unknown[1.2.3.4]: SASL LOGIN authentication failed: (reason unavailable), sasl_username=a@example.org')
+      netfilter.handle_line('imap-login: Disconnected: Connection closed (auth failed, 1 attempts in 2 secs): user=<a@example.org>, '
+                            'method=PLAIN, rip=1.2.3.4, lip=172.22.1.250')
     self.assertEqual(self.tables.rules, set())
-    self.assertNotIn('1.2.3.4/32', self.r.hgetall('F2B_ACTIVE_BANS'))
 
   def test_handle_line_survives_errors(self):
     netfilter = self.create()
     with mock.patch.object(netfilter.bans, 'attempt', side_effect=RuntimeError('boom')):
-      netfilter.handle_line(self.sasl('1.2.3.4'))
+      netfilter.handle_line(self.failed('1.2.3.4'))
     self.assertTrue(any('boom' in message for message in self.logger.messages('warn')))
 
   def test_watch_reconnects_after_errors(self):
     netfilter = self.create()
-    self.r.messages.extend([self.sasl('1.2.3.4'), ConnectionError('gone'), self.sasl('1.2.3.4')])
+    self.r.messages.extend([self.failed('1.2.3.4'), ConnectionError('gone'), self.failed('1.2.3.4')])
     netfilter.loop('watch', netfilter.watch, 0)
     self.assertEqual(self.tables.rules, {'1.2.3.4/32'})
     self.assertEqual(len(self.r.pubsubs), 2)
@@ -126,8 +125,8 @@ class NetfilterTest(unittest.TestCase):
 
   def test_recreated_chain_gets_isolation_and_bans_again(self):
     netfilter = self.create()
-    netfilter.handle_line(self.sasl('1.2.3.4'))
-    netfilter.handle_line(self.sasl('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
     self.tables.rules = set()
     self.tables.calls = []
     self.tables.recreate = True
@@ -151,8 +150,8 @@ class NetfilterTest(unittest.TestCase):
     self.r.hset('F2B_BLACKLIST', '198.51.100.1', 1)
     netfilter.update_lists()
     self.assertEqual(self.tables.rules, {'198.51.100.1/32'})
-    netfilter.handle_line(self.sasl('1.2.3.4'))
-    netfilter.handle_line(self.sasl('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
+    netfilter.handle_line(self.failed('1.2.3.4'))
     self.assertNotIn('1.2.3.4/32', self.tables.rules)
 
   def test_resolve_keeps_addresses_on_dns_errors(self):

@@ -68,6 +68,8 @@ require_once 'functions.acl.inc.php';
 
 
 $isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
+// real_rip is the address that connected to Dovecot (for proxied connections the proxy), client_ip the client
+$client_ip = filter_var($post['client_ip'] ?? '', FILTER_VALIDATE_IP) ? $post['client_ip'] : $post['real_rip'];
 $result = false;
 if ($isSOGoRequest) {
   // This is a SOGo Auth request. First check for SSO password.
@@ -121,7 +123,14 @@ if ($result) {
   http_response_code(200); // OK
   $return['success'] = true;
 } else {
-  error_log("MAILCOWAUTH: Login failed for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $post['real_rip']);
+  // Same line for the log and netfilter, which counts it for IMAP, POP3, Sieve and SMTP (Postfix asks Dovecot);
+  // SOGo logins have their own rule
+  $failed = "MAILCOWAUTH: Login failed for user " . $post['username'] . " with service " .
+    preg_replace('/[^a-z0-9]/', '', strtolower((string)$service)) . " from IP " . $client_ip;
+  error_log($failed);
+  if (!$isSOGoRequest) {
+    $redis->publish("F2B_CHANNEL", $failed);
+  }
   http_response_code(401); // Unauthorized
 }
 
