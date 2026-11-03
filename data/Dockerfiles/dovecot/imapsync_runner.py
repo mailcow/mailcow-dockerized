@@ -36,7 +36,7 @@ token_sync_interval = 60
 next_sql = """SELECT i.id, i.user1, i.user2, i.password1, i.exclude, i.delete2duplicates, i.maxage,
   i.subfolder2, i.delete1, i.delete2, i.automap, i.skipcrossduplicates, i.maxbytespersecond, i.custom_params,
   i.subscribeall, i.timeout1, i.timeout2, i.dry, i.source_id,
-  s.host1, s.port1, s.enc1, s.auth_type, s.oauth_flow
+  s.host1, s.port1, s.enc1, s.verify_cert, s.auth_type, s.oauth_flow
     FROM imapsync i JOIN imapsync_source s ON i.source_id = s.id
       WHERE i.active = 1
         AND s.active = 1
@@ -130,6 +130,14 @@ def internal_host(host):
     if ip.is_loopback or ip.is_unspecified or ip.is_link_local or any(ip in net for net in internal_nets):
       return True
   return False
+
+# SNI takes host names only
+def ip_literal(host):
+  try:
+    ipaddress.ip_address(host)
+    return True
+  except ValueError:
+    return False
 
 def oauth_token(j):
   if j['oauth_flow'] == 'authorization_code':
@@ -239,8 +247,13 @@ def prepare_job(j, global_bw, files):
       cmd.append(opt)
   enc1 = {'TLS': '--tls1', 'SSL': '--ssl1'}.get(j['enc1'])
   if enc1:
-    # Check the certificate of the source (imapsync does not by default), custom sslargs1 can turn it off
-    cmd += [enc1, '--sslargs1', 'SSL_verify_mode=1']
+    # Mail::IMAPClient starts TLS without a host name: check the certificate against host1, not its address
+    cmd += [enc1, '--sslargs1', 'SSL_verifycn_scheme=imap', '--sslargs1', 'SSL_verifycn_name=' + j['host1']]
+    if not ip_literal(j['host1']):
+      cmd += ['--sslargs1', 'SSL_hostname=' + j['host1']]
+    # imapsync does not check certificates by default; custom sslargs1 of password jobs can still change it
+    if j['verify_cert'] == 1:
+      cmd += ['--sslargs1', 'SSL_verify_mode=1']
   cmd += ['--host1', j['host1'], '--user1', j['user1']] + auth_args + ['--port1', str(j['port1'])]
   cmd += ['--host2', 'localhost', '--user2', j['user2'] + '*' + master_user, '--passfile2', tmpfile(master_pass + '\n')]
   if j['dry'] == 1:

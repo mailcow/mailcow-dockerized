@@ -1098,6 +1098,7 @@ function init_db_schema()
           "host1" => "VARCHAR(255) NOT NULL",
           "port1" => "SMALLINT UNSIGNED NOT NULL",
           "enc1" => "ENUM('TLS','SSL','PLAIN') DEFAULT 'TLS'",
+          "verify_cert" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "auth_type" => "ENUM('PLAIN','LOGIN','CRAM-MD5','XOAUTH2') DEFAULT 'PLAIN'",
           "oauth_flow" => "ENUM('client_credentials','authorization_code') NOT NULL DEFAULT 'client_credentials'",
           "oauth_token_endpoint" => "VARCHAR(500) DEFAULT NULL",
@@ -1679,9 +1680,15 @@ function init_db_schema()
             // Converted JSON may not fit into the old VARCHAR(512)
             $pdo->exec("ALTER TABLE `imapsync` MODIFY COLUMN `custom_params` TEXT");
             $imapsync_allow = \Mailcow\Imapsync\Model\CustomParams::allowlist($GLOBALS['IMAPSYNC_OPTIONS'] ?? [], $GLOBALS['IMAPSYNC_OPTIONS_DEFAULT'] ?? []);
-            $source_sel = $pdo->prepare("SELECT `id` FROM `imapsync_source` WHERE `created_by` = '' AND `name` = :name");
-            $source_ins = $pdo->prepare("INSERT IGNORE INTO `imapsync_source` (`name`, `description`, `created_by`, `scope`, `host1`, `port1`, `enc1`, `auth_type`, `active`)
-              VALUES (:name, '', '', 'domain', :host, :port, :enc, :auth, 1)");
+            // A legacy source is found by its connection and its only target domain (none for jobs without domain)
+            $source_sel = $pdo->prepare("SELECT `id` FROM `imapsync_source` s WHERE `created_by` = '' AND `host1` = :host AND `port1` = :port
+              AND `enc1` = :enc AND `auth_type` = :auth
+              AND (SELECT GROUP_CONCAT(`domain`) FROM `imapsync_source_domain` d WHERE d.`source_id` = s.`id`) <=> NULLIF(:domain, '')
+              ORDER BY `id` LIMIT 1");
+            $source_name_sel = $pdo->prepare("SELECT COUNT(*) FROM `imapsync_source` WHERE `created_by` = '' AND `name` = :name");
+            // The old runner never checked certificates, legacy sources keep that
+            $source_ins = $pdo->prepare("INSERT IGNORE INTO `imapsync_source` (`name`, `description`, `created_by`, `scope`, `host1`, `port1`, `enc1`, `verify_cert`, `auth_type`, `active`)
+              VALUES (:name, 'Migrated sync jobs', '', 'domain', :host, :port, :enc, 0, :auth, 1)");
             $source_domain_ins = $pdo->prepare("INSERT IGNORE INTO `imapsync_source_domain` (`source_id`, `domain`) VALUES (:id, :domain)");
             $job_upd = $pdo->prepare("UPDATE `imapsync` SET `source_id` = :source_id, `custom_params` = :cp, `custom_params_legacy` = :cp_legacy,
               `dry` = GREATEST(`dry`, :dry) WHERE `id` = :id AND `source_id` IS NULL");
@@ -1741,16 +1748,20 @@ function init_db_schema()
               $enc = in_array($row['enc1'], array('TLS', 'SSL', 'PLAIN'), true) ? $row['enc1'] : 'TLS';
               $at = strrchr((string)$row['user2'], '@');
               $domain = ($at === false) ? '' : strtolower(substr($at, 1));
-              // One source per (host, port, enc, auth, domain), name always unique and <= 100 chars
-              $name = 'legacy-' . mb_substr($host, 0, 60) . '-' . $port . '-' . substr(sha1($host . '|' . $port . '|' . $enc . '|' . $auth . '|' . $domain), 0, 8);
-              $source_sel->execute(array(':name' => $name));
+              // One source per (host, port, enc, auth, domain), named "host (domain)" plus " 2", " 3"... when taken (<= 100 chars)
+              $conn = array(':host' => $host, ':port' => $port, ':enc' => $enc, ':auth' => $auth);
+              $source_sel->execute($conn + array(':domain' => $domain));
               if (($source_id = $source_sel->fetchColumn()) === false) {
-                $source_ins->execute(array(':name' => $name, ':host' => $host, ':port' => $port, ':enc' => $enc, ':auth' => $auth));
-                $source_sel->execute(array(':name' => $name));
-                if (($source_id = $source_sel->fetchColumn()) === false) continue;
-              }
-              if ($domain !== '') {
-                $source_domain_ins->execute(array(':id' => $source_id, ':domain' => $domain));
+                $base = mb_substr($host . ($domain !== '' ? ' (' . $domain . ')' : ''), 0, 94);
+                for ($i = 1, $name = $base; $i < 1000; $name = $base . ' ' . ++$i) {
+                  $source_name_sel->execute(array(':name' => $name));
+                  if ($source_name_sel->fetchColumn() == 0) break;
+                }
+                $source_ins->execute($conn + array(':name' => $name));
+                if (($source_id = $pdo->lastInsertId()) == 0) continue;
+                if ($domain !== '') {
+                  $source_domain_ins->execute(array(':id' => $source_id, ':domain' => $domain));
+                }
               }
               $job_upd->execute(array(
                 ':source_id' => $source_id,

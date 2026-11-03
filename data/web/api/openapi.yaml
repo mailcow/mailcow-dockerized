@@ -1936,6 +1936,14 @@ paths:
                     - TLS
                     - SSL
                     - PLAIN
+                verify_cert:
+                  description: >-
+                    1 = check the server certificate (SSL and STARTTLS, default), 0 = do not check
+                    it (self-signed, expired or not matching the host).
+                  type: integer
+                  enum:
+                    - 0
+                    - 1
                 auth_type:
                   description: >-
                     authentication mechanism; PLAIN/LOGIN/CRAM-MD5 use the per-job
@@ -5080,6 +5088,15 @@ paths:
                         - TLS
                         - SSL
                         - PLAIN
+                    verify_cert:
+                      description: >-
+                        1 = check the server certificate (SSL and STARTTLS, default), 0 = do not check
+                        it (self-signed, expired or not matching the host). Turning the check off
+                        needs access to all sync jobs of the source, like changing the server.
+                      type: integer
+                      enum:
+                        - 0
+                        - 1
                     auth_type:
                       description: >-
                         authentication mechanism; PLAIN/LOGIN/CRAM-MD5 use the per-job
@@ -7313,6 +7330,7 @@ paths:
                       host1: imap.example.org
                       port1: 993
                       enc1: SSL
+                      verify_cert: 1
                       auth_type: XOAUTH2
                       oauth_flow: authorization_code
                       oauth_token_endpoint: https://login.example.org/token

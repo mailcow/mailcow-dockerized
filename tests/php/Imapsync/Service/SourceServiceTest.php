@@ -219,6 +219,23 @@ class SourceServiceTest extends TestCase
         $this->service(FakeContext::admin())->create(['name' => 'a', 'host1' => '192.0.2.10', 'port1' => 143, 'enc1' => 'PLAIN']);
     }
 
+    public function testCertificateIsCheckedUnlessTurnedOff(): void
+    {
+        $stored = [];
+        $this->repo->expects($this->exactly(3))->method('insert')->willReturnCallback(function (Source $s) use (&$stored): int {
+            $stored[] = $s->verifyCert;
+            return 1;
+        });
+        $service = $this->service(FakeContext::admin());
+        $basics = ['name' => 'a', 'host' => 'imap.example.org', 'port' => 143, 'enc' => 'TLS'];
+
+        $service->create($basics);
+        $service->create($basics + ['verify_cert' => '0']);
+        $service->create($basics + ['verify_cert' => '1']);
+        $this->assertSame([1, 0, 1], $stored);
+        $this->assertSame(0, Source::fromRow(['verify_cert' => '0'])->toArray(true, '')['verify_cert']);
+    }
+
     public function testNameMustBeUniquePerCreator(): void
     {
         $this->repo->method('nameExists')->with('<b>', 'admin', null)->willReturn(true);
@@ -304,6 +321,22 @@ class SourceServiceTest extends TestCase
         $service->update(7, ['host' => 'new.example.org']);
         // Name or description changes keep the server and need no check
         $service->update(7, ['description' => 'x']);
+    }
+
+    public function testCertificateCheckOnlyTurnsOffWhenAllJobsAreAccessible(): void
+    {
+        $this->repo->method('findVisible')->willReturnOnConsecutiveCalls(
+            self::source(['created_by' => 'u@example.org']),
+            self::source(['created_by' => 'u@example.org', 'verify_cert' => 0])
+        );
+        $this->repo->expects($this->once())->method('jobMailboxes')->willReturn(['u@example.org', 'other@example.org']);
+        // Turning it on needs no check and keeps the tokens
+        $this->repo->expects($this->once())->method('update')
+            ->with($this->callback(fn(Source $s): bool => $s->verifyCert === 1), $this->anything(), false);
+        $service = $this->service(FakeContext::user('u@example.org'));
+
+        $this->expectUserError(['imapsync_source_used_by_others', 'src'], fn() => $service->update(7, ['verify_cert' => '0']));
+        $service->update(7, ['verify_cert' => '1']);
     }
 
     public function testUsersMayNotSwitchToXOAuth2(): void

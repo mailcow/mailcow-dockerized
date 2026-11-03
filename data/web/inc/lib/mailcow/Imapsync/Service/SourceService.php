@@ -122,7 +122,7 @@ class SourceService
             $this->applyScope($source, $input['scope'] ?? $current->scope, $input['domains'] ?? [], $input['users'] ?? []);
         }
         $connectionChanged = self::connection($current) !== self::connection($source);
-        if ($connectionChanged) {
+        if ($connectionChanged || ($current->verifyCert && !$source->verifyCert)) {
             $this->requireAllJobsAccessible($source);
         }
         $this->repo->update($source, $writeTargets, $connectionChanged);
@@ -296,6 +296,7 @@ class SourceService
         $source->host = $host;
         $source->port = $port;
         $source->enc = $enc;
+        $source->verifyCert = isset($input['verify_cert']) ? (int)!empty($input['verify_cert']) : $source->verifyCert;
         $source->authType = $authType;
         $source->active = isset($input['active']) ? (int)$input['active'] : $source->active;
     }

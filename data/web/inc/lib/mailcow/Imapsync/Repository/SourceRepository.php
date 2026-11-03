@@ -206,6 +206,7 @@ class SourceRepository extends Repository
             'host1' => $source->host,
             'port1' => $source->port,
             'enc1' => $source->enc,
+            'verify_cert' => $source->verifyCert,
             'auth_type' => $source->authType,
             'oauth_flow' => $source->oauthFlow,
             'oauth_token_endpoint' => $source->tokenEndpoint,

@@ -12,6 +12,7 @@
   {% endif %}
   <form class="form-horizontal" data-id="edit_imapsync_source" role="form" method="post">
     <input type="hidden" value="0" name="active">
+    <input type="hidden" value="0" name="verify_cert">
     <div class="row mb-2">
       <label class="control-label col-sm-2" for="name">{{ lang.syncjobs.source_name }}</label>
       <div class="col-sm-10">
@@ -97,6 +98,14 @@
           <option value="TLS"{% if result.enc1 == 'TLS' %} selected{% endif %}>STARTTLS</option>
           <option value="PLAIN"{% if result.enc1 == 'PLAIN' %} selected{% endif %}>PLAIN</option>
         </select>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="verify_cert"{% if result.verify_cert == '1' %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.syncjobs.source_verify_cert }}</label>
+        </div>
+        <small class="text-muted">{{ lang.syncjobs.source_verify_cert_hint }}</small>
       </div>
     </div>
     <div class="row mb-4">

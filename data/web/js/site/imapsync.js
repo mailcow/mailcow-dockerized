@@ -184,7 +184,11 @@ var mailcowImapsync = (function($) {
         dataSrc: function(json) {
           if (!Array.isArray(json)) return [];
           $.each(json, function(i, item) {
-            item.endpoint = wrapCell(esc((item.host || item.host1) + ':' + (item.port || item.port1) + ' (' + (item.enc || item.enc1) + ')'));
+            item.endpoint = esc((item.host || item.host1) + ':' + (item.port || item.port1) + ' (' + (item.enc || item.enc1) + ')');
+            if (item.verify_cert == 0 && (item.enc || item.enc1) !== 'PLAIN') {
+              item.endpoint += ' <i class="bi bi-shield-exclamation text-warning" title="' + esc(L('source_verify_cert_off')) + '"></i>';
+            }
+            item.endpoint = wrapCell(item.endpoint);
             item.name_display = esc(item.name);
             if (item.description) item.name_display += '<div class="small text-muted">' + esc(item.description) + '</div>';
             item.name_display = wrapCell(item.name_display);
