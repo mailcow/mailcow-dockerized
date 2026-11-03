@@ -120,7 +120,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.4.27-1
+      image: ghcr.io/mailcow/phpfpm:8.5.12-1
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow

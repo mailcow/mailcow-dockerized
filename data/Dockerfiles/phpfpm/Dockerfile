@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine3.24
+FROM php:8.5-fpm-alpine3.24
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -77,7 +77,7 @@ RUN apk add -U --no-cache autoconf \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
