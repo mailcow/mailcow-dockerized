@@ -6,6 +6,8 @@ function check_login($user, $pass, $extra = null) {
   $is_internal = $extra['is_internal'];
   $role = $extra['role'];
   $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
+  // set when the password is right, but the account does not allow this login
+  $denied = false;
 
   // Try validate admin
   if (!isset($role) || $role == "admin") {
@@ -26,7 +28,7 @@ function check_login($user, $pass, $extra = null) {
 
   // Try validate app password
   if (!isset($role) || $role == "app") {
-    $result = apppass_login($user, $pass, $extra);
+    $result = apppass_login($user, $pass, $extra, $denied);
     if ($result !== false) {
       $real_rip = ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
       set_sasl_log($user, $real_rip, $extra['service'], $pass);
@@ -37,7 +39,7 @@ function check_login($user, $pass, $extra = null) {
   // Try validate user
   if (!isset($role) || $role == "user") {
     try {
-      $result = user_login($user, $pass, $extra);
+      $result = user_login($user, $pass, $extra, $denied);
     } catch (\Mailcow\Auth\IdpUnavailable $e) {
       // no failed login, netfilter must not count it
       error_log("mailcow UI: Identity provider unavailable for " . $user . " by " . $_SERVER['REMOTE_ADDR'] . ": " . $e->getMessage());
@@ -54,19 +56,20 @@ function check_login($user, $pass, $extra = null) {
       return $result;
     }
   }
-
   // skip log and only return false if it's an internal request
   if ($is_internal == true) return false;
 
+  // A denied login is logged, but not counted by netfilter (e.g. EAS/DAV clients of accounts without access)
+  $msg = ($denied ? "mailcow UI: Login denied for " : "mailcow UI: Invalid password for ") . $user . " by " . $_SERVER['REMOTE_ADDR'];
   if (!isset($_SESSION['ldelay'])) {
     $_SESSION['ldelay'] = "0";
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
-    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    if (!$denied) $redis->publish("F2B_CHANNEL", $msg);
+    error_log($msg);
   }
   elseif (!isset($_SESSION['mailcow_cc_username'])) {
     $_SESSION['ldelay'] = $_SESSION['ldelay']+0.5;
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
-    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+    if (!$denied) $redis->publish("F2B_CHANNEL", $msg);
+    error_log($msg);
   }
   $_SESSION['return'][] =  array(
     'type' => 'danger',
@@ -207,7 +210,7 @@ function domainadmin_login($user, $pass){
 
   return false;
 }
-function user_login($user, $pass, $extra = null){
+function user_login($user, $pass, $extra = null, &$denied = false){
   global $pdo;
   global $iam_provider;
   global $iam_settings;
@@ -261,11 +264,14 @@ function user_login($user, $pass, $extra = null){
         if ($extra['service'] != 'NONE') {
           $key = strtolower($extra['service']) . "_access";
           if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
+            $denied = true;
             return false;
           }
         }
         return true;
       }
+      // the IdP accepted the password, the mailbox is inactive
+      $denied = true;
     }
     clear_session();
     return false;
@@ -273,18 +279,16 @@ function user_login($user, $pass, $extra = null){
 
   // check if user has access to service (imap, smtp, pop3, sieve) if service is set
   $row['attributes'] = json_decode($row['attributes'], true);
-  // Shared mailboxes have no login of their own, members open them through group shares
-  if (($row['attributes']['shared'] ?? '0') == '1') {
-    return false;
-  }
-  if ($extra['service'] != 'NONE') {
-    $key = strtolower($extra['service']) . "_access";
-    if (isset($row['attributes'][$key]) && $row['attributes'][$key] != '1') {
-      return false;
+  $key = strtolower($extra['service']) . "_access";
+  // Shared mailboxes have no login of their own, members open them through group shares.
+  // Checked before asking an IdP (no template side effects).
+  if (($row['attributes']['shared'] ?? '0') == '1'
+    || ($extra['service'] != 'NONE' && isset($row['attributes'][$key]) && $row['attributes'][$key] != '1')
+    || $row['active'] != '1' || $row['d_active'] != '1') {
+    // Denied, not failed, unless the password is wrong; IdP passwords are not checked for that
+    if ($row['authsource'] != 'mailcow' || verify_hash($row['password'], $pass) !== false) {
+      $denied = true;
     }
-  }
-  // IdP accounts: refuse inactive mailboxes and domains before asking the IdP (no template side effects)
-  if ($row['authsource'] != 'mailcow' && ($row['active'] != '1' || $row['d_active'] != '1')) {
     return false;
   }
   switch ($row['authsource']) {
@@ -303,6 +307,7 @@ function user_login($user, $pass, $extra = null){
           $stmt->execute(array(':user' => $user));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           if (empty($row)) {
+            $denied = true;
             return false;
           }
 
@@ -361,6 +366,7 @@ function user_login($user, $pass, $extra = null){
         $stmt->execute(array(':user' => $user));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($row)) {
+          $denied = true;
           return false;
         }
 
@@ -403,9 +409,6 @@ function user_login($user, $pass, $extra = null){
       return $result;
     break;
     case 'mailcow':
-      if ($row['active'] != 1 || $row['d_active'] != 1) {
-        return false;
-      }
       // verify password
       if (verify_hash($row['password'], $pass) !== false) {
 
@@ -446,13 +449,15 @@ function user_login($user, $pass, $extra = null){
           }
           return "user";
         }
+        // TFA accounts use app passwords in mail clients
+        $denied = true;
       }
     break;
   }
 
   return false;
 }
-function apppass_login($user, $pass, $extra = null){
+function apppass_login($user, $pass, $extra = null, &$denied = false){
   global $pdo;
 
   $is_internal = $extra['is_internal'];
@@ -473,15 +478,12 @@ function apppass_login($user, $pass, $extra = null){
     return false;
   }
 
-  // fetch app password data
-  $stmt = $pdo->prepare("SELECT `app_passwd`.*, `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id` FROM `app_passwd`
+  // fetch app password data, inactive ones too: their right password is denied, not failed
+  $stmt = $pdo->prepare("SELECT `app_passwd`.*, `app_passwd`.`password` as `password`, `app_passwd`.`id` as `app_passwd_id`,
+    `mailbox`.`active` as `mailbox_active`, `domain`.`active` as `domain_active`, `mailbox`.`attributes` as `mailbox_attributes` FROM `app_passwd`
     INNER JOIN `mailbox` ON `mailbox`.`username` = `app_passwd`.`mailbox`
     INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
     WHERE `mailbox`.`kind` NOT REGEXP 'location|thing|group'
-      AND `mailbox`.`active` = '1'
-      AND `domain`.`active` = '1'
-      AND `app_passwd`.`active` = '1'
-      AND COALESCE(JSON_UNQUOTE(JSON_VALUE(`mailbox`.`attributes`, '$.shared')), '0') != '1'
       AND `app_passwd`.`mailbox` = :user"
   );
   // fetch password data
@@ -491,16 +493,23 @@ function apppass_login($user, $pass, $extra = null){
   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   foreach ($rows as $row) {
-    if ($extra['service'] != 'NONE' && $row[strtolower($extra['service']) . '_access'] != '1'){
+    // verify password
+    if (verify_hash($row['password'], $pass) === false) {
       continue;
     }
 
-    // verify password
-    if (verify_hash($row['password'], $pass) !== false) {
-      $_SESSION['app_passwd_id'] = $row['app_passwd_id'];
-      unset($_SESSION['ldelay']);
-      return "user";
+    $mailbox_attributes = json_decode($row['mailbox_attributes'], true);
+    if ($row['active'] != '1' || $row['mailbox_active'] != '1' || $row['domain_active'] != '1'
+      || ($mailbox_attributes['shared'] ?? '0') == '1'
+      || ($extra['service'] != 'NONE' && $row[strtolower($extra['service']) . '_access'] != '1')) {
+      // right password, but the app password does not allow this login
+      $denied = true;
+      continue;
     }
+
+    $_SESSION['app_passwd_id'] = $row['app_passwd_id'];
+    unset($_SESSION['ldelay']);
+    return "user";
   }
 
   return false;

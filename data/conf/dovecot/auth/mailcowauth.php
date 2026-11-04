@@ -71,6 +71,8 @@ $isSOGoRequest = $post['real_rip'] == getenv('IPV4_NETWORK') . '.248';
 // real_rip is the address that connected to Dovecot (for proxied connections the proxy), client_ip the client (for logs)
 $client_ip = filter_var($post['client_ip'] ?? '', FILTER_VALIDATE_IP) ? $post['client_ip'] : $post['real_rip'];
 $result = false;
+// set when the password is right, but the account does not allow this login
+$denied = false;
 if ($isSOGoRequest) {
   // This is a SOGo Auth request. First check for SSO password.
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
@@ -93,7 +95,7 @@ if ($result === false){
     'service' => $post['service'],
     'is_internal' => true,
     'remote_addr' => $post['real_rip']
-  ));
+  ), $denied);
   if ($result) {
     error_log('MAILCOWAUTH: App auth for user ' . $post['username'] . " with service " . $service . " from IP " . $client_ip);
     set_sasl_log($post['username'], $client_ip, $service);
@@ -104,7 +106,7 @@ if ($result === false){
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');
   try {
-    $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']));
+    $result = user_login($post['username'], $post['password'], array('is_internal' => true, 'service' => $post['service']), $denied);
   } catch (\Mailcow\Auth\IdpUnavailable $e) {
     // temporary failure for Dovecot, no failed login
     error_log("MAILCOWAUTH: Identity provider unavailable for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $client_ip . ": " . $e->getMessage());
@@ -122,6 +124,10 @@ if ($result === false){
 if ($result) {
   http_response_code(200); // OK
   $return['success'] = true;
+} elseif ($denied) {
+  // Logged, but no failed login for netfilter: e.g. a client of a shared mailbox or without IMAP access
+  error_log("MAILCOWAUTH: Login denied for user " . $post['username'] . " with service " . $service . " from IP " . $client_ip);
+  http_response_code(401); // Unauthorized
 } else {
   // Same line for the log and netfilter, which counts it for IMAP, POP3, Sieve and SMTP (Postfix asks Dovecot);
   // SOGo logins have their own rule
