@@ -142,6 +142,27 @@ class CustomParamsTest extends TestCase
         CustomParams::toJson([['o' => '--tests', 'v' => '']], $allowlist);
     }
 
+    public function testCodeExecutingOptionsAreBlocked(): void
+    {
+        // imapsync evaluates these values as Perl code (eval) or runs them as commands
+        foreach (['delete2foldersbutnot', 'delete2foldersonly', 'maxlinelengthcmd', 'oauthrefreshcmd1', 'oauthrefreshcmd2',
+            'pipemess', 'regexflag', 'regexmess', 'regextrans2', 'skipmess'] as $option) {
+            $this->assertContains($option, CustomParams::BLOCKED);
+        }
+    }
+
+    public function testRunnerBlocksTheSameOptions(): void
+    {
+        $runner = file_get_contents(__DIR__ . '/../../../../data/Dockerfiles/dovecot/imapsync_runner.py');
+        $this->assertSame(1, preg_match('/^blocked_params = \{(.*?)\}/ms', $runner, $m));
+        preg_match_all("/'([a-z0-9]+)'/", $m[1], $options);
+        $runnerBlocked = $options[1];
+        $blocked = CustomParams::BLOCKED;
+        sort($runnerBlocked);
+        sort($blocked);
+        $this->assertSame($blocked, $runnerBlocked);
+    }
+
     public function testOldWhitelistFormatIsIgnored(): void
     {
         $errorLog = ini_set('error_log', '/dev/null');

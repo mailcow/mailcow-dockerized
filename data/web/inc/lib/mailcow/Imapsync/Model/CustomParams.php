@@ -26,7 +26,7 @@ class CustomParams
      */
     public const BLOCKED = ['abort', 'delete2foldersbutnot', 'delete2foldersonly', 'logdir', 'logfile', 'maxlinelengthcmd',
         'oauthrefreshcmd1', 'oauthrefreshcmd2', 'passfile1', 'passfile2', 'pidfile', 'pipemess', 'regexflag', 'regexmess',
-        'regextrans2', 'showpasswords', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'];
+        'regextrans2', 'showpasswords', 'skipmess', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'];
 
     private static bool $warnedOldFormat = false;
 

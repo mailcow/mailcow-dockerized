@@ -23,7 +23,7 @@ token_min_valid = 900
 # Custom params never passed, also when stored before (same list as CustomParams::BLOCKED in the web UI)
 blocked_params = {'abort', 'delete2foldersbutnot', 'delete2foldersonly', 'logdir', 'logfile', 'maxlinelengthcmd',
   'oauthrefreshcmd1', 'oauthrefreshcmd2', 'passfile1', 'passfile2', 'pidfile', 'pipemess', 'regexflag', 'regexmess',
-  'regextrans2', 'showpasswords', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'}
+  'regextrans2', 'showpasswords', 'skipmess', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'}
 # imapsync only gets these variables, not the secrets of the container environment
 job_env_keys = ('PATH', 'LANG', 'LC_ALL', 'TZ')
 # A source must not point to mailcow itself (internal Docker network), host1 is checked before each run
