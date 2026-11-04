@@ -207,7 +207,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.12-2
+      image: ghcr.io/mailcow/sogo:5.12.13-1
       environment:
         - *db_version
         - DBNAME=${DBNAME}
