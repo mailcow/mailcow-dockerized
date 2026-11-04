@@ -967,7 +967,7 @@
         "idp_ref": "IdP group",
         "imap_grants": "Mailbox access",
         "imap_grants_hint": "Members open these mailboxes in their mail client (folder Shared/<mailbox>). Read: read and mark as read. Write: also file, move and delete mails. Full access: also delete folders. For team mailboxes without a login of their own, mark the mailbox as shared mailbox.",
-        "info": "Groups bundle mailboxes. A group can have its own address: an alias that delivers to all members automatically (in Exchange: distribution list). Members can send as other addresses, access shared mailboxes, calendars and address books and get a mailbox template. Members synced from the identity provider are marked IdP.",
+        "info": "Groups bundle mailboxes. A group can have its own address: an alias that delivers to all members automatically. Members can send as other addresses, access shared mailboxes, calendars and address books and get a mailbox template. Members synced from the identity provider are marked IdP.",
         "internal": "Only accept mail from senders of the domain",
         "list_error": "Groups could not be loaded",
         "managed_alias": "Managed by group %s",

@@ -967,7 +967,7 @@
         "idp_ref": "IdP-Gruppe",
         "imap_grants": "Postfachzugriff",
         "imap_grants_hint": "Mitglieder öffnen diese Mailboxen in ihrem Mailprogramm (Ordner Shared/<mailbox>). Lesen: lesen und als gelesen markieren. Schreiben: zusätzlich ablegen, verschieben und löschen. Vollzugriff: zusätzlich Ordner löschen. Team-Postfächer ohne eigenen Login als geteiltes Postfach markieren.",
-        "info": "Gruppen bündeln Postfächer. Eine Gruppe kann eine eigene Adresse haben: ein Alias, der automatisch an alle Mitglieder zustellt (in Exchange: Verteilerliste). Mitglieder können als andere Adressen senden, auf freigegebene Postfächer, Kalender und Adressbücher zugreifen und ein Postfach-Template erhalten. Vom Identity Provider synchronisierte Mitglieder sind mit IdP markiert.",
+        "info": "Gruppen bündeln Postfächer. Eine Gruppe kann eine eigene Adresse haben: ein Alias, der automatisch an alle Mitglieder zustellt. Mitglieder können als andere Adressen senden, auf freigegebene Postfächer, Kalender und Adressbücher zugreifen und ein Postfach-Template erhalten. Vom Identity Provider synchronisierte Mitglieder sind mit IdP markiert.",
         "internal": "Nur Mails von Absendern der Domain annehmen",
         "list_error": "Gruppen konnten nicht geladen werden",
         "managed_alias": "Wird von Gruppe %s verwaltet",
