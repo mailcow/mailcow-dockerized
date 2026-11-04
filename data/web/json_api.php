@@ -105,9 +105,28 @@ if (isset($_GET['query'])) {
     'msg' => 'Cannot find attributes in post data'
   ));
 
+  // A login with pending 2FA setup or password update may only use the calls of these steps
+  if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+    if (!empty($_SESSION['pending_tfa_setup'])) {
+      $pending_allowed = array('get/passwordpolicy', 'get/webauthn-tfa-registration', 'add/webauthn-tfa-registration');
+    }
+    else {
+      // the WebAuthn login of a TFA account comes before the password update
+      $pending_allowed = array('get/passwordpolicy', 'get/webauthn-tfa-get-args', 'edit/self', 'edit/admin');
+    }
+    if (!in_array($action . '/' . $category, $pending_allowed)) {
+      http_response_code(403);
+      echo json_encode(array(
+        'type' => 'error',
+        'msg' => 'API access denied until the pending account setup is finished'
+      ));
+      exit();
+    }
+  }
+
   switch ($action) {
     case "add":
-      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
+      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
             'type' => 'error',

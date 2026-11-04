@@ -60,6 +60,7 @@ adapt_new_options() {
   "ACME_DNS_CHALLENGE"
   "ACME_DNS_PROVIDER"
   "ACME_ACCOUNT_EMAIL"
+  "NGINX_MAX_BODY_SIZE"
   )
 
   sed -i --follow-symlinks '$a\' mailcow.conf
@@ -308,6 +309,11 @@ adapt_new_options() {
         ACME_ACCOUNT_EMAIL)
             echo '# Account email for ACME DNS-01 challenge registration' >> mailcow.conf
             echo 'ACME_ACCOUNT_EMAIL=me@example.com' >> mailcow.conf
+            ;;
+        NGINX_MAX_BODY_SIZE)
+            echo '# Maximum request size for SOGo webmail, CalDAV/CardDAV and ActiveSync, e.g. 128m or 1g - 0 means unlimited' >> mailcow.conf
+            echo '# Keep it above the message size limit of Postfix (100 MB by default). The mailcow UI and API stay limited to 64m.' >> mailcow.conf
+            echo 'NGINX_MAX_BODY_SIZE=128m' >> mailcow.conf
             ;;
         *)
             echo "${option}=" >> mailcow.conf

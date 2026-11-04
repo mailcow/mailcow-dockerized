@@ -12,11 +12,6 @@ $session_var_pass = 'sogo-sso-pass';
 // external clients can never supply it (bare fastcgi param, not an HTTP header)
 $is_internal_auth = (($_SERVER['SOGO_AUTH_INTERNAL'] ?? '') === '1');
 
-// the loopback is no client: use the client of the original request for logs, netfilter and API IP checks
-if ($is_internal_auth && filter_var($_SERVER['SOGO_AUTH_CLIENT_IP'] ?? '', FILTER_VALIDATE_IP)) {
-  $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'] = $_SERVER['SOGO_AUTH_CLIENT_IP'];
-}
-
 // validate credentials for basic auth requests
 if ($is_internal_auth && isset($_SERVER['PHP_AUTH_USER'])) {
   // load prerequisites only when required

@@ -428,7 +428,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.6-1
+      image: ghcr.io/mailcow/nginx:1.30.6-2
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -448,6 +448,7 @@ services:
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+        - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-128m}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z

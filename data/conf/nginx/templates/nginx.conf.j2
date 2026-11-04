@@ -47,10 +47,11 @@ http {
         default "";
     }
 
-    # client of an internal auth request, X-Real-IP is set by /sogo-auth-verify
-    map $server_port $sogo_auth_client_ip {
-        65510   $http_x_real_ip;
-        default "";
+    # Client address for PHP: on the internal sogo-auth listener nginx itself is the client,
+    # the real address comes from the X-Real-IP header set by /sogo-auth-verify
+    map $sogo_auth_internal $mailcow_client_ip {
+        "1"     $http_x_real_ip;
+        default $remote_addr;
     }
 
     {% if HTTP_REDIRECT %}
