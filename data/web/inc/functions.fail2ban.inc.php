@@ -145,6 +145,28 @@ function fail2ban($_action, $_data = null, $_extra = null) {
           );
           return true;
         }
+        // Queue all automatic bans for unbanning, the denylist stays
+        elseif ($_data['action'] == "unban-all") {
+          try {
+            foreach ($redis->hKeys('F2B_ACTIVE_BANS') as $network) {
+              $redis->hSet('F2B_QUEUE_UNBAN', $network, 1);
+            }
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_data_log),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'f2b_modified'
+          );
+          return true;
+        }
 
         // Start actions in dependency of network
         if (!empty($_data['network'])) {
