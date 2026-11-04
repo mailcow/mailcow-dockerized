@@ -535,7 +535,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.12
+      image: ghcr.io/mailcow/watchdog:2.13
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -553,6 +553,7 @@ services:
         - acme-mailcow
         - redis-mailcow
       environment:
+        - *db_version
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
