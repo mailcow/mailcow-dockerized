@@ -17,7 +17,7 @@
     <template id="{{ id }}_template">
       {% include 'edit/mailbox-group-grant.twig' with {'kind': kind, 'grant': {}} %}
     </template>
-    <button class="btn btn-sm btn-secondary group-grant-add" data-table="{{ id }}"><i class="bi bi-plus-lg"></i> {{ lang.groups.grant_add }}</button>
+    <button type="button" class="btn btn-sm btn-secondary group-grant-add" data-table="{{ id }}"><i class="bi bi-plus-lg"></i> {{ lang.groups.grant_add }}</button>
     {% endif %}
     <small class="text-muted d-block">{{ attribute(lang.groups, field ~ '_hint') }}</small>
   </div>

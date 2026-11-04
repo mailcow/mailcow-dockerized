@@ -194,13 +194,13 @@ services:
         ofelia.enabled: "true"
         ofelia.job-exec.phpfpm_identity_sync.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_identity_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_identity_sync.command: "/bin/bash -c \"php /crons/identity-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_identity_sync.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/identity-sync.php || exit 0\""
         ofelia.job-exec.phpfpm_group_grants.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_group_grants.no-overlap: "true"
-        ofelia.job-exec.phpfpm_group_grants.command: "/bin/bash -c \"php /crons/group-grants.php || exit 0\""
+        ofelia.job-exec.phpfpm_group_grants.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/group-grants.php || exit 0\""
         ofelia.job-exec.phpfpm_imapsync_oauth_refresh.schedule: "0 * * * * *"
         ofelia.job-exec.phpfpm_imapsync_oauth_refresh.no-overlap: "true"
-        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.command: "/bin/bash -c \"php /crons/imapsync-oauth-refresh.php || exit 0\""
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/imapsync-oauth-refresh.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
