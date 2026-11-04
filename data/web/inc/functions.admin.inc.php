@@ -74,6 +74,15 @@ function admin($_action, $_data = null) {
         $usernames = $_data['username'];
       }
       foreach ($usernames as $username) {
+        // A pending password update only allows changing the own password
+        if (!empty($_SESSION['pending_pw_update']) && $username != $_SESSION['mailcow_cc_username']) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          );
+          continue;
+        }
         $is_now = admin('details', $username);
         if (!empty($is_now)) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];

@@ -19,6 +19,14 @@ class CustomParams
 {
     private const MAX_PAIRS = 100;
     private const MAX_VALUE_LENGTH = 1000;
+    /**
+     * Never allowed, even when configured: code or command execution, local files, the environment
+     * of the container (tests*), passwords in the output and stopping other runs (abort).
+     * The runner (dovecot/imapsync_runner.py) skips the same options.
+     */
+    public const BLOCKED = ['abort', 'delete2foldersbutnot', 'delete2foldersonly', 'logdir', 'logfile', 'maxlinelengthcmd',
+        'oauthrefreshcmd1', 'oauthrefreshcmd2', 'passfile1', 'passfile2', 'pidfile', 'pipemess', 'regexflag', 'regexmess',
+        'regextrans2', 'showpasswords', 'skipmess', 'tests', 'testsdebug', 'testslive', 'testslive6', 'testsunit', 'tmpdir'];
 
     private static bool $warnedOldFormat = false;
 
@@ -57,7 +65,7 @@ class CustomParams
 
     /**
      * The effective allowlist: $IMAPSYNC_OPTIONS (after vars.local.inc.php) without the old
-     * 'whitelist' key and malformed entries; the defaults when nothing valid is left.
+     * 'whitelist' key, malformed entries and BLOCKED options; the defaults when nothing valid is left.
      */
     public static function allowlist(array $configured, array $defaults): array
     {
@@ -73,7 +81,7 @@ class CustomParams
             self::$warnedOldFormat = true;
             error_log("mailcow: \$IMAPSYNC_OPTIONS['whitelist'] (old format) is ignored, use 'option' => true|false|'regex' (see data/web/inc/vars.inc.php)");
         }
-        return empty($allowlist) ? $defaults : $allowlist;
+        return array_diff_key(empty($allowlist) ? $defaults : $allowlist, array_flip(self::BLOCKED));
     }
 
     /** The value to store for one option; throws when the allowlist rule is violated */

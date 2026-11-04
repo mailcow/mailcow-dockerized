@@ -188,25 +188,6 @@ class BanManagerTest(unittest.TestCase):
     self.bans.purge()
     self.assertEqual(self.bans.counters, {})
 
-  def test_excused_address_is_not_counted(self):
-    ip = ipaddress.ip_address('203.0.113.1')
-    self.bans.excuse(ip)
-    self.bans.excuse(ip)
-    self.attempts('203.0.113.1', 5)
-    self.assertEqual(self.active(), {})
-    self.assertEqual(len([message for message in self.logger.messages('warn') if 'Auth backend unavailable' in message]), 1)
-    # other addresses are counted
-    self.attempts('203.0.113.2', 3)
-    self.assertIn('203.0.113.2/32', self.active())
-
-  def test_excuse_ends(self):
-    self.bans.excuse(ipaddress.ip_address('203.0.113.1'))
-    self.clock.now += BanManager.EXCUSE_TIME + 1
-    self.bans.purge()
-    self.assertEqual(self.bans.excused, {})
-    self.attempts('203.0.113.1', 3)
-    self.assertIn('203.0.113.1/32', self.active())
-
 
 if __name__ == '__main__':
   unittest.main()

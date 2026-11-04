@@ -301,6 +301,31 @@ class GroupServiceTest extends TestCase
         $this->assertTrue($this->service(self::admin())->canEdit($group));
     }
 
+    public function testRemovedGrantsCountUntilDovecotDroppedThem(): void
+    {
+        $group = self::stored();
+        $group->removingImapOwners = ['c@other.org'];
+
+        $this->assertFalse($this->service(self::domainAdmin())->canEdit($group));
+        $this->assertTrue($this->service(self::admin())->canEdit($group));
+    }
+
+    public function testDomainAdminChangesOnlyApplyTemplatesInHisDomains(): void
+    {
+        $this->repo->method('findVisible')->willReturn(self::stored([], ['a@example.org' => 'manual', 'c@other.org' => 'manual']));
+        $this->repo->method('update')->willReturn([]);
+        $this->repo->method('delete')->willReturn([]);
+        $effects = $this->createMock(ChangeEffects::class);
+        $effects->method('apply')->willReturn([]);
+        // before and after lists of update() may repeat a member, only the set counts
+        $effects->expects($this->exactly(2))->method('snapshot')
+            ->with($this->callback(fn(array $usernames): bool => array_values(array_unique($usernames)) === ['a@example.org']))->willReturn([]);
+        $service = new GroupService($this->repo, $this->lookup, $this->templates, $effects, $this->sharing, self::domainAdmin());
+
+        $service->update(7, ['active' => 0]);
+        $service->delete(7);
+    }
+
     public function testDeleteRemovesTheImapAclsFirst(): void
     {
         $group = self::stored();
@@ -346,13 +371,16 @@ class GroupServiceTest extends TestCase
 
     public function testMembershipsAreVisibleToTheMailboxAndItsManagers(): void
     {
-        $this->lookup->method('membershipsOf')->willReturn([['id' => 7, 'name' => 'Sales']]);
+        $sales = ['id' => 7, 'domain' => 'example.org', 'name' => 'Sales'];
+        $foreign = ['id' => 8, 'domain' => 'other.org', 'name' => 'Other'];
+        $this->lookup->method('membershipsOf')->willReturn([$sales, $foreign]);
         $this->lookup->method('sendAsOf')->willReturn(['sales@example.org']);
         $this->templates->method('effective')->willReturn(['a@example.org' => 'Staff']);
-        $expected = ['groups' => [['id' => 7, 'name' => 'Sales']], 'template' => 'Staff', 'send_as' => ['sales@example.org']];
+        $expected = ['groups' => [$sales, $foreign], 'template' => 'Staff', 'send_as' => ['sales@example.org']];
 
         $this->assertSame($expected, $this->service(FakeContext::user('a@example.org', []))->membershipsOf('A@example.org'));
-        $this->assertSame($expected, $this->service(self::domainAdmin())->membershipsOf('a@example.org'));
+        // Groups of other domains stay hidden from a domain admin
+        $this->assertSame(['groups' => [$sales]] + $expected, $this->service(self::domainAdmin())->membershipsOf('a@example.org'));
         $this->assertSame([], $this->service(FakeContext::user('b@example.org', []))->membershipsOf('a@example.org'));
         $this->assertSame([], $this->service(self::domainAdmin())->membershipsOf('c@other.org'));
     }

@@ -19,8 +19,10 @@ if ($iam_provider){
       header('Location: ' . $redirect_uri);
       die();
     }
-  } elseif ($_GET['code'] && $_GET['state'] === $_SESSION['oauth2state']) {
-    // Check given state against previously stored one to mitigate CSRF attack
+  } elseif (!empty($_GET['code']) && !empty($_SESSION['oauth2state']) && is_string($_GET['state'] ?? null)
+    && hash_equals((string)$_SESSION['oauth2state'], $_GET['state'])) {
+    // Check given state against previously stored one to mitigate CSRF attack, a state is used once
+    unset($_SESSION['oauth2state']);
     // Received access token in $_GET['code']
     // extract info and verify user
     identity_provider('verify-sso');

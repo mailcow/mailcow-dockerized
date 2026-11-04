@@ -169,6 +169,12 @@ $SESSION_NAME = "MCSESSID";
 // Label for OTP devices
 $OTP_LABEL = "mailcow UI";
 
+// Failed second factor logins (TOTP, Yubico OTP, WebAuthn) of an account before its second factor is locked
+$TFA_MAX_FAILS = 10;
+
+// Time (in s) from the first failed second factor login until the counter and the lock are reset
+$TFA_FAIL_WINDOW = 900;
+
 // How long to wait (in s) for cURL Docker requests
 $DOCKER_TIMEOUT = 60;
 
@@ -291,13 +297,13 @@ $RSPAMD_MAPS = array(
 //   true   = option requires a non-empty value
 //   false  = pure flag, must NOT have a value
 //   string = PCRE (no delimiters) the whole non-empty value must match
-// Anything not listed here is rejected when a job is saved (the runner passes stored options as they are).
+// Anything not listed here is rejected when a job is saved; the runner passes stored options as they are, except the blocked ones below.
 // Override in vars.local.inc.php per option, e.g. $IMAPSYNC_OPTIONS['someoption'] = true; or unset($IMAPSYNC_OPTIONS['debug']);
 // The old format $IMAPSYNC_OPTIONS['whitelist'] (list of names) is no longer supported and ignored (logged).
 // NEVER add (RCE): 'delete2foldersonly', 'delete2foldersbutnot', 'regexflag', 'regexmess', 'pipemess', 'regextrans2', 'maxlinelengthcmd', 'oauthrefreshcmd1', 'oauthrefreshcmd2'
 // NEVER add options taking local file paths (e.g. 'logfile', 'logdir', 'pidfile', 'passfile1', 'sslargs1' with SSL_ca_file)
+// These, the tests* options (print the environment), 'showpasswords' and 'abort' (stops other runs) are also blocked in code
 $IMAPSYNC_OPTIONS_DEFAULT = array(
-  'abort'                  => false,
   'authmd51'               => false,
   'authuser1'              => true,
   'debug'                  => false,
@@ -373,9 +379,6 @@ $IMAPSYNC_OPTIONS_DEFAULT = array(
   'syncduplicates'         => false,
   'syncinternaldates'      => false,
   'synclabels'             => false,
-  'tests'                  => false,
-  'testslive'              => false,
-  'testslive6'             => false,
   'truncmess'              => true,
   'usecache'               => false,
   'useheader'              => true,

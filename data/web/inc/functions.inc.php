@@ -1857,6 +1857,40 @@ function get_tfa($username = null, $id = null) {
     }
 }
 function verify_tfa_login($username, $_data) {
+  global $redis;
+  global $TFA_MAX_FAILS;
+  global $TFA_FAIL_WINDOW;
+
+  if (empty($username)) {
+    return false;
+  }
+  // Count failed second factors per account, so codes cannot be guessed from many addresses
+  $fails_key = 'TFA_FAILS_' . $username;
+  if (intval($redis->get($fails_key)) >= $TFA_MAX_FAILS) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $username, '*'),
+      'msg' => 'tfa_login_locked'
+    );
+    $verified = false;
+  }
+  else {
+    $verified = verify_tfa_token($username, $_data);
+  }
+  if ($verified !== true) {
+    // The window starts with the first failure and is not extended by further attempts
+    if ($redis->incr($fails_key) == 1) {
+      $redis->expire($fails_key, $TFA_FAIL_WINDOW);
+    }
+    // Same message format as failed passwords, so the default fail2ban rule counts it
+    error_log("mailcow UI: Invalid password for " . $username . " (second factor) by " . $_SERVER['REMOTE_ADDR']);
+    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $username . " (second factor) by " . $_SERVER['REMOTE_ADDR']);
+    return false;
+  }
+  $redis->del($fails_key);
+  return true;
+}
+function verify_tfa_token($username, $_data) {
   global $pdo;
   global $yubi;
   global $u2f;
@@ -3008,6 +3042,18 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_SESSION['return'][] =  array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+
+      // A refresh keeps the logged-in mailbox: a changed IdP email or another IdP user ends the session
+      if (strtolower($info['email']) !== strtolower($_SESSION['mailcow_cc_username'] ?? '') ||
+        !\Mailcow\Auth\AuthModule::fromGlobals()->idp->verifyLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'The IdP user does not match the logged-in mailbox'),
           'msg' => 'refresh_login_failed'
         );
         return false;

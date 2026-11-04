@@ -29,6 +29,7 @@ class Source
     public string $host = '';
     public int $port = 0;
     public ?string $enc = 'TLS';
+    public int $verifyCert = 1;
     public ?string $authType = 'PLAIN';
     public string $oauthFlow = self::FLOW_CLIENT_CREDENTIALS;
     public ?string $tokenEndpoint = null;
@@ -65,6 +66,7 @@ class Source
         $source->scope = (string)($row['scope'] ?? 'user');
         $source->host = (string)($row['host1'] ?? '');
         $source->port = (int)($row['port1'] ?? 0);
+        $source->verifyCert = (int)($row['verify_cert'] ?? 1);
         $source->oauthFlow = (string)($row['oauth_flow'] ?? self::FLOW_CLIENT_CREDENTIALS);
         $source->tokenExpires = isset($row['oauth_token_expires']) ? (int)$row['oauth_token_expires'] : null;
         $source->refreshAttemptAge = isset($row['refresh_attempt_age']) ? (int)$row['refresh_attempt_age'] : null;
@@ -112,6 +114,7 @@ class Source
             'host1' => $this->host,
             'port1' => $this->port,
             'enc1' => $this->enc,
+            'verify_cert' => $this->verifyCert,
             'auth_type' => $this->authType,
             'oauth_flow' => $this->oauthFlow,
             'oauth_token_endpoint' => $this->tokenEndpoint,

@@ -501,6 +501,8 @@ class GroupRepository extends Repository
         $group->imapGrants = array_map(fn(array $grant): array => array_merge($grant, ['subscribe' => (int)$grant['subscribe']]),
             $this->query("SELECT `owner`, `rights`, `subscribe`, `state`, `last_error` FROM `mailbox_group_imap_grant`
               WHERE `group_id` = :id AND `state` != 'removing' ORDER BY `owner`", $id)->fetchAll(PDO::FETCH_ASSOC));
+        $group->removingImapOwners = $this->query("SELECT `owner` FROM `mailbox_group_imap_grant` WHERE `group_id` = :id AND `state` = 'removing'",
+            $id)->fetchAll(PDO::FETCH_COLUMN);
         $group->sogoGrants = array_map(fn(array $grant): array => array_merge($grant, ['subscribe' => (int)$grant['subscribe']]),
             $this->query("SELECT `owner`, `folder_type` AS `type`, `folder`, `access`, `subscribe`, `state`, `last_error`
               FROM `mailbox_group_sogo_grant` WHERE `group_id` = :id ORDER BY `owner`, `folder_type`, `folder`", $id)->fetchAll(PDO::FETCH_ASSOC));
