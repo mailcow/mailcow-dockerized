@@ -227,7 +227,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     if (isset($_GET['syncjob']) &&
       is_numeric($_GET['syncjob'])) {
         $id = $_GET["syncjob"];
-        $result = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getJob($id);
+        // Without the syncjobs ACL a job cannot be saved, so do not show the form
+        $result = (($_SESSION['acl']['syncjobs'] ?? '0') == '1') ? \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getJob($id) : [];
         $template = 'edit/syncjob.twig';
       }
     elseif (isset($_GET['syncjob_source']) &&

@@ -7,9 +7,6 @@ class BanManager:
   and the allowlist. Every firewall change runs under lock, which also guards the other firewall work of netfilter
   (chains, SNAT), because the backends must not run in parallel."""
 
-  # Seconds failed logins of an address are not counted after the auth backend was unavailable for it
-  EXCUSE_TIME = 60
-
   def __init__(self, r, tables, options, logger, lock, clock=time.time):
     self.r = r
     self.tables = tables
@@ -21,16 +18,6 @@ class BanManager:
     self.banned = set()
     self.denied = {}
     self.allowlist = []
-    self.excused = {}
-
-  def excuse(self, ip):
-    """The auth backend could not check a login of ip: its failed logins are not counted for EXCUSE_TIME"""
-    with self.lock:
-      now = self.clock()
-      if self.excused.get(ip, 0) <= now:
-        self.logger.logWarn('Auth backend unavailable for %s, its failed logins of the next %d seconds are not counted' % (
-          ip, self.EXCUSE_TIME))
-      self.excused[ip] = now + self.EXCUSE_TIME
 
   def attempt(self, ip):
     """Counts a failed attempt of ip and bans its network after max_attempts within retry_window"""
@@ -42,9 +29,6 @@ class BanManager:
       allowed = self.allowed_by(ip)
       if allowed is not None:
         self.logger.logInfo('Address %s is allowlisted by rule %s' % (ip, allowed))
-        return
-      if self.excused.get(ip, 0) > now:
-        self.logger.logInfo('Not counting the failed login of %s, the auth backend was unavailable' % ip)
         return
       if net in self.banned:
         # log lines of connections from before the ban
@@ -208,8 +192,6 @@ class BanManager:
       for net in [net for net, counter in self.counters.items()
                   if net not in self.banned and counter['ban_counter'] == 0 and now - counter['last_attempt'] > window]:
         del self.counters[net]
-      for ip in [ip for ip, until in self.excused.items() if until <= now]:
-        del self.excused[ip]
 
   def apply(self, nets):
     for net in self.tables.ban(nets):

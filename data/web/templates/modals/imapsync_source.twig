@@ -9,6 +9,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" role="form" data-id="add_imapsync_source">
           <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="verify_cert">
           <div class="row mb-3">
             <label class="control-label col-sm-2 text-sm-end">{{ lang.syncjobs.source_presets }}</label>
             <div class="col-sm-10 small">
@@ -97,6 +98,14 @@
                 <option value="TLS">STARTTLS</option>
                 <option value="PLAIN">PLAIN</option>
               </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="verify_cert" checked> {{ lang.syncjobs.source_verify_cert }}</label>
+              </div>
+              <small class="text-muted">{{ lang.syncjobs.source_verify_cert_hint }}</small>
             </div>
           </div>
           <div class="row mb-4">

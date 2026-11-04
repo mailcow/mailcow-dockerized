@@ -121,7 +121,11 @@ class SourceService
         if ($writeTargets) {
             $this->applyScope($source, $input['scope'] ?? $current->scope, $input['domains'] ?? [], $input['users'] ?? []);
         }
-        $this->repo->update($source, $writeTargets, self::connection($current) !== self::connection($source));
+        $connectionChanged = self::connection($current) !== self::connection($source);
+        if ($connectionChanged || ($current->verifyCert && !$source->verifyCert)) {
+            $this->requireAllJobsAccessible($source);
+        }
+        $this->repo->update($source, $writeTargets, $connectionChanged);
         $this->fetchToken($source);
         return $source;
     }
@@ -200,6 +204,24 @@ class SourceService
         return $this->context->hasAcl('syncjobs') || $this->context->isAdmin();
     }
 
+    /**
+     * The connection of a source only changes when the caller may access every mailbox whose sync jobs use it,
+     * their stored passwords would go to the new server.
+     *
+     * @throws UserError imapsync_source_used_by_others
+     */
+    private function requireAllJobsAccessible(Source $source): void
+    {
+        if ($this->context->hasAdminRights()) {
+            return;
+        }
+        foreach ($this->repo->jobMailboxes((int)$source->id) as $mailbox) {
+            if (!$this->context->canAccessMailbox($mailbox)) {
+                throw new UserError('imapsync_source_used_by_others', [htmlspecialchars($source->name)]);
+            }
+        }
+    }
+
     /** @throws AccessDenied when the caller cannot see or edit the source */
     private function editable(int $id): Source
     {
@@ -274,6 +296,7 @@ class SourceService
         $source->host = $host;
         $source->port = $port;
         $source->enc = $enc;
+        $source->verifyCert = isset($input['verify_cert']) ? (int)!empty($input['verify_cert']) : $source->verifyCert;
         $source->authType = $authType;
         $source->active = isset($input['active']) ? (int)$input['active'] : $source->active;
     }

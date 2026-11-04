@@ -109,12 +109,6 @@ class Netfilter:
   def handle_line(self, line):
     # a broken line must not end the watcher
     try:
-      excused = Regexes.temporary_failure(line)
-      if excused is not None:
-        ip = Regexes.parse_ip(excused)
-        if self.external(ip):
-          self.bans.excuse(ip)
-        return
       result = self.regexes.match(line)
       if result is None:
         return

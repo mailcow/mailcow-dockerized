@@ -43,6 +43,19 @@ while ! mariadb-admin status --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u$
   sleep 2
 done
 
+# Wait for the schema update (DB_VERSION) at startup, do not restart them meanwhile.
+DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
+DBV_WAIT=0
+while [[ "${DBV_NOW}" != "${DB_VERSION}" ]] && [[ ${DBV_WAIT} -lt 60 ]]; do
+  echo "Waiting for schema update..."
+  sleep 5
+  DBV_WAIT=$((DBV_WAIT + 1))
+  DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
+done
+if [[ "${DBV_NOW}" != "${DB_VERSION}" ]]; then
+  echo -e "\e[31m$(date) - DB schema is ${DBV_NOW}, expected ${DB_VERSION} - starting checks anyway, check the php-fpm log (init_db)\e[0m"
+fi
+
 # Do not attempt to write to slave
 if [[ ! -z ${REDIS_SLAVEOF_IP} ]]; then
   REDIS_CMDLINE="redis-cli -h ${REDIS_SLAVEOF_IP} -p ${REDIS_SLAVEOF_PORT} -a ${REDISPASS} --no-auth-warning"

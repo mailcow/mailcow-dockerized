@@ -44,6 +44,8 @@ class SyncPlanner
         /** @var array<string, DirectoryUser> $candidates email => user to create, template still open */
         $candidates = [];
         $duplicates = [];
+        /** @var array<string, true> $ambiguous unlinked mailboxes whose email several IdP users have, left as they are */
+        $ambiguous = [];
         foreach ($listing->users as $user) {
             if (isset($owners[$user->id])) {
                 $username = $owners[$user->id];
@@ -55,8 +57,17 @@ class SyncPlanner
                 $plan->skipped++;
             } elseif (isset($state->accounts[$user->email])) {
                 $account = $state->accounts[$user->email];
-                if ($account->externalId !== null || isset($plan->links[$user->email])) {
+                if ($account->externalId !== null) {
                     self::conflict($plan, $user->email . ' is linked to another IdP user');
+                    continue;
+                }
+                if (isset($plan->links[$user->email]) || isset($ambiguous[$user->email])) {
+                    // Which IdP user owns the mailbox is unclear: link none of them
+                    if (!isset($ambiguous[$user->email])) {
+                        self::conflict($plan, 'Several IdP users have the email ' . $user->email);
+                    }
+                    unset($plan->links[$user->email], $matched[$user->email]);
+                    $ambiguous[$user->email] = true;
                     continue;
                 }
                 $plan->links[$user->email] = $user->id;
@@ -85,7 +96,7 @@ class SyncPlanner
         if ($groups !== null) {
             $this->planGroups($settings, $groups, $state, $usernames, $matched, $plan);
         }
-        $this->planStates($settings, $state, $matched, $plan);
+        $this->planStates($settings, $state, $matched, $ambiguous, $plan);
         if ($settings->periodicSync) {
             $this->planUpdates($settings, $state, $matched, $plan);
         }
@@ -211,10 +222,13 @@ class SyncPlanner
     }
 
     /** @param array<string, DirectoryUser> $matched */
-    private function planStates(Settings $settings, State $state, array $matched, SyncPlan $plan): void
+    private function planStates(Settings $settings, State $state, array $matched, array $ambiguous, SyncPlan $plan): void
     {
         foreach ($state->accounts as $username => $account) {
             $username = (string)$username;
+            if (isset($ambiguous[$username])) {
+                continue;
+            }
             $user = $matched[$username] ?? null;
             if ($user === null && $account->missingSince === null) {
                 $plan->missing[] = $username;

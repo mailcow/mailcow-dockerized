@@ -12,6 +12,10 @@ if (!isset($_SESSION['mailcow_cc_role']) || $_SESSION['mailcow_cc_role'] != 'use
   header('Location: index.php?mobileconfig' . $append_get);
   die();
 }
+if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+  header('Location: /');
+  die();
+}
 
 error_reporting(0);
 
@@ -39,7 +43,7 @@ if (isset($_GET['only_email'])) {
   $onlyEmailAccount = false;
   $description = 'IMAP, CalDAV, CardDAV';
 }
-if (isset($_GET['app_password'])) {
+if (isset($_GET['app_password']) && ($_SESSION['acl']['app_passwds'] ?? '0') == '1') {
   $app_password = true;
   $description .= ' with application password';
 
