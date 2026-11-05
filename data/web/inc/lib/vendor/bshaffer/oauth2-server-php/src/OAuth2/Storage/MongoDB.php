@@ -32,6 +32,9 @@ class MongoDB implements AuthorizationCodeInterface,
 
     public function __construct($connection, $config = array())
     {
+        if (!class_exists(Database::class) || !class_exists(Client::class)) {
+            throw new \LogicException('Missing MongoDB php extension. Please install mongodb.so');
+        }
         if ($connection instanceof Database) {
             $this->db = $connection;
         } else {
@@ -167,7 +170,7 @@ class MongoDB implements AuthorizationCodeInterface,
         return is_null($code) ? false : $code;
     }
 
-    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
+    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null)
     {
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
@@ -180,6 +183,8 @@ class MongoDB implements AuthorizationCodeInterface,
                     'expires' => $expires,
                     'scope' => $scope,
                     'id_token' => $id_token,
+                    'code_challenge' => $code_challenge,
+                    'code_challenge_method' => $code_challenge_method,
                 ))
             );
             return $result->getMatchedCount() > 0;
@@ -192,6 +197,8 @@ class MongoDB implements AuthorizationCodeInterface,
             'expires' => $expires,
             'scope' => $scope,
             'id_token' => $id_token,
+            'code_challenge' => $code_challenge,
+            'code_challenge_method' => $code_challenge_method,
         );
         $result = $this->collection('code_table')->insertOne($token);
         return $result->getInsertedCount() > 0;

@@ -35,6 +35,17 @@ class BearerTest extends TestCase
         $this->assertEquals($response->getParameter('error_description'), 'The content type for POST requests must be "application/x-www-form-urlencoded"');
     }
 
+    public function testMissingContentTypeExpectsToBeCorrectContent()
+    {
+        $bearer = new Bearer();
+        $request = TestRequest::createPost(array(
+            'access_token' => 'ThisIsMyAccessToken'
+        ));
+
+        $param = $bearer->getAccessTokenParameter($request, $response = new Response());
+        $this->assertEquals($param, 'ThisIsMyAccessToken');
+    }
+
     public function testValidRequestUsingAuthorizationHeader()
     {
         $bearer = new Bearer();

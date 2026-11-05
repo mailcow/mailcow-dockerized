@@ -19,6 +19,13 @@ interface BasicMessageInterface extends PartInterface
     public function getRawMessage(): string;
 
     /**
+     * Save the raw message, including all headers, parts, etc. unencoded and unparsed to file.
+     *
+     * @param resource|string $file the path to the saved file as a string, or a valid file descriptor
+     */
+    public function saveRawMessage($file): void;
+
+    /**
      * Get message headers.
      */
     public function getHeaders(): Headers;
@@ -109,16 +116,44 @@ interface BasicMessageInterface extends PartInterface
     public function getReferences(): array;
 
     /**
-     * Get body HTML.
+     * Get message parts by type.
+     *
+     * @return string[]
+     */
+    public function getAllContentsBySubtype(string $subtype): array;
+
+    /**
+     * Get first body HTML part.
      *
      * @return null|string Null if message has no HTML message part
      */
     public function getBodyHtml(): ?string;
 
     /**
+     * Get all body HTML parts as array.
+     *
+     * @return string[]
+     */
+    public function getBodyHtmlParts(): array;
+
+    /**
+     * Get all body HTML parts merged into 1 html.
+     *
+     * @return null|string Null if message has no HTML message parts
+     */
+    public function getCompleteBodyHtml(): ?string;
+
+    /**
      * Get body text.
      */
     public function getBodyText(): ?string;
+
+    /**
+     * Get all body PLAIN parts merged into 1 string.
+     *
+     * @return null|string Null if message has no PLAIN message parts
+     */
+    public function getCompleteBodyText(): ?string;
 
     /**
      * Get attachments (if any) linked to this e-mail.

@@ -74,6 +74,15 @@ function admin($_action, $_data = null) {
         $usernames = $_data['username'];
       }
       foreach ($usernames as $username) {
+        // A pending password update only allows changing the own password
+        if (!empty($_SESSION['pending_pw_update']) && $username != $_SESSION['mailcow_cc_username']) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_action, $_data_log),
+            'msg' => 'access_denied'
+          );
+          continue;
+        }
         $is_now = admin('details', $username);
         if (!empty($is_now)) {
           $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
@@ -103,7 +112,7 @@ function admin($_action, $_data = null) {
             continue;
           }
         }
-        if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
+        if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new)) || $username_new == 'API') {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -179,6 +188,9 @@ function admin($_action, $_data = null) {
             $stmt = $pdo->prepare("UPDATE `tfa` SET `username` = :username_new WHERE `username` = :username");
             $stmt->execute(array(':username_new' => $username_new, ':username' => $username));
           }
+          if ($username_new != $username) {
+            \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username, $username_new);
+          }
         }
         $_SESSION['return'][] = array(
           'type' => 'success',
@@ -211,6 +223,7 @@ function admin($_action, $_data = null) {
         $stmt->execute(array(
           ':username' => $username,
         ));
+        \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username);
         $stmt = $pdo->prepare("DELETE FROM `domain_admins` WHERE `username` = :username");
         $stmt->execute(array(
           ':username' => $username,

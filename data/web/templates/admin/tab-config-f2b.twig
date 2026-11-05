@@ -106,6 +106,9 @@
           <button class="btn btn-secondary" type="button" data-action="edit_selected" data-item="{{ f2b_data.banlist_id }}" data-id="f2b_banlist" data-api-url='edit/fail2ban/banlist' data-api-attr='{}'><i class="bi bi-arrow-clockwise"></i></button>
         </div>
       </form>
+      {% if f2b_data.active_bans %}
+      <p><button class="btn btn-sm btn-secondary" data-action="edit_selected" data-item="self" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban-all"}' href="#"><i class="bi bi-unlock"></i> {{ lang.admin.unban_all }}</button></p>
+      {% endif %}
       {% for active_ban in f2b_data.active_bans %}
         <p>
           <span class="badge fs-7 bg-info d-block d-sm-inline-block">
@@ -119,7 +122,7 @@
             {% if active_ban.queued_for_unban == 0 %}
             <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"unban"}' href="#">[{{ lang.admin.queue_unban }}]</a>
             <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"whitelist"}' href="#">[allowlist]</a>
-            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[denylist (<b>{{ lang.admin.needs_restart }}</b>)]</a>
+            <a data-action="edit_selected" data-item="{{ active_ban.network }}" data-id="f2b-quick" data-api-url='edit/fail2ban' data-api-attr='{"action":"blacklist"}' href="#">[denylist]</a>
             {% else %}
             <i>{{ lang.admin.unban_pending }}</i>
             {% endif %}

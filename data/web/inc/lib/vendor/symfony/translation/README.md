@@ -6,8 +6,8 @@ The Translation component provides tools to internationalize your application.
 Getting Started
 ---------------
 
-```
-$ composer require symfony/translation
+```bash
+composer require symfony/translation
 ```
 
 ```php
@@ -26,7 +26,7 @@ echo $translator->trans('Hello World!'); // outputs « Bonjour ! »
 Sponsor
 -------
 
-Help Symfony by [sponsoring][1] its development!
+Help Symfony by [sponsoring][3] its development!
 
 Resources
 ---------
@@ -37,4 +37,4 @@ Resources
    [send Pull Requests](https://github.com/symfony/symfony/pulls)
    in the [main Symfony repository](https://github.com/symfony/symfony)
 
-[1]: https://symfony.com/sponsor
+[3]: https://symfony.com/sponsor

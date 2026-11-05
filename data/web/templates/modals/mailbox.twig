@@ -200,6 +200,14 @@
           <div class="row">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="shared" id="add_mailbox_shared"> {{ lang.mailbox.shared_mailbox }}</label>
+                <small class="text-muted">{{ lang.mailbox.shared_mailbox_info }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="force_pw_update" id="force_pw_update"> {{ lang.edit.force_pw_update }}</label>
                 <small class="text-muted">{{ lang.edit.force_pw_update_info|format(ui_texts.main_name) }}</small>
               </div>
@@ -933,20 +941,20 @@
   </div>
 </div><!-- add domain alias modal -->
 <!-- add sync job modal -->
-<div class="modal fade" id="addSyncJobModalAdmin" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="addSyncJobModalAdmin" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="addSyncJobModalAdminLabel">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">{{ lang.add.syncjob }}</h3>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h3 class="modal-title" id="addSyncJobModalAdminLabel">{{ lang.syncjobs.add }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.footer.cancel }}"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted">{{ lang.add.syncjob_hint }}</p>
+        <p class="text-muted">{{ lang.syncjobs.add_hint }}</p>
         <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_syncjob">
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="username">{{ lang.add.username }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_username">{{ lang.syncjobs.user2_label }}</label>
             <div class="col-sm-10">
-              <select data-live-search="true" name="username" title="{{ lang.add.select }}" required>
+              <select data-live-search="true" id="addsja_username" name="username" title="{{ lang.add.select }}" data-width="100%" required>
                 {% for mailbox in mailboxes %}
                   <option>{{ mailbox }}</option>
                 {% endfor %}
@@ -954,140 +962,142 @@
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="host1">{{ lang.add.hostname }}</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="host1" required>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="port1">{{ lang.add.port }}</label>
-            <div class="col-sm-10">
-              <input type="number" class="form-control" name="port1" min="1" max="65535" value="143" required>
-              <small class="text-muted">1-65535</small>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="user1">{{ lang.add.username }}</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="user1" required>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="password1">{{ lang.add.password }}</label>
-            <div class="col-sm-10">
-              <input type="password" class="form-control" name="password1" required>
-            </div>
-          </div>
-          <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="enc1">{{ lang.add.enc_method }}</label>
-            <div class="col-sm-10">
-              <select name="enc1" title="{{ lang.add.select }}" required>
-                <option value="SSL" selected>SSL</option>
-                <option value="TLS">STARTTLS</option>
-                <option value="PLAIN">PLAIN</option>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_source_id">{{ lang.syncjobs.source_select }}</label>
+            <div class="col-sm-10 imapsync-select-wrap">
+              <select class="imapsync-source-select" id="addsja_source_id" data-live-search="true" data-show-subtext="true" data-width="100%" name="source_id" title="{{ lang.syncjobs.source_select }}" required>
+                {# options are loaded via the API on modal open (js/site/imapsync.js) #}
               </select>
+              <div class="imapsync-no-source d-none mt-2">
+                <small class="text-muted">{{ lang.syncjobs.no_sources }}</small>
+                {% if mailcow_cc_role == 'admin' or acl.syncjobs == 1 %}
+                <button type="button" class="btn btn-sm btn-success ms-2 imapsync-open-source-modal"><i class="bi bi-plus-lg" aria-hidden="true"></i> {{ lang.syncjobs.source_add }}</button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2 imapsync-user1-row">
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_user1">{{ lang.syncjobs.user1_label }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="addsja_user1" name="user1" autocomplete="off" required>
+            </div>
+          </div>
+          <div class="row mb-2 imapsync-oauth-connect-row" style="display:none;">
+            <div class="offset-sm-2 col-sm-10">
+              <button type="button" class="btn btn-sm btn-primary imapsync-oauth-connect-btn"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> {{ lang.syncjobs.syncjob_oauth_connect }}</button>
+              <span class="imapsync-oauth-connect-status ms-2" role="status" aria-live="polite"></span>
+              <div><small class="text-muted">{{ lang.syncjobs.oauth_hint }}</small></div>
+            </div>
+          </div>
+          <div class="row mb-4 password1-row">
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_password1">{{ lang.syncjobs.password1_label }}</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" id="addsja_password1" name="password1" autocomplete="new-password" data-formcache-skip>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="mins_interval">{{ lang.add.mins_interval }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_mins_interval">{{ lang.syncjobs.mins_interval }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="20" required>
+              <input type="number" class="form-control" id="addsja_mins_interval" name="mins_interval" min="1" max="43800" value="20" required>
               <small class="text-muted">1-43800</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="subfolder2">{{ lang.edit.subfolder2|raw }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_subfolder2">{{ lang.syncjobs.subfolder2|raw }}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="subfolder2" value="">
+              <input type="text" class="form-control" id="addsja_subfolder2" name="subfolder2" value="">
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="maxage">{{ lang.edit.maxage|raw }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_maxage">{{ lang.syncjobs.maxage|raw }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="maxage" min="0" max="32000" value="0">
+              <input type="number" class="form-control" id="addsja_maxage" name="maxage" min="0" max="32000" value="0">
               <small class="text-muted">0-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="maxbytespersecond">{{ lang.edit.maxbytespersecond|raw }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_maxbytespersecond">{{ lang.syncjobs.maxbytespersecond|raw }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="maxbytespersecond" min="0" max="125000000" value="0">
+              <input type="number" class="form-control" id="addsja_maxbytespersecond" name="maxbytespersecond" min="0" max="125000000" value="0">
               <small class="text-muted">0-125000000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="timeout1">{{ lang.edit.timeout1 }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_timeout1">{{ lang.syncjobs.timeout1 }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="timeout1" min="1" max="32000" value="600">
+              <input type="number" class="form-control" id="addsja_timeout1" name="timeout1" min="1" max="32000" value="600">
               <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="timeout2">{{ lang.edit.timeout2 }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_timeout2">{{ lang.syncjobs.timeout2 }}</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="timeout2" min="1" max="32000" value="600">
+              <input type="number" class="form-control" id="addsja_timeout2" name="timeout2" min="1" max="32000" value="600">
               <small class="text-muted">1-32000</small>
             </div>
           </div>
           <div class="row mb-2">
-            <label class="control-label col-sm-2 text-sm-end" for="exclude">{{ lang.add.exclude }}</label>
+            <label class="control-label col-sm-2 text-sm-end" for="addsja_exclude">{{ lang.syncjobs.exclude }}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="exclude" value="(?i)spam|(?i)junk">
+              <input type="text" class="form-control" id="addsja_exclude" name="exclude" value="(?i)spam|(?i)junk">
             </div>
           </div>
           <div class="row mb-4">
-            <label class="control-label col-sm-2 text-sm-end" for="custom_params">{{ lang.add.custom_params }}</label>
+            <label class="control-label col-sm-2 text-sm-end" id="addsja_custom_params_label">{{ lang.syncjobs.custom_params }}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="custom_params" placeholder="--some-param=xy --other-param=yx">
-              <small class="text-muted">{{ lang.add.custom_params_hint }}</small>
+              <div class="imapsync-cp-editor" role="group" aria-labelledby="addsja_custom_params_label">
+                <div class="imapsync-cp-rows"></div>
+                <button type="button" class="btn btn-sm btn-secondary imapsync-cp-add"><i class="bi bi-plus-lg" aria-hidden="true"></i> {{ lang.syncjobs.custom_param_add }}</button>
+              </div>
+              <input type="hidden" name="custom_params" class="imapsync-cp-value" value="[]">
+              <small class="text-muted d-block mt-1">{{ lang.syncjobs.custom_params_hint }}</small>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.add.delete2duplicates }} (--delete2duplicates)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2duplicates" checked> {{ lang.syncjobs.delete2duplicates }} (--delete2duplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.add.delete1 }} (--delete1)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete1"> {{ lang.syncjobs.delete1 }} (--delete1)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.add.delete2 }} (--delete2)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="delete2"> {{ lang.syncjobs.delete2 }} (--delete2)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.add.automap }} (--automap)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="automap" checked> {{ lang.syncjobs.automap }} (--automap)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.add.skipcrossduplicates }} (--skipcrossduplicates)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="skipcrossduplicates"> {{ lang.syncjobs.skipcrossduplicates }} (--skipcrossduplicates)</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.add.subscribeall }} (--subscribeall)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="subscribeall" checked> {{ lang.syncjobs.subscribeall }} (--subscribeall)</label>
               </div>
             </div>
           </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="dry"> {{ lang.add.dry }} (--dry)</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="dry"> {{ lang.syncjobs.dry }} (--dry)</label>
               </div>
             </div>
           </div>
@@ -1347,3 +1357,8 @@
     </div>
   </div>
 </div><!-- DNS info modal -->
+
+{% include "modals/imapsync_source.twig" %}
+{% if acl.mailbox_groups == 1 %}
+{% include "modals/mailbox_group.twig" %}
+{% endif %}

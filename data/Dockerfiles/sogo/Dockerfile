@@ -1,6 +1,6 @@
 # SOGo built from source to enable security patch application
 # Repository: https://github.com/Alinto/sogo
-# Version: SOGo-5.12.12
+# Version: SOGo-5.12.13
 #
 # Applied security patches:
 # -
@@ -12,12 +12,12 @@ FROM debian:bookworm
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG SOGO_VERSION=SOGo-5.12.12
-ARG SOPE_VERSION=SOPE-5.12.12
+ARG SOGO_VERSION=SOGo-5.12.13
+ARG SOPE_VERSION=SOPE-5.12.13
 # Security patches to apply (space-separated commit hashes)
 ARG SOGO_SECURITY_PATCHES=""
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.19
+ARG GOSU_VERSION=1.20
 ENV LC_ALL=C
 
 # Install dependencies, build SOPE and SOGo, then clean up (all in one layer to minimize image size)

@@ -215,6 +215,10 @@ HTTPS_BIND=
 # Redirect HTTP connections to HTTPS - y/n
 HTTP_REDIRECT=y
 
+# Maximum request size for SOGo webmail, CalDAV/CardDAV and ActiveSync, e.g. 128m or 1g - 0 means unlimited
+# Keep it above the message size limit of Postfix (100 MB by default). The mailcow UI and API stay limited to 64m.
+NGINX_MAX_BODY_SIZE=128m
+
 # ------------------------------
 # Other bindings
 # ------------------------------
@@ -403,8 +407,8 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 # Use this IPv6 for outgoing connections (SNAT)
 #SNAT6_TO_SOURCE=
 
-# Create or override an API key for the web UI
-# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs
+# Service API keys: shown in the web UI, but can only be changed here (more keys can be added in the UI)
+# You _must_ define API_ALLOW_FROM, which is a comma separated list of IPs/networks
 # An API key defined as API_KEY has read-write access
 # An API key defined as API_KEY_READ_ONLY has read-only access
 # Allowed chars for API_KEY and API_KEY_READ_ONLY: a-z, A-Z, 0-9, -

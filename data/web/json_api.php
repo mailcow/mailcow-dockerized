@@ -19,7 +19,7 @@ function api_log($_data) {
     if ($value) {
       if (is_array($value)) unset($value["csrf_token"]);
       foreach ($value as $key => &$val) {
-        if(preg_match("/pass/i", $key)) {
+        if(preg_match("/pass|secret|oauth_extra_params/i", $key)) {
           $val = '*';
         }
       }
@@ -105,9 +105,28 @@ if (isset($_GET['query'])) {
     'msg' => 'Cannot find attributes in post data'
   ));
 
+  // A login with pending 2FA setup or password update may only use the calls of these steps
+  if (!empty($_SESSION['pending_tfa_setup']) || !empty($_SESSION['pending_pw_update'])) {
+    if (!empty($_SESSION['pending_tfa_setup'])) {
+      $pending_allowed = array('get/passwordpolicy', 'get/webauthn-tfa-registration', 'add/webauthn-tfa-registration');
+    }
+    else {
+      // the WebAuthn login of a TFA account comes before the password update
+      $pending_allowed = array('get/passwordpolicy', 'get/webauthn-tfa-get-args', 'edit/self', 'edit/admin');
+    }
+    if (!in_array($action . '/' . $category, $pending_allowed)) {
+      http_response_code(403);
+      echo json_encode(array(
+        'type' => 'error',
+        'msg' => 'API access denied until the pending account setup is finished'
+      ));
+      exit();
+    }
+  }
+
   switch ($action) {
     case "add":
-      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username'])) {
+      if ($_SESSION['mailcow_cc_api_access'] == 'ro' || isset($_SESSION['pending_mailcow_cc_username']) || !isset($_SESSION["mailcow_cc_username"])) {
         http_response_code(403);
         echo json_encode(array(
             'type' => 'error',
@@ -255,6 +274,12 @@ if (isset($_GET['query'])) {
         case "oauth2-client":
           process_add_return(oauth2('add', 'client', $attr));
         break;
+        case "api-key":
+          process_add_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->addKey($attr));
+        break;
+        case "mailbox-group":
+          process_add_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addGroup($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -317,7 +342,10 @@ if (isset($_GET['query'])) {
           process_add_return(admin('add', $attr));
         break;
         case "syncjob":
-          process_add_return(mailbox('add', 'syncjob', $attr));
+          process_add_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->addJob($attr));
+        break;
+        case "syncjob_source":
+          process_add_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->addSource($attr));
         break;
         case "bcc":
           process_add_return(bcc('add', $attr));
@@ -802,6 +830,34 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "api-key":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKeys());
+              break;
+
+              default:
+                process_get_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($object));
+              break;
+            }
+          break;
+
+          case "mailbox-group":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroups($extra));
+              break;
+
+              case "member":
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships((string)$extra));
+              break;
+
+              default:
+                process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroup($object));
+              break;
+            }
+          break;
+
           case "logs":
             switch ($object) {
               case "dovecot":
@@ -1046,61 +1102,37 @@ if (isset($_GET['query'])) {
             }
             process_get_return($data);
           break;
+          case "syncjob_options":
+            process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getOptions());
+          break;
+          case "imapsync_settings":
+            process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSettings());
+          break;
+          case "syncjob_source":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSources());
+              break;
+              default:
+                process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSource($object));
+              break;
+            }
+          break;
           case "syncjobs":
             switch ($object) {
               case "all":
-                $domains = mailbox('get', 'domains');
-                if (!empty($domains)) {
-                  foreach ($domains as $domain) {
-                    $mailboxes = mailbox('get', 'mailboxes', $domain);
-                    if (!empty($mailboxes)) {
-                      foreach ($mailboxes as $mailbox) {
-                        $syncjobs = mailbox('get', 'syncjobs', $mailbox);
-                        if (!empty($syncjobs)) {
-                          foreach ($syncjobs as $syncjob) {
-                            if (isset($extra)) {
-                              $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
-                            }
-                            else {
-                              $details = mailbox('get', 'syncjob_details', $syncjob);
-                            }
-                            if ($details) {
-                              $data[] = $details;
-                            }
-                            else {
-                              continue;
-                            }
-                          }
-                        }
-                      }
-                    }
+                // Admins see every job (incl. orphaned ones), others the jobs of the mailboxes they manage
+                $mailboxes = array();
+                if ($_SESSION['mailcow_cc_role'] != 'admin') {
+                  foreach (mailbox('get', 'domains') ?: array() as $domain) {
+                    $mailboxes = array_merge($mailboxes, mailbox('get', 'mailboxes', $domain) ?: array());
                   }
-                  process_get_return($data);
                 }
-                else {
-                  echo '{}';
-                }
+                process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getAllJobs($extra, $mailboxes));
               break;
 
               default:
-                $syncjobs = mailbox('get', 'syncjobs', $object);
-                if (!empty($syncjobs)) {
-                  foreach ($syncjobs as $syncjob) {
-                    if (isset($extra)) {
-                      $details = mailbox('get', 'syncjob_details', $syncjob, explode(',', $extra));
-                    }
-                    else {
-                      $details = mailbox('get', 'syncjob_details', $syncjob);
-                    }
-                    if ($details) {
-                      $data[] = $details;
-                    }
-                    else {
-                      continue;
-                    }
-                  }
-                }
-                process_get_return($data);
+                process_get_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getJobs($object, $extra));
               break;
             }
           break;
@@ -1533,11 +1565,23 @@ if (isset($_GET['query'])) {
             process_get_return($score);
           break;
           case "identity-provider":
-            if($_SESSION['mailcow_cc_role'] === 'admin') {
-              process_get_return($iam_settings);
+            if ($object == "sync-status") {
+              process_get_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->getStatus());
+            } elseif($_SESSION['mailcow_cc_role'] === 'admin') {
+              $iam_settings_out = $iam_settings;
+              // Read-only API keys never get the secrets of the identity provider
+              if (($_SESSION['mailcow_cc_api_access'] ?? '') == 'ro') {
+                foreach (array('client_secret', 'bindpass', 'access_token') as $iam_secret) {
+                  if (isset($iam_settings_out[$iam_secret])) $iam_settings_out[$iam_secret] = '*';
+                }
+              }
+              process_get_return($iam_settings_out);
             } else {
               process_get_return(null);
             }
+          break;
+          case "identity-link":
+            process_get_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->getLink((string)$object));
           break;
         break;
         // return no route found if no case is matched
@@ -1729,6 +1773,12 @@ if (isset($_GET['query'])) {
         case "oauth2-client":
           process_delete_return(oauth2('delete', 'client', array('id' => $items)));
         break;
+        case "api-key":
+          process_delete_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->deleteKeys($items));
+        break;
+        case "mailbox-group":
+          process_delete_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->deleteGroups($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -1742,7 +1792,10 @@ if (isset($_GET['query'])) {
           process_delete_return(rsettings('delete', array('id' => $items)));
         break;
         case "syncjob":
-          process_delete_return(mailbox('delete', 'syncjob', array('id' => $items)));
+          process_delete_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->deleteJobs($items));
+        break;
+        case "syncjob_source":
+          process_delete_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->deleteSources($items));
         break;
         case "filter":
           process_delete_return(mailbox('delete', 'filter', array('id' => $items)));
@@ -1825,6 +1878,9 @@ if (isset($_GET['query'])) {
         case "identity-provider":
           process_delete_return(identity_provider('delete'));
         break;
+        case "identity-link":
+          process_delete_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->unlink($items));
+        break;
         // return no route found if no case is matched
         default:
           http_response_code(404);
@@ -1890,6 +1946,12 @@ if (isset($_GET['query'])) {
         break;
         case "oauth2-client":
           process_edit_return(oauth2('edit', 'client', array_merge(array('id' => $items), $attr)));
+        break;
+        case "api-key":
+          process_edit_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->editKeys($items, $attr));
+        break;
+        case "mailbox-group":
+          process_edit_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->editGroups($items, $attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));
@@ -1968,7 +2030,27 @@ if (isset($_GET['query'])) {
           }
         break;
         case "syncjob":
-          process_edit_return(mailbox('edit', 'syncjob', array_merge(array('id' => $items), $attr)));
+          switch ($object) {
+            case "run_next":
+              process_edit_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->runNext($items));
+            break;
+            default:
+              process_edit_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->editJobs($items, $attr));
+            break;
+          }
+        break;
+        case "imapsync_settings":
+          process_edit_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->editSettings($attr));
+        break;
+        case "syncjob_source":
+          switch ($object) {
+            case "refresh_token":
+              process_edit_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->refreshSourceToken($items));
+            break;
+            default:
+              process_edit_return(\Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->editSources($items, $attr));
+            break;
+          }
         break;
         case "filter":
           process_edit_return(mailbox('edit', 'filter', array_merge(array('id' => $items), $attr)));
@@ -2057,6 +2139,9 @@ if (isset($_GET['query'])) {
         break;
         case "identity-provider-test":
           process_edit_return(identity_provider('test', $attr));
+        break;
+        case "identity-provider-sync":
+          process_edit_return(\Mailcow\Identity\IdentityModule::fromGlobals()->api->requestRun($attr));
         break;
         case "cors":
           process_edit_return(cors('edit', $attr));

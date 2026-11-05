@@ -133,7 +133,7 @@ class AuthorizeControllerTest extends TestCase
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
 
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertNotContains('error', $response->getHttpHeader('Location'));
+        $this->assertStringNotContainsString('error', $response->getHttpHeader('Location'));
     }
 
     public function testEnforceScope()
@@ -161,7 +161,7 @@ class AuthorizeControllerTest extends TestCase
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
 
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertNotContains('error', $response->getHttpHeader('Location'));
+        $this->assertStringNotContainsString('error', $response->getHttpHeader('Location'));
     }
 
     public function testInvalidRedirectUri()
@@ -227,7 +227,7 @@ class AuthorizeControllerTest extends TestCase
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
 
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertContains('code', $response->getHttpHeader('Location'));
+        $this->assertStringContainsString('code', $response->getHttpHeader('Location'));
     }
 
     public function testRedirectUriWithDifferentQueryAndExactMatchRequired()
@@ -263,7 +263,7 @@ class AuthorizeControllerTest extends TestCase
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
 
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertContains('code', $response->getHttpHeader('Location'));
+        $this->assertStringContainsString('code', $response->getHttpHeader('Location'));
     }
 
     public function testMultipleRedirectUris()
@@ -278,14 +278,14 @@ class AuthorizeControllerTest extends TestCase
 
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertContains('code', $response->getHttpHeader('Location'));
+        $this->assertStringContainsString('code', $response->getHttpHeader('Location'));
 
         // call again with different (but still valid) redirect URI
         $request->query['redirect_uri'] = 'http://morehazards.com';
 
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertContains('code', $response->getHttpHeader('Location'));
+        $this->assertStringContainsString('code', $response->getHttpHeader('Location'));
     }
 
     /**
@@ -303,7 +303,7 @@ class AuthorizeControllerTest extends TestCase
 
         $server->handleAuthorizeRequest($request, $response = new Response(), true);
         $this->assertEquals($response->getStatusCode(), 302);
-        $this->assertContains('state', $response->getHttpHeader('Location'));
+        $this->assertStringContainsString('state', $response->getHttpHeader('Location'));
         $this->assertStringStartsWith('http://brentertainment.com?code=', $response->getHttpHeader('Location'));
 
         $parts = parse_url($response->getHttpHeader('Location'));
@@ -421,7 +421,7 @@ class AuthorizeControllerTest extends TestCase
 
         $this->assertEquals($response->getStatusCode(), 302);
         $location = $response->getHttpHeader('Location');
-        $this->assertNotContains('error', $location);
+        $this->assertStringNotContainsString('error', $location);
 
         $parts = parse_url($location);
         $this->assertFalse(isset($parts['fake']));

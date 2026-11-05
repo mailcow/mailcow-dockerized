@@ -2,12 +2,14 @@
 
 namespace LdapRecord\Models\Concerns;
 
+use LdapRecord\Models\Model;
+
 /**
  * @author Taylor Otwell
  *
  * @see https://laravel.com
  *
- * @mixin \LdapRecord\Models\Model
+ * @mixin Model
  */
 trait HidesAttributes
 {

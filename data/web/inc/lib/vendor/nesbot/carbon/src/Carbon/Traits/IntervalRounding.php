@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -14,13 +16,14 @@ namespace Carbon\Traits;
 use Carbon\CarbonInterval;
 use Carbon\Exceptions\InvalidIntervalException;
 use DateInterval;
+use Time\Duration;
 
 /**
  * Trait to call rounding methods to interval or the interval of a period.
  */
 trait IntervalRounding
 {
-    protected function callRoundMethod(string $method, array $parameters)
+    protected function callRoundMethod(string $method, array $parameters): ?static
     {
         $action = substr($method, 0, 4);
 
@@ -35,12 +38,12 @@ trait IntervalRounding
         return null;
     }
 
-    protected function roundWith($precision, $function)
+    protected function roundWith(DateInterval|Duration|string|float|int $precision, callable|string $function): ?static
     {
         $unit = 'second';
 
-        if ($precision instanceof DateInterval) {
-            $precision = (string) CarbonInterval::instance($precision, [], true);
+        if ($precision instanceof DateInterval || $precision instanceof Duration) {
+            $precision = CarbonInterval::instance($precision)->forHumans(['locale' => 'en']);
         }
 
         if (\is_string($precision) && preg_match('/^\s*(?<precision>\d+)?\s*(?<unit>\w+)(?<other>\W.*)?$/', $precision, $match)) {

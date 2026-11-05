@@ -99,6 +99,27 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template = 'edit/oauth2client.twig';
         $template_data = ['oauth2client' => $oauth2client];
     }
+    elseif (isset($_GET['mailbox-group']) &&
+      is_numeric($_GET['mailbox-group'])) {
+        $result = \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroup($_GET['mailbox-group']);
+        $template = 'edit/mailbox-group.twig';
+        // Member candidates: mailboxes of the domains the caller manages
+        $mailboxes = [];
+        foreach (mailbox('get', 'domains') as $domain) {
+          foreach (mailbox('get', 'mailboxes', $domain) as $mailbox) {
+            $mailboxes[] = $mailbox;
+          }
+        }
+        $template_data = [
+          'mailboxes' => $mailboxes,
+          'mbox_templates' => ($_SESSION['mailcow_cc_role'] == 'admin') ? mailbox('get', 'mailbox_templates') : [],
+        ];
+    }
+    elseif (isset($_GET['api-key']) &&
+      is_numeric($_GET['api-key'])) {
+        $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);
+        $template = 'edit/api-key.twig';
+    }
     elseif (isset($_GET['aliasdomain']) &&
       is_valid_domain_name(html_entity_decode(rawurldecode($_GET["aliasdomain"]))) &&
       !empty($_GET["aliasdomain"])) {
@@ -136,6 +157,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'get_tls_policy' => $get_tls_policy,
           'rlyhosts' => $rlyhosts,
           'sender_acl_handles' => mailbox('get', 'sender_acl_handles', $mailbox),
+          'mailbox_groups' => \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships($mailbox),
+          'identity_link' => \Mailcow\Identity\IdentityModule::fromGlobals()->api->getLink($mailbox),
           'user_acls' => acl('get', 'user', $mailbox),
           'mailbox_details' => $result,
           'iam_settings' => $iam_settings,
@@ -204,9 +227,16 @@ if (isset($_SESSION['mailcow_cc_role'])) {
     if (isset($_GET['syncjob']) &&
       is_numeric($_GET['syncjob'])) {
         $id = $_GET["syncjob"];
-        $result = mailbox('get', 'syncjob_details', $id);
+        // Without the syncjobs ACL a job cannot be saved, so do not show the form
+        $result = (($_SESSION['acl']['syncjobs'] ?? '0') == '1') ? \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getJob($id) : [];
         $template = 'edit/syncjob.twig';
       }
+    elseif (isset($_GET['syncjob_source']) &&
+      is_numeric($_GET['syncjob_source'])) {
+        $id = $_GET["syncjob_source"];
+        $result = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSource($id);
+        $template = 'edit/imapsync_source.twig';
+    }
     elseif (isset($_GET['filter']) &&
       is_numeric($_GET['filter'])) {
         $id = $_GET["filter"];
@@ -225,6 +255,8 @@ else {
   $template_data['access_denied'] = true;
 }
 
+$js_minifier->add('/web/js/site/imapsync.js');
+$js_minifier->add('/web/js/site/groups.js');
 $js_minifier->add('/web/js/site/edit.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 
@@ -233,5 +265,6 @@ $template_data['return_to'] = $_SESSION['return_to'];
 $template_data['lang_user'] = json_encode($lang['user']);
 $template_data['lang_admin'] = json_encode($lang['admin']);
 $template_data['lang_datatables'] = json_encode($lang['datatables']);
+$template_data['imapsync_redirect_uri'] = \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri();
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

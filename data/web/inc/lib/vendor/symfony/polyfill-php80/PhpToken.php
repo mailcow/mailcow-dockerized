@@ -29,7 +29,7 @@ class PhpToken implements \Stringable
     public $text;
 
     /**
-     * @var int
+     * @var -1|positive-int
      */
     public $line;
 
@@ -38,6 +38,9 @@ class PhpToken implements \Stringable
      */
     public $pos;
 
+    /**
+     * @param -1|positive-int $line
+     */
     public function __construct(int $id, string $text, int $line = -1, int $position = -1)
     {
         $this->id = $id;
@@ -48,11 +51,11 @@ class PhpToken implements \Stringable
 
     public function getTokenName(): ?string
     {
-        if ('UNKNOWN' === $name = token_name($this->id)) {
-            $name = \strlen($this->text) > 1 || \ord($this->text) < 32 ? null : $this->text;
+        if ($this->id < 256) {
+            return \chr($this->id & 0xFF);
         }
 
-        return $name;
+        return 'UNKNOWN' === ($name = token_name($this->id)) ? null : $name;
     }
 
     /**
@@ -80,7 +83,7 @@ class PhpToken implements \Stringable
     }
 
     /**
-     * @return static[]
+     * @return list<static>
      */
     public static function tokenize(string $code, int $flags = 0): array
     {
@@ -89,13 +92,15 @@ class PhpToken implements \Stringable
         $tokens = token_get_all($code, $flags);
         foreach ($tokens as $index => $token) {
             if (\is_string($token)) {
-                $id = \ord($token);
+                // b" is the only such token longer than one char
+                $id = \ord($token[-1]);
                 $text = $token;
             } else {
                 [$id, $text, $line] = $token;
             }
             $tokens[$index] = new static($id, $text, $line, $position);
             $position += \strlen($text);
+            $line += preg_match_all('/\r\n?|\n/', $text);
         }
 
         return $tokens;

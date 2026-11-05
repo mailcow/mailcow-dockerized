@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Ddeboer\Imap;
 
-use Ddeboer\Imap\Exception\InvalidResourceException;
+use IMAP\Connection;
 
 interface ImapResourceInterface
 {
     /**
      * Get IMAP resource stream.
-     *
-     * @throws InvalidResourceException
-     *
-     * @return resource
      */
-    public function getStream();
+    public function getStream(): Connection;
 
     /**
      * Clear last mailbox used cache.

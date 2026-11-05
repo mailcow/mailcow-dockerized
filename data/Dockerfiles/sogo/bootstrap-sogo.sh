@@ -13,13 +13,11 @@ do
   sleep 3
 done
 
-# Wait for updated schema
+# Wait for updated schema (DB_VERSION from docker-compose.yml)
 DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
-DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
-while [[ "${DBV_NOW}" != "${DBV_NEW}" ]]; do
+while [[ "${DBV_NOW}" != "${DB_VERSION}" ]]; do
   echo "Waiting for schema update..."
   DBV_NOW=$(mariadb --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
-  DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
   sleep 5
 done
 echo "DB schema is ${DBV_NOW}"

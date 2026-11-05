@@ -10,6 +10,7 @@
  */
 
 return array_replace_recursive(require __DIR__.'/en.php', [
+    'first_day_of_week' => 0,
     'weekdays' => ['Dimingu', 'Chiposi', 'Chipiri', 'Chitatu', 'Chinai', 'Chishanu', 'Sabudu'],
     'weekdays_short' => ['Dim', 'Pos', 'Pir', 'Tat', 'Nai', 'Sha', 'Sab'],
     'weekdays_min' => ['Dim', 'Pos', 'Pir', 'Tat', 'Nai', 'Sha', 'Sab'],
@@ -19,8 +20,8 @@ return array_replace_recursive(require __DIR__.'/en.php', [
         'LT' => 'HH:mm',
         'LTS' => 'HH:mm:ss',
         'L' => 'D/M/YYYY',
-        'LL' => 'd [de] MMM [de] YYYY',
-        'LLL' => 'd [de] MMMM [de] YYYY HH:mm',
-        'LLLL' => 'dddd, d [de] MMMM [de] YYYY HH:mm',
+        'LL' => 'D [de] MMM [de] YYYY',
+        'LLL' => 'D [de] MMMM [de] YYYY HH:mm',
+        'LLLL' => 'dddd, D [de] MMMM [de] YYYY HH:mm',
     ],
 ]);

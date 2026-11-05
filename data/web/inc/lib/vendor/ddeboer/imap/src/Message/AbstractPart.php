@@ -56,8 +56,7 @@ abstract class AbstractPart implements PartInterface
     private ?string $encoding    = null;
     private ?string $disposition = null;
     private ?string $description = null;
-    /** @var null|int|string */
-    private $bytes;
+    private string|int|null $bytes;
     private ?string $lines          = null;
     private ?string $content        = null;
     private ?string $decodedContent = null;
@@ -256,6 +255,26 @@ abstract class AbstractPart implements PartInterface
         return $return;
     }
 
+    /**
+     * Save raw message content to file.
+     *
+     * @param resource|string $file the path to the saved file as a string, or a valid file descriptor
+     */
+    final protected function doSaveContent($file, string $partNumber): void
+    {
+        $return = \imap_savebody(
+            $this->resource->getStream(),
+            $file,
+            $this->getNumber(),
+            $partNumber,
+            \FT_UID | \FT_PEEK
+        );
+
+        if (false === $return) {
+            throw new ImapFetchbodyException('imap_savebody failed');
+        }
+    }
+
     final public function getParts(): array
     {
         $this->lazyParseStructure();
@@ -265,8 +284,6 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get current child part.
-     *
-     * @return mixed
      */
     #[\ReturnTypeWillChange]
     final public function current()
@@ -360,7 +377,7 @@ abstract class AbstractPart implements PartInterface
 
         // When the message is not multipart and the body is the attachment content
         // Prevents infinite recursion
-        if (self::isAttachment($this->structure) && !$this instanceof Attachment) {
+        if (!$this instanceof Attachment && self::isAttachment($this->structure)) {
             $this->parts[] = new Attachment($this->resource, $this->getNumber(), '1', $this->structure);
         }
 
@@ -372,12 +389,11 @@ abstract class AbstractPart implements PartInterface
             }
             foreach ($parts as $key => $partStructure) {
                 $partNumber = (!$this instanceof Message) ? $this->partNumber . '.' : '';
-                $partNumber .= (string) ($key + 1);
+                $partNumber .= $key + 1;
 
                 $newPartClass = self::isAttachment($partStructure)
                     ? Attachment::class
-                    : SimplePart::class
-                ;
+                    : SimplePart::class;
 
                 $this->parts[] = new $newPartClass($this->resource, $this->getNumber(), $partNumber, $partStructure);
             }
@@ -400,9 +416,9 @@ abstract class AbstractPart implements PartInterface
             }
 
             if (
-                    'inline' === \strtolower($part->disposition)
+                'inline' === \strtolower($part->disposition)
                 && self::SUBTYPE_PLAIN !== \strtoupper($part->subtype)
-                && self::SUBTYPE_HTML !== \strtoupper($part->subtype)
+                && self::SUBTYPE_HTML  !== \strtoupper($part->subtype)
             ) {
                 return true;
             }
@@ -427,10 +443,6 @@ abstract class AbstractPart implements PartInterface
         }
          */
 
-        if (self::SUBTYPE_RFC822 === \strtoupper($part->subtype)) {
-            return true;
-        }
-
-        return false;
+        return self::SUBTYPE_RFC822 === \strtoupper($part->subtype);
     }
 }

@@ -3,6 +3,7 @@
 <script type='text/javascript'>
   var acl = '{{ acl_json|raw }}';
   var lang = {{ lang_user|raw }};
+  lang.syncjobs = {{ lang_syncjobs|raw }};
   var csrf_token = '{{ csrf_token }}';
   var pagination_size = Math.trunc('{{ pagination_size }}');
   var mailcow_cc_username = '{{ mailcow_cc_username }}';

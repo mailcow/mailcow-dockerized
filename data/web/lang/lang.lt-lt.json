@@ -38,15 +38,11 @@
         "app_name": "Programėlės pavadinimas",
         "app_password": "Pridėti programėlės slaptažodį",
         "app_passwd_protocols": "Prieinamieji programėlės slaptažodžio protokolai",
-        "custom_params": "Pasirinktiniai parametrai",
-        "delete1": "Ištrinti iš šaltinio, kai baigta",
         "activate_filter_warn": "Visi kiti filtrai bus deaktivuoti, kai „aktyvus“ yra pražymėtas.",
-        "custom_params_hint": "Teisingai: --param=xy, neteisingai: --param xy",
         "description": "Aprašymas",
         "destination": "Gavėjas",
         "domain": "Domenas",
         "domain_quota_m": "Viso domeno kvota (MiB)",
-        "dry": "Simuliuoti sinchronizaciją",
         "enc_method": "Šifravimo metodas",
         "full_name": "Prilnas vardas",
         "generate": "generuoti",
@@ -64,13 +60,9 @@
         "alias_address": "Pakaitiniai/is adresai/as",
         "alias_address_info": "<small>Pilnas el. pašto adresas (-ai) arba @example.com, kad gautumėte visus pranešimus iš domeno (atskirtus kableliais). <b>Tik \"mailcow\" domenai</b>.</small>",
         "alias_domain": "Pakaitinis domenas",
-        "automap": "Stenktis automatiškai susieti aplankus (\"Išsiųsti\", \"Išsiųsti\" => \"išsiųsti\" ir tt.)",
         "backup_mx_options": "Perdavimo nustatymai",
         "bcc_dest_format": "BCC gavimo adresas turi būti vienas galiojantis el. pašto adresas.<br>Jei turite siųsti kopiją į kelis adresus, sukurkite slapyvardį ir naudokite jį čia.",
-        "delete2": "Ištrinti žinutes gavimo vietoje, kurios nėra šaltinyje.",
-        "delete2duplicates": "Ištrinti dublikatus gavimo vietoje",
         "domain_matches_hostname": "Domenas %s atitinka serverio vardą",
-        "exclude": "Išskirti objektus (regex)",
         "gal": "Visuotinis adresų sąrašas",
         "gal_info": "GAL (Global Address List) apima visus domeno objektus ir jų negali redaguoti joks vartotojas. SOGo trūksta laisvosios/užimtosios informacijos, jei tai išjungta! <b>Perkraukite SOGo, kad pritaikytumėte pakeitimus.</b>"
     },
@@ -350,5 +342,14 @@
         "dovecot_restart_success": "„Doveccot“ perkrautas",
         "domain_added": "Pridėtas domenas %s",
         "domain_admin_modified": "Pakeitimai domeno adminustratoriui %s išsaugoti"
+    },
+    "syncjobs": {
+        "dry": "Simuliuoti sinchronizaciją",
+        "exclude": "Išskirti objektus (regex)",
+        "automap": "Stenktis automatiškai susieti aplankus (\"Išsiųsti\", \"Išsiųsti\" => \"išsiųsti\" ir tt.)",
+        "delete1": "Ištrinti iš šaltinio, kai baigta",
+        "delete2": "Ištrinti žinutes gavimo vietoje, kurios nėra šaltinyje.",
+        "delete2duplicates": "Ištrinti dublikatus gavimo vietoje",
+        "custom_params": "Pasirinktiniai parametrai"
     }
 }

@@ -192,6 +192,7 @@ detect_major_update() {
       "2025-02"
       "2025-03"
       "2025-09"
+      "2026-11"
     )
 
     current_version=""

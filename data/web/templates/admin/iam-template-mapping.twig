@@ -1,0 +1,72 @@
+{# Default template and attribute mapping of all IdP forms (iam_form = keycloak|generic|ldap); row markup is used by
+   addAttributeMappingRow() in admin.js #}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_default_template_description }}"></i>
+              <label class="control-label">{{ lang.admin.iam_default_template }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select data-live-search="true" name="default_template" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                <option value="" {% if not iam_settings.default_template %}selected{% endif %}>-- {{ lang.mailbox.template }} --</option>
+                {% for mbox_template in mbox_templates %}
+                <option {% if mbox_template.template == iam_settings.default_template %}selected{% endif %}>{{ mbox_template.template }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_mapping_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_mapping }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <div class="row mx-0 align-items-center">
+                <span class="col-5 p-0 pe-2 text-muted">{{ lang.user.attribute }}</span>
+                <span class="col-5 p-0 pe-2 text-muted">{{ lang.mailbox.template }}</span>
+                <div class="col-2 p-0 d-flex">
+                  <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-auto iam_rolemap_add_{{ iam_form }}" title="{{ lang.admin.iam_mapping_add }}"><i class="bi bi-plus-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_{{ iam_form }}_mapping_list">
+            <input type="hidden" name="mappers" value="">
+            <input type="hidden" name="templates" value="">
+            {% for key, role in iam_settings.mappers %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row mx-0">
+                <div class="col-5 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="mappers" value="{{ iam_settings.mappers[key] }}" required>
+                </div>
+                <div class="col-5 p-0 pe-2">
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --" required>
+                  {% for mbox_template in mbox_templates %}
+                    <option{% if mbox_template.template == iam_settings.templates[key] %} selected{% endif %}>{{ mbox_template.template }}</option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_{{ iam_form }}_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row mx-0">
+                <div class="col-5 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="mappers" value="">
+                </div>
+                <div class="col-5 p-0 pe-2">
+                  <select data-live-search="true" name="templates" class="form-control" title="-- {{ lang.mailbox.template }} --">
+                  <option value="" selected>-- {{ lang.mailbox.template }} --</option>
+                  {% for mbox_template in mbox_templates %}
+                    <option>{{ mbox_template.template }}</option>
+                  {% endfor %}
+                  </select>
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_{{ iam_form }}_rolemap_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>

@@ -272,22 +272,27 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
+      // keep the backend order (C4: prio desc, never run first, least recently run)
+      order: [],
+      // drop state saved before the rework (it would restore the old ID sort / column visibility)
+      stateSaveParams: mailcowImapsync.jobTableStateSave,
+      stateLoadParams: mailcowImapsync.jobTableStateLoad,
       ajax: {
         type: "GET",
         url: '/api/v1/get/syncjobs/' + encodeURIComponent(mailcow_cc_username) + '/no_log',
         dataSrc: function(data){
+          if (!Array.isArray(data)) return [];
           $.each(data, function (i, item) {
-            item.user1 = escapeHtml(item.user1);
-            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '">' + lang.open_logs + '</a>'
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
               item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
-            item.server_w_port = escapeHtml(item.user1 + '@' + item.host1 + ':' + item.port1);
+            mailcowImapsync.prepareJobRow(item);
             if (acl_data.syncjobs === 1) {
               item.action = '<div class="btn-group">' +
                 '<a href="/edit/syncjob/' + item.id + '" class="btn btn-xs btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+                '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + item.id + '" class="btn btn-xs btn-xs-half btn-info"><i class="bi bi-card-list"></i> ' + lang.open_logs + '</a>' +
                 '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-xs btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
                 '</div>';
               item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
@@ -296,26 +301,6 @@ jQuery(function($){
               item.action = '<span>-</span>';
               item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
             }
-            if (item.is_running == 1) {
-              item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
-            } else {
-              item.is_running = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.waiting + '</span>';
-            }
-            if (!item.last_run > 0) {
-              item.last_run = lang.waiting;
-            }
-            if (item.success == null) {
-              item.success = '-';
-              item.exit_status = '';
-            } else {
-              item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            }
-            if (lang['syncjob_'+item.exit_status]) {
-              item.exit_status = lang['syncjob_'+item.exit_status];
-            } else if (item.success != '-') {
-              item.exit_status = lang.syncjob_check_log;
-            }
-            item.exit_status = item.success + ' ' + item.exit_status;
           });
 
           return data;
@@ -340,41 +325,34 @@ jQuery(function($){
           responsivePriority: 2
         },
         {
-          title: 'ID',
+          title: mailcowImapsync.L('id'),
           data: 'id',
           defaultContent: '',
           responsivePriority: 3
         },
         {
-          title: 'Server',
+          title: lang.syncjobs.source_server,
           data: 'server_w_port',
-          defaultContent: ''
-        },
-        {
-          title: lang.username,
-          data: 'user1',
           defaultContent: '',
-          responsivePriority: 3
+          responsivePriority: 4
         },
         {
           title: lang.last_run,
           data: 'last_run',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 7
         },
         {
-          title: lang.syncjob_last_run_result,
+          title: lang.syncjobs.syncjob_last_run_result,
           data: 'exit_status',
-          defaultContent: ''
-        },
-        {
-          title: 'Log',
-          data: 'log',
-          defaultContent: ''
+          defaultContent: '',
+          responsivePriority: 6
         },
         {
           title: lang.active,
           data: 'active',
           defaultContent: '',
+          responsivePriority: 8,
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':0==data&&'<i class="bi bi-x-lg"></i>'
           }
@@ -384,11 +362,6 @@ jQuery(function($){
           data: 'is_running',
           defaultContent: '',
           responsivePriority: 5
-        },
-        {
-          title: lang.encryption,
-          data: 'enc1',
-          defaultContent: ''
         },
         {
           title: lang.excludes,
@@ -699,6 +672,7 @@ jQuery(function($){
   onVisible("[id^=bl_policy_mailbox_table]", () => draw_bl_policy_mailbox_table());
   onVisible("[id^=wl_policy_mailbox_table]", () => draw_wl_policy_mailbox_table());
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
+  onVisible("[id^=imapsync_source_table]", () => mailcowImapsync.drawSourceTable(acl_data.syncjobs === 1));
   onVisible("[id^=app_passwd_table]", () => draw_app_passwd_table());
   onVisible("[id^=recent-logins]", () => last_logins('get'));
 });
