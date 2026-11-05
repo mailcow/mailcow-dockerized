@@ -500,10 +500,10 @@ function apppass_login($user, $pass, $extra = null, &$denied = false){
 
     $key = strtolower($extra['service']) . '_access';
     $mailbox_attributes = json_decode($row['mailbox_attributes'], true);
-    // app passwords never grant a protocol the mailbox itself is denied
+    // the protocols of the mailbox only limit direct user access, app passwords have their own
     if ($row['active'] != '1' || $row['mailbox_active'] != '1' || $row['domain_active'] != '1'
       || ($mailbox_attributes['shared'] ?? '0') == '1'
-      || ($extra['service'] != 'NONE' && ($row[$key] != '1' || (isset($mailbox_attributes[$key]) && $mailbox_attributes[$key] != '1')))) {
+      || ($extra['service'] != 'NONE' && $row[$key] != '1')) {
       // right password, but the app password does not allow this login
       $denied = true;
       continue;
