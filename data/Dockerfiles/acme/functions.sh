@@ -164,3 +164,19 @@ is_covered_by_wildcard() {
 
   return 1  # Not covered
 }
+
+get_private_key_type(){
+  local KEY_FILE="${1}"
+
+  if openssl rsa -in "${KEY_FILE}" -check -noout >/dev/null 2>&1; then
+    echo "rsa"
+    return 0
+  fi
+
+  if openssl ec -in "${KEY_FILE}" -check -noout >/dev/null 2>&1; then
+    echo "ecdsa"
+    return 0
+  fi
+
+  return 1
+}
