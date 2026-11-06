@@ -211,6 +211,26 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "user_api" => array(
+        "cols" => array(
+          "api_key" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          "allow_from" => "VARCHAR(512) NOT NULL DEFAULT ''",
+          "skip_ip_check" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("api_key")
+          ),
+          "key" => array(
+            "username" => array("username")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "templates" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",

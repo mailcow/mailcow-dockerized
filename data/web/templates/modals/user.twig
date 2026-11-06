@@ -363,6 +363,20 @@
               <input type="description" id="temp_alias_description" class="form-control" name="description" autocomplete="off">
             </div>
           </div>
+          <div class="row mb-4">
+            <label class="control-label col-sm-3" for="temp_alias_validity">{{ lang.user.alias_select_validity }}</label>
+            <div class="col-sm-5">
+              <select id="temp_alias_validity" name="validity" class="form-select">
+                <option value="1">1 {{ lang.user.hour }}</option>
+                <option value="24">1 {{ lang.user.day }}</option>
+                <option value="168">1 {{ lang.user.week }}</option>
+                <option value="744">1 {{ lang.user.month }}</option>
+                <option value="8760" selected>1 {{ lang.user.year }}</option>
+                <option value="87600">10 {{ lang.user.years }}</option>
+                <option value="876600">100 {{ lang.user.years }}</option>
+              </select>
+            </div>
+          </div>
           <div class="row">
             <div class="offset-sm-3 col-sm-9">
               <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="tempaliascreate" data-item="null" data-api-url='add/time_limited_alias' data-api-attr='' href="#">{{ lang.admin.add }}</button>

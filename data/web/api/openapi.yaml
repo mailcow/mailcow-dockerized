@@ -203,7 +203,7 @@ paths:
                   description: "a description for the alias, defaults to an empty string"
                   type: string
                 validity:
-                  description: "how many hours the alias stays valid, 1 to 87600, defaults to 8760 (one year)"
+                  description: "how many hours the alias stays valid, 1 to 876600, defaults to 8760 (one year)"
                   type: integer
                 permanent:
                   description: "keep the alias after it expired, defaults to false"
@@ -292,6 +292,79 @@ paths:
                   type: boolean
               type: object
       summary: Create API key
+  /api/alias/random/new:
+    post:
+      description: "SimpleLogin-compatible endpoint to create a random alias (e.g. for Bitwarden or Vaultwarden)."
+      operationId: Create random alias (SimpleLogin)
+      parameters:
+        - description: "Hostname / website domain the alias is generated for"
+          in: query
+          name: hostname
+          required: false
+          schema:
+            type: string
+        - description: "Generator mode: uuid or word"
+          in: query
+          name: mode
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                note:
+                  description: "Optional description or note for the alias"
+                  type: string
+                hostname:
+                  description: "Website domain"
+                  type: string
+              type: object
+      responses:
+        "201":
+          description: "Alias created successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  alias:
+                    type: string
+                  email:
+                    type: string
+                  enabled:
+                    type: boolean
+                  creation_timestamp:
+                    type: integer
+                  note:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Create random alias (SimpleLogin)
+  /api/user_info:
+    get:
+      description: "SimpleLogin-compatible endpoint returning user info."
+      operationId: Get user info (SimpleLogin)
+      responses:
+        "200":
+          description: "User info"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  is_premium:
+                    type: boolean
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Get user info (SimpleLogin)
   /api/v1/add/app-passwd:
     post:
       responses:

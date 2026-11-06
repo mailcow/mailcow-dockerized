@@ -25,6 +25,7 @@
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"744","permanent":"0"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.month }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"8760","permanent":"0"}' href="#">{{ lang.user.expire_in }} 1 {{ lang.user.year }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"87600","permanent":"0"}' href="#">{{ lang.user.expire_in }} 10 {{ lang.user.years }}</a></li>
+              <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"validity":"876600","permanent":"0"}' href="#">{{ lang.user.expire_in }} 100 {{ lang.user.years }}</a></li>
               <li><a class="dropdown-item" data-action="edit_selected" data-id="tla" data-api-url='edit/time_limited_alias' data-api-attr='{"permanent":"1"}' href="#">{{ lang.user.expire_never }}</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" data-action="delete_selected" data-id="tla" data-api-url='delete/time_limited_alias' href="#">{{ lang.mailbox.remove }}</a></li>
@@ -43,6 +44,59 @@
             </ul>
           </div>
         </div>
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header d-flex fs-6">
+              <span><i class="bi bi-key-fill"></i> {{ lang.user.api_key_simplelogin|default('API Key for Bitwarden / SimpleLogin') }}</span>
+            </div>
+            <div class="card-body">
+              <p class="text-muted">{{ lang.user.api_key_simplelogin_info|default('Use this API key in tools like Bitwarden or Vaultwarden to automatically generate email aliases. Enter your mailcow host URL as the server URL.') }}</p>
+              <form class="form-horizontal" role="form" method="post">
+                <div class="row mb-3">
+                  <label class="control-label col-sm-3">{{ lang.admin.api_key }}:</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="user_api_key_input" value="{{ user_api.api_key|default('') }}" placeholder="{{ lang.user.no_api_key|default('No API key generated yet') }}" readonly />
+                      {% if user_api.api_key %}
+                      <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('user_api_key_input').value);"><i class="bi bi-clipboard"></i></button>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="control-label col-sm-3">{{ lang.admin.activate }}:</label>
+                  <div class="col-sm-9">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="active" value="1" {% if user_api.active == 1 or not user_api %}checked{% endif %}>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="control-label col-sm-3">{{ lang.admin.api_skip_ip_check }}:</label>
+                  <div class="col-sm-9">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" name="skip_ip_check" value="1" {% if user_api.skip_ip_check == 1 or not user_api %}checked{% endif %}>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label class="control-label col-sm-3">{{ lang.admin.allow_from }}:</label>
+                  <div class="col-sm-9">
+                    <textarea class="form-control" name="allow_from" rows="2" placeholder="0.0.0.0/0">{{ user_api.allow_from|default('') }}</textarea>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="offset-sm-3 col-sm-9">
+                    <button class="btn btn-sm btn-success" name="user_api" type="submit"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+                    <button class="btn btn-sm btn-secondary" name="user_api_regen_key" type="submit">{{ lang.admin.regen_api_key }}</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   </div>
