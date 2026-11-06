@@ -242,6 +242,7 @@ function init_db_schema()
           "gal" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "relay_all_recipients" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "relay_unknown_only" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "archive" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -1053,7 +1054,8 @@ function init_db_schema()
           "domain_relayhost" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "mailbox_groups" => "TINYINT(1) NOT NULL DEFAULT '1'"
+          "mailbox_groups" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "archive" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -1273,6 +1275,42 @@ function init_db_schema()
         "keys" => array(
           "primary" => array(
             "" => array("name")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "archive_settings" => array(
+        "cols" => array(
+          "name" => "VARCHAR(64) NOT NULL",
+          "value" => "TEXT NOT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("name")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // Archive target the Postfix maps read (FILTER of the copies on port 591, SASL, TLS policy), one row kept in line with archive_settings
+      "archive_transport" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "address" => "VARCHAR(255) NOT NULL",
+          "nexthop" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "password" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "tls_policy" => "VARCHAR(64) NOT NULL DEFAULT 'encrypt'",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "address" => array("address"),
+            "nexthop" => array("nexthop")
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
@@ -2009,6 +2047,7 @@ function init_db_schema()
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.relayhost', \"0\") WHERE JSON_VALUE(`attributes`, '$.relayhost') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_pw_update', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_pw_update') IS NULL;");
     $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.force_tfa', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_tfa') IS NULL;");
+    $pdo->query("UPDATE `mailbox` SET `attributes` =  JSON_SET(`attributes`, '$.archive', \"inherit\") WHERE JSON_VALUE(`attributes`, '$.archive') IS NULL;");
     // admin attributes
     $pdo->query("UPDATE `admin` SET `attributes` = '{}' WHERE `attributes` = '' OR `attributes` IS NULL;");
     $pdo->query("UPDATE `admin` SET `attributes` =  JSON_SET(`attributes`, '$.force_tfa', \"0\") WHERE JSON_VALUE(`attributes`, '$.force_tfa') IS NULL;");
@@ -2056,6 +2095,7 @@ function init_db_schema()
         "backupmx" => 0,
         "relay_all_recipients" => 0,
         "relay_unknown_only" => 0,
+        "archive" => 0,
         "dkim_selector" => "dkim",
         "key_size" => 2048,
         "max_quota_for_domain" => 10240 * 1048576,
@@ -2073,6 +2113,7 @@ function init_db_schema()
         "rl_value" => "",
         "force_pw_update" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['force_pw_update']),
         "force_tfa" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['force_tfa']),
+        "archive" => strval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['archive']),
         "sogo_access" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['sogo_access']),
         "active" => 1,
         "tls_enforce_in" => intval($GLOBALS['MAILBOX_DEFAULT_ATTRIBUTES']['tls_enforce_in']),

@@ -61,13 +61,14 @@ submission inet n       -       n       -       -       smtpd
   -o non_smtpd_milters=
   -o syslog_name=postfix/quarantine
 
-# used to send bcc mails
+# used to send bcc mails and archive copies (sender archive-bounce@localhost goes to the archive)
 591 inet n      -       n       -       -       smtpd
   -o smtpd_helo_restrictions=
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o smtpd_tls_auth_only=no
   -o smtpd_milters=
   -o non_smtpd_milters=
+  -o smtpd_sender_restrictions=check_sender_access,proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sender_filter_maps.cf,permit_mynetworks,reject
   -o syslog_name=postfix/bcc
 
 # enforced smtp connector
@@ -80,6 +81,27 @@ smtp_enforced_tls      unix  -       -       n       -       -       smtp
 # this helps to have different sasl maps than we have with sender dependent transport maps
 smtp_via_transport_maps      unix  -       -       n       -       -       smtp
   -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf
+
+# archive copies (journal) to the archive set in the admin UI: only mails from archive-bounce@localhost on 591 get here
+# (FILTER of mysql_archive_sender_filter_maps), sent unchanged, TLS by default, refusals are retried (soft_bounce)
+# until maximal_queue_lifetime
+archive_smtp      unix  -       -       n       -       -       smtp
+  -o soft_bounce=yes
+  -o smtp_header_checks=
+  -o smtp_mime_header_checks=
+  -o smtp_nested_header_checks=
+  -o smtp_body_checks=
+  -o smtp_line_length_limit=0
+  -o disable_mime_output_conversion=yes
+  -o smtp_tls_security_level=encrypt
+  -o smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_archive_tls_policy_maps.cf
+  -o smtp_sasl_auth_enable=yes
+  -o smtp_sasl_password_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sasl_passwd_maps.cf
+  -o smtp_sasl_tls_security_options=noanonymous
+  -o syslog_name=postfix/archive
+# notices about archive copies (delays, bounces) go to archive-bounce@localhost and are dropped here
+archive_discard   unix  -       -       n       -       -       discard
+  -o syslog_name=postfix/archive
 
 tlsproxy   unix  -       -       n       -       0       tlsproxy
 dnsblog    unix  -       -       n       -       0       dnsblog

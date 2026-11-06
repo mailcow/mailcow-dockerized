@@ -205,6 +205,9 @@ $MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update'] = false;
 // Force 2FA enrollment at next login
 $MAILBOX_DEFAULT_ATTRIBUTES['force_tfa'] = false;
 
+// Archive mails of the mailbox (archivecow): "inherit" follows the domain, "1" always, "0" never
+$MAILBOX_DEFAULT_ATTRIBUTES['archive'] = 'inherit';
+
 // Enable SOGo access - Users will be redirected to SOGo after login (set to false to disable redirect by default)
 $MAILBOX_DEFAULT_ATTRIBUTES['sogo_access'] = true;
 

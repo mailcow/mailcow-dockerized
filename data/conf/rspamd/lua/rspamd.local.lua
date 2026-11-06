@@ -956,3 +956,138 @@ rspamd_config:register_symbol({
   end,
   priority = 1
 })
+
+-- Archive: a copy of every accepted mail of an archived mailbox goes by SMTP to the archive, through Postfix (port 591)
+rspamd_config:register_symbol({
+  name = 'MAILCOW_ARCHIVE',
+  type = 'idempotent',
+  flags = 'empty,explicit_disable,ignore_passthrough',
+  callback = function(task)
+    local rspamd_http = require "rspamd_http"
+    local rspamd_logger = require "rspamd_logger"
+    local rspamd_text = require "rspamd_text"
+    local rspamd_util = require "rspamd_util"
+    local hash = require "rspamd_cryptobox_hash"
+    local lua_smtp = require "lua_smtp"
+    local cjson = require "cjson"
+
+    -- accepted mails only: no reject, soft reject (greylisting included), discard or quarantine
+    local action = task:get_metric_action('default')
+    local accepted = (action == 'no action' or action == 'add header' or action == 'rewrite subject' or action == 'greylist')
+    local pre_accept = false
+    if task.has_pre_result then
+      local has_pre, pre_action = task:has_pre_result()
+      pre_accept = (has_pre and pre_action == 'accept')
+    end
+    if not accepted and not pre_accept then
+      return
+    end
+
+    local rcpts = {}
+    for _, r in ipairs(task:get_recipients('smtp') or {}) do
+      if r.addr and r.addr ~= '' then
+        table.insert(rcpts, r.addr)
+      end
+    end
+    if #rcpts == 0 then
+      return
+    end
+    local from = task:get_from('smtp')
+    local from_addr = (from and from[1] and from[1].addr) or ''
+    local qid = task:get_queue_id() or ''
+    -- the BCC symbol sends copies under the same condition, they bypass rspamd
+    local bcc = (pre_accept or (action ~= 'greylist' and accepted)) and not task:has_symbol('ENCRYPTED_CHAT')
+    local redis_params = rspamd_parse_redis_server('archive')
+
+    -- not archived: counted and listed for the archive status in the UI
+    -- the Message-ID finds the mail in the archive log of the UI
+    local message_id = task:get_message_id()
+    if not message_id or message_id == 'undef' then
+      message_id = ''
+    end
+    local function dropped(reason)
+      rspamd_logger.errx(task, "archive: mail %s is not archived: %s", qid, reason)
+      rspamd_redis_make_request(task, redis_params, 'ARCHIVE_DROPPED', true, function() end, 'INCR', {'ARCHIVE_DROPPED'})
+      rspamd_redis_make_request(task, redis_params, 'ARCHIVE_DROPPED_LOG', true, function() end, 'LPUSH',
+        {'ARCHIVE_DROPPED_LOG', cjson.encode({time = os.time(), qid = qid, reason = tostring(reason), message_id = message_id})})
+      rspamd_redis_make_request(task, redis_params, 'ARCHIVE_DROPPED_LOG', true, function() end, 'LTRIM', {'ARCHIVE_DROPPED_LOG', '0', '99'})
+    end
+
+    local function archive()
+      -- the archive gets the mail as accepted, with CRLF line ends and a final CRLF (also what the hash covers)
+      local content = rspamd_text.fromstring(tostring(task:get_content()))
+      content:normalize_newlines('smtp')
+      if #content < 2 or content:at(#content) ~= 10 or content:at(#content - 1) ~= 13 then
+        content = rspamd_text.fromtable({content, '\r\n'})
+      end
+      local body = {
+        from = from_addr,
+        rcpt = rcpts,
+        user = task:get_user() or '',
+        bcc = bcc,
+        qid = qid,
+        received = rspamd_util.get_time(),
+        sha256 = hash.create_specific('sha256', content):hex()
+      }
+
+      local function sent_cb(ok, err)
+        if not ok then
+          dropped(err)
+        end
+      end
+
+      local function journal_cb(err, code, res_body)
+        if err or code ~= 200 then
+          dropped(string.format('owner lookup failed (%s, %s)', err, code))
+          return
+        end
+        local ok, res = pcall(cjson.decode, tostring(res_body))
+        if not ok or type(res) ~= 'table' then
+          dropped('invalid answer of the owner lookup')
+          return
+        end
+        if res.archive ~= true then
+          return
+        end
+        -- lua_smtp ends the data with CRLF.CRLF, so the last CRLF of the content is left to it
+        lua_smtp.sendmail({
+          task = task,
+          host = os.getenv("IPV4_NETWORK") .. '.253',
+          port = 591,
+          from = res.sender,
+          recipients = res.rcpt,
+          helo = 'archive',
+          timeout = 20,
+        }, {res.headers or '', content:span(1, #content - 2)}, sent_cb)
+      end
+
+      rspamd_http.request({
+        task = task,
+        url = 'http://nginx:8081/archive.php',
+        body = cjson.encode(body),
+        timeout = (#rcpts > 100) and 10.0 or 2.0,
+        callback = journal_cb,
+        headers = {['Content-Type'] = 'application/json'},
+      })
+    end
+
+    local function enabled_cb(err, data)
+      if not err and type(data) == 'string' and data == '0' then
+        return
+      end
+      archive()
+    end
+
+    local ret = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      'ARCHIVE_ENABLED', -- hash key
+      false, -- is write
+      enabled_cb, --callback
+      'GET', -- command
+      {'ARCHIVE_ENABLED'} -- arguments
+    )
+    if not ret then
+      archive()
+    end
+  end
+})

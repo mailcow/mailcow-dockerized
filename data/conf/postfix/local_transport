@@ -1,2 +1,3 @@
 /watchdog@localhost$/   watchdog_discard:
+/^archive-bounce@localhost$/  archive_discard:
 /localhost$/  local:
