@@ -573,8 +573,8 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.domain_alias_options }}</label>
             <div class="col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
                 <br>
                 <p>{{ lang.edit.domain_alias_wildcard_info|raw }}</p>
               </div>
@@ -724,8 +724,8 @@
           <div class="row mb-2">
             <label class="control-label col-sm-2">{{ lang.edit.domain_alias_options }}</label>
             <div class="col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
                 <br>
                 <p>{{ lang.edit.domain_alias_wildcard_info|raw }}</p>
               </div>
@@ -915,21 +915,21 @@
             <label class="control-label col-sm-2 text-sm-end" for="goto">{{ lang.add.target_address }}</label>
             <div class="col-sm-10">
               <input type="text" autocorrect="off" autocapitalize="none" class="form-control mb-4" name="mbox_target" placeholder="ellen@wayland-yutani.terre" required>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null"> {{ lang.add.goto_null }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_null"> {{ lang.add.goto_null }}</label>
               </div>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_spam"> {{ lang.add.goto_spam|raw }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_spam"> {{ lang.add.goto_spam|raw }}</label>
               </div>
-              <div class="checkbox">
-                <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_ham"> {{ lang.add.goto_ham|raw }}</label>
+              <div class="form-check">
+                <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_ham"> {{ lang.add.goto_ham|raw }}</label>
               </div>
             </div>
           </div>
           <div class="row mb-2">
             <div class="offset-sm-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" checked> {{ lang.add.active }}</label>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.add.active }}</label>
               </div>
             </div>
           </div>

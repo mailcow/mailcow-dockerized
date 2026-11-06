@@ -44,8 +44,8 @@
       {% else %}
       <textarea id="textarea_alias_goto" class="form-control mb-4" autocapitalize="none" autocorrect="off" rows="10" id="goto" name="goto" required>{{ goto|replace({',': ', '}) }}</textarea>
       {% endif %}
-      <div class="checkbox">
-        <label><input class="goto_checkbox" type="checkbox" value="1" name="goto_null"{% if result.goto == 'null@localhost' %} checked{% endif %}> {{ lang.add.goto_null }}</label>
+      <div class="form-check">
+        <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_null"{% if result.goto == 'null@localhost' %} checked{% endif %}> {{ lang.add.goto_null }}</label>
       </div>
       <div class="form-check">
         <label><input class="form-check-input goto_checkbox" type="checkbox" value="1" name="goto_spam"{% if result.goto == 'spam@localhost' %} checked{% endif %}> {{ lang.add.goto_spam|raw }}</label>
