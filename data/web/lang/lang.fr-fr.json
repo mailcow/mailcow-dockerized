@@ -718,7 +718,7 @@
         "validate_save": "Valider et enregistrer",
         "lookup_mx": "La destination est une expression régulière qui doit correspondre avec le nom du MX (<code>.*\\.google\\.com</code> pour acheminer tout le courrier destiné à un MX se terminant par google.com via ce saut)",
         "mailbox_relayhost_info": "S'applique uniquement à la boîte de réception et aux alias directs, remplace le relayhost du domaine.",
-        "alias_wildcard": "Editer l'alias générique",
+        "alias_wildcard": "Éditer l'alias générique",
         "domain_alias_options": "Options d'alias",
         "domain_alias_wildcard": "Permettre la création d'alias d'e-mail avec un caractère de substitution <small>(ellen*@wayland-yutani.earth)</small>",
         "domain_alias_wildcard_info": "<div class=\"badge fs-6 bg-warning\">Attention</div> Cette option autorise tous les administrateurs du domaine à créer des alias d'e-mail avec un caractère de substitution \"*\". Un alias générique ne remplacera jamais une boîte aux lettres existante.",

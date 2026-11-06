@@ -2,7 +2,7 @@
 
 {% block inner_content %}
 {% if result %}
-<h4>{{ lang.edit.alias }}</h4>
+<h4>{% if result.is_wildcard == '1' %}{{ lang.edit.alias_wildcard }}{% else %}{{ lang.edit.alias }}{% endif %}</h4>
 <br>
 <form class="form-horizontal" data-id="editalias" role="form" method="post">
   <input type="hidden" value="0" name="active">
