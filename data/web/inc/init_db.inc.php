@@ -688,6 +688,7 @@ function init_db_schema()
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "private_comment" => "TEXT",
           "public_comment" => "TEXT",
+          "is_wildcard" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "sogo_visible" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "internal" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "sender_allowed" => "TINYINT(1) NOT NULL DEFAULT '1'",
