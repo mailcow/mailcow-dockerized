@@ -99,6 +99,7 @@ class StatusServiceTest extends TestCase
             ['time' => 1700000280, 'status' => 'softbounce', 'qid' => 'A2', 'message_id' => 'm2@firma.de',
                 'text' => 'host archive.example[192.0.2.5] said: 550 5.1.1 unknown (in reply to RCPT TO command)'],
         ], array_slice($log, 1));
+        $this->assertCount(2, $this->service()->log(2));
     }
 
     public function testOnlyAdmins(): void

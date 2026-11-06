@@ -154,6 +154,7 @@ function quarantine($_action, $_data = null) {
             $mail->addAttachment($msg_tmpf, $detail_row['qid'] . '.eml');
             $mail->Body = sprintf($lang['quarantine']['release_body']);
             $mail->send();
+            $released_msg = $mail->getSentMIMEMessage();
             unlink($msg_tmpf);
           }
           catch (phpmailerException $e) {
@@ -170,6 +171,7 @@ function quarantine($_action, $_data = null) {
         }
         elseif ($release_format == 'raw') {
           $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $detail_row['msg']);
+          $released_msg = $detail_row['msg'];
           // dot-stuffing per RFC5321 4.5.2: escape leading dots
           $detail_row['msg'] = preg_replace('~^\.~m', '..', $detail_row['msg']);
           $postfix_talk = array(
@@ -212,6 +214,10 @@ function quarantine($_action, $_data = null) {
             }
           }
           fclose($smtp_connection);
+        }
+        // Port 590 bypasses rspamd, so the archive gets released mails here
+        if (isset($released_msg)) {
+          \Mailcow\Archive\ArchiveModule::fromGlobals()->journal->submitDelivered($released_msg, $sender, array($detail_row['rcpt']), 'quarantine');
         }
         $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE id = :id");
         $stmt->execute(array(
@@ -453,6 +459,7 @@ function quarantine($_action, $_data = null) {
               $mail->addAttachment($msg_tmpf, $row['qid'] . '.eml');
               $mail->Body = sprintf($lang['quarantine']['release_body']);
               $mail->send();
+              $released_msg = $mail->getSentMIMEMessage();
               unlink($msg_tmpf);
             }
             catch (phpmailerException $e) {
@@ -467,6 +474,7 @@ function quarantine($_action, $_data = null) {
           }
           elseif ($release_format == 'raw') {
             $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $row['msg']);
+            $released_msg = $row['msg'];
             // dot-stuffing per RFC5321 4.5.2: escape leading dots
             $row['msg'] = preg_replace('~^\.~m', '..', $row['msg']);
             $postfix_talk = array(
@@ -505,6 +513,11 @@ function quarantine($_action, $_data = null) {
               }
             }
             fclose($smtp_connection);
+          }
+          // Port 590 bypasses rspamd, so the archive gets released mails here
+          if (isset($released_msg)) {
+            \Mailcow\Archive\ArchiveModule::fromGlobals()->journal->submitDelivered($released_msg, $sender, array($row['rcpt']), 'quarantine');
+            unset($released_msg);
           }
           $stmt = $pdo->prepare("DELETE FROM `quarantine` WHERE `id` = :id");
           $stmt->execute(array(

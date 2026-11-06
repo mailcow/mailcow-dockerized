@@ -45,6 +45,7 @@ $template_data = [
   'lang_edit' => json_encode($lang['edit']),
   'lang_datatables' => json_encode($lang['datatables']),
   'imapsync_redirect_uri' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri(),
+  'archive_enabled' => \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled(),
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

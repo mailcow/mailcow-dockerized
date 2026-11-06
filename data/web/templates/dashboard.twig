@@ -17,6 +17,7 @@
       <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-logs" aria-selected="false" aria-controls="tab-api-logs" role="tab" data-bs-toggle="tab">API</button></li>
       <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-api-rl" aria-selected="false" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Ratelimits</button></li>
       <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-cron-logs" aria-selected="false" aria-controls="tab-api-rl" role="tab" data-bs-toggle="tab">Crontasks</button></li>
+      <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-archive-logs" aria-selected="false" aria-controls="tab-archive-logs" role="tab" data-bs-toggle="tab">{{ lang.admin.archive }}</button></li>
       <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.external_logs }}</span></li>
       <li role="presentation"><button class="dropdown-item" data-bs-target="#tab-rspamd-history" aria-selected="false" aria-controls="tab-rspamd-history" role="tab" data-bs-toggle="tab">Rspamd</button></li>
       <li role="presentation"><span class="dropdown-header fs-6">{{ lang.debug.static_logs }}</span></li>
@@ -543,6 +544,21 @@
               <li class="table_collapse_option"><a class="dropdown-item" data-datatables-collapse="cron_log" data-table="cron_log" href="#">{{ lang.datatables.collapse_all }}</a></li>
             </ul>
             <table id="cron_log" class="table table-striped dt-responsive w-100"></table>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" class="tab-pane" id="tab-archive-logs">
+        <div class="debug-log-info">{{ lang.admin.archive_log_info }}</div>
+        <div class="card">
+          <div class="card-header d-flex align-items-center fs-5">
+            <span class="mt-2 ms-2">{{ lang.admin.archive }}</span>
+            <div class="btn-group ms-auto">
+              <button class="btn btn-sm btn-secondary refresh_table" data-table="archive_log">{{ lang.admin.refresh }}</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <table id="archive_log" class="table table-striped dt-responsive w-100"></table>
           </div>
         </div>
       </div>

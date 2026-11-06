@@ -37,10 +37,10 @@ class ArchiveApiController
         return $this->read(fn(): array => $this->status->status());
     }
 
-    /** GET archive/log */
-    public function getLog(): array
+    /** GET logs/archive[/count] */
+    public function getLog(int $count = 0): array
     {
-        return $this->read(fn(): array => $this->status->log());
+        return $this->read(fn(): array => $this->status->log($count));
     }
 
     /** GET archive/mailboxes */

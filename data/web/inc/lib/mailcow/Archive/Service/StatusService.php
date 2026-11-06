@@ -72,13 +72,14 @@ class StatusService
     }
 
     /**
-     * GET archive/log: deliveries, expired copies and mails not archived, newest first (admins, read-only keys included).
+     * GET logs/archive: deliveries, expired copies and mails not archived, newest first (admins, read-only keys included);
+     * $count limits the entries, 0 keeps the default.
      *
      * @throws AccessDenied
      */
-    public function log(): array
+    public function log(int $count = 0): array
     {
         $this->context->requireAdmin(false);
-        return $this->state->events();
+        return ($count > 0) ? $this->state->events($count) : $this->state->events();
     }
 }

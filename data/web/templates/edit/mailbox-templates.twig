@@ -114,6 +114,17 @@
         </select>
       </div>
     </div>
+    <div class="row mb-2{% if not archive_enabled %} d-none{% endif %}">
+      <label class="control-label col-sm-2" for="archive">{{ lang.edit.archive }}</label>
+      <div class="col-sm-10">
+        <select class="form-control" name="archive" id="archive">
+          <option value="inherit"{% if template.attributes.archive not in ['0', '1'] %} selected{% endif %}>{{ lang.edit.archive_inherit }}</option>
+          <option value="1"{% if template.attributes.archive == '1' %} selected{% endif %}>{{ lang.edit.archive_on }}</option>
+          <option value="0"{% if template.attributes.archive == '0' %} selected{% endif %}>{{ lang.edit.archive_off }}</option>
+        </select>
+        <small class="text-muted d-block">{{ lang.edit.archive_info }}</small>
+      </div>
+    </div>
     <div class="row mb-4">
       <label class="control-label col-sm-2">ACL</label>
       <div class="col-sm-10">

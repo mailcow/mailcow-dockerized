@@ -1,0 +1,168 @@
+<div class="tab-pane fade" id="tab-archive" role="tabpanel" aria-labelledby="tab-archive">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-archive" data-bs-toggle="collapse" aria-controls="collapse-tab-archive">
+        {{ lang.admin.archive }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.admin.archive }}</span>
+    </div>
+    <div id="collapse-tab-archive" class="card-body collapse" data-bs-parent="#admin-content">
+      <div class="row">
+        <p class="offset-md-3 col-12 col-md-9 mb-4">{{ lang.admin.archive_info }}</p>
+      </div>
+      <form class="form-horizontal" role="form" data-id="archive" method="post" autocomplete="off">
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_enabled">{{ lang.admin.archive_enabled }}:</label>
+          </div>
+          <div class="col-12 col-md-9 d-flex align-items-center">
+            <input type="hidden" name="enabled" value="0">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="archive_enabled" name="enabled" value="1"{% if archive_settings.enabled == 1 %} checked{% endif %}>
+            </div>
+          </div>
+          <div class="offset-md-3 col-12 col-md-9">
+            <small class="text-muted">{{ lang.admin.archive_enabled_info }}</small>
+          </div>
+        </div>
+        {% if archive_settings.enabled == 1 %}
+        {# Filled by js/site/archive.js: one line per problem; details in the archive log and the queue manager #}
+        <div class="row mb-2" id="archive_status">
+          <div class="offset-md-3 col-12 col-md-9 col-lg-7">
+            <div id="archive_state"><p class="text-muted mb-2">{{ lang.datatables.loadingRecords }}</p></div>
+            <small class="d-block">
+              <a href="/admin/dashboard" id="archive_log_link"><i class="bi bi-journal-text"></i> {{ lang.admin.archive_log }}</a>
+              <a href="/admin/queue" class="ms-3"><i class="bi bi-inboxes"></i> {{ lang.queue.queue_manager }}</a>
+              <a href="#" class="ms-3" id="archive_refresh"><i class="bi bi-arrow-clockwise"></i> {{ lang.admin.refresh }}</a>
+            </small>
+          </div>
+        </div>
+        {% endif %}
+
+        <legend class="fs-5 mt-4"><i class="bi bi-plug"></i> {{ lang.admin.archive_section_connection }}</legend><hr>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_address">{{ lang.admin.archive_address }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="email" class="form-control" id="archive_address" name="address" placeholder="journal@archive.example.com" value="{{ archive_settings.address }}">
+          </div>
+          <div class="offset-md-3 col-12 col-md-9">
+            <small class="text-muted">{{ lang.admin.archive_address_info }}</small>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_host">{{ lang.admin.archive_host }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <div class="input-group">
+              <input type="text" class="form-control" id="archive_host" name="host" placeholder="archive.example.com" value="{{ archive_settings.host }}">
+              <span class="input-group-text">{{ lang.admin.archive_port }}</span>
+              <input type="number" class="form-control" id="archive_port" name="port" min="1" max="65535" style="max-width: 7rem" aria-label="{{ lang.admin.archive_port }}" value="{{ archive_settings.port }}">
+            </div>
+          </div>
+          <div class="offset-md-3 col-12 col-md-9">
+            <small class="text-muted">{{ lang.admin.archive_host_info }}</small>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_tls">{{ lang.admin.archive_tls }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <select class="full-width-select form-control" id="archive_tls" name="tls">
+              {% for mode in ['encrypt', 'verify', 'may'] %}
+              <option value="{{ mode }}"{% if archive_settings.tls == mode %} selected{% endif %}>{{ attribute(lang.admin, 'archive_tls_' ~ mode) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_username">{{ lang.admin.archive_username }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="text" class="form-control" id="archive_username" name="username" autocomplete="off" value="{{ archive_settings.username }}">
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_password">{{ lang.admin.archive_password }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="password" class="form-control" id="archive_password" name="password" autocomplete="new-password"
+              placeholder="{% if archive_settings.has_password == 1 %}{{ lang.edit.unchanged_if_empty }}{% endif %}">
+            {% if archive_settings.has_password == 1 %}
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" id="archive_password_remove" name="password_remove" value="1">
+              <label class="form-check-label" for="archive_password_remove">{{ lang.admin.archive_password_remove }}</label>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <legend class="fs-5 mt-4"><i class="bi bi-file-earmark-text"></i> {{ lang.admin.archive_section_headers }}</legend><hr>
+        <div class="row mb-2">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_profile">{{ lang.admin.archive_profile }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <select class="full-width-select form-control" id="archive_profile" name="profile">
+              {% for profile in ['archivecow', 'envelope', 'none'] %}
+              <option value="{{ profile }}"{% if archive_settings.profile == profile %} selected{% endif %}>{{ attribute(lang.admin, 'archive_profile_' ~ profile) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="offset-md-3 col-12 col-md-9">
+            {% for profile in ['archivecow', 'envelope', 'none'] %}
+            <small class="text-muted archive-profile-info archive-profile-info-{{ profile }}{% if archive_settings.profile != profile %} d-none{% endif %}">{{ attribute(lang.admin, 'archive_profile_' ~ profile ~ '_info') }}</small>
+            {% endfor %}
+          </div>
+        </div>
+        {# Fields of the other profiles are hidden and disabled, so their stored values are kept #}
+        {% set archivecow = archive_settings.profile == 'archivecow' %}
+        {% set envelope = archive_settings.profile == 'envelope' %}
+        <div class="row mb-2 archive-profile archive-profile-archivecow{% if not archivecow %} d-none{% endif %}">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_signing_secret">{{ lang.admin.archive_signing_secret }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="password" class="form-control" id="archive_signing_secret" name="signing_secret" autocomplete="new-password"
+              placeholder="{% if archive_settings.has_signing_secret == 1 %}{{ lang.edit.unchanged_if_empty }}{% endif %}"{% if not archivecow %} disabled{% endif %}>
+          </div>
+          <div class="offset-md-3 col-12 col-md-9">
+            <small class="text-muted">{{ lang.admin.archive_signing_secret_info }}</small>
+          </div>
+        </div>
+        <div class="row mb-2 archive-profile archive-profile-envelope{% if not envelope %} d-none{% endif %}">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_header_from">{{ lang.admin.archive_header_from }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="text" class="form-control" id="archive_header_from" name="header_from" value="{{ archive_settings.header_from }}"{% if not envelope %} disabled{% endif %}>
+          </div>
+        </div>
+        <div class="row mb-2 archive-profile archive-profile-envelope{% if not envelope %} d-none{% endif %}">
+          <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+            <label class="control-label" for="archive_header_rcpt">{{ lang.admin.archive_header_rcpt }}:</label>
+          </div>
+          <div class="col-12 col-md-9 col-lg-5">
+            <input type="text" class="form-control" id="archive_header_rcpt" name="header_rcpt" value="{{ archive_settings.header_rcpt }}"{% if not envelope %} disabled{% endif %}>
+          </div>
+        </div>
+
+        <hr class="mt-4">
+        <div class="row mb-2">
+          <div class="offset-md-3 col-12 col-md-9">
+            {% set archive_ready = archive_settings.address and (archive_settings.profile != 'archivecow' or archive_settings.has_signing_secret == 1) %}
+            <button type="button" class="btn btn-sm d-block d-sm-inline btn-success mb-1" data-action="edit_selected" data-item="archive" data-id="archive" data-api-url='edit/archive' data-api-attr='{}'><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+            <button type="button" class="btn btn-sm d-block d-sm-inline btn-secondary mb-1 archive-test" data-action="edit_selected" data-item="archive" data-id="archive_test" data-api-url='edit/archive' data-api-attr='{"action":"test"}'{% if not archive_ready %} disabled{% endif %}><i class="bi bi-plug"></i> {{ lang.admin.archive_test }}</button>
+            <button type="button" class="btn btn-sm d-block d-sm-inline btn-secondary mb-1 archive-test" data-action="edit_selected" data-item="archive" data-id="archive_test" data-api-url='edit/archive' data-api-attr='{"action":"testmail"}'{% if not archive_ready %} disabled{% endif %}><i class="bi bi-envelope"></i> {{ lang.admin.archive_testmail }}</button>
+            <small class="text-muted d-block" id="archive_test_info">{{ lang.admin.archive_test_info }}</small>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

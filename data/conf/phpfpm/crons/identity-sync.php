@@ -60,6 +60,7 @@ $_SESSION['acl']['sogo_access'] = "1";
 $_SESSION['acl']['protocol_access'] = "1";
 $_SESSION['acl']['mailbox_relayhost'] = "1";
 $_SESSION['acl']['unlimited_quota'] = "1";
+$_SESSION['acl']['archive'] = "1";
 
 // One run at a time, released when the process ends
 $lock = fopen('/tmp/identity-sync.lock', 'c');

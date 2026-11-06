@@ -65,7 +65,8 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             'mta_sts' => $mta_sts,
             'mailboxes' => mailbox('get', 'mailboxes', $_GET["domain"]),
             'aliases' => mailbox('get', 'aliases', $_GET["domain"], 'address'),
-            'alias_domains' => mailbox('get', 'alias_domains', $_GET["domain"])
+            'alias_domains' => mailbox('get', 'alias_domains', $_GET["domain"]),
+            'archive_enabled' => \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled()
           ];
       }
     }
@@ -75,6 +76,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $template_data = [
           'template' => $domain_template,
           'rl' => ['frame' => $domain_template['attributes']['rl_frame']],
+          'archive_enabled' => \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled(),
         ];
         $template = 'edit/domain-templates.twig';
         $result = true;
@@ -85,6 +87,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           $template_data = [
             'template' => $mailbox_template,
             'rl' => ['frame' => $mailbox_template['attributes']['rl_frame']],
+            'archive_enabled' => \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled(),
           ];
           $template = 'edit/mailbox-templates.twig';
           $result = true;
@@ -162,6 +165,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'user_acls' => acl('get', 'user', $mailbox),
           'mailbox_details' => $result,
           'iam_settings' => $iam_settings,
+          'archive_enabled' => \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled(),
         ];
       }
     }
