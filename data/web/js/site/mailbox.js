@@ -1244,7 +1244,10 @@ jQuery(function($){
             item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
             item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
-            item.attributes.quota = humanFileSize(item.attributes.quota);
+            item.attributes.quota = {
+              sortBy: item.attributes.quota,
+              value: humanFileSize(item.attributes.quota)
+            };
 
             item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_in == 1 ? '1' : '0') + '</span></i>';
             item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_out == 1 ? '1' : '0') + '</span></i>';
@@ -1332,6 +1335,15 @@ jQuery(function($){
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
+          createdCell: function(td, cellData) {
+            $(td).attr({
+              "data-order": cellData.sortBy,
+              "data-sort": cellData.sortBy
+            });
+          },
+          render: function(data) {
+            return data.value;
+          }
         },
         {
           title: lang.tls_enforce_in,
