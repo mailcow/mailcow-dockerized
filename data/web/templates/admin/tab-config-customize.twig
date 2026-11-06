@@ -120,6 +120,7 @@
             <th>{{ lang.admin.link }}</th>
             <th>{{ lang.admin.user_link }}</th>
             <th style="width:125px;">{{ lang.admin.app_hide }}</th>
+            <th style="width:125px;">{{ lang.admin.app_admin_only }}</th>
             <th style="width:100px;">&nbsp;</th>
           </tr>
           {% for row in app_links %}
@@ -132,6 +133,12 @@
                   <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
                     <input data-id="app_links" type="hidden" name="hide" {% if val.hide %}value="1"{% else %}value="0"{% endif %}>
                     <input class="form-check-input app_hide" type="checkbox" value="1" {% if val.hide %}checked{% endif %}>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-center" style="height: 33.5px">
+                    <input data-id="app_links" type="hidden" name="admin_only" {% if val.admin_only %}value="1"{% else %}value="0"{% endif %}>
+                    <input class="form-check-input app_hide" type="checkbox" value="1" {% if val.admin_only %}checked{% endif %}>
                   </div>
                 </td>
                 <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100" type="button">{{ lang.admin.remove_row }}</a></td>
@@ -148,6 +155,7 @@
                   <input class="form-check-input" data-id="app_links" type="checkbox" name="hide" value="1" disabled {% if app.hide %}checked{% endif %}>
                 </div>
               </td>
+              <td></td>
               <td><a href="#" role="button" class="btn btn-sm btn-xs-lg btn-secondary h-100 w-100 disabled" type="button">{{ lang.admin.remove_row }}</a></td>
             </tr>
           {% endfor %}
