@@ -277,9 +277,34 @@ if [[ ! -z ${SPAMHAUS_DQS_KEY} ]]; then
       }
     }
     "DBL" {
-        # override the defaults for DBL defined in modules.d/rbl.conf
+        # full copy of the DBL rule from modules.d/rbl.conf, pointed at DQS:
+        # the override include replaces the stock rule instead of merging into it
         rbl = "${SPAMHAUS_DQS_KEY}.dbl.dq.spamhaus.net";
         disable_monitoring = true;
+        checks = ["emails", "dkim", "helo", "rdns", "replyto", "urls", "content_urls"];
+        no_ip = true;
+        ignore_defaults = true;
+        exclude_users = false;
+        emails_domainonly = true;
+        selector = {
+            from_smtp = "from('smtp'):domain";
+            from_mime = "from('mime'):domain";
+            mid = "header(Message-Id).regexp('@([^\.]+\.[^>]+)').last";
+        }
+        returncodes = {
+            DBL_SPAM = "127.0.1.2";
+            DBL_PHISH = "127.0.1.4";
+            DBL_MALWARE = "127.0.1.5";
+            DBL_BOTNET = "127.0.1.6";
+            DBL_ABUSE = "127.0.1.102";
+            DBL_ABUSE_REDIR = "127.0.1.103";
+            DBL_ABUSE_PHISH = "127.0.1.104";
+            DBL_ABUSE_MALWARE = "127.0.1.105";
+            DBL_ABUSE_BOTNET = "127.0.1.106";
+            DBL_PROHIBIT = "127.0.1.255";
+            DBL_BLOCKED_OPENRESOLVER = "127.255.255.254";
+            DBL_BLOCKED = "127.255.255.255";
+        }
     }
     "ZRD" {
         ignore_defaults = true;
