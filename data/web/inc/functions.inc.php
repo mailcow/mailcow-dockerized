@@ -710,6 +710,11 @@ function hasMailboxObjectAccess($username, $role, $object) {
   if (isset($row['domain']) && hasDomainAccess($username, $role, $row['domain'])) {
     return true;
   }
+  // relay-quarantine: domain admins get access to any address of a domain they manage
+  $domain = substr(strrchr($object, "@"), 1);
+  if (!empty($domain) && hasDomainAccess($username, $role, $domain)) {
+    return true;
+  }
   return false;
 }
 // does also verify mailboxes as a mailbox is a alias == goto
