@@ -4,7 +4,7 @@ catch_non_zero() {
   ${CMD} > /dev/null
   EC=$?
   if [ ${EC} -ne 0 ]; then
-    echo "Command ${CMD} failed to execute, exit code was ${EC}"
+    echo "Command ${CMD//${REDISPASS}/***} failed to execute, exit code was ${EC}"
   fi
 }
 source /source_env.sh
