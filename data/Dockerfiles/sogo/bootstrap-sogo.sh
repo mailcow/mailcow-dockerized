@@ -13,13 +13,11 @@ do
   sleep 3
 done
 
-# Wait for updated schema
-DBV_NOW=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} --user=${DBUSER} --password=${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
-DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
-while [[ "${DBV_NOW}" != "${DBV_NEW}" ]]; do
+# Wait for updated schema (DB_VERSION from docker-compose.yml)
+DBV_NOW=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
+while [[ "${DBV_NOW}" != "${DB_VERSION}" ]]; do
   echo "Waiting for schema update..."
-  DBV_NOW=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} --user=${DBUSER} --password=${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
-  DBV_NEW=$(grep -oE '\$db_version = .*;' init_db.inc.php | sed 's/$db_version = //g;s/;//g' | cut -d \" -f2)
+  DBV_NOW=$(mariadb --skip-ssl --host=${DBHOST} --port=${DBPORT} -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SELECT version FROM versions WHERE application = 'db_schema';" -BN)
   sleep 5
 done
 echo "DB schema is ${DBV_NOW}"

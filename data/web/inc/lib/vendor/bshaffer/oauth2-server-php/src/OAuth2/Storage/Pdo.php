@@ -247,7 +247,7 @@ class Pdo implements
      * @param string $id_token
      * @return bool|mixed
      */
-    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
+    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null)
     {
         if (func_num_args() > 6) {
             // we are calling with an id token
@@ -259,12 +259,12 @@ class Pdo implements
 
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope where authorization_code=:code', $this->config['code_table']));
+            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, code_challenge=:code_challenge, code_challenge_method=:code_challenge_method where authorization_code=:code', $this->config['code_table']));
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope)', $this->config['code_table']));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, code_challenge, code_challenge_method) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :code_challenge, :code_challenge_method)', $this->config['code_table']));
         }
 
-        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope'));
+        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'code_challenge', 'code_challenge_method'));
     }
 
     /**
@@ -277,19 +277,19 @@ class Pdo implements
      * @param string $id_token
      * @return bool
      */
-    private function setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
+    private function setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null)
     {
         // convert expires to datestring
         $expires = date('Y-m-d H:i:s', $expires);
 
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, id_token =:id_token where authorization_code=:code', $this->config['code_table']));
+            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, id_token =:id_token, code_challenge=:code_challenge, code_challenge_method=:code_challenge_method where authorization_code=:code', $this->config['code_table']));
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, id_token) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :id_token)', $this->config['code_table']));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, id_token, code_challenge, code_challenge_method) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :id_token, :code_challenge, :code_challenge_method)', $this->config['code_table']));
         }
 
-        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'id_token'));
+        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'id_token', 'code_challenge', 'code_challenge_method'));
     }
 
     /**
@@ -676,6 +676,8 @@ class Pdo implements
               expires             TIMESTAMP      NOT NULL,
               scope               VARCHAR(4000),
               id_token            VARCHAR(1000),
+              code_challenge        VARCHAR(1000),
+              code_challenge_method VARCHAR(20),
               PRIMARY KEY (authorization_code)
             );
 

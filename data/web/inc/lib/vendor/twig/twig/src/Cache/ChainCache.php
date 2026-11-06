@@ -19,7 +19,7 @@ namespace Twig\Cache;
  *
  * @author Quentin Devos <quentin@devos.pm>
  */
-final class ChainCache implements CacheInterface
+final class ChainCache implements CacheInterface, RemovableCacheInterface
 {
     /**
      * @param iterable<CacheInterface> $caches The ordered list of caches used to store and fetch cached items
@@ -67,6 +67,15 @@ final class ChainCache implements CacheInterface
         }
 
         return 0;
+    }
+
+    public function remove(string $name, string $cls): void
+    {
+        foreach ($this->caches as $cache) {
+            if ($cache instanceof RemovableCacheInterface) {
+                $cache->remove($name, $cls);
+            }
+        }
     }
 
     /**

@@ -22,7 +22,8 @@ add_header Referrer-Policy strict-origin;
 
 index index.php index.html;
 
-client_max_body_size 0;
+# PHP accepts no larger requests (post_max_size), SOGo webmail, CalDAV/CardDAV and ActiveSync use NGINX_MAX_BODY_SIZE
+client_max_body_size 64m;
 
 gzip on;
 gzip_disable "msie6";
@@ -116,7 +117,8 @@ location ~ \.php$ {
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_param PATH_INFO $fastcgi_path_info;
-    fastcgi_param HTTP_X_REAL_IP $remote_addr;
+    fastcgi_param REMOTE_ADDR $mailcow_client_ip;
+    fastcgi_param HTTP_X_REAL_IP $mailcow_client_ip;
     # trusted internal-auth marker; empty for external clients (see nginx.conf map)
     fastcgi_param SOGO_AUTH_INTERNAL $sogo_auth_internal;
     fastcgi_read_timeout 3600;
@@ -181,6 +183,7 @@ location /sogo-auth-verify {
     proxy_set_header  Content-Length "";
     proxy_pass        http://127.0.0.1:65510/sogo-auth;
     proxy_pass_request_body off;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
 }
 
 location ^~ /Microsoft-Server-ActiveSync {
@@ -204,7 +207,7 @@ location ^~ /Microsoft-Server-ActiveSync {
     proxy_busy_buffers_size 512k;
     proxy_set_header Host $http_host;
     client_body_buffer_size 512k;
-    client_max_body_size 0;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
 }
 
 location ^~ /SOGo {
@@ -255,7 +258,7 @@ location ^~ /SOGo {
     proxy_send_timeout 3600;
     proxy_read_timeout 3600;
     client_body_buffer_size 128k;
-    client_max_body_size 0;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
     break;
 }
 

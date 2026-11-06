@@ -84,6 +84,41 @@ class AuthorizationCode implements GrantTypeInterface
             return false;
         }
 
+        if (isset($authCode['code_challenge']) && $authCode['code_challenge']) {
+            if (!($code_verifier = $request->request('code_verifier'))) {
+                $response->setError(400, 'code_verifier_missing', "The PKCE code verifier parameter is required.");
+
+                return false;
+            }
+            // Validate code_verifier according to RFC-7636
+            // @see: https://tools.ietf.org/html/rfc7636#section-4.1
+            if (preg_match('/^[A-Za-z0-9-._~]{43,128}$/', $code_verifier) !== 1) {
+                $response->setError(400, 'code_verifier_invalid', "The PKCE code verifier parameter is invalid.");
+
+                return false;
+            }
+            $code_verifier = $request->request('code_verifier');
+            switch ($authCode['code_challenge_method']) {
+                case 'S256':
+                    $code_verifier_hashed = strtr(rtrim(base64_encode(hash('sha256', $code_verifier, true)), '='), '+/', '-_');
+                    break;
+
+                case 'plain':
+                    $code_verifier_hashed = $code_verifier;
+                    break;
+
+                default:
+                    $response->setError(400, 'code_challenge_method_invalid', "Unknown PKCE code challenge method.");
+
+                return FALSE;
+            }
+            if ($code_verifier_hashed !== $authCode['code_challenge']) {
+                $response->setError(400, 'code_verifier_mismatch', "The PKCE code verifier parameter does not match the code challenge.");
+
+                return FALSE;
+            }
+        }
+
         if (!isset($authCode['code'])) {
             $authCode['code'] = $code; // used to expire the code after the access token is granted
         }

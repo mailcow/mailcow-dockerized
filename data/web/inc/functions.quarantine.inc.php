@@ -767,8 +767,9 @@ function quarantine($_action, $_data = null) {
       else {
         $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
         foreach ($domains as $domain) {
-          $stmt = $pdo->prepare('SELECT `id`, `qid`, `subject`, LOCATE("VIRUS_FOUND", `symbols`) AS `virus_flag`, `score`, `rcpt`, `sender`, `action`, UNIX_TIMESTAMP(`created`) AS `created`, `notified` FROM `quarantine` WHERE `rcpt` REGEXP :domain');
-          $stmt->execute(array(':domain' => '@' . $domain . '$'));
+          // Compare the domain part exactly, a regex would treat dots in the domain as wildcards
+          $stmt = $pdo->prepare('SELECT `id`, `qid`, `subject`, LOCATE("VIRUS_FOUND", `symbols`) AS `virus_flag`, `score`, `rcpt`, `sender`, `action`, UNIX_TIMESTAMP(`created`) AS `created`, `notified` FROM `quarantine` WHERE SUBSTRING_INDEX(`rcpt`, "@", -1) = :domain');
+          $stmt->execute(array(':domain' => $domain));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
             $q_meta[] = $row;

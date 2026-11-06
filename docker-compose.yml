@@ -1,7 +1,10 @@
+# Version of the database schema
+x-db-version: &db_version DB_VERSION=02112026_1600
+
 services:
 
     unbound-mailcow:
-      image: ghcr.io/mailcow/unbound:1.26.1-1
+      image: ghcr.io/mailcow/unbound:1.26.2-1
       environment:
         - TZ=${TZ}
         - SKIP_UNBOUND_HEALTHCHECK=${SKIP_UNBOUND_HEALTHCHECK:-n}
@@ -42,7 +45,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:7.4.11-alpine
+      image: redis:7.4.12-alpine
       entrypoint: ["/bin/sh","/redis-conf.sh"]
       volumes:
         - redis-vol-1:/data/
@@ -84,7 +87,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:4.2.1-1
+      image: ghcr.io/mailcow/rspamd:4.2.3-1
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -117,7 +120,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: ghcr.io/mailcow/phpfpm:8.2.35-1
+      image: ghcr.io/mailcow/phpfpm:8.2.35-2
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -150,6 +153,7 @@ services:
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
+        - *db_version
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - REDISPASS=${REDISPASS}
@@ -188,20 +192,24 @@ services:
       restart: always
       labels:
         ofelia.enabled: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.schedule: "0 * * * * *"
-        ofelia.job-exec.phpfpm_keycloak_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_keycloak_sync.command: "/bin/bash -c \"php /crons/keycloak-sync.php || exit 0\""
-        ofelia.job-exec.phpfpm_ldap_sync.schedule: "0 * * * * *"
-        ofelia.job-exec.phpfpm_ldap_sync.no-overlap: "true"
-        ofelia.job-exec.phpfpm_ldap_sync.command: "/bin/bash -c \"php /crons/ldap-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_identity_sync.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_identity_sync.no-overlap: "true"
+        ofelia.job-exec.phpfpm_identity_sync.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/identity-sync.php || exit 0\""
+        ofelia.job-exec.phpfpm_group_grants.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_group_grants.no-overlap: "true"
+        ofelia.job-exec.phpfpm_group_grants.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/group-grants.php || exit 0\""
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.schedule: "0 * * * * *"
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.no-overlap: "true"
+        ofelia.job-exec.phpfpm_imapsync_oauth_refresh.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && php /crons/imapsync-oauth-refresh.php || exit 0\""
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: ghcr.io/mailcow/sogo:5.12.12-1
+      image: ghcr.io/mailcow/sogo:5.12.13-1
       environment:
+        - *db_version
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
@@ -224,7 +232,6 @@ services:
       volumes:
         - ./data/hooks/sogo:/hooks:Z
         - ./data/conf/sogo/:/etc/sogo/:z
-        - ./data/web/inc/init_db.inc.php:/init_db.inc.php:z
         - ./data/conf/sogo/custom-favicon.ico:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo.ico:z
         - ./data/conf/sogo/custom-shortlogo.svg:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo-compact.svg:z
         - ./data/conf/sogo/custom-fulllogo.svg:/usr/local/lib/GNUstep/SOGo/WebServerResources/img/sogo-full.svg:z
@@ -252,7 +259,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.3.21.1-2
+      image: ghcr.io/mailcow/dovecot:2.3.21.1-4
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -275,6 +282,7 @@ services:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/:z
       environment:
+        - *db_version
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
         - DOVECOT_MASTER_PASS=${DOVECOT_MASTER_PASS:-}
         - MAILCOW_REPLICA_IP=${MAILCOW_REPLICA_IP:-}
@@ -287,6 +295,7 @@ services:
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - MAILCOW_PASS_SCHEME=${MAILCOW_PASS_SCHEME:-BLF-CRYPT}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-7200}
         - ACL_ANYONE=${ACL_ANYONE:-disallow}
@@ -312,7 +321,7 @@ services:
         ofelia.enabled: "true"
         ofelia.job-exec.dovecot_imapsync_runner.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_imapsync_runner.no-overlap: "true"
-        ofelia.job-exec.dovecot_imapsync_runner.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu nobody /usr/local/bin/imapsync_runner.pl || exit 0\""
+        ofelia.job-exec.dovecot_imapsync_runner.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu nobody /usr/local/bin/imapsync_runner.py || exit 0\""
         ofelia.job-exec.dovecot_trim_logs.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_trim_logs.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0\""
         ofelia.job-exec.dovecot_quarantine.schedule: "0 */20 * * * *"
@@ -419,7 +428,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.6-1
+      image: ghcr.io/mailcow/nginx:1.30.6-2
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -439,6 +448,7 @@ services:
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - NGINX_USE_PROXY_PROTOCOL=${NGINX_USE_PROXY_PROTOCOL:-n}
         - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+        - NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-128m}
       volumes:
         - ./data/web:/web:ro,z
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro,z
@@ -465,7 +475,7 @@ services:
           condition: service_started
         unbound-mailcow:
           condition: service_healthy
-      image: ghcr.io/mailcow/acme:1.98
+      image: ghcr.io/mailcow/acme:1.99
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -506,7 +516,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: ghcr.io/mailcow/netfilter:1.64
+      image: ghcr.io/mailcow/netfilter:1.67
       stop_grace_period: 30s
       restart: always
       privileged: true
@@ -526,7 +536,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.11
+      image: ghcr.io/mailcow/watchdog:2.13
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -544,6 +554,7 @@ services:
         - acme-mailcow
         - redis-mailcow
       environment:
+        - *db_version
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -601,7 +612,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.12
+      image: ghcr.io/mailcow/dockerapi:2.15
       security_opt:
         - label=disable
       restart: always
@@ -621,7 +632,7 @@ services:
             - dockerapi
 
     olefy-mailcow:
-      image: ghcr.io/mailcow/olefy:1.15
+      image: ghcr.io/mailcow/olefy:1.16
       restart: always
       environment:
         - TZ=${TZ}

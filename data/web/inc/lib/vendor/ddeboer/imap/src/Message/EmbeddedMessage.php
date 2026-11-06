@@ -39,6 +39,14 @@ final class EmbeddedMessage extends AbstractMessage implements EmbeddedMessageIn
     }
 
     /**
+     * @param resource|string $file the path to the saved file as a string, or a valid file descriptor
+     */
+    public function saveRawMessage($file): void
+    {
+        $this->doSaveContent($file, $this->getPartNumber());
+    }
+
+    /**
      * Get content part number.
      */
     protected function getContentPartNumber(): string

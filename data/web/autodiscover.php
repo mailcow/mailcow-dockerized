@@ -144,41 +144,15 @@ try {
 }
 
 $username = trim((string)$email);
-try {
-  $stmt = $pdo->prepare("SELECT `mailbox`.`name`, `mailbox`.`active` FROM `mailbox` 
-    INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
-    WHERE `mailbox`.`username` = :username 
-    AND `mailbox`.`active` = '1'
-    AND `domain`.`active` = '1'");
-  $stmt->execute(array(':username' => $username));
-  $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
-}
-catch(PDOException $e) {
-  // Database error - return error response with complete XML
-  list($usec, $sec) = explode(' ', microtime());
-?>
-  <Response>
-    <Error Time="<?=date('H:i:s', $sec) . substr($usec, 0, strlen($usec) - 2);?>" Id="<?=rand(1000000000, 9999999999);?>">
-      <ErrorCode>500</ErrorCode>
-      <Message>Database Error</Message>
-      <DebugData />
-    </Error>
-  </Response>
-</Autodiscover>
-<?php
-  exit(0);
-}
-
-// Mailbox not found or not active - return generic error to prevent user enumeration
-if (empty($MailboxData)) {
+if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
   try {
     $json = json_encode(
       array(
         "time" => time(),
         "ua" => $_SERVER['HTTP_USER_AGENT'],
-        "user" => $email,
+        "user" => "none",
         "ip" => $_SERVER['REMOTE_ADDR'],
-        "service" => "Error: mailbox not found or inactive"
+        "service" => "Error: invalid email address in request"
       )
     );
     $redis->lPush('AUTODISCOVER_LOG', $json);
@@ -202,13 +176,33 @@ if (empty($MailboxData)) {
 <?php
   exit(0);
 }
+try {
+  $stmt = $pdo->prepare("SELECT `mailbox`.`name`, `mailbox`.`active` FROM `mailbox`
+    INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+    WHERE `mailbox`.`username` = :username
+    AND `mailbox`.`active` = '1'
+    AND `domain`.`active` = '1'");
+  $stmt->execute(array(':username' => $username));
+  $MailboxData = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+catch(PDOException $e) {
+  // Database error - return error response with complete XML
+  list($usec, $sec) = explode(' ', microtime());
+?>
+  <Response>
+    <Error Time="<?=date('H:i:s', $sec) . substr($usec, 0, strlen($usec) - 2);?>" Id="<?=rand(1000000000, 9999999999);?>">
+      <ErrorCode>500</ErrorCode>
+      <Message>Database Error</Message>
+      <DebugData />
+    </Error>
+  </Response>
+</Autodiscover>
+<?php
+  exit(0);
+}
 
-if (!empty($MailboxData['name'])) {
-  $displayname = $MailboxData['name'];
-}
-else {
-  $displayname = $email;
-}
+$email = $username;
+$displayname = $email;
 try {
   $json = json_encode(
     array(
@@ -216,11 +210,16 @@ try {
       "ua" => $_SERVER['HTTP_USER_AGENT'],
       "user" => $email,
       "ip" => $_SERVER['REMOTE_ADDR'],
-      "service" => $autodiscover_config['autodiscoverType']
+      // The answer is the same, only the log tells unknown or inactive mailboxes apart
+      "service" => (empty($MailboxData)) ? "Error: mailbox not found or inactive" : $autodiscover_config['autodiscoverType']
     )
   );
   $redis->lPush('AUTODISCOVER_LOG', $json);
   $redis->lTrim('AUTODISCOVER_LOG', 0, 100);
+  if (empty($MailboxData)) {
+    $redis->publish("F2B_CHANNEL", "Autodiscover: Invalid mailbox attempt by " . $_SERVER['REMOTE_ADDR']);
+    error_log("Autodiscover: Invalid mailbox attempt by " . $_SERVER['REMOTE_ADDR']);
+  }
 }
 catch (RedisException $e) {
   $_SESSION['return'][] = array(
@@ -243,7 +242,7 @@ if ($autodiscover_config['autodiscoverType'] == 'imap') {
         <Server><?=$autodiscover_config['imap']['server'];?></Server>
         <Port><?=$autodiscover_config['imap']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?=$email;?></LoginName>
+        <LoginName><?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></LoginName>
         <SPA>off</SPA>
         <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
@@ -253,7 +252,7 @@ if ($autodiscover_config['autodiscoverType'] == 'imap') {
         <Server><?=$autodiscover_config['smtp']['server'];?></Server>
         <Port><?=$autodiscover_config['smtp']['port'];?></Port>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?=$email;?></LoginName>
+        <LoginName><?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></LoginName>
         <SPA>off</SPA>
         <SSL>on</SSL>
         <AuthRequired>on</AuthRequired>
@@ -265,15 +264,15 @@ if ($autodiscover_config['autodiscoverType'] == 'imap') {
     ?>
       <Protocol>
         <Type>CalDAV</Type>
-        <Server>https://<?=$autodiscover_config['caldav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['caldav']['port']; ?>/SOGo/dav/<?=$email;?>/</Server>
+        <Server>https://<?=$autodiscover_config['caldav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['caldav']['port']; ?>/SOGo/dav/<?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?>/</Server>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?=$email;?></LoginName>
+        <LoginName><?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></LoginName>
       </Protocol>
       <Protocol>
         <Type>CardDAV</Type>
-        <Server>https://<?=$autodiscover_config['carddav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['carddav']['port']; ?>/SOGo/dav/<?=$email;?>/</Server>
+        <Server>https://<?=$autodiscover_config['carddav']['server'];?><?php if ($autodiscover_config['caldav']['port'] != 443) echo ':'.$autodiscover_config['carddav']['port']; ?>/SOGo/dav/<?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?>/</Server>
         <DomainRequired>off</DomainRequired>
-        <LoginName><?=$email;?></LoginName>
+        <LoginName><?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></LoginName>
       </Protocol>
     <?php
     }
@@ -288,7 +287,7 @@ if ($autodiscover_config['autodiscoverType'] == 'imap') {
     <Culture>en:en</Culture>
     <User>
       <DisplayName><?=htmlspecialchars($displayname, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></DisplayName>
-      <EMailAddress><?=$email;?></EMailAddress>
+      <EMailAddress><?=htmlspecialchars($email, ENT_XML1 | ENT_QUOTES, 'UTF-8');?></EMailAddress>
     </User>
     <Action>
       <Settings>

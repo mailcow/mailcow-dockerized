@@ -31,4 +31,10 @@ class SameasTest extends TestExpression
             ->raw(')')
         ;
     }
+
+    public function getStringCoercedChildNames(): array
+    {
+        // `===` is strict, no coercion
+        return [];
+    }
 }

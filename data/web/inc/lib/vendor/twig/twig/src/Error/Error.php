@@ -29,44 +29,39 @@ use Twig\Template;
  * Whenever possible, you must set these information (original template name
  * and line number) yourself by passing them to the constructor. If some or all
  * these information are not available from where you throw the exception, then
- * this class will guess them automatically (when the line number is set to -1
- * and/or the name is set to null). As this is a costly operation, this
- * can be disabled by passing false for both the name and the line number
- * when creating a new instance of this class.
+ * this class will guess them automatically.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class Error extends \Exception
 {
     private $lineno;
-    private $name;
+    /** @var positive-int|null */
+    private ?int $columnno;
     private $rawMessage;
-    private $sourcePath;
-    private $sourceCode;
+    private ?Source $source;
+    private string $phpFile;
+    private int $phpLine;
 
     /**
      * Constructor.
      *
      * By default, automatic guessing is enabled.
      *
-     * @param string      $message The error message
-     * @param int         $lineno  The template line where the error occurred
-     * @param Source|null $source  The source context where the error occurred
+     * @param string            $message  The error message
+     * @param int               $lineno   The template line where the error occurred
+     * @param Source|null       $source   The source context where the error occurred
+     * @param positive-int|null $columnno The template column where the error occurred
      */
-    public function __construct(string $message, int $lineno = -1, ?Source $source = null, ?\Throwable $previous = null)
+    public function __construct(string $message, int $lineno = -1, ?Source $source = null, ?\Throwable $previous = null, ?int $columnno = null)
     {
         parent::__construct('', 0, $previous);
 
-        if (null === $source) {
-            $name = null;
-        } else {
-            $name = $source->getName();
-            $this->sourceCode = $source->getCode();
-            $this->sourcePath = $source->getPath();
-        }
-
+        $this->phpFile = $this->getFile();
+        $this->phpLine = $this->getLine();
         $this->lineno = $lineno;
-        $this->name = $name;
+        $this->columnno = $columnno;
+        $this->source = $source;
         $this->rawMessage = $message;
         $this->updateRepr();
     }
@@ -84,30 +79,45 @@ class Error extends \Exception
     public function setTemplateLine(int $lineno): void
     {
         $this->lineno = $lineno;
+        $this->updateRepr();
+    }
 
+    /**
+     * Returns the 1-based column where the error occurred, or null if unknown.
+     *
+     * @return positive-int|null
+     */
+    public function getTemplateColumn(): ?int
+    {
+        return $this->columnno;
+    }
+
+    /**
+     * @param positive-int|null $columnno
+     */
+    public function setTemplateColumn(?int $columnno): void
+    {
+        $this->columnno = $columnno;
         $this->updateRepr();
     }
 
     public function getSourceContext(): ?Source
     {
-        return $this->name ? new Source($this->sourceCode, $this->name, $this->sourcePath) : null;
+        return $this->source;
     }
 
     public function setSourceContext(?Source $source = null): void
     {
-        if (null === $source) {
-            $this->sourceCode = $this->name = $this->sourcePath = null;
-        } else {
-            $this->sourceCode = $source->getCode();
-            $this->name = $source->getName();
-            $this->sourcePath = $source->getPath();
-        }
-
+        $this->source = $source;
         $this->updateRepr();
     }
 
     public function guess(): void
     {
+        if ($this->lineno > -1) {
+            return;
+        }
+
         $this->guessTemplateInfo();
         $this->updateRepr();
     }
@@ -120,80 +130,52 @@ class Error extends \Exception
 
     private function updateRepr(): void
     {
-        $this->message = $this->rawMessage;
-
-        if ($this->sourcePath && $this->lineno > 0) {
-            $this->file = $this->sourcePath;
-            $this->line = $this->lineno;
-
-            return;
-        }
-
-        $dot = false;
-        if (str_ends_with($this->message, '.')) {
-            $this->message = substr($this->message, 0, -1);
-            $dot = true;
-        }
-
-        $questionMark = false;
-        if (str_ends_with($this->message, '?')) {
-            $this->message = substr($this->message, 0, -1);
-            $questionMark = true;
-        }
-
-        if ($this->name) {
-            if (\is_string($this->name) || $this->name instanceof \Stringable) {
-                $name = \sprintf('"%s"', $this->name);
+        if ($this->source && $this->source->getPath()) {
+            // we only update the file and the line together
+            $this->file = $this->source->getPath();
+            if ($this->lineno > 0) {
+                $this->line = $this->lineno;
             } else {
-                $name = json_encode($this->name);
+                $this->line = -1;
             }
-            $this->message .= \sprintf(' in %s', $name);
         }
 
-        if ($this->lineno && $this->lineno >= 0) {
+        $this->message = $this->rawMessage;
+        $last = substr($this->message, -1);
+        if ($punctuation = '.' === $last || '?' === $last ? $last : '') {
+            $this->message = substr($this->message, 0, -1);
+        }
+        if ($this->source && $this->source->getName()) {
+            $this->message .= \sprintf(' in "%s"', $this->source->getName());
+        }
+        if ($this->lineno > 0) {
             $this->message .= \sprintf(' at line %d', $this->lineno);
+            if (null !== $this->columnno) {
+                $this->message .= \sprintf(' column %d', $this->columnno);
+            }
         }
-
-        if ($dot) {
-            $this->message .= '.';
-        }
-
-        if ($questionMark) {
-            $this->message .= '?';
+        if ($punctuation) {
+            $this->message .= $punctuation;
         }
     }
 
     private function guessTemplateInfo(): void
     {
-        $template = null;
-        $templateClass = null;
+        // $this->source is never null here (see guess() usage in Template)
 
+        $this->lineno = 0;
+        $template = null;
         $backtrace = debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS | \DEBUG_BACKTRACE_PROVIDE_OBJECT);
         foreach ($backtrace as $trace) {
-            if (isset($trace['object']) && $trace['object'] instanceof Template) {
-                $currentClass = \get_class($trace['object']);
-                $isEmbedContainer = null === $templateClass ? false : str_starts_with($templateClass, $currentClass);
-                if (null === $this->name || ($this->name == $trace['object']->getTemplateName() && !$isEmbedContainer)) {
-                    $template = $trace['object'];
-                    $templateClass = \get_class($trace['object']);
-                }
+            if (isset($trace['object']) && $trace['object'] instanceof Template && $this->source->getName() === $trace['object']->getTemplateName()) {
+                $template = $trace['object'];
+
+                break;
             }
         }
 
-        // update template name
-        if (null !== $template && null === $this->name) {
-            $this->name = $template->getTemplateName();
-        }
-
-        // update template path if any
-        if (null !== $template && null === $this->sourcePath) {
-            $src = $template->getSourceContext();
-            $this->sourceCode = $src->getCode();
-            $this->sourcePath = $src->getPath();
-        }
-
-        if (null === $template || $this->lineno > -1) {
-            return;
+        if (null === $template) {
+            return; // Impossible to guess the info as the template was not found in the backtrace
         }
 
         $r = new \ReflectionObject($template);
@@ -206,8 +188,7 @@ class Error extends \Exception
 
         while ($e = array_pop($exceptions)) {
             $traces = $e->getTrace();
-            array_unshift($traces, ['file' => $e->getFile(), 'line' => $e->getLine()]);
-
+            array_unshift($traces, ['file' => $e instanceof self ? $e->phpFile : $e->getFile(), 'line' => $e instanceof self ? $e->phpLine : $e->getLine()]);
             while ($trace = array_shift($traces)) {
                 if (!isset($trace['file']) || !isset($trace['line']) || $file != $trace['file']) {
                     continue;

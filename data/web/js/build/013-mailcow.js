@@ -73,7 +73,8 @@ $(document).ready(function() {
   }
 
   // form cache
-  $('[data-cached-form="true"]').formcache({key: $(this).data('id')});
+  // fields marked with data-formcache-skip (secrets) are never written to localStorage
+  $('[data-cached-form="true"]').formcache({key: $(this).data('id'), controls: ['select', 'textarea', 'input:not([data-formcache-skip])']});
 
   //  tooltips
   $(function () {
@@ -113,6 +114,8 @@ $(document).ready(function() {
         }
 
         localStorage.setItem(key, tab_id);
+        // remember which card of the tab was opened
+        localStorage.setItem(key + ':collapse', $(this).attr('data-bs-target').substring(1));
       });
       // open last tab
       $('[role="tablist"]').each(function (idx, elem) {
@@ -128,7 +131,10 @@ $(document).ready(function() {
           dropdown.find('.dropdown-menu').removeClass('show');
           dropdown.find('.dropdown-toggle').attr('aria-expanded', 'false');
           var tab = $('[id^="' + lastTab + '"]');
-          $(tab).find('.card-body.collapse:first').collapse('show');
+          var lastCollapse = localStorage.getItem(key + ':collapse');
+          var $card = lastCollapse ? $(tab).find('.card-body.collapse').filter(function() { return this.id === lastCollapse; }) : $();
+          if (!$card.length) $card = $(tab).find('.card-body.collapse:first');
+          $card.collapse('show');
         }
       });
   })();

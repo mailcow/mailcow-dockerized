@@ -1,12 +1,29 @@
 <div class="tab-pane fade" id="Syncjobs" role="tabpanel" aria-labelledby="Syncjobs">
   <div class="card mb-4">
     <div class="card-header d-flex fs-5">
-      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-Syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-Syncjobs">
-        {{ lang.user.sync_jobs }}
+      <span class="d-none d-md-block">{{ lang.syncjobs.sources_panel }}</span>
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-imapsync-sources" data-bs-toggle="collapse" aria-controls="collapse-tab-imapsync-sources">
+        {{ lang.syncjobs.sources_panel }}
       </button>
-      <span class="d-none d-md-block">{{ lang.user.sync_jobs }}</span>
     </div>
-    <div id="collapse-tab-Syncjobs" class="card-body collapse" data-bs-parent="#user-content">      
+    <div id="collapse-tab-imapsync-sources" class="card-body collapse" data-bs-parent="#user-content">
+      <p class="text-muted">{{ lang.syncjobs.sources_hint }}</p>
+      <div class="mass-actions-user mb-4">
+        <div class="btn-group" data-acl="{{ acl.syncjobs }}">
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addImapsyncSourceModal"><i class="bi bi-plus-lg"></i> {{ lang.syncjobs.source_add }}</a>
+        </div>
+      </div>
+      <table id="imapsync_source_table" class="table table-striped dt-responsive w-100"></table>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-Syncjobs" data-bs-toggle="collapse" aria-controls="collapse-tab-Syncjobs">
+        {{ lang.syncjobs.sync_jobs }}
+      </button>
+      <span class="d-none d-md-block">{{ lang.syncjobs.sync_jobs }}</span>
+    </div>
+    <div id="collapse-tab-Syncjobs" class="card-body collapse" data-bs-parent="#user-content">
       <div class="mass-actions-user mb-4">
         <div class="btn-group" data-acl="{{ acl.syncjobs }}">
           <div class="btn-group">
@@ -23,7 +40,7 @@
             </ul>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.syncjobs.create }}</a>
           </div>
         </div>
       </div>
@@ -44,7 +61,7 @@
             </ul>
           </div>
           <div class="btn-group">
-            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.user.create_syncjob }}</a>
+            <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addSyncJobModal"><i class="bi bi-plus-lg"></i> {{ lang.syncjobs.create }}</a>
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 # Keycloak Provider for OAuth 2.0 Client
 [![Latest Version](https://img.shields.io/github/release/stevenmaguire/oauth2-keycloak.svg?style=flat-square)](https://github.com/stevenmaguire/oauth2-keycloak/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/stevenmaguire/oauth2-keycloak/master.svg?style=flat-square)](https://travis-ci.org/stevenmaguire/oauth2-keycloak)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/stevenmaguire/oauth2-keycloak.svg?style=flat-square)](https://scrutinizer-ci.com/g/stevenmaguire/oauth2-keycloak/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/stevenmaguire/oauth2-keycloak.svg?style=flat-square)](https://scrutinizer-ci.com/g/stevenmaguire/oauth2-keycloak)
 [![Total Downloads](https://img.shields.io/packagist/dt/stevenmaguire/oauth2-keycloak.svg?style=flat-square)](https://packagist.org/packages/stevenmaguire/oauth2-keycloak)
@@ -20,9 +19,11 @@ composer require stevenmaguire/oauth2-keycloak
 
 Usage is the same as The League's OAuth client, using `\Stevenmaguire\OAuth2\Client\Provider\Keycloak` as the provider.
 
-Use `authServerUrl` to specify the Keycloak server URL. You can lookup the correct value from the Keycloak client installer JSON under `auth-server-url`, eg. `http://localhost:8080/auth`.
+Use `authServerUrl` to specify the Keycloak server URL. This depends on your Keycloak version:
+- legacy releases often use `http://localhost:8080/auth`
+- modern releases (Keycloak 17+) typically use `http://localhost:8080`
 
-Use `realm` to specify the Keycloak realm name. You can lookup the correct value from the Keycloak client installer JSON under `resource`, eg. `master`.
+Use `realm` to specify the Keycloak realm name. In client configuration exports this is represented as `realm`, e.g. `master`.
 
 ### Authorization Code Flow
 
@@ -34,8 +35,8 @@ $provider = new Stevenmaguire\OAuth2\Client\Provider\Keycloak([
     'clientSecret'          => '{keycloak-client-secret}',
     'redirectUri'           => 'https://example.com/callback-url',
     'encryptionAlgorithm'   => 'RS256',                             // optional
-    'encryptionKeyPath'     => '../key.pem'                         // optional
-    'encryptionKey'         => 'contents_of_key_or_certificate'     // optional
+    'encryptionKeyPath'     => '../key.pem',                        // optional
+    'encryptionKey'         => 'contents_of_key_or_certificate',    // optional
     'version'               => '20.0.1',                            // optional
 ]);
 
@@ -55,7 +56,7 @@ if (!isset($_GET['code'])) {
 
 } else {
 
-    // Try to get an access token (using the authorization coe grant)
+    // Try to get an access token (using the authorization code grant)
     try {
         $token = $provider->getAccessToken('authorization_code', [
             'code' => $_GET['code']
@@ -155,8 +156,8 @@ $provider->setEncryptionKeyPath($keyPath);
 
 ## Testing
 
-``` bash
-$ ./vendor/bin/phpunit
+```bash
+$ composer test
 ```
 
 ## Contributing

@@ -25,14 +25,14 @@ interface StreamInterface
      * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
      * @return string
      */
-    public function __toString();
+    public function __toString(): string;
 
     /**
      * Closes the stream and any underlying resources.
      *
      * @return void
      */
-    public function close();
+    public function close(): void;
 
     /**
      * Separates any underlying resources from the stream.
@@ -48,7 +48,7 @@ interface StreamInterface
      *
      * @return int|null Returns the size in bytes if known, or null if unknown.
      */
-    public function getSize();
+    public function getSize(): ?int;
 
     /**
      * Returns the current position of the file read/write pointer
@@ -56,21 +56,21 @@ interface StreamInterface
      * @return int Position of the file pointer
      * @throws \RuntimeException on error.
      */
-    public function tell();
+    public function tell(): int;
 
     /**
      * Returns true if the stream is at the end of the stream.
      *
      * @return bool
      */
-    public function eof();
+    public function eof(): bool;
 
     /**
      * Returns whether or not the stream is seekable.
      *
      * @return bool
      */
-    public function isSeekable();
+    public function isSeekable(): bool;
 
     /**
      * Seek to a position in the stream.
@@ -84,7 +84,7 @@ interface StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws \RuntimeException on failure.
      */
-    public function seek($offset, $whence = SEEK_SET);
+    public function seek(int $offset, int $whence = SEEK_SET): void;
 
     /**
      * Seek to the beginning of the stream.
@@ -96,14 +96,14 @@ interface StreamInterface
      * @link http://www.php.net/manual/en/function.fseek.php
      * @throws \RuntimeException on failure.
      */
-    public function rewind();
+    public function rewind(): void;
 
     /**
      * Returns whether or not the stream is writable.
      *
      * @return bool
      */
-    public function isWritable();
+    public function isWritable(): bool;
 
     /**
      * Write data to the stream.
@@ -112,14 +112,14 @@ interface StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws \RuntimeException on failure.
      */
-    public function write($string);
+    public function write(string $string): int;
 
     /**
      * Returns whether or not the stream is readable.
      *
      * @return bool
      */
-    public function isReadable();
+    public function isReadable(): bool;
 
     /**
      * Read data from the stream.
@@ -131,7 +131,7 @@ interface StreamInterface
      *     if no bytes are available.
      * @throws \RuntimeException if an error occurs.
      */
-    public function read($length);
+    public function read(int $length): string;
 
     /**
      * Returns the remaining contents in a string
@@ -140,7 +140,7 @@ interface StreamInterface
      * @throws \RuntimeException if unable to read or an error occurs while
      *     reading.
      */
-    public function getContents();
+    public function getContents(): string;
 
     /**
      * Get stream metadata as an associative array or retrieve a specific key.
@@ -149,10 +149,10 @@ interface StreamInterface
      * stream_get_meta_data() function.
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
-     * @param string $key Specific metadata to retrieve.
+     * @param string|null $key Specific metadata to retrieve.
      * @return array|mixed|null Returns an associative array if no key is
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null);
+    public function getMetadata(?string $key = null);
 }

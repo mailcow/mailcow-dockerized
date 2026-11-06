@@ -37,7 +37,7 @@ class JwtBearer implements GrantTypeInterface, ClientAssertionTypeInterface
      * @param EncryptionInterface|JWT $jwtUtil  - OPTONAL The class used to decode, encode and verify JWTs.
      * @param array                   $config
      */
-    public function __construct(JwtBearerInterface $storage, $audience, EncryptionInterface $jwtUtil = null, array $config = array())
+    public function __construct(JwtBearerInterface $storage, $audience, ?EncryptionInterface $jwtUtil = null, array $config = array())
     {
         $this->storage = $storage;
         $this->audience = $audience;
@@ -46,13 +46,13 @@ class JwtBearer implements GrantTypeInterface, ClientAssertionTypeInterface
             $jwtUtil = new Jwt();
         }
 
-        $this->config = array_merge(array(
+        $config = array_merge(array(
             'allowed_algorithms' => array('RS256', 'RS384', 'RS512')
         ), $config);
 
         $this->jwtUtil = $jwtUtil;
 
-        $this->allowedAlgorithms = $this->config['allowed_algorithms'];
+        $this->allowedAlgorithms = $config['allowed_algorithms'];
     }
 
     /**
@@ -127,7 +127,7 @@ class JwtBearer implements GrantTypeInterface, ClientAssertionTypeInterface
         }
 
         // Check expiration
-        if (ctype_digit($jwt['exp'])) {
+        if (ctype_digit((string)$jwt['exp'])) {
             if ($jwt['exp'] <= time()) {
                 $response->setError(400, 'invalid_grant', "JWT has expired");
 
@@ -141,7 +141,7 @@ class JwtBearer implements GrantTypeInterface, ClientAssertionTypeInterface
 
         // Check the not before time
         if ($notBefore = $jwt['nbf']) {
-            if (ctype_digit($notBefore)) {
+            if (ctype_digit((string)$notBefore)) {
                 if ($notBefore > time()) {
                     $response->setError(400, 'invalid_grant', "JWT cannot be used before the Not Before (nbf) time");
 
