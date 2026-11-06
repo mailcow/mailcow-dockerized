@@ -99,7 +99,7 @@ elseif (!empty($_SESSION['mailcow_cc_api'])) {
   // API session without header: end it when its key was deleted, deactivated, regenerated or its access changed
   if (!isset($pdo)) {
     // sogo-auth.php (nginx auth_request) loads no prerequisites
-    $pdo = new PDO($database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name, $database_user, $database_pass, array(
+    $pdo = new PDO($database_type . ":host=" . $database_host . ";port=" . $database_port . ";dbname=" . $database_name, $database_user, $database_pass, array(
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
       PDO::ATTR_EMULATE_PREPARES => false,

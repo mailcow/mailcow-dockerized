@@ -89,7 +89,7 @@ def imapsync_running():
   return False
 
 def connect():
-  return MySQLdb.connect(unix_socket='/var/run/mysqld/mysqld.sock', user=os.environ['DBUSER'],
+  return MySQLdb.connect(host=os.environ['DBHOST'], port=int(os.environ['DBPORT']), ssl_mode='DISABLED', user=os.environ['DBUSER'],
     passwd=os.environ['DBPASS'], db=os.environ['DBNAME'], charset='utf8mb4', autocommit=True)
 
 # Reconnect when the server dropped the connection (syncs can outlast wait_timeout)

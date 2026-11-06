@@ -6,7 +6,7 @@ if (file_exists(__DIR__ . '/../web/inc/vars.local.inc.php')) {
 }
 require_once __DIR__ . '/../web/inc/lib/vendor/autoload.php';
 
-$dsn = $database_type . ":unix_socket=" . $database_sock . ";dbname=" . $database_name;
+$dsn = $database_type . ":host=" . $database_host . ";port=" . $database_port . ";dbname=" . $database_name;
 $opt = [
   PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
   PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
