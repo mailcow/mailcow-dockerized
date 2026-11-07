@@ -4247,6 +4247,9 @@ paths:
                     shared:
                       description: shared mailbox, no login of its own (IMAP, SMTP, SOGo, app passwords, mailcow UI)
                       type: boolean
+                    sso_access:
+                      description: may this mailbox sign in through the configured identity provider (SSO), in addition to its local password
+                      type: boolean
                   type: object
                 items:
                   description: contains list of mailboxes you want update
