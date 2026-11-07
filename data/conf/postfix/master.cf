@@ -117,6 +117,9 @@ smtp_sender_cleanup unix n - y - 0 cleanup
 127.0.0.1:10027 inet n n n - 0 spawn user=nobody argv=/usr/local/bin/whitelist_forwardinghosts.sh
 # end whitelist_fwd
 
+# mail policies: policy service of smtpd, asks the mailcow UI (mailcow_mail_policy in main.cf)
+mailcow-policy unix - n n - 0 spawn user=nobody argv=/usr/local/bin/mailcow-policy.py
+
 # start watchdog-specific
 # logs to local7 (hidden)
 589 inet n      -       n       -       -       smtpd

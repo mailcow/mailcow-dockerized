@@ -280,6 +280,9 @@ if (isset($_GET['query'])) {
         case "mailbox-group":
           process_add_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addGroup($attr));
         break;
+        case "mail-policy":
+          process_add_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->addPolicy($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -854,6 +857,23 @@ if (isset($_GET['query'])) {
 
               default:
                 process_get_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getGroup($object));
+              break;
+            }
+          break;
+
+          case "mail-policy":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->getPolicies($extra));
+              break;
+
+              // test/<sender>/<recipient>[/login]: would the mail be accepted?
+              case "test":
+                process_get_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->test((string)$extra, (string)($query[4] ?? ''), ($query[5] ?? '') === 'login'));
+              break;
+
+              default:
+                process_get_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->getPolicy($object));
               break;
             }
           break;
@@ -1779,6 +1799,9 @@ if (isset($_GET['query'])) {
         case "mailbox-group":
           process_delete_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->deleteGroups($items));
         break;
+        case "mail-policy":
+          process_delete_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->deletePolicies($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -1952,6 +1975,9 @@ if (isset($_GET['query'])) {
         break;
         case "mailbox-group":
           process_edit_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->editGroups($items, $attr));
+        break;
+        case "mail-policy":
+          process_edit_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->editPolicies($items, $attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

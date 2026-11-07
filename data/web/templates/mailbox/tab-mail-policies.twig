@@ -1,0 +1,54 @@
+<div class="tab-pane fade" id="tab-mail-policies" role="tabpanel" aria-labelledby="tab-mail-policies">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-mail-policies" data-bs-toggle="collapse" aria-controls="collapse-tab-mail-policies">
+        {{ lang.mail_policy.mail_policies }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.mail_policy.mail_policies }} <span class="badge bg-info table-lines"></span></span>
+      <div class="btn-group ms-auto d-flex">
+        <button class="btn btn-xs btn-secondary refresh_table" data-table="mail_policy_table">{{ lang.admin.refresh }}</button>
+      </div>
+    </div>
+    <div id="collapse-tab-mail-policies" class="card-body collapse" data-bs-parent="#mail-content">
+      <p class="text-muted">{{ lang.mail_policy.info }}</p>
+      <table id="mail_policy_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="mail_policy" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="mail_policy" data-api-url='edit/mail-policy' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="mail_policy" data-api-url='edit/mail-policy' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="mail_policy" data-api-url='delete/mail-policy' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailPolicyModal"><i class="bi bi-plus-lg"></i> {{ lang.mail_policy.add }}</a>
+        </div>
+      </div>
+
+      {# Test a rule: would the mail be accepted? Filled by js/site/mail-policy.js #}
+      <div class="card mt-4">
+        <div class="card-header">{{ lang.mail_policy.test }}</div>
+        <div class="card-body">
+          <p class="text-muted small">{{ lang.mail_policy.test_info }}</p>
+          <form class="row g-2 align-items-center" id="mail_policy_test" autocomplete="off">
+            <div class="col-12 col-md-4">
+              <input type="email" class="form-control" id="mail_policy_test_sender" placeholder="{{ lang.mail_policy.test_sender }}" aria-label="{{ lang.mail_policy.test_sender }}">
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="email" class="form-control" id="mail_policy_test_recipient" placeholder="{{ lang.mail_policy.test_recipient }}" aria-label="{{ lang.mail_policy.test_recipient }}" required>
+            </div>
+            <div class="col-12 col-md-4 d-flex align-items-center">
+              <div class="form-check me-3">
+                <input class="form-check-input" type="checkbox" id="mail_policy_test_login" checked>
+                <label class="form-check-label" for="mail_policy_test_login">{{ lang.mail_policy.test_logged_in }}</label>
+              </div>
+              <button type="submit" class="btn btn-sm btn-secondary ms-auto"><i class="bi bi-play"></i> {{ lang.mail_policy.test_run }}</button>
+            </div>
+          </form>
+          <div id="mail_policy_test_result" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

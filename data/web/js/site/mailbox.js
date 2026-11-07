@@ -2493,6 +2493,7 @@ jQuery(function($){
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
   onVisible("[id^=imapsync_source_table]", () => mailcowImapsync.drawSourceTable(role === 'admin' || acl_data.syncjobs === 1));
   onVisible("[id^=mailbox_group_table]", () => mailcowGroups.drawTable());
+  onVisible("[id^=mail_policy_table]", () => mailcowMailPolicy.drawTable());
   onVisible("[id^=filter_table]", () => draw_filter_table());
   onVisible("[id^=bcc_table]", () => draw_bcc_table());
   onVisible("[id^=recipient_map_table]", () => draw_recipient_map_table());
