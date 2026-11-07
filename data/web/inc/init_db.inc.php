@@ -571,6 +571,116 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "retention_rule" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(100) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          // JSON list: trash, junk, sent, drafts, archive, inbox, all, folder:<name>
+          "folders" => "TEXT NOT NULL",
+          "days" => "INT NOT NULL DEFAULT '30'",
+          "keep_flagged" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          // simulate (count only) or delete
+          "mode" => "VARCHAR(16) NOT NULL DEFAULT 'simulate'",
+          "all_mailboxes" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "domain_name" => array("domain", "name")
+          ),
+          "fkey" => array(
+            "fk_retention_rule_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // a mailbox or a group (its members of the rule's domain) a retention rule is assigned to
+      "retention_rule_member" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "rule_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NULL DEFAULT NULL",
+          "group_id" => "INT NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "rule_mailbox" => array("rule_id", "username"),
+            "rule_group" => array("rule_id", "group_id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "group_id" => array("group_id")
+          ),
+          "fkey" => array(
+            "fk_retention_rule_member_rule" => array(
+              "col" => "rule_id",
+              "ref" => "retention_rule.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_retention_rule_member_mailbox" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_retention_rule_member_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // results of the nightly run: per mailbox and rule with found mail or an error (folder: the folder names), per
+      // rule a summary (username '') and the whole run (username '', rule_id NULL); kept 90 days, of simulating
+      // rules only the last run
+      "retention_log" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "username" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "rule_id" => "INT NULL DEFAULT NULL",
+          "rule_name" => "VARCHAR(100) NOT NULL DEFAULT ''",
+          "folder" => "TEXT NULL DEFAULT NULL",
+          "days" => "INT NOT NULL DEFAULT '0'",
+          "mailboxes" => "INT NOT NULL DEFAULT '0'",
+          "matched" => "INT NOT NULL DEFAULT '0'",
+          "deleted" => "INT NOT NULL DEFAULT '0'",
+          "errors" => "INT NOT NULL DEFAULT '0'",
+          "simulated" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "error" => "TEXT NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "domain_created" => array("domain", "created"),
+            "rule_created" => array("rule_id", "username", "created"),
+            "created" => array("created")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "mailbox_group_imap_grant" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
@@ -1135,7 +1245,8 @@ function init_db_schema()
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "mailbox_groups" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "mail_policies" => "TINYINT(1) NOT NULL DEFAULT '0'"
+          "mail_policies" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "retention" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(

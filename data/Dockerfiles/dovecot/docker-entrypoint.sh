@@ -281,6 +281,7 @@ chown root:tty /dev/console
 chmod +x /usr/lib/dovecot/sieve/rspamd-pipe-ham \
   /usr/lib/dovecot/sieve/rspamd-pipe-spam \
   /usr/local/bin/imapsync_runner.py \
+  /usr/local/bin/retention_runner.py \
   /usr/local/bin/imapsync \
   /usr/local/bin/trim_logs.sh \
   /usr/local/bin/sa-rules.sh \

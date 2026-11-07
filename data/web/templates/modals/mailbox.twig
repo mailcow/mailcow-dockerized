@@ -1365,3 +1365,6 @@
 {% if acl.mail_policies == 1 %}
 {% include "modals/mail_policy.twig" %}
 {% endif %}
+{% if acl.retention == 1 %}
+{% include "modals/retention.twig" %}
+{% endif %}

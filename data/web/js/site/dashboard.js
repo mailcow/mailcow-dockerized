@@ -875,6 +875,93 @@ jQuery(function($){
       hideTableExpandCollapseBtn('#tab-cron-logs', '#cron_log');
     });
   }
+  // results of the nightly retention runs: mailboxes with found mail or errors, and the runs (username '', no rule)
+  function draw_retention_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#retention_log') ) {
+      $('#retention_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+    var L = function(key) { return (lang.retention && lang.retention[key]) || ''; };
+    $('#retention_log').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/retention",
+        dataSrc: function(data){
+          return Array.isArray(data) ? data : [];
+        }
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
+          }
+        },
+        {
+          title: L('mailbox'),
+          data: 'username',
+          defaultContent: '',
+          render: function(data, type, row) {
+            return row.rule_id === null ? '<i>' + escapeHtml(L('run')) + '</i>' : escapeHtml(data);
+          }
+        },
+        {
+          title: L('rule'),
+          data: 'rule_name',
+          defaultContent: '',
+          render: function(data) {
+            return escapeHtml(data);
+          }
+        },
+        {
+          title: L('folder'),
+          data: 'folder',
+          defaultContent: '',
+          className: 'text-break',
+          render: function(data, type, row) {
+            if (row.rule_id === null) return escapeHtml(L('run_mailboxes').replace('%s', row.mailboxes));
+            return (data || '').split('\n').map(escapeHtml).join('<br>') + ' <span class="text-muted small">(' + escapeHtml(L('days_short').replace('%s', row.days)) + ')</span>';
+          }
+        },
+        {
+          title: L('found'),
+          data: 'matched',
+          defaultContent: ''
+        },
+        {
+          title: L('deleted'),
+          data: 'deleted',
+          defaultContent: '',
+          render: function(data, type, row) {
+            return row.simulated == 1 ? '<span class="badge bg-secondary">' + escapeHtml(L('simulated')) + '</span>' : escapeHtml(data);
+          }
+        },
+        {
+          title: L('error'),
+          data: 'error',
+          defaultContent: '',
+          className: 'dtr-col-md text-break',
+          render: function(data, type, row) {
+            if (!data && row.rule_id === null && row.errors > 0) data = L('errors').replace('%s', row.errors);
+            return data ? '<span class="text-danger">' + escapeHtml(data) + '</span>' : '';
+          }
+        }
+      ]
+    });
+  }
   function rspamd_pie_graph() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
@@ -1295,6 +1382,7 @@ jQuery(function($){
   onVisible("[id^=sasl_logs]", () => draw_sasl_logs());
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
   onVisible("[id^=cron_log]", () => draw_cron_logs());
+  onVisible("[id^=retention_log]", () => draw_retention_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 

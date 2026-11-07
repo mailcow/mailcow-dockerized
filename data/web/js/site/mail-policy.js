@@ -102,16 +102,18 @@ var mailcowMailPolicy = (function($) {
     });
   }
 
-  // add modal: mailboxes and groups of the chosen domain only
+  // add modal: mailboxes and groups of the chosen domain only. The options are rebuilt and bootstrap-select is
+  // built anew: its refresh repeats the list and still shows hidden options
   function filterDomain($form) {
     var domain = $form.find('select.mail-policy-domain-select').val();
     $form.find('select.mail-policy-mailboxes, select.mail-policy-groups').each(function() {
-      $(this).find('option').each(function() {
-        var other = $(this).data('domain') !== domain;
-        $(this).prop('hidden', other);
-        if (other) $(this).prop('selected', false);
-      });
-      $(this).selectpicker('refresh');
+      var $select = $(this);
+      if (!$select.data('all-options')) $select.data('all-options', $select.children('option').clone());
+      $select.selectpicker('destroy');
+      $select.empty().append($select.data('all-options').filter(function() {
+        return $(this).data('domain') === domain;
+      }).clone().prop('selected', false));
+      $select.selectpicker({'styleBase': 'btn btn-xs-lg', 'noneSelectedText': lang_footer.nothing_selected});
     });
   }
 

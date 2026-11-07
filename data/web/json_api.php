@@ -283,6 +283,9 @@ if (isset($_GET['query'])) {
         case "mail-policy":
           process_add_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->addPolicy($attr));
         break;
+        case "retention-rule":
+          process_add_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->addRule($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -878,6 +881,23 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "retention-rule":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->getRules($extra));
+              break;
+
+              // effective/<username>: what the rules delete in the mailbox
+              case "effective":
+                process_get_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->getEffective($extra));
+              break;
+
+              default:
+                process_get_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->getRule($object));
+              break;
+            }
+          break;
+
           case "logs":
             switch ($object) {
               case "dovecot":
@@ -912,6 +932,11 @@ if (isset($_GET['query'])) {
                   $logs = get_logs('netfilter-mailcow');
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
+              case "retention":
+                // results of the nightly retention runs: mailboxes with found mail or errors, newest first
+                $logs = \Mailcow\Retention\RetentionModule::fromGlobals()->api->getLog(isset($extra) ? intval(preg_replace('/[^\d]/', '', $extra)) : 0);
+                echo (!empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
               case "cron":
                 // 0 is first record, so empty is fine
@@ -1802,6 +1827,9 @@ if (isset($_GET['query'])) {
         case "mail-policy":
           process_delete_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->deletePolicies($items));
         break;
+        case "retention-rule":
+          process_delete_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->deleteRules($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -1978,6 +2006,9 @@ if (isset($_GET['query'])) {
         break;
         case "mail-policy":
           process_edit_return(\Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->editPolicies($items, $attr));
+        break;
+        case "retention-rule":
+          process_edit_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->editRules($items, $attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

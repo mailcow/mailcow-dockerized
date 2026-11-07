@@ -12,6 +12,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $js_minifier->add('/web/js/site/imapsync.js');
 $js_minifier->add('/web/js/site/groups.js');
 $js_minifier->add('/web/js/site/mail-policy.js');
+$js_minifier->add('/web/js/site/retention.js');
 $js_minifier->add('/web/js/site/mailbox.js');
 $js_minifier->add('/web/js/presets/sieveMailbox.js');
 $js_minifier->add('/web/js/site/pwgen.js');
@@ -48,6 +49,7 @@ $template_data = [
   'lang_datatables' => json_encode($lang['datatables']),
   'imapsync_redirect_uri' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri(),
   'mail_policy_groups' => \Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->policies->groupChoices($domains),
+  'retention_groups' => \Mailcow\Retention\RetentionModule::fromGlobals()->rules->groupChoices($domains),
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
