@@ -78,6 +78,26 @@ class PolicyRepository extends Repository
         $this->query("DELETE FROM `mail_policy` WHERE `id` = :id", ['id' => $id]);
     }
 
+    /** Address entries of all lists follow a renamed mailbox or alias */
+    public function renameAddress(string $old, string $new): void
+    {
+        $this->transaction(function () use ($old, $new): void {
+            $columns = ['send_allow', 'send_block', 'receive_allow', 'receive_block'];
+            foreach ($this->query("SELECT `id`, `" . implode('`, `', $columns) . "` FROM `mail_policy`")->fetchAll() as $row) {
+                $changed = [];
+                foreach ($columns as $column) {
+                    $entries = json_decode((string)$row[$column], true);
+                    if (is_array($entries) && in_array($old, $entries, true)) {
+                        $changed[$column] = json_encode(array_values(array_unique(array_map(fn(string $entry): string => ($entry === $old) ? $new : $entry, $entries))));
+                    }
+                }
+                if ($changed !== []) {
+                    $this->updateRow('mail_policy', (int)$row['id'], $changed);
+                }
+            }
+        });
+    }
+
     /** A primary domain (policies never belong to alias domains) */
     public function isDomain(string $domain): bool
     {

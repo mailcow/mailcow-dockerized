@@ -30,7 +30,7 @@ $value = fn(string $key): string => is_string($_POST[$key] ?? null) ? $_POST[$ke
 
 try {
   $policy = \Mailcow\MailPolicy\MailPolicyModule::create($pdo, \Mailcow\Core\Context::system());
-  echo $policy->api->check($value('sender'), $value('recipient'), $value('sasl_username'), (int)$value('server_port'));
+  echo $policy->api->check($value('sender'), $value('recipient'), $value('sasl_username'), (int)$value('server_port'), $value('helo_name'));
 }
 catch (Throwable $e) {
   // the policy service answers with a temporary error

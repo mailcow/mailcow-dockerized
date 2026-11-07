@@ -21,8 +21,16 @@ class FakeMailPolicyLookup extends LookupRepository
     public array $domains = [];
     /** id => ['address' => ?string, 'members' => string[]] */
     public array $groups = [];
-    /** alias address => domain of aliases with the internal flag */
-    public array $internalAliases = [];
+    /** alias address => ['domain' => string, 'internal' => bool] (active aliases, also own aliases of mailboxes) */
+    public array $aliases = [];
+    /** temporary alias => owner mailbox */
+    public array $temporaryAliases = [];
+    /** @var string[] domains with an internal catch-all alias */
+    public array $internalCatchAlls = [];
+    /** an active policy restricts sending */
+    public bool $sendRules = false;
+    /** other spelling (MySQL ignores accents) => stored address or domain */
+    public array $spellings = [];
     /** username => Policy[] assigned directly */
     public array $mailboxPolicies = [];
     /** group id => Policy[] */
@@ -67,9 +75,34 @@ class FakeMailPolicyLookup extends LookupRepository
         return in_array($username, $this->groups[$groupId]['members'] ?? [], true);
     }
 
-    public function internalAlias(string $address): ?string
+    public function aliasTarget(string $address): ?array
     {
-        return $this->internalAliases[$address] ?? null;
+        if (isset($this->aliases[$address])) {
+            return ['kind' => 'alias', 'domain' => $this->aliases[$address]['domain'], 'internal' => $this->aliases[$address]['internal']];
+        }
+        return isset($this->temporaryAliases[$address]) ? ['kind' => 'temporary', 'owner' => $this->temporaryAliases[$address]] : null;
+    }
+
+    public function internalCatchAll(string $domain): bool
+    {
+        return in_array($domain, $this->internalCatchAlls, true);
+    }
+
+    public function hasSendRules(): bool
+    {
+        return $this->sendRules;
+    }
+
+    public function storedAddress(string $address): ?string
+    {
+        $address = $this->spellings[$address] ?? $address;
+        return (isset($this->mailboxes[$address]) || isset($this->aliases[$address]) || isset($this->temporaryAliases[$address])) ? $address : null;
+    }
+
+    public function storedDomain(string $domain): ?string
+    {
+        $domain = $this->spellings[$domain] ?? $domain;
+        return (in_array($domain, $this->domains, true) || isset($this->aliasDomains[$domain])) ? $domain : null;
     }
 
     public function policiesForMailbox(string $username): array

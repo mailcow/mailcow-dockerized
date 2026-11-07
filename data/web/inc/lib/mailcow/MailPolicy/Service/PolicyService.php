@@ -8,6 +8,7 @@ use Mailcow\Core\AccessDenied;
 use Mailcow\Core\Context;
 use Mailcow\Core\Input;
 use Mailcow\Core\UserError;
+use Mailcow\MailPolicy\Model\Decision;
 use Mailcow\MailPolicy\Model\Policy;
 use Mailcow\MailPolicy\Repository\PolicyRepository;
 
@@ -17,7 +18,8 @@ use Mailcow\MailPolicy\Repository\PolicyRepository;
  * Read: admins all policies (also read-only API keys); domain admins with the `mail_policies` ACL the policies
  *       of their domains.
  * Edit: admins; domain admins with the ACL for policies of their domains. A policy is assigned to mailboxes and
- *       groups of its own domain; `group:<id>` entries name groups the editor may access.
+ *       groups of its own domain; `group:<id>` entries name groups of that domain. Groups need the `mailbox_groups`
+ *       ACL as well: without it a domain admin sees no groups and keeps the group entries and assignments.
  */
 class PolicyService
 {
@@ -94,10 +96,21 @@ class PolicyService
         return $policy;
     }
 
+    /** Address entries of the lists follow a renamed mailbox or alias; called after the rename, without permission check */
+    public function addressRenamed(string $old, string $new): void
+    {
+        $this->repo->renameAddress(strtolower($old), strtolower($new));
+    }
+
     /** @return array[] id, name, domain, address of the groups in these domains (choices of the forms) */
     public function groupChoices(array $domains): array
     {
-        return $this->canRead() ? $this->repo->groupsIn($domains) : [];
+        return ($this->canRead() && $this->canUseGroups()) ? $this->repo->groupsIn($domains) : [];
+    }
+
+    private function canUseGroups(): bool
+    {
+        return $this->context->hasAdminRights() || $this->context->hasAcl('mailbox_groups');
     }
 
     /**
@@ -116,21 +129,23 @@ class PolicyService
         if (($sender !== '' && !filter_var($sender, FILTER_VALIDATE_EMAIL)) || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
             throw new UserError('mail_policy_test_invalid');
         }
-        // domain admins test mail of their domains
-        if (!$this->context->hasAdminRights() && !$this->context->canAccessDomain(self::domainOf($sender))
-            && !$this->context->canAccessDomain(self::domainOf($recipient))) {
+        // domain admins test mail of their domains; a sender of another domain counts as not logged in
+        $ownSender = $this->context->hasAdminRights() || $this->context->canAccessDomain(self::domainOf($sender));
+        if (!$ownSender && !$this->context->canAccessDomain(self::domainOf($recipient))) {
             throw new AccessDenied();
         }
-        $login = ($loggedIn && $this->repo->mailboxDomain($sender) !== null) ? $sender : '';
+        $login = ($loggedIn && $ownSender && $this->repo->mailboxDomain($sender) !== null) ? $sender : '';
         $decision = $this->engine->check($sender, $recipient, $login);
         $policy = $decision->policy;
+        $hidden = $policy !== null && $policy->id !== null && !$this->visible($policy);
         return [
             'allowed' => (int)$decision->allowed,
             'side' => $decision->side,
-            'policy' => ($policy !== null && $policy->id !== null && $this->visible($policy)) ? $policy->name : null,
+            'policy' => ($policy !== null && $policy->id !== null && !$hidden) ? $policy->name : null,
             'internal_alias' => (int)($policy !== null && $policy->id === null),
             'logged_in' => (int)($login !== ''),
-            'text' => $decision->allowed ? '' : $decision->text(),
+            // the text of a policy of another domain stays hidden
+            'text' => $decision->allowed ? '' : ($hidden ? Decision::defaultText($decision->side) : $decision->text()),
         ];
     }
 
@@ -189,17 +204,26 @@ class PolicyService
                 $policy->$property = in_array($mode, Policy::MODES, true) ? $mode : throw new UserError('mail_policy_mode_invalid');
             }
         }
+        $groupAccess = $this->canUseGroups();
         foreach (self::LISTS as $key => $property) {
             // the UI sends the groups of a list separately (<list>_groups); the API may name them as group:<id>
-            if (array_key_exists($key, $input) || array_key_exists($key . '_groups', $input)) {
-                $entries = array_key_exists($key, $input) ? self::values($input[$key])
-                    : array_filter($policy->$property, fn(string $entry): bool => !str_starts_with($entry, 'group:'));
-                if (array_key_exists($key . '_groups', $input)) {
-                    $entries = array_filter($entries, fn(string $entry): bool => !str_starts_with(strtolower($entry), 'group:'));
-                    $entries = array_merge($entries, array_map(fn(string $id): string => 'group:' . $id, self::values($input[$key . '_groups'])));
-                }
-                $policy->$property = $this->entries(array_values($entries));
+            if (!array_key_exists($key, $input) && !array_key_exists($key . '_groups', $input)) {
+                continue;
             }
+            $entries = array_key_exists($key, $input) ? self::values($input[$key]) : self::withoutGroups($policy->$property);
+            $kept = [];
+            if (!$groupAccess) {
+                // without access to groups the group entries stay (also when sent back unchanged); the form shows no group choices
+                $kept = array_values(array_diff($policy->$property, self::withoutGroups($policy->$property)));
+                $entries = array_values(array_diff(array_map('strtolower', $entries), $kept));
+            } elseif (array_key_exists($key . '_groups', $input)) {
+                $entries = array_merge(self::withoutGroups($entries), array_map(fn(string $id): string => 'group:' . $id, self::values($input[$key . '_groups'])));
+            }
+            $entries = array_values(array_unique(array_merge($this->entries($entries, $policy->domain, $groupAccess), $kept)));
+            if (count($entries) > self::MAX_ENTRIES) {
+                throw new UserError('mail_policy_entries_exceeded', [self::MAX_ENTRIES]);
+            }
+            $policy->$property = $entries;
         }
         if (array_key_exists('reject_text', $input)) {
             $text = Input::text($input['reject_text']);
@@ -213,7 +237,7 @@ class PolicyService
         }
         if (array_key_exists('mailboxes', $input)) {
             $policy->mailboxes = [];
-            foreach (self::values($input['mailboxes']) as $username) {
+            foreach (self::limited($input['mailboxes']) as $username) {
                 $username = strtolower($username);
                 if ($this->repo->mailboxDomain($username) !== $policy->domain) {
                     throw new UserError('mail_policy_member_invalid', [htmlspecialchars($username)]);
@@ -222,9 +246,19 @@ class PolicyService
             }
             $policy->mailboxes = array_values($policy->mailboxes);
         }
-        if (array_key_exists('groups', $input)) {
+        // without access to groups the assignments stay; only sending them back unchanged is accepted
+        if (array_key_exists('groups', $input) && !$groupAccess && self::values($input['groups']) !== []) {
+            $sent = array_map('intval', self::values($input['groups']));
+            $stored = $policy->groups;
+            sort($sent);
+            sort($stored);
+            if (array_values(array_unique($sent)) !== $stored) {
+                throw new AccessDenied();
+            }
+        }
+        if (array_key_exists('groups', $input) && $groupAccess) {
             $policy->groups = [];
-            foreach (self::values($input['groups']) as $value) {
+            foreach (self::limited($input['groups']) as $value) {
                 $id = Input::intInRange($value, 1, PHP_INT_MAX);
                 if ($id === null || $this->repo->groupDomain($id) !== $policy->domain) {
                     throw new UserError('mail_policy_member_invalid', [htmlspecialchars($value)]);
@@ -236,20 +270,20 @@ class PolicyService
     }
 
     /**
-     * Entries of a list: addresses, domains (a leading @ is dropped) and group:<id>, lower case, without repeats.
+     * Entries of a list: addresses, domains (a leading @ is dropped) and group:<id> of a group of the policy's
+     * domain, lower case, without repeats.
      *
+     * @param string[] $values
      * @return string[]
      * @throws UserError
      */
-    private function entries(mixed $value): array
+    private function entries(array $values, string $domain, bool $groupAccess): array
     {
         $entries = [];
-        foreach (self::values($value) as $entry) {
-            $entry = strtolower($entry);
+        foreach (self::limited(array_map('strtolower', $values)) as $entry) {
             if (str_starts_with($entry, 'group:')) {
                 $id = Input::intInRange(substr($entry, 6), 1, PHP_INT_MAX);
-                $domain = ($id === null) ? null : $this->repo->groupDomain($id);
-                if ($domain === null || (!$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain))) {
+                if (!$groupAccess || $id === null || $this->repo->groupDomain($id) !== $domain) {
                     throw new UserError('mail_policy_entry_invalid', [htmlspecialchars($entry)]);
                 }
                 $entry = 'group:' . $id;
@@ -265,10 +299,28 @@ class PolicyService
             }
             $entries[$entry] = $entry;
         }
-        if (count($entries) > self::MAX_ENTRIES) {
+        return array_values($entries);
+    }
+
+    /**
+     * Values of a list field without repeats, at most MAX_ENTRIES (checked before anything is looked up)
+     *
+     * @return string[]
+     * @throws UserError
+     */
+    private static function limited(mixed $value): array
+    {
+        $values = array_values(array_unique(self::values($value)));
+        if (count($values) > self::MAX_ENTRIES) {
             throw new UserError('mail_policy_entries_exceeded', [self::MAX_ENTRIES]);
         }
-        return array_values($entries);
+        return $values;
+    }
+
+    /** @return string[] entries without group:<id> */
+    private static function withoutGroups(array $entries): array
+    {
+        return array_values(array_filter($entries, fn(string $entry): bool => !str_starts_with(strtolower($entry), 'group:')));
     }
 
     /**

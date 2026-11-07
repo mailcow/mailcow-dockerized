@@ -175,7 +175,7 @@ lmtp_destination_recipient_limit=1
 # Mail policies: while policies or internal aliases exist, mysql_mail_policy_maps.cf returns this class and smtpd
 # asks the policy service for every recipient (mailcow-policy in master.cf); no answer defers the recipient
 smtpd_restriction_classes = mailcow_mail_policy
-mailcow_mail_policy = check_policy_service { unix:private/mailcow-policy, timeout=10s, default_action=DEFER_IF_PERMIT }
+mailcow_mail_policy = check_policy_service { unix:private/mailcow-policy, timeout=10s, try_limit=1, default_action=DEFER_IF_PERMIT }
 mailcow-policy_time_limit = 3600s
 
 # DO NOT EDIT ANYTHING BELOW #

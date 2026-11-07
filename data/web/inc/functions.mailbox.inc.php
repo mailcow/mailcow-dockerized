@@ -2432,6 +2432,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               if ($address != $is_now['address']) {
                 // Send-as grants of groups follow the address
                 \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addressRenamed($is_now['address'], $address);
+                \Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->addressRenamed($is_now['address'], $address);
               }
             }
             $_SESSION['return'][] = array(
@@ -3295,7 +3296,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'mailbox_group_imap_grant' => ['owner'],
               'mailbox_group_sogo_grant' => ['owner'],
               'mailbox_group_sogo_acl' => ['c_uid'],
-              'mailbox_group_subscription' => ['username', 'owner']
+              'mailbox_group_subscription' => ['username', 'owner'],
+              'mail_policy_member' => ['username']
             ];
             foreach ($tables as $table => $columns) {
               foreach ($columns as $column) {
@@ -3311,6 +3313,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->sources->onAccountRenamed($old_username, $new_username);
             // Group memberships and send-as grants follow, group aliases are rebuilt
             \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->hooks->onMailboxRenamed($old_username, $new_username);
+            // Address entries of mail policies follow
+            \Mailcow\MailPolicy\MailPolicyModule::fromGlobals()->api->addressRenamed($old_username, $new_username);
 
             // Update c_uid, c_name and mail in _sogo_static_view table
             $pdo->prepare("UPDATE _sogo_static_view SET c_uid = :new_username, c_name = :new_username2, mail = :new_username3 WHERE c_uid = :old_username")

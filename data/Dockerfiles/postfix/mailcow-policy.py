@@ -22,7 +22,8 @@ def check(request):
     if nginx is None:
       nginx = socket.gethostbyname('nginx')
     # http.client sets TCP_NODELAY, so the body is not held back until the headers are acknowledged
-    conn = http.client.HTTPConnection(nginx, 8081, timeout=10)
+    # below the timeout of Postfix (main.cf), so an answer always arrives
+    conn = http.client.HTTPConnection(nginx, 8081, timeout=8)
     try:
       conn.request('POST', '/mailpolicy.php', body, {'Host': 'nginx', 'Content-Type': 'application/x-www-form-urlencoded'})
       response = conn.getresponse()

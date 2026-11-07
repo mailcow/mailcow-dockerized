@@ -246,11 +246,10 @@ user = ${DBUSER}
 password = ${DBPASS}
 hosts = unix:/var/run/mysqld/mysqld.sock
 dbname = ${DBNAME}
-query = SELECT 'mailcow_mail_policy' FROM mail_policy_member
-  JOIN mail_policy ON mail_policy.id = mail_policy_member.policy_id
-  WHERE mail_policy.active = '1' AND '%s' != ''
-  UNION SELECT 'mailcow_mail_policy' FROM alias WHERE internal = '1' AND active = '1'
-  LIMIT 1;
+query = SELECT 'mailcow_mail_policy' FROM DUAL WHERE '%s' != ''
+  AND (EXISTS (SELECT 1 FROM mail_policy_member JOIN mail_policy ON mail_policy.id = mail_policy_member.policy_id
+      WHERE mail_policy.active = '1')
+    OR EXISTS (SELECT 1 FROM alias WHERE internal = '1' AND active IN ('1', '2')));
 EOF
 
 cat <<EOF > /opt/postfix/conf/sql/mysql_virtual_alias_domain_maps.cf

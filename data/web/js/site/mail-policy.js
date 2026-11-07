@@ -130,7 +130,7 @@ var mailcowMailPolicy = (function($) {
       } else if (r.allowed == 1) {
         html = '<div class="alert alert-success py-2">' + esc(L('test_allowed')) + '</div>';
       } else {
-        var reason = r.internal_alias == 1 ? L('test_denied_internal') :
+        var reason = r.internal_alias == 1 ? L('test_denied_internal') : r.side === 'address' ? L('test_denied_address') :
           (r.policy ? L('test_denied_' + r.side).replace('%s', r.policy) : L('test_denied_other'));
         html = '<div class="alert alert-danger py-2">' + esc(reason) + '<div class="small mt-1"><code>550 5.7.1 ' + esc(r.text) + '</code></div></div>';
       }

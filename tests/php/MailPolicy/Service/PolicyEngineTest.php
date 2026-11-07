@@ -46,9 +46,9 @@ class PolicyEngineTest extends TestCase
     }
 
     /** [allowed, side] of a check */
-    private function check(string $sender, string $recipient, string $login = '', int $port = 587): array
+    private function check(string $sender, string $recipient, string $login = '', int $port = 587, string $helo = ''): array
     {
-        $decision = $this->engine->check($sender, $recipient, $login, $port);
+        $decision = $this->engine->check($sender, $recipient, $login, $port, $helo);
         return [$decision->allowed, $decision->side];
     }
 
@@ -139,7 +139,7 @@ class PolicyEngineTest extends TestCase
 
     public function testInternalFlagOfAliasesAndGroups(): void
     {
-        $this->lookup->internalAliases['team@firma.de'] = 'firma.de';
+        $this->lookup->aliases['team@firma.de'] = ['domain' => 'firma.de', 'internal' => true];
 
         $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'team@firma.de', '', 25));
         // the old rspamd rule let forged senders of the domain pass
@@ -174,15 +174,123 @@ class PolicyEngineTest extends TestCase
     {
         $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(12, ['sendMode' => 'internal'])];
         $this->lookup->mailboxPolicies['chef@firma.de'] = [self::policy(13, ['receiveMode' => 'internal'])];
-        $this->lookup->internalAliases['team@firma.de'] = 'firma.de';
+        $this->lookup->aliases['team@firma.de'] = ['domain' => 'firma.de', 'internal' => true];
 
         // a Sieve redirect of azubi to an external address follows its send rules
         $this->assertSame([false, 'send'], $this->check('azubi+x@firma.de', 'x@extern.example', '', 588));
         $this->assertSame([true, ''], $this->check('azubi@firma.de', 'chef@firma.de', '', 588));
         $this->assertSame([true, ''], $this->check('kollege@firma.de', 'team@firma.de', '', 588));
-        // notifications of mailcow (e.g. quota warnings) are no mailbox
-        $this->assertSame([true, ''], $this->check('quota-warning@localhost', 'chef@firma.de', '', 588));
+        // other senders are checked like mail from outside
+        $this->assertSame([false, 'receive'], $this->check('quota-warning@localhost', 'chef@firma.de', '', 588));
+        // the quota warning copies of Dovecot carry the address of the mailbox over its quota
+        $this->assertSame([true, ''], $this->check('azubi@firma.de', 'x@extern.example', '', 588, 'quotanotification'));
         // on other ports the sender address is no login
         $this->assertSame([false, 'receive'], $this->check('kollege@firma.de', 'team@firma.de', '', 25));
+    }
+
+    public function testDovecotMailWithoutMailboxSender(): void
+    {
+        // bounces redirected with the null sender, notifications of other senders: local recipients only while
+        // a policy restricts sending, as the sending mailbox is unknown
+        $this->assertSame([true, ''], $this->check('', 'x@extern.example', '', 588));
+        $this->lookup->sendRules = true;
+        $this->assertSame([false, 'send'], $this->check('', 'x@extern.example', '', 588));
+        $this->assertSame([false, 'send'], $this->check('irgendwer@nirgends.example', 'x@extern.example', '', 588));
+        $this->assertSame([true, ''], $this->check('', 'kollege@firma.com', '', 588));
+        // local recipients: receive rules as for mail from outside
+        $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(14, ['sendMode' => 'internal', 'receiveMode' => 'internal'])];
+        $this->assertSame([false, 'receive'], $this->check('', 'azubi@firma.de', '', 588));
+        // SOGo reminders log in with the Dovecot master user
+        $this->assertSame([false, 'send'], $this->check('azubi@firma.de', 'x@extern.example', 'abc@mailcow.local', 588));
+        $this->assertSame([false, 'send'], $this->check('', 'x@extern.example', 'abc@mailcow.local', 588));
+    }
+
+    public function testRecipientsAreComparedAsPostfixDeliversThem(): void
+    {
+        $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(15, ['receiveMode' => 'internal'])];
+
+        // trailing dot and quotes are dropped by Postfix
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'Azubi@Firma.de.', '', 25));
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', '"azubi+a b"@firma.com', '', 25));
+        // routes through another address are refused, Postfix would deliver them to the routed address
+        foreach (['azubi@firma.de@localhost', 'azubi%firma.de@localhost', 'firma.de!azubi@localhost.localdomain', 'x@extern.example@localhost',
+            'azubi%firma.de@[192.0.2.1]', 'abuse'] as $recipient) {
+            $this->assertSame([false, 'address'], $this->check('x@extern.example', $recipient, '', 25), $recipient);
+        }
+        // in other domains %, ! and @ in the local part are ordinary characters
+        $this->assertSame([true, ''], $this->check('kollege@firma.de', 'a!b@extern.example', 'kollege@firma.de'));
+        $this->assertSame([true, ''], $this->check('x@extern.example', 'sales%x@firma.de', '', 25));
+        $this->assertSame([true, ''], $this->check('x@extern.example', 'postmaster', '', 25));
+        $this->assertSame('550 5.7.1 This form of the recipient address is not allowed by the mail policy',
+            $this->engine->check('azubi@firma.de', 'x%extern.example@localhost', 'azubi@firma.de', 587)->action());
+    }
+
+    public function testSendersAreComparedAsPostfixResolvesThem(): void
+    {
+        $this->lookup->mailboxPolicies['kollege@firma.de'] = [self::policy(16, ['sendBlock' => ['konkurrenz.example']])];
+        $this->lookup->mailboxPolicies['info@firma.de'] = [self::policy(17, ['sendMode' => 'internal'])];
+
+        $this->assertSame([false, 'send'], $this->check('kollege@firma.de', 'x@konkurrenz.example.', 'kollege@firma.de'));
+        // sending as info@ with a trailing dot keeps the policy of info@
+        $this->assertSame([false, 'send'], $this->check('Info@firma.de.', 'x@extern.example', 'chef@firma.de'));
+    }
+
+    public function testTemporaryAliasesFollowTheirOwner(): void
+    {
+        $this->lookup->temporaryAliases['einmal.xyz@firma.de'] = 'azubi@firma.de';
+        $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(18, ['receiveMode' => 'internal'])];
+
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'einmal.xyz@firma.de', '', 25));
+        $this->assertSame([true, ''], $this->check('kollege@firma.de', 'einmal.xyz@firma.de', 'kollege@firma.de'));
+    }
+
+    public function testInternalFlagFollowsThePostfixLookup(): void
+    {
+        // an alias of its own in an alias domain; senders of the target domain are internal
+        $this->lookup->aliases['team2@firma.com'] = ['domain' => 'firma.com', 'internal' => true];
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'team2@firma.com', '', 25));
+        $this->assertSame([true, ''], $this->check('kollege@firma.de', 'team2@firma.com', 'kollege@firma.de'));
+        // the full address first, then without +tag
+        $this->lookup->aliases['team+ext@firma.de'] = ['domain' => 'firma.de', 'internal' => true];
+        $this->lookup->aliases['team@firma.de'] = ['domain' => 'firma.de', 'internal' => false];
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'team+ext@firma.de', '', 25));
+        $this->assertSame([true, ''], $this->check('x@extern.example', 'team+other@firma.de', '', 25));
+        // an internal catch-all alias covers the whole domain, also through its alias domain
+        $this->lookup->internalCatchAlls = ['tochter.de'];
+        $this->lookup->aliasDomains['tochter.com'] = 'tochter.de';
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'andere@tochter.de', '', 25));
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'unbekannt@tochter.com', '', 25));
+        $this->assertSame([true, ''], $this->check('andere@tochter.de', 'unbekannt@tochter.de', 'andere@tochter.de'));
+    }
+
+    public function testAddressesAreComparedInTheirStoredSpelling(): void
+    {
+        // MySQL ignores accents: Postfix delivers chéf@ to chef@ and töchter.de to tochter.de
+        $this->lookup->spellings = ['chéf@firma.de' => 'chef@firma.de', 'töchter.de' => 'tochter.de', 'köllege@firma.de' => 'kollege@firma.de'];
+        $this->lookup->mailboxPolicies['kollege@firma.de'] = [self::policy(20, ['sendBlock' => ['chef@firma.de', 'tochter.de']])];
+        $this->lookup->mailboxPolicies['chef@firma.de'] = [self::policy(21, ['receiveBlock' => ['kollege@firma.de']])];
+
+        $this->assertSame([false, 'send'], $this->check('kollege@firma.de', 'chéf@firma.de', 'kollege@firma.de'));
+        $this->assertSame([false, 'send'], $this->check('kollege@firma.de', 'x@töchter.de', 'kollege@firma.de'));
+        $this->assertSame([false, 'receive'], $this->check('köllege@firma.de', 'chef@firma.de', '', 25));
+    }
+
+    public function testTaggedAliasThroughAnAliasDomain(): void
+    {
+        // Postfix maps chef@firma.com to chef@firma.de and looks up chef+intern@firma.de again
+        $this->lookup->aliases['chef+intern@firma.de'] = ['domain' => 'firma.de', 'internal' => true];
+
+        $this->assertSame([false, 'receive'], $this->check('x@extern.example', 'chef+intern@firma.com', '', 25));
+        $this->assertSame([true, ''], $this->check('x@extern.example', 'chef+other@firma.com', '', 25));
+    }
+
+    public function testBlockEntriesAlsoMatchTheEnvelopeSender(): void
+    {
+        $this->lookup->mailboxPolicies['chef@firma.de'] = [self::policy(19, ['receiveBlock' => ['kollege@firma.de', 'group:7', 'tochter.de']])];
+
+        $this->assertSame([false, 'receive'], $this->check('kollege@firma.de', 'chef@firma.de', '', 25));
+        $this->assertSame([false, 'receive'], $this->check('azubi@firma.de', 'chef@firma.de', '', 25));
+        $this->assertSame([false, 'receive'], $this->check('andere@tochter.de', 'chef@firma.de', '', 25));
+        $this->assertSame([true, ''], $this->check('info@firma.de', 'chef@firma.de', '', 25));
     }
 }

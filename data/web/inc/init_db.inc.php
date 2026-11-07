@@ -500,11 +500,11 @@ function init_db_schema()
           "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
           // all, internal or list; the entries are JSON lists of addresses, domains and group:<id>
           "send_mode" => "VARCHAR(16) NOT NULL DEFAULT 'all'",
-          "send_allow" => "TEXT NOT NULL",
-          "send_block" => "TEXT NOT NULL",
+          "send_allow" => "MEDIUMTEXT NOT NULL",
+          "send_block" => "MEDIUMTEXT NOT NULL",
           "receive_mode" => "VARCHAR(16) NOT NULL DEFAULT 'all'",
-          "receive_allow" => "TEXT NOT NULL",
-          "receive_block" => "TEXT NOT NULL",
+          "receive_allow" => "MEDIUMTEXT NOT NULL",
+          "receive_block" => "MEDIUMTEXT NOT NULL",
           "reject_text" => "VARCHAR(255) NOT NULL DEFAULT ''",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
@@ -783,7 +783,8 @@ function init_db_schema()
             "group_id" => array("group_id")
           ),
           "key" => array(
-            "domain" => array("domain")
+            "domain" => array("domain"),
+            "internal" => array("internal", "active")
           ),
           "fkey" => array(
             "fk_alias_mailbox_group" => array(

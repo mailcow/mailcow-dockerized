@@ -75,10 +75,16 @@ class MailPolicyApiController
         }
     }
 
-    /** Answer for the Postfix policy service: DUNNO or the rejection */
-    public function check(string $sender, string $recipient, string $login, int $port): string
+    /** functions.mailbox.inc.php: a mailbox or alias was renamed */
+    public function addressRenamed(string $old, string $new): void
     {
-        return $this->engine->check($sender, $recipient, $login, $port)->action();
+        $this->policies->addressRenamed($old, $new);
+    }
+
+    /** Answer for the Postfix policy service: DUNNO or the rejection */
+    public function check(string $sender, string $recipient, string $login, int $port, string $helo = ''): string
+    {
+        return $this->engine->check($sender, $recipient, $login, $port, $helo)->action();
     }
 
     /**

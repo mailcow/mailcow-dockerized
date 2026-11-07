@@ -1459,7 +1459,7 @@ paths:
                   description: all; internal = recipients in the domain of the policy and its alias domains plus send_allow; list = send_allow only
                   type: string
                 send_allow:
-                  description: addresses, domains or group:<id> (array or list separated by commas, spaces or newlines), max. 500
+                  description: addresses, domains or group:<id> of a group of the policy's domain (array or list separated by commas, spaces or newlines), max. 500
                   type: array
                 send_block:
                   description: recipients that are always refused, entries as send_allow
@@ -1477,10 +1477,10 @@ paths:
                   description: text of the 550 5.7.1 rejection, printable ASCII, max. 200 characters, empty = default text
                   type: string
                 mailboxes:
-                  description: mailboxes of the domain the policy applies to (replaces the list)
+                  description: mailboxes of the domain the policy applies to (replaces the list), max. 500
                   type: array
                 groups:
-                  description: group IDs of the domain the policy applies to, also to mail to the group address (replaces the list)
+                  description: group IDs of the domain the policy applies to (its members of that domain and mail to the group address), max. 500; domain admins need the mailbox_groups ACL, without it group IDs and group entries stay unchanged
                   type: array
                 active:
                   type: boolean
@@ -4731,7 +4731,7 @@ paths:
                       description: all; internal = recipients in the domain of the policy and its alias domains plus send_allow; list = send_allow only
                       type: string
                     send_allow:
-                      description: addresses, domains or group:<id> (array or list separated by commas, spaces or newlines), max. 500
+                      description: addresses, domains or group:<id> of a group of the policy's domain (array or list separated by commas, spaces or newlines), max. 500
                       type: array
                     send_block:
                       description: recipients that are always refused, entries as send_allow
@@ -4749,10 +4749,10 @@ paths:
                       description: text of the 550 5.7.1 rejection, printable ASCII, max. 200 characters, empty = default text
                       type: string
                     mailboxes:
-                      description: mailboxes of the domain the policy applies to (replaces the list)
+                      description: mailboxes of the domain the policy applies to (replaces the list), max. 500
                       type: array
                     groups:
-                      description: group IDs of the domain the policy applies to, also to mail to the group address (replaces the list)
+                      description: group IDs of the domain the policy applies to (its members of that domain and mail to the group address), max. 500; domain admins need the mailbox_groups ACL, without it group IDs and group entries stay unchanged
                       type: array
                     active:
                       type: boolean
@@ -6812,10 +6812,12 @@ paths:
       tags:
         - Mail policies
       description: >-
-        Would Postfix accept the mail for this recipient? side is "send" or
-        "receive", policy is empty for a policy of another domain,
-        internal_alias = refused by the internal flag of an alias or group.
-        Domain admins test addresses of their domains. Empty answer for invalid
+        Would Postfix accept the mail for this recipient? side is "send",
+        "receive" or "address" (the recipient routes through another address),
+        policy is empty for a policy of another domain (its text is then the
+        default text), internal_alias = refused by the internal flag of an
+        alias or group. Domain admins test addresses of their domains; a sender
+        of another domain is tested as not logged in. Empty answer for invalid
         input.
       operationId: Test mail policies
       summary: Test mail policies

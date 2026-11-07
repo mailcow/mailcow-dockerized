@@ -23,6 +23,7 @@ class PolicyServiceTest extends TestCase
     private FakeMailPolicyLookup $lookup;
     /** @var Policy[] saved policies */
     private array $saved = [];
+    private int $groupLookups = 0;
 
     protected function setUp(): void
     {
@@ -30,7 +31,11 @@ class PolicyServiceTest extends TestCase
         $this->repo->method('isDomain')->willReturnCallback(fn(string $domain): bool => in_array($domain, ['firma.de', 'tochter.de'], true));
         $this->repo->method('mailboxDomain')->willReturnCallback(fn(string $username): ?string =>
             ['azubi@firma.de' => 'firma.de', 'chef@firma.de' => 'firma.de', 'andere@tochter.de' => 'tochter.de'][$username] ?? null);
-        $this->repo->method('groupDomain')->willReturnCallback(fn(int $id): ?string => [7 => 'firma.de', 9 => 'tochter.de'][$id] ?? null);
+        $this->repo->method('groupDomain')->willReturnCallback(function (int $id): ?string {
+            $this->groupLookups++;
+            return [7 => 'firma.de', 9 => 'tochter.de'][$id] ?? null;
+        });
+        $this->repo->method('groupsIn')->willReturn([['id' => 7, 'name' => 'Azubis', 'domain' => 'firma.de', 'address' => null]]);
         $this->repo->method('save')->willReturnCallback(function (Policy $policy): int {
             $policy->id ??= 1;
             $this->saved[] = clone $policy;
@@ -133,7 +138,7 @@ class PolicyServiceTest extends TestCase
     public function testPermissions(): void
     {
         $this->repo->method('find')->willReturn($this->stored());
-        $da = FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1']);
+        $da = FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1', 'mailbox_groups' => '1']);
 
         $this->assertSame('Test', $this->service($da)->create(['domain' => 'firma.de', 'name' => 'Test'])->name);
         $this->assertNotNull($this->service($da)->get(3));
@@ -147,6 +152,58 @@ class PolicyServiceTest extends TestCase
         $readOnly = new Context('admin', 'API', [], false, 'ro');
         $this->assertNotNull($this->service($readOnly)->get(3));
         $this->expectUserError('access_denied', fn() => $this->service($readOnly)->delete(3));
+    }
+
+    public function testGroupsNeedTheGroupAcl(): void
+    {
+        $this->repo->method('find')->willReturn($this->stored(['groups' => [7]]));
+        $da = FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1']);
+
+        $this->assertSame([], $this->service($da)->groupChoices(['firma.de']));
+        // the form sends empty group fields: the group entries and assignments stay
+        $policy = $this->service($da)->update(3, ['send_allow' => 'kunde.example', 'send_allow_groups' => '', 'groups' => '']);
+        $this->assertSame([['kunde.example', 'group:7'], [7]], [$policy->sendAllow, $policy->groups]);
+        // the stored values sent back unchanged, as returned by the API
+        $policy = $this->service($da)->update(3, ['send_allow' => ['partner.de', 'group:7'], 'groups' => ['7']]);
+        $this->assertSame([['partner.de', 'group:7'], [7]], [$policy->sendAllow, $policy->groups]);
+        $this->expectUserError('access_denied', fn() => $this->service($da)->update(3, ['groups' => ['7', '8']]));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->create(['domain' => 'firma.de', 'name' => 'Test', 'groups' => ['7']]));
+        $this->expectUserError(['mail_policy_entry_invalid', 'group:7'],
+            fn() => $this->service($da)->create(['domain' => 'firma.de', 'name' => 'Test', 'send_block' => 'group:7']));
+        $this->assertCount(1, $this->service(FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1', 'mailbox_groups' => '1']))->groupChoices(['firma.de']));
+    }
+
+    public function testGroupEntriesBelongToThePolicyDomain(): void
+    {
+        // also for admins: the policy of firma.de cannot name a group of tochter.de
+        $this->expectUserError(['mail_policy_entry_invalid', 'group:9'],
+            fn() => $this->service()->create(['domain' => 'firma.de', 'name' => 'Test', 'receive_block' => 'group:9']));
+    }
+
+    public function testListsAreLimitedBeforeAnythingIsLookedUp(): void
+    {
+        $groups = array_map(fn(int $i): string => 'group:' . $i, range(1, 501));
+        $this->expectUserError(['mail_policy_entries_exceeded', 500], fn() => $this->service()->create(['domain' => 'firma.de', 'name' => 'Test', 'send_block' => $groups]));
+        $this->assertSame(0, $this->groupLookups);
+        // repeats count once
+        $this->assertSame(['group:7'], $this->service()->create(['domain' => 'firma.de', 'name' => 'Test', 'send_block' => array_fill(0, 600, 'group:7')])->sendBlock);
+        $this->expectUserError(['mail_policy_entries_exceeded', 500],
+            fn() => $this->service()->create(['domain' => 'firma.de', 'name' => 'Test', 'mailboxes' => array_map(fn(int $i): string => "m$i@firma.de", range(1, 501))]));
+    }
+
+    public function testRuleTestShowsNothingOfOtherDomains(): void
+    {
+        $this->lookup->mailboxes['andere@tochter.de'] = 'tochter.de';
+        $this->lookup->mailboxPolicies['andere@tochter.de'] = [$this->stored(['id' => 5, 'domain' => 'tochter.de', 'name' => 'Geheim',
+            'sendAllow' => [], 'receiveMode' => 'internal', 'rejectText' => 'Interner Text'])];
+        $this->repo->method('mailboxDomain')->willReturnCallback(fn(string $username): ?string => $this->lookup->mailboxes[$username] ?? null);
+        $da = FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1']);
+
+        // a policy of another domain: neither name nor text
+        $this->assertSame(['allowed' => 0, 'side' => 'receive', 'policy' => null, 'internal_alias' => 0, 'logged_in' => 1,
+            'text' => 'This recipient does not accept mail from this sender'], $this->service($da)->test('azubi@firma.de', 'andere@tochter.de', true));
+        // a sender of another domain is not tested as logged in, so its mailbox and its rules stay hidden
+        $this->assertSame(0, $this->service($da)->test('andere@tochter.de', 'chef@firma.de', true)['logged_in']);
     }
 
     public function testRuleTest(): void
