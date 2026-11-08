@@ -1,0 +1,81 @@
+{% extends 'base.twig' %}
+
+{# E-Mail > Restore (admins, domain admins): snapshot, a tree of its domains and mailboxes (also deleted ones) with
+   a selection, the restore modal, the restores. Filled by js/site/backup.js. #}
+{% block content %}
+{% set is_admin = mailcow_cc_role == 'admin' %}
+<div id="backup_restore_page">
+  <div class="card mb-4">
+    <div class="card-header d-flex align-items-center fs-5">
+      <span>{{ lang.backup.restore_card }}</span>
+    </div>
+    <div class="card-body">
+      <div class="backup-restore-hints"></div>
+      {# left-aligned with the search of the toolbar below #}
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-3 px-2">
+        <label class="fw-semibold mb-0" for="backup_restore_snapshot">{{ lang.backup.snapshot_label }}</label>
+        <div class="flex-grow-1" style="min-width:16rem;max-width:28rem">
+          <select class="form-control" id="backup_restore_snapshot" data-live-search="true" data-show-subtext="true" data-width="100%"></select>
+        </div>
+      </div>
+      <div class="backup-tree-panel d-none">
+        <div class="backup-content-note"></div>
+        <div class="backup-restore-queued"></div>
+        <div class="position-sticky py-2 px-2 rounded backup-tree-toolbar" style="top:0;z-index:5;background:var(--bs-card-bg,var(--bs-body-bg))">
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="flex-grow-1" style="min-width:12rem;max-width:28rem">
+              <input type="search" class="form-control form-control-sm backup-tree-search" placeholder="{{ lang.backup.search_placeholder }}" aria-label="{{ lang.backup.search_placeholder }}" autocomplete="off">
+            </div>
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input backup-tree-deleted" type="checkbox" role="switch" id="backup_tree_deleted">
+              <label class="form-check-label small" for="backup_tree_deleted">{{ lang.backup.only_deleted }}</label>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+              <span class="small text-muted backup-selection-text" aria-live="polite"></span>
+              <button type="button" class="btn btn-sm btn-link px-1 backup-selection-clear d-none">{{ lang.backup.clear_selection }}</button>
+              <button type="button" class="btn btn-sm btn-xs-lg btn-success backup-selection-restore" disabled><i class="bi bi-clock-history"></i> {{ lang.backup.restore }}</button>
+            </div>
+          </div>
+          <div class="small mt-1 d-none backup-selection-hint" role="status"></div>
+        </div>
+        <table class="table table-sm table-hover align-middle mb-0 backup-tree" id="backup_tree">
+          <thead>
+            <tr>
+              <th>{{ lang.backup.name }}</th>
+              <th class="d-none d-md-table-cell">{{ lang.backup.state }}</th>
+              <th class="d-none d-sm-table-cell">{{ lang.backup.mailboxes }}</th>
+              <th class="text-end"><span class="visually-hidden">{{ lang.backup.restore }}</span></th>
+            </tr>
+          </thead>
+          {# not empty: mailcow removes empty tbody elements on load #}
+          <tbody><tr class="backup-tree-message"><td colspan="4" class="text-muted">{{ lang.footer.loading }}</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header d-flex align-items-center fs-5">
+      <span>{{ lang.backup.restores }}</span>
+      <button type="button" class="btn btn-xs btn-secondary ms-auto backup-table-refresh" data-table="backup_restores_table" title="{{ lang.backup.refresh }}" aria-label="{{ lang.backup.refresh }}"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">{{ lang.backup.restores_info }}</p>
+      <table id="backup_restores_table" class="table table-striped dt-responsive w-100"></table>
+    </div>
+  </div>
+</div>
+
+{% include 'modals/backup-restore.twig' %}
+{% include 'modals/backup-job.twig' %}
+
+<script type='text/javascript'>
+  var lang = {backup: {{ lang_backup|raw }}};
+  var lang_datatables = {{ lang_datatables|raw }};
+  var csrf_token = '{{ csrf_token }}';
+  var pagination_size = Math.trunc('{{ pagination_size }}');
+  var role = '{{ role }}';
+  var backup_configured = {{ backup_configured ? 'true' : 'false' }};
+  var backup_timezone = '{{ backup_timezone|e('js') }}';
+</script>
+{% endblock %}

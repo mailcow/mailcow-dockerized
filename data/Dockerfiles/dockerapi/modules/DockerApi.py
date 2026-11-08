@@ -6,8 +6,14 @@ import time
 import json
 import asyncio
 import platform
+import docker
 from datetime import datetime
 from fastapi import FastAPI, Response, Request
+
+def long_running(method):
+  """Marks an api call that runs for minutes: main.py runs it in a worker thread, the other api calls go on"""
+  method.long_running = True
+  return method
 
 class DockerApi:
   def __init__(self, redis_client, sync_docker_client, async_docker_client, logger):
@@ -445,6 +451,35 @@ class DockerApi:
         return Response(content=json.dumps({ 'type': 'danger', 'msg': 'users required' }, indent=4), media_type="application/json")
       init_return = container.exec_run(["/bin/bash", "-c", 'for user in "$@"; do sogo-tool init-user "$user" || exit 1; done', "init_user"] + users, user='sogo')
       return self.exec_run_handler('generic', init_return)
+  # api call: container_post - post_action: exec - cmd: sogo - task: restore
+  # Resets calendars, address books and preferences of a user to the sogo-tool backup file <dir>/<username> in a
+  # restore batch of the backup (/restore/<job>/b<batch>/sogo_backup, only the sogo user can read it); values are
+  # checked and passed as arguments, never through the shell. Runs in a worker thread (main.py) with its own client.
+  @long_running
+  def container_post__exec__sogo__restore(self, request_json, **kwargs):
+    if 'container_id' in kwargs:
+      filters = {"id": kwargs['container_id']}
+    elif 'container_name' in kwargs:
+      filters = {"name": kwargs['container_name']}
+
+    directory = str(request_json.get('dir', ''))
+    username = str(request_json.get('username', ''))
+    if (not re.fullmatch(r'/restore/[0-9]+/b[0-9]+/sogo_backup', directory)
+      or not re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9._+-]*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+', username)):
+      return Response(content=json.dumps({ 'type': 'danger', 'msg': 'dir and username required' }, indent=4), media_type="application/json")
+    # the folder: no symlink, uid 999, mode 0700; the file: plain, uid 999, mode 0600. sogo-tool restores folders and
+    # preferences in two runs, both stopped before the runner gives up waiting (30 minutes)
+    script = ('[ -d "$1" ] && [ ! -L "$1" ] && [ "$(realpath -e -- "$1")" = "$1" ] && [ "$(stat -c "%u %a" -- "$1")" = "999 700" ] '
+      '&& [ -f "$1/$2" ] && [ ! -L "$1/$2" ] && [ "$(stat -c "%u %a" -- "$1/$2")" = "999 600" ] '
+      '|| { echo "invalid directory or file"; exit 1; }; '
+      'timeout -k 30 850 sogo-tool restore -f ALL "$1" "$2" && exec timeout -k 30 850 sogo-tool restore -p "$1" "$2"')
+    client = docker.DockerClient(base_url='unix:///var/run/docker.sock', version='auto', timeout=1800)
+    try:
+      for container in client.containers.list(filters=filters):
+        restore_return = container.exec_run(["/bin/bash", "-c", script, "restore", directory, username], user='sogo')
+        return self.exec_run_handler('generic', restore_return)
+    finally:
+      client.close()
   # api call: container_post - post_action: exec - cmd: doveadm - task: subscribe_shared
   # Subscribes users to every folder of a mailbox shared with them (Shared/<owner>/...), or unsubscribes them
   def container_post__exec__doveadm__subscribe_shared(self, request_json, **kwargs):

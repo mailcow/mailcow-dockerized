@@ -1,0 +1,112 @@
+{# Restore modal of E-Mail > Restore: what is restored, the items, the mail target; js/site/backup.js opens and sends it.
+   Domain admins only see the items they have the ACL for (the API refuses the others as well). For deleted targets the
+   overwrite block is hidden and SOGo moves into "Calendars and contacts" (nothing to overwrite). #}
+{% macro component(key, label, note, sub) %}
+<div class="form-check{% if sub %} ms-4{% endif %}">
+  <input class="form-check-input backup-component" type="checkbox" value="{{ key }}" id="backup_restore_{{ key }}"{% if sub %} data-parent="{{ sub }}"{% endif %}>
+  <label class="form-check-label" for="backup_restore_{{ key }}">{{ label }}</label>
+  {% if note %}<div class="small text-muted">{{ note }}</div>{% endif %}
+</div>
+{% endmacro %}
+{% import _self as restore %}
+{% set is_admin = mailcow_cc_role == 'admin' %}
+<div class="modal fade" id="backupRestoreModal" tabindex="-1" role="dialog" aria-labelledby="backupRestoreModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <form class="modal-content" id="backup_restore_form" role="form" autocomplete="off">
+      <div class="modal-header">
+        <div class="text-break">
+          <h3 class="modal-title" id="backupRestoreModalTitle">{{ lang.backup.restore_title }}</h3>
+          <div class="small text-muted backup-restore-subtitle"></div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.backup.close }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-sm-3 col-lg-2 text-sm-end">{{ lang.backup.restore_what }}</div>
+          <div class="col-sm-9 col-lg-10">
+            <div class="backup-restore-summary text-break"></div>
+            <p class="text-muted small mb-1 mt-2">{{ lang.backup.restore_info }}</p>
+            <p class="text-muted small mb-1"><i class="bi bi-info-circle"></i> {{ lang.backup.note_inactive }}</p>
+            <div class="alert alert-info py-2 mb-0 d-none backup-create-note"><i class="bi bi-info-circle"></i> {{ lang.backup.create_note }}</div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-3 col-lg-2 text-sm-end">{{ lang.backup.components }}</div>
+          <div class="col-sm-9 col-lg-10">
+            <p class="small mb-2 d-none backup-no-mail-note"><i class="bi bi-exclamation-triangle-fill text-warning"></i> {{ lang.backup.no_mail_data }}</p>
+            <div class="row">
+              <div class="col-lg-6">
+                <fieldset class="mb-3">
+                  <legend class="fs-6 fw-bold mb-1">{{ lang.backup.group_mail }}</legend>
+                  {{ restore.component('mails', lang.backup.component_mails) }}
+                  <div class="ms-4 mb-1 backup-mail-target" role="radiogroup" aria-label="{{ lang.backup.mail_target }}">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="mail_target" value="folder" id="backup_restore_target_folder" checked>
+                      <label class="form-check-label" for="backup_restore_target_folder">{{ lang.backup.mail_target_folder|e|format('<span class="backup-folder-name"></span>')|raw }}</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="mail_target" value="original" id="backup_restore_target_original">
+                      <label class="form-check-label" for="backup_restore_target_original">{{ lang.backup.mail_target_original }}</label>
+                    </div>
+                  </div>
+                  {{ restore.component('imap_acl', lang.backup.component_imap_acl) }}
+                </fieldset>
+                <fieldset class="mb-3 d-none backup-sogo-normal">
+                  <legend class="fs-6 fw-bold mb-1">{{ lang.backup.group_calendar }}</legend>
+                </fieldset>
+                <fieldset class="mb-3">
+                  <legend class="fs-6 fw-bold mb-1">{{ lang.backup.group_addresses }}</legend>
+                  {{ restore.component('aliases', lang.backup.component_aliases) }}
+                  {% if is_admin or acl.mailbox_groups == 1 %}{{ restore.component('groups', lang.backup.component_groups) }}{% endif %}
+                  {{ restore.component('sender_acl', lang.backup.component_sender_acl) }}
+                  {% if is_admin or acl.mail_policies == 1 %}{{ restore.component('mail_policies', lang.backup.component_mail_policies) }}{% endif %}
+                  {% if is_admin or acl.retention == 1 %}{{ restore.component('retention_rules', lang.backup.component_retention_rules, lang.backup.note_retention_rules) }}{% endif %}
+                </fieldset>
+              </div>
+              <div class="col-lg-6">
+                {% if is_admin or acl.filters == 1 or acl.spam_policy == 1 or acl.bcc_maps == 1 %}
+                <fieldset class="mb-3">
+                  <legend class="fs-6 fw-bold mb-1">{{ lang.backup.group_filters }}</legend>
+                  {% if is_admin or acl.filters == 1 %}
+                  {{ restore.component('filters', lang.backup.component_filters) }}
+                  {{ restore.component('sieve_activate', lang.backup.component_sieve_activate, lang.backup.note_sieve_activate, 'filters') }}
+                  {% endif %}
+                  {% if is_admin or acl.spam_policy == 1 %}{{ restore.component('spam', lang.backup.component_spam) }}{% endif %}
+                  {% if is_admin or acl.bcc_maps == 1 %}{{ restore.component('bcc', lang.backup.component_bcc) }}{% endif %}
+                </fieldset>
+                {% endif %}
+                <fieldset class="mb-3">
+                  <legend class="fs-6 fw-bold mb-1">{{ lang.backup.group_access }}</legend>
+                  {% if is_admin or acl.syncjobs == 1 %}{{ restore.component('syncjobs', lang.backup.component_syncjobs) }}{% endif %}
+                  {% if is_admin or acl.app_passwds == 1 %}{{ restore.component('app_passwords', lang.backup.component_app_passwords, lang.backup.note_app_passwords) }}{% endif %}
+                  {{ restore.component('tfa', lang.backup.component_tfa, lang.backup.note_tfa) }}
+                </fieldset>
+                <fieldset class="border border-warning rounded px-3 py-2 mb-3 backup-overwrite">
+                  <legend class="fs-6 fw-bold mb-1 float-none w-auto px-1"><i class="bi bi-exclamation-triangle-fill text-warning"></i> {{ lang.backup.overwrite }}</legend>
+                  <p class="small text-muted mb-1">{{ lang.backup.overwrite_info }}</p>
+                  <div class="form-check backup-sogo-item">
+                    <input class="form-check-input backup-component" type="checkbox" value="sogo" id="backup_restore_sogo">
+                    <label class="form-check-label" for="backup_restore_sogo" data-overwrite="{{ lang.backup.component_sogo }}" data-normal="{{ lang.backup.component_sogo_new }}">{{ lang.backup.component_sogo }}</label>
+                    <div class="small text-muted backup-sogo-note">
+                      {{ lang.backup.note_sogo }}
+                      <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-bs-toggle="collapse" data-bs-target="#backup_sogo_more" aria-expanded="false" aria-controls="backup_sogo_more">{{ lang.backup.more }}</button>
+                      <div class="collapse" id="backup_sogo_more">{{ lang.backup.note_sogo_more }}</div>
+                    </div>
+                  </div>
+                  {{ restore.component('settings', lang.backup.component_settings, lang.backup.note_settings) }}
+                  {{ restore.component('password', lang.backup.component_password) }}
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-danger small d-none backup-restore-error" role="alert"></div>
+      </div>
+      <div class="modal-footer">
+        <small class="text-muted me-auto">{{ lang.backup.restore_background }}</small>
+        <button type="button" class="btn btn-sm btn-xs-lg btn-secondary" data-bs-dismiss="modal">{{ lang.backup.cancel }}</button>
+        <button type="submit" class="btn btn-sm btn-xs-lg btn-success backup-restore-submit" data-normal="{{ lang.backup.restore }}" data-overwrite="{{ lang.backup.restore_overwrite }}"><i class="bi bi-clock-history"></i> <span>{{ lang.backup.restore }}</span></button>
+      </div>
+    </form>
+  </div>
+</div>

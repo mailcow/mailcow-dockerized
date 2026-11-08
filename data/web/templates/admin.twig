@@ -28,6 +28,7 @@
         <li><button class="dropdown-item" data-bs-target="#tab-config-customize" aria-selected="false" aria-controls="tab-config-customize" role="tab" data-bs-toggle="tab">{{ lang.admin.customize }}</button></li>
       </ul>
     </li>
+    <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-config-backup" aria-selected="false" aria-controls="tab-config-backup" role="tab" data-bs-toggle="tab">{{ lang.backup.tab }}</button></li>
     <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-routing" aria-selected="false" aria-controls="tab-routing" role="tab" data-bs-toggle="tab">{{ lang.admin.routing }}</button></li>
     <li role="presentation" class="nav-item"><button class="nav-link" data-bs-target="#tab-sys-mails" aria-selected="false" aria-controls="tab-sys-mails" role="tab" data-bs-toggle="tab">{{ lang.admin.sys_mails }}</button></li>
     <li class="nav-item dropdown">
@@ -56,6 +57,7 @@
         {% include 'admin/tab-config-rsettings.twig' %}
         {% include 'admin/tab-config-customize.twig' %}
         {% include 'admin/tab-config-password-settings.twig' %}
+        {% include 'admin/tab-config-backup.twig' %}
         {% include 'admin/tab-sys-mails.twig' %}
         {% include 'admin/tab-globalfilter-regex.twig' %}
       </div>
@@ -64,9 +66,13 @@
 </div>
 
 {% include 'modals/admin.twig' %}
+{% include 'modals/backup-job.twig' %}
 
 <script type='text/javascript'>
 var lang = {{ lang_admin|raw }};
+lang.backup = {{ lang_backup|raw }};
+var backup_timezone = '{{ backup_timezone|e('js') }}';
+var backup_hostname = '{{ backup_hostname|e('js') }}';
 var lang_datatables = {{ lang_datatables|raw }};
 var admin_username = '{{ mailcow_cc_username }}';
 var csrf_token = '{{ csrf_token }}';

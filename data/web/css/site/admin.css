@@ -81,3 +81,53 @@ table tbody tr td input[type="checkbox"] {
 .dkim-label {
   margin: 0 0 8px !important;
 }
+/* backup schedule: the weekday toggles and the remove buttons of the entries react to the mouse, in every theme */
+.backup-schedule-days .btn:hover {
+  background-image: linear-gradient(rgba(128, 128, 128, .3), rgba(128, 128, 128, .3));
+}
+.backup-schedule-remove {
+  opacity: .6;
+}
+.backup-schedule-remove:hover, .backup-schedule-remove:focus-visible {
+  opacity: 1;
+  color: var(--bs-danger) !important;
+}
+/* result and log of a backup job: the border of the theme in light and dark mode (Bootstrap's .border stays light) */
+.backup-pre {
+  border: 1px solid var(--mc-border);
+}
+/* result of a restore job: an entry to open per mailbox, numbers in columns */
+.backup-result {
+  border: 1px solid var(--mc-border);
+}
+.backup-result > details + details {
+  border-top: 1px solid var(--mc-border);
+}
+.backup-result summary {
+  list-style: none;
+  cursor: pointer;
+}
+.backup-result summary::-webkit-details-marker {
+  display: none;
+}
+.backup-result summary:hover {
+  background-image: linear-gradient(rgba(128, 128, 128, .12), rgba(128, 128, 128, .12));
+}
+.backup-result summary .bi-chevron-right {
+  transition: transform .15s;
+}
+.backup-result details[open] > summary .bi-chevron-right {
+  transform: rotate(90deg);
+}
+.backup-result-body {
+  padding-left: 2.6rem !important;
+}
+.backup-result-body .table {
+  --bs-table-bg: transparent;
+}
+.backup-result-body .num {
+  width: 8.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

@@ -13,6 +13,7 @@ $js_minifier->add('/web/js/site/admin.js');
 $js_minifier->add('/web/js/presets/rspamd.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 $js_minifier->add('/web/js/site/identity.js');
+$js_minifier->add('/web/js/site/backup.js');
 
 // all domains
 $domains = mailbox('get', 'domains');
@@ -121,6 +122,8 @@ $template_data = [
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   'iam_settings' => $iam_settings,
   'mbox_templates' => $mbox_templates,
+  'backup_timezone' => getenv('TZ') ?: 'UTC',
+  'backup_hostname' => getenv('MAILCOW_HOSTNAME') ?: '',
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

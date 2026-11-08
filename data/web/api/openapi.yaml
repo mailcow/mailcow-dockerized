@@ -1597,6 +1597,174 @@ paths:
                   type: boolean
               type: object
       summary: Create retention rule
+  /api/v1/add/backup-job:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - backup
+                        - add
+                        - job
+                        - type: backup
+                      msg:
+                        - backup_job_added
+                        - backup
+                        - 11
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Queue a job for the backup container (admins): backup (database dump,
+        export of the domains, restic backup, forget by the keep policy), check
+        (restic check of the structure and 1/N of the data), prune (forget and
+        delete unused data) or init (test the connection, create the repository
+        if it does not exist). One job of each type at a time
+        (backup_job_active). Needs a complete target and repository password
+        (backup_not_configured); a backup also the confirmation that the
+        repository password is stored outside of mailcow
+        (backup_password_not_confirmed). Follow the job with
+        get/backup-job/{id}.
+      operationId: Create backup job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                type: backup
+              properties:
+                type:
+                  description: backup, check, prune or init
+                  type: string
+              type: object
+      summary: Create backup job
+  /api/v1/add/backup-restore:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - backup
+                        - add
+                        - restore
+                        - snapshot: 3ee0b6f7
+                          scope: mailbox
+                          mailboxes:
+                            - user@example.org
+                          components:
+                            - mails
+                            - aliases
+                          mail_target: folder
+                      msg:
+                        - backup_restore_added
+                        - 12
+                        - 1
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Queue a restore from a snapshot (admins; domain admins for their
+        domains). Scope "mailbox" restores the given mailboxes of one domain,
+        scope "domain" all mailboxes of the domain; admins can also restore a
+        deleted domain. Deleted mailboxes are created from the backup first.
+        The restore only adds what is missing, except "sogo", "settings" and
+        "password", which replace the current values with the backup's.
+        Components: mails (mail_target "folder": a copy below "Restored
+        <snapshot time>"; "original": only missing messages, into their
+        folders), imap_acl, aliases, groups, sender_acl, mail_policies,
+        retention_rules, filters, sieve_activate (needs filters), spam, bcc,
+        syncjobs, app_passwords, tfa, sogo, settings, password. Domain admins
+        need the matching ACL (else backup_component_denied). Snapshots made
+        with RESTIC_BACKUP_MODE=config hold no mails (backup_components_no_mails).
+        Results per mailbox and component: get/backup-job/{id}.
+      operationId: Create restore job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                snapshot: 3ee0b6f7
+                scope: mailbox
+                mailboxes:
+                  - user@example.org
+                components:
+                  - mails
+                  - imap_acl
+                  - aliases
+                  - sender_acl
+                  - filters
+                mail_target: folder
+              properties:
+                snapshot:
+                  description: id or short id of the snapshot (get/backup-snapshots)
+                  type: string
+                scope:
+                  description: mailbox (the given mailboxes, default) or domain (all mailboxes of the domain)
+                  type: string
+                mailboxes:
+                  description: mailboxes of one domain, scope mailbox only, max. 1000; deleted ones from the snapshot's content list are created
+                  type: array
+                domain:
+                  description: the domain (required for scope domain, a deleted one for admins; for scope mailbox it must exist and match the mailboxes)
+                  type: string
+                components:
+                  description: what to restore, see above
+                  type: array
+                mail_target:
+                  description: folder (default) or original
+                  type: string
+              type: object
+      summary: Create restore job
   /api/v1/add/oauth2-client:
     post:
       responses:
@@ -3186,6 +3354,67 @@ paths:
                   type: object
               type: object
       summary: Delete retention rules
+  /api/v1/delete/backup-job:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - backup
+                        - delete
+                        - job
+                        - id:
+                            - 12
+                      msg:
+                        - backup_job_cancelled
+                        - 12
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Cancel backup jobs by ID (admins any job, domain admins the restores of
+        their domains). Queued jobs and running jobs can be cancelled, except a
+        restore while the dovecot container restores the mails (step mails or
+        mails_running; backup_job_not_cancellable). A running job stops at its
+        next check; what it restored so far stays. One message per ID.
+      operationId: Cancel backup jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                - 12
+              properties:
+                items:
+                  description: contains list of job IDs you want to cancel
+                  type: object
+              type: object
+      summary: Cancel backup jobs
   /api/v1/delete/identity-link:
     post:
       responses:
@@ -5029,6 +5258,198 @@ paths:
                   type: object
               type: object
       summary: Update retention rules
+  /api/v1/edit/backup-settings:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - backup
+                        - edit
+                        - settings
+                        - enabled: "1"
+                          schedule:
+                            - days: [1, 3]
+                              time: "12:00"
+                            - days: [5, 6, 0]
+                              time: "18:00"
+                          keep_daily: 14
+                      msg: backup_settings_saved
+                      type: success
+              schema:
+                properties:
+                  log:
+                    description: contains request object
+                    items: {}
+                    type: array
+                  msg:
+                    items: {}
+                    type: array
+                  type:
+                    enum:
+                      - success
+                      - danger
+                      - warning
+                      - error
+                    type: string
+                type: object
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Save the backup settings (admins). Settings you do not send keep their
+        value. Secrets (password, s3_secret_key, rest_password) are write-only:
+        an empty value keeps the stored one. A new repository password resets
+        password_confirmed unless the same request confirms it. Secrets are
+        stored encrypted with the public key of the backup container (sealed
+        box); until the container has published its key, saving a secret
+        fails with backup_secrets_key_missing. A new repository password only
+        works for a new repository (restic keeps the password a repository was
+        created with). Changing the target, its connection or the password
+        makes the backup container test the repository again; changing the
+        SFTP host or port forgets the host key. enabled needs a complete
+        target and repository password (backup_not_configured). Invalid values
+        are refused with backup_setting_invalid and the name of the setting;
+        nothing is saved then.
+      operationId: Update backup settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - settings
+                attr:
+                  enabled: "1"
+                  target: s3
+                  s3_endpoint: https://s3.eu-central-1.amazonaws.com
+                  s3_bucket: mailcow-backup
+                  s3_access_key: AKIAEXAMPLE
+                  s3_secret_key: secret
+                  password: a-long-repository-password
+                  password_confirmed: "1"
+                  schedule:
+                    - days: [1, 3]
+                      time: "12:00"
+                    - days: [5, 6, 0]
+                      time: "18:00"
+                  keep_daily: 14
+              properties:
+                attr:
+                  properties:
+                    enabled:
+                      description: back up at the times of schedule (needs at least one entry)
+                      type: boolean
+                    target:
+                      description: s3, sftp, rest or local
+                      type: string
+                    s3_endpoint:
+                      description: http(s) URL of the S3 endpoint
+                      type: string
+                    s3_bucket:
+                      type: string
+                    s3_path:
+                      description: path in the bucket (optional)
+                      type: string
+                    s3_region:
+                      description: optional
+                      type: string
+                    s3_access_key:
+                      type: string
+                    s3_secret_key:
+                      description: write-only
+                      type: string
+                    s3_path_style:
+                      description: path-style bucket access (restic -o s3.bucket-lookup=path)
+                      type: boolean
+                    sftp_host:
+                      type: string
+                    sftp_port:
+                      type: number
+                    sftp_user:
+                      type: string
+                    sftp_path:
+                      description: directory of the repository, relative to the home directory or absolute
+                      type: string
+                    rest_url:
+                      description: URL of the restic REST server without credentials, e.g. https://backup.example.org:8000/mailcow
+                      type: string
+                    rest_user:
+                      type: string
+                    rest_password:
+                      description: write-only
+                      type: string
+                    local_path:
+                      description: subdirectory below RESTIC_LOCAL_PATH (default ./data/restic), no ".."
+                      type: string
+                    password:
+                      description: restic repository password, at least 8 characters, write-only
+                      type: string
+                    password_confirmed:
+                      description: the admin confirms that the repository password is stored outside of mailcow; backups need it
+                      type: boolean
+                    schedule:
+                      description: the scheduled backups, up to 24 entries (also as a JSON string); each backs up on its weekdays at its time
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          days:
+                            description: weekdays, 0 (Sunday) to 6, at least one
+                            type: array
+                            items:
+                              type: number
+                          time:
+                            description: HH:MM in the time zone of mailcow
+                            type: string
+                    keep_hourly:
+                      description: hourly snapshots to keep (for several backups a day), 0 to 1000
+                      type: number
+                    keep_daily:
+                      description: daily snapshots to keep, 0 to 1000
+                      type: number
+                    keep_weekly:
+                      type: number
+                    keep_monthly:
+                      type: number
+                    keep_yearly:
+                      type: number
+                    prune_weekday:
+                      description: 0 (Sunday) to 6, prune once a week after the first scheduled backup from that day on; empty string = never (manual prune jobs only, e.g. for append-only or object-lock targets)
+                      oneOf:
+                        - type: number
+                        - type: string
+                    max_unused:
+                      description: restic prune --max-unused, 0% to 100%
+                      type: string
+                    check_subset:
+                      description: after the first scheduled backup of a day check 1/N of the data (0 = off), 0 to 365
+                      type: number
+                    include_index:
+                      description: back up the Dovecot index
+                      type: boolean
+                    include_fts:
+                      description: include the full-text search index (with include_index)
+                      type: boolean
+                    limit_upload:
+                      description: KiB/s, 0 = unlimited
+                      type: number
+                    notify_email:
+                      description: addresses separated by commas that get a mail when a job fails, max. 20
+                      type: string
+                  type: object
+                items:
+                  description: 'contains ["settings"]'
+                  type: object
+              type: object
+      summary: Update backup settings
   /api/v1/edit/identity-provider-sync:
     post:
       responses:
@@ -7257,6 +7678,516 @@ paths:
         mailboxes they manage.
       operationId: Get effective retention rules
       summary: Get effective retention rules
+  /api/v1/get/backup-settings:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: 1
+                    target: sftp
+                    s3_endpoint: https://s3.amazonaws.com
+                    s3_bucket: ""
+                    s3_path: ""
+                    s3_region: ""
+                    s3_access_key: ""
+                    s3_secret_key_set: 0
+                    s3_path_style: 0
+                    sftp_host: backup.example.org
+                    sftp_port: 22
+                    sftp_user: mailcow
+                    sftp_path: backups/mailcow
+                    sftp_public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... mailcow-backup@mail.example.org
+                    sftp_host_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...
+                    rest_url: ""
+                    rest_user: ""
+                    rest_password_set: 0
+                    local_path: mailcow
+                    password_set: 1
+                    password_confirmed: 1
+                    schedule:
+                      - days: [0, 1, 2, 3, 4, 5, 6]
+                        time: "02:30"
+                    keep_hourly: 0
+                    keep_daily: 14
+                    keep_weekly: 4
+                    keep_monthly: 12
+                    keep_yearly: 0
+                    prune_weekday: 0
+                    max_unused: 10%
+                    check_subset: 30
+                    include_index: 1
+                    include_fts: 1
+                    limit_upload: 0
+                    notify_email: admin@example.org
+                    state_initialized: 1
+                    state_runner_seen: 1794093697
+                    state_last_backup: 6
+                    state_last_success: 1794089278
+                    state_repo_size: 84418594
+                    state_repo_stats:
+                      total_size: 84418594
+                      snapshots_count: 2
+                    configured: 1
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        The backup settings (admins, also read-only API keys). Secrets are
+        never returned, password_set, s3_secret_key_set and rest_password_set
+        tell whether they are set. sftp_public_key (add it to the
+        authorized_keys of the SFTP user), sftp_host_key and the state_* values
+        are written by the backup container. configured: target and repository
+        password are complete. {} for everybody else.
+      operationId: Get backup settings
+      summary: Get backup settings
+  /api/v1/get/backup-status:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: 1
+                    target: local
+                    configured: 1
+                    password_confirmed: 1
+                    initialized: 1
+                    runner_seen: 1794094257
+                    runner_age: 4
+                    runner_ok: 1
+                    last_success: 1794089278
+                    repo_size: 84418594
+                    repo_stats:
+                      total_size: 84418594
+                      snapshots_count: 2
+                    snapshots: 2
+                    latest_snapshot: 1794089277
+                    next_run: 1794101400
+                    schedule_gap: 86400
+                    secrets_error: null
+                    mode: all
+                    jobs:
+                      backup:
+                        id: 26
+                        type: backup
+                        state: done
+                        step: null
+                        params: {}
+                        result:
+                          snapshot: f4f5a5fec226eec1cdd8ddd8f02b1fe8e6a1441ce130c507ca877f8b26a0bb3e
+                        error: null
+                        domain: ""
+                        requested_by: schedule
+                        created: 1794093646
+                        started: 1794093646
+                        finished: 1794093653
+                      check: null
+                      prune: null
+                      init: null
+                      restore: null
+                    active: []
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        State of the backup (admins): configuration, heartbeat of the backup
+        container (runner_ok: reported within the last 120 seconds), last
+        successful backup, repository size, number of snapshots, the next
+        scheduled run (null while the schedule is off or waits for the
+        password confirmation), schedule_gap (the longest time between two
+        scheduled backups in seconds; a last success older than that is
+        overdue), the newest job of each type and the queued and running jobs. secrets_error (null when fine): the backup container
+        cannot decrypt the stored secrets (e.g. after the database was restored on another
+        server); enter the repository password and the credentials again.
+        mode: RESTIC_BACKUP_MODE of mailcow.conf (all, data or config; null
+        until the backup container reported it). Times are unix timestamps.
+      operationId: Get backup status
+      summary: Get backup status
+  /api/v1/get/backup-snapshots:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 3ee0b6f795f9e7bebf4274758147ddc593f81f6925db82f6eaf0029f71dcc71f
+                      short_id: 3ee0b6f7
+                      time: 1794089277
+                      hostname: mail.example.org
+                      tags:
+                        - mailcow
+                      summary:
+                        files_new: 104
+                        files_changed: 24
+                        data_added: 4103499
+                        total_bytes_processed: 92154276
+                      domains:
+                        - example.org
+                      mode: all
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        The snapshots in the repository, newest first, as of the last backup
+        or prune (admins). Domain admins get the snapshots that hold one of
+        their domains and were made after the domain was created, with id,
+        short_id, time, mode and those domains only. domains is null for
+        snapshots not made by mailcow. mode: what the backup holds, from
+        RESTIC_BACKUP_MODE (tag mode:<mode>): all, data (without the mailcow
+        directory) or config (without mails).
+      operationId: Get backup snapshots
+      summary: Get backup snapshots
+  "/api/v1/get/backup-snapshot-content/{snapshot}":
+    get:
+      parameters:
+        - description: id or short id of the snapshot
+          example: 3ee0b6f7
+          in: path
+          name: snapshot
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    snapshot: 3ee0b6f795f9e7bebf4274758147ddc593f81f6925db82f6eaf0029f71dcc71f
+                    time: 1794089277
+                    available: 1
+                    domains:
+                      - domain: example.org
+                        exists: 1
+                        mailboxes: 42
+                        missing: 2
+                      - domain: old.example.org
+                        exists: 0
+                        mailboxes: 5
+                        missing: 5
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        The domains of a snapshot with their state now: exists (the domain
+        exists now), mailboxes (in the snapshot) and missing (of them deleted
+        now). Admins get all domains, domain admins the domains they
+        administer now (snapshots made after the domain was created). available
+        0: the snapshot has no content list (made before mailcow kept one), the
+        list then comes from its manifest and counts the mailboxes that exist
+        now; only those can be restored. {} if the snapshot does not exist or
+        is not visible.
+      operationId: Get backup snapshot content
+      summary: Get backup snapshot content
+  "/api/v1/get/backup-snapshot-content/{snapshot}/{domain}":
+    get:
+      parameters:
+        - description: id or short id of the snapshot
+          example: 3ee0b6f7
+          in: path
+          name: snapshot
+          required: true
+          schema:
+            type: string
+        - description: a domain of the snapshot
+          example: example.org
+          in: path
+          name: domain
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    domain: example.org
+                    exists: 1
+                    mailboxes:
+                      - username: info@example.org
+                        name: Info
+                        exists: 1
+                      - username: former@example.org
+                        name: Former Colleague
+                        exists: 0
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        The mailboxes of a domain in a snapshot with their state now (exists 0:
+        deleted since, a restore creates it from the backup). Same visibility
+        as get/backup-snapshot-content/{snapshot}; {} if not visible.
+      operationId: Get backup snapshot domain content
+      summary: Get backup snapshot domain content
+  "/api/v1/get/backup-snapshot-search/{snapshot}/{term}":
+    get:
+      parameters:
+        - description: id or short id of the snapshot
+          example: 3ee0b6f7
+          in: path
+          name: snapshot
+          required: true
+          schema:
+            type: string
+        - description: search term, URL-encoded (path segment)
+          example: carol
+          in: path
+          name: term
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    domains:
+                      - domain: example.org
+                        exists: 0
+                        mailboxes:
+                          - username: carol@example.org
+                            name: Carol
+                            exists: 0
+                    truncated: 0
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Search the domains and mailboxes of a snapshot (case-insensitive
+        "contains"). A plain term matches the domain name, the local part, the
+        full address or the display name; a matching domain comes with all its
+        mailboxes. "x@" matches the local part only, "@d" returns all mailboxes
+        of the matching domains (a matching domain also appears without
+        mailboxes), "x@d" matches the full address only. An empty term or "@"
+        returns no domains. At most 500 mailboxes, then truncated is 1. Same
+        visibility as get/backup-snapshot-content (domain admins: domains they
+        administer, snapshots made after the domain was created); {} when the
+        snapshot does not exist or is not visible. For snapshots without a
+        content list the current mailboxes of the snapshot's domains are
+        searched. The path is decoded before json_api.php reads it: encode the
+        term twice when it may contain "&", "+", "%" or "#" (the UI always
+        encodes it twice).
+      operationId: Search backup snapshot
+      summary: Search backup snapshot
+  "/api/v1/get/backup-jobs/{count}":
+    get:
+      parameters:
+        - description: Number of jobs to return, newest first (default 100 without this part, max. 1000)
+          example: 100
+          in: path
+          name: count
+          required: true
+          schema:
+            type: number
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 12
+                      type: restore
+                      state: done
+                      step: null
+                      params:
+                        snapshot: 3ee0b6f795f9e7bebf4274758147ddc593f81f6925db82f6eaf0029f71dcc71f
+                        snapshot_time: 1794089277
+                        scope: mailbox
+                        domain: example.org
+                        mailboxes:
+                          - user@example.org
+                        components:
+                          - mails
+                          - aliases
+                        mail_target: folder
+                        requested_role: admin
+                        create_domain: 0
+                        create_mailboxes:
+                          - user@example.org
+                      result:
+                        snapshot:
+                          id: 3ee0b6f795f9e7bebf4274758147ddc593f81f6925db82f6eaf0029f71dcc71f
+                          short_id: 3ee0b6f7
+                          time: "2026-11-07 23:07"
+                        mailboxes:
+                          user@example.org:
+                            mailbox:
+                              added: 1
+                              created: 1
+                            mails:
+                              added: 32
+                              skipped: 0
+                              errors: []
+                              folder: Restored 2026-11-07 23:07
+                            aliases:
+                              added: 1
+                              skipped: 2
+                              errors: []
+                        errors: 0
+                      error: null
+                      domain: example.org
+                      requested_by: admin
+                      created: 1794094015
+                      started: 1794094016
+                      finished: 1794094062
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Backup jobs without their log, newest first: admins all jobs, domain
+        admins the restores of their domains. state: queued, running, done,
+        failed or cancelled; step: what a running job does. The result of a
+        restore holds per mailbox and component the numbers of added and
+        already existing (skipped) entries and the errors; "mailbox" tells
+        whether a deleted mailbox was created, "domain" (next to "mailboxes")
+        the creation of a deleted domain. Finished jobs are kept for 180 days.
+      operationId: Get backup jobs
+      summary: Get backup jobs
+  "/api/v1/get/backup-jobs/{count}/{type}":
+    get:
+      parameters:
+        - description: Number of jobs to return, newest first; 0 = 100, max. 1000
+          example: 0
+          in: path
+          name: count
+          required: true
+          schema:
+            type: number
+        - description: only jobs of this type (backup, check, prune, init or restore); an unknown type returns []
+          example: restore
+          in: path
+          name: type
+          required: true
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - id: 12
+                      type: restore
+                      state: done
+                      step: null
+                      params:
+                        snapshot: 3ee0b6f795f9e7bebf4274758147ddc593f81f6925db82f6eaf0029f71dcc71f
+                        scope: mailbox
+                        domain: example.org
+                        mailboxes:
+                          - user@example.org
+                        components:
+                          - mails
+                        mail_target: folder
+                      result: null
+                      error: null
+                      domain: example.org
+                      requested_by: admin
+                      created: 1794094015
+                      started: 1794094016
+                      finished: 1794094062
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        Backup jobs of one type without their log, newest first, with the
+        visibility of get/backup-jobs/{count} (domain admins: the restores of
+        their domains). E.g. get/backup-jobs/0/restore for the restores.
+      operationId: Get backup jobs of a type
+      summary: Get backup jobs of a type
+  "/api/v1/get/backup-job/{id}":
+    get:
+      parameters:
+        - description: id of the job
+          example: 12
+          in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    id: 11
+                    type: backup
+                    state: done
+                    step: null
+                    params: {}
+                    result:
+                      dump_bytes: 667156
+                      export:
+                        domains: 1
+                        failed: []
+                      snapshot: f4f5a5fec226eec1cdd8ddd8f02b1fe8e6a1441ce130c507ca877f8b26a0bb3e
+                      summary:
+                        files_new: 1696
+                        files_changed: 0
+                        data_added: 93096838
+                        total_bytes_processed: 95911108
+                      forget:
+                        removed: 0
+                      snapshots: 3
+                    error: null
+                    domain: ""
+                    requested_by: schedule
+                    created: 1794093646
+                    started: 1794093646
+                    finished: 1794093653
+                    log: "2026-11-08 02:30:01 backup job started (requested by schedule)\n2026-11-08 02:30:03 snapshot f4f5a5fe: 1696 new and 0 changed files, 88 MiB added, 91 MiB processed\n2026-11-08 02:30:07 backup job done"
+          description: OK
+          headers: {}
+      tags:
+        - Backup
+      description: >-
+        A backup job with its log (the same entry as in get/backup-jobs plus
+        "log"). {} if the job does not exist or the caller may not see it.
+      operationId: Get backup job
+      summary: Get backup job
   /api/v1/get/identity-provider/sync-status:
     get:
       responses:
@@ -8817,6 +9748,8 @@ tags:
     description: Whom mailboxes and groups may send to and receive from
   - name: Retention rules
     description: Delete mail from folders after a number of days
+  - name: Backup
+    description: Encrypted backups with restic, restore of mailboxes and domains
   - name: Routing
     description: Define your own email routes
   - name: Resources

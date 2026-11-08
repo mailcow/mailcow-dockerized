@@ -681,6 +681,67 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "backup_setting" => array(
+        "cols" => array(
+          "name" => "VARCHAR(64) NOT NULL",
+          "value" => "TEXT NOT NULL",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("name")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "backup_job" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "type" => "ENUM('backup', 'check', 'prune', 'init', 'restore') NOT NULL",
+          "state" => "ENUM('queued', 'running', 'done', 'failed', 'cancelled') NOT NULL DEFAULT 'queued'",
+          "step" => "VARCHAR(32) NULL DEFAULT NULL",
+          "params" => "MEDIUMTEXT NULL DEFAULT NULL",
+          "result" => "MEDIUMTEXT NULL DEFAULT NULL",
+          "log" => "MEDIUMTEXT NULL DEFAULT NULL",
+          "error" => "TEXT NULL DEFAULT NULL",
+          "domain" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "requested_by" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "started" => "DATETIME NULL DEFAULT NULL",
+          "finished" => "DATETIME NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "state_type" => array("state", "type"),
+            "domain_created" => array("domain", "created")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      "backup_snapshot" => array(
+        "cols" => array(
+          "id" => "VARCHAR(64) NOT NULL",
+          "short_id" => "VARCHAR(16) NOT NULL",
+          "time" => "DATETIME NOT NULL",
+          "hostname" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "tags" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "summary" => "TEXT NULL DEFAULT NULL",
+          "domains" => "MEDIUMTEXT NULL DEFAULT NULL",
+          "content" => "MEDIUMBLOB NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "key" => array(
+            "time" => array("time")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "mailbox_group_imap_grant" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",

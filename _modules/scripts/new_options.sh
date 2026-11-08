@@ -61,6 +61,8 @@ adapt_new_options() {
   "ACME_DNS_PROVIDER"
   "ACME_ACCOUNT_EMAIL"
   "NGINX_MAX_BODY_SIZE"
+  "RESTIC_LOCAL_PATH"
+  "RESTIC_BACKUP_MODE"
   )
 
   sed -i --follow-symlinks '$a\' mailcow.conf
@@ -314,6 +316,19 @@ adapt_new_options() {
             echo '# Maximum request size for SOGo webmail, CalDAV/CardDAV and ActiveSync, e.g. 128m or 1g - 0 means unlimited' >> mailcow.conf
             echo '# Keep it above the message size limit of Postfix (100 MB by default). The mailcow UI and API stay limited to 64m.' >> mailcow.conf
             echo 'NGINX_MAX_BODY_SIZE=128m' >> mailcow.conf
+            ;;
+        RESTIC_LOCAL_PATH)
+            echo '# Folder on the host for backups to the target "local" (backup settings in the mailcow UI), as an absolute path,' >> mailcow.conf
+            echo '# e.g. a NAS mounted from another disk. The repository is created in a subfolder of it.' >> mailcow.conf
+            echo '# Empty: the Docker volume restic-repo-vol-1 of mailcow, on the same disk as the mailcow data.' >> mailcow.conf
+            echo 'RESTIC_LOCAL_PATH=' >> mailcow.conf
+            ;;
+        RESTIC_BACKUP_MODE)
+            echo '# What the backups of the mailcow UI hold:' >> mailcow.conf
+            echo '# - all (default),' >> mailcow.conf
+            echo '# - data (vmail, vmail-index, database, redis, mail crypt keys and mailcow.conf)' >> mailcow.conf
+            echo '# - config (database, redis, mail crypt keys, mailcow.conf and data/conf).' >> mailcow.conf
+            echo 'RESTIC_BACKUP_MODE=all' >> mailcow.conf
             ;;
         *)
             echo "${option}=" >> mailcow.conf

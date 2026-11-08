@@ -264,6 +264,17 @@ ACL_ANYONE=disallow
 # Check interval is hourly
 MAILDIR_GC_TIME=7200
 
+# Folder on the host for backups to the target "local" (backup settings in the mailcow UI), as an absolute path,
+# e.g. a NAS mounted from another disk. The repository is created in a subfolder of it.
+# Empty: the Docker volume restic-repo-vol-1 of mailcow, on the same disk as the mailcow data.
+RESTIC_LOCAL_PATH=
+
+# What the backups of the mailcow UI hold:
+# - all (default),
+# - data (vmail, vmail-index, database, redis, mail crypt keys and mailcow.conf)
+# - config (database, redis, mail crypt keys, mailcow.conf and data/conf).
+RESTIC_BACKUP_MODE=all
+
 # Additional SAN for the certificate
 #
 # You can use wildcard records to create specific names for every domain you add to mailcow.

@@ -496,3 +496,15 @@ input::placeholder {
 .btn-light, .btn-light:hover {
     background-image: none;
 }
+/* native time picker icon and popup in dark mode */
+input[type="time"] {
+    color-scheme: dark;
+}
+/* switches while off: a light knob and a visible border (Bootstrap's dark knob is for light pages, the dark mode
+   does not set data-bs-theme) */
+.form-switch .form-check-input:not(:checked):not(:focus) {
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 255, 255, 0.6%29'/%3e%3c/svg%3e");
+}
+.form-switch .form-check-input:not(:checked) {
+    border-color: var(--mc-btn-outline-border);
+}
