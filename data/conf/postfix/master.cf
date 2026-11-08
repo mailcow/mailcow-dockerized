@@ -62,13 +62,14 @@ submission inet n       -       n       -       -       smtpd
   -o syslog_name=postfix/quarantine
 
 # used to send bcc mails and archive copies (sender archive-bounce@localhost goes to the archive)
+# the archive FILTER comes after the one of MX-based transports, Postfix uses the last FILTER
 591 inet n      -       n       -       -       smtpd
   -o smtpd_helo_restrictions=
   -o smtpd_client_restrictions=permit_mynetworks,reject
   -o smtpd_tls_auth_only=no
   -o smtpd_milters=
   -o non_smtpd_milters=
-  -o smtpd_sender_restrictions=check_sender_access,proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sender_filter_maps.cf,permit_mynetworks,reject
+  -o smtpd_recipient_restrictions=check_recipient_mx_access,proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,check_sender_access,proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sender_filter_maps.cf,permit_mynetworks,reject
   -o syslog_name=postfix/bcc
 
 # enforced smtp connector
