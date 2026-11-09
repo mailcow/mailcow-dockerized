@@ -286,6 +286,12 @@ if (isset($_GET['query'])) {
         case "retention-rule":
           process_add_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->addRule($attr));
         break;
+        case "backup-job":
+          process_add_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->addJob($attr));
+        break;
+        case "backup-restore":
+          process_add_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->addRestore($attr));
+        break;
         case "domain":
           switch ($object) {
             case "template":
@@ -916,6 +922,37 @@ if (isset($_GET['query'])) {
                 process_get_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->getRule($object));
               break;
             }
+          break;
+
+          case "backup-settings":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getSettings());
+          break;
+
+          case "backup-status":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getStatus());
+          break;
+
+          case "backup-snapshots":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getSnapshots(), false);
+          break;
+
+          // backup-snapshot-content/<snapshot>[/<domain>]: domains of a snapshot, or the mailboxes of one, with their state now
+          case "backup-snapshot-content":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getSnapshotContent($object, $extra));
+          break;
+
+          // backup-snapshot-search/<snapshot>/<term>: domains and mailboxes of a snapshot matching the term (at most 500)
+          case "backup-snapshot-search":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getSnapshotSearch($object, $extra));
+          break;
+
+          // backup-jobs[/<count>[/<type>]]: newest first, without logs; count 0 = default, type e.g. restore
+          case "backup-jobs":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getJobs(isset($object) ? intval(preg_replace('/[^\d]/', '', $object)) : 0, $extra), false);
+          break;
+
+          case "backup-job":
+            process_get_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->getJob($object));
           break;
 
           case "logs":
@@ -1857,6 +1894,9 @@ if (isset($_GET['query'])) {
         case "retention-rule":
           process_delete_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->deleteRules($items));
         break;
+        case "backup-job":
+          process_delete_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->deleteJobs($items));
+        break;
         case "app-passwd":
           process_delete_return(app_passwd('delete', array('id' => $items)));
         break;
@@ -2039,6 +2079,9 @@ if (isset($_GET['query'])) {
         break;
         case "retention-rule":
           process_edit_return(\Mailcow\Retention\RetentionModule::fromGlobals()->api->editRules($items, $attr));
+        break;
+        case "backup-settings":
+          process_edit_return(\Mailcow\Backup\BackupModule::fromGlobals()->api->editSettings($attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

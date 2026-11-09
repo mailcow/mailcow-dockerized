@@ -159,6 +159,9 @@ async def post_containers(container_id : str, post_action : str, request: Reques
       api_call_method = getattr(dockerapi, api_call_method_name, lambda container_id: Response(content=json.dumps({'type': 'danger', 'msg':'container_post - unknown api call' }, indent=4), media_type="application/json"))
 
       dockerapi.logger.info("api call: %s, container_id: %s" % (api_call_method_name, container_id))
+      if getattr(api_call_method, 'long_running', False):
+        # runs for minutes (e.g. sogo-tool of a backup restore): in a worker thread, the other api calls go on
+        return await asyncio.to_thread(api_call_method, request_json, container_id=container_id)
       return api_call_method(request_json, container_id=container_id)
     except Exception as e:
       dockerapi.logger.error("error - container_post: %s" % str(e))

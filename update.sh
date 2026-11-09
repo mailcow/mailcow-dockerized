@@ -67,6 +67,7 @@ source _modules/scripts/core.sh
 source _modules/scripts/ipv6_controller.sh
 source _modules/scripts/new_options.sh
 source _modules/scripts/migrate_options.sh
+source _modules/scripts/backup.sh
 
 ############## End Function Section ##############
 
@@ -146,6 +147,9 @@ while (($#)); do
     --skip-ping-check)
       SKIP_PING_CHECK=y
     ;;
+    --backup)
+      BACKUP=y
+    ;;
     --stable)
       CURRENT_BRANCH="$(cd "${SCRIPT_DIR}"; git rev-parse --abbrev-ref HEAD)"
       NEW_BRANCH="master"
@@ -176,7 +180,7 @@ while (($#)); do
       NEW_BRANCH="legacy"
     ;;
     --help|-h)
-    echo './update.sh [-c|--check, --check-tags, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --stable, --legacy, -f|--force, -d|--dev, -h|--help]
+    echo './update.sh [-c|--check, --check-tags, --ours, --gc, --nightly, --prefetch, --skip-start, --skip-ping-check, --backup, --stable, --legacy, -f|--force, -d|--dev, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --check-tags         -   Check for newer tags and exit (exit codes => 0: newer tag available, 3: no newer tag)
@@ -186,9 +190,10 @@ while (($#)); do
   --prefetch           -   Only prefetch new images and exit (useful to prepare updates)
   --skip-start         -   Do not start mailcow after update
   --skip-ping-check    -   Skip ICMP Check to public DNS resolvers (Use it only if you'\''ve blocked any ICMP Connections to your mailcow machine)
+  --backup             -   Create a backup before the update without asking (when the backup is set up in the mailcow UI), also with --force
   --stable             -   Switch your mailcow updates to the stable (master) branch. Default unless you changed it with --nightly or --legacy.
   --legacy             -   Switch your mailcow updates to the legacy branch. The legacy branch will only receive security updates until February 2026.
-  -f|--force           -   Force update, do not ask questions
+  -f|--force           -   Force update, do not ask questions (no backup before the update unless --backup is given)
   -d|--dev             -   Enables Developer Mode (No Checkout of update.sh for tests)
 '
     exit 0
@@ -239,6 +244,8 @@ else
    fi
 fi
 
+backup_decide
+
 if ! [ "$NEW_BRANCH" ]; then
   echo -e "\e[33mDetecting which build your mailcow runs on...\e[0m"
   sleep 1
@@ -281,6 +288,7 @@ elif [ "$NEW_BRANCH" == "master" ] && [ "$CURRENT_BRANCH" != "master" ]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --stable parameter again to trigger this process here."
     exit 0
   fi
+  backup_run
   BRANCH="$NEW_BRANCH"
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE="${DIFF_DIRECTORY}/diff_before_upgrade_to_master_$(date +"%Y-%m-%d-%H-%M-%S")"
@@ -306,6 +314,7 @@ elif [ "$NEW_BRANCH" == "nightly" ] && [ "$CURRENT_BRANCH" != "nightly" ]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --nightly parameter again to trigger this process here."
     exit 0
   fi
+  backup_run
   BRANCH=$NEW_BRANCH
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_nightly_$(date +"%Y-%m-%d-%H-%M-%S")
@@ -329,6 +338,7 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
     echo "OK. If you prepared yourself for that please run the update.sh Script with the --legacy parameter again to trigger this process here."
     exit 0
   fi
+  backup_run
   BRANCH=$NEW_BRANCH
   DIFF_DIRECTORY=update_diffs
   DIFF_FILE=${DIFF_DIRECTORY}/diff_before_upgrade_to_legacy_$(date +"%Y-%m-%d-%H-%M-%S")
@@ -343,6 +353,17 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
   git checkout -f "${BRANCH}"
 fi
 
+if [ ! "$FORCE" ]; then
+  read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK, exiting."
+    exit 0
+  fi
+  detect_major_update
+fi
+
+backup_run
+
 if [ ! "$DEV" ]; then
   EXIT_COUNT=0
   echo -e "\e[32mChecking for newer update script...\e[0m"
@@ -354,15 +375,6 @@ if [ ! "$DEV" ]; then
     chmod +x update.sh
     EXIT_COUNT+=1
   fi
-fi
-
-if [ ! "$FORCE" ]; then
-  read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
-  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    echo "OK, exiting."
-    exit 0
-  fi
-  detect_major_update
 fi
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"

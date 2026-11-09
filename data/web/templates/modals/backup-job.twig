@@ -1,0 +1,19 @@
+{# Details of a backup job: overview, restore result per mailbox and item, log; filled by js/site/backup.js #}
+<div class="modal fade" id="backupJobModal" tabindex="-1" role="dialog" aria-labelledby="backupJobModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="backupJobModalTitle"></h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.backup.close }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="backup-job-body"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-xs-lg btn-danger me-auto backup-job-cancel d-none"><i class="bi bi-x-circle"></i> {{ lang.backup.cancel_job }}</button>
+        <button type="button" class="btn btn-sm btn-xs-lg btn-secondary backup-job-refresh d-none"><i class="bi bi-arrow-clockwise"></i> {{ lang.backup.refresh }}</button>
+        <button type="button" class="btn btn-sm btn-xs-lg btn-secondary" data-bs-dismiss="modal">{{ lang.backup.close }}</button>
+      </div>
+    </div>
+  </div>
+</div>

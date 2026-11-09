@@ -1,5 +1,5 @@
 # Version of the database schema
-x-db-version: &db_version DB_VERSION=09112026_1230
+x-db-version: &db_version DB_VERSION=09112026_1530
 
 services:
 
@@ -241,6 +241,7 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - sogo-web-vol-1:/sogo_web
         - sogo-userdata-backup-vol-1:/sogo_backup
+        - restic-restore-vol-1:/restore:ro
       labels:
         ofelia.enabled: "true"
         ofelia.job-exec.sogo_sessions.schedule: "0 * * * * *"
@@ -281,6 +282,7 @@ services:
         - ./data/assets/templates:/templates:z
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/:z
+        - restic-restore-vol-1:/restore
       environment:
         - *db_version
         - DOVECOT_MASTER_USER=${DOVECOT_MASTER_USER:-}
@@ -325,6 +327,9 @@ services:
         ofelia.job-exec.dovecot_retention.schedule: "0 30 3 * * *"
         ofelia.job-exec.dovecot_retention.no-overlap: "true"
         ofelia.job-exec.dovecot_retention.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/retention_runner.py || exit 0\""
+        ofelia.job-exec.dovecot_restore_runner.schedule: "0 * * * * *"
+        ofelia.job-exec.dovecot_restore_runner.no-overlap: "true"
+        ofelia.job-exec.dovecot_restore_runner.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/restore_runner.py || exit 0\""
         ofelia.job-exec.dovecot_trim_logs.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_trim_logs.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0\""
         ofelia.job-exec.dovecot_quarantine.schedule: "0 */20 * * * *"
@@ -616,7 +621,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:2.15
+      image: ghcr.io/mailcow/dockerapi:nightly-09112026
       security_opt:
         - label=disable
       restart: always
@@ -653,6 +658,53 @@ services:
         mailcow-network:
           aliases:
             - olefy
+
+    restic-mailcow:
+      image: ghcr.io/mailcow/restic:nightly-09112026
+      depends_on:
+        - mysql-mailcow
+        - redis-mailcow
+      stop_grace_period: 30s
+      security_opt:
+        - label=disable
+        - no-new-privileges:true
+      cap_drop:
+        - ALL
+      cap_add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - FSETID
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
+      environment:
+        - TZ=${TZ}
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - REDISPASS=${REDISPASS}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - MASTER=${MASTER:-y}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
+        - RESTIC_LOCAL_PATH=${RESTIC_LOCAL_PATH:-}
+        - RESTIC_BACKUP_MODE=${RESTIC_BACKUP_MODE:-all}
+      volumes:
+        - vmail-vol-1:/var/vmail:ro
+        - vmail-index-vol-1:/var/vmail_index:ro
+        - crypt-vol-1:/mail_crypt:ro
+        - redis-vol-1:/redis:ro
+        - rspamd-vol-1:/rspamd:ro
+        - sogo-userdata-backup-vol-1:/sogo_backup:ro
+        - mysql-socket-vol-1:/var/run/mysqld/:ro
+        - ./:/mailcow/install:ro
+        - restic-vol-1:/cache
+        - restic-restore-vol-1:/restore
+        - ${RESTIC_LOCAL_PATH:-restic-repo-vol-1}:/repository
+      restart: always
+      networks:
+        mailcow-network:
+          aliases:
+            - restic
 
     ofelia-mailcow:
       image: mcuadros/ofelia:latest
@@ -700,3 +752,6 @@ volumes:
   sogo-web-vol-1:
   sogo-userdata-backup-vol-1:
   clamd-db-vol-1:
+  restic-vol-1:
+  restic-restore-vol-1:
+  restic-repo-vol-1:
