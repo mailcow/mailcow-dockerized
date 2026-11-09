@@ -863,7 +863,7 @@ def install_info():
   info = {}
 
   def git(*args):
-    result = subprocess.run(['git', '-c', 'safe.directory=*', '--no-optional-locks', '-C', install_dir] + list(args),
+    result = subprocess.run(['git', '-c', 'safe.directory=*', '-c', 'core.fsmonitor=false', '--no-optional-locks', '-C', install_dir] + list(args),
       capture_output=True, text=True, timeout=300)
     return result.stdout if result.returncode == 0 else None
 
@@ -1128,10 +1128,19 @@ def make_dir(path, uid=0, gid=0, mode=0o711):
 def component_error(text):
   return {'added': 0, 'skipped': 0, 'errors': [text]}
 
-def free_space(job, path, need, what):
-  free = shutil.disk_usage(path).free
-  if need + space_reserve > free:
-    raise JobError('not enough free disk space for %s: %s needed, %s free' % (what, mib(need + space_reserve), mib(free)))
+# imported: what the dovecot runner imports into /var/vmail afterwards, keeping disk_reserve() free like import_space_ok()
+def free_space(job, path, need, what, imported=0):
+  usage = shutil.disk_usage(path)
+  required = need + space_reserve
+  if imported:
+    vmail = shutil.disk_usage('/var/vmail')
+    if os.stat(path).st_dev == os.stat('/var/vmail').st_dev:
+      required = need + imported * 11 // 10 + disk_reserve(usage.total)
+    elif imported * 11 // 10 + disk_reserve(vmail.total) > vmail.free:
+      raise JobError('not enough free disk space for the import of the mails: %s needed, %s free' % (
+        mib(imported * 11 // 10 + disk_reserve(vmail.total)), mib(vmail.free)))
+  if required > usage.free:
+    raise JobError('not enough free disk space for %s: %s needed, %s free' % (what, mib(required), mib(usage.free)))
 
 # Sizes of the files below the given directories of a snapshot (bytes per directory); listed directories that do not
 # exist are missing in the result
@@ -1180,8 +1189,8 @@ def snapshot_names(job, repo, snap_id, folder):
     raise RepoError('the snapshot could not be listed: ' + restic_error(rc, err))
   return names
 
-def restic_restore(job, repo, snap_id, target, includes, need, what):
-  free_space(job, restore_dir, need, what)
+def restic_restore(job, repo, snap_id, target, includes, need, what, imported=0):
+  free_space(job, restore_dir, need, what, imported)
   args = []
   for include in includes:
     args += ['--include', include]
@@ -1274,8 +1283,11 @@ def restore_settings(job, batch, sections, components, results):
     try:
       for component, value in post({'action': 'restore', 'job': job.id, 'username': username, 'data': section}).items():
         result[component] = value
-      job.log('%s: %s' % (username, 'created and settings restored' if (result.get('mailbox') or {}).get('created')
-        else 'settings restored'))
+      parts = ['created'] if (result.get('mailbox') or {}).get('created') else []
+      restored = [component for component in sorted(components) if component in result]
+      if restored:
+        parts.append(', '.join(restored) + ' restored')
+      job.log('%s: %s' % (username, '; '.join(parts) or 'nothing to restore'))
     except Exception as e:
       for component in components:
         result[component] = component_error('the restore request failed: %s' % http_error(e))
@@ -1464,11 +1476,12 @@ def job_restore(job, s, repo):
     job.save()
     batch_dir = '%s/b%d' % (target, number)
     includes, need = batch_includes(ready, homes, components)
+    # also without files: the dovecot runner then reports "no mails" instead of missing files
+    make_dir(batch_dir)
     if includes:
-      make_dir(batch_dir)
       job.step('files')
       started = time.monotonic()
-      restic_restore(job, repo, snap_id, batch_dir, includes, need, 'the files of the restore')
+      restic_restore(job, repo, snap_id, batch_dir, includes, need, 'the files of the restore', imported=need)
       job.log('files of %d mailboxes restored in %d s (batch %d of %d)' % (len(ready), time.monotonic() - started, number,
         len(batches)))
     detached = False

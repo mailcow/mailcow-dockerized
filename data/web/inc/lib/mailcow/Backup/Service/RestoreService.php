@@ -330,6 +330,11 @@ class RestoreService
                 continue;
             }
             $current = $this->repo->rows('alias', ['address' => $address])[0] ?? null;
+            // the own alias of another mailbox is its forwarding, it stays as its owner set it
+            if ($current !== null && $this->mailbox($address) !== null) {
+                $run->skipped('aliases');
+                continue;
+            }
             if ($current !== null) {
                 $this->aliasGoto($run, $current, $gotos);
                 continue;
@@ -676,9 +681,9 @@ class RestoreService
                 $run->skipped('syncjobs');
                 continue;
             }
-            $source = $this->repo->rows('imapsync_source', ['id' => (int)($row['source_id'] ?? 0)])[0] ?? null;
-            $sourceId = ($source !== null && strtolower((string)$source['host1']) === strtolower($host) && (int)$source['port1'] === $port)
-                ? (int)$source['id'] : ($this->repo->syncSourcesFor($host, $port, $run->username, $run->domain)[0] ?? null);
+            // the backup's source when the mailbox may still use it, else another one it may use
+            $usable = $this->repo->syncSourcesFor($host, $port, $run->username, $run->domain);
+            $sourceId = in_array((int)($row['source_id'] ?? 0), $usable, true) ? (int)$row['source_id'] : ($usable[0] ?? null);
             if ($sourceId === null || $user1 === '') {
                 $run->error('syncjobs', "$user1 ($host:$port): sync source does not exist");
                 continue;

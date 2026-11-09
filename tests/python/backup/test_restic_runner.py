@@ -108,6 +108,25 @@ class Space(Patch):
     rr.check_local_space(types.SimpleNamespace(log=logs.append), dict(rr.defaults, target='local'))
     return logs
 
+  def staging(self, free, need, imported, same_disk=True):
+    usage = types.SimpleNamespace(total=100 * GiB, free=free)
+    disk_usage, stat = rr.shutil.disk_usage, os.stat
+    rr.shutil.disk_usage = lambda path: usage
+    os.stat = lambda path, *args, **kwargs: (types.SimpleNamespace(st_dev=1 if same_disk or path != '/var/vmail' else 2)
+      if path in ('/restore', '/var/vmail') else stat(path, *args, **kwargs))
+    self.addCleanup(setattr, rr.shutil, 'disk_usage', disk_usage)
+    self.addCleanup(setattr, os, 'stat', stat)
+    rr.free_space(None, '/restore', need, 'the files', imported)
+
+  def test_staging_keeps_room_for_the_import(self):
+    # 10 GiB staged and imported on one disk: 10 + 11 + 5 (5 % of 100 GiB) GiB
+    self.staging(26 * GiB, 10 * GiB, 10 * GiB)
+    with self.assertRaisesRegex(rr.JobError, 'the files: 26624.0 MiB needed, 25600.0 MiB free'):
+      self.staging(25 * GiB, 10 * GiB, 10 * GiB)
+    with self.assertRaisesRegex(rr.JobError, 'import of the mails: 16384.0 MiB needed'):
+      self.staging(15 * GiB, 10 * GiB, 10 * GiB, same_disk=False)
+    self.staging(GiB, GiB // 2, 0)
+
   def test_check(self):
     self.assertIn('50.0 GiB free, about 1.0 GiB needed plus 5.0 GiB reserve', self.check(50 * GiB, 100 * GiB, added=1)[0])
     with self.assertRaisesRegex(rr.JobError, 'not enough free space for the local repository: 10.0 GiB free'):

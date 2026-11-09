@@ -301,9 +301,17 @@ function schedule_decision() {
 }
 
 function restore_volumes() {
-  local snapshot=${1} manifest_arch=${2} includes=() mounts=() path volume
-  # the backed up paths of the snapshot, one per line
-  local paths=$(restic_run -- snapshots --json ${snapshot} | grep -oE '"paths":\[[^]]*\]' | grep -oE '"/[^"]*"' | tr -d '"')
+  local snapshot=${1} manifest_arch=${2} includes=() mounts=() restored=() path volume json paths
+  # the backed up paths of the snapshot, one per line; without them --delete below would act on the whole target /
+  if ! json=$(restic_run -- snapshots --json ${snapshot}); then
+    echo -e "\e[31mThe paths of the snapshot could not be read\e[0m"
+    return 1
+  fi
+  paths=$(grep -oE '"paths":\[[^]]*\]' <<< "${json}" | grep -oE '"/[^"]*"' | tr -d '"')
+  if [[ -z ${paths} ]]; then
+    echo -e "\e[31mThe snapshot lists no paths\e[0m"
+    return 1
+  fi
   for path in "${!SNAPSHOT_VOLUMES[@]}"; do
     volume=$(docker volume ls -qf name=^${CMPS_PRJ}_${SNAPSHOT_VOLUMES[${path}]}$)
     if [[ -z ${volume} ]]; then
@@ -326,8 +334,13 @@ function restore_volumes() {
     fi
     includes+=(--include ${path})
     mounts+=(-v ${volume}:${path})
+    restored+=(${path})
   done
-  echo "Restoring the volumes (${includes[*]//--include /})..."
+  if [[ ${#includes[@]} -eq 0 ]]; then
+    echo -e "\e[31mNone of the volumes is in the snapshot\e[0m"
+    return 1
+  fi
+  echo "Restoring the volumes (${restored[*]})..."
   # --delete: the volumes get exactly the content of the snapshot
   restic_run "${mounts[@]}" -- restore ${snapshot} --target / --delete "${includes[@]}"
 }
@@ -432,6 +445,8 @@ function failed_after_move() {
   echo "and start it with docker compose up -d (data volumes restored so far stay restored)."
   if [[ -n ${OLD_DUMP} ]]; then
     echo "The database as it was before the restore: ${ASIDE_DIR}/${OLD_DUMP} (import it with mariadb into ${DBNAME:-the database})."
+  elif [[ ${DB_REMOVED} == "y" ]]; then
+    echo "The database volume was recreated and the database before the restore was not saved: it is gone."
   fi
   exit 1
 }
@@ -441,7 +456,15 @@ function failed_data_only() {
   echo "Fix the problem shown above and run the restore again, or start mailcow as it is with"
   echo "  ${COMPOSE_COMMAND} up -d"
   echo "(volumes and database restored so far stay restored)."
+  if [[ -n ${OLD_DUMP} ]]; then
+    echo "The database as it was before the restore: ${MAILCOW_DIR}/${OLD_DUMP} (import it with mariadb into ${DBNAME:-the database})."
+  fi
   exit 1
+}
+
+# The mailcow directory is renamed for a full restore: not possible for a mount point or without write access to its parent
+function movable() {
+  ! awk -v dir="${1}" '$5 == dir { found = 1 } END { exit !found }' /proc/self/mountinfo && [[ -w $(dirname "${1}") ]]
 }
 
 # The snapshots made by mailcow; asks which one to restore (Enter: the newest)
@@ -458,12 +481,16 @@ function choose_snapshot() {
   fi
 }
 
-# The database before a full restore, into the directory that is moved aside (needs the running database)
+# The database before a restore, into the mailcow directory (a full restore moves it aside; needs the running database)
 function dump_current_database() {
   local mysql=$(docker ps -qf name=mysql-mailcow -f label=com.docker.compose.project=${1} | head -n 1)
-  [[ -z ${mysql} || -z ${DBROOT} || -z ${DBNAME} ]] && return 0
+  if [[ -z ${mysql} || -z ${DBROOT} || -z ${DBNAME} ]]; then
+    confirm "WARNING: the current database cannot be saved before the restore (MariaDB does not run).
+The restore deletes it, there is no way back to it."
+    return 0
+  fi
   OLD_DUMP="mailcow-before-restore-$(date +%Y%m%d-%H%M%S).sql"
-  echo "Saving the current database to ${OLD_DUMP} (moves aside with the directory)..."
+  echo "Saving the current database to ${OLD_DUMP}..."
   ( umask 077; MYSQL_PWD="${DBROOT}" docker exec -e MYSQL_PWD ${mysql} mariadb-dump -uroot --single-transaction --routines \
     --triggers --events --hex-blob "${DBNAME}" > "${MAILCOW_DIR}/${OLD_DUMP}" )
   if [[ $? -ne 0 ]]; then
@@ -521,6 +548,10 @@ function restore_full() {
   schedule_decision ${snap_prj}
   ASIDE_DIR="${MAILCOW_DIR}.before-restore-$(date +%Y%m%d-%H%M)"
   [[ -e ${ASIDE_DIR} ]] && ASIDE_DIR="${ASIDE_DIR}$(date +%S)"
+  if ! movable "${MAILCOW_DIR}"; then
+    echo -e "\e[31m${MAILCOW_DIR} cannot be moved aside for the restore (it is a mount point or its parent folder is not writable)\e[0m"
+    exit 1
+  fi
   confirm "WARNING: this restores mailcow completely as it was in snapshot ${snapshot:0:8}: the mailcow directory
 (version and configuration), all mails, the mail index and crypt keys, Redis, Rspamd, the SOGo backup files and the
 database. ${MAILCOW_DIR} is moved to ${ASIDE_DIR}, the database volume is recreated.
@@ -558,7 +589,7 @@ Everything newer than the snapshot is lost. mailcow is stopped during the restor
   compose "${MAILCOW_DIR}" pull || failed_after_move
   echo "Creating volumes and containers, the database volume is recreated..."
   compose "${MAILCOW_DIR}" down
-  docker volume rm ${CMPS_PRJ}_mysql-vol-1 > /dev/null 2>&1
+  docker volume rm ${CMPS_PRJ}_mysql-vol-1 > /dev/null 2>&1 && DB_REMOVED=y
   compose "${MAILCOW_DIR}" up --no-start || failed_after_move
   restore_volumes ${snapshot} "${MANIFEST[arch]}" || failed_after_move
   echo "Starting the database..."
@@ -646,12 +677,15 @@ Everything newer than the snapshot is lost. mailcow is stopped during the restor
     read -p "Also restore mailcow.conf from the snapshot (the current one is kept as a copy)? [y|N] " RESTORE_MAILCOW_CONF
   fi
   check_dump ${snapshot} || exit 1
+  OLD_DUMP=
+  dump_current_database ${CMPS_PRJ}
 
   echo "Stopping mailcow..."
   compose "${MAILCOW_DIR}" down
   echo "Starting the database..."
   compose "${MAILCOW_DIR}" up -d mysql-mailcow
   if ! fetch_dump ${snapshot}; then
+    [[ -n ${OLD_DUMP} ]] && rm -f "${MAILCOW_DIR}/${OLD_DUMP}"
     echo "Nothing was changed, starting mailcow again..."
     compose "${MAILCOW_DIR}" up -d
     exit 1
@@ -677,6 +711,9 @@ Everything newer than the snapshot is lost. mailcow is stopped during the restor
   fi
   echo "    ${COMPOSE_COMMAND} exec dovecot-mailcow doveadm fts rescan -A"
   echo "- Run an \"init\" job in the backup settings, it refreshes the list of snapshots."
+  if [[ -n ${OLD_DUMP} ]]; then
+    echo "- The database before the restore is ${MAILCOW_DIR}/${OLD_DUMP}, delete it when you no longer need it."
+  fi
   if [[ ${conf_dir} != "${MAILCOW_DIR}/data/conf" && ${RESTORE_CONF,,} =~ ^(yes|y)$ ]]; then
     echo "- Compare ${conf_dir} with data/conf and take over what you need."
   fi

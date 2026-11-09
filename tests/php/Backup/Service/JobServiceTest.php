@@ -192,7 +192,7 @@ class JobServiceTest extends TestCase
         // domain admins create mailboxes in their domains, never domains
         $da = self::domainAdmin();
         $this->assertSame(['dora@firma.de'], $this->service($da)->restore(self::restore(['mailboxes' => ['dora@firma.de']]))->params['create_mailboxes']);
-        $this->expectUserError(['domain_not_found', 'alt.de'], fn() => $this->service($da)->restore(self::restore(['scope' => 'domain', 'domain' => 'alt.de'])));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['scope' => 'domain', 'domain' => 'alt.de'])));
         $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['mailboxes' => ['x@alt.de']])));
     }
 
@@ -253,6 +253,10 @@ class JobServiceTest extends TestCase
         // mailboxes and domains of others
         $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['mailboxes' => ['carl@tochter.de']])));
         $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['scope' => 'domain', 'domain' => 'tochter.de'])));
+        // unknown ones look the same
+        $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['mailboxes' => ['nobody@tochter.de']])));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['mailboxes' => ['x@nirgends.de']])));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->restore(self::restore(['scope' => 'domain', 'domain' => 'nirgends.de'])));
     }
 
     public function testUsersAndReadOnlyKeysCannotRestore(): void
@@ -494,8 +498,14 @@ class JobServiceTest extends TestCase
             $view['result']['mailboxes']['anna@firma.de']['aliases']['errors']);
         $this->assertSame('restic: Fatal: unable to open repository at …', $view['error']);
         $this->assertSame("09:00 restore from … by …\n09:01 anna@firma.de done", $view['log']);
+        // and not the account of the admin who requested it
+        $job->requestedBy = 'superuser';
+        $job->log = "09:00 restore job started (requested by superuser)";
+        $view = $this->service(self::domainAdmin())->view($job, true);
+        $this->assertSame(['', '09:00 restore job started (requested by an administrator)'], [$view['requested_by'], $view['log']]);
         // admins see everything
         $this->assertSame($job->error, $this->service()->view($job, true)['error']);
+        $this->assertSame('superuser', $this->service()->view($job, true)['requested_by']);
     }
 
     public function testADomainAdminRestoresADomainOnceAtATime(): void

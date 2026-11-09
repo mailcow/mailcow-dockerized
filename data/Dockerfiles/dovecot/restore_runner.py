@@ -168,6 +168,9 @@ def own_folders(user, prefixes):
         guids[row['mailbox']] = row['guid']
   return guids
 
+def masked(user):
+  return '*' in user or '?' in user
+
 def free_name(base, existing):
   name, count = base, 1
   while name in existing or any(folder.startswith(name + '/') for folder in existing):
@@ -451,7 +454,7 @@ class AclRestore:
     return identifier
 
   def add(self, owner, folder, identifier, rights, result):
-    if not self.in_scope(owner):
+    if not self.in_scope(owner) or masked(owner):
       result['skipped'] += 1
       return
     try:
@@ -549,6 +552,10 @@ def count_errors(result):
 def restore_mailbox(job_id, user, components, mode, staging, snapshot_time, prefixes, acl, granted, check_quota, result):
   local, _, domain = user.rpartition('@')
   home = '%s/var/vmail/%s/%s' % (staging, domain, local)
+  if masked(user):
+    for key in components & {'mails', 'imap_acl', 'filters'}:
+      merge(result, key, component(['username with * or ?, doveadm reads it as a mask']))
+    return
   location = mail_location(user)
   if not location:
     for key in components & {'mails', 'imap_acl', 'filters'}:
@@ -654,6 +661,9 @@ def run_batch(job):
 
 def main():
   global conn
+  if os.geteuid() == 0:
+    # as vmail like the ofelia job: a run as root would leave a lock file the runs as vmail cannot open
+    os.execv('/usr/local/bin/gosu', ['gosu', 'vmail', sys.executable, os.path.abspath(__file__)] + sys.argv[1:])
   os.umask(0o077)
   # released by the kernel when the process ends, a crashed run leaves no stale lock
   lock_fd = os.open(lock_file, os.O_RDWR | os.O_CREAT, 0o600)

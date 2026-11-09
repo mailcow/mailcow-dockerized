@@ -588,6 +588,31 @@ class RestoreServiceTest extends TestCase
         $this->assertSame([], $this->groupUpdates);
     }
 
+    public function testTheOwnAliasOfAnotherMailboxIsLeftAlone(): void
+    {
+        // bob forwarded to anna when the backup was made; info2@ was an alias then and is a mailbox now
+        $this->job(['aliases']);
+        $this->repo->tables['mailbox'][] = self::mailbox('info2@firma.de');
+        $this->repo->tables['alias'][] = ['id' => 5, 'address' => 'info2@firma.de', 'goto' => 'info2@firma.de', 'domain' => 'firma.de', 'active' => 1];
+        $result = $this->merge(self::backup(['aliases' => [
+            ['address' => 'bob@firma.de', 'goto' => 'bob@firma.de,anna@firma.de', 'domain' => 'firma.de'],
+            ['address' => 'info2@firma.de', 'goto' => 'anna@firma.de', 'domain' => 'firma.de'],
+        ]]))['aliases'];
+        $this->assertSame(['bob@firma.de', 'info2@firma.de'], [$this->alias('bob@firma.de')['goto'], $this->alias('info2@firma.de')['goto']]);
+        $this->assertSame(['added' => 0, 'skipped' => 2], array_slice($result, 0, 2));
+    }
+
+    public function testASyncJobUsesItsSourceOnlyWhileTheMailboxMayUseIt(): void
+    {
+        // source 2 no longer covers firma.de since the backup
+        $this->job(['syncjobs']);
+        $this->repo->tables['imapsync_source_domain'] = [];
+        $result = $this->merge(self::backup(['imapsync' => [['user1' => 'anna@legacy.de', 'source_id' => 2, 'source_host1' => 'imap.legacy.de',
+            'source_port1' => 143, 'mins_interval' => 60]]]))['syncjobs'];
+        $this->assertSame([], $this->repo->rows('imapsync', ['user1' => 'anna@legacy.de']));
+        $this->assertSame(['anna@legacy.de (imap.legacy.de:143): sync source does not exist'], $result['errors']);
+    }
+
     public function testAliasLimitAndAddressesInUse(): void
     {
         $this->job(['aliases']);

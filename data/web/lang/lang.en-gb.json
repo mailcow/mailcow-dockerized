@@ -871,6 +871,7 @@
         "backup_password_not_confirmed": "Confirm first that the repository password is stored outside of mailcow",
         "backup_password_too_short": "The repository password must have at least %s characters",
         "backup_restore_active": "A restore of %s is already queued or running",
+        "backup_restore_domain_active": "A restore in %s is already queued or running, domain administrators can run one restore per domain at a time",
         "backup_scope_invalid": "Invalid restore scope (mailbox or domain)",
         "backup_secrets_key_missing": "The backup container has not provided its key yet: start it (restic-mailcow) and save again",
         "backup_setting_invalid": "Invalid value for %s",

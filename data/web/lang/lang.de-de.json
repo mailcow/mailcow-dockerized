@@ -880,6 +880,7 @@
         "backup_password_not_confirmed": "Bitte zuerst bestätigen, dass das Repository-Passwort außerhalb von mailcow aufbewahrt wird",
         "backup_password_too_short": "Das Repository-Passwort muss mindestens %s Zeichen lang sein",
         "backup_restore_active": "Eine Wiederherstellung von %s ist bereits eingereiht oder läuft",
+        "backup_restore_domain_active": "In %s ist bereits eine Wiederherstellung eingereiht oder läuft, Domain-Administratoren können je Domain eine Wiederherstellung gleichzeitig starten",
         "backup_scope_invalid": "Ungültiger Umfang der Wiederherstellung (Mailbox oder Domain)",
         "backup_secrets_key_missing": "Der Backup-Container hat seinen Schlüssel noch nicht bereitgestellt: Bitte den Container (restic-mailcow) starten und erneut speichern",
         "backup_setting_invalid": "Ungültiger Wert für %s",

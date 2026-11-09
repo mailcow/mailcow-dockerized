@@ -56,6 +56,15 @@ class Acl(unittest.TestCase):
     self.assertEqual(acl.shown('user=a@x.de'), 'user=a@x.de')
     self.assertTrue(rr.AclRestore(('Shared/',), None).in_scope('a@y.de'))
 
+  def test_masks(self):
+    # doveadm -u reads * and ? as wildcards: such owners are skipped before doveadm runs
+    self.assertTrue(rr.masked('a*@x.de'))
+    self.assertTrue(rr.masked('a?b@x.de'))
+    self.assertFalse(rr.masked('a.b+c@x.de'))
+    result = rr.component()
+    rr.AclRestore(('Shared/',), None).add('a*@x.de', 'INBOX', 'user=b@x.de', ['lookup'], result)
+    self.assertEqual(result['skipped'], 1)
+
 
 class Messages(unittest.TestCase):
   def test_message_key(self):

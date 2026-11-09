@@ -102,6 +102,13 @@ class JobService
                 $entry[$key] = self::restricted($entry[$key], $domains);
             }
         }
+        // the account of an admin who requested the restore stays hidden, the UI shows "Administrator"
+        if (($job->params['requested_role'] ?? '') !== 'domainadmin') {
+            $entry['requested_by'] = '';
+            if (isset($entry['log'])) {
+                $entry['log'] = str_replace('(requested by ' . $job->requestedBy . ')', '(requested by an administrator)', $entry['log']);
+            }
+        }
         return $entry;
     }
 
@@ -550,6 +557,9 @@ class JobService
     private function domainScope(Snapshot $snapshot, mixed $value): array
     {
         $domain = strtolower((string)Input::text($value));
+        if ($domain !== '' && !$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain)) {
+            throw new AccessDenied();
+        }
         $exists = $domain !== '' && $this->jobs->isDomain($domain);
         // a deleted domain is created from the snapshot's export: only when the content lists it
         if (!$exists && !($this->context->hasAdminRights() && $snapshot->mailboxesOf($domain) !== null)) {
@@ -580,6 +590,9 @@ class JobService
         }
         $domain = strtolower((string)Input::text($domainValue));
         foreach ($mailboxes as $username) {
+            if (str_contains($username, '@') && !$this->context->hasAdminRights() && !$this->context->canAccessDomain(self::domainOf($username))) {
+                throw new AccessDenied();
+            }
             // a deleted mailbox can be restored when the snapshot knows it
             $mailboxDomain = $this->jobs->mailboxDomain($username) ?? (isset($snapshot->mailboxesOf(self::domainOf($username))[$username]) ? self::domainOf($username) : null);
             if ($mailboxDomain === null) {

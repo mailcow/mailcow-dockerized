@@ -155,6 +155,8 @@ var mailcowBackup = (function($) {
     return job.state === 'queued' || job.state === 'running';
   }
   function isCancellable(job) {
+    // domain admins cancel only restores domain admins requested (JobService::cancel)
+    if (typeof role !== 'undefined' && role === 'domainadmin' && (job.params || {}).requested_role !== 'domainadmin') return false;
     return job.state === 'queued' || (job.state === 'running' && !(job.type === 'restore' && DOVECOT_STEPS.indexOf(job.step) !== -1));
   }
   function stepText(job) {
