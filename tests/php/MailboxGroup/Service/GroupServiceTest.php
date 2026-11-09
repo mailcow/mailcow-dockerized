@@ -184,6 +184,15 @@ class GroupServiceTest extends TestCase
         $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'other.org', 'name' => 'X']));
         $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'members' => ['c@other.org']]));
         $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'send_as' => '@other.org']));
+        // unknown names outside their domains look the same as existing ones
+        $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'nope.org', 'name' => 'X']));
+        $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'members' => ['room1@other.org']]));
+        $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'send_as' => '@nope.org']));
+        $this->expectUserError('access_denied', fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'send_as' => 'nobody@other.org']));
+        $this->expectUserError(['group_member_invalid', 'room1@example.org'],
+            fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'members' => ['room1@example.org']]));
+        $this->expectUserError(['group_send_as_invalid', 'nobody@example.org'],
+            fn() => $service->create(['domain' => 'example.org', 'name' => 'X', 'send_as' => 'nobody@example.org']));
     }
 
     public function testAdminFieldsAreIgnoredForDomainAdmins(): void

@@ -168,12 +168,13 @@ class PolicyService
     /** @throws UserError */
     private function domainFor(mixed $value): string
     {
-        $domain = strtolower((string)Input::text($value));
+        $domain = Input::text($value);
+        $domain = ($domain === null || $domain === '') ? '' : (string)idn_to_ascii(strtolower($domain), 0, INTL_IDNA_VARIANT_UTS46);
+        if ($domain !== '' && !$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain)) {
+            throw new AccessDenied();
+        }
         if ($domain === '' || !$this->repo->isDomain($domain)) {
             throw new UserError('domain_not_found', [htmlspecialchars((string)Input::text($value))]);
-        }
-        if (!$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain)) {
-            throw new AccessDenied();
         }
         return $domain;
     }

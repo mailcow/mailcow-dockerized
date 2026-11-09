@@ -195,11 +195,11 @@ class GroupService
     {
         $domain = Input::text($value);
         $domain = ($domain === null || $domain === '') ? '' : (string)idn_to_ascii(strtolower($domain), 0, INTL_IDNA_VARIANT_UTS46);
+        if ($domain !== '' && !$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain)) {
+            throw new AccessDenied();
+        }
         if ($domain === '' || !$this->lookup->isDomain($domain)) {
             throw new UserError('domain_not_found', [htmlspecialchars((string)Input::text($value))]);
-        }
-        if (!$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain)) {
-            throw new AccessDenied();
         }
         return $domain;
     }
@@ -304,6 +304,9 @@ class GroupService
         $new = array_values(array_diff(array_unique($add), array_map('strval', array_keys($members))));
         $regular = $this->lookup->regularMailboxes($new);
         foreach ($new as $username) {
+            if ($this->foreignDomain($username)) {
+                throw new AccessDenied();
+            }
             if (!in_array($username, $regular, true)) {
                 throw new UserError('group_member_invalid', [htmlspecialchars($username)]);
             }
@@ -337,11 +340,11 @@ class GroupService
                 // The group's own address is covered by sender_allowed
                 $valid = ($address !== null && $address !== $group->address && $this->lookup->aliasExists($address));
             }
+            if ($this->foreignDomain($address)) {
+                throw new AccessDenied();
+            }
             if (!$valid) {
                 throw new UserError('group_send_as_invalid', [htmlspecialchars($value)]);
-            }
-            if (!$this->context->hasAdminRights() && !$this->context->canAccessDomain(self::domainOf((string)$address))) {
-                throw new AccessDenied();
             }
             $sendAs[] = (string)$address;
         }
@@ -504,5 +507,12 @@ class GroupService
     private static function domainOf(string $address): string
     {
         return substr($address, strrpos($address, '@') + 1);
+    }
+
+    /** A domain admin names an address or @domain outside their domains: denied before anything is looked up */
+    private function foreignDomain(?string $address): bool
+    {
+        $domain = ($address !== null && str_contains($address, '@')) ? self::domainOf($address) : '';
+        return $domain !== '' && !$this->context->hasAdminRights() && !$this->context->canAccessDomain($domain);
     }
 }

@@ -28,7 +28,7 @@ class PolicyServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->repo = $this->createMock(PolicyRepository::class);
-        $this->repo->method('isDomain')->willReturnCallback(fn(string $domain): bool => in_array($domain, ['firma.de', 'tochter.de'], true));
+        $this->repo->method('isDomain')->willReturnCallback(fn(string $domain): bool => in_array($domain, ['firma.de', 'tochter.de', 'xn--mller-kva.de'], true));
         $this->repo->method('mailboxDomain')->willReturnCallback(fn(string $username): ?string =>
             ['azubi@firma.de' => 'firma.de', 'chef@firma.de' => 'firma.de', 'andere@tochter.de' => 'tochter.de'][$username] ?? null);
         $this->repo->method('groupDomain')->willReturnCallback(function (int $id): ?string {
@@ -91,6 +91,7 @@ class PolicyServiceTest extends TestCase
         ], array_intersect_key($policy->toArray(), array_flip(['domain', 'name', 'description', 'send_mode', 'send_allow', 'send_block',
             'receive_mode', 'receive_allow', 'receive_block', 'reject_text', 'active', 'mailboxes', 'groups'])));
         $this->assertCount(1, $this->saved);
+        $this->assertSame('xn--mller-kva.de', $this->service()->create(['domain' => 'Müller.de', 'name' => 'Test'])->domain);
     }
 
     public function testUpdateKeepsMissingValuesAndReplacesListGroups(): void
@@ -153,6 +154,7 @@ class PolicyServiceTest extends TestCase
         $this->assertNotNull($this->service($da)->get(3));
         // other domains, no ACL, users and read-only keys
         $this->expectUserError('access_denied', fn() => $this->service($da)->create(['domain' => 'tochter.de', 'name' => 'Test']));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->create(['domain' => 'unbekannt.de', 'name' => 'Test']));
         $this->expectUserError(['mail_policy_entry_invalid', 'group:9'],
             fn() => $this->service($da)->create(['domain' => 'firma.de', 'name' => 'Test', 'send_block_groups' => ['9']]));
         $this->assertNull($this->service(FakeContext::domainAdmin([], ['tochter.de'], ['mail_policies' => '1']))->get(3));
