@@ -390,9 +390,8 @@ rspamd_config:register_symbol({
     local rspamd_logger = require "rspamd_logger"
     local redis_params = rspamd_parse_redis_server('taghandler')
     local rspamd_http = require "rspamd_http"
-    local rcpts = task:get_recipients('smtp')
+    local rcpts = task:get_recipients({'smtp', 'orig'})
     local lua_util = require "lua_util"
-    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
 
     local function remove_moo_tag()
       local moo_tag_header = task:get_header('X-Moo-Tag', false)
@@ -417,8 +416,9 @@ rspamd_config:register_symbol({
 
     -- Check if recipient has a tag (contains '+')
     local tag = nil
-    if tagged_rcpt ~= nil then
-      tag = tagged_rcpt
+    local base_user, tag_part = rcpt_user:match('^([^%+]+)%+(.+)$')
+    if base_user and tag_part then
+      tag = tag_part
       rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
     end
 
@@ -498,8 +498,7 @@ rspamd_config:register_symbol({
           else
             rspamd_logger.infox("TAG_MOO: user wants subject modified for tagged mail")
             local sbj = task:get_header('Subject') or ''
-            local tag_value = tag[1] and tag[1].options and tag[1].options[1] or ''
-            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag_value .. '] ' .. sbj)) .. '?='
+            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
             task:set_milter_reply({
               remove_headers = {
                 ['Subject'] = 1,
