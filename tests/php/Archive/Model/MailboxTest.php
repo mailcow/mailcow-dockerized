@@ -28,6 +28,8 @@ class MailboxTest extends TestCase
             'on as number' => [1, 0, true],
             'off' => ['0', 1, false],
             'off as number' => [0, 1, false],
+            'on as boolean' => [true, 0, true],
+            'off as boolean' => [false, 1, false],
         ];
     }
 

@@ -34,9 +34,10 @@ class Mailbox
         );
     }
 
-    /** Mailbox setting as stored: '1', '0', anything else (also a missing attribute) is 'inherit' */
+    /** Mailbox setting: '1', '0' (also as number or boolean), anything else (also a missing attribute) is 'inherit' */
     public static function setting(mixed $value): string
     {
+        $value = is_bool($value) ? (int)$value : $value;
         $value = is_scalar($value) ? (string)$value : '';
         return in_array($value, ['0', '1'], true) ? $value : self::INHERIT;
     }
