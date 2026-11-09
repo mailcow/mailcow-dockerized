@@ -1416,11 +1416,11 @@ function set_tfa($_data) {
       // Block TFA removal if force_tfa policy is active
       $is_forced_tfa = false;
       if ($_SESSION['mailcow_cc_role'] === 'user') {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       } else {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       }
@@ -1687,11 +1687,11 @@ function unset_tfa_key($_data) {
     // Block key removal if force_tfa policy is active
     $is_forced_tfa = false;
     if ($_SESSION['mailcow_cc_role'] === 'user') {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     } else {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     }
