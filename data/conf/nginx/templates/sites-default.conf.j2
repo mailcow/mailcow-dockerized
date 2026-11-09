@@ -94,11 +94,11 @@ location / {
 }
 
 location /qhandler {
-    rewrite ^/qhandler/(.*)/(.*) /qhandler.php?action=$1&hash=$2;
+    rewrite ^/qhandler/([^/]+)/(.+?)/?$ /qhandler.php?action=$1&hash=$2;
 }
 
 location /edit {
-    rewrite ^/edit/(.*)/(.*) /edit.php?$1=$2;
+    rewrite ^/edit/([^/]+)/(.+?)/?$ /edit.php?$1=$2;
 }
 
 location ~ ^/api/v1/(.*)$ {
