@@ -23,7 +23,8 @@ use PDOException;
 class BackupApiController
 {
     public function __construct(private SettingsService $settings, private JobService $jobs, private ExportService $export,
-        private RestoreService $restore, private DomainRestoreService $domainRestore, private ApiResponse $response)
+        private RestoreService $restore, private DomainRestoreService $domainRestore, private ApiResponse $response,
+        private bool $demoMode = false)
     {
     }
 
@@ -147,11 +148,15 @@ class BackupApiController
     /**
      * Runs one write call: $work gets the log entry and returns the result for process_*_return().
      * A UserError becomes a danger message, a database error stops the call with one `mysql_error` message.
+     * In demo mode no write call runs.
      */
     private function handle(string $action, string $object, mixed $data, callable $work): bool
     {
         $log = ['backup', $action, $object, $data];
         try {
+            if ($this->demoMode) {
+                throw new UserError('demo_mode_enabled');
+            }
             $result = $work($log);
         } catch (UserError $e) {
             $result = $this->response->error($e, $log);

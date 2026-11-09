@@ -555,6 +555,7 @@
         "created_from_backup": "Created from the backup",
         "data_added": "Added",
         "deleted_domain_children": "The domain was deleted: only the whole domain can be restored.",
+        "demo_mode": "Demo Mode is enabled: backups, restores and changes to the settings are disabled",
         "details": "Details",
         "domains": "Domains",
         "duration": "Duration",

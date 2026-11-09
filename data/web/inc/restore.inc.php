@@ -13,6 +13,7 @@ $template_data = [
   'lang_datatables' => json_encode($lang['datatables']),
   'backup_configured' => \Mailcow\Backup\BackupModule::fromGlobals()->settings->load()->configured(),
   'backup_timezone' => getenv('TZ') ?: 'UTC',
+  'backup_demo_mode' => $DEMO_MODE,
 ];
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';

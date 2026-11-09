@@ -81,6 +81,26 @@ class BackupApiControllerTest extends TestCase
         $this->assertSame(['backup', 'delete', 'job', ['id' => [4, '7', 'x']]], $_SESSION['return'][4]['log']);
     }
 
+    public function testDemoModeChangesNothing(): void
+    {
+        $this->settings->expects($this->never())->method('save');
+        foreach (['create', 'restore', 'cancel'] as $method) {
+            $this->jobs->expects($this->never())->method($method);
+        }
+        $this->jobs->method('status')->willReturn(['configured' => false]);
+        $api = new BackupApiController($this->settings, $this->jobs, $this->createMock(ExportService::class), $this->restore,
+            $this->domainRestore, new ApiResponse(Settings::SECRETS), true);
+
+        $this->assertFalse($api->editSettings(['target' => 's3', 's3_endpoint' => 'https://s3.example.org']));
+        $this->assertFalse($api->addJob(['type' => 'backup']));
+        $this->assertFalse($api->addRestore(['snapshot' => 'abc']));
+        $this->assertFalse($api->deleteJobs([4]));
+
+        $this->assertSame(array_fill(0, 4, ['danger', 'demo_mode_enabled']),
+            array_map(fn(array $m): array => [$m['type'], $m['msg']], $_SESSION['return']));
+        $this->assertSame(['configured' => false], $api->getStatus());
+    }
+
     public function testReads(): void
     {
         $this->jobs->method('get')->willReturnCallback(fn(int $id): ?Job => ($id === 4) ? self::job(4, 'backup') : null);

@@ -124,6 +124,7 @@ $template_data = [
   'mbox_templates' => $mbox_templates,
   'backup_timezone' => getenv('TZ') ?: 'UTC',
   'backup_hostname' => getenv('MAILCOW_HOSTNAME') ?: '',
+  'backup_demo_mode' => $DEMO_MODE,
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

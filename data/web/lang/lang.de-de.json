@@ -555,6 +555,7 @@
         "created_from_backup": "Aus dem Backup angelegt",
         "data_added": "Hinzugefügt",
         "deleted_domain_children": "Die Domain wurde gelöscht: Nur die ganze Domain lässt sich wiederherstellen.",
+        "demo_mode": "Demo Mode ist aktiviert: Backups, Wiederherstellungen und Änderungen an den Einstellungen sind gesperrt",
         "details": "Details",
         "domains": "Domains",
         "duration": "Dauer",
