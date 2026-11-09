@@ -906,6 +906,9 @@ rspamd_config:register_symbol({
 
             if not seen_cte and rewrite.need_rewrite_ct then
               out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', new_cte)
+              task:set_milter_reply({
+                add_headers = {['Content-Transfer-Encoding'] = new_cte}
+              })
             end
 
             -- End of headers
