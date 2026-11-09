@@ -24,7 +24,7 @@ class RuleServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->repo = $this->createMock(RuleRepository::class);
-        $this->repo->method('isDomain')->willReturnCallback(fn(string $domain): bool => in_array($domain, ['firma.de', 'tochter.de'], true));
+        $this->repo->method('isDomain')->willReturnCallback(fn(string $domain): bool => in_array($domain, ['firma.de', 'tochter.de', 'xn--mller-kva.de'], true));
         $this->repo->method('mailboxDomain')->willReturnCallback(fn(string $username): ?string =>
             ['azubi@firma.de' => 'firma.de', 'chef@firma.de' => 'firma.de', 'andere@tochter.de' => 'tochter.de'][$username] ?? null);
         $this->repo->method('groupDomain')->willReturnCallback(fn(int $id): ?string => [7 => 'firma.de', 9 => 'tochter.de'][$id] ?? null);
@@ -74,6 +74,7 @@ class RuleServiceTest extends TestCase
         $this->assertSame(['domain' => 'firma.de', 'name' => 'Aufräumen', 'folders' => ['trash', 'junk', 'folder:Projekte/*', 'folder:Newsletter'],
             'days' => 30, 'keep_flagged' => 1, 'mode' => 'simulate', 'all_mailboxes' => 0, 'active' => 1, 'mailboxes' => ['azubi@firma.de'], 'groups' => [7]],
             array_intersect_key($rule->toArray(), array_flip(['domain', 'name', 'folders', 'days', 'keep_flagged', 'mode', 'all_mailboxes', 'active', 'mailboxes', 'groups'])));
+        $this->assertSame('xn--mller-kva.de', $this->service()->create(['domain' => 'Müller.de', 'name' => 'Test', 'folders' => ['trash'], 'days' => 30])->domain);
     }
 
     public function testUpdateKeepsMissingValuesAndReplacesOwnFolders(): void
@@ -122,6 +123,8 @@ class RuleServiceTest extends TestCase
         $this->assertSame('Test', $this->service($da)->create($create('firma.de'))->name);
         $this->assertNotNull($this->service($da)->get(3));
         $this->expectUserError('access_denied', fn() => $this->service($da)->create($create('tochter.de')));
+        $this->expectUserError('access_denied', fn() => $this->service($da)->create($create('unbekannt.de')));
+        $this->expectUserError(['domain_not_found', 'unbekannt.de'], fn() => $this->service()->create($create('unbekannt.de')));
         $this->assertNull($this->service(FakeContext::domainAdmin([], ['tochter.de'], ['retention' => '1']))->get(3));
         $this->expectUserError('access_denied', fn() => $this->service(FakeContext::domainAdmin([], ['firma.de'], ['mail_policies' => '1']))->create($create('firma.de')));
         $this->expectUserError('access_denied', fn() => $this->service(FakeContext::user('azubi@firma.de'))->update(3, []));

@@ -71,7 +71,7 @@ class RetentionApiController
     {
         $id = $this->toId($id);
         $rule = ($id === null) ? null : $this->rules->get($id);
-        return ($rule === null) ? [] : $this->rules->toArray($rule);
+        return ($rule === null) ? [] : $this->rules->toArray($rule, $this->rules->lastRuns([$id])[$id] ?? null);
     }
 
     /**

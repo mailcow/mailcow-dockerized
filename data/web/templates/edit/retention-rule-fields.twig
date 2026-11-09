@@ -43,6 +43,7 @@
     </div>
   </div>
 </div>
+{% if rule.id is defined %}
 <div class="row mb-2">
   <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_mode">{{ lang.retention.mode }}</label>
   <div class="col-sm-10">
@@ -54,6 +55,7 @@
     <small class="text-muted d-block">{{ lang.retention.mode_info }}</small>
   </div>
 </div>
+{% endif %}
 <legend class="fs-5 mt-4"><i class="bi bi-people"></i> {{ lang.retention.assign }}</legend><hr>
 <p class="text-muted small">{{ lang.retention.assign_info }}</p>
 <div class="row mb-2">
