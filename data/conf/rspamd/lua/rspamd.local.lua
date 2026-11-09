@@ -363,6 +363,61 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
+  name = 'WHITELISTED_FWD_HOST',
+  type = 'prefilter',
+  score = 0.0,
+  callback = function(task)
+    local rspamd_logger = require "rspamd_logger"
+    local redis_params = rspamd_parse_redis_server('fwd_host')
+    local ip = task:get_from_ip()
+
+    if ip == nil or not ip:is_valid() then
+      return false
+    end
+
+    local from_ip_string = tostring(ip)
+    local ip_check_table = {'WHITELISTED_FWD_HOST', from_ip_string}
+
+    local maxbits = 128
+    local minbits = 7
+    if ip:get_version() == 4 then
+        maxbits = 32
+        minbits = 8
+    end
+    for i=maxbits,minbits,-1 do
+      table.insert(ip_check_table, ip:apply_mask(i):to_string() .. "/" .. i)
+    end
+
+    local function fwd_host_cb(err, data)
+      if err or type(data) ~= 'table' then
+        rspamd_logger.infox(rspamd_config, "fwd_host query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
+        return
+      end
+      for _,v in pairs(data) do
+        if type(v) == 'string' then
+          task:insert_result('WHITELISTED_FWD_HOST', 1.0, from_ip_string)
+          task:set_flag('pass_all')
+          return
+        end
+      end
+    end
+
+    local redis_ret = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      'WHITELISTED_FWD_HOST', -- hash key
+      false, -- is write
+      fwd_host_cb, --callback
+      'HMGET', -- command
+      ip_check_table -- arguments
+    )
+    if not redis_ret then
+      rspamd_logger.infox(rspamd_config, "cannot check fwd_host redis map")
+    end
+  end,
+  priority = 18
+})
+
+rspamd_config:register_symbol({
   name = 'TLS_HEADER',
   type = 'postfilter',
   callback = function(task)
