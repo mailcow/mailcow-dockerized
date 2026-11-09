@@ -9,3 +9,5 @@ disable_monitoring = true;
 # instead of silently accepting the message without further processing.
 soft_reject_on_timeout = true;
 local_addrs = /etc/rspamd/custom/mailcow_networks.map;
+# Must not be lower than message_size_limit in postfix main.cf
+max_message = 134217728;
