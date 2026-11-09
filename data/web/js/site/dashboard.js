@@ -875,6 +875,81 @@ jQuery(function($){
       hideTableExpandCollapseBtn('#tab-cron-logs', '#cron_log');
     });
   }
+  // archive copies from the Postfix log and mails not archived; the Message-ID finds a mail
+  function draw_archive_logs() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#archive_log') ) {
+      $('#archive_log').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+    // softbounce: the archive refused the copy, Postfix keeps it and tries again
+    var status_class = {sent: 'bg-success', deferred: 'bg-warning text-dark', softbounce: 'bg-danger', bounced: 'bg-danger', expired: 'bg-danger', dropped: 'bg-danger'};
+
+    $('#archive_log').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: log_pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      order: [[0, 'desc']],
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/logs/archive",
+        dataSrc: function(data){
+          return Array.isArray(data) ? data : [];
+        }
+      },
+      columns: [
+        {
+          title: lang.time,
+          data: 'time',
+          defaultContent: '',
+          createdCell: function(td, cellData) {
+            createSortableDate(td, cellData)
+          }
+        },
+        {
+          title: lang.archive_delivery,
+          data: 'status',
+          defaultContent: '',
+          render: function(data) {
+            var label = lang['archive_delivery_' + data] || data;
+            return '<span class="badge ' + (status_class[data] || 'bg-secondary') + '">' + escapeHtml(label) + '</span>';
+          }
+        },
+        {
+          title: lang.archive_message_id,
+          data: 'message_id',
+          defaultContent: '',
+          className: 'text-break',
+          render: function(data) {
+            return escapeHtml(data);
+          }
+        },
+        {
+          title: lang.archive_queue_id,
+          data: 'qid',
+          defaultContent: '',
+          render: function(data) {
+            return escapeHtml(data);
+          }
+        },
+        {
+          title: lang.archive_details,
+          data: 'text',
+          defaultContent: '',
+          className: 'dtr-col-md text-break',
+          render: function(data) {
+            return escapeHtml(data);
+          }
+        }
+      ]
+    });
+  }
   function rspamd_pie_graph() {
     $.ajax({
       url: '/api/v1/get/rspamd/actions',
@@ -1295,6 +1370,7 @@ jQuery(function($){
   onVisible("[id^=sasl_logs]", () => draw_sasl_logs());
   onVisible("[id^=netfilter_log]", () => draw_netfilter_logs());
   onVisible("[id^=cron_log]", () => draw_cron_logs());
+  onVisible("[id^=archive_log]", () => draw_archive_logs());
   onVisible("[id^=rspamd_history]", () => draw_rspamd_history());
   onVisible("[id^=rspamd_donut]", () => rspamd_pie_graph());
 

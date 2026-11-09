@@ -858,6 +858,26 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "archive":
+            switch ($object) {
+              case "settings":
+                process_get_return(\Mailcow\Archive\ArchiveModule::fromGlobals()->api->getSettings());
+              break;
+
+              case "status":
+                process_get_return(\Mailcow\Archive\ArchiveModule::fromGlobals()->api->getStatus());
+              break;
+
+              case "mailboxes":
+                process_get_return(\Mailcow\Archive\ArchiveModule::fromGlobals()->api->getMailboxes());
+              break;
+
+              default:
+                process_get_return(null);
+              break;
+            }
+          break;
+
           case "logs":
             switch ($object) {
               case "dovecot":
@@ -903,6 +923,11 @@ if (isset($_GET['query'])) {
                   $logs = get_logs('cron-mailcow');
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
+              case "archive":
+                // deliveries of archive copies and mails not archived, newest first
+                $logs = \Mailcow\Archive\ArchiveModule::fromGlobals()->api->getLog(isset($extra) ? intval(preg_replace('/[^\d]/', '', $extra)) : 0);
+                echo (!empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
               case "postfix":
                 // 0 is first record, so empty is fine
@@ -1682,6 +1707,8 @@ if (isset($_GET['query'])) {
             ['db' => 'messages', 'dt' => 20, 'dummy' => true, 'order_subquery' => "SELECT SUM(messages) FROM `quota2` WHERE `quota2`.`username` = `m`.`username`"],
             ['db' => 'tags', 'dt' => 23, 'dummy' => true, 'search' => ['join' => 'LEFT JOIN `tags_mailbox` AS `tm` ON `tm`.`username` = `m`.`username`', 'where_column' => '`tm`.`tag_name`']],
             ['db' => 'active', 'dt' => 24],
+            // archived by the mailbox setting or ('inherit') the domain default
+            ['db' => 'archive', 'dt' => 25, 'dummy' => true, 'order_subquery' => "SELECT IF(JSON_VALUE(`m`.`attributes`, '$.archive') = '1' OR (COALESCE(JSON_VALUE(`m`.`attributes`, '$.archive'), '') NOT IN ('0', '1') AND `domain`.`archive` = '1'), 1, 0) FROM `domain` WHERE `domain`.`domain` = `m`.`domain`"],
           ];
 
           if($_SESSION['mailcow_cc_role'] === 'admin') {
@@ -1952,6 +1979,9 @@ if (isset($_GET['query'])) {
         break;
         case "mailbox-group":
           process_edit_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->editGroups($items, $attr));
+        break;
+        case "archive":
+          process_edit_return(\Mailcow\Archive\ArchiveModule::fromGlobals()->api->edit($attr));
         break;
         case "recipient_map":
           process_edit_return(recipient_map('edit', array_merge(array('id' => $items), $attr)));

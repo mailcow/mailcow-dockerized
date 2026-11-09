@@ -8,6 +8,7 @@
     <input type="hidden" value="0" name="active">
     <input type="hidden" value="0" name="backupmx">
     <input type="hidden" value="0" name="gal">
+    <input type="hidden" value="0" name="archive">
     <input type="hidden" value="0" name="relay_all_recipients">
     <input type="hidden" value="0" name="relay_unknown_only">
 
@@ -67,6 +68,14 @@
         <div class="form-check">
           <label><input type="checkbox" class="form-check-input" value="1" name="gal"{% if template.attributes.gal == '1' %} checked{% endif %}> {{ lang.edit.gal }}</label>
           <small class="text-muted">{{ lang.edit.gal_info|raw }}</small>
+        </div>
+      </div>
+    </div>
+    <div class="row{% if not archive_enabled %} d-none{% endif %}">
+      <div class="offset-sm-2 col-sm-10">
+        <div class="form-check">
+          <label><input type="checkbox" class="form-check-input" value="1" name="archive"{% if template.attributes.archive == '1' %} checked{% endif %}> {{ lang.edit.archive_domain }}</label>
+          <small class="text-muted">{{ lang.edit.archive_domain_info }}</small>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 # Version of the database schema
-x-db-version: &db_version DB_VERSION=02112026_1600
+x-db-version: &db_version DB_VERSION=06112026_1800
 
 services:
 
@@ -375,6 +375,7 @@ services:
         - REDISPASS=${REDISPASS}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - SPAMHAUS_DQS_KEY=${SPAMHAUS_DQS_KEY:-}
+        - *db_version
       cap_add:
         - NET_BIND_SERVICE
       ports:

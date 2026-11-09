@@ -50,6 +50,9 @@ postscreen_greet_wait = 3s
 postscreen_non_smtp_command_enable = no
 postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sender_filter_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sasl_passwd_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_archive_tls_policy_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   $sender_dependent_default_transport_maps,

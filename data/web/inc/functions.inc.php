@@ -539,6 +539,7 @@ function sys_mail($_data) {
       $mail->Body = $mass_text;
     }
     $mail->XMailer = 'MooMassMail';
+    $archive = \Mailcow\Archive\ArchiveModule::fromGlobals();
     foreach ($rcpts as $rcpt) {
       $mail->AddAddress($rcpt);
       if (!$mail->send()) {
@@ -547,6 +548,10 @@ function sys_mail($_data) {
           'log' => array(__FUNCTION__),
           'msg' => 'Mailer error (RCPT "' . htmlspecialchars($rcpt) . '"): ' . str_replace('https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting', '', $mail->ErrorInfo)
         );
+      }
+      else {
+        // Delivered by LMTP without rspamd, so the archive gets it here
+        $archive->journal->submitDelivered($mail->getSentMIMEMessage(), $mass_from, array($rcpt), 'massmail');
       }
       $mail->ClearAllRecipients();
     }

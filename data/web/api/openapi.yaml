@@ -685,6 +685,11 @@ paths:
                     is domain global address list active or not, it enables
                     shared contacts accross domain in SOGo webmail
                   type: boolean
+                archive:
+                  description: >-
+                    archive mails of the mailboxes of this domain by default (mailboxes set to `inherit`),
+                    see GET /api/v1/get/archive/mailboxes
+                  type: boolean
                 mailboxes:
                   description: limit count of mailboxes associated with this domain
                   type: number
@@ -1254,6 +1259,12 @@ paths:
                 force_tfa:
                   description: force 2FA enrollment at login
                   type: boolean
+                archive:
+                  description: >-
+                    archiving of the mailbox: `inherit` follows the domain, `1` always, `0` never (admins, domain
+                    admins with the archive permission; otherwise the template decides)
+                  type: string
+                  enum: [inherit, "1", "0"]
                 tls_enforce_in:
                   description: force inbound email tls encryption
                   type: boolean
@@ -3918,6 +3929,11 @@ paths:
                         is domain global address list active or not, it enables
                         shared contacts accross domain in SOGo webmail
                       type: boolean
+                    archive:
+                      description: >-
+                        archive mails of the mailboxes of this domain by default (admins, domain admins with the
+                        archive permission)
+                      type: boolean
                     mailboxes:
                       description: limit count of mailboxes associated with this domain
                       type: number
@@ -4222,6 +4238,12 @@ paths:
                     force_tfa:
                       description: force 2FA enrollment at login
                       type: boolean
+                    archive:
+                      description: >-
+                        archiving of the mailbox: `inherit` follows the domain, `1` always, `0` never (admins, domain
+                        admins with the archive permission)
+                      type: string
+                      enum: [inherit, "1", "0"]
                     name:
                       description: Full name of the mailbox user
                       type: string
@@ -4546,6 +4568,104 @@ paths:
                       default: run
               type: object
       summary: Request identity sync run
+  /api/v1/edit/archive:
+    post:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - log:
+                        - archive
+                        - edit
+                        - settings
+                        - enabled: "1"
+                          address: journal@archive.example.org
+                          signing_secret: "*"
+                      msg: archive_settings_saved
+                      type: success
+          description: OK
+          headers: {}
+      tags:
+        - Archive
+      description: >-
+        Archive target, admins with a read-write key only. mailcow sends a copy of every accepted mail of archived
+        mailboxes by SMTP to `address`, through the Postfix queue (envelope sender `archive-bounce@localhost`, notices
+        to it are dropped: no bounce or delay warning reaches a sender). Attributes missing in the request keep their
+        value, an empty `password` or `signing_secret` keeps the stored one. Switching on needs the address, and the
+        signing key for the profile archivecow. With `action: test` the stored target is tested (connection, TLS,
+        AUTH, whether the address is accepted; no mail is sent), with `action: testmail` a test copy is sent through
+        the mail queue.
+      operationId: Edit archive settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example:
+                items:
+                  - archive
+                attr:
+                  enabled: "1"
+                  address: journal@archive.example.org
+                  host: archive.example.org
+                  port: 25
+                  tls: encrypt
+                  profile: archivecow
+                  signing_secret: secret-key
+              properties:
+                items:
+                  type: array
+                  default: ["archive"]
+                attr:
+                  type: object
+                  properties:
+                    enabled:
+                      description: copies of accepted mails go to the archive; copies already queued are delivered either way
+                      type: boolean
+                    address:
+                      description: address the archive receives copies at
+                      type: string
+                    host:
+                      description: SMTP server of the archive, empty for the MX of the address domain
+                      type: string
+                    port:
+                      type: integer
+                      default: 25
+                    tls:
+                      description: "`encrypt` (TLS required), `verify` (TLS required, certificate verified), `may`"
+                      type: string
+                      enum: [encrypt, verify, may]
+                    username:
+                      description: SMTP AUTH user at the archive, empty for none
+                      type: string
+                    password:
+                      description: SMTP AUTH password, never returned
+                      type: string
+                    profile:
+                      description: >-
+                        headers in front of each copy: `archivecow` (X-Archive-Owner, -Rcpt, -From, -Queue-ID,
+                        -Received, -Direction, -Source, -SHA256 and X-Archive-Signature), `envelope` (sender and
+                        recipients under `header_from` / `header_rcpt`), `none`
+                      type: string
+                      enum: [archivecow, envelope, none]
+                    signing_secret:
+                      description: key of X-Archive-Signature (HMAC-SHA256), never returned
+                      type: string
+                    header_from:
+                      type: string
+                      default: X-Envelope-From
+                    header_rcpt:
+                      type: string
+                      default: X-Envelope-To
+                    action:
+                      type: string
+                      enum: [test, testmail]
+              type: object
+      summary: Edit archive settings
   /api/v1/edit/mailq:
     post:
       responses:
@@ -5758,6 +5878,7 @@ paths:
                       description: Some description
                       domain_name: domain.tld
                       gal: "0"
+                      archive: 1
                       max_new_mailbox_quota: 10737418240
                       max_num_aliases_for_domain: 400
                       max_num_mboxes_for_domain: 10
@@ -6312,7 +6433,9 @@ paths:
                 response:
                   value:
                     - active: "1"
+                      archive: 1
                       attributes:
+                        archive: inherit
                         force_pw_update: "0"
                         force_tfa: "0"
                         mailbox_format: "maildir:"
@@ -6507,6 +6630,154 @@ paths:
         nothing was changed).
       operationId: Get identity sync status
       summary: Get identity sync status
+  /api/v1/get/archive/mailboxes:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: 1
+                    mailboxes:
+                      - username: anna@example.org
+                        domain: example.org
+                        name: Anna Example
+                        active: 1
+                        source: domain
+                      - username: board@example.net
+                        domain: example.net
+                        name: Board
+                        active: 2
+                        source: mailbox
+          description: OK
+          headers: {}
+      tags:
+        - Archive
+      description: >-
+        Mailboxes whose mails go to the archive now (admins, read-only keys included). A mailbox is archived when
+        archiving is switched on (`enabled`) and its setting is `1`, or `inherit` while its domain archives by default
+        (`source` says which). Only mailboxes that receive mail are listed: `active` 1, or 2 (no login, mail is
+        delivered). `username` is the value of the X-Archive-Owner header. Mailboxes that drop out of the list
+        (archiving switched off, deleted, renamed) keep their mails in the archive.
+      operationId: Get archived mailboxes
+      summary: Get archived mailboxes
+  /api/v1/get/archive/status:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: 1
+                    configured: 1
+                    queued: 2
+                    queued_bytes: 182044
+                    oldest_queued: 1762425600
+                    delay_reasons:
+                      - "connect to archive.example.org[192.0.2.10]:25: Connection refused"
+                    last_delivery: 1762425580
+                    dropped: 3
+                    dropped_24h: 1
+                    last_dropped:
+                      time: 1762425500
+                      reason: "owner lookup failed (nil, 502)"
+          description: OK
+          headers: {}
+      tags:
+        - Archive
+      description: >-
+        Summary of the archive state (admins, read-only keys included): copies waiting in the Postfix queue with the
+        reasons Postfix gives, the time of the last delivery to the archive, and mails that were not archived because
+        their copy could not be handed to Postfix (`dropped` since ever, `dropped_24h` and `last_dropped` for the last
+        24 hours).
+      operationId: Get archive status
+      summary: Get archive status
+  "/api/v1/get/logs/archive/{count}":
+    get:
+      parameters:
+        - description: Number of logs to return
+          in: path
+          name: count
+          required: true
+          schema:
+            type: number
+        - description: e.g. api-key-string
+          example: api-key-string
+          in: header
+          name: X-API-Key
+          required: false
+          schema:
+            type: string
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    - time: 1762425580
+                      status: sent
+                      qid: 4XyZ1abc
+                      message_id: "c3d1e0f2@example.org"
+                      text: "250 2.0.0 Ok: queued as 9F2C4"
+                    - time: 1762425500
+                      status: dropped
+                      qid: 3AbC2def
+                      message_id: "a1b2c3@example.org"
+                      text: "owner lookup failed (nil, 502)"
+          description: OK
+          headers: {}
+      tags:
+        - Logs
+      description: >-
+        Archive log, newest first (admins, read-only keys included): deliveries of copies from the Postfix log
+        (`status` sent, deferred, softbounce when the archive refused the copy and Postfix keeps it, or bounced),
+        copies discarded after the queue lifetime (expired) and mails that were not archived (dropped, `text` is the
+        reason). `message_id` is the Message-ID of the mail, `qid` the queue ID of the copy (of the mail for dropped).
+
+        Tip: You can limit how many logs you want to get by using `/<count>` at
+        the end of the api url.
+      operationId: Get archive log
+      summary: Get archive log
+  /api/v1/get/archive/settings:
+    get:
+      responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: 1
+                    address: journal@archive.example.org
+                    host: archive.example.org
+                    port: 25
+                    tls: encrypt
+                    username: ""
+                    has_password: 0
+                    profile: archivecow
+                    has_signing_secret: 1
+                    header_from: X-Envelope-From
+                    header_rcpt: X-Envelope-To
+          description: OK
+          headers: {}
+      tags:
+        - Archive
+      description: Archive target (admins, read-only keys included); password and signing key are never returned.
+      operationId: Get archive settings
+      summary: Get archive settings
   "/api/v1/get/identity-link/{username}":
     get:
       parameters:
@@ -7597,7 +7868,9 @@ paths:
                 response:
                   value:
                     - active: "1"
+                      archive: 1
                       attributes:
+                        archive: inherit
                         force_pw_update: "0"
                         force_tfa: "0"
                         mailbox_format: "maildir:"
@@ -8025,3 +8298,7 @@ tags:
     description: Manage Cross-Origin Resource Sharing (CORS) settings
   - name: Identity Provider
     description: Manage external Identity Provider settings
+  - name: Archive
+    description: >-
+      Archiving (SMTP journaling): a copy of every accepted incoming, outgoing and internal mail of archived
+      mailboxes goes by SMTP to the archive, through the Postfix queue.

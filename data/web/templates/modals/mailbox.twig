@@ -39,7 +39,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end" for="description">{{ lang.mailbox.template }}</label>
             <div class="col-sm-10">
-              <select data-live-search="true" id="mailbox_templates" class="form-control" title="{{ lang.mailbox.template }}">
+              <select data-live-search="true" id="mailbox_templates" name="template" class="form-control" title="{{ lang.mailbox.template }}">
               </select>
             </div>
           </div>
@@ -152,6 +152,17 @@
                 <option value="eas">ActiveSync</option>
                 <option value="dav">CalDAV/CardDAV</option>
               </select>
+            </div>
+          </div>
+          <div class="row mb-2{% if not archive_enabled %} d-none{% endif %}" data-acl="{{ acl.archive }}">
+            <label class="control-label col-sm-2 text-sm-end" for="addMailbox_archive">{{ lang.edit.archive }}</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="archive" id="addMailbox_archive"{% if acl.archive != 1 %} disabled{% endif %}>
+                <option value="inherit" selected>{{ lang.edit.archive_inherit }}</option>
+                <option value="1">{{ lang.edit.archive_on }}</option>
+                <option value="0">{{ lang.edit.archive_off }}</option>
+              </select>
+              <small class="text-muted d-block">{{ lang.edit.archive_info }}</small>
             </div>
           </div>
           <div class="row mb-4">
@@ -360,6 +371,17 @@
               </select>
             </div>
           </div>
+          <div class="row mb-2{% if not archive_enabled %} d-none{% endif %}">
+            <label class="control-label col-sm-2 text-sm-end" for="addMailboxTemplate_archive">{{ lang.edit.archive }}</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="archive" id="addMailboxTemplate_archive">
+                <option value="inherit" selected>{{ lang.edit.archive_inherit }}</option>
+                <option value="1">{{ lang.edit.archive_on }}</option>
+                <option value="0">{{ lang.edit.archive_off }}</option>
+              </select>
+              <small class="text-muted d-block">{{ lang.edit.archive_info }}</small>
+            </div>
+          </div>
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end text-sm-end">ACL</label>
             <div class="col-sm-10">
@@ -451,6 +473,7 @@
       <div class="modal-body">
         <form class="form-horizontal" data-cached-form="true" data-id="add_domain" role="form">
           <input type="hidden" value="0" name="gal">
+          <input type="hidden" value="0" name="archive">
           <input type="hidden" value="0" name="active">
           <input type="hidden" value="0" name="backupmx">
           <input type="hidden" value="0" name="relay_all_recipients">
@@ -525,6 +548,14 @@
             </div>
           </div>
           {% endif %}
+          <div class="row mb-2{% if not archive_enabled %} d-none{% endif %}" data-acl="{{ acl.archive }}">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="archive" id="addDomain_archive"> {{ lang.edit.archive_domain }}</label>
+                <small class="text-muted">{{ lang.edit.archive_domain_info }}</small>
+              </div>
+            </div>
+          </div>
           <div class="row mb-4">
             <div class="offset-sm-2 col-sm-10">
               <div class="form-check">
@@ -661,6 +692,14 @@
               <div class="form-check">
                 <label><input type="checkbox" class="form-check-input" value="1" name="gal" checked> {{ lang.add.gal }}</label>
                 <small class="text-muted">{{ lang.add.gal_info|raw }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="row{% if not archive_enabled %} d-none{% endif %}">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="archive"> {{ lang.edit.archive_domain }}</label>
+                <small class="text-muted">{{ lang.edit.archive_domain_info }}</small>
               </div>
             </div>
           </div>

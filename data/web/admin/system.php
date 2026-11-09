@@ -13,6 +13,7 @@ $js_minifier->add('/web/js/site/admin.js');
 $js_minifier->add('/web/js/presets/rspamd.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 $js_minifier->add('/web/js/site/identity.js');
+$js_minifier->add('/web/js/site/archive.js');
 
 // all domains
 $domains = mailbox('get', 'domains');
@@ -116,6 +117,7 @@ $template_data = [
   'ui_theme' => customize('get', 'ui_theme'),
   'password_complexity' => password_complexity('get'),
   'imapsync_settings' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSettings(),
+  'archive_settings' => \Mailcow\Archive\ArchiveModule::fromGlobals()->api->getSettings(),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',

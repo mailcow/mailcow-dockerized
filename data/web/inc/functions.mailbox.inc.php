@@ -366,6 +366,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $relay_unknown_only = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $DOMAIN_DEFAULT_ATTRIBUTES['relay_unknown_only'];
           $backupmx = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $DOMAIN_DEFAULT_ATTRIBUTES['backupmx'];
           $gal = (isset($_data['gal'])) ? intval($_data['gal']) : $DOMAIN_DEFAULT_ATTRIBUTES['gal'];
+          $archive = (intval((isset($_data['archive'])) ? $_data['archive'] : ($DOMAIN_DEFAULT_ATTRIBUTES['archive'] ?? 0)) == 1) ? 1 : 0;
           if ($relay_all_recipients == 1) {
             $backupmx = '1';
           }
@@ -421,8 +422,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':domain' => '%@' . $domain
           ));
           // save domain
-          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`)
-            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients)");
+          $stmt = $pdo->prepare("INSERT INTO `domain` (`domain`, `description`, `aliases`, `mailboxes`, `defquota`, `maxquota`, `quota`, `backupmx`, `gal`, `active`, `relay_unknown_only`, `relay_all_recipients`, `archive`)
+            VALUES (:domain, :description, :aliases, :mailboxes, :defquota, :maxquota, :quota, :backupmx, :gal, :active, :relay_unknown_only, :relay_all_recipients, :archive)");
           $stmt->execute(array(
             ':domain' => $domain,
             ':description' => $description,
@@ -435,7 +436,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             ':gal' => $gal,
             ':active' => $active,
             ':relay_unknown_only' => $relay_unknown_only,
-            ':relay_all_recipients' => $relay_all_recipients
+            ':relay_all_recipients' => $relay_all_recipients,
+            ':archive' => $archive
           ));
           // save tags
           foreach($tags as $index => $tag){
@@ -940,6 +942,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $relayhost = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : 0;
           // Shared mailbox: no login of its own, members open it through group shares
           $shared = (isset($_data['shared'])) ? intval($_data['shared']) : 0;
+          // Archiving comes from the template unless the caller may set it
+          $archive = \Mailcow\Archive\Model\Mailbox::setting((isset($_data['archive']) && hasACLAccess("archive")) ? $_data['archive'] : ($MAILBOX_DEFAULT_ATTRIBUTES['archive'] ?? 'inherit'));
           $quarantine_notification = (isset($_data['quarantine_notification'])) ? strval($_data['quarantine_notification']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_notification']);
           $quarantine_category = (isset($_data['quarantine_category'])) ? strval($_data['quarantine_category']) : strval($MAILBOX_DEFAULT_ATTRIBUTES['quarantine_category']);
           // Validate quarantine_category
@@ -974,6 +978,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'dav_access' => strval($dav_access),
               'relayhost' => strval($relayhost),
               'shared' => strval($shared),
+              'archive' => $archive,
               'passwd_update' => time(),
               'mailbox_format' => strval($MAILBOX_DEFAULT_ATTRIBUTES['mailbox_format']),
               'quarantine_notification' => strval($quarantine_notification),
@@ -1525,6 +1530,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
           $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
           $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+          $attr['archive']                    = (isset($_data['archive']) && intval($_data['archive']) == 1) ? 1 : 0;
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -1600,6 +1606,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : "";
           $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_pw_update']);
           $attr["force_tfa"]                   = isset($_data['force_tfa']) ? intval($_data['force_tfa']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['force_tfa']);
+          $attr["archive"]                     = \Mailcow\Archive\Model\Mailbox::setting($_data['archive'] ?? $MAILBOX_DEFAULT_ATTRIBUTES['archive']);
           $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['sogo_access']);
           $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : 1;
           $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : intval($MAILBOX_DEFAULT_ATTRIBUTES['tls_enforce_in']);
@@ -2488,6 +2495,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
                 $description          = (!empty($_data['description']) && isset($_SESSION['acl']['domain_desc']) && $_SESSION['acl']['domain_desc'] == "1") ? $_data['description'] : $is_now['description'];
                 (int)$relayhost       = (isset($_data['relayhost']) && isset($_SESSION['acl']['domain_relayhost']) && $_SESSION['acl']['domain_relayhost'] == "1") ? intval($_data['relayhost']) : intval($is_now['relayhost']);
+                $archive              = (isset($_data['archive']) && hasACLAccess("archive")) ? ((intval($_data['archive']) == 1) ? 1 : 0) : intval($is_now['archive']);
                 $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
               }
               else {
@@ -2501,11 +2509,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
               $stmt = $pdo->prepare("UPDATE `domain` SET
               `description` = :description,
-              `gal` = :gal
+              `gal` = :gal,
+              `archive` = :archive
                 WHERE `domain` = :domain");
               $stmt->execute(array(
                 ':description' => $description,
                 ':gal' => $gal,
+                ':archive' => $archive,
                 ':domain' => $domain
               ));
               // save tags
@@ -2538,6 +2548,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $active               = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
                 $backupmx             = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : $is_now['backupmx'];
                 $gal                  = (isset($_data['gal'])) ? intval($_data['gal']) : $is_now['gal'];
+                $archive              = (isset($_data['archive'])) ? ((intval($_data['archive']) == 1) ? 1 : 0) : intval($is_now['archive']);
                 $relay_all_recipients = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : $is_now['relay_all_recipients'];
                 $relay_unknown_only   = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : $is_now['relay_unknown_only'];
                 $relayhost            = (isset($_data['relayhost'])) ? intval($_data['relayhost']) : $is_now['relayhost'];
@@ -2652,6 +2663,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only` = :relay_unknown_only,
               `backupmx` = :backupmx,
               `gal` = :gal,
+              `archive` = :archive,
               `active` = :active,
               `quota` = :quota,
               `defquota` = :defquota,
@@ -2666,6 +2678,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':relay_unknown_only' => $relay_unknown_only,
                 ':backupmx' => $backupmx,
                 ':gal' => $gal,
+                ':archive' => $archive,
                 ':active' => $active,
                 ':quota' => $quota,
                 ':defquota' => $defquota,
@@ -2753,6 +2766,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
             $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
             $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+            $attr['archive']                    = (isset($_data['archive'])) ? ((intval($_data['archive']) == 1) ? 1 : 0) : intval($is_now['attributes']['archive'] ?? 0);
             $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
             $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -2814,6 +2828,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               (int)$eas_access     = (isset($_data['eas_access']) && hasACLAccess("protocol_access")) ? intval($_data['eas_access']) : intval($is_now['attributes']['eas_access']);
               (int)$dav_access    = (isset($_data['dav_access']) && hasACLAccess("protocol_access")) ? intval($_data['dav_access']) : intval($is_now['attributes']['dav_access']);
               (int)$relayhost       = (isset($_data['relayhost']) && hasACLAccess("mailbox_relayhost")) ? intval($_data['relayhost']) : intval($is_now['attributes']['relayhost']);
+              $archive              = \Mailcow\Archive\Model\Mailbox::setting((isset($_data['archive']) && hasACLAccess("archive")) ? $_data['archive'] : ($is_now['attributes']['archive'] ?? null));
               (int)$shared          = (isset($_data['shared'])) ? intval($_data['shared']) : intval($is_now['attributes']['shared'] ?? 0);
               (int)$quota_m         = (isset_has_content($_data['quota'])) ? intval($_data['quota']) : ($is_now['quota'] / 1048576);
               $name                 = (!empty($_data['name'])) ? ltrim(rtrim($_data['name'], '>'), '<') : $is_now['name'];
@@ -3114,6 +3129,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   `attributes` = JSON_SET(`attributes`, '$.smtp_access', :smtp_access),
                   `attributes` = JSON_SET(`attributes`, '$.eas_access', :eas_access),
                   `attributes` = JSON_SET(`attributes`, '$.dav_access', :dav_access),
+                  `attributes` = JSON_SET(`attributes`, '$.archive', :archive),
                   `attributes` = JSON_SET(`attributes`, '$.recovery_email', :recovery_email),
                   `attributes` = JSON_SET(`attributes`, '$.attribute_hash', :attribute_hash)
                     WHERE `username` = :username");
@@ -3131,6 +3147,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':smtp_access' => $smtp_access,
                 ':eas_access' => $eas_access,
                 ':dav_access' => $dav_access,
+                ':archive' => $archive,
                 ':recovery_email' => $pw_recovery_email,
                 ':relayhost' => $relayhost,
                 ':shared' => strval($shared),
@@ -3534,6 +3551,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr["rl_value"]                    = (!empty($_data['rl_value'])) ? $_data['rl_value'] : $is_now['rl_value'];
             $attr["force_pw_update"]             = isset($_data['force_pw_update']) ? intval($_data['force_pw_update']) : $is_now['force_pw_update'];
             $attr["force_tfa"]                   = isset($_data['force_tfa']) ? intval($_data['force_tfa']) : $is_now['force_tfa'];
+            $attr["archive"]                     = \Mailcow\Archive\Model\Mailbox::setting($_data['archive'] ?? ($is_now['attributes']['archive'] ?? null));
             $attr["sogo_access"]                 = isset($_data['sogo_access']) ? intval($_data['sogo_access']) : $is_now['sogo_access'];
             $attr["active"]                      = isset($_data['active']) ? intval($_data['active']) : $is_now['active'];
             $attr["tls_enforce_in"]              = isset($_data['tls_enforce_in']) ? intval($_data['tls_enforce_in']) : $is_now['tls_enforce_in'];
@@ -4682,6 +4700,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               `relay_unknown_only`,
               `backupmx`,
               `gal`,
+              `archive`,
               `active`
                 FROM `domain` WHERE `domain`= :domain");
           $stmt->execute(array(
@@ -4742,6 +4761,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $domaindata['backupmx_int'] = $row['backupmx'];
           $domaindata['gal'] = $row['gal'];
           $domaindata['gal_int'] = $row['gal'];
+          $domaindata['archive'] = $row['archive'];
           $domaindata['rl'] = $rl;
           $domaindata['active'] = $row['active'];
           $domaindata['active_int'] = $row['active'];
@@ -4829,6 +4849,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if (preg_match('/y|yes/i', getenv('MASTER'))) {
             $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
+              `domain`.`active` AS `domain_active`,
+              `domain`.`archive` AS `domain_archive`,
               `mailbox`.`username`,
               `mailbox`.`name`,
               `mailbox`.`active`,
@@ -4851,6 +4873,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           else {
             $stmt = $pdo->prepare("SELECT
               `domain`.`backupmx`,
+              `domain`.`active` AS `domain_active`,
+              `domain`.`archive` AS `domain_archive`,
               `mailbox`.`username`,
               `mailbox`.`name`,
               `mailbox`.`active`,
@@ -4890,6 +4914,18 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mailboxdata['created'] = $row['created'];
           $mailboxdata['modified'] = $row['modified'];
           $mailboxdata['authsource'] = ($row['authsource']) ? $row['authsource'] : 'mailcow';
+          // Mails of the mailbox go to the archive: global switch, mailbox setting ("inherit" follows the domain), receives mail
+          static $archive_enabled = null;
+          if ($archive_enabled === null) {
+            try {
+              $archive_enabled = \Mailcow\Archive\ArchiveModule::fromGlobals()->settings->enabled();
+            }
+            catch (PDOException $e) {
+              $archive_enabled = false;
+            }
+          }
+          $mailboxdata['archive'] = ($archive_enabled && $row['active'] != 0 && $row['domain_active'] == 1 && $row['backupmx'] == 0
+            && \Mailcow\Archive\Model\Mailbox::effective($mailboxdata['attributes']['archive'] ?? null, $row['domain_archive'])) ? 1 : 0;
 
           if ($mailboxdata['percent_in_use'] === '- ') {
             $mailboxdata['percent_class'] = "info";

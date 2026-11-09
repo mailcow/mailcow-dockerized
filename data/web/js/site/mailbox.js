@@ -232,6 +232,7 @@ $(document).ready(function() {
     } else {
       $('#addDomain_gal').prop('checked', false);
     }
+    $('#addDomain_archive').prop('checked', template.archive == 1);
 
     if (template.active == 1){
       $('#addDomain_active').prop('checked', true);
@@ -433,6 +434,7 @@ $(document).ready(function() {
     } else {
       $('#force_tfa').prop('checked', false);
     }
+    $('#addMailbox_archive').selectpicker('val', ['0', '1'].includes(String(template.archive)) ? String(template.archive) : 'inherit');
     if (template.sogo_access == 1){
       $('#sogo_access').prop('checked', true);
     } else {
@@ -1185,6 +1187,18 @@ jQuery(function($){
           responsivePriority: 4,
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':(0==data?'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>':2==data&&'&#8212;');
+          }
+        },
+        {
+          title: lang.archive,
+          data: 'archive',
+          searchable: false,
+          defaultContent: '',
+          responsivePriority: 5,
+          // not shown while archiving is switched off
+          className: archive_enabled ? '' : 'never',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {

@@ -81,6 +81,7 @@
   var csrf_token = '{{ csrf_token }}';
   var pagination_size = Math.trunc('{{ pagination_size }}');
   var role = '{{ role }}';
+  var archive_enabled = {{ archive_enabled ? 1 : 0 }};
   var is_dual = {{ is_dual }};
   var ALLOW_ADMIN_EMAIL_LOGIN = {{ allow_admin_email_login }};
 </script>
