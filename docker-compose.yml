@@ -391,7 +391,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.14.0
+      image: ghcr.io/mailcow/postfix-tlspol:1.14.5
       depends_on:
         unbound-mailcow:
           condition: service_healthy
