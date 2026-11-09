@@ -2524,6 +2524,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':domain' => $domain,
                   ':tag_name' => $tag,
                 ));
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                ));
               }
 
               $_SESSION['return'][] = array(
@@ -2691,6 +2695,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':domain' => $domain,
                   ':tag_name' => $tag,
+                ));
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
                 ));
               }
 
@@ -3169,6 +3177,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':username' => $username,
                   ':tag_name' => $tag,
+                ));
+                $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':username' => $username,
                 ));
               } catch (Exception $e) {
               }
@@ -5916,6 +5928,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                ));
+              }
             }
           }
 
@@ -5968,6 +5986,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':username' => $username,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':username' => $username,
+                ));
+              }
             }
           }
 
