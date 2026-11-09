@@ -39,7 +39,8 @@ use Redis;
  *   process_get_return(BackupModule::fromGlobals()->api->getSettings());
  *   echo json_encode(BackupModule::create($pdo, Context::system(), $config, $redis)->api->export($domain, $page));  // backup.php
  *
- * $config: timezone (TZ of mailcow, for the schedule), alias_disable_external_domains ($ALIAS_DISABLE_EXTERNAL_DOMAINS).
+ * $config: timezone (TZ of mailcow, for the schedule), alias_disable_external_domains ($ALIAS_DISABLE_EXTERNAL_DOMAINS),
+ * demo_mode ($DEMO_MODE: the API changes nothing).
  * $redis: for DKIM keys, rate limits and the domain map (export and restore).
  */
 class BackupModule
@@ -73,15 +74,17 @@ class BackupModule
         $restore = new RestoreService($restoreRepo, $jobRepo, $groups, $sogo, $dovecot, $legacy, (bool)($config['alias_disable_external_domains'] ?? false));
         $domainRestore = new DomainRestoreService($restoreRepo, $jobRepo, $groups, $legacy);
         return new self($settings, $jobs, $export, $restore, $domainRestore,
-            new BackupApiController($settings, $jobs, $export, $restore, $domainRestore, new ApiResponse(Settings::SECRETS)));
+            new BackupApiController($settings, $jobs, $export, $restore, $domainRestore, new ApiResponse(Settings::SECRETS),
+                (bool)($config['demo_mode'] ?? false)));
     }
 
-    /** Legacy entry point for procedural callers: reads $pdo, $redis, $_SESSION, TZ and $ALIAS_DISABLE_EXTERNAL_DOMAINS */
+    /** Legacy entry point for procedural callers: reads $pdo, $redis, $_SESSION, TZ, $ALIAS_DISABLE_EXTERNAL_DOMAINS and $DEMO_MODE */
     public static function fromGlobals(?Context $context = null): self
     {
         return self::create($GLOBALS['pdo'], $context ?? Context::fromSession($_SESSION ?? []), [
             'timezone' => getenv('TZ') ?: 'UTC',
             'alias_disable_external_domains' => ($GLOBALS['ALIAS_DISABLE_EXTERNAL_DOMAINS'] ?? false) === true,
-        ], ($GLOBALS['redis'] ?? null) instanceof Redis ? $GLOBALS['redis'] : null);
+            'demo_mode' => ($GLOBALS['DEMO_MODE'] ?? false) === true,
+        ],($GLOBALS['redis'] ?? null) instanceof Redis ? $GLOBALS['redis'] : null);
     }
 }

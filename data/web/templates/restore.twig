@@ -10,6 +10,7 @@
       <span>{{ lang.backup.restore_card }}</span>
     </div>
     <div class="card-body">
+      {% if backup_demo_mode %}<div class="alert alert-warning">{{ lang.backup.demo_mode }}</div>{% endif %}
       <div class="backup-restore-hints"></div>
       {# left-aligned with the search of the toolbar below #}
       <div class="d-flex flex-wrap align-items-center gap-2 mb-3 px-2">

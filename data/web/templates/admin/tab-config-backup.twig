@@ -13,6 +13,7 @@
       <div class="row mb-4">
         <div class="col-sm-9 offset-sm-3">
           <p class="text-muted">{{ lang.backup.intro }} <a href="/admin/restore">{{ lang.backup.intro_restore_link }}</a></p>
+          {% if backup_demo_mode %}<div class="alert alert-warning">{{ lang.backup.demo_mode }}</div>{% endif %}
 
           <div id="backup_status">
             <div class="backup-status-summary mb-2" aria-live="polite"><span class="text-muted">{{ lang.footer.loading }}</span></div>
