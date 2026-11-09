@@ -31,7 +31,7 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
-if (strpos($data, 'autodiscover/outlook/responseschema') !== false) {
+if (strpos($data, 'autodiscover/outlook/responseschema') !== false && $autodiscover_config['autodiscoverType'] == 'activesync') {
   $autodiscover_config['autodiscoverType'] = 'imap';
   if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
     // Office for macOS does not support EAS
