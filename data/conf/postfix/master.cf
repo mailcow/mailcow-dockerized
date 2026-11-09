@@ -121,9 +121,10 @@ smtp_sender_cleanup unix n - y - 0 cleanup
 mailcow-policy unix - n n - 0 spawn user=nobody argv=/usr/local/bin/mailcow-policy.py
 
 # start watchdog-specific
-# logs to local7 (hidden)
+# logs to local7 (hidden), no mail policy check
 589 inet n      -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,reject
+  -o smtpd_recipient_restrictions=permit_mynetworks,reject
   -o syslog_name=watchdog
   -o syslog_facility=local7
   -o smtpd_milters=
