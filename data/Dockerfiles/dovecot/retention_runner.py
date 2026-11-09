@@ -133,7 +133,7 @@ def own_folders(user, prefixes):
   folders = {}
   if not names:
     return folders
-  for line in doveadm('-f', 'tab', 'mailbox', 'status', '-u', user, 'guid', *sorted(names), partial=True).splitlines()[1:]:
+  for line in doveadm('-f', 'tab', 'mailbox', 'status', '-u', user, '--', 'guid', *sorted(names), partial=True).splitlines()[1:]:
     name, _, guid = line.rpartition('\t')
     if name in names and re.fullmatch(r'[0-9a-f]{32}', guid):
       folders[name] = guid
@@ -168,7 +168,7 @@ def decide(actions, folders, names):
   return decided
 
 def found(user, query):
-  return len(doveadm('search', '-u', user, *query).splitlines())
+  return len(doveadm('search', '-u', user, '--', *query).splitlines())
 
 def clean(user, action, selected, folders, result):
   # name and guid together: doveadm then only opens these folders
@@ -182,7 +182,7 @@ def clean(user, action, selected, folders, result):
   if not result['matched'] or action['mode'] != 'delete':
     return
   try:
-    doveadm('expunge', '-u', user, *query)
+    doveadm('expunge', '-u', user, '--', *query)
     result['deleted'] = result['matched']
   except Exception as e:
     # part of the mail may be gone: what is left is counted
@@ -193,6 +193,9 @@ def clean(user, action, selected, folders, result):
       pass
 
 def main():
+  if os.geteuid() == 0:
+    # as vmail like the nightly job: a run as root would leave a lock file the runs as vmail cannot open
+    os.execv('/usr/local/bin/gosu', ['gosu', 'vmail', sys.executable, os.path.abspath(__file__)] + sys.argv[1:])
   # released by the kernel when the process ends, a crashed run leaves no stale lock
   lock_fd = os.open(lock_file, os.O_RDWR | os.O_CREAT, 0o600)
   try:
@@ -208,6 +211,9 @@ def main():
       user = mailbox['username']
       run['mailboxes'] += 1
       try:
+        if '*' in user or '?' in user:
+          # doveadm -u would run for every user the name matches as a mask
+          raise RuntimeError('username with * or ?, doveadm reads it as a mask')
         folders, error = own_folders(user, prefixes), ''
         decided = decide(mailbox['actions'], folders, names)
       except Exception as e:
@@ -218,7 +224,8 @@ def main():
       for rule_id, (action, selected) in decided.items():
         rule = summary.setdefault(rule_id, {'rule_id': rule_id, 'mailboxes': 0, 'matched': 0, 'deleted': 0, 'errors': 0,
           'simulated': int(action['mode'] != 'delete')})
-        result = {'username': user, 'rule_id': rule_id, 'folder': '\n'.join(selected), 'days': action['days'], 'matched': 0,
+        # the log keeps 10000 characters of the folder names, more would only make the report too large
+        result = {'username': user, 'rule_id': rule_id, 'folder': '\n'.join(selected)[:10000], 'days': action['days'], 'matched': 0,
           'deleted': 0, 'simulated': rule['simulated'], 'error': error}
         if not error:
           try:

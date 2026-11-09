@@ -159,6 +159,13 @@ http {
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             fastcgi_param PATH_INFO $fastcgi_path_info;
         }
+
+        location = /retention.php {
+            client_max_body_size 32m;
+            fastcgi_pass {{ PHPFPMHOST }}:9001;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
     }
 
     # rspamd meta_exporter:
