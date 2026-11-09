@@ -1596,6 +1596,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
           $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
           $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+          $attr['allow_wildcard_aliases']     = (isset($_data['allow_wildcard_aliases'])) ? intval($_data['allow_wildcard_aliases']) : 0;
           $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
           $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 
@@ -2883,6 +2884,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $attr['backupmx']                   = (isset($_data['backupmx'])) ? intval($_data['backupmx']) : 0;
             $attr['relay_all_recipients']       = (isset($_data['relay_all_recipients'])) ? intval($_data['relay_all_recipients']) : 0;
             $attr['relay_unknown_only']          = (isset($_data['relay_unknown_only'])) ? intval($_data['relay_unknown_only']) : 0;
+            $attr['allow_wildcard_aliases']     = (isset($_data['allow_wildcard_aliases'])) ? intval($_data['allow_wildcard_aliases']) : 0;
             $attr['dkim_selector']              = (isset($_data['dkim_selector'])) ? $_data['dkim_selector'] : "dkim";
             $attr['key_size']                   = isset($_data['key_size']) ? intval($_data['key_size']) : 2048;
 

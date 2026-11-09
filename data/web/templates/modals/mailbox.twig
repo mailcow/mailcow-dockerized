@@ -582,7 +582,7 @@
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.domain_alias_options }}</label>
             <div class="col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
+                <label><input type="checkbox" class="form-check-input" id="addDomain_allow_wildcard_aliases" value="1" name="allow_wildcard_aliases"> {{ lang.edit.domain_alias_wildcard|raw }}</label>
                 <br>
                 <p>{{ lang.edit.domain_alias_wildcard_info|raw }}</p>
               </div>
@@ -733,7 +733,7 @@
             <label class="control-label col-sm-2 text-sm-end text-sm-end">{{ lang.edit.domain_alias_options }}</label>
             <div class="col-sm-10">
               <div class="form-check">
-                <label><input type="checkbox" class="form-check-input" value="1" name="allow_wildcard_aliases"{% if result.allow_wildcard_aliases == '1' %} checked{% endif %}> {{ lang.edit.domain_alias_wildcard|raw }}</label>
+                <label><input type="checkbox" class="form-check-input" value="1" name="allow_wildcard_aliases"> {{ lang.edit.domain_alias_wildcard|raw }}</label>
                 <br>
                 <p>{{ lang.edit.domain_alias_wildcard_info|raw }}</p>
               </div>

@@ -261,6 +261,11 @@ $(document).ready(function() {
     } else {
       $('#addDomain_relay_unknown_only').prop('checked', false);
     }
+    if (template.allow_wildcard_aliases == 1){
+      $('#addDomain_allow_wildcard_aliases').prop('checked', true);
+    } else {
+      $('#addDomain_allow_wildcard_aliases').prop('checked', false);
+    }
 
 
     // load tags
@@ -850,6 +855,14 @@ jQuery(function($){
           defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.allow_aliases_wildcard,
+          data: 'attributes.allow_wildcard_aliases',
+          defaultContent: '',
+          render: function (data, type) {
+            return 1==data?'<i class="bi bi-check-lg text-warning"><span class="sorting-value">1</span></i>':'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
           }
         },
         {
