@@ -1,0 +1,32 @@
+<div class="tab-pane fade" id="tab-retention" role="tabpanel" aria-labelledby="tab-retention">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-retention" data-bs-toggle="collapse" aria-controls="collapse-tab-retention">
+        {{ lang.retention.rules }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.retention.rules }} <span class="badge bg-info table-lines"></span></span>
+      <div class="btn-group ms-auto d-flex">
+        <button class="btn btn-xs btn-secondary refresh_table" data-table="retention_table">{{ lang.admin.refresh }}</button>
+      </div>
+    </div>
+    <div id="collapse-tab-retention" class="card-body collapse" data-bs-parent="#mail-content">
+      <p class="text-muted">{{ lang.retention.info }}</p>
+      <table id="retention_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="retention_rule" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="retention_rule" data-api-url='edit/retention-rule' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="retention_rule" data-api-url='edit/retention-rule' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="retention_rule" data-api-url='edit/retention-rule' data-api-attr='{"mode":"simulate"}' href="#">{{ lang.retention.mode }}: {{ lang.retention.mode_simulate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="retention_rule" data-api-url='delete/retention-rule' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addRetentionModal"><i class="bi bi-plus-lg"></i> {{ lang.retention.add }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

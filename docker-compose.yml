@@ -1,5 +1,5 @@
 # Version of the database schema
-x-db-version: &db_version DB_VERSION=09112026_0311
+x-db-version: &db_version DB_VERSION=09112026_1230
 
 services:
 
@@ -259,7 +259,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:2.3.21.1-4
+      image: ghcr.io/mailcow/dovecot:nightly-09112026
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -322,6 +322,9 @@ services:
         ofelia.job-exec.dovecot_imapsync_runner.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_imapsync_runner.no-overlap: "true"
         ofelia.job-exec.dovecot_imapsync_runner.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu nobody /usr/local/bin/imapsync_runner.py || exit 0\""
+        ofelia.job-exec.dovecot_retention.schedule: "0 30 3 * * *"
+        ofelia.job-exec.dovecot_retention.no-overlap: "true"
+        ofelia.job-exec.dovecot_retention.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/retention_runner.py || exit 0\""
         ofelia.job-exec.dovecot_trim_logs.schedule: "0 * * * * *"
         ofelia.job-exec.dovecot_trim_logs.command: "/bin/bash -c \"[[ $${MASTER} == y ]] && /usr/local/bin/gosu vmail /usr/local/bin/trim_logs.sh || exit 0\""
         ofelia.job-exec.dovecot_quarantine.schedule: "0 */20 * * * *"

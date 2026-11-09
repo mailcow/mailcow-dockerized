@@ -3314,7 +3314,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'mailbox_group_sogo_grant' => ['owner'],
               'mailbox_group_sogo_acl' => ['c_uid'],
               'mailbox_group_subscription' => ['username', 'owner'],
-              'mail_policy_member' => ['username']
+              'mail_policy_member' => ['username'],
+              'retention_rule_member' => ['username']
             ];
             foreach ($tables as $table => $columns) {
               foreach ($columns as $column) {
@@ -5388,6 +5389,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':domain' => $domain,
             ));
             \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->domainDeleted($domain);
+            \Mailcow\Retention\RetentionModule::fromGlobals()->api->domainDeleted($domain);
             $stmt = $pdo->prepare("DELETE FROM `imapsync_source_domain` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,

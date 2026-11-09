@@ -1,0 +1,92 @@
+{# Fields of a retention rule (add modal, edit page): rule, id (prefix of the element ids), groups (choices: id, name,
+   domain, address), mailboxes (choices), ro, label_class. Own folders are sent apart as own_folders, one per line;
+   without group choices (none in the domain, no access to groups) the group field is left out and stays unchanged. #}
+{% set special = [] %}
+{% set own = [] %}
+{% for folder in rule.folders|default([]) %}
+  {% if folder starts with 'folder:' %}
+    {% set own = own|merge([folder|slice(7)]) %}
+  {% else %}
+    {% set special = special|merge([folder]) %}
+  {% endif %}
+{% endfor %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_folders">{{ lang.retention.folders }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}<input type="hidden" name="folders" value="">{% endif %}
+    <select data-width="100%" name="folders" id="{{ id }}_folders" class="form-control" multiple title="{{ lang.retention.folders }}"{% if ro %} disabled{% endif %}>
+      {% for folder in ['trash', 'junk', 'sent', 'drafts', 'archive', 'inbox', 'all'] %}
+      <option value="{{ folder }}"{% if folder in special %} selected{% endif %}>{{ attribute(lang.retention, 'folder_' ~ folder) }}</option>
+      {% endfor %}
+    </select>
+    <small class="text-muted d-block">{{ lang.retention.folders_info }}</small>
+  </div>
+</div>
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_own_folders">{{ lang.retention.own_folders }}</label>
+  <div class="col-sm-10">
+    <textarea class="form-control" rows="2" name="own_folders" id="{{ id }}_own_folders" placeholder="Newsletter&#10;Projekte/*"{% if ro %} disabled{% endif %}>{{ own|join("\n") }}</textarea>
+    <small class="text-muted d-block">{{ lang.retention.own_folders_info }}</small>
+  </div>
+</div>
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_days">{{ lang.retention.days }}</label>
+  <div class="col-sm-10">
+    <div class="input-group" style="max-width: 16rem">
+      <input type="number" class="form-control" name="days" id="{{ id }}_days" min="1" max="36500" value="{{ rule.days|default(30) }}" required{% if ro %} disabled{% endif %}>
+      <span class="input-group-text">{{ lang.retention.days_short|replace({'%s ': ''}) }}</span>
+    </div>
+    <small class="text-muted d-block">{{ lang.retention.days_info }}</small>
+    <div class="form-check mt-1">
+      {% if not ro %}<input type="hidden" value="0" name="keep_flagged">{% endif %}
+      <label><input type="checkbox" class="form-check-input" value="1" name="keep_flagged"{% if rule.keep_flagged|default(0) == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.retention.keep_flagged }}</label>
+    </div>
+  </div>
+</div>
+{% if rule.id is defined %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_mode">{{ lang.retention.mode }}</label>
+  <div class="col-sm-10">
+    <select class="form-control" name="mode" id="{{ id }}_mode"{% if ro %} disabled{% endif %}>
+      {% for mode in ['simulate', 'delete'] %}
+      <option value="{{ mode }}"{% if rule.mode|default('simulate') == mode %} selected{% endif %}>{{ attribute(lang.retention, 'mode_' ~ mode) }}</option>
+      {% endfor %}
+    </select>
+    <small class="text-muted d-block">{{ lang.retention.mode_info }}</small>
+  </div>
+</div>
+{% endif %}
+<legend class="fs-5 mt-4"><i class="bi bi-people"></i> {{ lang.retention.assign }}</legend><hr>
+<p class="text-muted small">{{ lang.retention.assign_info }}</p>
+<div class="row mb-2">
+  <div class="offset-sm-2 col-sm-10">
+    <div class="form-check">
+      {% if not ro %}<input type="hidden" value="0" name="all_mailboxes">{% endif %}
+      <label><input type="checkbox" class="form-check-input" value="1" name="all_mailboxes"{% if rule.all_mailboxes|default(0) == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.retention.all_mailboxes }}</label>
+    </div>
+  </div>
+</div>
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_mailboxes">{{ lang.retention.mailboxes }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}<input type="hidden" name="mailboxes" value="">{% endif %}
+    <select data-live-search="true" data-width="100%" name="mailboxes" id="{{ id }}_mailboxes" class="form-control retention-mailboxes" multiple title="{{ lang.retention.mailboxes }}"{% if ro %} disabled{% endif %}>
+      {% for mailbox in mailboxes %}
+      <option value="{{ mailbox }}" data-domain="{{ mailbox|split('@')|last }}"{% if mailbox in rule.mailboxes|default([]) %} selected{% endif %}>{{ mailbox }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% if groups %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_groups">{{ lang.retention.groups }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}<input type="hidden" name="groups" value="">{% endif %}
+    <select data-live-search="true" data-width="100%" name="groups" id="{{ id }}_groups" class="form-control retention-groups" multiple title="{{ lang.retention.groups }}"{% if ro %} disabled{% endif %}>
+      {% for group in groups %}
+      <option value="{{ group.id }}" data-domain="{{ group.domain }}"{% if group.id in rule.groups|default([]) %} selected{% endif %}>{{ group.name }}{% if group.address %} ({{ group.address }}){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% endif %}

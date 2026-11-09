@@ -129,6 +129,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'mail_policy_groups' => !empty($result) ? $mail_policy->policies->groupChoices([$result['domain']]) : [],
         ];
     }
+    elseif (isset($_GET['retention-rule']) &&
+      is_numeric($_GET['retention-rule'])) {
+        $retention = \Mailcow\Retention\RetentionModule::fromGlobals();
+        $result = $retention->api->getRule($_GET['retention-rule']);
+        $template = 'edit/retention-rule.twig';
+        // Choices: mailboxes and groups of the domain of the rule
+        $template_data = [
+          'mailboxes' => !empty($result) ? mailbox('get', 'mailboxes', $result['domain']) : [],
+          'retention_groups' => !empty($result) ? $retention->rules->groupChoices([$result['domain']]) : [],
+        ];
+    }
     elseif (isset($_GET['api-key']) &&
       is_numeric($_GET['api-key'])) {
         $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);

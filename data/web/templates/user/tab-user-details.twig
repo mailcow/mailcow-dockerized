@@ -74,6 +74,21 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-hourglass-split"></i> {{ lang.mailbox.policies_retention }}:
+          <p class="small">{{ lang.retention.user_info }}</p>
+        </div>
+        <div class="col-sm-8 col-md-9 col-12">
+          <p>
+          {% for action in retention_rules %}
+            {% if action.folder starts with 'folder:' %}{{ action.folder|slice(7) }}{% elseif action.folder == 'all' and not loop.first %}{{ lang.retention.user_all_other }}{% elseif action.match == 'subfolders' %}{{ lang.retention.user_subfolders_of|format(attribute(lang.retention, 'folder_' ~ action.folder)) }}{% else %}{{ attribute(lang.retention, 'folder_' ~ action.folder) }}{% if action.subfolders %} {{ lang.retention.user_with_subfolders }}{% endif %}{% endif %}:
+            {{ lang.retention.days_short|format(action.days) }}{% if action.keep_flagged %}, {{ lang.retention.user_keep_flagged }}{% endif %}{% if action.mode != 'delete' %} <span class="text-muted">({{ lang.retention.user_simulated }})</span>{% endif %}{% if not loop.last %}<br>{% endif %}
+          {% else %}
+            {{ lang.retention.user_none }}
+          {% endfor %}
+          </p>
+        </div>
+      </div>
+      <div class="row">
         <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.is_catch_all }}:</div>
         <div class="col-sm-8 col-md-9 col-12">
           <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% else %}{{ user_get_alias_details.is_catch_all }}{% endif %}</p>
