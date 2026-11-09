@@ -105,9 +105,11 @@ class PolicyEngine
             }
         }
         return match ($mode) {
+            'all' => true,
             'internal' => $internal || $this->any($allow, $matches),
             'list' => $this->any($allow, $matches),
-            default => true,
+            // an unknown mode lets nothing through
+            default => false,
         };
     }
 

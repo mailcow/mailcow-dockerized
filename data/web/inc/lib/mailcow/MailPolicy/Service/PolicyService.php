@@ -288,11 +288,15 @@ class PolicyService
                 }
                 $entry = 'group:' . $id;
             } elseif (str_contains(ltrim($entry, '@'), '@')) {
-                if (!filter_var($entry, FILTER_VALIDATE_EMAIL)) {
+                // in the form the engine compares: domain without the final dot, never a +tag or an IP literal
+                $at = strrpos($entry, '@');
+                $local = substr($entry, 0, $at);
+                $entry = $local . '@' . rtrim(substr($entry, $at + 1), '.');
+                if (!filter_var($entry, FILTER_VALIDATE_EMAIL) || str_contains(substr($local, 1), '+') || str_contains($entry, '@[')) {
                     throw new UserError('mail_policy_entry_invalid', [htmlspecialchars($entry)]);
                 }
             } else {
-                $entry = ltrim($entry, '@');
+                $entry = rtrim(ltrim($entry, '@'), '.');
                 if (!str_contains($entry, '.') || !filter_var($entry, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
                     throw new UserError('mail_policy_entry_invalid', [htmlspecialchars($entry)]);
                 }

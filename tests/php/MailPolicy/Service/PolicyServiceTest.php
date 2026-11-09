@@ -113,6 +113,9 @@ class PolicyServiceTest extends TestCase
             'mode' => [['send_mode' => 'nobody'], 'mail_policy_mode_invalid'],
             'domain without dot' => [['send_allow' => 'localhost'], ['mail_policy_entry_invalid', 'localhost']],
             'address' => [['receive_block' => 'a@@b.de'], ['mail_policy_entry_invalid', 'a@@b.de']],
+            'address with +tag' => [['receive_block' => 'news+promo@vendor.example'], ['mail_policy_entry_invalid', 'news+promo@vendor.example']],
+            'IP literal' => [['send_allow' => 'u@[127.0.0.1]'], ['mail_policy_entry_invalid', 'u@[127.0.0.1]']],
+            'top level domain' => [['send_block' => 'com.'], ['mail_policy_entry_invalid', 'com']],
             'unknown group' => [['receive_block_groups' => ['8']], ['mail_policy_entry_invalid', 'group:8']],
             'reject text with line break' => [['reject_text' => "a\r\nb"], 'mail_policy_reject_text_invalid'],
             'reject text not ASCII' => [['reject_text' => 'Nur für Azubis'], 'mail_policy_reject_text_invalid'],
@@ -120,6 +123,12 @@ class PolicyServiceTest extends TestCase
             'group of another domain' => [['groups' => ['9']], ['mail_policy_member_invalid', '9']],
             'unknown domain' => [['domain' => 'fremd.de'], ['domain_not_found', 'fremd.de']],
         ];
+    }
+
+    public function testEntriesInTheFormTheEngineCompares(): void
+    {
+        $policy = $this->service()->create(['domain' => 'firma.de', 'name' => 'Test', 'receive_block' => "Spam.Example.\n@news.example\nBoss@Ext.Example.\n+x@ext.example"]);
+        $this->assertSame(['spam.example', 'news.example', 'boss@ext.example', '+x@ext.example'], $policy->receiveBlock);
     }
 
     #[DataProvider('invalidInput')]

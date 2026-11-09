@@ -58,6 +58,13 @@ class PolicyEngineTest extends TestCase
         $this->assertSame('DUNNO', $this->engine->check('azubi@firma.de', 'x@extern.example', 'azubi@firma.de')->action());
     }
 
+    public function testUnknownModeLetsNothingThrough(): void
+    {
+        $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(1, ['sendMode' => 'nobody', 'receiveMode' => ''])];
+        $this->assertSame([false, 'send'], $this->check('azubi@firma.de', 'kollege@firma.de', 'azubi@firma.de'));
+        $this->assertSame([false, 'receive'], $this->check('kollege@firma.de', 'azubi@firma.de', 'kollege@firma.de'));
+    }
+
     public function testSendOnlyInternalWithAllowedAndBlockedEntries(): void
     {
         $this->lookup->mailboxPolicies['azubi@firma.de'] = [self::policy(1, [
