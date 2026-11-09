@@ -1,0 +1,84 @@
+{# Fields of a mail policy (add modal, edit page): policy, id (prefix of the element ids), groups (choices: id, name,
+   domain, address), mailboxes (choices), ro, label_class. Groups of a list are sent apart as <list>_groups; without
+   group choices (none in the domain, no access to groups) the group fields are left out and stay unchanged. #}
+{% set entries = {} %}
+{% set listed = {} %}
+{% for key in ['send_allow', 'send_block', 'receive_allow', 'receive_block'] %}
+  {% set plain = [] %}
+  {% set group_ids = [] %}
+  {% for entry in attribute(policy, key)|default([]) %}
+    {% if entry starts with 'group:' %}
+      {% set group_ids = group_ids|merge([entry|slice(6)]) %}
+    {% else %}
+      {% set plain = plain|merge([entry]) %}
+    {% endif %}
+  {% endfor %}
+  {% set entries = entries|merge({(key): plain|join("\n")}) %}
+  {% set listed = listed|merge({(key): group_ids}) %}
+{% endfor %}
+{% for side in ['send', 'receive'] %}
+<legend class="fs-5 mt-4"><i class="bi {{ side == 'send' ? 'bi-send' : 'bi-inbox' }}"></i> {{ attribute(lang.mail_policy, side) }}</legend><hr>
+<p class="text-muted small">{{ attribute(lang.mail_policy, side ~ '_info') }}</p>
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_{{ side }}_mode">{{ lang.mail_policy.mode }}</label>
+  <div class="col-sm-10">
+    <select class="form-control" name="{{ side }}_mode" id="{{ id }}_{{ side }}_mode"{% if ro %} disabled{% endif %}>
+      {% for mode in ['all', 'internal', 'list'] %}
+      <option value="{{ mode }}"{% if attribute(policy, side ~ '_mode')|default('all') == mode %} selected{% endif %}>{{ attribute(lang.mail_policy, 'mode_' ~ side ~ '_' ~ mode) }}</option>
+      {% endfor %}
+    </select>
+    <small class="text-muted d-block">{{ lang.mail_policy.internal_info }}</small>
+  </div>
+</div>
+{% for list in ['allow', 'block'] %}
+{% set key = side ~ '_' ~ list %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_{{ key }}">{{ attribute(lang.mail_policy, list ~ '_' ~ side) }}</label>
+  <div class="col-sm-10">
+    <textarea class="form-control" rows="3" name="{{ key }}" id="{{ id }}_{{ key }}" placeholder="partner.example, user@example.org"{% if ro %} disabled{% endif %}>{{ attribute(entries, key) }}</textarea>
+    <small class="text-muted d-block mb-1">{{ attribute(lang.mail_policy, 'entries_info_' ~ side) }}</small>
+    {% if groups %}
+    {% if not ro %}<input type="hidden" name="{{ key }}_groups" value="">{% endif %}
+    <select data-live-search="true" data-width="100%" name="{{ key }}_groups" class="form-control mail-policy-groups" multiple title="{{ lang.mail_policy.groups }}"{% if ro %} disabled{% endif %}>
+      {% for group in groups %}
+      <option value="{{ group.id }}" data-domain="{{ group.domain }}"{% if group.id ~ '' in attribute(listed, key) %} selected{% endif %}>{{ group.name }}{% if group.address %} ({{ group.address }}){% endif %}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endfor %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_reject_text">{{ lang.mail_policy.reject_text }}</label>
+  <div class="col-sm-10">
+    <input type="text" class="form-control" name="reject_text" id="{{ id }}_reject_text" maxlength="200" value="{{ policy.reject_text|default('') }}"{% if ro %} disabled{% endif %}>
+    <small class="text-muted d-block">{{ lang.mail_policy.reject_text_info }}</small>
+  </div>
+</div>
+<legend class="fs-5 mt-4"><i class="bi bi-people"></i> {{ lang.mail_policy.assign }}</legend><hr>
+<p class="text-muted small">{{ lang.mail_policy.assign_info }}</p>
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_mailboxes">{{ lang.mail_policy.mailboxes }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}<input type="hidden" name="mailboxes" value="">{% endif %}
+    <select data-live-search="true" data-width="100%" name="mailboxes" id="{{ id }}_mailboxes" class="form-control mail-policy-mailboxes" multiple title="{{ lang.mail_policy.mailboxes }}"{% if ro %} disabled{% endif %}>
+      {% for mailbox in mailboxes %}
+      <option value="{{ mailbox }}" data-domain="{{ mailbox|split('@')|last }}"{% if mailbox in policy.mailboxes|default([]) %} selected{% endif %}>{{ mailbox }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% if groups %}
+<div class="row mb-2">
+  <label class="control-label col-sm-2{{ label_class }}" for="{{ id }}_groups">{{ lang.mail_policy.groups }}</label>
+  <div class="col-sm-10">
+    {% if not ro %}<input type="hidden" name="groups" value="">{% endif %}
+    <select data-live-search="true" data-width="100%" name="groups" id="{{ id }}_groups" class="form-control mail-policy-groups" multiple title="{{ lang.mail_policy.groups }}"{% if ro %} disabled{% endif %}>
+      {% for group in groups %}
+      <option value="{{ group.id }}" data-domain="{{ group.domain }}"{% if group.id in policy.groups|default([]) %} selected{% endif %}>{{ group.name }}{% if group.address %} ({{ group.address }}){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% endif %}

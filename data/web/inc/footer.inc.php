@@ -74,6 +74,7 @@ $globalVariables = [
   'lang_danger' => json_encode($lang['danger']),
   'lang_syncjobs' => json_encode($lang['syncjobs']),
   'lang_groups' => json_encode($lang['groups']),
+  'lang_mail_policy' => json_encode($lang['mail_policy'] ?? []),
   'docker_timeout' => $DOCKER_TIMEOUT,
   'session_lifetime' => (int)$SESSION_LIFETIME,
   'csrf_token' => $_SESSION['CSRF']['TOKEN'],

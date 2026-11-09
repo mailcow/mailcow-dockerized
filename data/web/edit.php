@@ -118,6 +118,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           'mbox_templates' => ($_SESSION['mailcow_cc_role'] == 'admin') ? mailbox('get', 'mailbox_templates') : [],
         ];
     }
+    elseif (isset($_GET['mail-policy']) &&
+      is_numeric($_GET['mail-policy'])) {
+        $mail_policy = \Mailcow\MailPolicy\MailPolicyModule::fromGlobals();
+        $result = $mail_policy->api->getPolicy($_GET['mail-policy']);
+        $template = 'edit/mail-policy.twig';
+        // Choices: mailboxes and groups of the domain of the policy
+        $template_data = [
+          'mailboxes' => !empty($result) ? mailbox('get', 'mailboxes', $result['domain']) : [],
+          'mail_policy_groups' => !empty($result) ? $mail_policy->policies->groupChoices([$result['domain']]) : [],
+        ];
+    }
     elseif (isset($_GET['api-key']) &&
       is_numeric($_GET['api-key'])) {
         $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);

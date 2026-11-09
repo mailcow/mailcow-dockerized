@@ -492,6 +492,86 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      // Mail policies: whom the assigned mailboxes and groups may send to and receive from (Mailcow\MailPolicy)
+      "mail_policy" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "domain" => "VARCHAR(255) NOT NULL",
+          "name" => "VARCHAR(100) NOT NULL",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          // all, internal or list; the entries are JSON lists of addresses, domains and group:<id>
+          "send_mode" => "VARCHAR(16) NOT NULL DEFAULT 'all'",
+          "send_allow" => "MEDIUMTEXT NOT NULL",
+          "send_block" => "MEDIUMTEXT NOT NULL",
+          "receive_mode" => "VARCHAR(16) NOT NULL DEFAULT 'all'",
+          "receive_allow" => "MEDIUMTEXT NOT NULL",
+          "receive_block" => "MEDIUMTEXT NOT NULL",
+          "reject_text" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "domain_name" => array("domain", "name")
+          ),
+          "fkey" => array(
+            "fk_mail_policy_domain" => array(
+              "col" => "domain",
+              "ref" => "domain.domain",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // a mailbox or a group (its members and its address) a policy is assigned to
+      "mail_policy_member" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "policy_id" => "INT NOT NULL",
+          "username" => "VARCHAR(255) NULL DEFAULT NULL",
+          "group_id" => "INT NULL DEFAULT NULL"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "policy_mailbox" => array("policy_id", "username"),
+            "policy_group" => array("policy_id", "group_id")
+          ),
+          "key" => array(
+            "username" => array("username"),
+            "group_id" => array("group_id")
+          ),
+          "fkey" => array(
+            "fk_mail_policy_member_policy" => array(
+              "col" => "policy_id",
+              "ref" => "mail_policy.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mail_policy_member_mailbox" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_mail_policy_member_group" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "mailbox_group_imap_grant" => array(
         "cols" => array(
           "id" => "INT NOT NULL AUTO_INCREMENT",
@@ -704,7 +784,8 @@ function init_db_schema()
             "group_id" => array("group_id")
           ),
           "key" => array(
-            "domain" => array("domain")
+            "domain" => array("domain"),
+            "internal" => array("internal", "active")
           ),
           "fkey" => array(
             "fk_alias_mailbox_group" => array(
@@ -1055,7 +1136,8 @@ function init_db_schema()
           "domain_desc" => "TINYINT(1) NOT NULL DEFAULT '0'",
           "alias_external_goto" => "TINYINT(1) NOT NULL DEFAULT '1'",
           "mailbox_groups" => "TINYINT(1) NOT NULL DEFAULT '1'",
-          "archive" => "TINYINT(1) NOT NULL DEFAULT '0'"
+          "archive" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "mail_policies" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(

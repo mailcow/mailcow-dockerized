@@ -469,35 +469,5 @@ while ($row = array_shift($rows)) {
 }
 ?>
 
-<?php
-// Start internal aliases
-
-$stmt = $pdo->query("SELECT `id`, `address`, `domain` FROM `alias` WHERE `active` = '1' AND `internal` = '1'");
-$aliases = $stmt->fetchAll(PDO::FETCH_ASSOC);
-while ($alias = array_shift($aliases)) {
-  // build allowed_domains regex and add target domain and alias domains
-  $stmt = $pdo->prepare("SELECT `alias_domain` FROM `alias_domain` WHERE `active` = '1' AND `target_domain` = :target_domain");
-  $stmt->execute(array(':target_domain' => $alias['domain']));
-  $allowed_domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  $allowed_domains = array_map(function($item) {
-    return str_replace('.', '\.', $item['alias_domain']);
-  }, $allowed_domains);
-  $allowed_domains[] = str_replace('.', '\.', $alias['domain']);
-  $allowed_domains = implode('|', $allowed_domains);
-?>
-  internal_alias_<?=$alias['id'];?> {
-    priority = 10;
-    rcpt = "<?=$alias['address'];?>";
-    from = "/^((?!.*@(<?=$allowed_domains;?>)).)*$/";
-    apply "default" {
-      MAILCOW_INTERNAL_ALIAS = 9999.0;
-    }
-    symbols [
-      "MAILCOW_INTERNAL_ALIAS"
-    ]
-  }
-<?php
-}
-?>
 
 }

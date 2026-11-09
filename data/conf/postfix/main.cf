@@ -53,6 +53,7 @@ proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_trans
   proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sender_filter_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_archive_sasl_passwd_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_archive_tls_policy_maps.cf,
+  proxy:mysql:/opt/postfix/conf/sql/mysql_mail_policy_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   $sender_dependent_default_transport_maps,
@@ -93,6 +94,7 @@ smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
 smtpd_recipient_restrictions = check_recipient_mx_access proxy:mysql:/opt/postfix/conf/sql/mysql_mbr_access_maps.cf,
+  check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_mail_policy_maps.cf,
   permit_sasl_authenticated,
   permit_mynetworks,
   check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
@@ -172,6 +174,12 @@ smtps_smtpd_tls_mandatory_protocols = >=TLSv1.2
 parent_domain_matches_subdomains = debug_peer_list,fast_flush_domains,mynetworks,qmqpd_authorized_clients
 # This Option is added to correctly set the X-Original-To Header when mails are send to lmtp (dovecot)
 lmtp_destination_recipient_limit=1
+
+# Mail policies: while policies or internal aliases exist, mysql_mail_policy_maps.cf returns this class and smtpd
+# asks the policy service for every recipient (mailcow-policy in master.cf); no answer defers the recipient
+smtpd_restriction_classes = mailcow_mail_policy
+mailcow_mail_policy = check_policy_service { unix:private/mailcow-policy, timeout=10s, try_limit=1, default_action=DEFER_IF_PERMIT }
+mailcow-policy_time_limit = 3600s
 
 # DO NOT EDIT ANYTHING BELOW #
 # Overrides #

@@ -1,0 +1,46 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+{% set ro = not result.can_edit %}
+<h4>{{ lang.mail_policy.policy }}: {{ result.name }}</h4>
+<form data-id="edit_mail_policy" class="form-horizontal" role="form" method="post" autocapitalize="none" autocorrect="off">
+  <input type="hidden" value="0" name="active">
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="mail_policy_domain">{{ lang.mail_policy.domain }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="mail_policy_domain" value="{{ result.domain }}" disabled>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="mail_policy_name">{{ lang.mail_policy.name }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="name" id="mail_policy_name" value="{{ result.name }}" maxlength="100" required{% if ro %} disabled{% endif %}>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <label class="control-label col-sm-2" for="mail_policy_description">{{ lang.mail_policy.description }}</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="description" id="mail_policy_description" value="{{ result.description }}" maxlength="255"{% if ro %} disabled{% endif %}>
+    </div>
+  </div>
+  {% include 'edit/mail-policy-fields.twig' with {'policy': result, 'id': 'mail_policy', 'groups': mail_policy_groups, 'mailboxes': mailboxes, 'ro': ro, 'label_class': ''} %}
+  <div class="row mb-4">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if result.active == 1 %} checked{% endif %}{% if ro %} disabled{% endif %}> {{ lang.mailbox.active }}</label>
+      </div>
+    </div>
+  </div>
+  {% if not ro %}
+  <div class="row">
+    <div class="offset-sm-2 col-sm-10">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="edit_mail_policy" data-item="{{ result.id }}" data-api-url='edit/mail-policy' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+    </div>
+  </div>
+  {% endif %}
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}

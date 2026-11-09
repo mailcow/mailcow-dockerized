@@ -1401,3 +1401,6 @@
 {% if acl.mailbox_groups == 1 %}
 {% include "modals/mailbox_group.twig" %}
 {% endif %}
+{% if acl.mail_policies == 1 %}
+{% include "modals/mail_policy.twig" %}
+{% endif %}

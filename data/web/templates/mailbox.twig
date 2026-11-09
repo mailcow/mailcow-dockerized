@@ -36,10 +36,20 @@
     {% if acl.mailbox_groups == 1 %}
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-groups" role="tab" data-bs-toggle="tab" data-bs-target="#tab-groups">{{ lang.groups.groups }}</button></li>
     {% endif %}
+    {% if mailcow_cc_role == 'admin' %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.policies }}</a>
+      <ul class="dropdown-menu">
+        <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-tls-policy" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tls-policy">{{ lang.mailbox.policies_tls }}</button></li>
+        <li role="presentation"><button class="dropdown-item" aria-selected="false" aria-controls="tab-mail-policies" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mail-policies">{{ lang.mailbox.policies_mail }}</button></li>
+      </ul>
+    </li>
+    {% elseif acl.mail_policies == 1 %}
+    <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-mail-policies" role="tab" data-bs-toggle="tab" data-bs-target="#tab-mail-policies">{{ lang.mail_policy.mail_policies }}</button></li>
+    {% endif %}
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-syncjobs" role="tab" data-bs-toggle="tab" data-bs-target="#tab-syncjobs">{{ lang.syncjobs.sync_jobs }}</button></li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-filters" role="tab" data-bs-toggle="tab" data-bs-target="#tab-filters">{{ lang.mailbox.filters }}</button></li>
     <li class="nav-item" role="presentation"><button class="nav-link" aria-selected="false" aria-controls="tab-bcc" role="tab" data-bs-toggle="tab" data-bs-target="#tab-bcc">{{ lang.mailbox.address_rewriting }}</button></li>
-    <li class="nav-item" role="presentation"{% if mailcow_cc_role != 'admin' %} class="d-none"{% endif %}><button class="nav-link" aria-selected="false" aria-controls="tab-tls-policy" role="tab" data-bs-toggle="tab" data-bs-target="#tab-tls-policy">{{ lang.mailbox.tls_policy_maps }}</button></li>
   </ul>
 
   <div class="row">
@@ -59,6 +69,9 @@
         {% if acl.mailbox_groups == 1 %}
         {% include 'mailbox/tab-groups.twig' %}
         {% endif %}
+        {% if acl.mail_policies == 1 %}
+        {% include 'mailbox/tab-mail-policies.twig' %}
+        {% endif %}
         {% include 'mailbox/tab-syncjobs.twig' %}
         {% include 'mailbox/tab-filters.twig' %}
         {% include 'mailbox/tab-bcc.twig' %}
@@ -75,6 +88,7 @@
   var lang = {{ lang_mailbox|raw }};
   lang.syncjobs = {{ lang_syncjobs|raw }};
   lang.groups = {{ lang_groups|raw }};
+  lang.mail_policy = {{ lang_mail_policy|raw }};
   var lang_rl = {{ lang_rl|raw }};
   var lang_edit = {{ lang_edit|raw }};
   var lang_datatables = {{ lang_datatables|raw }};
