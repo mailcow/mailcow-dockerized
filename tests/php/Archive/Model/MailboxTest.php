@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Mailcow\Tests\Archive\Model;
 
 use Mailcow\Archive\Model\Mailbox;
+use Mailcow\Archive\Redis\ArchiveState;
 use Mailcow\Archive\Service\MailboxListService;
-use Mailcow\Archive\Repository\SettingsRepository;
-use Mailcow\Archive\Model\Settings;
 use Mailcow\Core\Context;
 use Mailcow\Core\UserError;
 use Mailcow\Tests\Support\FakeArchiveLookup;
 use Mailcow\Tests\Support\FakeContext;
+use Mailcow\Tests\Support\FakeRedis;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -43,20 +43,18 @@ class MailboxTest extends TestCase
     {
         $lookup = new FakeArchiveLookup();
         $lookup->mailboxes = ['b@firma.de' => ['inherit', 1], 'a@other.de' => ['1', 0], 'c@firma.de' => ['0', 1]];
-        $settings = new Settings();
-        $repo = $this->createMock(SettingsRepository::class);
-        $repo->method('load')->willReturnCallback(fn(): Settings => $settings);
+        $redis = new FakeRedis();
         $readOnly = new Context('admin', 'API', [], false, 'ro');
 
-        $this->assertSame(['enabled' => 0, 'mailboxes' => []], (new MailboxListService($lookup, $repo, $readOnly))->archived());
+        $this->assertSame(['enabled' => 0, 'mailboxes' => []], (new MailboxListService($lookup, new ArchiveState($redis), $readOnly))->archived());
 
-        $settings->enabled = true;
+        $redis->strings['ARCHIVE_ENABLED'] = '1';
         $this->assertSame(['enabled' => 1, 'mailboxes' => [
             ['username' => 'b@firma.de', 'domain' => 'firma.de', 'name' => '', 'active' => 1, 'source' => 'domain'],
             ['username' => 'a@other.de', 'domain' => 'other.de', 'name' => '', 'active' => 1, 'source' => 'mailbox'],
-        ]], (new MailboxListService($lookup, $repo, $readOnly))->archived());
+        ]], (new MailboxListService($lookup, new ArchiveState($redis), $readOnly))->archived());
 
         $this->expectException(UserError::class);
-        (new MailboxListService($lookup, $repo, FakeContext::domainAdmin()))->archived();
+        (new MailboxListService($lookup, new ArchiveState($redis), FakeContext::domainAdmin()))->archived();
     }
 }

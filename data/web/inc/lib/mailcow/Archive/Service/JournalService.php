@@ -48,8 +48,7 @@ class JournalService
     public function prepare(array $request): array
     {
         $settings = $this->settings->load();
-        $this->state->setEnabled($settings->enabled);
-        if (!$settings->enabled || !$settings->canDeliver()) {
+        if (!$this->state->enabled() || !$settings->canDeliver()) {
             return ['archive' => false];
         }
         $from = self::text($request['from'] ?? '');
@@ -75,7 +74,7 @@ class JournalService
     {
         try {
             $settings = $this->settings->load();
-            if (!$settings->enabled || !$settings->canDeliver()) {
+            if (!$this->state->enabled() || !$settings->canDeliver()) {
                 return false;
             }
             $resolved = $this->resolver->resolve($from, $rcpts, '', false);

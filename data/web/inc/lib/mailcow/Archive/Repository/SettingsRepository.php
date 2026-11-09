@@ -19,7 +19,6 @@ class SettingsRepository extends Repository
     {
         $rows = $this->query("SELECT `name`, `value` FROM `archive_settings`")->fetchAll(PDO::FETCH_KEY_PAIR);
         $settings = new Settings();
-        $settings->enabled = ($rows['enabled'] ?? '0') === '1';
         $settings->address = (string)($rows['address'] ?? '');
         $settings->host = (string)($rows['host'] ?? '');
         $settings->port = (int)($rows['port'] ?? $settings->port);
@@ -40,7 +39,6 @@ class SettingsRepository extends Repository
     public function save(Settings $settings): void
     {
         $values = [
-            'enabled' => $settings->enabled ? '1' : '0',
             'address' => $settings->address,
             'host' => $settings->host,
             'port' => (string)$settings->port,

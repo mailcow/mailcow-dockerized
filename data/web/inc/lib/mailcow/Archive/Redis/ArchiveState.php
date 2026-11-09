@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Mailcow\Archive\Redis;
 
 use Mailcow\Archive\Model\Settings;
+use RuntimeException;
 
 /**
  * Redis side of the archive:
- * - ARCHIVE_ENABLED: the switch rspamd reads before it asks for owners, mirrored from the settings.
+ * - ARCHIVE_ENABLED: the global switch, kept here only; rspamd reads it before it asks for owners.
  * - ARCHIVE_DROPPED / ARCHIVE_DROPPED_LOG: copies that could not be handed to Postfix (rspamd.local.lua, release
  *   hooks), counted and the last 100 listed.
  * - POSTFIX_MAILLOG: the Postfix log, read for the archive log: deliveries of the archive_smtp service and expired
@@ -31,6 +32,16 @@ class ArchiveState
     public function setEnabled(bool $enabled): void
     {
         $this->redis?->set(self::ENABLED, $enabled ? '1' : '0');
+    }
+
+    /** The global switch: on only while ARCHIVE_ENABLED is '1', as rspamd reads it (missing or unreadable is off) */
+    public function enabled(): bool
+    {
+        try {
+            return $this->redis?->get(self::ENABLED) === '1';
+        } catch (RuntimeException) {
+            return false;
+        }
     }
 
     /** A mail was not archived: its copy could not be handed to Postfix */

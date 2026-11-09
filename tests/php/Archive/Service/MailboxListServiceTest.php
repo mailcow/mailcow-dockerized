@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace Mailcow\Tests\Archive\Service;
 
-use Mailcow\Archive\Model\Settings;
-use Mailcow\Archive\Repository\SettingsRepository;
+use Mailcow\Archive\Redis\ArchiveState;
 use Mailcow\Archive\Service\MailboxListService;
 use Mailcow\Core\AccessDenied;
 use Mailcow\Core\Context;
 use Mailcow\Tests\Support\FakeArchiveLookup;
 use Mailcow\Tests\Support\FakeContext;
+use Mailcow\Tests\Support\FakeRedis;
 use PHPUnit\Framework\TestCase;
 
 class MailboxListServiceTest extends TestCase
 {
     private FakeArchiveLookup $lookup;
+    private FakeRedis $redis;
 
     protected function setUp(): void
     {
+        $this->redis = new FakeRedis();
         $this->lookup = new FakeArchiveLookup();
         // username => [mailbox setting, domain default]
         $this->lookup->mailboxes = [
@@ -31,11 +33,8 @@ class MailboxListServiceTest extends TestCase
 
     private function service(bool $enabled, ?Context $context = null): MailboxListService
     {
-        $settings = new Settings();
-        $settings->enabled = $enabled;
-        $repo = $this->createStub(SettingsRepository::class);
-        $repo->method('load')->willReturn($settings);
-        return new MailboxListService($this->lookup, $repo, $context ?? FakeContext::admin());
+        $this->redis->strings['ARCHIVE_ENABLED'] = $enabled ? '1' : '0';
+        return new MailboxListService($this->lookup, new ArchiveState($this->redis), $context ?? FakeContext::admin());
     }
 
     public function testArchivedMailboxesWithTheirSource(): void

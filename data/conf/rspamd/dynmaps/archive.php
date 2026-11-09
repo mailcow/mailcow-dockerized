@@ -21,7 +21,7 @@ catch (PDOException $e) {
   http_response_code(501);
   exit;
 }
-// Init Redis, only to mirror the switch rspamd reads
+// Init Redis, it keeps the global switch; without it nothing is archived
 $redis = new Redis();
 try {
   $redis->connect('redis-mailcow', 6379);

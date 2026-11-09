@@ -14,7 +14,6 @@ use Mailcow\Core\AccessDenied;
 use Mailcow\Core\Context;
 use Mailcow\Core\Input;
 use Mailcow\Core\UserError;
-use PDOException;
 
 /**
  * Admin use cases of the archive target. Read-only API keys may read the settings (never password or key).
@@ -34,17 +33,15 @@ class SettingsService
     public function get(): Settings
     {
         $this->context->requireAdmin(false);
-        return $this->repo->load();
+        $settings = $this->repo->load();
+        $settings->enabled = $this->state->enabled();
+        return $settings;
     }
 
-    /** Global switch for internal callers (page templates, mailbox details), no permission check; off while the table is missing */
+    /** Global switch for internal callers (page templates, mailbox details), no permission check */
     public function enabled(): bool
     {
-        try {
-            return $this->repo->load()->enabled;
-        } catch (PDOException) {
-            return false;
-        }
+        return $this->state->enabled();
     }
 
     /**
@@ -57,6 +54,7 @@ class SettingsService
     {
         $this->context->requireAdmin();
         $settings = $this->repo->load();
+        $settings->enabled = $this->state->enabled();
         if (array_key_exists('address', $input)) {
             $address = strtolower((string)Input::text($input['address']));
             if (!is_scalar($input['address']) || ($address !== '' && !filter_var($address, FILTER_VALIDATE_EMAIL))) {

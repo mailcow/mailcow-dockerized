@@ -1072,13 +1072,12 @@ rspamd_config:register_symbol({
     end
 
     local function enabled_cb(err, data)
-      if not err and type(data) == 'string' and data == '0' then
-        return
+      if not err and type(data) == 'string' and data == '1' then
+        archive()
       end
-      archive()
     end
 
-    local ret = rspamd_redis_make_request(task,
+    rspamd_redis_make_request(task,
       redis_params, -- connect params
       'ARCHIVE_ENABLED', -- hash key
       false, -- is write
@@ -1086,8 +1085,5 @@ rspamd_config:register_symbol({
       'GET', -- command
       {'ARCHIVE_ENABLED'} -- arguments
     )
-    if not ret then
-      archive()
-    end
   end
 })

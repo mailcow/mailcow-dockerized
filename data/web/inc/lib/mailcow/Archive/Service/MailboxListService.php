@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Mailcow\Archive\Service;
 
 use Mailcow\Archive\Model\Mailbox;
+use Mailcow\Archive\Redis\ArchiveState;
 use Mailcow\Archive\Repository\LookupRepository;
-use Mailcow\Archive\Repository\SettingsRepository;
 use Mailcow\Core\AccessDenied;
 use Mailcow\Core\Context;
 
@@ -16,7 +16,7 @@ use Mailcow\Core\Context;
  */
 class MailboxListService
 {
-    public function __construct(private LookupRepository $lookup, private SettingsRepository $settings, private Context $context)
+    public function __construct(private LookupRepository $lookup, private ArchiveState $state, private Context $context)
     {
     }
 
@@ -29,7 +29,7 @@ class MailboxListService
     public function archived(): array
     {
         $this->context->requireAdmin(false);
-        $enabled = $this->settings->load()->enabled;
+        $enabled = $this->state->enabled();
         return [
             'enabled' => (int)$enabled,
             'mailboxes' => $enabled ? array_map(fn(Mailbox $mailbox): array => $mailbox->toArray(), $this->lookup->archivedMailboxes()) : [],

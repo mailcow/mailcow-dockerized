@@ -51,7 +51,7 @@ class ArchiveModule
         $settings = new SettingsService($settingsRepo, $lookup, $state, $smtp, $context);
         $journal = new JournalService($settingsRepo, new OwnerResolver($lookup), new HeaderBuilder(), $smtp, $state, $context);
         $status = new StatusService($settingsRepo, $state, new LegacyQueue(), $context);
-        $mailboxes = new MailboxListService($lookup, $settingsRepo, $context);
+        $mailboxes = new MailboxListService($lookup, $state, $context);
         $api = new ArchiveApiController($settings, $status, $journal, $mailboxes, new ApiResponse(self::SECRET_KEYS));
         return new self($settings, $journal, $status, $mailboxes, $api);
     }

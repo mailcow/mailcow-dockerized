@@ -58,7 +58,7 @@ class StatusService
             }
         }
         return [
-            'enabled' => (int)$settings->enabled,
+            'enabled' => (int)$this->state->enabled(),
             'configured' => (int)$settings->canDeliver(),
             'queued' => count($copies),
             'queued_bytes' => $bytes,

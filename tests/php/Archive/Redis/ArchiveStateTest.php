@@ -25,12 +25,25 @@ class ArchiveStateTest extends TestCase
         $this->redis->lPush('POSTFIX_MAILLOG', json_encode(['time' => $time, 'program' => $program, 'message' => $message]));
     }
 
-    public function testSwitchIsMirroredForRspamd(): void
+    public function testGlobalSwitchIsKeptHere(): void
     {
+        // no key yet: off
+        $this->assertFalse($this->state->enabled());
         $this->state->setEnabled(true);
         $this->assertSame('1', $this->redis->strings['ARCHIVE_ENABLED']);
+        $this->assertTrue($this->state->enabled());
         $this->state->setEnabled(false);
         $this->assertSame('0', $this->redis->strings['ARCHIVE_ENABLED']);
+        $this->assertFalse($this->state->enabled());
+        // no connection or a failing one: off, rspamd cannot read the switch either
+        $this->assertFalse((new ArchiveState(null))->enabled());
+        $failing = new class {
+            public function get(string $key): string
+            {
+                throw new \RuntimeException('connection lost');
+            }
+        };
+        $this->assertFalse((new ArchiveState($failing))->enabled());
     }
 
     public function testDroppedCopiesAreCountedAndTheLast100Listed(): void

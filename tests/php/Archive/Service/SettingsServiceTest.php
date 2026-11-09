@@ -15,7 +15,6 @@ use Mailcow\Tests\Support\FakeArchiveLookup;
 use Mailcow\Tests\Support\FakeContext;
 use Mailcow\Tests\Support\FakeRedis;
 use Mailcow\Tests\Support\FakeSmtpClient;
-use PDOException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -74,12 +73,19 @@ class SettingsServiceTest extends TestCase
         $this->assertSame('', $this->service()->save(['password' => '', 'password_remove' => '1'])->password);
     }
 
-    public function testEnabledIsOffWithoutTheTable(): void
+    public function testSwitchIsKeptInRedisOnly(): void
     {
-        $repo = $this->createMock(SettingsRepository::class);
-        $repo->method('load')->willThrowException(new PDOException('no such table'));
-
-        $this->assertFalse((new SettingsService($repo, $this->lookup, new ArchiveState($this->redis), $this->smtp, FakeContext::admin()))->enabled());
+        $this->assertFalse($this->service()->enabled());
+        $this->assertSame(0, $this->service()->get()->toArray()['enabled']);
+        $this->service()->save(['enabled' => '1']);
+        $this->assertSame('1', $this->redis->strings['ARCHIVE_ENABLED']);
+        $this->assertSame(1, $this->service()->get()->toArray()['enabled']);
+        // saving other settings keeps the switch
+        $this->service()->save(['port' => '2525']);
+        $this->assertTrue($this->service()->enabled());
+        // a lost Redis key shows as off, as rspamd sees it
+        unset($this->redis->strings['ARCHIVE_ENABLED']);
+        $this->assertFalse($this->service()->enabled());
     }
 
     public function testAddressOutsideTheMailcowDomains(): void

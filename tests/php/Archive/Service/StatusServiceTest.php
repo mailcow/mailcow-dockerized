@@ -24,12 +24,12 @@ class StatusServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->redis = new FakeRedis();
+        $this->redis->strings['ARCHIVE_ENABLED'] = '1';
     }
 
     private function service(?Context $context = null): StatusService
     {
         $settings = new Settings();
-        $settings->enabled = true;
         $settings->address = 'journal@archive.example';
         $settings->profile = 'none';
         $repo = $this->createStub(SettingsRepository::class);
@@ -68,6 +68,12 @@ class StatusServiceTest extends TestCase
             'last_dropped' => ['time' => $this->redis->lists['ARCHIVE_DROPPED_LOG'] ? json_decode($this->redis->lists['ARCHIVE_DROPPED_LOG'][0], true)['time'] : 0,
                 'reason' => 'owner lookup failed'],
         ], $this->service()->status());
+    }
+
+    public function testSwitchFromRedis(): void
+    {
+        $this->redis->strings['ARCHIVE_ENABLED'] = '0';
+        $this->assertSame(0, $this->service()->status()['enabled']);
     }
 
     public function testLogWithMessageIds(): void

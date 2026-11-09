@@ -29,7 +29,6 @@ class JournalServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->stored = new Settings();
-        $this->stored->enabled = true;
         $this->stored->address = 'journal@archive.example';
         $this->stored->signingKey = 'key';
         $this->lookup = new FakeArchiveLookup();
@@ -38,6 +37,7 @@ class JournalServiceTest extends TestCase
             $this->lookup->aliases[$username] = $username;
         }
         $this->redis = new FakeRedis();
+        $this->redis->strings['ARCHIVE_ENABLED'] = '1';
         $this->smtp = new FakeSmtpClient();
     }
 
@@ -87,9 +87,8 @@ class JournalServiceTest extends TestCase
         $this->stored->signingKey = '';
         $this->assertSame(['archive' => false], $this->service()->prepare(['from' => 'x@extern.example', 'rcpt' => ['anna@firma.de']]));
 
-        $this->stored->enabled = false;
+        $this->redis->strings['ARCHIVE_ENABLED'] = '0';
         $this->assertSame(['archive' => false], $this->service()->prepare(['from' => 'x@extern.example', 'rcpt' => ['anna@firma.de']]));
-        $this->assertSame('0', $this->redis->strings['ARCHIVE_ENABLED']);
         $this->assertSame([], $this->smtp->submitted);
     }
 
@@ -140,7 +139,7 @@ class JournalServiceTest extends TestCase
 
     public function testTestMail(): void
     {
-        $this->stored->enabled = false;
+        $this->redis->strings['ARCHIVE_ENABLED'] = '0';
 
         $this->assertSame('Q1', $this->service(FakeContext::admin())->testMail());
 
