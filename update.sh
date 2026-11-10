@@ -18,6 +18,18 @@ if [ ! -f "${PWD}/mailcow.conf" ]; then
   fi
 fi
 BRANCH="$(cd "${SCRIPT_DIR}" && git rev-parse --abbrev-ref HEAD)"
+UPDATE_ARGS=("$@")
+SCRIPT_HASH="$(sha256sum "${SCRIPT_DIR}/update.sh" | awk '{print $1}')"
+
+restart_update_script() {
+  if [[ "${MAILCOW_UPDATE_RESTARTS:-0}" -ge 3 ]]; then
+    echo -e "\e[31mupdate.sh keeps changing, please run it again.\e[0m"
+    exit 2
+  fi
+  export MAILCOW_UPDATE_RESTARTS=$(( ${MAILCOW_UPDATE_RESTARTS:-0} + 1 ))
+  echo -e "\e[33m$1, restarting the update script...\e[0m"
+  exec "${SCRIPT_DIR}/update.sh" "${UPDATE_ARGS[@]}"
+}
 
 # Check for --dev flag early to skip _modules update
 for arg in "$@"; do
@@ -38,9 +50,9 @@ if [ ! "$DEV" ]; then
     MODULES_HASH_BEFORE="EMPTY"
   fi
 
-  echo -e "\e[33mFetching latest _modules from origin/${BRANCH}…\e[0m"
+  echo -e "\e[33mFetching latest _modules and update.sh from origin/${BRANCH}…\e[0m"
   git fetch origin "${BRANCH}"
-  git checkout "origin/${BRANCH}" -- _modules
+  git checkout "origin/${BRANCH}" -- _modules update.sh
 
   if [[ ! -d "${MODULE_DIR}" || -z "$(ls -A "${MODULE_DIR}")" ]]; then
     echo -e "\e[31mError: _modules is still missing or empty after fetch!\e[0m"
@@ -50,10 +62,10 @@ if [ ! "$DEV" ]; then
   # Calculate hash after fetch
   MODULES_HASH_AFTER=$(find "${MODULE_DIR}" -type f -exec sha256sum {} \; 2>/dev/null | sort | sha256sum | awk '{print $1}')
 
-  # Check if modules changed
-  if [[ "${MODULES_HASH_BEFORE}" != "${MODULES_HASH_AFTER}" ]]; then
-    echo -e "\e[33m_modules have been updated. Please restart the update script.\e[0m"
-    exit 2
+  # Check if modules or the script changed
+  if [[ "${MODULES_HASH_BEFORE}" != "${MODULES_HASH_AFTER}" || "$(sha256sum "${SCRIPT_DIR}/update.sh" | awk '{print $1}')" != "${SCRIPT_HASH}" ]]; then
+    chmod +x "${SCRIPT_DIR}/update.sh"
+    restart_update_script "update.sh or _modules have been updated"
   fi
 else
   echo -e "\e[33mDeveloper mode: Skipping _modules update from git\e[0m"
@@ -344,15 +356,12 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
 fi
 
 if [ ! "$DEV" ]; then
-  EXIT_COUNT=0
   echo -e "\e[32mChecking for newer update script...\e[0m"
-  SHA1_1="$(sha1sum update.sh)"
   git fetch origin
   git checkout "origin/${BRANCH}" -- update.sh
-  SHA1_2="$(sha1sum update.sh)"
-  if [[ "${SHA1_1}" != "${SHA1_2}" ]]; then
+  if [[ "$(sha256sum update.sh | awk '{print $1}')" != "${SCRIPT_HASH}" ]]; then
     chmod +x update.sh
-    EXIT_COUNT+=1
+    restart_update_script "update.sh has been updated"
   fi
 fi
 
