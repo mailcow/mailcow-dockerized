@@ -68,7 +68,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.4.6-1
+      image: ghcr.io/mailcow/clamd:1.4.6-2
       restart: always
       depends_on:
         unbound-mailcow:
@@ -348,7 +348,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: ghcr.io/mailcow/postfix:3.10.12-1
+      image: ghcr.io/mailcow/postfix:3.10.13-1
       depends_on:
         mysql-mailcow:
           condition: service_started
@@ -428,7 +428,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.6-2
+      image: ghcr.io/mailcow/nginx:1.30.6-3
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
