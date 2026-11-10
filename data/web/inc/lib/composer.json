@@ -10,8 +10,13 @@
         "mustangostang/spyc": "^0.6.3",
         "directorytree/ldaprecord": "^3.3",
         "twig/twig": "^3.0",
-        "stevenmaguire/oauth2-keycloak": "^4.0",
+        "stevenmaguire/oauth2-keycloak": "^6.1",
         "league/oauth2-client": "^2.7",
         "bacon/bacon-qr-code": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mailcow\\": "mailcow/"
+        }
     }
 }

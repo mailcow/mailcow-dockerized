@@ -47,7 +47,7 @@ try:
   if max_score == "":
     max_score = 9999.0
 
-  def query_mysql(query, headers = True, update = False):
+  def query_mysql(query, params = None, headers = True, update = False):
     while True:
       try:
         cnx = MySQLdb.connect(user=os.environ.get('DBUSER'), password=os.environ.get('DBPASS'), database=os.environ.get('DBNAME'), charset="utf8mb4", collation="utf8mb4_general_ci")
@@ -57,7 +57,10 @@ try:
       else:
         break
     cur = cnx.cursor()
-    cur.execute(query)
+    if params:
+      cur.execute(query, params)
+    else:
+      cur.execute(query)
     if not update:
       result = []
       columns = tuple( [d[0] for d in cur.description] )
@@ -76,7 +79,7 @@ try:
 
   def notify_rcpt(rcpt, msg_count, quarantine_acl, category):
     if category == "add_header": category = "add header"
-    meta_query = query_mysql('SELECT `qhash`, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = "%s" AND score < %f AND (action = "%s" OR "all" = "%s")' % (rcpt, max_score, category, category))
+    meta_query = query_mysql('SELECT `qhash`, id, subject, score, sender, created, action FROM quarantine WHERE notified = 0 AND rcpt = %s AND score < %s AND (action = %s OR "all" = %s)', (rcpt, max_score, category, category))
     print("%s: %d of %d messages qualify for notification" % (rcpt, len(meta_query), msg_count))
     if len(meta_query) == 0:
       return
@@ -130,7 +133,7 @@ try:
             server.sendmail(msg['From'], [str(redirect)] + [str(bcc)], text)
         server.quit()
         for res in meta_query:
-         query_mysql('UPDATE quarantine SET notified = 1 WHERE id = "%d"' % (res['id']), update = True)
+         query_mysql('UPDATE quarantine SET notified = 1 WHERE id = %s', (res['id'],), update = True)
         r.hset('Q_LAST_NOTIFIED', record['rcpt'], time_now)
         break
       except Exception as ex:
@@ -138,7 +141,7 @@ try:
         print('%s'  % (ex))
         time.sleep(3)
 
-  records = query_mysql('SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, count(id) AS counter, rcpt FROM quarantine LEFT OUTER JOIN user_acl ON user_acl.username = rcpt WHERE notified = 0 AND score < %f AND rcpt in (SELECT username FROM mailbox) GROUP BY rcpt' % (max_score))
+  records = query_mysql('SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, count(id) AS counter, rcpt FROM quarantine LEFT OUTER JOIN user_acl ON user_acl.username = rcpt WHERE notified = 0 AND score < %s AND rcpt in (SELECT username FROM mailbox) GROUP BY rcpt', (max_score,))
 
   for record in records:
     attrs = ''
@@ -156,7 +159,7 @@ try:
     except Exception as ex:
       print('Could not determine last notification for %s, assuming never' % (record['rcpt']))
       last_notification = 0
-    attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
+    attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = %s', (record['rcpt'],))
     attrs = attrs_json[0]['attributes']
     if isinstance(attrs, str):
       # if attr is str then just load it

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ddeboer\Imap;
 
-use Ddeboer\Imap\Exception\InvalidResourceException;
 use Ddeboer\Imap\Exception\ReopenMailboxException;
 use IMAP\Connection;
 
@@ -13,33 +12,21 @@ use IMAP\Connection;
  */
 final class ImapResource implements ImapResourceInterface
 {
-    /**
-     * @var resource
-     */
-    private $resource;
-    private ?MailboxInterface $mailbox           = null;
+    private Connection $resource;
+    private ?MailboxInterface $mailbox;
     private static ?string $lastMailboxUsedCache = null;
 
     /**
      * Constructor.
-     *
-     * @param Connection|resource $resource
      */
-    public function __construct($resource, MailboxInterface $mailbox = null)
+    public function __construct(Connection $resource, MailboxInterface $mailbox = null)
     {
         $this->resource = $resource;
         $this->mailbox  = $mailbox;
     }
 
-    public function getStream()
+    public function getStream(): Connection
     {
-        if (
-            !$this->resource instanceof Connection
-            && (false === \is_resource($this->resource) || 'imap' !== \get_resource_type($this->resource))
-        ) {
-            throw new InvalidResourceException('Supplied resource is not a valid imap resource');
-        }
-
         $this->initMailbox();
 
         return $this->resource;
@@ -76,10 +63,8 @@ final class ImapResource implements ImapResourceInterface
 
     /**
      * Check whether the current mailbox is open.
-     *
-     * @param resource $resource
      */
-    private static function isMailboxOpen(MailboxInterface $mailbox, $resource): bool
+    private static function isMailboxOpen(MailboxInterface $mailbox, Connection $resource): bool
     {
         $currentMailboxName = $mailbox->getFullEncodedName();
         if ($currentMailboxName === self::$lastMailboxUsedCache) {

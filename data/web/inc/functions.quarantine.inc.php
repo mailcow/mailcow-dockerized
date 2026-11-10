@@ -170,6 +170,8 @@ function quarantine($_action, $_data = null) {
         }
         elseif ($release_format == 'raw') {
           $detail_row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $detail_row['msg']);
+          // dot-stuffing per RFC5321 4.5.2: escape leading dots
+          $detail_row['msg'] = preg_replace('~^\.~m', '..', $detail_row['msg']);
           $postfix_talk = array(
             array('220', 'HELO quarantine' . chr(10)),
             array('250', 'MAIL FROM: ' . $sender . chr(10)),
@@ -180,7 +182,7 @@ function quarantine($_action, $_data = null) {
             array('221', '')
           );
           // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+          $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
           if (!$smtp_connection) {
             logger(array('return' => array(
               array(
@@ -192,7 +194,7 @@ function quarantine($_action, $_data = null) {
             return false;
           }
           for ($i=0; $i < count($postfix_talk); $i++) {
-            $smtp_resource = fgets($smtp_connection, 256); 
+            $smtp_resource = fgets($smtp_connection, 256);
             if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
               $ret = substr($smtp_resource, 0, 3);
               $ret = (empty($ret)) ? '-' : $ret;
@@ -465,17 +467,19 @@ function quarantine($_action, $_data = null) {
           }
           elseif ($release_format == 'raw') {
             $row['msg'] = preg_replace('/^X-Spam-Flag: (.*)/m', 'X-Pre-Release-Spam-Flag: $1', $row['msg']);
+            // dot-stuffing per RFC5321 4.5.2: escape leading dots
+            $row['msg'] = preg_replace('~^\.~m', '..', $row['msg']);
             $postfix_talk = array(
               array('220', 'HELO quarantine' . chr(10)),
               array('250', 'MAIL FROM: ' . $sender . chr(10)),
               array('250', 'RCPT TO: ' . $row['rcpt'] . chr(10)),
               array('250', 'DATA' . chr(10)),
-              array('354', str_replace("\n.", '', $row['msg']) . chr(10) . '.' . chr(10)),
+              array('354', $row['msg'] . chr(10) . '.' . chr(10)),
               array('250', 'QUIT' . chr(10)),
               array('221', '')
             );
             // Thanks to https://stackoverflow.com/questions/6632399/given-an-email-as-raw-text-how-can-i-send-it-using-php
-            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1); 
+            $smtp_connection = fsockopen($postfix, 590, $errno, $errstr, 1);
             if (!$smtp_connection) {
               $_SESSION['return'][] = array(
                 'type' => 'warning',
@@ -485,7 +489,7 @@ function quarantine($_action, $_data = null) {
               return false;
             }
             for ($i=0; $i < count($postfix_talk); $i++) {
-              $smtp_resource = fgets($smtp_connection, 256); 
+              $smtp_resource = fgets($smtp_connection, 256);
               if (substr($smtp_resource, 0, 3) !== $postfix_talk[$i][0]) {
                 $ret = substr($smtp_resource, 0, 3);
                 $ret = (empty($ret)) ? '-' : $ret;
@@ -763,8 +767,9 @@ function quarantine($_action, $_data = null) {
       else {
         $domains = array_merge(mailbox('get', 'domains'), mailbox('get', 'alias_domains'));
         foreach ($domains as $domain) {
-          $stmt = $pdo->prepare('SELECT `id`, `qid`, `subject`, LOCATE("VIRUS_FOUND", `symbols`) AS `virus_flag`, `score`, `rcpt`, `sender`, `action`, UNIX_TIMESTAMP(`created`) AS `created`, `notified` FROM `quarantine` WHERE `rcpt` REGEXP :domain');
-          $stmt->execute(array(':domain' => '@' . $domain . '$'));
+          // Compare the domain part exactly, a regex would treat dots in the domain as wildcards
+          $stmt = $pdo->prepare('SELECT `id`, `qid`, `subject`, LOCATE("VIRUS_FOUND", `symbols`) AS `virus_flag`, `score`, `rcpt`, `sender`, `action`, UNIX_TIMESTAMP(`created`) AS `created`, `notified` FROM `quarantine` WHERE SUBSTRING_INDEX(`rcpt`, "@", -1) = :domain');
+          $stmt->execute(array(':domain' => $domain));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while($row = array_shift($rows)) {
             $q_meta[] = $row;

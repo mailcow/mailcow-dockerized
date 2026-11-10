@@ -48,13 +48,13 @@ jQuery(function($){
       url: "/api/v1/get/mailq/all",
       dataSrc: function(data){
         $.each(data, function (i, item) {
-          item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailqitems" name="multi_select" value="' + item.queue_id + '" />';
+          item.chkbox = '<input type="checkbox" class="form-check-input" data-id="mailqitems" name="multi_select" value="' + escapeHtml(item.queue_id) + '" />';
           rcpts = $.map(item.recipients, function(i) {
             return escapeHtml(i);
           });
           item.recipients = rcpts.join('<hr style="margin:1px!important">');
           item.action = '<div class="btn-group">' +
-            '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.show_message + '</a>' +
+            '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + escapeHtml(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.show_message + '</a>' +
             '</div>';
           });
           return data;
@@ -79,12 +79,14 @@ jQuery(function($){
         {
           title: 'QID',
           data: 'queue_id',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: 'Queue',
           data: 'queue_name',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang_admin.arrival_time,
@@ -106,7 +108,8 @@ jQuery(function($){
         {
           title: lang_admin.sender,
           data: 'sender',
-          defaultContent: ''
+          defaultContent: '',
+          render: $.fn.dataTable.render.text()
         },
         {
           title: lang_admin.recipients,

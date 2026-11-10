@@ -38,7 +38,7 @@ class AccessToken implements AccessTokenInterface
      *     );
      * @endcode
      */
-    public function __construct(AccessTokenStorageInterface $tokenStorage, RefreshTokenInterface $refreshStorage = null, array $config = array())
+    public function __construct(AccessTokenStorageInterface $tokenStorage, ?RefreshTokenInterface $refreshStorage = null, array $config = array())
     {
         $this->tokenStorage = $tokenStorage;
         $this->refreshStorage = $refreshStorage;

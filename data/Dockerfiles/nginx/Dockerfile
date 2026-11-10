@@ -1,9 +1,10 @@
-FROM nginx:alpine
+FROM nginx:1.30.6-alpine
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
-RUN apk add --no-cache nginx \
+RUN apk upgrade --no-cache && \
+  apk add --no-cache nginx \
   python3 \
   py3-pip && \
   pip install --upgrade pip && \

@@ -89,7 +89,7 @@ class Connection
     /**
      * Set the connection configuration.
      *
-     * @throws Configuration\ConfigurationException
+     * @throws ConfigurationException
      */
     public function setConfiguration(DomainConfiguration|array $config = []): void
     {

@@ -7,7 +7,7 @@ else
   __dns_loader_standalone=0
 fi
 
-CONFIG_PATH="${ACME_DNS_CONFIG_FILE:-/etc/acme/dns-101.conf}"
+CONFIG_PATH="${ACME_DNS_CONFIG_FILE:-/etc/acme/dns-01.conf}"
 
 if [[ ! -f "${CONFIG_PATH}" ]]; then
   if [[ $__dns_loader_standalone -eq 1 ]]; then

@@ -156,7 +156,7 @@ function domain_admin($_action, $_data = null) {
               }
             }
           }
-          if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new))) {
+          if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username_new)) || $username_new == 'API') {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -183,6 +183,9 @@ function domain_admin($_action, $_data = null) {
             ':username_new' => $username_new,
             ':username' => $username
           ));
+          if ($username_new != $username) {
+            \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username, $username_new);
+          }
           if (!empty($domains)) {
             foreach ($domains as $domain) {
               $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
@@ -331,6 +334,8 @@ function domain_admin($_action, $_data = null) {
         $stmt->execute(array(
           ':username' => $username,
         ));
+        // sync sources created by this account must not pass to a re-created account of the same name
+        \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->accountChanged($username);
         $_SESSION['return'][] = array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -429,14 +434,25 @@ function domain_admin_sso($_action, $_data) {
 
   switch ($_action) {
     case 'check':
-      $token = $_data;
+      $token = preg_replace('/[^a-zA-Z0-9-]/', '', $_data);
 
       $stmt = $pdo->prepare("SELECT `t1`.`username` FROM `da_sso` AS `t1` JOIN `admin` AS `t2` ON `t1`.`username` = `t2`.`username` WHERE `t1`.`token` = :token AND `t1`.`created` > DATE_SUB(NOW(), INTERVAL '30' SECOND) AND `t2`.`active` = 1 AND `t2`.`superadmin` = 0;");
       $stmt->execute(array(
-        ':token' => preg_replace('/[^a-zA-Z0-9-]/', '', $token)
+        ':token' => $token
       ));
       $return = $stmt->fetch(PDO::FETCH_ASSOC);
-      return empty($return['username']) ? false : $return['username'];
+      if (empty($return['username'])) {
+        return false;
+      }
+      // single-use: consume the token; if a concurrent request already used it, deny
+      $del = $pdo->prepare("DELETE FROM `da_sso` WHERE `token` = :token");
+      $del->execute(array(
+        ':token' => $token
+      ));
+      if ($del->rowCount() < 1) {
+        return false;
+      }
+      return $return['username'];
     case 'issue':
       if ($_SESSION['mailcow_cc_role'] != "admin") {
         $_SESSION['return'][] = array(

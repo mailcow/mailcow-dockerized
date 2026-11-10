@@ -1,8 +1,4 @@
 function auth_password_verify(request, password)
-  if request.domain == nil then
-    return dovecot.auth.PASSDB_RESULT_USER_UNKNOWN, "No such user"
-  end
-
   local json = require "cjson"
   local ltn12 = require "ltn12"
   local https = require "ssl.https"
@@ -11,7 +7,10 @@ function auth_password_verify(request, password)
   local req = {
     username = request.user,
     password = password,
+    -- address that connected to Dovecot, for proxied connections the proxy
     real_rip = request.real_rip,
+    -- address of the client, also for proxied connections
+    client_ip = request.rip,
     service = request.service
   }
   local req_json = json.encode(req)
@@ -32,8 +31,23 @@ function auth_password_verify(request, password)
   -- Returning PASSDB_RESULT_PASSWORD_MISMATCH will reset the user's auth cache entry.
   -- Returning PASSDB_RESULT_INTERNAL_FAILURE keeps the existing cache entry,
   -- even if the TTL has expired. Useful to avoid cache eviction during backend issues.
+
+  -- On a network-level failure (nginx unreachable, DNS failure, timeout) https.request
+  -- returns nil plus an error string, so c is not a numeric HTTP status code. Treat this
+  -- as a backend outage and keep the cache entry, rather than wiping it as a mismatch.
+  if type(c) ~= "number" then
+    dovecot.i_info("HTTP request to auth backend failed with " .. tostring(c) .. " for user " .. request.user)
+    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream unreachable"
+  end
+
+  -- 5xx: the backend or the identity provider cannot answer, a temporary failure and no failed login
+  if c >= 500 then
+    dovecot.i_info("HTTP request to auth backend failed with " .. tostring(c) .. " for user " .. request.user)
+    return dovecot.auth.PASSDB_RESULT_INTERNAL_FAILURE, "Upstream unavailable"
+  end
+
   if c ~= 200 and c ~= 401 then
-    dovecot.i_info("HTTP request failed with " .. c .. " for user " .. request.user)
+    dovecot.i_info("HTTP request failed with " .. tostring(c) .. " for user " .. request.user)
     return dovecot.auth.PASSDB_RESULT_PASSWORD_MISMATCH, "Upstream error"
   end
 

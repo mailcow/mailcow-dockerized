@@ -150,41 +150,41 @@ rspamd_config:register_symbol({
     local function ipv6_to_segments(ip_str)
       -- Remove zone identifier if present (e.g., %eth0)
       ip_str = ip_str:gsub("%%.*$", "")
-      
+
       local segments = {}
-      
+
       -- Handle :: compression
       if ip_str:find('::') then
         local before, after = ip_str:match('^(.*)::(.*)$')
         before = before or ''
         after = after or ''
-        
+
         local before_parts = {}
         local after_parts = {}
-        
+
         if before ~= '' then
           for seg in before:gmatch('[^:]+') do
             table.insert(before_parts, tonumber(seg, 16) or 0)
           end
         end
-        
+
         if after ~= '' then
           for seg in after:gmatch('[^:]+') do
             table.insert(after_parts, tonumber(seg, 16) or 0)
           end
         end
-        
+
         -- Add before segments
         for _, seg in ipairs(before_parts) do
           table.insert(segments, seg)
         end
-        
+
         -- Add compressed zeros
         local zeros_needed = 8 - #before_parts - #after_parts
         for i = 1, zeros_needed do
           table.insert(segments, 0)
         end
-        
+
         -- Add after segments
         for _, seg in ipairs(after_parts) do
           table.insert(segments, seg)
@@ -195,12 +195,12 @@ rspamd_config:register_symbol({
           table.insert(segments, tonumber(seg, 16) or 0)
         end
       end
-      
+
       -- Ensure we have exactly 8 segments
       while #segments < 8 do
         table.insert(segments, 0)
       end
-      
+
       return segments
     end
 
@@ -208,46 +208,46 @@ rspamd_config:register_symbol({
     local function get_ipv6_variants(ip_str)
       local variants = {}
       local seen = {}
-      
+
       local function add_variant(v)
         if v and not seen[v] then
           table.insert(variants, v)
           seen[v] = true
         end
       end
-      
+
       -- For IPv4, just return the original
       if not ip_str:find(':') then
         add_variant(ip_str)
         return variants
       end
-      
+
       local segments = ipv6_to_segments(ip_str)
-      
+
       -- 1. Fully expanded form (all zeros shown as 0000)
       local expanded_parts = {}
       for _, seg in ipairs(segments) do
         table.insert(expanded_parts, string.format('%04x', seg))
       end
       add_variant(table.concat(expanded_parts, ':'))
-      
+
       -- 2. Standard form (no leading zeros, but all segments present)
       local standard_parts = {}
       for _, seg in ipairs(segments) do
         table.insert(standard_parts, string.format('%x', seg))
       end
       add_variant(table.concat(standard_parts, ':'))
-      
+
       -- 3. Find all possible :: compressions
       -- RFC 5952: compress the longest run of consecutive zeros
       -- But we need to check all possibilities since Redis might have any form
-      
+
       -- Find all zero runs
       local zero_runs = {}
       local in_run = false
       local run_start = 0
       local run_length = 0
-      
+
       for i = 1, 8 do
         if segments[i] == 0 then
           if not in_run then
@@ -266,21 +266,21 @@ rspamd_config:register_symbol({
           end
         end
       end
-      
+
       -- Don't forget the last run
       if in_run and run_length >= 1 then
         table.insert(zero_runs, {start = run_start, length = run_length})
       end
-      
+
       -- Generate variant for each zero run compression
       for _, run in ipairs(zero_runs) do
         local parts = {}
-        
+
         -- Before compression
         for i = 1, run.start - 1 do
           table.insert(parts, string.format('%x', segments[i]))
         end
-        
+
         -- The compression
         if run.start == 1 then
           table.insert(parts, '')
@@ -291,22 +291,22 @@ rspamd_config:register_symbol({
         else
           table.insert(parts, '')
         end
-        
+
         -- After compression
         for i = run.start + run.length, 8 do
           table.insert(parts, string.format('%x', segments[i]))
         end
-        
+
         local compressed = table.concat(parts, ':'):gsub('::+', '::')
         add_variant(compressed)
       end
-      
+
       return variants
     end
 
     local from_ip_string = tostring(ip)
     local ip_check_table = {}
-    
+
     -- Add all variants of the exact IP
     for _, variant in ipairs(get_ipv6_variants(from_ip_string)) do
       table.insert(ip_check_table, variant)
@@ -318,18 +318,18 @@ rspamd_config:register_symbol({
         maxbits = 32
         minbits = 8
     end
-    
+
     -- Add all CIDR notations with variants
     for i=maxbits,minbits,-1 do
       local masked_ip = ip:apply_mask(i)
       local cidr_base = masked_ip:to_string()
-      
+
       for _, variant in ipairs(get_ipv6_variants(cidr_base)) do
         local cidr = variant .. "/" .. i
         table.insert(ip_check_table, cidr)
       end
     end
-    
+
     local function keep_spam_cb(err, data)
       if err then
         rspamd_logger.infox(rspamd_config, "keep_spam query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
@@ -345,7 +345,7 @@ rspamd_config:register_symbol({
         end
       end
     end
-    
+
     table.insert(ip_check_table, 1, 'KEEP_SPAM')
     local redis_ret_user = rspamd_redis_make_request(task,
       redis_params, -- connect params
@@ -360,6 +360,61 @@ rspamd_config:register_symbol({
     end
   end,
   priority = 19
+})
+
+rspamd_config:register_symbol({
+  name = 'WHITELISTED_FWD_HOST',
+  type = 'prefilter',
+  score = 0.0,
+  callback = function(task)
+    local rspamd_logger = require "rspamd_logger"
+    local redis_params = rspamd_parse_redis_server('fwd_host')
+    local ip = task:get_from_ip()
+
+    if ip == nil or not ip:is_valid() then
+      return false
+    end
+
+    local from_ip_string = tostring(ip)
+    local ip_check_table = {'WHITELISTED_FWD_HOST', from_ip_string}
+
+    local maxbits = 128
+    local minbits = 7
+    if ip:get_version() == 4 then
+        maxbits = 32
+        minbits = 8
+    end
+    for i=maxbits,minbits,-1 do
+      table.insert(ip_check_table, ip:apply_mask(i):to_string() .. "/" .. i)
+    end
+
+    local function fwd_host_cb(err, data)
+      if err or type(data) ~= 'table' then
+        rspamd_logger.infox(rspamd_config, "fwd_host query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
+        return
+      end
+      for _,v in pairs(data) do
+        if type(v) == 'string' then
+          task:insert_result('WHITELISTED_FWD_HOST', 1.0, from_ip_string)
+          task:set_flag('pass_all')
+          return
+        end
+      end
+    end
+
+    local redis_ret = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      'WHITELISTED_FWD_HOST', -- hash key
+      false, -- is write
+      fwd_host_cb, --callback
+      'HMGET', -- command
+      ip_check_table -- arguments
+    )
+    if not redis_ret then
+      rspamd_logger.infox(rspamd_config, "cannot check fwd_host redis map")
+    end
+  end,
+  priority = 18
 })
 
 rspamd_config:register_symbol({
@@ -390,9 +445,8 @@ rspamd_config:register_symbol({
     local rspamd_logger = require "rspamd_logger"
     local redis_params = rspamd_parse_redis_server('taghandler')
     local rspamd_http = require "rspamd_http"
-    local rcpts = task:get_recipients('smtp')
+    local rcpts = task:get_recipients({'smtp', 'orig'})
     local lua_util = require "lua_util"
-    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
 
     local function remove_moo_tag()
       local moo_tag_header = task:get_header('X-Moo-Tag', false)
@@ -417,8 +471,9 @@ rspamd_config:register_symbol({
 
     -- Check if recipient has a tag (contains '+')
     local tag = nil
-    if tagged_rcpt ~= nil then
-      tag = tagged_rcpt
+    local base_user, tag_part = rcpt_user:match('^([^%+]+)%+(.+)$')
+    if base_user and tag_part then
+      tag = tag_part
       rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
     end
 
@@ -441,7 +496,7 @@ rspamd_config:register_symbol({
 
     -- Check if we have a pre-result (e.g., from KEEP_SPAM or POSTMASTER_HANDLER)
     local allow_processing = false
-    
+
     if task.has_pre_result then
       local has_pre, pre_action = task:has_pre_result()
       if has_pre then
@@ -498,8 +553,7 @@ rspamd_config:register_symbol({
           else
             rspamd_logger.infox("TAG_MOO: user wants subject modified for tagged mail")
             local sbj = task:get_header('Subject') or ''
-            local tag_value = tag[1] and tag[1].options and tag[1].options[1] or ''
-            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag_value .. '] ' .. sbj)) .. '?='
+            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
             task:set_milter_reply({
               remove_headers = {
                 ['Subject'] = 1,
@@ -765,13 +819,22 @@ rspamd_config:register_symbol({
   end
 })
 
+-- Expand a domain footer: replace only "{= key =}" placeholders with their values.
+-- Unknown placeholders render empty, matching the previous engine behaviour.
+local function expand_footer(template, replacements)
+  return (template:gsub('{=%s*([%w_]+)%s*=}', function(key)
+    local value = replacements[key]
+    if value == nil then return '' end
+    return tostring(value)
+  end))
+end
+
 rspamd_config:register_symbol({
   name = 'MOO_FOOTER',
   type = 'prefilter',
   callback = function(task)
     local cjson = require "cjson"
     local lua_mime = require "lua_mime"
-    local lua_util = require "lua_util"
     local rspamd_logger = require "rspamd_logger"
     local rspamd_http = require "rspamd_http"
     local envfrom = task:get_from(1)
@@ -844,10 +907,10 @@ rspamd_config:register_symbol({
               end
             end
             if footer.html and footer.html ~= "" then
-              footer.html = lua_util.jinja_template(footer.html, replacements, true)
+              footer.html = expand_footer(footer.html, replacements)
             end
             if footer.plain and footer.plain ~= "" then
-              footer.plain = lua_util.jinja_template(footer.plain, replacements, true)
+              footer.plain = expand_footer(footer.plain, replacements)
             end
 
             -- add footer
@@ -856,6 +919,8 @@ rspamd_config:register_symbol({
 
             local seen_cte
             local newline_s = newline(task)
+            -- use the CTE add_text_footer actually applied
+            local new_cte = rewrite.new_cte or 'quoted-printable'
 
             local function rewrite_ct_cb(name, hdr)
               if rewrite.need_rewrite_ct then
@@ -877,13 +942,13 @@ rspamd_config:register_symbol({
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
-                      'Content-Transfer-Encoding', 'quoted-printable')
+                      'Content-Transfer-Encoding', new_cte)
                   -- update Content-Transfer-Encoding header
                   task:set_milter_reply({
                     remove_headers = {['Content-Transfer-Encoding'] = 0},
                   })
                   task:set_milter_reply({
-                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                    add_headers = {['Content-Transfer-Encoding'] = new_cte}
                   })
                   seen_cte = true
                   return
@@ -895,7 +960,10 @@ rspamd_config:register_symbol({
             task:headers_foreach(rewrite_ct_cb, {full = true})
 
             if not seen_cte and rewrite.need_rewrite_ct then
-              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', 'quoted-printable')
+              out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', new_cte)
+              task:set_milter_reply({
+                add_headers = {['Content-Transfer-Encoding'] = new_cte}
+              })
             end
 
             -- End of headers
@@ -914,7 +982,7 @@ rspamd_config:register_symbol({
                 out_parts[#out_parts + 1] = o
                 out_parts[#out_parts + 1] = newline_s
               else
-                local removePrefix = "--\x0D\x0AContent-Type"
+                local removePrefix = "--\x0D\x0AContent-"
                 if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
                   o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
                 end

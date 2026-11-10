@@ -22,7 +22,8 @@ add_header Referrer-Policy strict-origin;
 
 index index.php index.html;
 
-client_max_body_size 0;
+# PHP accepts no larger requests (post_max_size), SOGo webmail, CalDAV/CardDAV and ActiveSync use NGINX_MAX_BODY_SIZE
+client_max_body_size 64m;
 
 gzip on;
 gzip_disable "msie6";
@@ -93,11 +94,11 @@ location / {
 }
 
 location /qhandler {
-    rewrite ^/qhandler/(.*)/(.*) /qhandler.php?action=$1&hash=$2;
+    rewrite ^/qhandler/([^/]+)/(.+?)/?$ /qhandler.php?action=$1&hash=$2;
 }
 
 location /edit {
-    rewrite ^/edit/(.*)/(.*) /edit.php?$1=$2;
+    rewrite ^/edit/([^/]+)/(.+?)/?$ /edit.php?$1=$2;
 }
 
 location ~ ^/api/v1/(.*)$ {
@@ -116,6 +117,10 @@ location ~ \.php$ {
     include /etc/nginx/fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param REMOTE_ADDR $mailcow_client_ip;
+    fastcgi_param HTTP_X_REAL_IP $mailcow_client_ip;
+    # trusted internal-auth marker; empty for external clients (see nginx.conf map)
+    fastcgi_param SOGO_AUTH_INTERNAL $sogo_auth_internal;
     fastcgi_read_timeout 3600;
     fastcgi_send_timeout 3600;
 }
@@ -178,9 +183,16 @@ location /sogo-auth-verify {
     proxy_set_header  Content-Length "";
     proxy_pass        http://127.0.0.1:65510/sogo-auth;
     proxy_pass_request_body off;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
 }
 
 location ^~ /Microsoft-Server-ActiveSync {
+    # Outlook for iOS/Android (Microsoft's sync service) sends EAS commands without credentials
+    # and only authenticates after a 401 Basic challenge. SOGo answers those with 403, so challenge here.
+    if ($http_authorization = "") {
+        add_header WWW-Authenticate 'Basic realm="SOGo"' always;
+        return 401;
+    }
     auth_request /sogo-auth-verify;
     auth_request_set $user $upstream_http_x_user;
     auth_request_set $auth $upstream_http_x_auth;
@@ -201,7 +213,7 @@ location ^~ /Microsoft-Server-ActiveSync {
     proxy_busy_buffers_size 512k;
     proxy_set_header Host $http_host;
     client_body_buffer_size 512k;
-    client_max_body_size 0;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
 }
 
 location ^~ /SOGo {
@@ -252,7 +264,7 @@ location ^~ /SOGo {
     proxy_send_timeout 3600;
     proxy_read_timeout 3600;
     client_body_buffer_size 128k;
-    client_max_body_size 0;
+    client_max_body_size {{ NGINX_MAX_BODY_SIZE }};
     break;
 }
 

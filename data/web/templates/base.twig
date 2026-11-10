@@ -10,15 +10,16 @@
 
   <link rel="stylesheet" href="{{ css_path }}">
   <script>
+    var mailcow_dark_css = '{{ dark_css_path }}';
     // check if darkmode is preferred by OS or set by localStorage
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem("theme") !== "light" ||
-        localStorage.getItem("theme") === "dark") {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem("mailcow_theme") !== "light" ||
+        localStorage.getItem("mailcow_theme") === "dark") {
       var head  = document.getElementsByTagName('head')[0];
       var link  = document.createElement('link');
       link.id   = 'dark-mode-theme';
       link.rel  = 'stylesheet';
       link.type = 'text/css';
-      link.href = '/css/themes/mailcow-darkmode.css';
+      link.href = mailcow_dark_css;
       head.appendChild(link);
     }
   </script>
@@ -193,7 +194,7 @@ $(window).scroll(function() {
 });
 // Select language and reopen active URL without POST
 function setLang(sel) {
-  $.post( '{{ uri }}', {lang: sel} );
+  $.post( '{{ uri|escape("js") }}', {lang: sel} );
   window.location.href = window.location.pathname + window.location.search;
 }
 // FIDO2 functions
@@ -415,18 +416,24 @@ function recursiveBase64StrToArrayBuffer(obj) {
         return navigator.credentials.create(json);
       }).then(function(cred) {
         return {
-          id: cred.id,
-          rawId: arrayBufferToBase64(cred.rawId),
-          response: {
-            attestationObject: arrayBufferToBase64(cred.response.attestationObject),
-            clientDataJSON: arrayBufferToBase64(cred.response.clientDataJSON)
-          },
-          type: cred.type
+          clientDataJSON: arrayBufferToBase64(cred.response.clientDataJSON),
+          attestationObject: arrayBufferToBase64(cred.response.attestationObject),
+          key_id: keyId,
+          tfa_method: 'webauthn',
+          confirm_password: ''
         };
-      }).then(function(credData) {
-        $('#setup_webauthn_register_data').val(JSON.stringify(credData));
-        $('#setup_webauthn_reg_form input[name=set_tfa]').val('1');
-        $('#setup_webauthn_reg_form').submit();
+      }).then(JSON.stringify).then(function(credentialData) {
+        // send the attestation to the JSON API, like the regular WebAuthn modal does,
+        // so that the credential is parsed and stored correctly
+        return window.fetch('/api/v1/add/webauthn-tfa-registration', {method: 'POST', body: credentialData, cache: 'no-cache'});
+      }).then(function(response) {
+        return response.json();
+      }).then(function(json) {
+        if (json.success) {
+          window.location = window.location.href.split('#')[0];
+        } else {
+          throw new Error(json.msg);
+        }
       }).catch(function(err) {
         $('#setup_webauthn_return_code').show().text(err.message || 'Registration failed');
       });
@@ -473,6 +480,10 @@ function recursiveBase64StrToArrayBuffer(obj) {
             window.location.reload();
           } else {
             var msg = (data && data[0] && data[0].msg) ? data[0].msg : 'Password change failed.';
+            // the API returns raw language keys, resolve them like the alert box does
+            if (Object.prototype.hasOwnProperty.call(lang_danger, msg)) {
+              msg = lang_danger[msg];
+            }
             $('#changePWAlert').show().text(msg);
           }
         },

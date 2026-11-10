@@ -12,6 +12,7 @@ $fido2_data = fido2(array("action" => "get_friendly_names"));
 $js_minifier->add('/web/js/site/admin.js');
 $js_minifier->add('/web/js/presets/rspamd.js');
 $js_minifier->add('/web/js/site/pwgen.js');
+$js_minifier->add('/web/js/site/identity.js');
 
 // all domains
 $domains = mailbox('get', 'domains');
@@ -93,10 +94,6 @@ $template_data = [
   'tfa_id' => @$_SESSION['tfa_id'],
   'fido2_cid' => @$_SESSION['fido2_cid'],
   'fido2_data' => $fido2_data,
-  'api' => [
-    'ro' => admin_api('ro', 'get'),
-    'rw' => admin_api('rw', 'get'),
-  ],
   'dkim_domains' => $dkim_domains,
   'dkim_domains_with_keys' => $dkim_domains_with_keys,
   'dkim_blind_domains' => $dkim_blind_domains,
@@ -115,7 +112,10 @@ $template_data = [
   'logo_dark_specs' => customize('get', 'main_logo_dark_specs'),
   'ip_check' => customize('get', 'ip_check'),
   'custom_login' => customize('get', 'custom_login'),
+  'ui_themes' => customize('get', 'ui_themes'),
+  'ui_theme' => customize('get', 'ui_theme'),
   'password_complexity' => password_complexity('get'),
+  'imapsync_settings' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->api->getSettings(),
   'show_rspamd_global_filters' => @$_SESSION['show_rspamd_global_filters'],
   'cors_settings' => $cors_settings,
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',

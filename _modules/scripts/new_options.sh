@@ -60,11 +60,12 @@ adapt_new_options() {
   "ACME_DNS_CHALLENGE"
   "ACME_DNS_PROVIDER"
   "ACME_ACCOUNT_EMAIL"
+  "NGINX_MAX_BODY_SIZE"
   )
 
   sed -i --follow-symlinks '$a\' mailcow.conf
   for option in ${CONFIG_ARRAY[@]}; do
-    if grep -q "${option}" mailcow.conf; then
+    if grep -q "^#\?${option}=" mailcow.conf; then
       continue
     fi
 
@@ -111,16 +112,16 @@ adapt_new_options() {
             echo "SQL_PORT=127.0.0.1:13306" >> mailcow.conf
             ;;
         API_KEY)
-            echo '# Create or override API key for web UI' >> mailcow.conf
+            echo '# Read-write service API key, shown read-only in the web UI' >> mailcow.conf
             echo "#API_KEY=" >> mailcow.conf
             ;;
         API_KEY_READ_ONLY)
-            echo '# Create or override read-only API key for web UI' >> mailcow.conf
+            echo '# Read-only service API key, shown read-only in the web UI' >> mailcow.conf
             echo "#API_KEY_READ_ONLY=" >> mailcow.conf
             ;;
         API_ALLOW_FROM)
-            echo '# Must be set for API_KEY to be active' >> mailcow.conf
-            echo '# IPs only, no networks (networks can be set via UI)' >> mailcow.conf
+            echo '# Must be set for API_KEY and API_KEY_READ_ONLY to be active' >> mailcow.conf
+            echo '# Comma separated list of IPs/networks' >> mailcow.conf
             echo "#API_ALLOW_FROM=" >> mailcow.conf
             ;;
         SNAT_TO_SOURCE)
@@ -302,12 +303,17 @@ adapt_new_options() {
             ;;
         ACME_DNS_PROVIDER)
             echo '# DNS provider for DNS-01 challenge (e.g. dns_cf, dns_azure, dns_gd, etc.)' >> mailcow.conf
-            echo '# See the dns-101 provider documentation for more information.' >> mailcow.conf
+            echo '# See the dns-01 provider documentation for more information.' >> mailcow.conf
             echo 'ACME_DNS_PROVIDER=dns_xxx' >> mailcow.conf
             ;;
         ACME_ACCOUNT_EMAIL)
             echo '# Account email for ACME DNS-01 challenge registration' >> mailcow.conf
             echo 'ACME_ACCOUNT_EMAIL=me@example.com' >> mailcow.conf
+            ;;
+        NGINX_MAX_BODY_SIZE)
+            echo '# Maximum request size for SOGo webmail, CalDAV/CardDAV and ActiveSync, e.g. 128m or 1g - 0 means unlimited' >> mailcow.conf
+            echo '# Keep it above the message size limit of Postfix (100 MB by default). The mailcow UI and API stay limited to 64m.' >> mailcow.conf
+            echo 'NGINX_MAX_BODY_SIZE=128m' >> mailcow.conf
             ;;
         *)
             echo "${option}=" >> mailcow.conf

@@ -1,6 +1,6 @@
 # SOGo built from source to enable security patch application
 # Repository: https://github.com/Alinto/sogo
-# Version: SOGo-5.12.4
+# Version: SOGo-5.12.13
 #
 # Applied security patches:
 # -
@@ -12,12 +12,12 @@ FROM debian:bookworm
 LABEL maintainer="The Infrastructure Company GmbH <info@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG SOGO_VERSION=SOGo-5.12.5
-ARG SOPE_VERSION=SOPE-5.12.5
+ARG SOGO_VERSION=SOGo-5.12.13
+ARG SOPE_VERSION=SOPE-5.12.13
 # Security patches to apply (space-separated commit hashes)
 ARG SOGO_SECURITY_PATCHES=""
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
-ARG GOSU_VERSION=1.19
+ARG GOSU_VERSION=1.20
 ENV LC_ALL=C
 
 # Install dependencies, build SOPE and SOGo, then clean up (all in one layer to minimize image size)
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     gobjc \
+    pkg-config \
     gnustep-make \
     gnustep-base-runtime \
     libgnustep-base-dev \
@@ -40,6 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libzip-dev \
     libytnef0-dev \
+    libwbxml2-dev \
     curl \
     ca-certificates \
     # Runtime dependencies
@@ -68,6 +70,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 \
     libzip4 \
     libytnef0 \
+    libwbxml2-1 \
   # Download gosu
   && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
@@ -97,6 +100,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && ./configure --disable-debug --disable-strip \
   && make -j$(nproc) \
   && make install \
+  && cd /tmp/sogo/ActiveSync \
+  && . /usr/share/GNUstep/Makefiles/GNUstep.sh \
+  && make -j$(nproc) install \
   && cd / \
   && rm -rf /tmp/sogo \
   # Strip binaries
@@ -146,8 +152,8 @@ RUN echo "/usr/lib64" > /etc/ld.so.conf.d/sogo.conf \
 # Create sogo user and group
 RUN groupadd -r -g 999 sogo \
   && useradd -r -u 999 -g sogo -d /var/lib/sogo -s /bin/bash -c "SOGo Daemon" sogo \
-  && mkdir -p /var/lib/sogo /var/run/sogo /var/log/sogo \
-  && chown -R sogo:sogo /var/lib/sogo /var/run/sogo /var/log/sogo
+  && mkdir -p /var/lib/sogo /var/run/sogo /var/log/sogo /var/spool/sogo \
+  && chown -R sogo:sogo /var/lib/sogo /var/run/sogo /var/log/sogo /var/spool/sogo
 
 # Create symlinks for SOGo binaries
 RUN ln -s /usr/local/sbin/sogod /usr/sbin/sogod \

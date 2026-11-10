@@ -1,3 +1,306 @@
+# 3.30.0 (2026-09-25)
+
+ * Fix `split`, `random`, and `shuffle` merging a trailing newline into the last character of a string
+ * Speed up splitting a string into characters in `split`, `random`, and `shuffle`
+ * Speed up escaping by fetching the escaper runtime once per template
+ * Speed up adding extensions to an environment
+ * Fix the escaping safe analysis retaining every compiled template node for the lifetime of the environment
+ * Speed up loading a template that the environment has already loaded
+ * Speed up rendering by compiling a cheaper generator guard into templates
+ * Speed up compiling filter, function, and test calls
+ * Fix `IntlExtension` letting the pattern derived from a date formatter prototype override an explicit locale
+ * Fix `IntlExtension` not honoring the locale of a date formatter prototype configured with no date and time styles
+ * Speed up macro calls
+ * Fix `TemplateWrapper::unwrap()` failing when called without arguments, which is now deprecated
+ * Add `TemplateWrapper::getDefaultEscapeStrategy()` to know the escaping strategy a template was compiled with
+ * Report a clear error when `random`, `reverse`, `shuffle`, and `split` receive a string that is not valid UTF-8
+ * Fix the deprecation about omitting parentheses when calling a macro being reported twice for the same call
+ * Add the macro name to the deprecation about omitting parentheses when calling a macro
+ * Deprecate cloning a `Twig\Environment` instance
+ * Fix array access with a `Stringable` key on subclasses of `ArrayObject` and `ArrayIterator`
+
+# 3.29.0 (2026-09-18)
+
+ * Fix the PHP warning and cryptic error when a block or a macro rendered on its own uses macros imported in the template body
+ * Fix `{% cache %}` always missing in the Symfony bundle when `framework.cache.app` uses a natively tag aware adapter
+ * Fix the sandbox resolving `use` trait templates before checking that the `use` tag is allowed
+ * Fix `html_attr` dropping `style` declarations whose value is `0`, `0.0` or `'0'`
+ * Fix the `default` filter fallback emitting an undefined variable warning when it uses the null-safe operator
+ * Fix the `matches` operator silently treating PCRE execution errors as non-matches; it now throws a `RuntimeError`
+ * Fix `TemplateWrapper::streamBlock()`, `TemplateWrapper::hasBlock()`, and `TemplateWrapper::getBlockNames()` omitting environment globals
+ * Fix exceptions from dynamic parent expressions escaping without template context
+ * Add the `BlockChain` class to compose blocks from multiple templates without using template internals
+ * Fix `TemplateWrapper::hasBlock()` and `TemplateWrapper::getBlockNames()` losing the `extends` line when the parent template does not exist
+ * Fix an output buffer leak when a parent block rendered in an expression throws in non-yield mode
+ * Add the `HtmlExtension::htmlAttrValue()` method to resolve a single HTML attribute value the way the `html_attr` function renders it
+ * Fix `html_attr` JSON encoding a `Stringable` value in a `data-*` attribute instead of using its string representation
+ * Add documentation comments to attach metadata to nodes (experimental)
+ * Fix destructuring patterns containing no variables (empty patterns or sequences with only empty slots) triggering a PHP fatal error instead of a `SyntaxError`
+ * Fix object and mapping destructuring evaluating the right-hand expression more than once
+ * Fix sequence destructuring of iterators throwing a `TypeError`
+ * Fix `MissingExtensionSuggestor` not suggesting the `twig/*-extra` package to install for some `html-extra`, `intl-extra`, and `string-extra` filters and functions
+ * Add `TempestMarkdown` to use `tempest/markdown` as the `markdown_to_html` converter
+ * Add the `include_only` function to render a template without giving it access to the current context
+ * Add the `Twig\Sandbox\SandboxInterface` interface and `Twig\Sandbox\Sandbox` class to render untrusted templates through a dedicated, always-sandboxed environment crafted for it
+ * Reject `TemplateWrapper` instances created by another `Environment`
+ * Add the `Twig\Extension\SandboxBridgeExtension` to render sandboxed templates from trusted templates with an explicit output escaping strategy
+ * Extract the sandbox runtime enforcement into a new internal `Twig\Sandbox\SecurityChecker` class used by compiled templates and `CoreExtension`
+ * Mark `SandboxExtension` as internal, use `Twig\Sandbox\Sandbox` instead
+ * Deprecate the `sandboxed` argument of the `include` function, use `Twig\Sandbox\Sandbox` instead
+ * Deprecate `SandboxExtension::enableSandbox()`, `disableSandbox()`, and `isSandboxedGlobally()`
+ * Normalize destructuring variable AST nodes as assignment targets
+ * Fix `IntlExtension` ignoring explicit date/time formats and configured calendars when using a date formatter prototype
+ * Add a `format_list` filter to `IntlExtension` to format a list of strings using PHP 8.5's `IntlListFormatter`
+ * Fix array access with a `Stringable` key for `ArrayObject` and `ArrayIterator` while preserving object keys for `SplObjectStorage`
+ * Fix duplicated macro argument names triggering a PHP fatal error instead of a `SyntaxError`
+ * Deprecate defining a macro more than once in the same template
+ * Deprecate `TemplateVariable` and `AssignTemplateVariable`; use `MacroVariable` and `AssignMacroVariable` instead
+ * Deprecate calling or testing a macro with a name whose case differs from its definition; macro names will be case-sensitive in 4.0
+ * Deprecate omitting parentheses when calling a macro; it will throw a `SyntaxError` in 4.0
+ * Deprecate using parentheses when testing a macro with the `defined` test; it will throw a `SyntaxError` in 4.0
+ * Deprecate calling a macro without a value for an argument that has no default value; the argument will be required in 4.0
+ * Deprecate passing extra or unknown arguments to a macro that does not declare a variadic argument; it will throw in 4.0
+ * Add support for declaring an explicit variadic macro argument (`{% macro foo(a, ...rest) %}`)
+ * Compile macros as closures stored in a per-template registry instead of `macro_`-prefixed PHP methods
+ * Represent imported macro namespaces with a narrow capability object instead of template instances
+ * Mark `Twig\Node\MacroNode` as `@final`; it will be final in Twig 4.0
+ * Deprecate not passing a `MacrosNode` instance as the macros of a `ModuleNode` constructor
+ * Change `MacroReferenceExpression` to take the bare macro name instead of a `macro_`-prefixed method name
+ * Deprecate resolving a macro through a `macro_`-prefixed name; pass the bare macro name to `MacroReferenceExpression`
+
+# 3.28.0 (2026-07-03)
+
+ * Render backed enums using their backing value in the `html_attr` function
+ * Fix empty Markup values being treated as truthy in and, or, xor, not, ternary, and elvis expressions
+ * Fix a PHP 8.5 `chr()` deprecation when decoding an octal string escape sequence larger than `\377` (such as `"\777"`)
+ * Mark `Twig\Markup` as `@final`; it will be final in Twig 4.0
+ * Reduce memory usage and speed up the context restoration compiled at the end of `for` loops
+ * Allow calling a macro with a dynamic name via the dot operator (`macros.(name)(args)`)
+ * Report the column number in syntax errors and expose it via `Error::getTemplateColumn()`
+ * Track the source offset of each token and expose it via `Token::getOffset()`
+ * Fix nested `block()` calls to resolve against the overriding template when a block rendered through `block(name, template)` calls `parent()`
+ * Deprecate the possibility to use a `block` tag within a capture node (like `set`)
+ * Deprecate the possibility to use a `block` tag within a capture node (like `set`) in child templates
+ * Deprecate using a `macro`, `extends`, or `use` tag outside the root of a template
+ * Stop reporting a skipped test in `IntegrationTestCase` when there is no legacy test to run
+ * Fix `markdown_to_html` to strip the indentation shared by all lines instead of mangling content that starts with a blank line
+ * Make the `IntegrationTestCase` and `NodeTestCase` test helpers compatible with PHPUnit 11
+ * Cast printed expressions to string so values that cannot be converted to a string (arrays, non-`Stringable` objects, ...) report a usable stack trace at the print location
+ * Make the `include()` function return a `Markup` object so an assigned result is not re-escaped when printed
+ * Skip the sandbox `__toString` check on arguments whose PHP parameter type cannot implicitly coerce to string
+ * Document the criteria for marking a callable or tag as always allowed in a sandbox, and the list of built-in tags, filters, and functions that will be always allowed in Twig 4.0
+ * Add an `always_allowed_in_sandbox` option for filters, functions, and tests, and an `isAlwaysAllowedInSandbox()` method for token parsers, to let authors mark callables and tags that are always allowed in sandbox mode without explicit allow-listing
+ * Add an allow-list for tests to `Twig\Sandbox\SecurityPolicy`, with the safe built-in tests flagged as always allowed so they keep working without allow-listing
+
+# 3.27.1 (2026-05-30)
+
+ * Fix array access with a `Stringable` key to coerce the key to string consistently instead of throwing in the optimized path
+ * Fix sandbox replacing `IteratorAggregate` arguments (e.g. Symfony's `FormView`) by a plain array
+
+# 3.27.0 (2026-05-27)
+
+ * Add a strict mode to `Twig\Sandbox\SecurityPolicy` to opt-in to the 4.0 behavior for the `extends`/`use` tags and the `parent`/`block`/`attribute` functions, which are otherwise still implicitly allowed in a sandbox
+ * Deprecate the fact that the `parent`, `block`, and `attribute` functions are always allowed in a sandboxed template
+ * Fix sandbox filter/tag/function allow-list bypass when the sandbox state changed between renders of a cached `Template` instance
+ * Fix PHP 8.1+ implicit float-to-int deprecation triggered by sandboxed `ArrayAccess` attribute access with a float key
+ * Restrict allowed classes in `Twig\Profiler\Profile::unserialize()` to prevent arbitrary class instantiation
+ * Escape root profile name in `HtmlDumper`
+ * Fix sandbox bypass in deprecated internal wrappers `twig_array_some()`, `twig_array_every()`, and `twig_check_arrow_in_sandbox()` (`src/Resources/core.php`)
+ * Deprecate the `Twig\Sandbox\SourcePolicyInterface` interface with no replacement
+ * Fix sandbox bypass in the "column" filter when sandboxing is enabled via `SourcePolicyInterface`
+ * Fix sandbox `__toString` bypass via `Traversable` arguments to the `join` and `replace` filters (also covers containers that implement both `Stringable` and `Traversable`)
+ * Fix sandbox `__toString` bypass via the `in` and `not in` operators
+ * Prevent a stack overflow in `SandboxExtension::ensureToStringAllowed()` when a self-referencing iterable is passed to a sandboxed template
+ * Add support for any expression as a dynamic mapping key (attribute access, filters, ...)
+ * Fix sandbox `__toString` policy bypass via dynamic mapping keys
+
+# 3.26.0 (2026-05-20)
+
+ * Document that the sandbox doesn't protect against resource exhaustion
+ * Document `template_from_string` caveats when used in a sandboxed environment
+ * Add docs on `Markup` about the goal of this class in the context of a sandbox
+ * Pre-escape HTML input on the `spaceless` filter
+ * Pre-escape HTML input on `inline_css` and `inky_to_html` filters
+ * Fix XSS by adjusting `is_safe` annotation on HTML-emitting filters
+ * [Profiler] Escape template and profile names in `HtmlDumper`
+ * Fix unbounded memoisation of `IntlDateFormatter` / `NumberFormatter`
+ * Fix sandbox bypass in the "column" filter
+ * Fix sandbox bypass in the `{% sandbox %}` tag when including a preloaded template
+ * Fix sandbox bypass: PHP code injection via `{% use %}` template name
+ * Fix sandbox bypass: PHP code injection via `_self` / import macro reference
+ * Fix sandbox bypass in object destructuring assignment
+ * Fix sandbox bypass: propagate `Source` to `checkArrow` for source-policy sandboxing
+ * Encode single quotes as `\x27` in `Compiler::string()` as a defense-in-depth measure
+ * Fix sandbox `__toString` bypasses
+ * Add `Twig\Node\CoercesChildrenToStringInterface` to let nodes declare which of their child nodes will be string-coerced at runtime so the sandbox wraps them with a `__toString` check
+
+# 3.25.0 (2026-05-17)
+
+ * Add a `needs_is_sandboxed` option for filters, functions, and tests
+ * Use deterministic suffixes for generated embed classes
+ * Lazy-load `EscaperRuntime` in `EscaperExtension`
+
+# 3.24.0 (2026-03-17)
+
+ * Deprecate not implementing the `getOperatorTokens()` method in `ExpressionParserInterface` implementations
+ * Deprecate passing a non-`AbstractExpression` node to `Twig\Node\Expression\Binary\MatchesBinary` constructor
+ * Deprecate passing a non-`AbstractExpression` node to `Parser::setParent()`
+ * Add support for renaming variables in object destructuring (`{name: userName} = user`)
+ * Add `html_attr_relaxed` escaping strategy that preserves :, @, [, and ] for front-end framework attribute names
+ * Add support for short-circuiting in null-safe operator chains
+ * Add the `html_attr` function and `html_attr_merge` as well as `html_attr_type` filters
+
+# 3.23.0 (2026-01-23)
+
+ * Add `=` assignment operator (allows to set variables in expression or to replace the short-form of the set tag)
+ * Add sequence, mapping, and object destructuring
+ * Add `?.` null-safe operator
+ * Add `===` and `!==` operators (equivalent to the `same as` and `not same as` tests)
+ * Fix opcache preload warning for unlinked anonymous class
+ * Fix spread operator behavior
+
+# 3.22.2 (2025-12-14)
+
+ * Fix "cycle" with non-countable ArrayAccess + Traversable objects
+ * Use "getShareDir" as an indicator of Symfony version in Symfony bundle
+ * Fix escaper compatibility with PHP 8.5
+
+# 3.22.1 (2025-11-16)
+
+ * Add support for Symfony 8
+
+# 3.22.0 (2025-10-29)
+
+ * Add support for two words test in guard tag
+ * Add `Environment::registerUndefinedTestCallback()`
+ * Fix compatibility with Symfony 8
+ * Fix accessing arrays with stringable objects as key
+ * Avoid errors when failing to guess the template info for an error
+ * Fix expression parser compatibility layer
+ * Fix compiling 'index' with repr (not string) in EmbedNode
+ * Update configuration keys + allow extra keys for CommonMark extensions
+ * Allow usage of other Markdown converters than CommonMark in LeagueMarkdown
+
+# 3.21.1 (2025-05-03)
+
+ * Fix ExtensionSet usage of BinaryOperatorExpressionParser
+
+# 3.21.0 (2025-05-02)
+
+ * Fix wrong array index
+ * Deprecate `Template::loadTemplate()`
+ * Fix testing and expression when it evaluates to an instance of `Markup`
+ * Add `ReturnPrimitiveTypeInterface` (and sub-interfaces for number, boolean, string, and array)
+ * Add `SupportDefinedTestInterface` for expression nodes supporting the `defined` test
+ * Deprecate using the `|` operator in an expression with `+` or `-` without using parentheses to clarify precedence
+ * Deprecate operator precedence outside of the [0, 512] range
+ * Introduce expression parser classes to describe operators and operands provided by extensions
+   instead of arrays (it comes with many deprecations that are documented in
+   the ``deprecated`` documentation chapter)
+ * Deprecate the `Twig\ExpressionParser`, and `Twig\OperatorPrecedenceChange` classes
+ * Add attributes `AsTwigFilter`, `AsTwigFunction`, and `AsTwigTest` to ease extension development
+
+# 3.20.0 (2025-02-13)
+
+ * Fix support for ignoring syntax errors in an undefined handler in guard
+ * Add configuration for Commonmark
+ * Fix wrong array index
+ * Bump minimum PHP version to 8.1
+ * Add support for registering callbacks for undefined functions, filters or token parsers in the IntegrationTestCase
+ * Use correct line number for `ForElseNode`
+ * Fix timezone conversion on strings
+
+# 3.19.0 (2025-01-28)
+
+ * Fix a security issue where escaping was missing when using `??`
+ * Deprecate `Token::getType()`, use `Token::test()` instead
+ * Add `Token::toEnglish()`
+ * Add `ForElseNode`
+ * Deprecate `Twig\ExpressionParser::parseOnlyArguments()` and
+  `Twig\ExpressionParser::parseArguments()` (use
+  `Twig\ExpressionParser::parseNamedArguments()` instead)
+ * Fix `constant()` behavior when used with `??`
+ * Add the `invoke` filter
+ * Make `{}` optional for the `types` tag
+ * Add `LastModifiedExtensionInterface` and implementation in `AbstractExtension` to track modification of runtime classes
+ * Ignore static properties when using the dot operator
+
+# 3.18.0 (2024-12-29)
+
+ * Support for invoking closures
+ * Fix unary operator precedence change
+ * Ignore `SyntaxError` exceptions from undefined handlers when using the `guard` tag
+ * Add a way to stream template rendering (`TemplateWrapper::stream()` and `TemplateWrapper::streamBlock()`)
+
+# 3.17.1 (2024-12-12)
+
+ * Fix the null coalescing operator when the test returns null
+ * Fix the Elvis operator when used as '? :' instead of '?:'
+
+# 3.17.0 (2024-12-10)
+
+ * Fix ArrayAccess with objects as keys
+ * Support underscores in number literals
+ * Deprecate `ConditionalExpression` and `NullCoalesceExpression` (use `ConditionalTernary` and `NullCoalesceBinary` instead)
+
+# 3.16.0 (2024-11-29)
+
+ * Deprecate `InlinePrint`
+ * Fix having macro variables starting with an underscore
+ * Deprecate not passing a `Source` instance to `TokenStream`
+ * Deprecate returning `null` from `TwigFilter::getSafe()` and `TwigFunction::getSafe()`, return `[]` instead
+
+# 3.15.0 (2024-11-17)
+
+ * [BC BREAK] Add support for accessing class constants with the dot operator;
+   this can be a BC break if you don't use UPPERCASE constant names
+ * Add Spanish inflector support for the `plural` and `singular` filters in the String extension
+ * Deprecate `TempNameExpression` in favor of `LocalVariable`
+ * Deprecate `NameExpression` in favor of `ContextVariable`
+ * Deprecate `AssignNameExpression` in favor of `AssignContextVariable`
+ * Remove `MacroAutoImportNodeVisitor`
+ * Deprecate `MethodCallExpression` in favor of `MacroReferenceExpression`
+ * Fix support for the "is defined" test on `_self.xxx` (auto-imported) macros
+ * Fix support for the "is defined" test on inherited macros
+ * Add named arguments support for the dot operator arguments (`foo.bar(some: arg)`)
+ * Add named arguments support for macros
+ * Add a new `guard` tag that allows to test if some Twig callables are available at compilation time
+ * Allow arrow functions everywhere
+ * Deprecate passing a string or an array to Twig callable arguments accepting arrow functions (pass a `\Closure`)
+ * Add support for triggering deprecations for future operator precedence changes
+ * Deprecate using the `not` unary operator in an expression with ``*``, ``/``, ``//``, or ``%`` without using explicit parentheses to clarify precedence
+ * Deprecate using the `??` binary operator without explicit parentheses
+ * Deprecate using the `~` binary operator in an expression with `+` or `-` without using parentheses to clarify precedence
+ * Deprecate not passing `AbstractExpression` args to most constructor arguments for classes extending `AbstractExpression`
+ * Fix `power` expressions with a negative number in parenthesis (`(-1) ** 2`)
+ * Deprecate instantiating `Node` directly. Use `EmptyNode` or `Nodes` instead.
+ * Add support for inline comments
+ * Add `Profile::getStartTime()` and `Profile::getEndTime()`
+ * Fix "ignore missing" when used on an "embed" tag
+ * Fix the possibility to override an aliased block (via use)
+ * Add template cache hot reload
+ * Allow Twig callable argument names to be free-form (snake-case or camelCase) independently of the PHP callable signature
+   They were automatically converted to snake-cased before
+ * Deprecate the `attribute` function; use the `.` notation and wrap the name with parenthesis instead
+ * Add support for argument unpackaging
+ * Add JSON support for the file extension escaping strategy
+ * Support Markup instances (and any other \Stringable) as dynamic mapping keys
+ * Deprecate the `sandbox` tag
+ * Improve the way one can deprecate a Twig callable (use `deprecation_info` instead of the other callable options)
+ * Add the `enum` function
+ * Add support for logical `xor` operator
+
+# 3.14.2 (2024-11-07)
+
+ * Fix an infinite recursion in the sandbox code
+
+# 3.14.1 (2024-11-06)
+
+ * [BC BREAK] Fix a security issue in the sandbox mode allowing an attacker to call attributes on Array-like objects
+   They are now checked via the property policy
+ * Fix a security issue in the sandbox mode allowing an attacker to be able to call `toString()`
+   under some circumstances on an object even if the `__toString()` method is not allowed by the security policy
+
 # 3.14.0 (2024-09-09)
 
  * Fix a security issue when an included sandboxed template has been loaded before without the sandbox context
@@ -43,6 +346,17 @@
  * Bump minimum PHP version to 8.0
  * Fix integration tests when a test has more than one data/expect section and deprecations
  * Add the `enum_cases` function
+
+# 3.11.2 (2024-11-06)
+
+ * [BC BREAK] Fix a security issue in the sandbox mode allowing an attacker to call attributes on Array-like objects
+   They are now checked via the property policy
+ * Fix a security issue in the sandbox mode allowing an attacker to be able to call `toString()`
+   under some circumstances on an object even if the `__toString()` method is not allowed by the security policy
+
+# 3.11.1 (2024-09-10)
+
+ * Fix a security issue when an included sandboxed template has been loaded before without the sandbox context
 
 # 3.11.0 (2024-08-08)
 

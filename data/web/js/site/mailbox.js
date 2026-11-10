@@ -120,6 +120,10 @@ $(document).ready(function() {
       }
     });
   });
+  // Shared mailboxes need no password, the server sets a random one
+  $('#add_mailbox_shared').on('change', function() {
+    $(this).closest('form').find('input[name="password"], input[name="password2"]').prop('required', !this.checked);
+  });
   // @Open Mailbox add modal
   $('#addMailboxModal').on('show.bs.modal', function(e) {
     $.ajax({
@@ -424,6 +428,11 @@ $(document).ready(function() {
     } else {
       $('#force_pw_update').prop('checked', false);
     }
+    if (template.force_tfa == 1){
+      $('#force_tfa').prop('checked', true);
+    } else {
+      $('#force_tfa').prop('checked', false);
+    }
     if (template.sogo_access == 1){
       $('#sogo_access').prop('checked', true);
     } else {
@@ -605,7 +614,7 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: 'RL',
+          title: lang_edit.ratelimit,
           data: 'rl',
           searchable: false,
           orderable: false,
@@ -706,10 +715,6 @@ jQuery(function($){
           $.each(json, function (i, item) {
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
 
-            item.attributes.def_quota_for_mbox = humanFileSize(item.attributes.def_quota_for_mbox);
-            item.attributes.max_quota_for_mbox = humanFileSize(item.attributes.max_quota_for_mbox);
-            item.attributes.max_quota_for_domain = humanFileSize(item.attributes.max_quota_for_domain);
-
             item.template = escapeHtml(item.template);
             if (item.attributes.rl_frame === "s"){
               item.attributes.rl_frame = lang_rl.second;
@@ -792,16 +797,25 @@ jQuery(function($){
           title: lang.mailbox_defquota,
           data: 'attributes.def_quota_for_mbox',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.max_quota,
           data: 'attributes.max_quota_for_mbox',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.domain_quota_total,
           data: 'attributes.max_quota_for_domain',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.gal,
@@ -923,6 +937,7 @@ jQuery(function($){
             item.last_mail_login = (item.attributes.imap_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(item.last_imap_login)) + '</div><br>' : '') +
                                    (item.attributes.pop3_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(item.last_pop3_login)) + '</div><br>' : '') +
                                    (item.attributes.smtp_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(item.last_smtp_login)) + '</div><br>' : '') +
+                                   '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SOGO @ ' + unix_time_format(Number(item.last_sogo_login)) + '</div><br>' +
                                    '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(item.last_sso_login)) + '</div>';
             /*
             if (!item.rl) {
@@ -991,6 +1006,10 @@ jQuery(function($){
               'style="min-width:2em;width:' + item.percent_in_use + '%">' + item.percent_in_use + '%' + '</div></div>'
             };
             item.username = escapeHtml(item.username);
+            if (item.attributes && item.attributes.shared == '1') {
+              item.username += ' <span class="badge bg-secondary">' + escapeHtml(lang.shared_mailbox) + '</span>';
+            }
+            item.name = escapeHtml(item.name);
 
             if (Array.isArray(item.tags)){
               var tags = '';
@@ -1231,8 +1250,6 @@ jQuery(function($){
             item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
             item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
-            item.attributes.quota = humanFileSize(item.attributes.quota);
-
             item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_in == 1 ? '1' : '0') + '</span></i>';
             item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_out == 1 ? '1' : '0') + '</span></i>';
             item.attributes.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.pop3_access == 1 ? '1' : '0') + '</span></i>';
@@ -1242,6 +1259,7 @@ jQuery(function($){
             item.attributes.eas_access = '<i class="text-' + (item.attributes.eas_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.eas_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.eas_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.dav_access = '<i class="text-' + (item.attributes.dav_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.dav_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.dav_access == 1 ? '1' : '0') + '</span></i>';
             item.attributes.sogo_access = '<i class="text-' + (item.attributes.sogo_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.sogo_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.sogo_access == 1 ? '1' : '0') + '</span></i>';
+            item.attributes.force_tfa = '<i class="text-' + (item.attributes.force_tfa == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.force_tfa == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.force_tfa == 1 ? '1' : '0') + '</span></i>';
             if (item.attributes.quarantine_notification === 'never') {
               item.attributes.quarantine_notification = lang.never;
             } else if (item.attributes.quarantine_notification === 'hourly') {
@@ -1318,6 +1336,9 @@ jQuery(function($){
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.tls_enforce_in,
@@ -1384,6 +1405,11 @@ jQuery(function($){
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"></i>':'<i class="bi bi-x-lg"></i>';
           }
+        },
+        {
+          title: lang.force_tfa,
+          data: 'attributes.force_tfa',
+          defaultContent: ''
         },
         {
           title: lang_edit.ratelimit,
@@ -1914,6 +1940,12 @@ jQuery(function($){
               '<a href="#" data-action="delete_selected" data-id="single-alias" data-api-url="delete/alias" data-item="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="alias" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
+            if (item.group_id) {
+              // Distribution address of a group: changed through the group
+              item.action = '<a href="/edit/mailbox-group/' + encodeURIComponent(item.group_id) + '" class="btn btn-sm btn-xs-lg btn-secondary"><i class="bi bi-people"></i> ' +
+                escapeHtml((lang.groups && lang.groups.managed_alias ? lang.groups.managed_alias : '%s').replace('%s', item.group_name)) + '</a>';
+              item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
+            }
             item.goto = escapeHtml(item.goto.replace(/,/g, " "));
             if (item.public_comment !== null) {
               item.public_comment = escapeHtml(item.public_comment);
@@ -2157,7 +2189,11 @@ jQuery(function($){
            "tr" +
            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
-      order: [[2, 'desc']],
+      // keep the backend order (C4: prio desc, never run first, least recently run)
+      order: [],
+      // drop state saved before the rework (it would restore the old ID sort / column visibility)
+      stateSaveParams: mailcowImapsync.jobTableStateSave,
+      stateLoadParams: mailcowImapsync.jobTableStateLoad,
       initComplete: function(){
         hideTableExpandCollapseBtn('#tab-syncjobs', '#sync_job_table');
       },
@@ -2165,40 +2201,21 @@ jQuery(function($){
         type: "GET",
         url: "/api/v1/get/syncjobs/all/no_log",
         dataSrc: function(json){
+          if (!Array.isArray(json)) return [];
           $.each(json, function (i, item) {
-            item.log = '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '">' + lang.open_logs + '</a>'
-            item.user2 = escapeHtml(item.user2);
             if (!item.exclude > 0) {
               item.exclude = '-';
             } else {
               item.exclude  = '<code>' + escapeHtml(item.exclude) + '</code>';
             }
-            item.server_w_port = escapeHtml(item.user1) + '@' + escapeHtml(item.host1) + ':' + escapeHtml(item.port1);
+            mailcowImapsync.prepareJobRow(item);
+            item.user2 = mailcowImapsync.wrapCell(escapeHtml(item.user2));
             item.action = '<div class="btn-group">' +
               '<a href="/edit/syncjob/' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+              '<a href="#syncjobLogModal" data-bs-toggle="modal" data-syncjob-id="' + encodeURIComponent(item.id) + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-info"><i class="bi bi-card-list"></i> ' + lang.open_logs + '</a>' +
               '<a href="#" data-action="delete_selected" data-id="single-syncjob" data-api-url="delete/syncjob" data-item="' + item.id + '" class="btn btn-sm btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
               '</div>';
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="syncjob" name="multi_select" value="' + item.id + '" />';
-            if (item.is_running == 1) {
-              item.is_running = '<span id="active-script" class="badge fs-6 bg-success">' + lang.running + '</span>';
-            } else {
-              item.is_running = '<span id="inactive-script" class="badge fs-6 bg-warning">' + lang.waiting + '</span>';
-            }
-            if (!item.last_run > 0) {
-              item.last_run = lang.waiting;
-            }
-            if (item.success == null) {
-              item.success = '-';
-              item.exit_status = '';
-            } else {
-              item.success = '<i class="text-' + (item.success == 1 ? 'success' : 'danger') + ' bi bi-' + (item.success == 1 ? 'check-lg' : 'x-lg') + '"></i>';
-            }
-            if (lang['syncjob_'+item.exit_status]) {
-              item.exit_status = lang['syncjob_'+item.exit_status];
-            } else if (item.success != '-') {
-              item.exit_status = lang.syncjob_check_log;
-            }
-            item.exit_status = item.success + ' ' + item.exit_status;
           });
 
           return json;
@@ -2223,40 +2240,46 @@ jQuery(function($){
           responsivePriority: 2
         },
         {
-          title: 'ID',
+          title: mailcowImapsync.L('id'),
           data: 'id',
           responsivePriority: 3,
           defaultContent: ''
         },
         {
-          title: lang.owner,
+          title: lang.syncjobs.prio,
+          data: 'prio',
+          visible: role === 'admin',
+          responsivePriority: 3,
+          defaultContent: ''
+        },
+        {
+          title: lang.syncjobs.user2_label,
           data: 'user2',
           responsivePriority: 4,
           defaultContent: ''
         },
         {
-          title: 'Server',
+          title: lang.syncjobs.source_server,
           data: 'server_w_port',
+          responsivePriority: 6,
           defaultContent: ''
         },
         {
           title: lang.last_run,
           data: 'last_run',
+          responsivePriority: 9,
           defaultContent: ''
         },
         {
-          title: lang.syncjob_last_run_result,
+          title: lang.syncjobs.syncjob_last_run_result,
           data: 'exit_status',
-          defaultContent: ''
-        },
-        {
-          title: 'Log',
-          data: 'log',
+          responsivePriority: 8,
           defaultContent: ''
         },
         {
           title: lang.active,
           data: 'active',
+          responsivePriority: 10,
           defaultContent: '',
           render: function (data, type) {
             return 1==data?'<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>':0==data&&'<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
@@ -2265,6 +2288,7 @@ jQuery(function($){
         {
           title: lang.status,
           data: 'is_running',
+          responsivePriority: 7,
           defaultContent: ''
         },
         {
@@ -2474,6 +2498,8 @@ jQuery(function($){
   onVisible("[id^=alias_table]", () => draw_alias_table());
   onVisible("[id^=aliasdomain_table]", () => draw_aliasdomain_table());
   onVisible("[id^=sync_job_table]", () => draw_sync_job_table());
+  onVisible("[id^=imapsync_source_table]", () => mailcowImapsync.drawSourceTable(role === 'admin' || acl_data.syncjobs === 1));
+  onVisible("[id^=mailbox_group_table]", () => mailcowGroups.drawTable());
   onVisible("[id^=filter_table]", () => draw_filter_table());
   onVisible("[id^=bcc_table]", () => draw_bcc_table());
   onVisible("[id^=recipient_map_table]", () => draw_recipient_map_table());

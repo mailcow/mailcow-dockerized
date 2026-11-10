@@ -80,9 +80,9 @@ class CachedKeySet implements ArrayAccess
         ClientInterface $httpClient,
         RequestFactoryInterface $httpFactory,
         CacheItemPoolInterface $cache,
-        int $expiresAfter = null,
+        ?int $expiresAfter = null,
         bool $rateLimit = false,
-        string $defaultAlg = null
+        ?string $defaultAlg = null
     ) {
         $this->jwksUri = $jwksUri;
         $this->httpClient = $httpClient;
@@ -178,6 +178,17 @@ class CachedKeySet implements ArrayAccess
             }
             $request = $this->httpFactory->createRequest('GET', $this->jwksUri);
             $jwksResponse = $this->httpClient->sendRequest($request);
+            if ($jwksResponse->getStatusCode() !== 200) {
+                throw new UnexpectedValueException(
+                    \sprintf(
+                        'HTTP Error: %d %s for URI "%s"',
+                        $jwksResponse->getStatusCode(),
+                        $jwksResponse->getReasonPhrase(),
+                        $this->jwksUri,
+                    ),
+                    $jwksResponse->getStatusCode()
+                );
+            }
             $this->keySet = $this->formatJwksForCache((string) $jwksResponse->getBody());
 
             if (!isset($this->keySet[$keyId])) {
@@ -202,15 +213,21 @@ class CachedKeySet implements ArrayAccess
         }
 
         $cacheItem = $this->cache->getItem($this->rateLimitCacheKey);
-        if (!$cacheItem->isHit()) {
-            $cacheItem->expiresAfter(1); // # of calls are cached each minute
+
+        $cacheItemData = [];
+        if ($cacheItem->isHit() && \is_array($data = $cacheItem->get())) {
+            $cacheItemData = $data;
         }
 
-        $callsPerMinute = (int) $cacheItem->get();
+        $callsPerMinute = $cacheItemData['callsPerMinute'] ?? 0;
+        $expiry = $cacheItemData['expiry'] ?? new \DateTime('+60 seconds', new \DateTimeZone('UTC'));
+
         if (++$callsPerMinute > $this->maxCallsPerMinute) {
             return true;
         }
-        $cacheItem->set($callsPerMinute);
+
+        $cacheItem->set(['expiry' => $expiry, 'callsPerMinute' => $callsPerMinute]);
+        $cacheItem->expiresAt($expiry);
         $this->cache->save($cacheItem);
         return false;
     }

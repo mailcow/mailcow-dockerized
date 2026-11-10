@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -19,7 +21,7 @@ $transMethod = new ReflectionMethod(
     class_exists(TranslatorInterface::class)
         ? TranslatorInterface::class
         : Translation\Translator::class,
-    'trans'
+    'trans',
 );
 
 require $transMethod->hasReturnType()

@@ -2,6 +2,7 @@
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
+         convertDeprecationsToExceptions="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"

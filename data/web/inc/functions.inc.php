@@ -53,6 +53,39 @@ function valid_network($network) {
 function valid_hostname($hostname) {
   return filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
 }
+// Validates a browser-style Origin: scheme://host[:port], no path/query/fragment/credentials
+function valid_origin($origin) {
+  $parts = parse_url($origin);
+  if ($parts === false || !isset($parts['scheme']) || !isset($parts['host'])) {
+    return false;
+  }
+  if (!in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+    return false;
+  }
+  if (isset($parts['user']) || isset($parts['pass']) || isset($parts['path']) || isset($parts['query']) || isset($parts['fragment'])) {
+    return false;
+  }
+  $host = $parts['host'];
+  $host_without_brackets = trim($host, '[]');
+  if (!valid_hostname($host_without_brackets) && !filter_var($host_without_brackets, FILTER_VALIDATE_IP)) {
+    return false;
+  }
+  // Reject anything that doesn't round-trip to the exact same origin (e.g. stray trailing slash)
+  $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+  $rebuilt = strtolower($parts['scheme']) . '://' . strtolower($host) . $port;
+  return strtolower($origin) === $rebuilt;
+}
+// Bring an origin into the exact form a browser sends it (scheme://host[:port], lowercase).
+function normalize_cors_origin($origin) {
+  $origin = trim($origin);
+  if ($origin === '*') {
+    return '*';
+  }
+  if ($origin !== '' && !preg_match('~^[a-z][a-z0-9+.-]*://~i', $origin)) {
+    $origin = 'https://' . $origin;
+  }
+  return valid_origin($origin) ? strtolower($origin) : false;
+}
 // Thanks to https://stackoverflow.com/a/49373789
 // Validates exact ip matches and ip-in-cidr, ipv4 and ipv6
 function ip_acl($ip, $networks) {
@@ -558,7 +591,7 @@ function logger($_data = false) {
       $type = $return['type'];
       $msg = null;
       if (isset($return['msg'])) {
-        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE);
+        $msg = json_encode($return['msg'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
       }
       $call = null;
       if (isset($return['log'])) {
@@ -599,6 +632,18 @@ function logger($_data = false) {
   else {
     return true;
   }
+}
+function is_local_mailcow_domain($domain) {
+  // True if domain is a locally managed, active primary or alias domain
+  global $pdo;
+  $domain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+  if (empty($domain)) {
+    return false;
+  }
+  $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = 1
+    UNION SELECT 1 FROM `alias_domain` WHERE `alias_domain` = :d2 AND `active` = 1 LIMIT 1");
+  $stmt->execute(array(':d' => $domain, ':d2' => $domain));
+  return (bool)$stmt->fetchColumn();
 }
 function hasDomainAccess($username, $role, $domain) {
   global $pdo;
@@ -1247,8 +1292,13 @@ function set_tfa($_data) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row) {
         if ($row['authsource'] == 'ldap'){
-          if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
-          else $access_denied = false;
+          try {
+            if (!ldap_mbox_login($username, $_data["confirm_password"], $iam_settings)) $access_denied = true;
+            else $access_denied = false;
+          } catch (\Mailcow\Auth\IdpUnavailable $e) {
+            $_SESSION['return'][] = array('type' => 'danger', 'log' => array(__FUNCTION__, $_data_log, $e->getMessage()), 'msg' => 'iam_unavailable');
+            return false;
+          }
         } else {
           if (!verify_hash($row['password'], $_data["confirm_password"])) $access_denied = true;
           else $access_denied = false;
@@ -1344,6 +1394,18 @@ function set_tfa($_data) {
     case "webauthn":
         $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
 
+        // Refuse incomplete WebAuthn registrations. Without this guard a request
+        // that does not contain the parsed credential data (e.g. a plain form
+        // POST) would silently insert an empty keyHandle while reporting success.
+        if (empty($_data['registration']) || empty($_data['registration']->credentialId)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data_log),
+            'msg' => 'webauthn_registration_failed'
+          );
+          return false;
+        }
+
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`)
         VALUES (?, ?, 'webauthn', ?, ?, ?, ?, '1')");
         $stmt->execute(array(
@@ -1366,11 +1428,11 @@ function set_tfa($_data) {
       // Block TFA removal if force_tfa policy is active
       $is_forced_tfa = false;
       if ($_SESSION['mailcow_cc_role'] === 'user') {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       } else {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       }
@@ -1637,11 +1699,11 @@ function unset_tfa_key($_data) {
     // Block key removal if force_tfa policy is active
     $is_forced_tfa = false;
     if ($_SESSION['mailcow_cc_role'] === 'user') {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     } else {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     }
@@ -1807,6 +1869,40 @@ function get_tfa($username = null, $id = null) {
     }
 }
 function verify_tfa_login($username, $_data) {
+  global $redis;
+  global $TFA_MAX_FAILS;
+  global $TFA_FAIL_WINDOW;
+
+  if (empty($username)) {
+    return false;
+  }
+  // Count failed second factors per account, so codes cannot be guessed from many addresses
+  $fails_key = 'TFA_FAILS_' . $username;
+  if (intval($redis->get($fails_key)) >= $TFA_MAX_FAILS) {
+    $_SESSION['return'][] =  array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $username, '*'),
+      'msg' => 'tfa_login_locked'
+    );
+    $verified = false;
+  }
+  else {
+    $verified = verify_tfa_token($username, $_data);
+  }
+  if ($verified !== true) {
+    // The window starts with the first failure and is not extended by further attempts
+    if ($redis->incr($fails_key) == 1) {
+      $redis->expire($fails_key, $TFA_FAIL_WINDOW);
+    }
+    // Same message format as failed passwords, so the default fail2ban rule counts it
+    error_log("mailcow UI: Invalid password for " . $username . " (second factor) by " . $_SERVER['REMOTE_ADDR']);
+    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for " . $username . " (second factor) by " . $_SERVER['REMOTE_ADDR']);
+    return false;
+  }
+  $redis->del($fails_key);
+  return true;
+}
+function verify_tfa_token($username, $_data) {
   global $pdo;
   global $yubi;
   global $u2f;
@@ -2009,128 +2105,6 @@ function verify_tfa_login($username, $_data) {
     return true;
   }
 }
-function admin_api($access, $action, $data = null) {
-  global $pdo;
-  if ($_SESSION['mailcow_cc_role'] != "admin") {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__),
-      'msg' => 'access_denied'
-    );
-    return false;
-  }
-  if ($access !== "ro" && $access !== "rw") {
-    $_SESSION['return'][] =  array(
-      'type' => 'danger',
-      'log' => array(__FUNCTION__),
-      'msg' => 'invalid access type'
-    );
-    return false;
-  }
-  if ($action == "edit") {
-    $active = (!empty($data['active'])) ? 1 : 0;
-    $skip_ip_check = (isset($data['skip_ip_check'])) ? 1 : 0;
-    $allow_from = array();
-    if (isset($data['allow_from'])) {
-      $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $data['allow_from']));
-    }
-    foreach ($allow_from as $key => $val) {
-      if (empty($val)) {
-        unset($allow_from[$key]);
-        continue;
-      }
-      if (valid_network($val) !== true) {
-        $_SESSION['return'][] =  array(
-          'type' => 'warning',
-          'log' => array(__FUNCTION__, $data),
-          'msg' => array('ip_invalid', htmlspecialchars($allow_from[$key]))
-        );
-        unset($allow_from[$key]);
-        continue;
-      }
-    }
-    $allow_from = implode(',', array_unique(array_filter($allow_from)));
-    if (empty($allow_from) && $skip_ip_check == 0) {
-      $_SESSION['return'][] =  array(
-        'type' => 'danger',
-        'log' => array(__FUNCTION__, $data),
-        'msg' => 'ip_list_empty'
-      );
-      return false;
-    }
-    $api_key = implode('-', array(
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3)))
-    ));
-    $stmt = $pdo->query("SELECT `api_key` FROM `api` WHERE `access` = '" . $access . "'");
-    $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-    if (empty($num_results)) {
-      $stmt = $pdo->prepare("INSERT INTO `api` (`api_key`, `skip_ip_check`, `active`, `allow_from`, `access`)
-        VALUES (:api_key, :skip_ip_check, :active, :allow_from, :access);");
-      $stmt->execute(array(
-        ':api_key' => $api_key,
-        ':skip_ip_check' => $skip_ip_check,
-        ':active' => $active,
-        ':allow_from' => $allow_from,
-        ':access' => $access
-      ));
-    }
-    else {
-      if ($skip_ip_check == 0) {
-        $stmt = $pdo->prepare("UPDATE `api` SET `skip_ip_check` = :skip_ip_check,
-          `active` = :active,
-          `allow_from` = :allow_from
-            WHERE `access` = :access;");
-        $stmt->execute(array(
-          ':active' => $active,
-          ':skip_ip_check' => $skip_ip_check,
-          ':allow_from' => $allow_from,
-          ':access' => $access
-        ));
-      }
-      else {
-        $stmt = $pdo->prepare("UPDATE `api` SET `skip_ip_check` = :skip_ip_check,
-          `active` = :active
-            WHERE `access` = :access;");
-        $stmt->execute(array(
-          ':active' => $active,
-          ':skip_ip_check' => $skip_ip_check,
-          ':access' => $access
-        ));
-      }
-    }
-  }
-  elseif ($action == "regen_key") {
-    $api_key = implode('-', array(
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3))),
-      strtoupper(bin2hex(random_bytes(3)))
-    ));
-    $stmt = $pdo->prepare("UPDATE `api` SET `api_key` = :api_key WHERE `access` = :access");
-    $stmt->execute(array(
-      ':api_key' => $api_key,
-      ':access' => $access
-    ));
-  }
-  elseif ($action == "get") {
-    $stmt = $pdo->query("SELECT * FROM `api` WHERE `access` = '" . $access . "'");
-    $apidata = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($apidata !== false) {
-      $apidata['allow_from'] = str_replace(',', PHP_EOL, $apidata['allow_from']);
-    }
-    return $apidata;
-  }
-  $_SESSION['return'][] =  array(
-    'type' => 'success',
-    'log' => array(__FUNCTION__, $data),
-    'msg' => 'admin_api_modified'
-  );
-}
 function license($action, $data = null) {
   global $pdo;
   global $redis;
@@ -2283,10 +2257,13 @@ function cors($action, $data = null) {
         return false;
       }
 
-      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array($_SERVER['SERVER_NAME']);
+      $allowed_origins = isset($data['allowed_origins']) ? $data['allowed_origins'] : array(getBaseURL());
       $allowed_origins = !is_array($allowed_origins) ? array_filter(array_map('trim', explode("\n", $allowed_origins))) : $allowed_origins;
-      foreach ($allowed_origins as $origin) {
-        if (!filter_var($origin, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) && $origin != '*') {
+      foreach ($allowed_origins as &$origin) {
+        if ($origin === '*') {
+          continue;
+        }
+        if (!valid_origin($origin)) {
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $action, $data),
@@ -2294,7 +2271,10 @@ function cors($action, $data = null) {
           );
           return false;
         }
+        // browsers always send a lowercase scheme/host in the Origin header, so normalize to match
+        $origin = strtolower($origin);
       }
+      unset($origin);
 
       $allowed_methods = isset($data['allowed_methods']) ? $data['allowed_methods'] : array('GET', 'POST', 'PUT', 'DELETE');
       $allowed_methods  = !is_array($allowed_methods) ? array_map('trim', preg_split( "/( |,|;|\n)/", $allowed_methods)) : $allowed_methods;
@@ -2342,26 +2322,35 @@ function cors($action, $data = null) {
         );
       }
 
-      $cors_settings                    = !$cors_settings ? array('allowed_origins' => $_SERVER['SERVER_NAME'], 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
-      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? $_SERVER['SERVER_NAME'] : $cors_settings['allowed_origins'];
+      $cors_settings                    = !$cors_settings ? array('allowed_origins' => getBaseURL(), 'allowed_methods' => 'GET, POST, PUT, DELETE') : $cors_settings;
+      $cors_settings['allowed_origins'] = empty($cors_settings['allowed_origins']) ? getBaseURL() : $cors_settings['allowed_origins'];
       $cors_settings['allowed_methods'] = empty($cors_settings['allowed_methods']) ? 'GET, POST, PUT, DELETE, OPTION' : $cors_settings['allowed_methods'];
 
       return $cors_settings;
     break;
     case "set_headers":
       $cors_settings = cors('get');
+      // normalize the stored list; it may still hold bare hostnames written before origins were validated as origins
+      $allowed_origins = array_filter(array_map('normalize_cors_origin', explode(',', $cors_settings['allowed_origins'])));
+      $origin = isset($_SERVER['HTTP_ORIGIN']) ? normalize_cors_origin($_SERVER['HTTP_ORIGIN']) : false;
       // check if requested origin is in allowed origins
-      $allowed_origins = explode(', ', $cors_settings['allowed_origins']);
-      $cors_settings['allowed_origins'] = $allowed_origins[0];
-      if (in_array('*', $allowed_origins)){
-        $cors_settings['allowed_origins'] = '*';
-      } else if (array_key_exists('HTTP_ORIGIN', $_SERVER) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
-        $cors_settings['allowed_origins'] = $_SERVER['HTTP_ORIGIN'];
+      $allow_origin = null;
+      if (in_array('*', $allowed_origins, true)) {
+        $allow_origin = '*';
+      } else if ($origin !== false && in_array($origin, $allowed_origins, true)) {
+        $allow_origin = $origin;
       }
       // always allow OPTIONS for preflight request
       $cors_settings["allowed_methods"] = empty($cors_settings["allowed_methods"]) ? 'OPTIONS' : $cors_settings["allowed_methods"] . ', ' . 'OPTIONS';
 
-      header('Access-Control-Allow-Origin: ' . $cors_settings['allowed_origins']);
+      // a disallowed origin gets no Access-Control-Allow-Origin at all; echoing a different origin than the requesting one tells a browser nothing
+      if ($allow_origin !== null) {
+        header('Access-Control-Allow-Origin: ' . $allow_origin);
+      }
+      if ($allow_origin !== '*') {
+        // the response depends on the request origin, keep caches from mixing them up
+        header('Vary: Origin', false);
+      }
       header('Access-Control-Allow-Methods: '. $cors_settings['allowed_methods']);
       header('Access-Control-Allow-Headers: Accept, Content-Type, X-Api-Key, Origin');
 
@@ -2422,6 +2411,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
   $data_log = $_data;
   if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
   if (isset($data_log['access_token'])) $data_log['access_token'] = '*';
+  if (isset($data_log['bindpass'])) $data_log['bindpass'] = '*';
 
   switch ($_action) {
     case 'get':
@@ -2432,14 +2422,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       foreach($rows as $row){
         switch ($row["key"]) {
           case "redirect_url_extra":
+            $settings[$row["key"]] = json_decode($row["value"]);
+          break;
           case "mappers":
           case "templates":
-            $settings[$row["key"]] = json_decode($row["value"]);
+            // Parallel lists; older rows can be JSON objects, decode as arrays to keep the keys aligned
+            $settings[$row["key"]] = (array)json_decode($row["value"], true);
           break;
           case "use_ssl":
           case "use_tls":
           case "login_provisioning":
-          case "ignore_ssl_errors":
+          case "ignore_ssl_error":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2463,7 +2456,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($settings["authsource"] == "ldap"){
         $settings['use_ssl'] = !isset($settings['use_ssl']) ? false : $settings['use_ssl'];
         $settings['use_tls'] = !isset($settings['use_tls']) ? false : $settings['use_tls'];
-        $settings['ignore_ssl_errors'] = !isset($settings['ignore_ssl_errors']) ? false : $settings['ignore_ssl_errors'];
+        $settings['ignore_ssl_error'] = !isset($settings['ignore_ssl_error']) ? false : $settings['ignore_ssl_error'];
       }
       return $settings;
     break;
@@ -2517,6 +2510,13 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       $_data['ignore_ssl_error']    = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
       $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
+      // Identity sync: offboarding and groups (Keycloak and LDAP)
+      $sync_settings = array('offboarding', 'offboarding_limit', 'group_sync', 'group_autocreate', 'group_default_domain');
+      $_data['offboarding']          = isset($_data['offboarding']) ? intval($_data['offboarding']) : 0;
+      $_data['offboarding_limit']    = isset($_data['offboarding_limit']) && is_numeric($_data['offboarding_limit']) ? min(100, max(0, intval($_data['offboarding_limit']))) : 10;
+      $_data['group_sync']           = isset($_data['group_sync']) ? intval($_data['group_sync']) : 0;
+      $_data['group_autocreate']     = isset($_data['group_autocreate']) ? intval($_data['group_autocreate']) : 0;
+      $_data['group_default_domain'] = isset($_data['group_default_domain']) ? strtolower(trim($_data['group_default_domain'])) : "";
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
@@ -2525,7 +2525,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning');
+          $_data['group_paths']       = isset($_data['group_paths']) ? trim($_data['group_paths']) : "";
+          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'group_paths'), $sync_settings);
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
@@ -2546,7 +2547,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['use_tls']           = isset($_data['use_tls']) && !$_data['use_ssl'] ? boolval($_data['use_tls']) : false;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
-          $required_settings          = array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning');
+          $_data['id_attribute']      = isset($_data['id_attribute']) ? strtolower(trim($_data['id_attribute'])) : "";
+          $_data['disabled_filter']   = isset($_data['disabled_filter']) ? trim($_data['disabled_filter']) : "";
+          $_data['group_basedn']      = isset($_data['group_basedn']) ? trim($_data['group_basedn']) : "";
+          $_data['group_filter']      = isset($_data['group_filter']) ? trim($_data['group_filter']) : "";
+          $_data['group_name_attribute'] = (!empty($_data['group_name_attribute'])) ? strtolower(trim($_data['group_name_attribute'])) : "cn";
+          $_data['group_member_mode'] = isset($_data['group_member_mode']) && in_array($_data['group_member_mode'], array('memberof', 'member', 'ad_chain')) ? $_data['group_member_mode'] : "memberof";
+          $_data['group_member_attribute'] = (!empty($_data['group_member_attribute'])) ? strtolower(trim($_data['group_member_attribute'])) : "member";
+          $required_settings          = array_merge(array('authsource', 'host', 'port', 'basedn', 'username_field', 'filter', 'attribute_field', 'binddn', 'bindpass', 'periodic_sync', 'import_users', 'sync_interval', 'use_ssl', 'use_tls', 'ignore_ssl_error', 'login_provisioning', 'id_attribute', 'disabled_filter', 'group_basedn', 'group_filter', 'group_name_attribute', 'group_member_mode', 'group_member_attribute'), $sync_settings);
         break;
       }
 
@@ -2567,6 +2575,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $stmt->bindParam(':key', $setting);
         $stmt->bindParam(':value', $_data[$setting]);
         $stmt->execute();
+      }
+      // Stored LDAP ids of another id attribute never match again, the mailboxes are linked by email again
+      if ($_data['authsource'] == 'ldap' && ($iam_settings['id_attribute'] ?? '') != $_data['id_attribute']) {
+        $pdo->query("UPDATE `identity_link` SET `external_id` = NULL WHERE `provider` = 'ldap'");
       }
       $pdo->commit();
 
@@ -2595,19 +2607,26 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $_data['mappers'] = (!is_array($_data['mappers'])) ? array($_data['mappers']) : $_data['mappers'];
         $_data['templates'] = (!is_array($_data['templates'])) ? array($_data['templates']) : $_data['templates'];
 
-        $mappers = array_filter($_data['mappers']);
-        $templates = array_filter($_data['templates']);
-        if (count($mappers) == count($templates)){
-          $mappers = json_encode($mappers);
-          $templates = json_encode($templates);
-
-          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('mappers', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-          $stmt->bindParam(':value', $mappers);
-          $stmt->execute();
-          $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
-          $stmt->bindParam(':value', $templates);
-          $stmt->execute();
+        // Keep mapper/template pairs together, incomplete rows are dropped
+        $mappers = array();
+        $templates = array();
+        $template_values = array_values($_data['templates']);
+        foreach (array_values($_data['mappers']) as $i => $mapper) {
+          if ((string)$mapper === '' || (string)($template_values[$i] ?? '') === '') {
+            continue;
+          }
+          $mappers[] = $mapper;
+          $templates[] = $template_values[$i];
         }
+        $mappers = json_encode($mappers);
+        $templates = json_encode($templates);
+
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('mappers', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $mappers);
+        $stmt->execute();
+        $stmt = $pdo->prepare("INSERT INTO identity_provider (`key`, `value`) VALUES ('templates', :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);");
+        $stmt->bindParam(':value', $templates);
+        $stmt->execute();
       }
 
       // delete old access_token
@@ -2732,6 +2751,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       $stmt = $pdo->query("DELETE FROM identity_provider;");
+      $stmt = $pdo->query("DELETE FROM identity_link;");
+      $stmt = $pdo->query("DELETE FROM identity_sync_run;");
 
       $_SESSION['return'][] =  array(
         'type' => 'success',
@@ -2852,8 +2873,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       // get mapped template
-      $user_template = $info['mailcow_template'];
-      $mapper_key = array_search($user_template, $iam_settings['mappers']);
+      $idp_login = \Mailcow\Auth\AuthModule::fromGlobals()->idp;
+      $mapped_template = $idp_login->mappedTemplate($info['mailcow_template'] ?? array());
 
       // token valid, get mailbox
       $stmt = $pdo->prepare("SELECT
@@ -2875,13 +2896,23 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           );
           return false;
         }
-        if ($mapper_key !== false) {
+        if (!$idp_login->verifyLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+          clear_session();
+          $_SESSION['return'][] =  array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $info['email'], 'The mailbox is linked to another IdP user'),
+            'msg' => 'login_failed'
+          );
+          return false;
+        }
+        $update_template = $idp_login->templateFor($info['email'], $mapped_template);
+        if ($update_template !== null) {
           // update user
           $_SESSION['access_all_exception'] = '1';
           mailbox('edit', 'mailbox_from_template', array(
             'username' => $info['email'],
             'name' => $info['name'],
-            'template' => $iam_settings['templates'][$mapper_key]
+            'template' => $update_template
           ));
           $_SESSION['access_all_exception'] = '0';
 
@@ -2896,11 +2927,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $stmt->execute(array(':user' => $info['email']));
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        if ($row['active'] != 1 || $row['d_active'] != 1) {
+        if ($row['active'] != 1 || $row['d_active'] != 1 || (json_decode($row['attributes'], true)['shared'] ?? '0') == '1') {
           clear_session();
           $_SESSION['return'][] =  array(
             'type' => 'danger',
-            'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive'),
+            'log' => array(__FUNCTION__, $info['email'], 'Domain or mailbox is inactive or shared'),
             'msg' => 'login_failed'
           );
           return false;
@@ -2926,7 +2957,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
-      if (empty($iam_settings['mappers']) || empty($user_template) || $mapper_key === false){
+      if ($mapped_template === null){
         if (!empty($iam_settings['default_template'])) {
           $mbox_template = $iam_settings['default_template'];
         } else {
@@ -2939,7 +2970,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           return false;
         }
       } else {
-        $mbox_template = $iam_settings['templates'][$mapper_key];
+        $mbox_template = $mapped_template;
+      }
+
+      if (!$idp_login->mayCreate($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'The IdP user is linked to another mailbox'),
+          'msg' => 'login_failed'
+        );
+        return false;
       }
 
       // create mailbox
@@ -2961,6 +3002,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
+      $idp_login->storeLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''));
 
       // double check if mailbox and domain is active
       $stmt = $pdo->prepare("SELECT * FROM `mailbox`
@@ -3017,6 +3059,38 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       }
 
+      // A refresh keeps the logged-in mailbox: a changed IdP email or another IdP user ends the session
+      if (strtolower($info['email']) !== strtolower($_SESSION['mailcow_cc_username'] ?? '') ||
+        !\Mailcow\Auth\AuthModule::fromGlobals()->idp->verifyLink($iam_settings['authsource'], $info['email'], (string)($info['sub'] ?? ''))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'The IdP user does not match the logged-in mailbox'),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+
+      // The mailbox may have been deleted or deactivated since the login
+      $stmt = $pdo->prepare("SELECT `mailbox`.`authsource` FROM `mailbox`
+        INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+        WHERE `kind` NOT REGEXP 'location|thing|group'
+          AND `mailbox`.`active` = '1'
+          AND `domain`.`active` = '1'
+          AND COALESCE(JSON_UNQUOTE(JSON_VALUE(`mailbox`.`attributes`, '$.shared')), '0') != '1'
+          AND `username` = :user");
+      $stmt->execute(array(':user' => $info['email']));
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if (!$row || !in_array($row['authsource'], array('keycloak', 'generic-oidc'))) {
+        clear_session();
+        $_SESSION['return'][] =  array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $info['email'], 'Mailbox or domain is inactive or not of type OIDC'),
+          'msg' => 'refresh_login_failed'
+        );
+        return false;
+      }
+
       set_user_loggedin_session($info['email']);
       $_SESSION['iam_token'] = $plain_token;
       $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
@@ -3044,7 +3118,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
       if ($iam_settings['authsource'] !== 'keycloak') return false;
-      if (isset($iam_settings['access_token'])) {
+      // only introspect a cached access_token that is not (about to be) expired,
+      // introspecting an expired token makes Keycloak log INTROSPECT_TOKEN_ERROR
+      $token_not_expired = false;
+      if (!empty($iam_settings['access_token'])) {
+        $token_parts = explode('.', $iam_settings['access_token']);
+        if (count($token_parts) === 3) {
+          $token_payload = json_decode(base64_decode(strtr($token_parts[1], '-_', '+/')), true);
+          $token_not_expired = is_array($token_payload) && isset($token_payload['exp']) && intval($token_payload['exp']) > time() + 30;
+        }
+      }
+      if ($token_not_expired) {
         // check if access_token is valid
         $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token/introspect";
         $req = http_build_query(array(
@@ -3095,6 +3179,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         ':key' => 'access_token',
         ':value' => $res['access_token']
       ));
+      // keep the cached token in sync, so subsequent calls in the same run reuse it
+      $iam_settings['access_token'] = $res['access_token'];
       return $res['access_token'];
     break;
   }
@@ -3503,7 +3589,16 @@ function protect_route($allowed_roles = ['admin', 'domainadmin', 'user'], $redir
     if (isset($redirects['unauthenticated'])) {
       header('Location: ' . $redirects['unauthenticated']);
     } else {
-      header('Location: /');
+      // Send a deep link to the login page for its area instead of the user login at /,
+      // e.g. /admin/dashboard -> /admin rather than /
+      $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin');
+      } elseif (strpos($request_uri, '/domainadmin/') === 0) {
+        header('Location: /domainadmin');
+      } else {
+        header('Location: /');
+      }
     }
     exit();
   }

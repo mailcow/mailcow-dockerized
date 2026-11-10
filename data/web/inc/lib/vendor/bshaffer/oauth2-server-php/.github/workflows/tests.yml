@@ -1,0 +1,74 @@
+name: Test Suite
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+      myriadb:
+        image: mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3808:3808
+          - 3306:3306
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: oauth2_server_php
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -h localhost" --health-interval=10s --health-timeout=5s --health-retries=5
+    strategy:
+      matrix:
+        php: [ 7.2, 7.3, 7.4, "8.0", 8.1, 8.2 ]
+    name: "PHP ${{ matrix.php }} Unit Test"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: codecov/codecov-action@v1
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mongodb, mbstring, intl, redis, pdo_mysql
+      - name: Install composer dependencies
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: composer install
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit -v
+  phpstan:
+    name: "PHPStan"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+      - name: Install composer dependencies
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: composer install
+      - name: Run PHPStan
+        run: |
+          composer require phpstan/phpstan
+          vendor/bin/phpstan analyse --level=0 src/

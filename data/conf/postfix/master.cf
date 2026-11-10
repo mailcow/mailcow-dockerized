@@ -29,7 +29,6 @@ smtps    inet  n       -       n       -       -       smtpd
 # TLS protocol can be modified by setting submission_smtpd_tls_mandatory_protocols in extra.cf
 submission inet n       -       n       -       -       smtpd
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
-  -o smtpd_enforce_tls=yes
   -o smtpd_tls_security_level=encrypt
   -o smtpd_tls_mandatory_protocols=$submission_smtpd_tls_mandatory_protocols
   -o tls_preempt_cipherlist=yes
@@ -38,7 +37,6 @@ submission inet n       -       n       -       -       smtpd
 10587      inet n       -       n       -       -       smtpd
   -o smtpd_upstream_proxy_protocol=haproxy
   -o smtpd_client_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
-  -o smtpd_enforce_tls=yes
   -o smtpd_tls_security_level=encrypt
   -o smtpd_tls_mandatory_protocols=$submission_smtpd_tls_mandatory_protocols
   -o tls_preempt_cipherlist=yes
