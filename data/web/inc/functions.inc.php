@@ -1399,6 +1399,18 @@ function set_tfa($_data) {
     case "webauthn":
         $key_id = (!isset($_data["key_id"])) ? 'unidentified' : $_data["key_id"];
 
+        // Refuse incomplete WebAuthn registrations. Without this guard a request
+        // that does not contain the parsed credential data (e.g. a plain form
+        // POST) would silently insert an empty keyHandle while reporting success.
+        if (empty($_data['registration']) || empty($_data['registration']->credentialId)) {
+          $_SESSION['return'][] = array(
+            'type' => 'danger',
+            'log' => array(__FUNCTION__, $_data_log),
+            'msg' => 'webauthn_registration_failed'
+          );
+          return false;
+        }
+
         $stmt = $pdo->prepare("INSERT INTO `tfa` (`username`, `key_id`, `authmech`, `keyHandle`, `publicKey`, `certificate`, `counter`, `active`)
         VALUES (?, ?, 'webauthn', ?, ?, ?, ?, '1')");
         $stmt->execute(array(
@@ -1421,11 +1433,11 @@ function set_tfa($_data) {
       // Block TFA removal if force_tfa policy is active
       $is_forced_tfa = false;
       if ($_SESSION['mailcow_cc_role'] === 'user') {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       } else {
-        $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+        $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
         $stmt_check->execute(array($username));
         $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
       }
@@ -1692,11 +1704,11 @@ function unset_tfa_key($_data) {
     // Block key removal if force_tfa policy is active
     $is_forced_tfa = false;
     if ($_SESSION['mailcow_cc_role'] === 'user') {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `mailbox` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     } else {
-      $stmt_check = $pdo->prepare("SELECT JSON_EXTRACT(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
+      $stmt_check = $pdo->prepare("SELECT JSON_VALUE(`attributes`, '$.force_tfa') FROM `admin` WHERE `username` = ?");
       $stmt_check->execute(array($username));
       $is_forced_tfa = ($stmt_check->fetchColumn() == '1');
     }
@@ -2425,7 +2437,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_ssl":
           case "use_tls":
           case "login_provisioning":
-          case "ignore_ssl_errors":
+          case "ignore_ssl_error":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2449,7 +2461,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if ($settings["authsource"] == "ldap"){
         $settings['use_ssl'] = !isset($settings['use_ssl']) ? false : $settings['use_ssl'];
         $settings['use_tls'] = !isset($settings['use_tls']) ? false : $settings['use_tls'];
-        $settings['ignore_ssl_errors'] = !isset($settings['ignore_ssl_errors']) ? false : $settings['ignore_ssl_errors'];
+        $settings['ignore_ssl_error'] = !isset($settings['ignore_ssl_error']) ? false : $settings['ignore_ssl_error'];
       }
       return $settings;
     break;
@@ -3111,7 +3123,17 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
       if ($iam_settings['authsource'] !== 'keycloak') return false;
-      if (isset($iam_settings['access_token'])) {
+      // only introspect a cached access_token that is not (about to be) expired,
+      // introspecting an expired token makes Keycloak log INTROSPECT_TOKEN_ERROR
+      $token_not_expired = false;
+      if (!empty($iam_settings['access_token'])) {
+        $token_parts = explode('.', $iam_settings['access_token']);
+        if (count($token_parts) === 3) {
+          $token_payload = json_decode(base64_decode(strtr($token_parts[1], '-_', '+/')), true);
+          $token_not_expired = is_array($token_payload) && isset($token_payload['exp']) && intval($token_payload['exp']) > time() + 30;
+        }
+      }
+      if ($token_not_expired) {
         // check if access_token is valid
         $url = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/token/introspect";
         $req = http_build_query(array(
@@ -3162,6 +3184,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         ':key' => 'access_token',
         ':value' => $res['access_token']
       ));
+      // keep the cached token in sync, so subsequent calls in the same run reuse it
+      $iam_settings['access_token'] = $res['access_token'];
       return $res['access_token'];
     break;
   }

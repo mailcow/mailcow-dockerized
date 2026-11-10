@@ -1074,7 +1074,6 @@
         "verified_webauthn_login": "Inicio de sesión WebAuthn verificado",
         "verified_yotp_login": "Inicio de sesión Yubico OTP verificado",
         "admin_added": "Se agregó el administrador %s",
-        "admin_api_modified": "Se guardaron los cambios en la API",
         "admin_removed": "Se eliminó el administrador %s",
         "app_links": "Se guardaron los cambios en los enlaces de aplicaciones",
         "app_passwd_added": "Se agregó una nueva contraseña de aplicación",
@@ -1333,10 +1332,6 @@
         "sogo_profile_reset_help": "Esto destruirá el perfil de SOGo del usuario y <b>eliminará de forma irrecuperable todos sus contactos y datos de calendario</b>.",
         "spam_score_reset": "Restablecer al valor predeterminado del servidor",
         "spamfilter_table_domain_policy": "n/d (política del dominio)",
-        "syncjob_check_log": "Revisar registro",
-        "syncjob_EX_OK": "Correcto",
-        "syncjob_EXIT_OVERQUOTA": "El buzón de destino superó su cuota",
-        "syncjob_EXIT_AUTHENTICATION_FAILURE_USER1": "Usuario o contraseña incorrectos",
         "tfa_info": "La autenticación de dos factores ayuda a proteger su cuenta. Si la activa, necesitará contraseñas de aplicación para iniciar sesión en aplicaciones o servicios que no admiten la autenticación de dos factores (p. ej., clientes de correo)."
     },
     "warning": {

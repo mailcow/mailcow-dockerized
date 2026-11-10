@@ -68,7 +68,7 @@ services:
             - redis
 
     clamd-mailcow:
-      image: ghcr.io/mailcow/clamd:1.4.6-1
+      image: ghcr.io/mailcow/clamd:1.4.6-2
       restart: always
       depends_on:
         unbound-mailcow:
@@ -87,7 +87,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: ghcr.io/mailcow/rspamd:4.2.3-1
+      image: ghcr.io/mailcow/rspamd:nightly-10112026
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -260,7 +260,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: ghcr.io/mailcow/dovecot:nightly-09112026
+      image: ghcr.io/mailcow/dovecot:nightly-10112026
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
@@ -400,7 +400,7 @@ services:
             - postfix
 
     postfix-tlspol-mailcow:
-      image: ghcr.io/mailcow/postfix-tlspol:1.14.0
+      image: ghcr.io/mailcow/postfix-tlspol:1.14.5
       depends_on:
         unbound-mailcow:
           condition: service_healthy
@@ -437,7 +437,7 @@ services:
         - php-fpm-mailcow
         - sogo-mailcow
         - rspamd-mailcow
-      image: ghcr.io/mailcow/nginx:1.30.6-2
+      image: ghcr.io/mailcow/nginx:1.30.6-3
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -621,7 +621,7 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: ghcr.io/mailcow/dockerapi:nightly-09112026
+      image: ghcr.io/mailcow/dockerapi:nightly-10112026
       security_opt:
         - label=disable
       restart: always

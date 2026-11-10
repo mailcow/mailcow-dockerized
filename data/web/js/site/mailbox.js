@@ -616,7 +616,7 @@ jQuery(function($){
           defaultContent: ''
         },
         {
-          title: 'RL',
+          title: lang_edit.ratelimit,
           data: 'rl',
           searchable: false,
           orderable: false,
@@ -717,10 +717,6 @@ jQuery(function($){
           $.each(json, function (i, item) {
             item.chkbox = '<input type="checkbox" class="form-check-input" data-id="domain_template" name="multi_select" value="' + encodeURIComponent(item.id) + '" />';
 
-            item.attributes.def_quota_for_mbox = humanFileSize(item.attributes.def_quota_for_mbox);
-            item.attributes.max_quota_for_mbox = humanFileSize(item.attributes.max_quota_for_mbox);
-            item.attributes.max_quota_for_domain = humanFileSize(item.attributes.max_quota_for_domain);
-
             item.template = escapeHtml(item.template);
             if (item.attributes.rl_frame === "s"){
               item.attributes.rl_frame = lang_rl.second;
@@ -803,16 +799,25 @@ jQuery(function($){
           title: lang.mailbox_defquota,
           data: 'attributes.def_quota_for_mbox',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.max_quota,
           data: 'attributes.max_quota_for_mbox',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.domain_quota_total,
           data: 'attributes.max_quota_for_domain',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.gal,
@@ -934,6 +939,7 @@ jQuery(function($){
             item.last_mail_login = (item.attributes.imap_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">IMAP @ ' + unix_time_format(Number(item.last_imap_login)) + '</div><br>' : '') +
                                    (item.attributes.pop3_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">POP3 @ ' + unix_time_format(Number(item.last_pop3_login)) + '</div><br>' : '') +
                                    (item.attributes.smtp_access == 1 ? '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SMTP @ ' + unix_time_format(Number(item.last_smtp_login)) + '</div><br>' : '') +
+                                   '<div class="text-start badge bg-info mb-2" style="min-width: 70px;">SOGO @ ' + unix_time_format(Number(item.last_sogo_login)) + '</div><br>' +
                                    '<div class="text-start badge bg-info" style="min-width: 70px;">SSO @ ' + unix_time_format(Number(item.last_sso_login)) + '</div>';
             /*
             if (!item.rl) {
@@ -1258,8 +1264,6 @@ jQuery(function($){
             item.attributes.rl_value = (!item.attributes.rl_value) ? "∞" : escapeHtml(item.attributes.rl_value);
             item.attributes.ratelimit = item.attributes.rl_value + " " + item.attributes.rl_frame;
 
-            item.attributes.quota = humanFileSize(item.attributes.quota);
-
             item.attributes.tls_enforce_in = '<i class="text-' + (item.attributes.tls_enforce_in == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_in == 1 ? '1' : '0') + '</span></i>';
             item.attributes.tls_enforce_out = '<i class="text-' + (item.attributes.tls_enforce_out == 1 ? 'success bi bi-lock-fill' : 'danger bi bi-unlock-fill') + '"><span class="sorting-value">' + (item.attributes.tls_enforce_out == 1 ? '1' : '0') + '</span></i>';
             item.attributes.pop3_access = '<i class="text-' + (item.attributes.pop3_access == 1 ? 'success' : 'danger') + ' bi bi-' + (item.attributes.pop3_access == 1 ? 'check-lg' : 'x-lg') + '"><span class="sorting-value">' + (item.attributes.pop3_access == 1 ? '1' : '0') + '</span></i>';
@@ -1346,6 +1350,9 @@ jQuery(function($){
           title: lang.domain_quota,
           data: 'attributes.quota',
           defaultContent: '',
+          render: function (data, type) {
+            return type === 'sort' || type === 'type' ? data : humanFileSize(data);
+          }
         },
         {
           title: lang.tls_enforce_in,

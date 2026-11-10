@@ -621,8 +621,8 @@ class DockerApi:
       if not user or id in ('user=', 'group='):
         return Response(content=json.dumps({ 'type': 'danger', 'msg': 'user and id required' }, indent=4), media_type="application/json")
       action = 'doveadm acl set -u "$ACL_USER" -- "$folder" "$ACL_ID" $ACL_RIGHTS' if rights else 'doveadm acl delete -u "$ACL_USER" -- "$folder" "$ACL_ID"'
-      script = ('set -o pipefail; doveadm mailbox list -u "$ACL_USER" | while IFS= read -r folder; do '
-        'case "$folder" in Shared/*) continue;; esac; ' + action + ' || exit 1; done && doveadm acl recalc -u "$ACL_USER"')
+      script = ('set -o pipefail; doveadm -f tab mailbox status -u "$ACL_USER" guid "*" | tail -n +2 | cut -f1 | while IFS= read -r folder; do '
+        'case "$folder" in Shared|Shared/*) continue;; esac; ' + action + ' || exit 1; done && doveadm acl recalc -u "$ACL_USER"')
       acl_return = container.exec_run(["/bin/bash", "-c", script],
         environment={ 'ACL_USER': user, 'ACL_ID': id, 'ACL_RIGHTS': ' '.join(rights) })
       return self.exec_run_handler('generic', acl_return)

@@ -35,6 +35,13 @@ function fwdhost($_action, $_data = null) {
         );
         return false;
       }
+      $hosts = array_unique(array_map(function ($host) {
+        $net = explode('/', $host, 2);
+        if (filter_var($net[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+          $net[0] = inet_ntop(inet_pton($net[0]));
+        }
+        return implode('/', $net);
+      }, $hosts));
       foreach ($hosts as $host) {
         try {
           $redis->hSet('WHITELISTED_FWD_HOST', $host, $source);

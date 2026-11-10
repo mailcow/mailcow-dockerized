@@ -3,6 +3,11 @@
 # THIS SCRIPT IS DESIGNED TO BE RUNNING BY MAILCOW SCRIPTS ONLY!
 # DO NOT, AGAIN, NOT TRY TO RUN THIS SCRIPT STANDALONE!!!!!!
 
+# Global IPv6 address that is no unique local address (fc00::/7, e.g. Docker bridges)
+_has_public_ipv6() {
+  ip -6 -o addr show scope global 2>/dev/null | awk '{print $4}' | grep -qviE '^f[cd]'
+}
+
 # 1) Check if the host supports IPv6
 get_ipv6_support() {
   # ---- helper: probe external IPv6 connectivity without DNS ----
@@ -37,6 +42,9 @@ get_ipv6_support() {
     if _probe_ipv6_connectivity; then
       DETECTED_IPV6=true
       echo -e "IPv6 detected on host – ${LIGHT_GREEN}leaving IPv6 support enabled${YELLOW}.${NC}"
+    elif _has_public_ipv6; then
+      DETECTED_IPV6=true
+      echo -e "${YELLOW}External IPv6 connectivity test failed, but the host has a public IPv6 address – ${LIGHT_GREEN}leaving IPv6 support enabled${YELLOW}.${NC}"
     else
       DETECTED_IPV6=false
       echo -e "${YELLOW}Default IPv6 route present but external IPv6 connectivity failed – ${LIGHT_RED}disabling IPv6 support${YELLOW}.${NC}"
@@ -192,9 +200,31 @@ EOF
   fi
 }
 
+_set_enable_ipv6() {
+  if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
+    if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
+      sed -i "s/^ENABLE_IPV6=.*/ENABLE_IPV6=$1/" "$MAILCOW_CONF"
+    else
+      echo "ENABLE_IPV6=$1" >> "$MAILCOW_CONF"
+    fi
+  else
+    export IPV6_BOOL=$1
+  fi
+}
+
+_warn_ipv6_disabled() {
+  _has_public_ipv6 || return 0
+  ip -6 route show default 2>/dev/null | grep -qE '^default' || return 0
+  grep -Eq '"userland-proxy"[[:space:]]*:[[:space:]]*false' /etc/docker/daemon.json 2>/dev/null && return 0
+  echo -e "${LIGHT_RED}WARNING: ENABLE_IPV6=false, but this host has a public IPv6 address.${NC}"
+  echo -e "${YELLOW}Docker forwards IPv6 connections to mailcow with an internal source address, which Postfix trusts. This can make your server an open relay over IPv6.${NC}"
+  echo -e "${YELLOW}Set ENABLE_IPV6=true in mailcow.conf, or set \"userland-proxy\": false in /etc/docker/daemon.json and restart Docker.${NC}"
+  echo -e "${YELLOW}See https://docs.mailcow.email/post_installation/firststeps-disable_ipv6/${NC}"
+  sleep 5
+}
+
 # 3) Main wrapper for generate_config.sh and update.sh
 configure_ipv6() {
-  # detect manual override if mailcow.conf is present
   if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]] && grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
     MANUAL_SETTING=$(grep '^ENABLE_IPV6=' "$MAILCOW_CONF" | cut -d= -f2)
   elif [[ -z "$MAILCOW_CONF" ]] && [[ -n "${ENABLE_IPV6:-}" ]]; then
@@ -203,19 +233,23 @@ configure_ipv6() {
     MANUAL_SETTING=""
   fi
 
+  if [[ "${MANUAL_SETTING,,}" == "false" ]]; then
+    _set_enable_ipv6 false
+    echo "ENABLE_IPV6=false is set, skipping Docker IPv6 configuration."
+    _warn_ipv6_disabled
+    echo "IPv6 configuration complete: ENABLE_IPV6=false"
+    return
+  fi
+
   get_ipv6_support
 
-  # if user manually set it, check for mismatch
+  if [[ "$DETECTED_IPV6" != "true" && "${MANUAL_SETTING,,}" == "true" ]] && _has_public_ipv6; then
+    echo -e "${YELLOW}Keeping ENABLE_IPV6=true, the host has a public IPv6 address.${NC}"
+    DETECTED_IPV6=true
+  fi
+
   if [[ "$DETECTED_IPV6" != "true" ]]; then
-    if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
-      if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
-        sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=false/' "$MAILCOW_CONF"
-      else
-        echo "ENABLE_IPV6=false" >> "$MAILCOW_CONF"
-      fi
-    else
-      export IPV6_BOOL=false
-    fi
+    _set_enable_ipv6 false
     echo "Skipping Docker IPv6 configuration because host does not support IPv6."
     echo "Make sure to check if your docker daemon.json does not include \"enable_ipv6\": true if you do not want IPv6."
     echo "IPv6 configuration complete: ENABLE_IPV6=false"
@@ -224,16 +258,7 @@ configure_ipv6() {
   fi
 
   docker_daemon_edit
-
-  if [[ -n "$MAILCOW_CONF" && -f "$MAILCOW_CONF" ]]; then
-    if grep -q '^ENABLE_IPV6=' "$MAILCOW_CONF"; then
-      sed -i 's/^ENABLE_IPV6=.*/ENABLE_IPV6=true/' "$MAILCOW_CONF"
-    else
-      echo "ENABLE_IPV6=true" >> "$MAILCOW_CONF"
-    fi
-  else
-    export IPV6_BOOL=true
-  fi
+  _set_enable_ipv6 true
 
   echo "IPv6 configuration complete: ENABLE_IPV6=true"
 }
