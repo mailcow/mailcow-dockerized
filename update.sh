@@ -353,17 +353,6 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
   git checkout -f "${BRANCH}"
 fi
 
-if [ ! "$FORCE" ]; then
-  read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
-  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    echo "OK, exiting."
-    exit 0
-  fi
-  detect_major_update
-fi
-
-backup_run
-
 if [ ! "$DEV" ]; then
   EXIT_COUNT=0
   echo -e "\e[32mChecking for newer update script...\e[0m"
@@ -376,6 +365,17 @@ if [ ! "$DEV" ]; then
     EXIT_COUNT+=1
   fi
 fi
+
+if [ ! "$FORCE" ]; then
+  read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "OK, exiting."
+    exit 0
+  fi
+  detect_major_update
+fi
+
+backup_run
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
 sed -i 's/HTTPS_BIND:-:/HTTPS_BIND:-/g' docker-compose.yml
