@@ -3988,6 +3988,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(':goto' => '(^|,)'.preg_quote($_data, '/').'($|,)'));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows)) {
+            if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
+              continue;
+            }
             // Keep old array for backward compatibility
             $data['fixed_sender_aliases'][] = $row['address'];
             // Split into allowed/blocked for proper display
@@ -4977,7 +4980,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(':username' => $_data));
             $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($sender_acl_rows as $sender_acl_row) {
-              $mailboxdata['sender_acl'][] = $sender_acl_row['send_as'];
+              $send_as = $sender_acl_row['send_as'];
+              if ($_SESSION['mailcow_cc_role'] == 'domainadmin' && $send_as != '*') {
+                $in_scope = (substr($send_as, 0, 1) == '@')
+                  ? hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], substr($send_as, 1))
+                  : hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $send_as);
+                if (!$in_scope) {
+                  continue;
+                }
+              }
+              $mailboxdata['sender_acl'][] = $send_as;
             }
           }
           $stmt = $pdo->prepare("SELECT `tag_name`

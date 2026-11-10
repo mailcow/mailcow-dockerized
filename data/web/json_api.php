@@ -1087,10 +1087,14 @@ if (isset($_GET['query'])) {
                   $data['mailboxes'][$mailbox][] = $mailbox;
                   $user_alias_details = user_get_alias_details($mailbox);
                   foreach ($user_alias_details['direct_aliases'] as $k => $v) {
-                    $data['mailboxes'][$mailbox][] = $k;
+                    if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], substr(strrchr($k, '@'), 1))) {
+                      $data['mailboxes'][$mailbox][] = $k;
+                    }
                   }
                   foreach ($user_alias_details['shared_aliases'] as $k => $v) {
-                    $data['mailboxes'][$mailbox][] = $k;
+                    if (hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], substr(strrchr($k, '@'), 1))) {
+                      $data['mailboxes'][$mailbox][] = $k;
+                    }
                   }
                 }
               }
