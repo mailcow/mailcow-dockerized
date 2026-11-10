@@ -365,6 +365,16 @@ elif [ "$NEW_BRANCH" == "legacy" ] && [ "$CURRENT_BRANCH" != "legacy" ]; then
   git checkout -f "${BRANCH}"
 fi
 
+if [ ! "$DEV" ]; then
+  echo -e "\e[32mChecking for newer update script...\e[0m"
+  git fetch origin
+  git checkout "origin/${BRANCH}" -- update.sh
+  if [[ "$(sha256sum update.sh | awk '{print $1}')" != "${SCRIPT_HASH}" ]]; then
+    chmod +x update.sh
+    restart_update_script "update.sh has been updated"
+  fi
+fi
+
 if [ ! "$FORCE" ]; then
   read -r -p "Are you sure you want to update mailcow: dockerized? All containers will be stopped. [y/N] " response
   if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -375,16 +385,6 @@ if [ ! "$FORCE" ]; then
 fi
 
 backup_run
-
-if [ ! "$DEV" ]; then
-  echo -e "\e[32mChecking for newer update script...\e[0m"
-  git fetch origin
-  git checkout "origin/${BRANCH}" -- update.sh
-  if [[ "$(sha256sum update.sh | awk '{print $1}')" != "${SCRIPT_HASH}" ]]; then
-    chmod +x update.sh
-    restart_update_script "update.sh has been updated"
-  fi
-fi
 
 echo -e "\e[32mValidating docker-compose stack configuration...\e[0m"
 sed -i 's/HTTPS_BIND:-:/HTTPS_BIND:-/g' docker-compose.yml

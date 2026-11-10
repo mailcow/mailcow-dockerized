@@ -22,7 +22,12 @@ backup_failed() {
 # Whether to back up (asked with the other questions); the backup itself runs before the first change of the checkout
 backup_decide() {
   local output rc
-  RUN_BACKUP=
+  # exported: update.sh restarts itself after a branch switch, the decision and a backup already made stay
+  if [ "$MAILCOW_UPDATE_BACKUP_DECIDED" ]; then
+    return 0
+  fi
+  export MAILCOW_UPDATE_BACKUP_DECIDED=y
+  export RUN_BACKUP=
   if [ "$FORCE" ] && [ ! "$BACKUP" ]; then
     return 0
   fi
