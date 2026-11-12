@@ -21,6 +21,22 @@ use PHPUnit\Framework\TestCase;
 
 class IdpLoginServiceTest extends TestCase
 {
+    public function testKeycloakLoginUsesTheConfiguredUserInfoClaimWithoutFallback(): void
+    {
+        $this->assertSame('user@company.example', IdpLoginService::keycloakEmailFromClaims([
+            'email' => 'private@example.org', 'mailcow_email' => ' User@Company.Example ',
+        ], 'mailcow_email'));
+        $this->assertNull(IdpLoginService::keycloakEmailFromClaims([
+            'email' => 'private@example.org',
+        ], 'mailcow_email'));
+        $this->assertNull(IdpLoginService::keycloakEmailFromClaims([
+            'Mailcow_email' => 'user@company.example',
+        ], 'mailcow_email'));
+        $this->assertSame('user@example.org', IdpLoginService::keycloakEmailFromClaims([
+            'email' => ' User@Example.org ',
+        ], 'email'));
+    }
+
     public function testLinkErrorsDenyTheLogin(): void
     {
         $links = $this->createMock(LinkService::class);

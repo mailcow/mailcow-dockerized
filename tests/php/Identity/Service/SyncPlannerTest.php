@@ -46,6 +46,17 @@ class SyncPlannerTest extends TestCase
         $this->assertSame(['a@example.org is linked to an IdP user whose email is now new@example.org'], $plan->conflicts);
     }
 
+    public function testMissingEmailOnListedUserDoesNotCreateOrDeactivateMailboxes(): void
+    {
+        $plan = $this->plan([self::user('u1', null), self::user('u2', null)],
+            [new Account('a@example.org', 'A', 1, 'u1')]);
+
+        $this->assertSame([], $plan->creates);
+        $this->assertSame([], $plan->deactivate);
+        $this->assertSame([], $plan->missing);
+        $this->assertSame(1, $plan->skipped);
+    }
+
     public function testMailboxLinkedToAnotherUserIsNotTakenOver(): void
     {
         $plan = $this->plan([self::user('u2', 'a@example.org')], [new Account('a@example.org', 'A', 1, 'u1', false, self::SINCE)]);

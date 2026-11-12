@@ -6,6 +6,15 @@
               <small class="text-muted">{{ lang.admin.iam_extra_permission|raw }}</small>
             </div>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_keycloak_email_attribute_info }}"></i>
+              <label class="control-label" for="iam_keycloak_email_attribute">{{ lang.admin.iam_keycloak_email_attribute }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" id="iam_keycloak_email_attribute" name="keycloak_email_attribute" value="{{ iam_settings.keycloak_email_attribute|default('email') }}" required>
+            </div>
+          </div>
           {% endif %}
           <div class="row mb-2">
             <div class="col-md-3 d-flex align-items-center justify-content-md-end">

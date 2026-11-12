@@ -2444,6 +2444,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if (!array_key_exists('login_provisioning', $settings)) {
         $settings['login_provisioning'] = 1;
       }
+      if (($settings['authsource'] ?? '') == 'keycloak') {
+        $email_attribute = $settings['keycloak_email_attribute'] ?? 'email';
+        $settings['keycloak_email_attribute'] = is_string($email_attribute) && trim($email_attribute) !== '' ? trim($email_attribute) : 'email';
+      }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
         $settings["client_scopes"] = "openid profile email mailcow_template";
@@ -2520,13 +2524,23 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       switch ($_data['authsource']) {
         case "keycloak":
           $_data['server_url']        = (!empty($_data['server_url'])) ? rtrim($_data['server_url'], '/') : null;
+          if (array_key_exists('keycloak_email_attribute', $_data) && !is_string($_data['keycloak_email_attribute'])) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $data_log),
+              'msg' => 'iam_keycloak_email_attribute_invalid'
+            );
+            return false;
+          }
+          $email_attribute = trim($_data['keycloak_email_attribute'] ?? 'email');
+          $_data['keycloak_email_attribute'] = $email_attribute !== '' ? $email_attribute : 'email';
           $_data['mailpassword_flow'] = isset($_data['mailpassword_flow']) ? intval($_data['mailpassword_flow']) : 0;
           $_data['periodic_sync']     = isset($_data['periodic_sync']) ? intval($_data['periodic_sync']) : 0;
           $_data['import_users']      = isset($_data['import_users']) ? intval($_data['import_users']) : 0;
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
           $_data['group_paths']       = isset($_data['group_paths']) ? trim($_data['group_paths']) : "";
-          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'group_paths'), $sync_settings);
+          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'keycloak_email_attribute', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'group_paths'), $sync_settings);
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
@@ -2862,6 +2876,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         );
         return false;
       }
+      if ($iam_settings['authsource'] == 'keycloak') {
+        $info['email'] = \Mailcow\Auth\Service\IdpLoginService::keycloakEmailFromClaims($info,
+          $iam_settings['keycloak_email_attribute'] ?? 'email');
+      }
       // check if email address is given
       if (empty($info['email'])) {
         $_SESSION['return'][] =  array(
@@ -3047,6 +3065,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           'msg' => array('refresh_login_failed', $e->getMessage())
         );
         return false;
+      }
+      if ($iam_settings['authsource'] == 'keycloak') {
+        $info['email'] = \Mailcow\Auth\Service\IdpLoginService::keycloakEmailFromClaims($info,
+          $iam_settings['keycloak_email_attribute'] ?? 'email');
       }
 
       if (empty($info['email'])){
