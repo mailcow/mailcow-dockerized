@@ -60,6 +60,12 @@ for ($i = 0; $i < count($mailcow_apps_processed); $i++) {
     }
   }
 }
+if ($app_links_processed && ($_SESSION['mailcow_cc_role'] ?? '') !== 'admin'){
+  // links marked "admin only" are not shown to domain admins and users
+  $app_links_processed = array_values(array_filter($app_links_processed, function ($entry) {
+    return empty($entry[array_key_first($entry)]['admin_only']);
+  }));
+}
 if ($app_links_processed){
   for ($i = 0; $i < count($app_links_processed); $i++) {
     $key = array_key_first($app_links_processed[$i]);
