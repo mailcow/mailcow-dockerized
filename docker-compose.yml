@@ -1,5 +1,5 @@
 # Version of the database schema
-x-db-version: &db_version DB_VERSION=02112026_1600
+x-db-version: &db_version DB_VERSION=07112026_1200
 
 services:
 
