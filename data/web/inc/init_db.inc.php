@@ -1570,7 +1570,8 @@ function init_db_schema()
           "redirect_uri" => "VARCHAR(2000)",
           "grant_types" => "VARCHAR(80)",
           "scope" => "VARCHAR(4000)",
-          "user_id" => "VARCHAR(80)"
+          "user_id" => "VARCHAR(80)",
+          "trusted" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(

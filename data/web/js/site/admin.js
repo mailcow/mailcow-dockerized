@@ -211,6 +211,13 @@ jQuery(function($){
           defaultContent: ''
         },
         {
+          title: lang.oauth2_trusted,
+          data: 'trusted',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
           title: lang.action,
           data: 'action',
           className: 'dt-sm-head-hidden dt-text-right',
