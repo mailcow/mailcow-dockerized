@@ -977,18 +977,31 @@ rspamd_config:register_symbol({
               out[#out + 1] = task:get_rawbody()
             end
             local out_parts = {}
+            local previous_ends_newline = true
+            local function append_fragment(fragment)
+              out_parts[#out_parts + 1] = fragment
+              local text = tostring(fragment)
+              if #text > 0 then
+                previous_ends_newline = text:sub(-1) == '\n'
+              end
+            end
+
             for _,o in ipairs(out) do
               if type(o) ~= 'table' then
-                out_parts[#out_parts + 1] = o
-                out_parts[#out_parts + 1] = newline_s
+                -- MIME boundaries must start on a new line, even after raw parts.
+                if tostring(o):sub(1, 2) == '--' and not previous_ends_newline then
+                  append_fragment(newline_s)
+                end
+                append_fragment(o)
+                append_fragment(newline_s)
               else
                 local removePrefix = "--\x0D\x0AContent-"
                 if string.lower(string.sub(tostring(o[1]), 1, string.len(removePrefix))) == string.lower(removePrefix) then
                   o[1] = string.sub(tostring(o[1]), string.len("--\x0D\x0A") + 1)
                 end
-                out_parts[#out_parts + 1] = o[1]
+                append_fragment(o[1])
                 if o[2] then
-                  out_parts[#out_parts + 1] = newline_s
+                  append_fragment(newline_s)
                 end
               end
             end
