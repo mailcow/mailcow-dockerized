@@ -549,8 +549,8 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
 
   // get the mailcow_password attribute from keycloak user
   $url = "{$iam_settings['server_url']}/admin/realms/{$iam_settings['realm']}/users";
-  // as string, http_build_query() would send exact=1 and Keycloak would search for substrings
-  $queryParams = array('email' => $user, 'exact' => 'true');
+  $email_attribute = $iam_settings['keycloak_email_attribute'] ?? 'email';
+  $queryParams = \Mailcow\Identity\Http\KeycloakClient::emailSearchQuery($user, $email_attribute);
   $queryString = http_build_query($queryParams);
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_TIMEOUT, 7);
@@ -571,9 +571,12 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   if ($code != 200) {
     throw new \Mailcow\Auth\IdpUnavailable('Keycloak returned HTTP ' . $code);
   }
-  // exact=true can still return several users with that email, only the exact address counts
+  // Attribute searches can return more than one user; only one exact configured email may log in.
   if (is_array($users)) {
-    $users = array_values(array_filter($users, fn($u) => is_array($u) && strcasecmp((string)($u['email'] ?? ''), $user) === 0));
+    $users = array_values(array_filter($users, function ($row) use ($email_attribute, $user) {
+      $email = is_array($row) ? \Mailcow\Identity\Directory\KeycloakDirectory::email($row, $email_attribute) : null;
+      return $email !== null && strcasecmp($email, $user) === 0;
+    }));
   }
   if (!is_array($users) || count($users) != 1) {
     return false;

@@ -8,6 +8,7 @@ use LdapRecord\Auth\BindException;
 use LdapRecord\Connection;
 use LdapRecord\LdapRecordException;
 use Mailcow\Auth\IdpUnavailable;
+use Mailcow\Identity\Directory\KeycloakDirectory;
 use Mailcow\Identity\Model\Settings;
 use Mailcow\Identity\Service\LinkService;
 use Mailcow\MailboxGroup\Service\TemplateService;
@@ -21,6 +22,12 @@ class IdpLoginService
 {
     public function __construct(private Settings $settings, private LinkService $links, private TemplateService $templates)
     {
+    }
+
+    /** OIDC UserInfo claim with the configured Keycloak mailbox email attribute name. */
+    public static function keycloakEmailFromClaims(array $claims, string $emailAttribute): ?string
+    {
+        return KeycloakDirectory::normalizeEmail($claims[$emailAttribute] ?? null);
     }
 
     /**

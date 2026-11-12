@@ -36,6 +36,8 @@ class Settings
     public string $clientId = '';
     public string $clientSecret = '';
     public bool $ignoreSslError = false;
+    /** Keycloak user attribute and OIDC UserInfo claim used for mailbox addresses */
+    public string $keycloakEmailAttribute = 'email';
     /** @var string[] Keycloak group paths: '/path', '/path/*' (subtree) or '/*' (all) */
     public array $groupPaths = [];
     public string $basedn = '';
@@ -72,6 +74,8 @@ class Settings
         $settings->clientId = (string)($s['client_id'] ?? '');
         $settings->clientSecret = (string)($s['client_secret'] ?? '');
         $settings->ignoreSslError = self::flag($s['ignore_ssl_error'] ?? 0);
+        $emailAttribute = $s['keycloak_email_attribute'] ?? 'email';
+        $settings->keycloakEmailAttribute = is_string($emailAttribute) && trim($emailAttribute) !== '' ? trim($emailAttribute) : 'email';
         $settings->groupPaths = array_values(array_filter(array_map('trim', explode(',', (string)($s['group_paths'] ?? ''))), 'strlen'));
         $settings->basedn = (string)($s['basedn'] ?? '');
         $settings->filter = trim((string)($s['filter'] ?? ''));

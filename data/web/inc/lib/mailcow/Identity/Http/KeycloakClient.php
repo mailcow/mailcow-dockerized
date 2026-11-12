@@ -19,6 +19,13 @@ class KeycloakClient
     {
     }
 
+    /** Query parameters to find Keycloak users by their configured mailbox email attribute. */
+    public static function emailSearchQuery(string $email, string $attribute = 'email'): array
+    {
+        return $attribute === 'email' ? ['email' => $email, 'exact' => 'true']
+            : ['q' => $attribute . ':' . $email, 'briefRepresentation' => 'false'];
+    }
+
     /**
      * GET below /admin/realms/<realm>, decoded JSON. A rejected token is renewed once.
      *

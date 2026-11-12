@@ -16,7 +16,7 @@ class KeycloakDirectoryTest extends TestCase
     {
         $users = [];
         for ($i = 1; $i <= 150; $i++) {
-            $users[] = ['id' => "u$i", 'email' => "User$i@Example.org", 'firstName' => 'User', 'lastName' => (string)$i, 'enabled' => $i !== 2,
+            $users[] = ['id' => "u$i", 'email' => " User$i@Example.org ", 'firstName' => 'User', 'lastName' => (string)$i, 'enabled' => $i !== 2,
                 'attributes' => ['mailcow_template' => ['staff']]];
         }
         $client = new FakeKeycloakClient(['/users' => $users]);
@@ -31,6 +31,50 @@ class KeycloakDirectoryTest extends TestCase
         $this->assertFalse($listing->users['u2']->enabled);
         $this->assertSame(['/users?briefRepresentation=false&first=0&max=100', '/users?briefRepresentation=false&first=100&max=100'],
             $client->paths());
+        $this->assertSame('email', Settings::fromArray([])->keycloakEmailAttribute);
+    }
+
+    public function testCustomEmailAttributePreservesCaseAndUsesItsFirstValue(): void
+    {
+        $settings = Settings::fromArray(['keycloak_email_attribute' => ' Mailcow_Email ']);
+        $client = new FakeKeycloakClient(['/users' => [[
+            'id' => 'u1', 'email' => 'private@example.org', 'enabled' => true,
+            'attributes' => ['Mailcow_Email' => [' User@Company.Example '], 'mailcow_template' => ['staff']],
+        ]]]);
+
+        $listing = (new KeycloakDirectory($client, $settings))->listAll(false);
+
+        $this->assertSame('Mailcow_Email', $settings->keycloakEmailAttribute);
+        $this->assertSame('user@company.example', $listing->users['u1']->email);
+        $this->assertSame(['staff'], $listing->users['u1']->templateValues);
+    }
+
+    public function testMailpasswordSearchUsesTheConfiguredAttribute(): void
+    {
+        $this->assertSame(['email' => 'user@example.org', 'exact' => 'true'],
+            KeycloakClient::emailSearchQuery('user@example.org'));
+        $this->assertSame(['q' => 'mailcow_email:user@example.org', 'briefRepresentation' => 'false'],
+            KeycloakClient::emailSearchQuery('user@example.org', 'mailcow_email'));
+    }
+
+    public function testInvalidCustomEmailDoesNotFallBackToKeycloakEmail(): void
+    {
+        foreach ([
+            'missing' => [],
+            'empty' => ['mailcow_email' => []],
+            'blank' => ['mailcow_email' => ['  ']],
+            'invalid' => ['mailcow_email' => ['not-an-email']],
+            'non-string' => ['mailcow_email' => [42]],
+            'wrong case' => ['Mailcow_email' => ['user@company.example']],
+            'malformed' => ['mailcow_email' => ['address' => 'user@company.example']],
+        ] as $case => $attributes) {
+            $user = KeycloakDirectory::user([
+                'id' => 'u1', 'email' => 'private@example.org', 'enabled' => true, 'attributes' => $attributes,
+            ], 'mailcow_email');
+
+            $this->assertNull($user->email, $case);
+        }
+        $this->assertSame('email', Settings::fromArray(['keycloak_email_attribute' => ''])->keycloakEmailAttribute);
     }
 
     public function testSelectsGroupsByPathWithChildrenAndListedMembers(): void

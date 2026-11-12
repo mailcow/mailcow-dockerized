@@ -7804,6 +7804,11 @@ paths:
                       description: If enabled, mailcow will attempt to validate user credentials using the Keycloak Admin REST API instead of relying solely on the Authorization Code Flow.
                       type: boolean
                       default: false
+                    keycloak_email_attribute:
+                      description: (Keycloak only) Keycloak Admin REST API user attribute containing the mailbox email address for imports, synchronization and Mailpassword Flow. For a custom attribute, a Keycloak protocol mapper must also expose the corresponding OIDC UserInfo claim with the same name for interactive login.
+                      type: string
+                      default: email
+                      example: mailcow_email
                     periodic_sync:
                       description: If enabled, mailcow periodically performs a full sync of all users from Keycloak or LDAP.
                       type: boolean
@@ -7928,6 +7933,7 @@ paths:
                     templates: ["small", "medium"]
                     ignore_ssl_error: true
                     mailpassword_flow: true
+                    keycloak_email_attribute: "mailcow_email"
                     periodic_sync: true
                     import_users: true
                     sync_interval: 30

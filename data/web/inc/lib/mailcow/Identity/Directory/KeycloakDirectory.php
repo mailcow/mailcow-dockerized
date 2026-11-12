@@ -26,7 +26,7 @@ class KeycloakDirectory implements Directory
         $users = [];
         foreach ($this->paged('/users', ['briefRepresentation' => 'false']) as $row) {
             if (isset($row['id'])) {
-                $user = self::user($row);
+                $user = self::user($row, $this->settings->keycloakEmailAttribute);
                 $users[$user->id] = $user;
             }
         }
@@ -34,11 +34,31 @@ class KeycloakDirectory implements Directory
     }
 
     /** A user of the admin REST API */
-    public static function user(array $row): DirectoryUser
+    public static function user(array $row, string $emailAttribute = 'email'): DirectoryUser
     {
-        $email = (isset($row['email']) && $row['email'] !== '') ? strtolower((string)$row['email']) : null;
+        $email = self::email($row, $emailAttribute);
         return new DirectoryUser((string)$row['id'], $email, trim(($row['firstName'] ?? '') . ' ' . ($row['lastName'] ?? '')),
             !empty($row['enabled']), array_map('strval', (array)($row['attributes']['mailcow_template'] ?? [])));
+    }
+
+    /** Email from a Keycloak Admin API user representation; a custom attribute uses its first value. */
+    public static function email(array $row, string $emailAttribute = 'email'): ?string
+    {
+        $email = $emailAttribute === 'email' ? ($row['email'] ?? null) : ($row['attributes'][$emailAttribute] ?? null);
+        if ($emailAttribute !== 'email' && is_array($email)) {
+            $email = $email[0] ?? null;
+        }
+        return self::normalizeEmail($email);
+    }
+
+    /** A mailbox email from a Keycloak API response or OIDC claim. */
+    public static function normalizeEmail(mixed $email): ?string
+    {
+        if (!is_string($email)) {
+            return null;
+        }
+        $email = strtolower(trim($email));
+        return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     /**
