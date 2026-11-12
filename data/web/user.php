@@ -75,6 +75,7 @@ $template_data = [
   'number_of_app_passwords' => $number_of_app_passwords,
   'lang_datatables' => json_encode($lang['datatables']),
   'imapsync_redirect_uri' => \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->oauth->redirectUri(),
+  'user_api' => user_api('get'),
 ];
 
 $js_minifier->add('/web/js/site/imapsync.js');

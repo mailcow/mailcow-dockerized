@@ -47,10 +47,18 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 $_SESSION['LAST_ACTIVITY'] = time();
 
 // API
+$req_api_key = '';
 if (!empty($_SERVER['HTTP_X_API_KEY'])) {
+  $req_api_key = preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY']);
+} elseif (!empty($_SERVER['HTTP_AUTHENTICATION'])) {
+  $req_api_key = preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_AUTHENTICATION']);
+} elseif (!empty($_SERVER['HTTP_AUTHORIZATION']) && preg_match('/Bearer\s+([a-zA-Z0-9-]+)/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
+  $req_api_key = $matches[1];
+}
+if (!empty($req_api_key)) {
   $stmt = $pdo->prepare("SELECT * FROM `api` WHERE `api_key` = :api_key AND `active` = '1';");
   $stmt->execute(array(
-    ':api_key' => preg_replace('/[^a-zA-Z0-9-]/', '', $_SERVER['HTTP_X_API_KEY'])
+    ':api_key' => $req_api_key
   ));
   $api_return = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!empty($api_return['api_key'])) {
@@ -84,15 +92,49 @@ if (!empty($_SERVER['HTTP_X_API_KEY'])) {
     }
   }
   else {
-    $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
-    error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
-    http_response_code(401);
-    echo json_encode(array(
-      'type' => 'error',
-      'msg' => 'authentication failed'
-    ));
-    unset($_POST);
-    exit();
+    try {
+      $stmt = $pdo->prepare("SELECT * FROM `user_api` WHERE `api_key` = :api_key AND `active` = '1';");
+      $stmt->execute(array(
+        ':api_key' => $req_api_key
+      ));
+      $user_api_return = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      $user_api_return = false;
+    }
+    if (!empty($user_api_return['api_key'])) {
+      $skip_ip_check = ($user_api_return['skip_ip_check'] == 1);
+      $remote = get_remote_ip(false);
+      $allow_from = array_map('trim', preg_split( "/( |,|;|\n)/", $user_api_return['allow_from']));
+      if ($skip_ip_check === true || ip_acl($remote, $allow_from)) {
+        $_SESSION['mailcow_cc_username'] = $user_api_return['username'];
+        $_SESSION['mailcow_cc_role'] = 'user';
+        $_SESSION['mailcow_cc_api'] = true;
+        $_SESSION['mailcow_cc_api_access'] = 'rw';
+        acl('to_session');
+      }
+      else {
+        $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+        error_log("mailcow UI: Invalid password for " . $user_api_return['username'] . " by " . $_SERVER['REMOTE_ADDR']);
+        http_response_code(401);
+        echo json_encode(array(
+          'type' => 'error',
+          'msg' => 'api access denied for ip ' . $_SERVER['REMOTE_ADDR']
+        ));
+        unset($_POST);
+        exit();
+      }
+    }
+    else {
+      $redis->publish("F2B_CHANNEL", "mailcow UI: Invalid password for API_USER by " . $_SERVER['REMOTE_ADDR']);
+      error_log("mailcow UI: Invalid password for " . $user . " by " . $_SERVER['REMOTE_ADDR']);
+      http_response_code(401);
+      echo json_encode(array(
+        'type' => 'error',
+        'msg' => 'authentication failed'
+      ));
+      unset($_POST);
+      exit();
+    }
   }
 }
 elseif (!empty($_SESSION['mailcow_cc_api'])) {

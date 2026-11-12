@@ -369,7 +369,15 @@ query = SELECT goto FROM alias
     WHERE alias_domain.alias_domain = '%d'
       AND mailbox.username = CONCAT('%u','@',alias_domain.target_domain)
       AND (mailbox.active = '1' OR mailbox.active ='2')
-      AND alias_domain.active='1';
+      AND alias_domain.active='1'
+  UNION
+  SELECT goto FROM spamalias
+    WHERE address='%s'
+      AND (validity >= UNIX_TIMESTAMP() OR permanent != 0)
+      AND (
+        '%d' IN (SELECT domain FROM domain WHERE active='1')
+        OR '%d' IN (SELECT alias_domain FROM alias_domain WHERE active='1')
+      );
 EOF
 
 # MX based routing
