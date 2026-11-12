@@ -14,3 +14,19 @@ body {
     margin: 0;
     background: #fafafa;
 }
+
+/* mailcow: inline code in descriptions in the text colour instead of bold purple */
+.swagger-ui .markdown code,
+.swagger-ui .renderedMarkdown code {
+    color: inherit;
+    font-weight: normal;
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 0 3px;
+}
+
+html.dark-mode .swagger-ui .markdown code,
+html.dark-mode .swagger-ui .renderedMarkdown code {
+    color: inherit;
+    background: rgba(255, 255, 255, 0.08);
+}
