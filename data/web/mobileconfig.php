@@ -38,10 +38,16 @@ catch(PDOException $e) {
 
 $emailAddresses = $email;
 if (isset($_GET['with_aliases'])) {
-  $aliasDetails = user_get_alias_details($email);
-  if (!empty($aliasDetails['direct_aliases'])) {
-    $emailAddresses = implode(', ', array_merge(array($email), array_keys($aliasDetails['direct_aliases'])));
-  }
+  // Own active aliases, alias-domain addresses and what the user's active groups allow to send as (same rule as LookupRepository::sendAsOf)
+  $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+    WHERE `goto` = :email AND `address` != :email2 AND `address` NOT LIKE '@%' AND `active` = 1 AND `group_id` IS NULL
+    UNION SELECT CONCAT(`local_part`, '@', `alias_domain`) FROM `mailbox`
+      JOIN `alias_domain` ON `target_domain` = `domain` WHERE `username` = :email3 AND `alias_domain`.`active` = 1
+    UNION SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :email4 AND `group_id` IS NOT NULL
+    UNION SELECT g.`address` FROM `mailbox_group_member` m JOIN `mailbox_group` g ON g.`id` = m.`group_id`
+      WHERE m.`username` = :email5 AND g.`active` = 1 AND g.`sender_allowed` = 1 AND g.`address` IS NOT NULL");
+  $stmt->execute(array(':email' => $email, ':email2' => $email, ':email3' => $email, ':email4' => $email, ':email5' => $email));
+  $emailAddresses = implode(', ', array_merge(array($email), $stmt->fetchAll(PDO::FETCH_COLUMN)));
 }
 
 if (isset($_GET['only_email'])) {
