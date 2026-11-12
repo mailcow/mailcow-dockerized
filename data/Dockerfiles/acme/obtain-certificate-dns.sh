@@ -4,6 +4,7 @@
 # 0 = cert created successfully
 # 1 = cert renewed successfully
 # 2 = cert not due for renewal
+# 10 = too many names for a Let's Encrypt certificate
 # * = errors
 
 source /srv/functions.sh
@@ -53,9 +54,15 @@ if [[ "${LE_STAGING}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 elif [[ ! -z "${DIRECTORY_URL}" ]]; then
   log_f "Using custom directory URL ${DIRECTORY_URL}"
   ACME_SH_SERVER_ARGS=("--server" "${DIRECTORY_URL}")
+  CUSTOM_DIRECTORY=y
 else
   log_f "Using Let's Encrypt production servers"
   ACME_SH_SERVER_ARGS=("--server" "letsencrypt")
+fi
+
+# The limit of names per certificate only applies to Let's Encrypt
+if [[ "${CUSTOM_DIRECTORY}" != "y" ]] && ! check_le_san_limit "${CERT_DOMAIN}" "${#CERT_DOMAINS[@]}"; then
+  exit 10
 fi
 
 if [[ -f ${DOMAINS_FILE} && "$(cat ${DOMAINS_FILE})" ==  "${CERT_DOMAINS[*]}" ]]; then
