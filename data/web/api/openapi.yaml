@@ -6614,6 +6614,80 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/v1/edit/domain/token_issuer:
+    post:
+      summary: Set the token issuer of domains
+      description: >-
+        Mailboxes of the domains can then sign in to IMAP, POP3, Sieve and SMTP
+        with a signed JWT access token from this OpenID Connect issuer (SASL
+        OAUTHBEARER or XOAUTH2) instead of a password. The token's `iss` must
+        equal `issuer`, its address claim the mailbox, and if `audiences` are
+        set its `aud` or `azp` one of them. The issuer can sign in to every
+        mailbox of the domains. An empty `issuer` turns token sign-in off.
+        Admins only.
+
+
+        Messages: `domain_token_issuer_modified`; errors `access_denied`,
+        `domain_invalid`, `domain_not_found`, `token_issuer_invalid`,
+        `token_claim_invalid`, `token_audience_invalid`.
+      operationId: editDomainTokenIssuer
+      tags:
+        - Domains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+                - attr
+              properties:
+                items:
+                  description: Domain name or list of domain names
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                attr:
+                  type: object
+                  properties:
+                    issuer:
+                      type: string
+                      default: ""
+                      description: >-
+                        Issuer URL exactly as in the tokens; its keys are found
+                        through `/.well-known/openid-configuration`
+                    audiences:
+                      description: >-
+                        Client IDs the token must be issued for; a string is
+                        split at commas and whitespace. Empty accepts any token
+                        of the issuer.
+                      oneOf:
+                        - type: string
+                        - type: array
+                          items:
+                            type: string
+                    claim:
+                      type: string
+                      default: email
+                      description: Token claim holding the mailbox address
+            example:
+              items:
+                - example.org
+              attr:
+                issuer: https://id.example.org/realms/example
+                audiences:
+                  - webmail
+                claim: email
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/v1/edit/fail2ban:
     post:
       summary: Edit Fail2Ban settings, bans and filters
@@ -8395,6 +8469,50 @@ paths:
                   domain_admins: anna.admin
                   tags:
                     - customer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/get/domain/token_issuer/{domain}:
+    get:
+      summary: Get the token issuer of a domain
+      description: >-
+        The OpenID Connect issuer whose access tokens sign in to the domain's
+        mailboxes (SASL OAUTHBEARER and XOAUTH2). An empty `issuer` means token
+        sign-in is off. Admins only.
+      operationId: getDomainTokenIssuer
+      tags:
+        - Domains
+      parameters:
+        - name: domain
+          in: path
+          required: true
+          description: Domain name
+          schema:
+            type: string
+          example: example.org
+      responses:
+        "200":
+          description: The domain's token issuer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                  issuer:
+                    type: string
+                  audiences:
+                    type: array
+                    items:
+                      type: string
+                  claim:
+                    type: string
+              example:
+                domain: example.org
+                issuer: https://id.example.org/realms/example
+                audiences:
+                  - webmail
+                claim: email
         "401":
           $ref: "#/components/responses/Unauthorized"
   /api/v1/get/domain/template/{id}:

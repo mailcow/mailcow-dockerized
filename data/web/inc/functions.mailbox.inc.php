@@ -3977,6 +3977,108 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
           }
         break;
+        case 'domain_token_issuer':
+          // Whoever sets the issuer decides who can sign in to every mailbox of the domain: admins only.
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'access_denied'
+            );
+            return false;
+          }
+          $domains = is_array($_data['domains']) ? $_data['domains'] : array($_data['domains']);
+          // an empty issuer turns token sign-in off for the domains
+          $issuer = trim((string)($_data['issuer'] ?? ''));
+          $claim = trim((string)($_data['claim'] ?? ''));
+          $claim = ($claim === '') ? 'email' : $claim;
+          $audiences = $_data['audiences'] ?? array();
+          if (!is_array($audiences)) {
+            $audiences = preg_split('/[\s,]+/', (string)$audiences);
+          }
+          $audiences = array_values(array_unique(array_filter(array_map('trim', $audiences), 'strlen')));
+          if ($issuer !== '') {
+            // compared byte for byte with the iss claim and the discovery document, so no normalising
+            if (!filter_var($issuer, FILTER_VALIDATE_URL) || strlen($issuer) > 500
+              || !in_array(parse_url($issuer, PHP_URL_SCHEME), array('https', 'http'), true)
+              || parse_url($issuer, PHP_URL_QUERY) !== null || parse_url($issuer, PHP_URL_FRAGMENT) !== null) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'token_issuer_invalid'
+              );
+              return false;
+            }
+            if (!preg_match('/^[A-Za-z0-9_.:-]{1,100}$/', $claim)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'token_claim_invalid'
+              );
+              return false;
+            }
+            foreach ($audiences as $audience) {
+              if (strlen($audience) > 255 || preg_match('/[\x00-\x1f\x7f]/', $audience)) {
+                $_SESSION['return'][] = array(
+                  'type' => 'danger',
+                  'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                  'msg' => 'token_audience_invalid'
+                );
+                return false;
+              }
+            }
+          }
+          foreach ($domains as $domain) {
+            $domain = idn_to_ascii(strtolower(trim($domain)), 0, INTL_IDNA_VARIANT_UTS46);
+            if (!is_valid_domain_name($domain)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => 'domain_invalid'
+              );
+              return false;
+            }
+            $stmt = $pdo->prepare("SELECT `domain` FROM `domain` WHERE `domain` = :domain");
+            $stmt->execute(array(':domain' => $domain));
+            if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => array('domain_not_found', htmlspecialchars($domain))
+              );
+              return false;
+            }
+            try {
+              if ($issuer === '') {
+                $stmt = $pdo->prepare("DELETE FROM `domain_token_issuer` WHERE `domain` = :domain");
+                $stmt->execute(array(':domain' => $domain));
+              }
+              else {
+                $stmt = $pdo->prepare("REPLACE INTO `domain_token_issuer` (`domain`, `issuer`, `audiences`, `claim`)
+                  VALUES (:domain, :issuer, :audiences, :claim)");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                  ':issuer' => $issuer,
+                  ':audiences' => json_encode($audiences),
+                  ':claim' => $claim,
+                ));
+              }
+            }
+            catch (PDOException $e) {
+              $_SESSION['return'][] = array(
+                'type' => 'danger',
+                'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                'msg' => $e->getMessage()
+              );
+              return false;
+            }
+            $_SESSION['return'][] = array(
+              'type' => 'success',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => array('domain_token_issuer_modified', htmlspecialchars($domain))
+            );
+          }
+        break;
       }
     break;
     case 'get':
@@ -5144,6 +5246,28 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 
           return $footer;
         break;
+        case 'domain_token_issuer':
+          if ($_SESSION['mailcow_cc_role'] != "admin") {
+            return false;
+          }
+          $domain = idn_to_ascii(strtolower(trim($_data)), 0, INTL_IDNA_VARIANT_UTS46);
+          if (!is_valid_domain_name($domain)) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+              'msg' => 'domain_invalid'
+            );
+            return false;
+          }
+          $stmt = $pdo->prepare("SELECT `domain`, `issuer`, `audiences`, `claim` FROM `domain_token_issuer` WHERE `domain` = :domain");
+          $stmt->execute(array(':domain' => $domain));
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          if (!$row) {
+            return array('domain' => $domain, 'issuer' => '', 'audiences' => array(), 'claim' => 'email');
+          }
+          $row['audiences'] = json_decode($row['audiences'], true);
+          return $row;
+        break;
       }
     break;
     case 'delete':
@@ -5379,6 +5503,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               ':domain' => $domain,
             ));
             \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->domainDeleted($domain);
+            $stmt = $pdo->prepare("DELETE FROM `domain_token_issuer` WHERE `domain` = :domain");
+            $stmt->execute(array(
+              ':domain' => $domain,
+            ));
             $stmt = $pdo->prepare("DELETE FROM `imapsync_source_domain` WHERE `domain` = :domain");
             $stmt->execute(array(
               ':domain' => $domain,

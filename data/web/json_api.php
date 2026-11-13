@@ -524,6 +524,9 @@ if (isset($_GET['query'])) {
                   break;
                 }
               break;
+              case "token_issuer":
+                process_get_return(mailbox('get', 'domain_token_issuer', $extra));
+              break;
               default:
                 $data = mailbox('get', 'domain_details', $object);
                 process_get_return($data);
@@ -2069,6 +2072,9 @@ if (isset($_GET['query'])) {
             break;
             case "footer":
               process_edit_return(mailbox('edit', 'domain_wide_footer', array_merge(array('domains' => $items), $attr)));
+            break;
+            case "token_issuer":
+              process_edit_return(mailbox('edit', 'domain_token_issuer', array_merge(array('domains' => $items), $attr)));
             break;
             default:
               process_edit_return(mailbox('edit', 'domain', array_merge(array('domain' => $items), $attr)));
