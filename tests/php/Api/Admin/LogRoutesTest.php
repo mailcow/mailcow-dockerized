@@ -18,6 +18,7 @@ class LogRoutesTest extends ApiTestCase
             'ratelimited' => ['ratelimited', 'ratelimited'],
             'netfilter' => ['netfilter', 'netfilter-mailcow'],
             'cron' => ['cron', 'cron-mailcow'],
+            'scim' => ['scim', 'scim-mailcow'],
             'postfix' => ['postfix', 'postfix-mailcow'],
             'autodiscover' => ['autodiscover', 'autodiscover-mailcow'],
             'sogo' => ['sogo', 'sogo-mailcow'],
