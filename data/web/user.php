@@ -62,6 +62,8 @@ $template_data = [
   'tfa_id' => @$_SESSION['tfa_id'],
   'fido2_data' => $fido2_data,
   'mailboxdata' => $mailboxdata,
+  // SCIM users of an LDAP IdP confirm TFA changes with their LDAP password, like LDAP users
+  'tfa_available' => in_array($mailboxdata['authsource'], ['mailcow', 'ldap']) || ($mailboxdata['authsource'] == 'scim' && ($iam_settings['authsource'] ?? '') == 'ldap'),
   'clientconfigstr' => $clientconfigstr,
   'user_get_alias_details' => $user_get_alias_details,
   'mailbox_groups' => \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->getMemberships($username),

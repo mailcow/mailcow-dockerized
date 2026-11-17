@@ -353,7 +353,7 @@ function init_db_schema()
           "custom_attributes" => "JSON NOT NULL DEFAULT ('{}')",
           "kind" => "VARCHAR(100) NOT NULL DEFAULT ''",
           "multiple_bookings" => "INT NOT NULL DEFAULT -1",
-          "authsource" => "ENUM('mailcow', 'keycloak', 'generic-oidc', 'ldap') DEFAULT 'mailcow'",
+          "authsource" => "ENUM('mailcow', 'keycloak', 'generic-oidc', 'ldap', 'scim') DEFAULT 'mailcow'",
           "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
           "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
           "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
@@ -672,6 +672,130 @@ function init_db_schema()
           ),
           "key" => array(
             "status" => array("status")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // SCIM 2.0 provider (data/web/inc/lib/mailcow/Scim): Bearer tokens of the IdPs, only the SHA-256 is stored
+      "scim_tokens" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          "description" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "token_hash" => "CHAR(64) NOT NULL",
+          // set = the token only sees users and groups of this domain
+          "domain_restriction" => "VARCHAR(255) NULL DEFAULT NULL",
+          // domain of the groups created by an unrestricted token
+          "group_domain" => "VARCHAR(255) NULL DEFAULT NULL",
+          // IPs/networks, comma separated; empty = any
+          "allow_from" => "TEXT NOT NULL",
+          "default_template" => "VARCHAR(255) NULL DEFAULT NULL",
+          // JSON lists: value of the extension attribute `template` => mailbox template
+          "mappers" => "TEXT NULL DEFAULT NULL",
+          "templates" => "TEXT NULL DEFAULT NULL",
+          // a changed userName renames the mailbox within its domain; the old address is kept as alias
+          "allow_rename" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "rename_alias" => "TINYINT(1) NOT NULL DEFAULT '1'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP",
+          "active" => "TINYINT(1) NOT NULL DEFAULT '1'"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "token_hash" => array("token_hash")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // SCIM User resources: one row per mailbox provisioned (or adopted) through SCIM; no row = not a SCIM resource
+      "scim_maps" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          // opaque SCIM id (RFC 7643 3.1); NULL: deleted through SCIM, the row keeps `disabled` for the template guard
+          "scim_id" => "VARCHAR(36) NULL DEFAULT NULL",
+          "external_id" => "VARCHAR(255) NULL DEFAULT NULL",
+          "username" => "VARCHAR(255) NOT NULL",
+          // name parts of the IdP: mailbox.name is one string
+          "given_name" => "VARCHAR(255) NULL DEFAULT NULL",
+          "family_name" => "VARCHAR(255) NULL DEFAULT NULL",
+          // token that set external_id (its owner, RFC 7643 3.1) or created the user
+          "token_id" => "INT NULL DEFAULT NULL",
+          // mailbox template mapped from the IdP's template attribute
+          "template" => "VARCHAR(255) NULL DEFAULT NULL",
+          // 1 = SCIM set the mailbox to login disabled (active = 2), like identity_link.idp_disabled
+          "disabled" => "TINYINT(1) NOT NULL DEFAULT '0'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "scim_maps_scim_id" => array("scim_id"),
+            "scim_maps_username" => array("username")
+          ),
+          "key" => array(
+            "scim_maps_external_id" => array("external_id")
+          ),
+          "fkey" => array(
+            "fk_scim_maps_username" => array(
+              "col" => "username",
+              "ref" => "mailbox.username",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_scim_maps_token_id" => array(
+              "col" => "token_id",
+              "ref" => "scim_tokens.id",
+              "delete" => "SET NULL",
+              "update" => "NO ACTION"
+            )
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
+      // SCIM Group resources: mailbox groups created through SCIM. Not linked by mailbox_group.idp_ref, which belongs
+      // to the Keycloak/LDAP sync; SCIM members are mailbox_group_member rows with source 'idp'
+      "scim_group_maps" => array(
+        "cols" => array(
+          "id" => "INT NOT NULL AUTO_INCREMENT",
+          // NULL: deleted through SCIM, the row marks the mailbox group for a new POST with its name
+          "scim_id" => "VARCHAR(36) NULL DEFAULT NULL",
+          "group_id" => "INT NOT NULL",
+          "external_id" => "VARCHAR(255) NULL DEFAULT NULL",
+          // usernames the IdP set as members; SCIM shows those that are still members, not manual-only ones
+          "members" => "JSON NOT NULL DEFAULT ('[]')",
+          "token_id" => "INT NULL DEFAULT NULL",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("id")
+          ),
+          "unique" => array(
+            "scim_group_maps_scim_id" => array("scim_id"),
+            "scim_group_maps_group_id" => array("group_id")
+          ),
+          "key" => array(
+            "scim_group_maps_external_id" => array("external_id")
+          ),
+          "fkey" => array(
+            "fk_scim_group_maps_group_id" => array(
+              "col" => "group_id",
+              "ref" => "mailbox_group.id",
+              "delete" => "CASCADE",
+              "update" => "NO ACTION"
+            ),
+            "fk_scim_group_maps_token_id" => array(
+              "col" => "token_id",
+              "ref" => "scim_tokens.id",
+              "delete" => "SET NULL",
+              "update" => "NO ACTION"
+            )
           )
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"

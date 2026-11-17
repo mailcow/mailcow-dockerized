@@ -118,7 +118,7 @@
           </div>
           {% endif %}
           {# TFA #}
-          {% if mailboxdata.authsource == "mailcow" or mailboxdata.authsource == "ldap" %}
+          {% if tfa_available %}
           <div class="row mt-4">
             <div class="col-12 col-md-3 d-flex">
               <span class="mt-2 w-100 text-md-end">{{ lang.tfa.tfa }}:</span>

@@ -1,0 +1,64 @@
+<div class="tab-pane fade" id="tab-config-scim" role="tabpanel" aria-labelledby="tab-config-scim">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-config-scim" data-bs-toggle="collapse" aria-controls="collapse-tab-config-scim">
+        SCIM
+      </button>
+      <span class="d-none d-md-block">SCIM</span>
+    </div>
+    <div id="collapse-tab-config-scim" class="card-body collapse" data-bs-parent="#admin-content">
+      <p class="text-muted">{{ lang.admin.scim_info|format(scim_base_url)|raw }}</p>
+      {% if iam_settings.authsource not in ['keycloak', 'generic-oidc', 'ldap'] %}
+      <div class="alert alert-warning">{{ lang.admin.scim_no_iam }}</div>
+      {% endif %}
+      {% for new_token in scim_new_tokens %}
+      {% set label = new_token[0] %}{% set value = new_token[1] %}
+      <div class="alert alert-success">
+        <p><b>{{ label }}</b>: {{ lang.admin.scim_token_new }}</p>
+        <div class="input-group">
+          <input type="text" class="form-control textarea-code" value="{{ value }}" readonly>
+          <button type="button" class="btn btn-secondary api-key-copy" data-key="{{ value }}"><i class="bi bi-clipboard"></i></button>
+        </div>
+      </div>
+      {% endfor %}
+
+      <legend><i class="bi bi-key"></i> {{ lang.admin.scim_tokens }}</legend>
+      <hr />
+      <table id="scimtokenstable" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-admin mb-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="scim_tokens" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="scim_tokens" data-api-url='edit/scim-token' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="scim_tokens" data-api-url='edit/scim-token' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="scim_tokens" data-api-url='delete/scim-token' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" data-bs-toggle="modal" data-bs-target="#addScimTokenModal" href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.scim_token_add }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addScimTokenModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.admin.scim_token_add }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-id="add_scim_token" role="form" method="post" autocapitalize="none" autocorrect="off">
+          {% include 'admin/scim-token-fields.twig' with {'token': {}} %}
+          <div class="row mb-4">
+            <div class="offset-md-3 col-12 col-md-9">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_scim_token" data-api-url='add/scim-token' data-api-attr='{}' href="#"><i class="bi bi-plus-lg"></i> {{ lang.admin.add }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

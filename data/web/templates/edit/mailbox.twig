@@ -44,6 +44,9 @@
                           {% if iam_settings.authsource == 'ldap' %}
                           <option value="ldap" {% if result.authsource == "ldap" %}selected{% endif %}>LDAP</option>
                           {% endif %}
+                          {% if iam_settings.authsource in ['keycloak', 'generic-oidc', 'ldap'] or result.authsource == 'scim' %}
+                          <option value="scim" {% if result.authsource == "scim" %}selected{% endif %}>SCIM</option>
+                          {% endif %}
                       </select>
                     </div>
                   </div>
@@ -595,6 +598,9 @@
             </div>
             <div id="collapse-tab-mrename" class="card-body collapse" data-bs-parent="#mailbox-content">
               <div class="well">
+                {% if result.authsource == 'scim' %}
+                <div class="alert alert-warning mb-3" role="alert"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> {{ lang.edit.mailbox_rename_scim }}</div>
+                {% endif %}
                 <div id="rename_warning">
                   <p>{{ lang.edit.mailbox_rename_warning }}</p>
                   <div id="confirm_show_rspamd_global_filters">
