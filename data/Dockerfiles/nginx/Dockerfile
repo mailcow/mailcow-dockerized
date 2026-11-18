@@ -1,4 +1,4 @@
-FROM nginx:1.30.7-alpine
+FROM nginx:1.31.9-alpine
 LABEL maintainer "The Infrastructure Company GmbH <info@servercow.de>"
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
