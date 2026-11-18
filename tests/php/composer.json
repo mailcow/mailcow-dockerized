@@ -4,7 +4,8 @@
     "type": "project",
     "license": "GPL-3.0-only",
     "require-dev": {
-        "phpunit/phpunit": "^11.5"
+        "phpunit/phpunit": "^11.5",
+        "symfony/yaml": "^7.3"
     },
     "autoload-dev": {
         "psr-4": {

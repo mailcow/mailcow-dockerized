@@ -363,6 +363,61 @@ rspamd_config:register_symbol({
 })
 
 rspamd_config:register_symbol({
+  name = 'WHITELISTED_FWD_HOST',
+  type = 'prefilter',
+  score = 0.0,
+  callback = function(task)
+    local rspamd_logger = require "rspamd_logger"
+    local redis_params = rspamd_parse_redis_server('fwd_host')
+    local ip = task:get_from_ip()
+
+    if ip == nil or not ip:is_valid() then
+      return false
+    end
+
+    local from_ip_string = tostring(ip)
+    local ip_check_table = {'WHITELISTED_FWD_HOST', from_ip_string}
+
+    local maxbits = 128
+    local minbits = 7
+    if ip:get_version() == 4 then
+        maxbits = 32
+        minbits = 8
+    end
+    for i=maxbits,minbits,-1 do
+      table.insert(ip_check_table, ip:apply_mask(i):to_string() .. "/" .. i)
+    end
+
+    local function fwd_host_cb(err, data)
+      if err or type(data) ~= 'table' then
+        rspamd_logger.infox(rspamd_config, "fwd_host query request for ip %s returned invalid or empty data (\"%s\") or error (\"%s\")", ip, data, err)
+        return
+      end
+      for _,v in pairs(data) do
+        if type(v) == 'string' then
+          task:insert_result('WHITELISTED_FWD_HOST', 1.0, from_ip_string)
+          task:set_flag('pass_all')
+          return
+        end
+      end
+    end
+
+    local redis_ret = rspamd_redis_make_request(task,
+      redis_params, -- connect params
+      'WHITELISTED_FWD_HOST', -- hash key
+      false, -- is write
+      fwd_host_cb, --callback
+      'HMGET', -- command
+      ip_check_table -- arguments
+    )
+    if not redis_ret then
+      rspamd_logger.infox(rspamd_config, "cannot check fwd_host redis map")
+    end
+  end,
+  priority = 18
+})
+
+rspamd_config:register_symbol({
   name = 'TLS_HEADER',
   type = 'postfilter',
   callback = function(task)
@@ -390,9 +445,8 @@ rspamd_config:register_symbol({
     local rspamd_logger = require "rspamd_logger"
     local redis_params = rspamd_parse_redis_server('taghandler')
     local rspamd_http = require "rspamd_http"
-    local rcpts = task:get_recipients('smtp')
+    local rcpts = task:get_recipients({'smtp', 'orig'})
     local lua_util = require "lua_util"
-    local tagged_rcpt = task:get_symbol("TAGGED_RCPT")
 
     local function remove_moo_tag()
       local moo_tag_header = task:get_header('X-Moo-Tag', false)
@@ -417,8 +471,9 @@ rspamd_config:register_symbol({
 
     -- Check if recipient has a tag (contains '+')
     local tag = nil
-    if tagged_rcpt ~= nil then
-      tag = tagged_rcpt
+    local base_user, tag_part = rcpt_user:match('^([^%+]+)%+(.+)$')
+    if base_user and tag_part then
+      tag = tag_part
       rspamd_logger.infox("TAG_MOO: found tag in recipient: %s (base: %s, tag: %s)", rcpt_addr, base_user, tag)
     end
 
@@ -498,8 +553,7 @@ rspamd_config:register_symbol({
           else
             rspamd_logger.infox("TAG_MOO: user wants subject modified for tagged mail")
             local sbj = task:get_header('Subject') or ''
-            local tag_value = tag[1] and tag[1].options and tag[1].options[1] or ''
-            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag_value .. '] ' .. sbj)) .. '?='
+            new_sbj = '=?UTF-8?B?' .. tostring(util.encode_base64('[' .. tag .. '] ' .. sbj)) .. '?='
             task:set_milter_reply({
               remove_headers = {
                 ['Subject'] = 1,
@@ -907,6 +961,9 @@ rspamd_config:register_symbol({
 
             if not seen_cte and rewrite.need_rewrite_ct then
               out[#out + 1] = string.format('%s: %s', 'Content-Transfer-Encoding', new_cte)
+              task:set_milter_reply({
+                add_headers = {['Content-Transfer-Encoding'] = new_cte}
+              })
             end
 
             -- End of headers

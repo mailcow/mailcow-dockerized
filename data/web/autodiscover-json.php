@@ -8,7 +8,7 @@ if(file_exists('inc/vars.local.inc.php')) {
 $autodiscover_config = array_merge($default_autodiscover_config, $autodiscover_config);
 
 header('Content-type: application/json');
-if (strtolower($_GET['Protocol']) == 'activesync' && getenv('SKIP_SOGO') != "y") {
+if (strtolower($_GET['Protocol']) == 'activesync' && $autodiscover_config['autodiscoverType'] == 'activesync' && getenv('SKIP_SOGO') != "y") {
   echo '{"Protocol":"ActiveSync","Url":"' . $autodiscover_config['activesync']['url'] . '"}';
 }
 elseif (strtolower($_GET['Protocol']) == 'autodiscoverv1') {

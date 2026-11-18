@@ -2524,6 +2524,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                   ':domain' => $domain,
                   ':tag_name' => $tag,
                 ));
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                ));
               }
 
               $_SESSION['return'][] = array(
@@ -2691,6 +2695,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':domain' => $domain,
                   ':tag_name' => $tag,
+                ));
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
                 ));
               }
 
@@ -3169,6 +3177,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 $stmt->execute(array(
                   ':username' => $username,
                   ':tag_name' => $tag,
+                ));
+                $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':username' => $username,
                 ));
               } catch (Exception $e) {
               }
@@ -3988,6 +4000,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $stmt->execute(array(':goto' => '(^|,)'.preg_quote($_data, '/').'($|,)'));
           $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
           while ($row = array_shift($rows)) {
+            if (!hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $row['address'])) {
+              continue;
+            }
             // Keep old array for backward compatibility
             $data['fixed_sender_aliases'][] = $row['address'];
             // Split into allowed/blocked for proper display
@@ -4923,6 +4938,9 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 			      else if ($SaslLogs['service'] == 'SSO') {
               $last_sso_login = strtotime($SaslLogs['datetime']);
             }
+            else if ($SaslLogs['service'] == 'SOGO') {
+              $last_sogo_login = strtotime($SaslLogs['datetime']);
+            }
           }
           if (!isset($last_imap_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
             $last_imap_login = 0;
@@ -4936,10 +4954,14 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
 		      if (!isset($last_sso_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
             $last_sso_login = 0;
           }
+          if (!isset($last_sogo_login) || $GLOBALS['SHOW_LAST_LOGIN'] === false) {
+            $last_sogo_login = 0;
+          }
           $mailboxdata['last_imap_login'] = $last_imap_login;
           $mailboxdata['last_smtp_login'] = $last_smtp_login;
           $mailboxdata['last_pop3_login'] = $last_pop3_login;
           $mailboxdata['last_sso_login'] = $last_sso_login;
+          $mailboxdata['last_sogo_login'] = $last_sogo_login;
 
           if (!isset($_extra) || $_extra != 'reduced') {
             $rl = ratelimit('get', 'mailbox', $_data);
@@ -4977,7 +4999,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             $stmt->execute(array(':username' => $_data));
             $sender_acl_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($sender_acl_rows as $sender_acl_row) {
-              $mailboxdata['sender_acl'][] = $sender_acl_row['send_as'];
+              $send_as = $sender_acl_row['send_as'];
+              if ($_SESSION['mailcow_cc_role'] == 'domainadmin' && $send_as != '*') {
+                $in_scope = (substr($send_as, 0, 1) == '@')
+                  ? hasDomainAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], substr($send_as, 1))
+                  : hasAliasObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $send_as);
+                if (!$in_scope) {
+                  continue;
+                }
+              }
+              $mailboxdata['sender_acl'][] = $send_as;
             }
           }
           $stmt = $pdo->prepare("SELECT `tag_name`
@@ -5916,6 +5947,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':domain' => $domain,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("UPDATE `domain` SET `modified` = NOW() WHERE `domain` = :domain");
+                $stmt->execute(array(
+                  ':domain' => $domain,
+                ));
+              }
             }
           }
 
@@ -5968,6 +6005,12 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':username' => $username,
                 ':tag_name' => $tag,
               ));
+              if ($stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("UPDATE `mailbox` SET `modified` = NOW() WHERE `username` = :username");
+                $stmt->execute(array(
+                  ':username' => $username,
+                ));
+              }
             }
           }
 

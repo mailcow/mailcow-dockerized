@@ -116,8 +116,8 @@ if ($result === false){
     exit;
   }
   if ($result) {
-    error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $post['service'] . " from IP " . $client_ip);
-    set_sasl_log($post['username'], $client_ip, $post['service']);
+    error_log('MAILCOWAUTH: User auth for user ' . $post['username'] . " with service " . $service . " from IP " . $client_ip);
+    set_sasl_log($post['username'], $client_ip, $service);
   }
 }
 

@@ -109,7 +109,7 @@ foreach ($rcpts as $rcpt) {
   }
 
   // Skip if domain is excluded
-  if (in_array($parsed_rcpt['domain'], $exclude_domains)) {
+  if (is_array($exclude_domains) && in_array($parsed_rcpt['domain'], $exclude_domains)) {
     error_log(sprintf("QUARANTINE: Skipped domain %s", $parsed_rcpt['domain']) . PHP_EOL);
     continue;
   }

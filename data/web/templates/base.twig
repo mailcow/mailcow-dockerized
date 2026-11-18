@@ -416,18 +416,24 @@ function recursiveBase64StrToArrayBuffer(obj) {
         return navigator.credentials.create(json);
       }).then(function(cred) {
         return {
-          id: cred.id,
-          rawId: arrayBufferToBase64(cred.rawId),
-          response: {
-            attestationObject: arrayBufferToBase64(cred.response.attestationObject),
-            clientDataJSON: arrayBufferToBase64(cred.response.clientDataJSON)
-          },
-          type: cred.type
+          clientDataJSON: arrayBufferToBase64(cred.response.clientDataJSON),
+          attestationObject: arrayBufferToBase64(cred.response.attestationObject),
+          key_id: keyId,
+          tfa_method: 'webauthn',
+          confirm_password: ''
         };
-      }).then(function(credData) {
-        $('#setup_webauthn_register_data').val(JSON.stringify(credData));
-        $('#setup_webauthn_reg_form input[name=set_tfa]').val('1');
-        $('#setup_webauthn_reg_form').submit();
+      }).then(JSON.stringify).then(function(credentialData) {
+        // send the attestation to the JSON API, like the regular WebAuthn modal does,
+        // so that the credential is parsed and stored correctly
+        return window.fetch('/api/v1/add/webauthn-tfa-registration', {method: 'POST', body: credentialData, cache: 'no-cache'});
+      }).then(function(response) {
+        return response.json();
+      }).then(function(json) {
+        if (json.success) {
+          window.location = window.location.href.split('#')[0];
+        } else {
+          throw new Error(json.msg);
+        }
       }).catch(function(err) {
         $('#setup_webauthn_return_code').show().text(err.message || 'Registration failed');
       });

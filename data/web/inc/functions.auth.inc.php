@@ -601,6 +601,13 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
 
   // validate mailcow_password
   $mailcow_password = $user_res['attributes']['mailcow_password'][0];
+  // Keycloak returns binary LDAP attributes like userPassword Base64 encoded
+  if (substr($mailcow_password, 0, 1) != '{') {
+    $decoded_password = base64_decode($mailcow_password, true);
+    if ($decoded_password !== false && substr($decoded_password, 0, 1) == '{') {
+      $mailcow_password = $decoded_password;
+    }
+  }
   if (!verify_hash($mailcow_password, $pass)) {
     return false;
   }

@@ -97,9 +97,11 @@
                     <div class="col-sm-10">
                       <select data-live-search="true" data-width="100%" style="width:100%" id="editSelectSenderACL" name="sender_acl" size="10" multiple>
                         {% for domain in sender_acl_handles.sender_acl_domains.ro %}
-                          <option data-subtext="Admin" value="{{ domain }}" disabled selected>
-                            {{ lang.edit.dont_check_sender_acl|format(domain) }}
-                          </option>
+                          {% if domain == '*' or mailcow_cc_role == 'admin' %}
+                            <option data-subtext="Admin" value="{{ domain }}" disabled selected>
+                              {{ lang.edit.dont_check_sender_acl|format(domain) }}
+                            </option>
+                          {% endif %}
                         {% endfor %}
                         {% for domain in sender_acl_handles.sender_acl_domains.rw %}
                           <option value="{{ domain }}" selected>
