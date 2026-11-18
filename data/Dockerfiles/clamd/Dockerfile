@@ -1,7 +1,7 @@
 FROM alpine:3.24 AS builder
 
 WORKDIR /src
-ENV CLAMD_VERSION=1.4.6
+ENV CLAMD_VERSION=1.4.7
 
 RUN apk upgrade --no-cache \
   && apk add --update --no-cache \

@@ -885,7 +885,11 @@ if (isset($_GET['query'])) {
               break;
 
               default:
-                process_get_return(null);
+                http_response_code(404);
+                echo json_encode(array(
+                  'type' => 'error',
+                  'msg' => 'route not found'
+                ));
                 break;
               }
             break;
