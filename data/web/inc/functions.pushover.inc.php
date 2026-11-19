@@ -193,7 +193,6 @@ function pushover($_action, $_data = null) {
           ));
           $result = curl_exec($ch);
           $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          curl_close($ch);
           if ($httpcode == 200) {
             $_SESSION['return'][] = array(
               'type' => 'success',

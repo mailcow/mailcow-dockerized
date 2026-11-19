@@ -16,11 +16,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
-        curl_close($curl);
         return $err;
       }
       else {
-        curl_close($curl);
         $containers = json_decode($response, true);
         if (!empty($containers)) {
           foreach ($containers as $container) {
@@ -42,11 +40,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
-        curl_close($curl);
         return $err;
       }
       else {
-        curl_close($curl);
         $containers = json_decode($response, true);
         if (!empty($containers)) {
           foreach ($containers as $container) {
@@ -83,11 +79,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
-        curl_close($curl);
         return $err;
       }
       else {
-        curl_close($curl);
         $decoded_response = json_decode($response, true);
         if (!empty($decoded_response)) {
           if (empty($service_name)) {
@@ -136,11 +130,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
           $response = curl_exec($curl);
           if ($response === false) {
             $err = curl_error($curl);
-            curl_close($curl);
             return $err;
           }
           else {
-            curl_close($curl);
             if (empty($response)) {
               return true;
             }
@@ -164,11 +156,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
-        curl_close($curl);
         return $err;
       }
       else {
-        curl_close($curl);
         $stats = json_decode($response, true);
         if (!empty($stats)) return $stats;
       }
@@ -182,11 +172,9 @@ function docker($action, $service_name = null, $attr1 = null, $attr2 = null, $ex
       $response = curl_exec($curl);
       if ($response === false) {
         $err = curl_error($curl);
-        curl_close($curl);
         return $err;
       }
       else {
-        curl_close($curl);
         $stats = json_decode($response, true);
         if (!empty($stats)) return $stats;
       }

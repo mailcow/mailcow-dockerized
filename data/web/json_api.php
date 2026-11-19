@@ -1550,7 +1550,6 @@ if (isset($_GET['query'])) {
                       "ipv4" => $ipv4,
                       "ipv6" => $ipv6
                     );
-                    curl_close($curl);
                     echo json_encode($ips);
                   }
                 break;

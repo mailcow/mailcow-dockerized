@@ -83,7 +83,6 @@ class KeycloakClient
         $response = curl_exec($curl);
         $code = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $error = curl_error($curl);
-        curl_close($curl);
         if ($response === false) {
             throw new DirectoryException('Keycloak request failed: ' . $error);
         }
