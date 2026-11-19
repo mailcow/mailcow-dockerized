@@ -36,6 +36,22 @@ catch(PDOException $e) {
   $displayname = $email;
 }
 
+$emailAddresses = $email;
+if (isset($_GET['with_aliases'])) {
+  // Addresses the user can send as, same rules as the Postfix sender map: own aliases, alias-domain addresses, group addresses
+  $stmt = $pdo->prepare("SELECT `address` FROM `alias`
+    WHERE `goto` = :email AND `address` != :email2 AND `address` NOT LIKE '@%' AND `active` = 1 AND `sender_allowed` = 1 AND `group_id` IS NULL
+      AND (`domain` IN (SELECT `domain` FROM `domain` WHERE `active` = 1) OR `domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `active` = 1))
+    UNION SELECT CONCAT(`local_part`, '@', `alias_domain`) FROM `mailbox`
+      JOIN `alias_domain` ON `target_domain` = `domain` WHERE `username` = :email3 AND `alias_domain`.`active` = 1
+    UNION SELECT `send_as` FROM `sender_acl` WHERE `logged_in_as` = :email4 AND `group_id` IS NOT NULL AND `send_as` NOT LIKE '@%'
+    UNION SELECT g.`address` FROM `mailbox_group_member` m JOIN `mailbox_group` g ON g.`id` = m.`group_id`
+      WHERE m.`username` = :email5 AND g.`active` = 1 AND g.`sender_allowed` = 1 AND g.`address` IS NOT NULL
+      AND (g.`domain` IN (SELECT `domain` FROM `domain` WHERE `active` = 1) OR g.`domain` IN (SELECT `alias_domain` FROM `alias_domain` WHERE `active` = 1))");
+  $stmt->execute(array(':email' => $email, ':email2' => $email, ':email3' => $email, ':email4' => $email, ':email5' => $email));
+  $emailAddresses = implode(', ', array_merge(array($email), $stmt->fetchAll(PDO::FETCH_COLUMN)));
+}
+
 if (isset($_GET['only_email'])) {
   $onlyEmailAccount = true;
   $description = 'IMAP';
@@ -89,7 +105,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <key>EmailAccountName</key>
         <string><?=$displayname?></string>
         <key>EmailAddress</key>
-        <string><?=$email?></string>
+        <string><?=$emailAddresses?></string>
         <key>IncomingMailServerAuthentication</key>
         <string>EmailAuthPassword</string>
         <key>IncomingMailServerHostName</key>
