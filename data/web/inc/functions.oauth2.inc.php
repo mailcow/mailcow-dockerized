@@ -18,6 +18,7 @@ function oauth2($_action, $_type, $_data = null) {
           $client_id = bin2hex(random_bytes(6));
           $client_secret = bin2hex(random_bytes(12));
           $redirect_uri = $_data['redirect_uri'];
+          $trusted = $_data['trusted'] ?? 0;
           $scope = 'profile';
           // For future use
           // $grant_type = isset($_data['grant_type']) ? $_data['grant_type'] : 'authorization_code';
@@ -50,13 +51,14 @@ function oauth2($_action, $_type, $_data = null) {
             );
             return false;
           }
-          $stmt = $pdo->prepare("INSERT INTO `oauth_clients` (`client_id`, `client_secret`, `redirect_uri`, `scope`)
-            VALUES (:client_id, :client_secret, :redirect_uri, :scope)");
+          $stmt = $pdo->prepare("INSERT INTO `oauth_clients` (`client_id`, `client_secret`, `redirect_uri`, `scope`, `trusted`)
+            VALUES (:client_id, :client_secret, :redirect_uri, :scope, :trusted)");
           $stmt->execute(array(
             ':client_id' => $client_id,
             ':client_secret' => $client_secret,
             ':redirect_uri' => $redirect_uri,
-            ':scope' => $scope
+            ':scope' => $scope,
+            ':trusted' => $trusted
           ));
           $_SESSION['return'][] = array(
             'type' => 'success',
@@ -74,6 +76,7 @@ function oauth2($_action, $_type, $_data = null) {
             $is_now = oauth2('details', 'client', $id);
             if (!empty($is_now)) {
               $redirect_uri = (!empty($_data['redirect_uri'])) ? $_data['redirect_uri'] : $is_now['redirect_uri'];
+              $trusted = $_data['trusted'] ?? 0;
             }
             else {
               $_SESSION['return'][] = array(
@@ -128,11 +131,13 @@ function oauth2($_action, $_type, $_data = null) {
               continue;
             }
             $stmt = $pdo->prepare("UPDATE `oauth_clients` SET
-              `redirect_uri` = :redirect_uri
+              `redirect_uri` = :redirect_uri,
+              `trusted` = :trusted
                 WHERE `id` = :id");
             $stmt->execute(array(
               ':id' => $id,
-              ':redirect_uri' => $redirect_uri
+              ':redirect_uri' => $redirect_uri,
+              ':trusted' => $trusted
             ));
             $_SESSION['return'][] = array(
               'type' => 'success',
@@ -238,5 +243,25 @@ function oauth2($_action, $_type, $_data = null) {
         break;
       }
     break;
+    case 'details_by_client_id':
+      switch ($_type) {
+        case 'client':
+          $stmt = $pdo->prepare("SELECT * FROM `oauth_clients`
+            WHERE `client_id` = :client_id");
+          $stmt->execute(array(':client_id' => $_data));
+          $oauth_client_details = $stmt->fetch(PDO::FETCH_ASSOC);
+          return $oauth_client_details;
+        break;
+      }
+    break;
   }
+}
+
+function oauth2trusted($_client_id) {
+  global $pdo;
+  $stmt = $pdo->prepare("SELECT `trusted` FROM `oauth_clients`
+    WHERE `client_id` = :client_id");
+  $stmt->execute(array(':client_id' => $_client_id));
+  $oauth_client_details = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $oauth_client_details['trusted'] ?? 0;
 }
