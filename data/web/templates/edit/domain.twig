@@ -10,6 +10,9 @@
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dqwbcc">{{ lang.edit.quota_warning_bcc }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dmtasts">{{ lang.edit.mta_sts }}</button></li>
       <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dfooter">{{ lang.edit.domain_footer }}</button></li>
+      {% if mailcow_cc_role == 'admin' %}
+      <li role="presentation" class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#dtokenissuer">{{ lang.edit.domain_token_issuer }}</button></li>
+      {% endif %}
     </ul>
     <hr class="d-none d-md-block">
     <div class="tab-content">
@@ -429,6 +432,53 @@
             </div>
         </div>
       </div>
+      {% if mailcow_cc_role == 'admin' %}
+      <div id="dtokenissuer" class="tab-pane fade" role="tabpanel" aria-labelledby="domain-token-issuer">
+        <div class="card mb-4">
+            <div class="card-header d-flex d-md-none fs-5">
+              <button class="btn flex-grow-1 text-start" data-bs-target="#collapse-tab-token-issuer" data-bs-toggle="collapse" aria-controls="collapse-tab-token-issuer">
+                {{ lang.edit.domain_token_issuer }}
+              </button>
+            </div>
+            <div id="collapse-tab-token-issuer" class="card-body collapse" data-bs-parent="#domain-content">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <h4>{{ lang.edit.domain_token_issuer }}</h4>
+                    <p>{{ lang.edit.domain_token_issuer_info|raw }}</p>
+                    <form class="form-horizontal mt-4" data-id="domain_token_issuer">
+                      <div class="row mb-2">
+                        <label class="control-label col-sm-2" for="domain_token_issuer_url">{{ lang.edit.token_issuer }}:</label>
+                        <div class="col-sm-10">
+                          <input type="url" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" id="domain_token_issuer_url" name="issuer" placeholder="https://id.example.org/realms/example" value="{{ domain_token_issuer.issuer }}">
+                          <small class="text-muted">{{ lang.edit.token_issuer_info }}</small>
+                        </div>
+                      </div>
+                      <div class="row mb-2">
+                        <label class="control-label col-sm-2" for="domain_token_issuer_audiences">{{ lang.edit.token_audiences }}:</label>
+                        <div class="col-sm-10">
+                          <textarea spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" rows="3" id="domain_token_issuer_audiences" name="audiences">{{ domain_token_issuer.audiences|join("\n") }}</textarea>
+                          <small class="text-muted">{{ lang.edit.token_audiences_info }}</small>
+                        </div>
+                      </div>
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2" for="domain_token_issuer_claim">{{ lang.edit.token_claim }}:</label>
+                        <div class="col-sm-10">
+                          <input type="text" spellcheck="false" autocorrect="off" autocapitalize="none" class="form-control" id="domain_token_issuer_claim" name="claim" placeholder="email" value="{{ domain_token_issuer.claim }}">
+                          <small class="text-muted">{{ lang.edit.token_claim_info }}</small>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="domain_token_issuer" data-item="{{ domain }}" data-api-url='edit/domain/token_issuer' data-api-attr='{}' href="#">{{ lang.edit.save }}</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
 </div>
 {% else %}

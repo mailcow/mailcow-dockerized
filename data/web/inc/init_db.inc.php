@@ -253,6 +253,23 @@ function init_db_schema()
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "domain_token_issuer" => array(
+        // the OIDC issuer whose access tokens sign in to the domain's mailboxes (OAUTHBEARER, XOAUTH2)
+        "cols" => array(
+          "domain" => "VARCHAR(255) NOT NULL",
+          "issuer" => "VARCHAR(500) NOT NULL",
+          "audiences" => "JSON NOT NULL DEFAULT ('[]')",
+          "claim" => "VARCHAR(100) NOT NULL DEFAULT 'email'",
+          "created" => "DATETIME(0) NOT NULL DEFAULT NOW(0)",
+          "modified" => "DATETIME ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("domain")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),
       "domain_wide_footer" => array(
         "cols" => array(
           "domain" => "VARCHAR(255) NOT NULL",

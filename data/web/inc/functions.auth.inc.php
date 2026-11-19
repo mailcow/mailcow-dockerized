@@ -516,6 +516,176 @@ function apppass_login($user, $pass, $extra = null, &$denied = false){
 
   return false;
 }
+// Token sign-in (SASL OAUTHBEARER and XOAUTH2) for IMAP, POP3, Sieve and SMTP.
+// A domain can trust one token issuer, an OIDC identity provider (domain_token_issuer). A mailbox of
+// that domain then signs in with an access token from it instead of a password: the token is checked
+// against the issuer's signing keys, must name the mailbox and, if audiences are set, be meant for
+// one of them. The issuer is per domain, so the IdP of one domain can never sign in to another
+// domain's mailboxes, whatever addresses it puts in its tokens.
+// Returns "user" on success. $denied is set when the token is valid, but the mailbox does not allow
+// the login, which is not a failed login for netfilter.
+function token_login($user, $token, $service, &$denied = false){
+  global $pdo;
+
+  $user = strtolower(trim((string)$user));
+  if (!filter_var($user, FILTER_VALIDATE_EMAIL) || !is_string($token) || $token === '') {
+    return false;
+  }
+  $domain = substr($user, strrpos($user, '@') + 1);
+
+  $stmt = $pdo->prepare("SELECT `issuer`, `audiences`, `claim` FROM `domain_token_issuer` WHERE `domain` = :domain");
+  $stmt->execute(array(':domain' => $domain));
+  $trust = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$trust) {
+    // no token sign-in for this domain
+    return false;
+  }
+
+  $claims = token_verify($trust['issuer'], $token);
+  // a token without an expiry would stay valid for good
+  if ($claims === false || !isset($claims['exp']) || ($claims['iss'] ?? null) !== $trust['issuer']) {
+    return false;
+  }
+  $audiences = json_decode($trust['audiences'], true);
+  if (!empty($audiences)) {
+    $aud = isset($claims['aud']) ? (array)$claims['aud'] : array();
+    if (isset($claims['azp'])) {
+      $aud[] = $claims['azp'];
+    }
+    if (empty(array_intersect($audiences, $aud))) {
+      return false;
+    }
+  }
+  $address = $claims[$trust['claim']] ?? null;
+  if (!is_string($address) || strtolower(trim($address)) !== $user) {
+    return false;
+  }
+  // an address the IdP itself has not verified does not prove the mailbox is the user's
+  if ($trust['claim'] == 'email' && ($claims['email_verified'] ?? true) === false) {
+    return false;
+  }
+
+  // the same checks as a password login: active mailbox and domain, no shared mailbox, protocol allowed
+  $stmt = $pdo->prepare("SELECT `mailbox`.`active`, `mailbox`.`attributes`, `domain`.`active` AS `d_active`
+    FROM `mailbox`
+    INNER JOIN `domain` ON `mailbox`.`domain` = `domain`.`domain`
+    WHERE `kind` NOT REGEXP 'location|thing|group'
+      AND `username` = :user");
+  $stmt->execute(array(':user' => $user));
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$row) {
+    return false;
+  }
+  $attributes = json_decode($row['attributes'], true);
+  $service = !empty($service) ? $service : 'NONE';
+  $key = strtolower($service) . '_access';
+  if ($row['active'] != '1' || $row['d_active'] != '1'
+    || ($attributes['shared'] ?? '0') == '1'
+    || ($service != 'NONE' && isset($attributes[$key]) && $attributes[$key] != '1')) {
+    $denied = true;
+    return false;
+  }
+  return "user";
+}
+// Verifies a JWT access token with the signing keys of $issuer and returns its claims, or false.
+// Signature, expiry and not-before are checked here, the claims by the caller.
+function token_verify($issuer, $token){
+  \Firebase\JWT\JWT::$leeway = 30;
+  foreach (array(false, true) as $refresh) {
+    $keys = token_issuer_keys($issuer, $refresh);
+    try {
+      // the algorithm is bound to each key, a token cannot choose another one
+      $keyset = \Firebase\JWT\JWK::parseKeySet(array('keys' => $keys), 'RS256');
+      return json_decode(json_encode(\Firebase\JWT\JWT::decode($token, $keyset)), true);
+    }
+    catch (\UnexpectedValueException $e) {
+      // a key id that is not in the cache: the issuer may have rotated its keys, fetch them once more
+      if (!$refresh && str_contains($e->getMessage(), '"kid"')) {
+        continue;
+      }
+      return false;
+    }
+    catch (\Throwable $e) {
+      // malformed token, unsupported algorithm
+      return false;
+    }
+  }
+  return false;
+}
+// The signing keys of a token issuer, found through its OIDC discovery document and cached in Redis
+// for an hour. $refresh skips the cache, for a key id not in it, at most once a minute per issuer,
+// so tokens with made-up key ids cannot make mailcow hammer the IdP. If the IdP cannot be reached,
+// cached keys are used even when older.
+function token_issuer_keys($issuer, $refresh = false){
+  global $redis;
+
+  $cached = null;
+  try {
+    $cached = json_decode((string)$redis->hGet('TOKEN_ISSUER_KEYS', $issuer), true);
+  }
+  catch (RedisException $e) {
+  }
+  $now = time();
+  $has_cache = is_array($cached) && isset($cached['fetched'], $cached['keys']);
+  if ($has_cache) {
+    $age = $now - intval($cached['fetched']);
+    if ($age < ($refresh ? 60 : 3600)) {
+      return $cached['keys'];
+    }
+  }
+
+  try {
+    $discovery = token_issuer_fetch(rtrim($issuer, '/') . '/.well-known/openid-configuration');
+    if (($discovery['issuer'] ?? null) !== $issuer || !is_string($discovery['jwks_uri'] ?? null)) {
+      throw new \Mailcow\Auth\IdpUnavailable('The discovery document names another issuer or no jwks_uri');
+    }
+    $jwks = token_issuer_fetch($discovery['jwks_uri']);
+    $keys = array();
+    foreach (($jwks['keys'] ?? array()) as $jwk) {
+      // signing keys only, an IdP publishes its encryption keys in the same set
+      if (is_array($jwk) && ($jwk['use'] ?? 'sig') === 'sig') {
+        $keys[] = $jwk;
+      }
+    }
+    if (empty($keys)) {
+      throw new \Mailcow\Auth\IdpUnavailable('The issuer publishes no signing keys');
+    }
+  }
+  catch (\Mailcow\Auth\IdpUnavailable $e) {
+    if ($has_cache) {
+      return $cached['keys'];
+    }
+    throw $e;
+  }
+
+  try {
+    $redis->hSet('TOKEN_ISSUER_KEYS', $issuer, json_encode(array('fetched' => $now, 'keys' => $keys)));
+  }
+  catch (RedisException $e) {
+  }
+  return $keys;
+}
+function token_issuer_fetch($url){
+  $curl = curl_init($url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+  curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+  curl_setopt($curl, CURLOPT_USERAGENT, 'mailcow');
+  $response = curl_exec($curl);
+  $code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+  $error = curl_error($curl);
+  curl_close($curl);
+  if ($response === false || $code != 200) {
+    throw new \Mailcow\Auth\IdpUnavailable('GET ' . $url . ' failed: ' . ($error !== '' ? $error : 'HTTP ' . $code));
+  }
+  $json = json_decode($response, true);
+  if (!is_array($json)) {
+    throw new \Mailcow\Auth\IdpUnavailable('GET ' . $url . ' returned no JSON');
+  }
+  return $json;
+}
 // Keycloak REST Api Flow - auth user by mailcow_password attribute
 // This password will be used for direct UI, IMAP and SMTP Auth
 // To use direct user credentials, only Authorization Code Flow is valid
