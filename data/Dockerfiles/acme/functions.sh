@@ -67,8 +67,11 @@ get_ipv6(){
 
 check_domain(){
     DOMAIN=$1
-    A_DOMAIN=$(dig A ${DOMAIN} +short | tail -n 1)
-    AAAA_DOMAIN=$(dig AAAA ${DOMAIN} +short | tail -n 1)
+    # Collect all addresses (skip CNAME targets), prefer the one matching this server, else keep the last one
+    A_DOMAIN=$(dig A ${DOMAIN} +short | grep -E "^([0-9]{1,3}\.){3}[0-9]{1,3}$")
+    AAAA_DOMAIN=$(dig AAAA ${DOMAIN} +short | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
+    A_DOMAIN=$(echo "${A_DOMAIN}" | grep -Fx "${IPV4:-ERR}" || echo "${A_DOMAIN}" | tail -n 1)
+    AAAA_DOMAIN=$(for IP in ${AAAA_DOMAIN}; do expand ${IP}; done | grep -Fx "$(expand ${IPV6:-"0000:0000:0000:0000:0000:0000:0000:0000"})" || echo "${AAAA_DOMAIN}" | tail -n 1)
     # Hard-fail on CAA errors for MAILCOW_HOSTNAME
     PARENT_DOMAIN=$(echo ${DOMAIN} | cut -d. -f2-)
     CAAS=( $(dig CAA ${PARENT_DOMAIN} +short | sed -n 's/\d issue "\(.*\)"/\1/p') )
@@ -84,10 +87,6 @@ check_domain(){
     if [[ ${ACME_DNS_CHALLENGE} == "y" ]]; then
       log_f "ACME_DNS_CHALLENGE=y - skipping IP and HTTP validation for ${DOMAIN}"
       return 0
-    fi
-    # Check if CNAME without v6 enabled target
-    if [[ ! -z ${AAAA_DOMAIN} ]] && [[ -z $(echo ${AAAA_DOMAIN} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$") ]]; then
-      AAAA_DOMAIN=
     fi
     if [[ ! -z ${AAAA_DOMAIN} ]]; then
       log_f "Found AAAA record for ${DOMAIN}: ${AAAA_DOMAIN} - skipping A record check"
