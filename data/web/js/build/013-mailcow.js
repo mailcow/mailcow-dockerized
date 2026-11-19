@@ -423,3 +423,107 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(copyText.value);
   mailcow_alert_box(lang.copy_to_clipboard, "success");
 }
+
+// Configurable table columns
+// Columns marked with "configurable: false" are always shown and not listed in the picker.
+// Columns the user unchecks are moved into the responsive child row instead of being removed,
+// so their data stays reachable via the row's expand toggle.
+function loadTableColumns(table_id) {
+  try {
+    var prefs = JSON.parse(localStorage.getItem('mailcow_columns_' + table_id));
+    if (prefs && typeof prefs === 'object') return prefs;
+  } catch {}
+  return {};
+}
+function saveTableColumns(table_id, prefs) {
+  try {
+    if (Object.keys(prefs).length === 0)
+      localStorage.removeItem('mailcow_columns_' + table_id);
+    else
+      localStorage.setItem('mailcow_columns_' + table_id, JSON.stringify(prefs));
+  } catch {}
+}
+function isConfigurableColumn(column) {
+  return column.configurable !== false && typeof column.data === 'string' && column.title !== '';
+}
+function isColumnShown(column, prefs) {
+  return prefs.hasOwnProperty(column.data) ? prefs[column.data] : column.defaultShown;
+}
+function columnPriority(column, shown) {
+  return (shown && !column.defaultShown) ? column.switchedOnPriority : column.defaultPriority;
+}
+function applyTableColumns(table_id, columns) {
+  var prefs = loadTableColumns(table_id);
+  // Columns the user switched on rank right after the fixed ones, so on narrow screens
+  // the responsive extension moves default columns into the child row before them
+  var fixed_priority = 0;
+  columns.forEach(function(column) {
+    if (!isConfigurableColumn(column) && typeof column.responsivePriority === 'number')
+      fixed_priority = Math.max(fixed_priority, column.responsivePriority);
+  });
+  columns.forEach(function(column) {
+    if (!isConfigurableColumn(column)) return;
+    var classes = (column.className || '').split(' ').filter(Boolean);
+    column.defaultShown = !classes.includes('none');
+    column.defaultPriority = column.responsivePriority;
+    column.switchedOnPriority = fixed_priority + 0.5;
+    var shown = isColumnShown(column, prefs);
+    classes = classes.filter(function(c) { return c !== 'none'; });
+    if (!shown) classes.push('none');
+    column.className = classes.join(' ');
+    column.responsivePriority = columnPriority(column, shown);
+  });
+  return columns;
+}
+// Applies the saved choice to a table that is already drawn. The responsive extension reads the
+// "none" class from the header cell and the priority from the column settings, so both are
+// updated in place and the columns re-laid out, without reloading the data or closing child rows.
+function updateTableColumns(table_id, table) {
+  var prefs = loadTableColumns(table_id);
+  var settings = table.settings()[0];
+  table.init().columns.forEach(function(column, i) {
+    if (!isConfigurableColumn(column)) return;
+    var shown = isColumnShown(column, prefs);
+    $(table.column(i).header()).toggleClass('none', !shown);
+    // there is no API to change a column's priority after init
+    settings.aoColumns[i].responsivePriority = columnPriority(column, shown);
+  });
+  table.responsive.rebuild();
+  table.columns.adjust().responsive.recalc();
+}
+function drawTableColumnPicker(table_id, table) {
+  var picker = $('.table-column-picker[data-table="' + table_id + '"]');
+  if (!picker.length) return;
+  var labels = (typeof lang_datatables !== 'undefined') ? lang_datatables : {};
+  var columns = table.init().columns;
+  var prefs = loadTableColumns(table_id);
+
+  picker.empty();
+  picker.append($('<li class="dropdown-header"></li>').text(labels.columns_show || 'Show as column'));
+  columns.forEach(function(column) {
+    if (!isConfigurableColumn(column)) return;
+    var checkbox = $('<input type="checkbox" class="form-check-input me-2">')
+      .prop('checked', isColumnShown(column, prefs))
+      .on('change', function() {
+        var prefs = loadTableColumns(table_id);
+        if ($(this).prop('checked') === column.defaultShown)
+          delete prefs[column.data];
+        else
+          prefs[column.data] = $(this).prop('checked');
+        saveTableColumns(table_id, prefs);
+        updateTableColumns(table_id, table);
+      });
+    picker.append($('<li></li>').append($('<label class="dropdown-item"></label>').append(checkbox, $('<span></span>').text(column.title))));
+  });
+  picker.append('<li><hr class="dropdown-divider"></li>');
+  picker.append($('<li></li>').append(
+    $('<a class="dropdown-item" href="#"></a>')
+      .text(labels.columns_reset || 'Reset to default')
+      .on('click', function(e) {
+        e.preventDefault();
+        saveTableColumns(table_id, {});
+        updateTableColumns(table_id, table);
+        drawTableColumnPicker(table_id, table);
+      })
+  ));
+}

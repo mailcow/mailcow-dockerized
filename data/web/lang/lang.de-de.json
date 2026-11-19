@@ -695,6 +695,9 @@
     },
     "datatables": {
         "collapse_all": "Alle Einklappen",
+        "columns": "Spalten",
+        "columns_reset": "Auf Standard zurücksetzen",
+        "columns_show": "Als Spalte anzeigen",
         "decimal": ",",
         "emptyTable": "Keine Daten in der Tabelle vorhanden",
         "expand_all": "Alle Ausklappen",

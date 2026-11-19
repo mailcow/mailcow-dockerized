@@ -6,7 +6,11 @@
       </button>
       <span class="d-none d-md-block">{{ lang.mailbox.mailboxes }} <span class="badge bg-info table-lines"></span></span>
 
-      <div class="btn-group ms-auto d-flex">
+      <div class="btn-group ms-auto d-flex flex-nowrap">
+        <div class="btn-group">
+          <button class="btn btn-xs btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"><i class="bi bi-layout-three-columns"></i> {{ lang.datatables.columns }}</button>
+          <ul class="dropdown-menu dropdown-menu-end table-column-picker" data-table="mailbox_table"></ul>
+        </div>
         <button class="btn btn-xs btn-secondary refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table">{{ lang.admin.refresh }}</button>
       </div>
     </div>
