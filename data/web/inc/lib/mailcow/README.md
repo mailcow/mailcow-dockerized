@@ -37,6 +37,9 @@ Shares become Dovecot ACLs on `group=mcg_<id>` (userdb `acl_groups`) and `sogo_a
 through dockerapi) are used by other modules instead of calling `docker()` or the SOGo functions themselves.
 `Identity/` (IdP links, sync runs, offboarding) lists Keycloak/LDAP through `Directory/` adapters, decides in the
 side-effect free `SyncPlanner` and is run by the `identity-sync.php` cron.
+`Scim/` (SCIM 2.0 provider, /scim/v2 via `scim.php`) maps SCIM Users to mailboxes (authsource `scim`, table
+`scim_maps`) and SCIM Groups to mailbox groups (`scim_group_maps`, members as IdP members through
+`MailboxGroup\Service\IdpSyncService`); offboarding follows `Identity/` (login disabled, mailbox kept).
 `Auth/` (logins) holds for now the IdP login steps the legacy login flows call (link checks fail closed, group
 template before the attribute mapping); the auth logic of the function files moves here step by step.
 

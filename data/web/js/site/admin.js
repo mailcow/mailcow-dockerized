@@ -306,6 +306,52 @@ jQuery(function($){
       ]
     });
   }
+  function draw_scim_tokens() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#scimtokenstable') ) {
+      $('#scimtokenstable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#scimtokenstable').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/scim-token/all",
+        dataSrc: function(data){
+          return process_table_data(data, 'scimtokenstable');
+        }
+      },
+      columns: [
+        { title: '', data: null, searchable: false, orderable: false, defaultContent: '' },
+        { title: '', data: 'chkbox', searchable: false, orderable: false, defaultContent: '' },
+        { title: 'ID', data: 'id', defaultContent: '' },
+        { title: lang.description, data: 'desc', defaultContent: '' },
+        { title: lang.scim_domain_restriction, data: 'restriction', defaultContent: '' },
+        { title: lang.scim_group_domain, data: 'groups', defaultContent: '' },
+        { title: lang.iam_default_template, data: 'template', defaultContent: '' },
+        { title: lang.api_networks, data: 'networks', defaultContent: '' },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        { title: lang.action, data: 'action', className: 'dt-sm-head-hidden dt-text-right', defaultContent: '' },
+      ]
+    });
+  }
   function draw_admins() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#adminstable') ) {
@@ -691,6 +737,19 @@ jQuery(function($){
             '</div>';
         }
       });
+    } else if (table == 'scimtokenstable') {
+      $.each(data, function (i, item) {
+        item.desc = escapeHtml(item.description);
+        item.restriction = item.domain_restriction ? escapeHtml(item.domain_restriction) : lang.scim_all_domains;
+        item.groups = escapeHtml(item.domain_restriction || item.group_domain || '-');
+        item.template = escapeHtml(item.default_template || '-');
+        item.networks = item.allow_from.length ? $.map(item.allow_from, function(n) { return escapeHtml(n); }).join('<br>') : '-';
+        item.chkbox = '<input type="checkbox" class="form-check-input" data-id="scim_tokens" name="multi_select" value="' + item.id + '" />';
+        item.action = '<div class="btn-group">' +
+          '<a href="/edit/scim-token/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+          '<a href="#" data-action="delete_selected" data-id="single-scim-token" data-api-url="delete/scim-token" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+          '</div>';
+      });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
         item.selected_domains = escapeHtml(item.selected_domains);
@@ -739,6 +798,7 @@ jQuery(function($){
   onVisible("[id^=domainadminstable]", () => draw_domain_admins());
   onVisible("[id^=oauth2clientstable]", () => draw_oauth2_clients());
   onVisible("[id^=apikeystable]", () => draw_api_keys());
+  onVisible("[id^=scimtokenstable]", () => draw_scim_tokens());
   onVisible("[id^=forwardinghoststable]", () => draw_fwd_hosts());
   onVisible("[id^=relayhoststable]", () => draw_relayhosts());
   onVisible("[id^=transportstable]", () => draw_transport_maps());
@@ -895,6 +955,12 @@ jQuery(function($){
   });
   $('.iam_rolemap_add_ldap').click(async function(e){
     addAttributeMappingRow('#iam_ldap_mapping_list', '.iam_ldap_rolemap_del', e);
+  });
+  $('.iam_rolemap_add_scim').click(async function(e){
+    addAttributeMappingRow('#iam_scim_mapping_list', '.iam_scim_rolemap_del', e);
+  });
+  $('.iam_scim_rolemap_del').click(async function(e){
+    deleteAttributeMappingRow(this, e);
   });
   $('.iam_keycloak_rolemap_del').click(async function(e){
     deleteAttributeMappingRow(this, e);

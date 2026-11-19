@@ -659,6 +659,7 @@ components:
             - keycloak
             - generic-oidc
             - ldap
+            - scim
         percent_class:
           type: string
           enum:
@@ -733,8 +734,12 @@ components:
             - keycloak
             - generic-oidc
             - ldap
+            - scim
           default: mailcow
-          description: Login source; an external one only if it is the configured identity provider, else mailcow
+          description: >-
+            Login source; an external one only if it is the configured identity
+            provider, else mailcow. `scim` = provisioned by an identity provider
+            through SCIM, allowed without a configured identity provider.
         password:
           type: string
           format: password
@@ -873,7 +878,11 @@ components:
             - keycloak
             - generic-oidc
             - ldap
-          description: An external source only if it is the configured identity provider
+            - scim
+          description: >-
+            An external source only if it is the configured identity provider.
+            `scim` = provisioned by an identity provider through SCIM; needs a
+            configured keycloak, generic-oidc or ldap identity provider.
         pw_recovery_email:
           type: string
           description: Address for password reset mails (authsource mailcow only)
@@ -1890,6 +1899,102 @@ components:
           type: [integer, string, boolean]
           description: 1/true = allow the key from any address
           default: 0
+        active:
+          type: [integer, string, boolean]
+          description: 1/true = active
+          default: 1
+    ScimToken:
+      type: object
+      description: A SCIM token, without its value (only its SHA-256 is stored)
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        domain_restriction:
+          type: [string, "null"]
+          description: The token only sees users and groups of this domain; null = all domains
+        group_domain:
+          type: [string, "null"]
+          description: Domain of the groups a token without domain restriction creates; null = no groups
+        allow_from:
+          type: array
+          description: IP addresses and networks the token may be used from; empty = any
+          items:
+            type: string
+        default_template:
+          type: [string, "null"]
+          description: Mailbox template of users whose template attribute is missing or not mapped
+        mappers:
+          type: array
+          description: Values of the extension attribute `template`, paired by position with `templates`
+          items:
+            type: string
+        templates:
+          type: array
+          description: Mailbox templates selected by `mappers`
+          items:
+            type: string
+        allow_rename:
+          type: integer
+          enum: [0, 1]
+          description: 1 = a changed userName renames the mailbox within its domain
+        rename_alias:
+          type: integer
+          enum: [0, 1]
+          description: 1 = a rename keeps the old address as alias
+        active:
+          type: integer
+          enum: [0, 1]
+        created:
+          type: [string, "null"]
+        modified:
+          type: [string, "null"]
+    ScimTokenAttributes:
+      type: object
+      description: Attributes of a SCIM token for add and edit; an edit keeps the fields not sent
+      properties:
+        description:
+          type: string
+          description: Free text, at most 255 characters
+        domain_restriction:
+          type: string
+          description: >-
+            The token only sees users and groups of this domain and creates
+            groups there; empty = all domains
+        group_domain:
+          type: string
+          description: Domain of the groups a token without domain restriction creates; empty = no groups
+        allow_from:
+          description: >-
+            IP addresses and CIDR networks the token may be used from, as list
+            or as string separated by commas, spaces or newlines; empty = any
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        default_template:
+          type: string
+          description: Mailbox template of users whose template attribute is missing or not mapped
+        mappers:
+          type: array
+          description: Values of the extension attribute `template`, paired by position with `templates`
+          items:
+            type: string
+        templates:
+          type: array
+          description: Mailbox templates selected by `mappers`
+          items:
+            type: string
+        allow_rename:
+          type: [integer, string, boolean]
+          description: 1/true = a changed userName renames the mailbox within its domain (else userName is immutable)
+          default: 0
+        rename_alias:
+          type: [integer, string, boolean]
+          description: 1/true = a rename keeps the old address as alias
+          default: 1
         active:
           type: [integer, string, boolean]
           description: 1/true = active
@@ -3690,6 +3795,19 @@ components:
               priority: warning
               task: Group Shares
               message: "group_imap_grant_failed: info@example.org"
+    ScimLogs:
+      description: The log entries, `{}` if there are none
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/CronLogEntry"
+          example:
+            - time: 1794096901
+              priority: info
+              task: SCIM
+              message: "Created User john.doe@example.org (token ID 3)"
     DovecotLogs:
       description: The log entries, `{}` if there are none
       content:
@@ -4194,6 +4312,44 @@ paths:
               access: rw
               allow_from: "192.0.2.10, 2001:db8::/64"
               skip_ip_check: 0
+              active: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/v1/add/scim-token:
+    post:
+      summary: Create SCIM token
+      description: >-
+        Creates a SCIM token for an identity provider (administrators only).
+        Only its SHA-256 is stored: the value is returned once, in the
+        `scim_token` key of the success message. The identity provider sends
+        it as Bearer token to the SCIM 2.0 API below /scim/v2.
+
+
+        Messages: `scim_token_added`; errors `scim_token_description_invalid`,
+        `domain_invalid`, `domain_not_found`, `network_host_invalid`.
+      operationId: addScimToken
+      tags:
+        - SCIM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScimTokenAttributes"
+            example:
+              description: Entra ID
+              domain_restriction: example.org
+              allow_from: ""
+              default_template: Staff
+              mappers:
+                - sales
+              templates:
+                - Sales
               active: 1
       responses:
         "200":
@@ -5520,6 +5676,38 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/v1/delete/scim-token:
+    post:
+      summary: Delete SCIM tokens
+      description: >-
+        Deletes SCIM tokens (administrators only). The users and groups they
+        provisioned stay; those deleted through SCIM are given to a token
+        again (also a new one of the same identity provider) only after an
+        administrator released them.
+
+
+        Messages: `scim_token_deleted`.
+      operationId: deleteScimToken
+      tags:
+        - SCIM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: IDs of the SCIM tokens
+              items:
+                type: [integer, string]
+            example:
+              - 3
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/v1/delete/app-passwd:
     post:
       tags:
@@ -6423,6 +6611,48 @@ paths:
                   - 192.0.2.10
                   - 198.51.100.0/24
                 regen_key: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/v1/edit/scim-token:
+    post:
+      summary: Edit SCIM tokens
+      description: >-
+        Changes SCIM tokens (administrators only); fields not sent keep their
+        value. The token value cannot be changed.
+
+
+        Messages: `scim_token_modified`; errors as for `add/scim-token`.
+      operationId: editScimToken
+      tags:
+        - SCIM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  description: IDs of the SCIM tokens
+                  type: array
+                  items:
+                    type: [integer, string]
+                attr:
+                  $ref: "#/components/schemas/ScimTokenAttributes"
+              required:
+                - items
+                - attr
+            example:
+              items:
+                - 3
+              attr:
+                group_domain: example.org
+                active: 1
       responses:
         "200":
           $ref: "#/components/responses/WriteResult"
@@ -7953,6 +8183,84 @@ paths:
                   active: 1
                   created: "2026-11-02 09:12:44"
                   modified: "2026-11-05 16:40:02"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/get/scim-token/{id}:
+    get:
+      summary: Get SCIM token
+      description: >-
+        One SCIM token, without its value. Administrators only, a read-only
+        API key gets `{}`.
+      operationId: getScimToken
+      tags:
+        - SCIM
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the SCIM token
+          schema:
+            type: integer
+          example: 3
+      responses:
+        "200":
+          description: The SCIM token, `{}` if there is none with this ID or for a read-only API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScimToken"
+              example:
+                id: 3
+                description: Entra ID
+                domain_restriction: example.org
+                group_domain: null
+                allow_from: []
+                default_template: Staff
+                mappers:
+                  - sales
+                templates:
+                  - Sales
+                allow_rename: 0
+                rename_alias: 1
+                active: 1
+                created: "2026-11-12 12:00:00"
+                modified: null
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/get/scim-token/all:
+    get:
+      summary: Get SCIM tokens
+      description: >-
+        Lists the SCIM tokens without their values. Administrators only, a
+        read-only API key gets `{}`.
+      operationId: getScimTokens
+      tags:
+        - SCIM
+      responses:
+        "200":
+          description: The SCIM tokens, `{}` if there are none or for a read-only API key
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScimToken"
+              example:
+                - id: 3
+                  description: Entra ID
+                  domain_restriction: example.org
+                  group_domain: null
+                  allow_from: []
+                  default_template: Staff
+                  mappers:
+                    - sales
+                  templates:
+                    - Sales
+                  allow_rename: 0
+                  rename_alias: 1
+                  active: 1
+                  created: "2026-11-12 12:00:00"
+                  modified: null
         "401":
           $ref: "#/components/responses/Unauthorized"
   /api/v1/get/app-passwd/all/{mailbox}:
@@ -9530,6 +9838,41 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SaslLogs"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/get/logs/scim:
+    get:
+      summary: Get SCIM logs
+      description: >-
+        The newest 1000 entries of the SCIM 2.0 API (writes and errors of the
+        identity providers), newest first.
+      operationId: getScimLogs
+      tags:
+        - Logs
+      responses:
+        "200":
+          $ref: "#/components/responses/ScimLogs"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/get/logs/scim/{count}:
+    get:
+      summary: Get SCIM logs (count or range)
+      description: Entries of the SCIM 2.0 API, newest first.
+      operationId: getScimLogsByCount
+      tags:
+        - Logs
+      parameters:
+        - name: count
+          in: path
+          required: true
+          description: "`N`: the newest N entries; `from-to`: entries `from` to `to` (newest = 1)"
+          schema:
+            type: string
+            pattern: ^[0-9]+(-[0-9]+)?$
+          example: "50"
+      responses:
+        "200":
+          $ref: "#/components/responses/ScimLogs"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /api/v1/get/logs/sogo:
@@ -14447,6 +14790,11 @@ tags:
     description: Clients that use mailcow as OAuth2 server
   - name: API Keys
     description: API keys; service keys from mailcow.conf are read-only
+  - name: SCIM
+    description: >-
+      Tokens of identity providers for the SCIM 2.0 API below /scim/v2 (RFC
+      7643/7644), which describes itself at /scim/v2/ServiceProviderConfig,
+      /Schemas and /ResourceTypes
   - name: Groups
     description: Mailbox groups (distribution lists, send-as rights, templates)
   - name: Routing

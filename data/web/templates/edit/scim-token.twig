@@ -1,0 +1,17 @@
+{% extends 'edit.twig' %}
+
+{% block inner_content %}
+{% if result %}
+<h4>{{ lang.admin.scim_token }}</h4>
+<form data-id="edit_scim_token" class="form-horizontal" role="form" method="post" autocapitalize="none" autocorrect="off">
+  {% include 'admin/scim-token-fields.twig' with {'token': result} %}
+  <div class="row">
+    <div class="offset-md-3 col-12 col-md-9">
+      <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="edit_selected" data-id="edit_scim_token" data-item="{{ result.id }}" data-api-url='edit/scim-token' data-api-attr='{}' href="#"><i class="bi bi-check-lg"></i> {{ lang.admin.save }}</button>
+    </div>
+  </div>
+</form>
+{% else %}
+  {{ parent() }}
+{% endif %}
+{% endblock %}
