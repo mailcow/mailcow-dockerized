@@ -3,7 +3,7 @@
 # Version: SOGo-5.12.13
 #
 # Applied security patches:
-# -
+# - 1ed977528c8af4155903edeaae7301cc3e5315f4 (fix(eas): answer Sync of non-selectable mail folders as empty folders, Alinto/sogo#426, bug 5872)
 #
 # To add new patches, modify SOGO_SECURITY_PATCHES ARG below with space-separated commit hashes
 
@@ -15,7 +15,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG SOGO_VERSION=SOGo-5.12.13
 ARG SOPE_VERSION=SOPE-5.12.13
 # Security patches to apply (space-separated commit hashes)
-ARG SOGO_SECURITY_PATCHES=""
+ARG SOGO_SECURITY_PATCHES="1ed977528c8af4155903edeaae7301cc3e5315f4"
 # renovate: datasource=github-releases depName=tianon/gosu versioning=semver-coerced extractVersion=^(?<version>.*)$
 ARG GOSU_VERSION=1.20
 ENV LC_ALL=C
