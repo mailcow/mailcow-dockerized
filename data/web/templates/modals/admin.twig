@@ -60,7 +60,7 @@
           <div class="row mb-4">
             <label class="control-label col-sm-2 text-sm-end" for="name">{{ lang.admin.admin_domains }}:</label>
             <div class="col-sm-10">
-              <select title="{{ lang.admin.search_domain_da }}" class="full-width-select" name="domains" size="5" multiple>
+              <select data-live-search="true" title="{{ lang.admin.search_domain_da }}" class="full-width-select" name="domains" size="5" multiple>
                 {% for domain in domains %}
                 <option>{{ domain }}</option>
                 {% endfor %}
