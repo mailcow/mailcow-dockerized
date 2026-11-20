@@ -291,6 +291,16 @@
             <div id="collapse-tab-mtasts" class="card-body collapse" data-bs-parent="#domain-content">
                 <h4>{{ lang.edit.mta_sts }}</h4>
                 <p>{{ lang.edit.mta_sts_info|raw }}</p>
+                {% if mta_sts %}
+                <div class="alert alert-secondary" role="alert">
+                  <p><i class="bi bi-info-circle-fill"></i> <b>{{ lang.edit.mta_sts_policy_id }}</b>: <code>{{ mta_sts.id }}</code></p>
+                  <p class="mb-1"><b>{{ lang.edit.mta_sts_dns_records }}</b>:</p>
+<pre class="mb-0 p-2 rounded">_mta-sts     300  TXT    "v={{ mta_sts.version }}; id={{ mta_sts.id }}"
+{% if mta_sts.mode == 'testing' %}_smtp._tls   300  TXT    "v=TLSRPTv1; rua=mailto:tlsrpt@{{ domain }}"
+{% endif %}mta-sts      300  CNAME  {{ mailcow_hostname }}.</pre>
+                  {% if mta_sts.mode == 'testing' %}<small class="d-block mt-2">{{ lang.edit.mta_sts_tlsrpt_notice }}</small>{% endif %}
+                </div>
+                {% endif %}
                 <form data-id="dommtasts" method="post">
                   <input type="hidden" value="0" name="active">
                   <input type="hidden" value="{{ domain }}" name="domain">
@@ -344,6 +354,15 @@
                       </div>
                     </div>
                   </div>
+                  {% if mta_sts %}
+                  <div class="row mb-2">
+                    <div class="offset-sm-2 col-sm-10">
+                      <div id="mta-sts-dns-change-warning" class="alert alert-warning mb-0 d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> {{ lang.edit.mta_sts_dns_change_warning|raw }}
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
                   <div class="row mb-2">
                     <div class="offset-sm-2 col-sm-10">
                       {% if mta_sts == false %}
