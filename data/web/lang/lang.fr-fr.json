@@ -729,6 +729,10 @@
         "mta_sts_mode_info": "Il y a trois modes parmi lesquels choisir :<ul><li><em>testing</em> – la politique est seulement surveillée, les violations n'ont pas d'impact.</li><li><em>enforce</em> – la politique est appliquée strictement, les connexions sans TLS valide sont rejetées.</li><li><em>none</em> – la politique est publiée mais non appliquée.</li></ul>",
         "mta_sts_max_age_info": "Durée en secondes pendant laquelle les serveurs de courriel peuvent mettre en cache cette politique avant de revérifier.",
         "mta_sts_mx_info": "Autoriser l'envoi uniquement aux noms d'hôtes des serveurs de courriels indiqués explicitement ; le MTA émetteur vérifie si le nom d'hôte DNS du MX correspond à la liste de la politique, et autorise la délivrance seulement avec un certificat TLS valide (protège contre le MITM).",
+        "mta_sts_policy_id": "ID de la politique actuelle",
+        "mta_sts_dns_records": "Enregistrements DNS à créer",
+        "mta_sts_dns_change_warning": "Après l'enregistrement de ces modifications, vous devrez mettre à jour les enregistrements DNS MTA-STS du domaine en conséquence, sinon les serveurs émetteurs continueront d'utiliser la politique en cache.",
+        "mta_sts_tlsrpt_notice": "Remplacez l'adresse d'exemple par la boîte aux lettres qui doit recevoir les rapports TLS.",
         "sender_allowed": "Autoriser l'envoi sous cet alias",
         "sender_allowed_info": "Si cette option est désactivée, cet alias peut uniquement recevoir des courriels. Utilisez les ACL d’expéditeur pour autoriser certaines boîtes aux lettres à envoyer des messages via cet alias."
     },
