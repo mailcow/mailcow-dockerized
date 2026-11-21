@@ -1,5 +1,65 @@
 <?php
-function check_login($user, $pass, $extra = null) {
+function bare_localpart_login_enabled() {
+  global $ALLOW_BARE_LOCALPART_LOGIN;
+  $flag = $ALLOW_BARE_LOCALPART_LOGIN ?? getenv('ALLOW_BARE_LOCALPART_LOGIN') ?: 'n';
+  return (bool)preg_match('/^([yY][eE][sS]|[yY])+$/', (string)$flag);
+}
+
+/**
+ * If the request Host is mail.<domain>, return <domain>; otherwise null.
+ * A trailing port is ignored. The domain is not rewritten unless it later
+ * exists and is active in Mailcow (see bare_localpart_login_qualify()).
+ */
+function bare_localpart_login_domain_from_host($http_host = null) {
+  $host = strtolower((string)($http_host ?? ($_SERVER['HTTP_HOST'] ?? '')));
+  $host = preg_replace('/:\d+$/', '', $host);
+  if ($host === null || $host === '') {
+    return null;
+  }
+  if (!preg_match('/^mail\.(.+)$/', $host, $m)) {
+    return null;
+  }
+  $domain = $m[1];
+  if ($domain === '' || !preg_match('/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/', $domain)) {
+    return null;
+  }
+  return $domain;
+}
+
+/**
+ * Qualify a bare local-part as user@domain when the feature is enabled,
+ * the username contains no "@", and Host is mail.<active-domain>.
+ * Full addresses (any domain) are never changed.
+ */
+function bare_localpart_login_qualify($user) {
+  global $pdo;
+  if (!bare_localpart_login_enabled()) {
+    return $user;
+  }
+  if (!is_string($user) || $user === '' || strpos($user, '@') !== false) {
+    return $user;
+  }
+  $domain = bare_localpart_login_domain_from_host();
+  if ($domain === null || $domain === '') {
+    return $user;
+  }
+  try {
+    if (!isset($pdo) || !($pdo instanceof PDO)) {
+      return $user;
+    }
+    $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = '1' LIMIT 1");
+    $stmt->execute(array(':d' => $domain));
+    if (!$stmt->fetchColumn()) {
+      return $user;
+    }
+  } catch (Throwable $e) {
+    error_log('bare_localpart_login_qualify: domain check failed: ' . $e->getMessage());
+    return $user;
+  }
+  return $user . '@' . $domain;
+}
+
+function check_login(&$user, $pass, $extra = null) {
   global $pdo;
   global $redis;
 
@@ -8,6 +68,12 @@ function check_login($user, $pass, $extra = null) {
   $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
   // set when the password is right, but the account does not allow this login
   $denied = false;
+
+  // Qualify bare usernames for user/app paths only.
+  // Admin and domain-admin keep the name as typed. Full addresses are never changed.
+  if (isset($role) && ($role == "user" || $role == "app")) {
+    $user = bare_localpart_login_qualify($user);
+  }
 
   // Try validate admin
   if (!isset($role) || $role == "admin") {
@@ -25,6 +91,11 @@ function check_login($user, $pass, $extra = null) {
     }
   }
 
+  // After admin/domain-admin have seen the original name (SOGo/EAS/DAV: role unset),
+  // qualify so mailbox and app-password login and the caller's $username get user@domain.
+  if (!isset($role)) {
+    $user = bare_localpart_login_qualify($user);
+  }
 
   // Try validate app password
   if (!isset($role) || $role == "app") {
@@ -217,6 +288,8 @@ function user_login($user, $pass, $extra = null, &$denied = false){
 
   $is_internal = $extra['is_internal'];
   $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
+
+  $user = bare_localpart_login_qualify($user);
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
@@ -461,6 +534,8 @@ function apppass_login($user, $pass, $extra = null, &$denied = false){
   global $pdo;
 
   $is_internal = $extra['is_internal'];
+
+  $user = bare_localpart_login_qualify($user);
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){

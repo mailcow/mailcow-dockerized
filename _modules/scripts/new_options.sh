@@ -41,6 +41,7 @@ adapt_new_options() {
   "SKIP_FTS"
   "ENABLE_SSL_SNI"
   "ALLOW_ADMIN_EMAIL_LOGIN"
+  "ALLOW_BARE_LOCALPART_LOGIN"
   "SKIP_HTTP_VERIFICATION"
   "SOGO_EXPIRE_SESSION"
   "SOGO_URL_ENCRYPTION_KEY"
@@ -230,6 +231,14 @@ adapt_new_options() {
             echo '# Only certain password hash algorithm are supported. For a fully list of supported schemes,' >> mailcow.conf
             echo '# see https://docs.mailcow.email/models/model-passwd/' >> mailcow.conf
             echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
+            ;;
+        ALLOW_BARE_LOCALPART_LOGIN)
+            echo '# Allow mailbox login with only the local part when the HTTP Host is mail.<domain>' >> mailcow.conf
+            echo '# and <domain> is an active Mailcow domain (including hosts listed in ADDITIONAL_SERVER_NAMES' >> mailcow.conf
+            echo '# when they follow that pattern, e.g. mail.example.net). Usernames that already contain "@"' >> mailcow.conf
+            echo '# are never rewritten. Admin and domain-admin logins are unchanged. Off by default.' >> mailcow.conf
+            echo '# After setting this to y, recreate php-fpm-mailcow (or docker compose up -d).' >> mailcow.conf
+            echo 'ALLOW_BARE_LOCALPART_LOGIN=n' >> mailcow.conf
             ;;
         ADDITIONAL_SERVER_NAMES)
             echo '# Additional server names for mailcow UI' >> mailcow.conf
