@@ -84,6 +84,7 @@ $DEFAULT_LANG = 'en-gb';
 // https://www.iso.org/obp/ui/#search
 // https://en.wikipedia.org/wiki/IETF_language_tag
 $AVAILABLE_LANGUAGES = array(
+  'ar-sa' => 'العربية (Arabic)',
   // 'ca-es' => 'Català (Catalan)',
   'bg-bg' => 'Български (Bulgarian)',
   'cs-cz' => 'Čeština (Czech)',
