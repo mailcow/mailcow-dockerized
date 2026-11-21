@@ -754,7 +754,8 @@
         "aria": {
             "sortAscending": ": aktivirajte za razvrstitev stolpca naraščajoče",
             "sortDescending": ": aktivirajte za razvrstitev stolpca padajoče"
-        }
+        },
+        "infoPostFix": ""
     },
     "diagnostics": {
         "cname_from_a": "Vrednost, izpeljana iz zapisa A/AAAA. To je podprto, če zapis kaže na pravilen vir.",
