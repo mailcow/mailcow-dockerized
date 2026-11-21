@@ -31,6 +31,26 @@ error_reporting(0);
 
 $data = trim(file_get_contents("php://input"));
 
+// Clients like iOS Mail send the Autodiscover request several times in parallel, each with a
+// different Basic auth username (full address, local part), and keep the username whose request
+// succeeded. The endpoint ignores credentials, so every candidate got 200 and iOS could keep the
+// bare local part, which mailcow cannot log in. Answer 401 when a Basic username is sent and it
+// is not the requested address. The password is never checked here (no oracle, no fail2ban hit).
+if (isset($_SERVER['PHP_AUTH_USER']) && trim((string)$_SERVER['PHP_AUTH_USER']) !== '' && $data) {
+  $requested_email = '';
+  try {
+    $probe = new SimpleXMLElement($data);
+    $requested_email = trim((string)$probe->Request->EMailAddress);
+  } catch (Exception $e) {
+    $requested_email = '';
+  }
+  if ($requested_email !== '' && strcasecmp(trim((string)$_SERVER['PHP_AUTH_USER']), $requested_email) !== 0) {
+    header('HTTP/1.1 401 Unauthorized');
+    header('WWW-Authenticate: Basic realm="autodiscover"');
+    exit(0);
+  }
+}
+
 if (strpos($data, 'autodiscover/outlook/responseschema') !== false && $autodiscover_config['autodiscoverType'] == 'activesync') {
   $autodiscover_config['autodiscoverType'] = 'imap';
   if ($autodiscover_config['useEASforOutlook'] == 'yes' &&
