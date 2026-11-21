@@ -38,7 +38,7 @@
             <hr class="d-block d-md-none">
           </div>
         {% else %}
-          <div class="row collapse in dkim_key_missing">
+          <div class="row collapse show dkim_key_missing">
             <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="{{ domain }}" disabled></div>
             <div class="col-md-3">
               <p>{{ lang.admin.domain }}: <strong>{{ domain }}</strong><br><span class="badge fs-6 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
@@ -49,7 +49,7 @@
         {% endif %}
         {% for alias_domain, alias_domain_data in domain_data.alias_domains %}
           {% if alias_domain_data.dkim %}
-            <div class="row collapse in dkim_key_valid">
+            <div class="row collapse show dkim_key_valid">
               <div class="col-md-1"><input type="checkbox" class="form-check-input" data-id="dkim" name="multi_select" value="{{ alias_domain }}"></div>
               <div class="col-md-2 offset-md-1">
                 <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong></small>
@@ -65,7 +65,7 @@
               <hr class="d-block d-md-none">
             </div>
           {% else %}
-            <div class="row collapse in dkim_key_missing">
+            <div class="row collapse show dkim_key_missing">
               <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="{{ alias_domain }}" disabled></div>
               <div class="col-md-2 offset-md-1">
                 <p><small>↳ Alias-Domain: <strong>{{ alias_domain }}</strong><br></small><span class="badge fs-6 bg-danger">{{ lang.admin.dkim_key_missing }}</span></p>
@@ -77,7 +77,7 @@
         {% endfor %}
       {% endfor %}
       {% for blind, data in dkim_blind_domains|filter(data => data.dkim is not null) %}
-        <div class="row collapse in dkim_key_unused">
+        <div class="row collapse show dkim_key_unused">
           <div class="col-md-1"><input type="checkbox" class="form-check-input" data-id="dkim" name="multi_select" value="{{ blind }}"></div>
           <div class="col-md-3">
             <p>{{ lang.admin.domain }}: <strong>{{ blind }}</strong>
