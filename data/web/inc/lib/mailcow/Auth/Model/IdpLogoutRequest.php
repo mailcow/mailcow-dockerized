@@ -68,15 +68,47 @@ class IdpLogoutRequest
         return new self($endpoint, $params);
     }
 
+    /** Issuer (iss) of an ID token, read without verification, '' for no or an unreadable token */
+    public static function issuer(?string $idToken): string
+    {
+        $parts = explode('.', (string)$idToken);
+        if (count($parts) !== 3) {
+            return '';
+        }
+        $claims = json_decode((string)base64_decode(strtr($parts[1], '-_', '+/')), true);
+        return (is_array($claims) && is_string($claims['iss'] ?? null)) ? $claims['iss'] : '';
+    }
+
+    /**
+     * Warning for the mailcow UI log when the IdP session is not ended (no tokens in it): the session is already
+     * gone, so the user is named. log is [identity_provider, <calling action>, user(, issuer)].
+     *
+     * @return array{type: 'warning', log: list<string>, msg: string}
+     */
+    public static function localOnlyLogEntry(string $origin, ?string $username, string $issuer, string $reason): array
+    {
+        $log = ['identity_provider', $origin, (string)$username];
+        if ($issuer !== '') {
+            $log[] = $issuer;
+        }
+        return [
+            'type' => 'warning',
+            'log' => $log,
+            'msg' => 'IdP logout not possible for ' . ($username ?: 'unknown user') . ', local logout only: ' . $reason,
+        ];
+    }
+
     public function url(?array $params = null): string
     {
         return $this->endpoint . (str_contains($this->endpoint, '?') ? '&' : '?') . http_build_query($params ?? $this->params);
     }
 
     /**
-     * @return array{method: 'GET'|'POST', action: string, params: array<string, string>, url: string, reduced: bool}
-     *   url: the redirect target for GET; reduced: the request lacks id_token_hint because the provider cannot
-     *   take it as POST
+     * How the browser sends the request: a redirect to url (GET), or a form POST of params to action.
+     * reduced: the GET lacks id_token_hint because the provider cannot take the long request as POST.
+     *
+     * @return array{method: 'GET', action: string, params: array<string, string>, url: string, reduced: bool}
+     *   |array{method: 'POST', action: string, params: array<string, string>, reduced: false}
      */
     public function transport(): array
     {
@@ -85,7 +117,7 @@ class IdpLogoutRequest
             return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->params, 'url' => $url, 'reduced' => false];
         }
         if ($this->getParams === null) {
-            return ['method' => 'POST', 'action' => $this->endpoint, 'params' => $this->params, 'url' => $url, 'reduced' => false];
+            return ['method' => 'POST', 'action' => $this->endpoint, 'params' => $this->params, 'reduced' => false];
         }
         return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->getParams, 'url' => $this->url($this->getParams), 'reduced' => true];
     }

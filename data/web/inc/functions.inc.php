@@ -3140,7 +3140,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       // a logout without client or redirect URL stays local; the local session is already gone, so no error page
       if (empty($iam_settings['client_id']) || empty($iam_settings['redirect_url'])) {
-        identity_provider('log-logout-local-only', array('issuer' => '', 'username' => $_extra['username'] ?? null), 'client ID or redirect URL not set');
+        identity_provider('log-logout-local-only', array('origin' => 'get-logout-url', 'username' => $_extra['username'] ?? null), 'client ID or redirect URL not set');
         return false;
       }
       $post_logout_redirect_uri = (string)$iam_settings['redirect_url'];
@@ -3184,13 +3184,16 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-end-session-endpoint":
       // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
       // $_extra: username of the session, for log entries
-      if (empty($_data) || !is_string($_data))
+      // without an ID token (e.g. a session from before the update) the issuer and so the endpoint are unknown
+      if (empty($_data) || !is_string($_data)) {
+        identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'username' => $_extra), 'no ID token in the session');
         return false;
-      $id_token_parts = explode('.', $_data);
-      if (count($id_token_parts) != 3)
+      }
+      $issuer = \Mailcow\Auth\Model\IdpLogoutRequest::issuer($_data);
+      if ($issuer === '') {
+        identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'username' => $_extra), 'ID token of the session has no readable issuer');
         return false;
-      $id_token_claims = json_decode(base64_decode(strtr($id_token_parts[1], '-_', '+/')), true);
-      $issuer = (is_array($id_token_claims) && is_string($id_token_claims['iss'] ?? null)) ? $id_token_claims['iss'] : '';
+      }
       // only talk to the configured provider: the issuer and the end session endpoint must use
       // the same scheme, host and port as one of the configured authorize, token or userinfo URLs
       $get_origin = function ($url) {
@@ -3206,7 +3209,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $iam_settings['userinfo_url'] ?? ''
       )));
       if (!in_array($get_origin($issuer), $provider_origins, true) || strpbrk($issuer, '?#') !== false) {
-        identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'ID token issuer is not on the host of the configured provider URLs');
+        identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'issuer' => $issuer, 'username' => $_extra), 'ID token issuer is not on the host of the configured provider URLs');
         return false;
       }
       $cache_key = 'IAM_END_SESSION_ENDPOINT_' . md5($issuer);
@@ -3233,7 +3236,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         if ($res === false || $code != 200) {
           // provider not reachable, logout stays local, try again in a few minutes
           $cache_ttl = 300;
-          identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'discovery document not available (HTTP ' . $code . ')');
+          identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'issuer' => $issuer, 'username' => $_extra), 'discovery document not available (HTTP ' . $code . ')');
         }
         else {
           $cache_ttl = 3600;
@@ -3242,9 +3245,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           if (is_array($discovery) && ($discovery['issuer'] ?? null) === $issuer &&
             is_string($discovery['end_session_endpoint'] ?? null)) {
             $end_session_endpoint = $discovery['end_session_endpoint'];
+            if (!in_array($get_origin($end_session_endpoint), $provider_origins, true)) {
+              identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'issuer' => $issuer, 'username' => $_extra), 'end_session_endpoint is not on the host of the configured provider URLs');
+            }
           }
           else {
-            identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'discovery document has no end_session_endpoint for this issuer');
+            identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'issuer' => $issuer, 'username' => $_extra), 'discovery document has no end_session_endpoint for this issuer');
           }
         }
         try {
@@ -3258,12 +3264,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "log-logout-local-only":
       // tell the admin why the IdP session is not ended on logout (mailcow UI log, no tokens)
-      // the session is already gone, so the user is named in the entry
-      logger(array('return' => array(array(
-        'type' => 'warning',
-        'log' => array(__FUNCTION__, 'get-end-session-endpoint', $_data['username'] ?? '', $_data['issuer'] ?? ''),
-        'msg' => 'IdP logout not possible for ' . ($_data['username'] ?? 'unknown user') . ', local logout only: ' . $_extra
-      ))));
+      // $_data: origin (the calling action), username, issuer (left out when empty); $_extra: reason
+      logger(array('return' => array(\Mailcow\Auth\Model\IdpLogoutRequest::localOnlyLogEntry(
+        (string)($_data['origin'] ?? 'get-logout-url'), isset($_data['username']) ? (string)$_data['username'] : null,
+        (string)($_data['issuer'] ?? ''), (string)$_extra))));
       return true;
     break;
     case "get-keycloak-admin-token":

@@ -48,6 +48,7 @@ class IdpLogoutRequestTest extends TestCase
         $this->assertSame(self::SERVER . '/realms/r1/protocol/openid-connect/logout', $transport['action']);
         if ($method === 'POST') {
             $this->assertFalse($transport['reduced']);
+            $this->assertArrayNotHasKey('url', $transport);
             $this->assertSame($token, $transport['params']['id_token_hint']);
             $this->assertSame(self::REDIRECT, $transport['params']['post_logout_redirect_uri']);
         } else {
@@ -92,7 +93,7 @@ class IdpLogoutRequestTest extends TestCase
 
         $this->assertSame(['method' => 'POST', 'action' => 'https://idp.example.org/logout?tenant=1',
             'params' => ['client_id' => 'mailcow', 'post_logout_redirect_uri' => self::REDIRECT, 'id_token_hint' => $token],
-            'url' => $request->url(), 'reduced' => false], $request->transport());
+            'reduced' => false], $request->transport());
         $this->assertStringStartsWith('https://idp.example.org/logout?tenant=1&client_id=mailcow&', $request->url());
     }
 
@@ -140,6 +141,44 @@ class IdpLogoutRequestTest extends TestCase
         $this->assertFalse($transport['reduced']);
         $this->assertSame($params, $transport['params']);
         $this->assertSame($request->url($params), $transport['url']);
+    }
+
+    /** @return array<string, array{0: ?string, 1: string}> token, issuer */
+    public static function issuerCases(): array
+    {
+        $b64 = fn(string $json): string => rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
+        return [
+            'issuer' => [$b64('{"alg":"RS256"}') . '.' . $b64('{"iss":"https://idp.example.org/realms/r1","sub":"x"}') . '.sig', 'https://idp.example.org/realms/r1'],
+            // a session from before the update has no ID token: generic OIDC cannot find the end session endpoint
+            'no token' => [null, ''],
+            'empty token' => ['', ''],
+            'two parts' => ['a.b', ''],
+            'payload not JSON' => ['a.' . $b64('not json') . '.c', ''],
+            'no iss claim' => ['a.' . $b64('{"sub":"x"}') . '.c', ''],
+            'iss not a string' => ['a.' . $b64('{"iss":["x"]}') . '.c', ''],
+        ];
+    }
+
+    #[DataProvider('issuerCases')]
+    public function testIssuerIsReadFromTheToken(?string $token, string $issuer): void
+    {
+        $this->assertSame($issuer, IdpLogoutRequest::issuer($token));
+    }
+
+    public function testLocalOnlyLogEntryNamesTheCallerAndLeavesOutAnEmptyIssuer(): void
+    {
+        $this->assertSame([
+            'type' => 'warning',
+            'log' => ['identity_provider', 'get-logout-url', 'u@example.org'],
+            'msg' => 'IdP logout not possible for u@example.org, local logout only: client ID or redirect URL not set',
+        ], IdpLogoutRequest::localOnlyLogEntry('get-logout-url', 'u@example.org', '', 'client ID or redirect URL not set'));
+        $this->assertSame([
+            'type' => 'warning',
+            'log' => ['identity_provider', 'get-end-session-endpoint', 'u@example.org', 'https://idp.example.org'],
+            'msg' => 'IdP logout not possible for u@example.org, local logout only: discovery document not available (HTTP 404)',
+        ], IdpLogoutRequest::localOnlyLogEntry('get-end-session-endpoint', 'u@example.org', 'https://idp.example.org', 'discovery document not available (HTTP 404)'));
+        $this->assertSame('IdP logout not possible for unknown user, local logout only: no ID token in the session',
+            IdpLogoutRequest::localOnlyLogEntry('get-end-session-endpoint', null, '', 'no ID token in the session')['msg']);
     }
 
     public function testWithoutTokenThereIsNoHint(): void
