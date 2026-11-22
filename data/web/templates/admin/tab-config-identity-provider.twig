@@ -111,6 +111,17 @@
               </div>
             </div>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_idp_logout_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_idp_logout }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="idp_logout" value="1" {% if iam_settings.idp_logout == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
           <legend class="fs-5 mt-4"><i class="bi bi-file-earmark-text"></i> {{ lang.admin.iam_section_templates }}</legend><hr>
           {% include 'admin/iam-template-mapping.twig' with {'iam_form': 'keycloak'} %}
           {% include 'admin/iam-sync-settings.twig' with {'iam_form': 'keycloak'} %}
@@ -204,6 +215,17 @@
             <div class="col-12 col-md-9 d-flex align-items-center">
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" name="login_provisioning" value="1" {% if iam_settings.login_provisioning == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_idp_logout_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_idp_logout }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="idp_logout" value="1" {% if iam_settings.idp_logout == 1 %}checked{% endif %}>
               </div>
             </div>
           </div>

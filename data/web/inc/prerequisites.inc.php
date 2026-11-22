@@ -183,31 +183,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 $iam_provider = identity_provider('init');
 $iam_settings = identity_provider('get');
 
-// Logout of an identity provider session: the local session is gone, now end the IdP session
-if (!empty($iam_logout) && $iam_provider) {
-  $iam_logout_url = identity_provider('get-logout-url', $iam_logout_id_token ?? null);
-  if (!empty($iam_logout_url) && strlen($iam_logout_url) <= 2048) {
-    header('Location: ' . $iam_logout_url);
-    exit();
-  }
-  elseif (!empty($iam_logout_url)) {
-    // A large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits),
-    // send the same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows
-    $iam_logout_form = identity_provider('get-logout-url', $iam_logout_id_token ?? null, array('form' => true));
-    header_remove('Location');
-    http_response_code(200);
-    header('Content-Type: text/html; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body onload="document.forms[0].submit()">';
-    echo '<form method="post" action="' . htmlspecialchars($iam_logout_form['action'], ENT_QUOTES) . '">';
-    foreach ($iam_logout_form['params'] as $key => $value) {
-      echo '<input type="hidden" name="' . htmlspecialchars($key, ENT_QUOTES) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '">';
-    }
-    echo '<noscript><button type="submit">Continue</button></noscript></form></body></html>';
-    exit();
-  }
-}
-
 // IMAP lib
 // use Ddeboer\Imap\Server;
 // $imap_server = new Server('dovecot', 143, '/imap/tls/novalidate-cert');
@@ -298,6 +273,32 @@ if(file_exists($langFile)) {
   $lang = array_merge_real($lang, json_decode(file_get_contents($langFile), true));
 }
 
+
+// Logout of an identity provider session: the local session is gone, now end the IdP session
+if (!empty($iam_logout) && $iam_provider) {
+  $iam_logout_form = identity_provider('get-logout-url', $iam_logout_id_token ?? null, array('form' => true, 'username' => $iam_logout_username ?? null));
+  if (!empty($iam_logout_form)) {
+    $iam_logout_url = $iam_logout_form['action'] . (strpos($iam_logout_form['action'], '?') === false ? '?' : '&') . http_build_query($iam_logout_form['params']);
+    if (strlen($iam_logout_url) <= 2048) {
+      header('Location: ' . $iam_logout_url);
+      exit();
+    }
+    // A large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits),
+    // send the same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows
+    header_remove('Location');
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo '<!DOCTYPE html><html lang="' . htmlspecialchars($_SESSION['mailcow_locale'] ?? 'en-gb', ENT_QUOTES) . '"><head><meta charset="utf-8">';
+    echo '<title>' . htmlspecialchars($lang['login']['idp_logout'], ENT_QUOTES) . '</title></head><body onload="document.forms[0].submit()">';
+    echo '<form method="post" action="' . htmlspecialchars($iam_logout_form['action'], ENT_QUOTES) . '">';
+    foreach ($iam_logout_form['params'] as $key => $value) {
+      echo '<input type="hidden" name="' . htmlspecialchars($key, ENT_QUOTES) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '">';
+    }
+    echo '<noscript><button type="submit">' . htmlspecialchars($lang['login']['idp_logout_continue'], ENT_QUOTES) . '</button></noscript></form></body></html>';
+    exit();
+  }
+}
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.acl.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.address_rewriting.inc.php';

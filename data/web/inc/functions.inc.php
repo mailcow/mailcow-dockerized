@@ -2434,6 +2434,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           case "use_tls":
           case "login_provisioning":
           case "ignore_ssl_error":
+          case "idp_logout":
             $settings[$row["key"]] = boolval($row["value"]);
           break;
           default:
@@ -2444,6 +2445,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // set login_provisioning if not exists
       if (!array_key_exists('login_provisioning', $settings)) {
         $settings['login_provisioning'] = 1;
+      }
+      // set idp_logout if not exists: end the IdP session on logout (OIDC RP-Initiated Logout)
+      if (!array_key_exists('idp_logout', $settings)) {
+        $settings['idp_logout'] = 1;
       }
       // return default client_scopes for generic-oidc if none is set
       if ($settings["authsource"] == "generic-oidc" && empty($settings["client_scopes"])){
@@ -2511,6 +2516,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
 
       $_data['ignore_ssl_error']    = isset($_data['ignore_ssl_error']) ? boolval($_data['ignore_ssl_error']) : false;
       $_data['login_provisioning']  = isset($_data['login_provisioning']) ? boolval($_data['login_provisioning']) : false;
+      $_data['idp_logout']          = isset($_data['idp_logout']) ? boolval($_data['idp_logout']) : false;
       // Identity sync: offboarding and groups (Keycloak and LDAP)
       $sync_settings = array('offboarding', 'offboarding_limit', 'group_sync', 'group_autocreate', 'group_default_domain');
       $_data['offboarding']          = isset($_data['offboarding']) ? intval($_data['offboarding']) : 0;
@@ -2527,14 +2533,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           $_data['sync_interval']     = (!empty($_data['sync_interval'])) ? intval($_data['sync_interval']) : 15;
           $_data['sync_interval']     = $_data['sync_interval'] < 1 ? 1 : $_data['sync_interval'];
           $_data['group_paths']       = isset($_data['group_paths']) ? trim($_data['group_paths']) : "";
-          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'group_paths'), $sync_settings);
+          $required_settings          = array_merge(array('authsource', 'server_url', 'realm', 'client_id', 'client_secret', 'redirect_url', 'version', 'mailpassword_flow', 'periodic_sync', 'import_users', 'sync_interval', 'ignore_ssl_error', 'login_provisioning', 'idp_logout', 'group_paths'), $sync_settings);
         break;
         case "generic-oidc":
           $_data['authorize_url']     = (!empty($_data['authorize_url'])) ? $_data['authorize_url'] : null;
           $_data['token_url']         = (!empty($_data['token_url'])) ? $_data['token_url'] : null;
           $_data['userinfo_url']      = (!empty($_data['userinfo_url'])) ? $_data['userinfo_url'] : null;
           $_data['client_scopes']     = (!empty($_data['client_scopes'])) ? $_data['client_scopes'] : "openid profile email mailcow_template";
-          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning');
+          $required_settings          = array('authsource', 'authorize_url', 'token_url', 'client_id', 'client_secret', 'redirect_url', 'userinfo_url', 'client_scopes', 'ignore_ssl_error', 'login_provisioning', 'idp_logout');
         break;
         case "ldap":
           $_data['host']              = (!empty($_data['host'])) ? str_replace(" ", "", $_data['host']) : "";
@@ -3124,15 +3130,22 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "get-logout-url":
       // RP-initiated logout (OpenID Connect RP-Initiated Logout 1.0), ends the session at the IdP
+      // $_extra: 'form' => true returns action and params for a form POST, 'username' is used in log entries
+      if (empty($iam_settings['idp_logout']))
+        return false;
+      $redirect_param = 'post_logout_redirect_uri';
       switch ($iam_settings['authsource']) {
         case "keycloak":
           if (empty($iam_settings['server_url']) || empty($iam_settings['realm']))
             return false;
           $end_session_endpoint = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/logout";
+          // Keycloak before 18.0.0 only knows redirect_uri on logout, as in the Keycloak provider library
+          if (!empty($iam_settings['version']) && version_compare($iam_settings['version'], '18.0.0', '<'))
+            $redirect_param = 'redirect_uri';
         break;
         case "generic-oidc":
-          // no setting for it, the endpoint comes from the discovery document of the ID token issuer
-          $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data);
+          // the endpoint comes from the discovery document of the ID token issuer
+          $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data, $_extra['username'] ?? null);
           if (empty($end_session_endpoint))
             return false;
         break;
@@ -3143,7 +3156,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $post_logout_redirect_uri = $iam_settings['redirect_url'];
       if (isset($iam_settings['redirect_url_extra'])) {
         // use the extra redirect URL of the current domain, as in get-redirect
-        $targetDomain = strtolower($_SERVER['HTTP_HOST']);
+        $targetDomain = strtolower($_SERVER['HTTP_HOST'] ?? '');
         foreach ($iam_settings['redirect_url_extra'] as $testUrl) {
           $testUrlParsed = parse_url($testUrl);
           if (isset($testUrlParsed['host']) && strtolower($testUrlParsed['host']) == $targetDomain) {
@@ -3154,7 +3167,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       $params = array(
         'client_id' => $iam_settings['client_id'],
-        'post_logout_redirect_uri' => $post_logout_redirect_uri
+        $redirect_param => $post_logout_redirect_uri
       );
       // without id_token_hint Keycloak asks the user to confirm the logout
       if (!empty($_data) && is_string($_data)) {
@@ -3167,6 +3180,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "get-end-session-endpoint":
       // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
+      // $_extra: username of the session, for log entries
       if (empty($_data) || !is_string($_data))
         return false;
       $id_token_parts = explode('.', $_data);
@@ -3189,7 +3203,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $iam_settings['userinfo_url'] ?? ''
       )));
       if (!in_array($get_origin($issuer), $provider_origins, true) || strpbrk($issuer, '?#') !== false) {
-        identity_provider('log-logout-local-only', $issuer, 'ID token issuer is not on the host of the configured provider URLs');
+        identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'ID token issuer is not on the host of the configured provider URLs');
         return false;
       }
       $cache_key = 'IAM_END_SESSION_ENDPOINT_' . md5($issuer);
@@ -3205,7 +3219,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        if ($iam_settings['ignore_ssl_error']) {
+        if (!empty($iam_settings['ignore_ssl_error'])) {
           curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
           curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         }
@@ -3216,7 +3230,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         if ($res === false || $code != 200) {
           // provider not reachable, logout stays local, try again in a few minutes
           $cache_ttl = 300;
-          identity_provider('log-logout-local-only', $issuer, 'discovery document not available (HTTP ' . $code . ')');
+          identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'discovery document not available (HTTP ' . $code . ')');
         }
         else {
           $cache_ttl = 3600;
@@ -3227,7 +3241,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             $end_session_endpoint = $discovery['end_session_endpoint'];
           }
           else {
-            identity_provider('log-logout-local-only', $issuer, 'discovery document has no end_session_endpoint for this issuer');
+            identity_provider('log-logout-local-only', array('issuer' => $issuer, 'username' => $_extra), 'discovery document has no end_session_endpoint for this issuer');
           }
         }
         try {
@@ -3241,10 +3255,11 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "log-logout-local-only":
       // tell the admin why the IdP session is not ended on logout (mailcow UI log, no tokens)
+      // the session is already gone, so the user is named in the entry
       logger(array('return' => array(array(
         'type' => 'warning',
-        'log' => array(__FUNCTION__, 'get-end-session-endpoint', $_data),
-        'msg' => 'IdP logout not possible, local logout only: ' . $_extra
+        'log' => array(__FUNCTION__, 'get-end-session-endpoint', $_data['username'] ?? '', $_data['issuer'] ?? ''),
+        'msg' => 'IdP logout not possible for ' . ($_data['username'] ?? 'unknown user') . ', local logout only: ' . $_extra
       ))));
       return true;
     break;

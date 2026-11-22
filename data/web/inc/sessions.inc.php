@@ -128,8 +128,14 @@ if (isset($_POST["logout"])) {
       $logout_allowed = in_array($_SERVER['HTTP_SEC_FETCH_SITE'], array('same-origin', 'none'));
     }
     elseif (!empty($_SERVER['HTTP_ORIGIN'])) {
-      $logout_allowed = strtolower((string)parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST)) ===
-        strtolower((string)parse_url('//' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST));
+      // compare scheme, host and port, default ports are left out of both sides
+      $logout_origin = parse_url($_SERVER['HTTP_ORIGIN']);
+      $logout_host = parse_url('//' . ($_SERVER['HTTP_HOST'] ?? ''));
+      $logout_scheme = $IS_HTTPS ? 'https' : 'http';
+      $logout_allowed = is_array($logout_origin) && is_array($logout_host) &&
+        strtolower($logout_origin['scheme'] ?? '') === $logout_scheme &&
+        strtolower($logout_origin['host'] ?? '') === strtolower($logout_host['host'] ?? '') &&
+        ($logout_origin['port'] ?? ($logout_scheme == 'https' ? 443 : 80)) == ($logout_host['port'] ?? ($logout_scheme == 'https' ? 443 : 80));
     }
     else {
       $logout_allowed = true;
@@ -167,6 +173,7 @@ if (isset($_POST["logout"])) {
     // the session came from the identity provider, end it there too (see prerequisites.inc.php)
     $iam_logout = !empty($_SESSION['iam_token']);
     $iam_logout_id_token = $_SESSION['iam_id_token'] ?? null;
+    $iam_logout_username = $_SESSION['mailcow_cc_username'] ?? null;
     session_regenerate_id(true);
     session_unset();
     session_destroy();

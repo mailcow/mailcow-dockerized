@@ -3350,6 +3350,16 @@ components:
             - string
           description: (boolean) Create mailboxes at their first login
           default: false
+        idp_logout:
+          type:
+            - boolean
+            - integer
+            - string
+          description: >-
+            (boolean) Keycloak and generic OIDC: end the IdP session on logout (OpenID Connect
+            RP-Initiated Logout). The redirect URLs must be registered at the IdP as post-logout
+            redirect URIs. On if never saved.
+          default: true
         periodic_sync:
           type:
             - integer
@@ -3463,6 +3473,10 @@ components:
         ignore_ssl_error:
           type: boolean
         login_provisioning:
+          type:
+            - boolean
+            - integer
+        idp_logout:
           type:
             - boolean
             - integer
