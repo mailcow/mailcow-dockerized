@@ -145,11 +145,13 @@ class BareLocalpartLoginTest extends TestCase
             'global yes' => ['yes', null, true],
             'global empty' => ['', 'y', false],
             'other value' => ['true', null, false],
+            'global true (vars.local.inc.php)' => [true, 'n', true],
+            'global false (vars.local.inc.php)' => [false, 'y', false],
         ];
     }
 
     #[DataProvider('flags')]
-    public function testFlagPrecedence(string|false|null $global, ?string $env, bool $enabled): void
+    public function testFlagPrecedence(string|bool|null $global, ?string $env, bool $enabled): void
     {
         unset($GLOBALS['ALLOW_BARE_LOCALPART_LOGIN']);
         if ($global !== null) {
@@ -159,6 +161,40 @@ class BareLocalpartLoginTest extends TestCase
 
         $this->assertSame($enabled, bare_localpart_login_enabled());
         $this->assertSame($enabled ? 'user@example.org' : 'user', bare_localpart_login_qualify('user'));
+    }
+
+    public static function flagValues(): array
+    {
+        return [
+            // exactly y or yes, in any case, like the other mailcow.conf switches
+            'y' => ['y', true],
+            'Y' => ['Y', true],
+            'yes' => ['yes', true],
+            'YES' => ['YES', true],
+            'Yes' => ['Yes', true],
+            // anything else is off: no repetition, no surrounding whitespace (as for the other switches)
+            'yy' => ['yy', false],
+            'yesy' => ['yesy', false],
+            'yyes' => ['yyes', false],
+            'YyEs' => ['YyEs', false],
+            'spaces' => [' y ', false],
+            'trailing newline' => ["y\n", false],
+            'n' => ['n', false],
+            'no' => ['no', false],
+            'empty' => ['', false],
+            '1' => ['1', false],
+        ];
+    }
+
+    #[DataProvider('flagValues')]
+    public function testFlagValue(string $value, bool $enabled): void
+    {
+        $GLOBALS['ALLOW_BARE_LOCALPART_LOGIN'] = $value;
+        $this->assertSame($enabled, bare_localpart_login_enabled());
+
+        unset($GLOBALS['ALLOW_BARE_LOCALPART_LOGIN']);
+        putenv('ALLOW_BARE_LOCALPART_LOGIN=' . $value);
+        $this->assertSame($enabled, bare_localpart_login_enabled(), 'from the environment');
     }
 
     public function testCheckLoginUserParameterIsByReference(): void

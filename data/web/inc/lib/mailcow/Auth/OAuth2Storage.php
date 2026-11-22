@@ -18,7 +18,7 @@ class OAuth2Storage extends Pdo
     /** @var array<string, string> requested username => mailbox whose password was checked */
     private array $checkedUsers = [];
 
-    public function __construct($connection, $config = array())
+    public function __construct($connection, $config = [])
     {
         parent::__construct($connection, $config);
         $this->config['user_table'] = 'mailbox';
@@ -27,7 +27,7 @@ class OAuth2Storage extends Pdo
     public function checkUserCredentials($username, $password)
     {
         $login = $username;
-        if (\check_login($login, $password, array('role' => 'user', 'service' => 'NONE', 'is_internal' => false)) == 'user') {
+        if (\check_login($login, $password, ['role' => 'user', 'service' => 'NONE', 'is_internal' => false]) == 'user') {
             $this->checkedUsers[$username] = $login;
             return true;
         }

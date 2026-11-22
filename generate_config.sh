@@ -352,11 +352,13 @@ FTS_PROCS=1
 # Allow admins to log into SOGo as email user (without any password)
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
-# Allow mailbox login with only the local part when the HTTP Host is mail.<domain>
-# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of
-# that form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.
+# Allow mailbox login with only the local part (alice instead of alice@example.org) for HTTP logins:
+# Mailcow UI, SOGo, ActiveSync (EAS) and CalDAV/CardDAV. Applies when the HTTP Host is mail.<domain>
+# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of that
+# form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.
+# IMAP, SMTP, POP3 and Sieve clients still need the full address.
 # Usernames that already contain "@" are never rewritten. Admin and domain-admin logins are
-# unchanged. Off by default.
+# unchanged. Off by default - y/n
 # After setting this to y, recreate php-fpm-mailcow (or docker compose up -d).
 ALLOW_BARE_LOCALPART_LOGIN=n
 

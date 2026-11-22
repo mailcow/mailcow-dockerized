@@ -233,11 +233,13 @@ adapt_new_options() {
             echo "MAILCOW_PASS_SCHEME=BLF-CRYPT" >> mailcow.conf
             ;;
         ALLOW_BARE_LOCALPART_LOGIN)
-            echo '# Allow mailbox login with only the local part when the HTTP Host is mail.<domain>' >> mailcow.conf
-            echo '# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of' >> mailcow.conf
-            echo '# that form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.' >> mailcow.conf
+            echo '# Allow mailbox login with only the local part (alice instead of alice@example.org) for HTTP logins:' >> mailcow.conf
+            echo '# Mailcow UI, SOGo, ActiveSync (EAS) and CalDAV/CardDAV. Applies when the HTTP Host is mail.<domain>' >> mailcow.conf
+            echo '# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of that' >> mailcow.conf
+            echo '# form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.' >> mailcow.conf
+            echo '# IMAP, SMTP, POP3 and Sieve clients still need the full address.' >> mailcow.conf
             echo '# Usernames that already contain "@" are never rewritten. Admin and domain-admin logins are' >> mailcow.conf
-            echo '# unchanged. Off by default.' >> mailcow.conf
+            echo '# unchanged. Off by default - y/n' >> mailcow.conf
             echo '# After setting this to y, recreate php-fpm-mailcow (or docker compose up -d).' >> mailcow.conf
             echo 'ALLOW_BARE_LOCALPART_LOGIN=n' >> mailcow.conf
             ;;

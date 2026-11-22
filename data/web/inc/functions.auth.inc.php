@@ -1,8 +1,16 @@
 <?php
+/**
+ * ALLOW_BARE_LOCALPART_LOGIN: $ALLOW_BARE_LOCALPART_LOGIN (vars.inc.php, may be overridden in
+ * vars.local.inc.php, also as a boolean) wins over the environment. On only for exactly "y" or "yes"
+ * in any case, like the other mailcow.conf switches; "yy", "yesy" or " y " leave it off.
+ */
 function bare_localpart_login_enabled() {
   global $ALLOW_BARE_LOCALPART_LOGIN;
-  $flag = $ALLOW_BARE_LOCALPART_LOGIN ?? getenv('ALLOW_BARE_LOCALPART_LOGIN') ?: 'n';
-  return (bool)preg_match('/^([yY][eE][sS]|[yY])+$/', (string)$flag);
+  $flag = $ALLOW_BARE_LOCALPART_LOGIN ?? getenv('ALLOW_BARE_LOCALPART_LOGIN');
+  if (is_bool($flag)) {
+    return $flag;
+  }
+  return (bool)preg_match('/^(y|yes)$/iD', (string)$flag);
 }
 
 /**
@@ -20,7 +28,7 @@ function bare_localpart_login_domain_from_host($http_host = null) {
     return null;
   }
   $domain = $m[1];
-  if ($domain === '' || !preg_match('/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/', $domain)) {
+  if (!preg_match('/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/D', $domain)) {
     return null;
   }
   return $domain;
@@ -54,7 +62,7 @@ function bare_localpart_login_qualify($user) {
     return $user;
   }
   $domain = bare_localpart_login_domain_from_host();
-  if ($domain === null || $domain === '') {
+  if ($domain === null) {
     return $user;
   }
   try {
@@ -73,6 +81,11 @@ function bare_localpart_login_qualify($user) {
   return $user . '@' . $domain;
 }
 
+/**
+ * $user is passed by reference: with ALLOW_BARE_LOCALPART_LOGIN, a bare local part is replaced by
+ * the qualified address (alice -> alice@example.org), so the caller creates the session, SOGo
+ * headers or OAuth token for the mailbox that was checked. Callers must pass a variable.
+ */
 function check_login(&$user, $pass, $extra = null) {
   global $pdo;
   global $redis;
