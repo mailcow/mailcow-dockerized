@@ -258,6 +258,12 @@ class BareLocalpartLoginFlowTest extends TestCase
     {
         $this->pdo->exec("INSERT INTO `mailbox` (`username`, `domain`, `authsource`, `attributes`) VALUES ('dave@example.org', 'example.org', 'ldap', '{}')");
         $this->pdo->exec("UPDATE `domain` SET `active` = 0 WHERE `domain` = 'example.org'");
+        $GLOBALS['iam_settings'] = ['authsource' => 'ldap', 'username_field' => 'mail', 'filter' => '', 'attribute_field' => 'memberof', 'id_attribute' => ''];
+        // refused by the domain policy, before the IdP: any LDAP call is counted (and would fail the login otherwise)
+        $GLOBALS['iam_provider'] = new class {
+            public int $calls = 0;
+            public function __call(string $name, array $arguments): mixed { $this->calls++; throw new \RuntimeException('LDAP must not be asked'); }
+        };
         foreach (['dave', 'dave@example.org'] as $username) {
             foreach ([null, 'user'] as $role) {
                 $_SESSION = [];
@@ -270,6 +276,10 @@ class BareLocalpartLoginFlowTest extends TestCase
                 $this->assertSame([], LegacyLoginFlow::strikes());
             }
         }
+        $this->assertSame(0, $GLOBALS['iam_provider']->calls);
+        $log = (string)file_get_contents($this->errorLog);
+        $this->assertSame(4, substr_count($log, 'mailcow UI: Login denied for dave@example.org by ' . self::IP));
+        $this->assertStringNotContainsString('Identity provider unavailable', $log);
     }
 
     // LDAP/Keycloak look a mailbox up by its email address (username_field "mail", Keycloak email=):
@@ -280,7 +290,7 @@ class BareLocalpartLoginFlowTest extends TestCase
             // [mailbox exists in mailcow, username]
             'existing mailbox, bare' => [true, 'erin'],
             'existing mailbox, full address' => [true, 'erin@example.org'],
-            'first login (provisioning), bare' => [false, 'erin'],
+            'no mailbox yet (first-login path), bare' => [false, 'erin'],
         ];
     }
 
@@ -315,9 +325,9 @@ class BareLocalpartLoginFlowTest extends TestCase
     {
         return [
             // [option, mailbox exists in mailcow, uid searched, password binds]
-            'option off, first login' => ['n', false, 'erin', 1],
+            'option off, no mailbox yet' => ['n', false, 'erin', 1],
             'option off, existing mailbox' => ['n', true, 'erin', 1],
-            'option on, first login' => ['y', false, 'erin@example.org', 0],
+            'option on, no mailbox yet' => ['y', false, 'erin@example.org', 0],
             'option on, existing mailbox' => ['y', true, 'erin@example.org', 0],
         ];
     }
