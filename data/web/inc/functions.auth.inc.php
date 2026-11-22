@@ -628,7 +628,7 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   global $iam_settings;
 
   $is_internal = $extra['is_internal'];
-  $create = $extra['create'];
+  $create = $extra['create'] ?? false;
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
@@ -809,7 +809,7 @@ function ldap_mbox_login($user, $pass, $extra = null){
   global $iam_settings;
 
   $is_internal = $extra['is_internal'];
-  $create = $extra['create'];
+  $create = $extra['create'] ?? false;
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){

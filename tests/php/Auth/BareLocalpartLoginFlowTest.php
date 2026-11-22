@@ -285,13 +285,13 @@ class BareLocalpartLoginFlowTest extends TestCase
     }
 
     #[DataProvider('ldapLogins')]
-    public function testLdapIsAskedForTheQualifiedAddress(bool $exists, string $username): void
+    public function testLdapSearchUsesTheQualifiedAddress(bool $exists, string $username): void
     {
         if ($exists) {
             $this->pdo->exec("INSERT INTO `mailbox` (`username`, `domain`, `authsource`, `attributes`) VALUES ('erin@example.org', 'example.org', 'ldap', '{}')");
         }
         $GLOBALS['iam_settings'] = ['authsource' => 'ldap', 'username_field' => 'mail', 'filter' => '', 'attribute_field' => 'memberof', 'id_attribute' => ''];
-        // records the search; no entry found, so the login fails before any bind
+        // records the search only: no entry is found, so the login fails before any bind
         $GLOBALS['iam_provider'] = new class {
             public array $searches = [];
             public function query(): self { return $this; }
@@ -300,11 +300,61 @@ class BareLocalpartLoginFlowTest extends TestCase
             public function get(): array { return []; }
         };
         $login = $username;
-        // @: ldap_mbox_login() reads $extra['create'], unset for an existing mailbox (not part of this change)
-        $this->assertFalse(@check_login($login, 'secret', ['role' => 'user', 'service' => 'MAILCOWUI', 'is_internal' => false]));
+        $this->assertFalse(check_login($login, 'secret', ['role' => 'user', 'service' => 'MAILCOWUI', 'is_internal' => false]));
         $this->assertSame('erin@example.org', $login);
         $this->assertSame([['mail', 'erin@example.org']], $GLOBALS['iam_provider']->searches);
         $this->assertSame(['mailcow UI: Invalid password for erin@example.org by ' . self::IP], LegacyLoginFlow::strikes());
+    }
+
+    // username_field "uid" (mailcow expects the attribute with the email address): a bare name never logged in
+    // without this option either. Mailbox names are email addresses, so "erin" finds no mailbox and takes the
+    // first-login path: uid=erin is found and the password checked, but there is no mailbox "erin" to log in to
+    // (with provisioning on, user_login() looks the new mailbox up as "erin" again and denies). With the option
+    // the search is uid=erin@example.org, as for the full address.
+    public static function uidLogins(): array
+    {
+        return [
+            // [option, mailbox exists in mailcow, uid searched, password binds]
+            'option off, first login' => ['n', false, 'erin', 1],
+            'option off, existing mailbox' => ['n', true, 'erin', 1],
+            'option on, first login' => ['y', false, 'erin@example.org', 0],
+            'option on, existing mailbox' => ['y', true, 'erin@example.org', 0],
+        ];
+    }
+
+    #[DataProvider('uidLogins')]
+    public function testLdapUidFieldNeverLoggedInABareName(string $option, bool $exists, string $searched, int $binds): void
+    {
+        $GLOBALS['ALLOW_BARE_LOCALPART_LOGIN'] = $option;
+        if ($exists) {
+            $this->pdo->exec("INSERT INTO `mailbox` (`username`, `domain`, `authsource`, `attributes`) VALUES ('erin@example.org', 'example.org', 'ldap', '{}')");
+        }
+        $GLOBALS['iam_settings'] = ['authsource' => 'ldap', 'username_field' => 'uid', 'filter' => '', 'attribute_field' => 'memberof',
+            'id_attribute' => 'entryuuid', 'login_provisioning' => 0];
+        $searches = [];
+        $query = $this->createMock(\LdapRecord\Query\Builder::class);
+        $query->method('select')->willReturnSelf();
+        $query->method('where')->willReturnCallback(function ($field, $op, $value) use (&$searches, $query) {
+            $searches[] = [$field, $value];
+            return $query;
+        });
+        // the directory has uid=erin only
+        $query->method('get')->willReturnCallback(function () use (&$searches): array {
+            return (end($searches)[1] === 'erin')
+                ? [['dn' => 'uid=erin,dc=example,dc=org', 'uid' => ['erin'], 'entryuuid' => ['uuid-erin'], 'displayname' => ['Erin']]] : [];
+        });
+        $guard = $this->createMock(\LdapRecord\Auth\Guard::class);
+        $guard->expects($this->exactly($binds))->method('bind')->with('uid=erin,dc=example,dc=org', 'secret');
+        $ldap = $this->createMock(\LdapRecord\Connection::class);
+        $ldap->method('query')->willReturn($query);
+        $ldap->method('auth')->willReturn($guard);
+        $GLOBALS['iam_provider'] = $ldap;
+        $mailboxes = (int)$this->pdo->query("SELECT COUNT(*) FROM `mailbox`")->fetchColumn();
+
+        $login = 'erin';
+        $this->assertFalse(check_login($login, 'secret', ['role' => 'user', 'service' => 'MAILCOWUI', 'is_internal' => false]));
+        $this->assertSame([['uid', $searched]], $searches);
+        $this->assertSame($mailboxes, (int)$this->pdo->query("SELECT COUNT(*) FROM `mailbox`")->fetchColumn());
     }
 
     public function testUnknownDomainHostLeavesTheNameAlone(): void
