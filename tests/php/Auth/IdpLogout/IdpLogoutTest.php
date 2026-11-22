@@ -30,6 +30,9 @@ class IdpLogoutTest extends TestCase
     ];
     private const ISSUER = 'https://idp.example.org';
     private const DISCOVERY = 'https://idp.example.org/.well-known/openid-configuration';
+    /** Reason of the warning for a session without ID token; %s: label of the idp_logout setting */
+    private const NO_ID_TOKEN = 'no ID token in the session (a session from before the update, or the provider returns none: '
+        . 'add the openid scope or turn off "%s"), logged once an hour';
     /** The form the logout button of the mailcow UI posts */
     private const UI_LOGOUT = ['logout' => '1', 'csrf_token' => 'csrf-token-of-the-session'];
 
@@ -39,8 +42,8 @@ class IdpLogoutTest extends TestCase
     public static function unusableTokens(): array
     {
         return [
-            'no token' => [null, 'no ID token in the session'],
-            'empty token' => ['', 'no ID token in the session'],
+            'no token' => [null, self::NO_ID_TOKEN],
+            'empty token' => ['', self::NO_ID_TOKEN],
             'not a JWT' => ['opaque-token', 'ID token of the session has no readable issuer'],
             'no issuer claim' => [self::idToken(['sub' => 'x']), 'ID token of the session has no readable issuer'],
         ];
@@ -53,17 +56,50 @@ class IdpLogoutTest extends TestCase
 
         $this->assertFalse($result['sent_to_idp']);
         $this->assertSame([], $result['fetched'], 'no discovery request');
-        $this->assertSame([], $result['redis_calls'], 'no discovery cache lookup');
+        $this->assertSame([], array_filter($result['redis_calls'], fn(array $c): bool => str_starts_with($c[1], 'IAM_END_SESSION_ENDPOINT_')),
+            'no discovery cache lookup');
         $this->assertSame(['Location: /'], $result['headers'], 'the local logout redirect of sessions.inc.php');
         $this->assertSame(302, $result['status']);
         $this->assertSame('', $result['body']);
         $this->assertSame([], $result['session'], 'the local session is gone');
-        $this->assertSame([[
-            'type' => 'warning',
-            'msg' => json_encode('IdP logout not possible for ' . self::USER . ', local logout only: ' . $reason),
-            'call' => json_encode(['identity_provider', 'get-end-session-endpoint', self::USER]),
-            'user' => 'unauthenticated',
-        ]], $result['logs']);
+        $this->assertSame([self::localOnlyLog(sprintf($reason, self::idpLogoutLabel()))], $result['logs']);
+    }
+
+    // a provider that returns no ID token would warn on every logout: once an hour per provider
+
+    public function testMissingIdTokenWarningIsRememberedForAnHour(): void
+    {
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT);
+
+        $this->assertSame([['get', self::noIdTokenKey()], ['setEx', self::noIdTokenKey(), 3600, '1']], $result['redis_calls']);
+    }
+
+    public function testMissingIdTokenWarningIsNotRepeatedWithinTheHour(): void
+    {
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT, redis: [self::noIdTokenKey() => '1']);
+
+        $this->assertFalse($result['sent_to_idp']);
+        $this->assertSame([], $result['fetched']);
+        $this->assertSame(['Location: /'], $result['headers']);
+        $this->assertSame([], $result['logs']);
+        $this->assertSame([['get', self::noIdTokenKey()]], $result['redis_calls']);
+    }
+
+    public function testMissingIdTokenWarningOfAnotherProviderIsLogged(): void
+    {
+        $result = $this->logout(['client_id' => 'other-client'] + self::GENERIC, self::session(null), self::UI_LOGOUT,
+            redis: [self::noIdTokenKey() => '1']);
+
+        $this->assertCount(1, $result['logs']);
+    }
+
+    public function testMissingIdTokenWarningIsLoggedWhenRedisIsDown(): void
+    {
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT, redisDown: true);
+
+        $this->assertFalse($result['sent_to_idp']);
+        $this->assertSame(['Location: /'], $result['headers']);
+        $this->assertSame([self::localOnlyLog(sprintf(self::NO_ID_TOKEN, self::idpLogoutLabel()))], $result['logs']);
     }
 
     // a discovered end_session_endpoint off the configured provider hosts is never used, fresh or from the cache
@@ -193,12 +229,32 @@ class IdpLogoutTest extends TestCase
 
     public function testSogoLogoutButtonPostsTheLogoutFormTopLevel(): void
     {
+        // without comments, without whitespace around punctuation and with one quote style: only a change of behaviour fails
         $js = (string)file_get_contents(__DIR__ . '/../../../../data/conf/sogo/custom-sogo.js');
-        $this->assertSame(1, preg_match('/function mc_logout\(\) \{(.*?)\n\}/s', $js, $match));
-        foreach (['form.method = "POST"', 'form.action = "/"', 'input.name = "logout"', 'form.submit()'] as $statement) {
-            $this->assertStringContainsString($statement, $match[1]);
+        $js = (string)preg_replace(['#/\*.*?\*/#s', '#(^|\s)//[^\n]*#', '/\s*([=(){};.,])\s*/'], ['', '$1', '$1'], $js);
+        $js = str_replace("'", '"', $js);
+        $start = strpos($js, 'function mc_logout(){');
+        $this->assertNotFalse($start, 'custom-sogo.js declares mc_logout()');
+        for ($i = $start + strlen('function mc_logout()'), $depth = 0; $i < strlen($js); $i++) {
+            $depth += ['{' => 1, '}' => -1][$js[$i]] ?? 0;
+            if ($depth === 0) {
+                break;
+            }
         }
-        $this->assertStringNotContainsString('fetch(', $match[1], 'a top-level navigation, so the browser follows the IdP redirect');
+        $body = substr($js, $start, $i - $start + 1);
+
+        $this->assertSame(1, preg_match('/(?:var|let|const)\s+(\w+)=document\.createElement\("form"\)/', $body, $form), 'a form');
+        $this->assertSame(1, preg_match('/(?:var|let|const)\s+(\w+)=document\.createElement\("input"\)/', $body, $input), 'an input');
+        [$form, $input] = [$form[1], $input[1]];
+        $this->assertSame('POST', strtoupper((string)self::jsProperty($body, $form, 'method')));
+        $this->assertSame('/', self::jsProperty($body, $form, 'action'));
+        $this->assertSame('logout', self::jsProperty($body, $input, 'name'));
+        $this->assertSame('1', self::jsProperty($body, $input, 'value'));
+        $this->assertStringContainsString($form . '.appendChild(' . $input . ')', $body);
+        $this->assertSame(1, preg_match('/' . $form . '\.(?:requestSubmit|submit)\(\)/', $body), 'the form is submitted');
+        foreach (['fetch(', 'XMLHttpRequest', '.ajax(', 'sendBeacon('] as $background) {
+            $this->assertStringNotContainsString($background, $body, 'a top-level navigation, so the browser follows the IdP redirect');
+        }
     }
 
     /** @return array<string, array{0: array<string, ?string>}> request headers of a same-origin logout */
@@ -255,14 +311,17 @@ class IdpLogoutTest extends TestCase
      * @param array<string, ?string> $server $_SERVER entries, null removes one
      * @param array<string, array{0: int, 1: string}> $documents discovery URL => [HTTP code, body]
      * @param array<string, string> $redis
+     * @param bool $redisDown every Redis call throws RedisException
      */
-    private function logout(array $settings, array $session, array $post, array $server = [], array $documents = [], array $redis = []): array
+    private function logout(array $settings, array $session, array $post, array $server = [], array $documents = [], array $redis = [],
+        bool $redisDown = false): array
     {
         $requestFile = tempnam(sys_get_temp_dir(), 'idp-logout-req-');
         $resultFile = tempnam(sys_get_temp_dir(), 'idp-logout-res-');
         try {
             file_put_contents($requestFile, json_encode(['settings' => $settings, 'session' => $session, 'post' => $post,
-                'server' => $server, 'documents' => (object)$documents, 'redis' => (object)$redis, 'result' => $resultFile],
+                'server' => $server, 'documents' => (object)$documents, 'redis' => (object)$redis, 'redis_down' => $redisDown,
+                'result' => $resultFile],
                 JSON_THROW_ON_ERROR));
             $process = proc_open([PHP_BINARY, '-d', 'display_errors=stderr',
                 '-d', 'disable_functions=curl_init,curl_setopt,curl_exec,curl_getinfo,curl_close,header,header_remove,http_response_code',
@@ -298,6 +357,38 @@ class IdpLogoutTest extends TestCase
     {
         $encode = fn(string $part): string => rtrim(strtr(base64_encode($part), '+/', '-_'), '=');
         return $encode('{"alg":"RS256","typ":"JWT"}') . '.' . $encode(json_encode($claims)) . '.signature';
+    }
+
+    /** A local-only logout warning of get-end-session-endpoint as logger() writes it */
+    private static function localOnlyLog(string $reason): array
+    {
+        return [
+            'type' => 'warning',
+            'msg' => json_encode('IdP logout not possible for ' . self::USER . ', local logout only: ' . $reason,
+                JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
+            'call' => json_encode(['identity_provider', 'get-end-session-endpoint', self::USER]),
+            'user' => 'unauthenticated',
+        ];
+    }
+
+    /** The label of the idp_logout setting in the admin UI */
+    private static function idpLogoutLabel(): string
+    {
+        $lang = json_decode((string)file_get_contents(__DIR__ . '/../../../../data/web/lang/lang.en-gb.json'), true);
+        return $lang['admin']['iam_idp_logout'];
+    }
+
+    /** Redis key that remembers the missing-ID-token warning of the GENERIC provider */
+    private static function noIdTokenKey(): string
+    {
+        return 'IAM_NO_ID_TOKEN_LOGGED_' . md5(json_encode([self::GENERIC['token_url'], self::GENERIC['client_id']]));
+    }
+
+    /** The string $object.$property = "..." (or setAttribute) sets in normalised $js */
+    private static function jsProperty(string $js, string $object, string $property): ?string
+    {
+        $pattern = '/' . $object . '(?:\.' . $property . '="([^"]*)"|\.setAttribute\("' . $property . '","([^"]*)"\))/';
+        return preg_match($pattern, $js, $match) ? ($match[1] !== '' ? $match[1] : ($match[2] ?? '')) : null;
     }
 
     private static function cacheKey(): string

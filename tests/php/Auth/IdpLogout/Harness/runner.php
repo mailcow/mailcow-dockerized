@@ -2,8 +2,9 @@
 
 // Runs one logout request of IdpLogoutTest in a process of its own, with the real data/web/inc/functions.inc.php and
 // sessions.inc.php: the logout POST of sessions.inc.php, then the IdP logout step of prerequisites.inc.php. The test
-// disables curl_*, header(), header_remove() and http_response_code(); here they are recorders, the discovery
-// documents are scripted, Redis is an array and the UI log an in-memory SQLite table. The result (headers, status,
+// disables curl_*, header(), header_remove() and http_response_code(); here they are recorders (declared only where
+// the PHP function is missing, so that the file also passes php -l; the runner stops unless every recorder is in
+// place), the discovery documents are scripted, Redis is an array (or down) and the UI log an in-memory SQLite table. The result (headers, status,
 // output, discovery requests, Redis calls, log rows, PHP notices) goes to the result file named in the request.
 
 namespace IdpLogoutHarness {
@@ -32,19 +33,25 @@ namespace IdpLogoutHarness {
         public array $calls = [];
 
         /** @param array<string, string> $data */
-        public function __construct(public array $data)
+        public function __construct(public array $data, private bool $down = false)
         {
         }
 
         public function get(string $key): string|false
         {
             $this->calls[] = ['get', $key];
+            if ($this->down) {
+                throw new \RedisException('down');
+            }
             return $this->data[$key] ?? false;
         }
 
         public function setEx(string $key, int $ttl, string $value): bool
         {
             $this->calls[] = ['setEx', $key, $ttl, $value];
+            if ($this->down) {
+                throw new \RedisException('down');
+            }
             $this->data[$key] = $value;
             return true;
         }
@@ -56,75 +63,99 @@ namespace {
     use IdpLogoutHarness\FakeRedis;
     use IdpLogoutHarness\State;
 
-    function curl_init(?string $url = null)
-    {
-        $handle = count(State::$handles) + 1;
-        State::$handles[$handle] = ($url !== null) ? [CURLOPT_URL => $url] : [];
-        return $handle;
-    }
-
-    function curl_setopt($handle, int $option, mixed $value): bool
-    {
-        State::$handles[$handle][$option] = $value;
-        return true;
-    }
-
-    function curl_exec($handle): string|bool
-    {
-        $url = (string)(State::$handles[$handle][CURLOPT_URL] ?? '');
-        State::$fetched[] = $url;
-        if (!isset(State::$documents[$url])) {
-            return false;
-        }
-        return State::$documents[$url][1];
-    }
-
-    function curl_getinfo($handle, ?int $option = null): mixed
-    {
-        $url = (string)(State::$handles[$handle][CURLOPT_URL] ?? '');
-        return State::$documents[$url][0] ?? 0;
-    }
-
-    function curl_close($handle): void
-    {
-    }
-
-    function header(string $header, bool $replace = true, int $response_code = 0): void
-    {
-        State::$headerCalls[] = ['header', $header];
-        $name = strtolower(trim(strstr($header, ':', true) ?: $header));
-        if ($replace) {
-            State::$headers = array_values(array_filter(State::$headers,
-                fn(string $h): bool => strtolower(trim(strstr($h, ':', true) ?: $h)) !== $name));
-        }
-        State::$headers[] = $header;
-        // like PHP: a Location header turns a 200 into a 302
-        if ($name === 'location' && State::$status === 200) {
-            State::$status = 302;
+    // the phpredis exception identity_provider() catches; the test image has no phpredis
+    if (!class_exists('RedisException')) {
+        class RedisException extends \RuntimeException
+        {
         }
     }
 
-    function header_remove(?string $name = null): void
-    {
-        State::$headerCalls[] = ['header_remove', $name];
-        State::$headers = ($name === null) ? [] : array_values(array_filter(State::$headers,
-            fn(string $h): bool => strtolower(trim(strstr($h, ':', true) ?: $h)) !== strtolower($name)));
+    const RECORDERS = ['curl_init', 'curl_setopt', 'curl_exec', 'curl_getinfo', 'curl_close', 'header', 'header_remove',
+        'http_response_code', 'get_remote_ip'];
+
+    if (!function_exists('curl_init')) {
+        function curl_init(?string $url = null)
+        {
+            $handle = count(State::$handles) + 1;
+            State::$handles[$handle] = ($url !== null) ? [CURLOPT_URL => $url] : [];
+            return $handle;
+        }
+
+        function curl_setopt($handle, int $option, mixed $value): bool
+        {
+            State::$handles[$handle][$option] = $value;
+            return true;
+        }
+
+        function curl_exec($handle): string|bool
+        {
+            $url = (string)(State::$handles[$handle][CURLOPT_URL] ?? '');
+            State::$fetched[] = $url;
+            if (!isset(State::$documents[$url])) {
+                return false;
+            }
+            return State::$documents[$url][1];
+        }
+
+        function curl_getinfo($handle, ?int $option = null): mixed
+        {
+            $url = (string)(State::$handles[$handle][CURLOPT_URL] ?? '');
+            return State::$documents[$url][0] ?? 0;
+        }
+
+        function curl_close($handle): void
+        {
+        }
     }
 
-    function http_response_code(int $response_code = 0): int|bool
-    {
-        State::$headerCalls[] = ['http_response_code', $response_code];
-        $previous = State::$status;
-        if ($response_code > 0) {
-            State::$status = $response_code;
+    if (!function_exists('header')) {
+        function header(string $header, bool $replace = true, int $response_code = 0): void
+        {
+            State::$headerCalls[] = ['header', $header];
+            $name = strtolower(trim(strstr($header, ':', true) ?: $header));
+            if ($replace) {
+                State::$headers = array_values(array_filter(State::$headers,
+                    fn(string $h): bool => strtolower(trim(strstr($h, ':', true) ?: $h)) !== $name));
+            }
+            State::$headers[] = $header;
+            // like PHP: a Location header turns a 200 into a 302
+            if ($name === 'location' && State::$status === 200) {
+                State::$status = 302;
+            }
         }
-        return $previous;
+
+        function header_remove(?string $name = null): void
+        {
+            State::$headerCalls[] = ['header_remove', $name];
+            State::$headers = ($name === null) ? [] : array_values(array_filter(State::$headers,
+                fn(string $h): bool => strtolower(trim(strstr($h, ':', true) ?: $h)) !== strtolower($name)));
+        }
+
+        function http_response_code(int $response_code = 0): int|bool
+        {
+            State::$headerCalls[] = ['http_response_code', $response_code];
+            $previous = State::$status;
+            if ($response_code > 0) {
+                State::$status = $response_code;
+            }
+            return $previous;
+        }
     }
 
     // defined in prerequisites.inc.php, used by logger()
-    function get_remote_ip($use_x_real_ip = true)
-    {
-        return '192.0.2.10';
+    if (!function_exists('get_remote_ip')) {
+        function get_remote_ip($use_x_real_ip = true)
+        {
+            return '192.0.2.10';
+        }
+    }
+
+    // run without the disable_functions of IdpLogoutTest, the real functions would be called: stop
+    foreach (RECORDERS as $recorder) {
+        if ((new ReflectionFunction($recorder))->isInternal()) {
+            fwrite(STDERR, "$recorder() is PHP's own: run this file through IdpLogoutTest\n");
+            exit(1);
+        }
     }
 
     $request = json_decode(file_get_contents($argv[1]), true, 512, JSON_THROW_ON_ERROR);
@@ -160,7 +191,7 @@ namespace {
     $pdo->sqliteCreateFunction('UNIX_TIMESTAMP', fn(): int => time(), 0);
     $pdo->exec('CREATE TABLE `logs` (`id` INTEGER PRIMARY KEY, `type` TEXT, `task` TEXT, `msg` TEXT, `call` TEXT,
         `user` TEXT, `role` TEXT, `remote` TEXT, `time` INTEGER)');
-    $redis = new FakeRedis($request['redis']);
+    $redis = new FakeRedis($request['redis'], !empty($request['redis_down']));
     $iam_settings = $request['settings'];
     $lang = json_decode(file_get_contents($web . '/lang/lang.en-gb.json'), true);
 

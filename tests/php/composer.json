@@ -4,6 +4,11 @@
     "type": "project",
     "license": "GPL-3.0-only",
     "require-dev": {
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-pdo_sqlite": "*",
+        "ext-session": "*",
+        "ext-tokenizer": "*",
         "phpunit/phpunit": "^11.5",
         "symfony/yaml": "^7.3"
     },

@@ -3211,9 +3211,23 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     case "get-end-session-endpoint":
       // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
       // $_extra: username of the session, for log entries
-      // without an ID token (e.g. a session from before the update) the issuer and so the endpoint are unknown
+      // without an ID token the issuer and so the endpoint are unknown: a session from before the update, or a provider
+      // that returns no ID token (no openid scope), which repeats on every logout, so log it once an hour per provider
       if (empty($_data) || !is_string($_data)) {
-        identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'username' => $_extra), 'no ID token in the session');
+        $logged_key = 'IAM_NO_ID_TOKEN_LOGGED_' . md5(json_encode(array($iam_settings['token_url'] ?? '', $iam_settings['client_id'] ?? '')));
+        try {
+          $logged = ($redis->get($logged_key) !== false);
+        } catch (RedisException $e) {
+          $logged = false;
+        }
+        if (!$logged) {
+          identity_provider('log-logout-local-only', array('origin' => 'get-end-session-endpoint', 'username' => $_extra),
+            'no ID token in the session (a session from before the update, or the provider returns none: add the openid scope or turn off "End the IdP session on logout"), logged once an hour');
+          try {
+            $redis->setEx($logged_key, 3600, '1');
+          } catch (RedisException $e) {
+          }
+        }
         return false;
       }
       $issuer = \Mailcow\Auth\Model\IdpLogoutRequest::issuer($_data);
