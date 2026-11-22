@@ -34,9 +34,29 @@ namespace IdpLogoutHarness {
         /** @var array<string, int> TTL in seconds of the keys set with one */
         public array $ttl = [];
 
-        /** @param array<string, string> $data */
-        public function __construct(public array $data, private bool $down = false)
+        /**
+         * @param array<string, string> $data
+         * @param bool $down every command throws RedisException, as phpredis does without a connection
+         * @param ?string $errorReply the server answers set() with this error reply: phpredis returns false and keeps it
+         *     for getLastError() (an ERR reply does not throw)
+         * @param ?string $lastError an error left over from an earlier command
+         */
+        public function __construct(public array $data, private bool $down = false, private ?string $errorReply = null,
+            private ?string $lastError = null)
         {
+        }
+
+        public function getLastError(): ?string
+        {
+            $this->calls[] = ['getLastError'];
+            return $this->lastError;
+        }
+
+        public function clearLastError(): bool
+        {
+            $this->calls[] = ['clearLastError'];
+            $this->lastError = null;
+            return true;
         }
 
         public function get(string $key): string|false
@@ -68,6 +88,10 @@ namespace IdpLogoutHarness {
             $this->calls[] = ['set', $key, $value, $options];
             if ($this->down) {
                 throw new \RedisException('down');
+            }
+            if ($this->errorReply !== null) {
+                $this->lastError = $this->errorReply;
+                return false;
             }
             $options = is_int($options) ? ['ex' => $options] : ($options ?? []);
             foreach ($options as $name => $option) {
@@ -223,7 +247,8 @@ namespace {
     $pdo->sqliteCreateFunction('UNIX_TIMESTAMP', fn(): int => time(), 0);
     $pdo->exec('CREATE TABLE `logs` (`id` INTEGER PRIMARY KEY, `type` TEXT, `task` TEXT, `msg` TEXT, `call` TEXT,
         `user` TEXT, `role` TEXT, `remote` TEXT, `time` INTEGER)');
-    $redis = new FakeRedis($request['redis'], !empty($request['redis_down']));
+    $redis = new FakeRedis($request['redis'], !empty($request['redis_down']), $request['redis_error_reply'] ?? null,
+        $request['redis_last_error'] ?? null);
     $iam_settings = $request['settings'];
     $lang = json_decode(file_get_contents($web . '/lang/lang.en-gb.json'), true);
 

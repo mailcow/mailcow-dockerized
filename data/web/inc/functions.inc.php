@@ -3214,10 +3214,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       // without an ID token the issuer and so the endpoint are unknown: a session from before the update, or a provider
       // that returns no ID token (no openid scope), which repeats on every logout, so log it at most once an hour per
       // provider: the logout that sets the marker (SET NX, atomic) logs; without Redis every logout logs
+      // phpredis returns false for an existing marker and for an ERR reply (no exception), getLastError() tells them apart
       if (empty($_data) || !is_string($_data)) {
         $logged_key = 'IAM_NO_ID_TOKEN_LOGGED_' . md5(json_encode(array($iam_settings['token_url'] ?? '', $iam_settings['client_id'] ?? '')));
         try {
-          $log_it = ($redis->set($logged_key, '1', array('nx', 'ex' => 3600)) !== false);
+          $redis->clearLastError();
+          $log_it = ($redis->set($logged_key, '1', array('nx', 'ex' => 3600)) !== false || !empty($redis->getLastError()));
         } catch (RedisException $e) {
           $log_it = true;
         }

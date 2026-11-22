@@ -56,7 +56,7 @@ class IdpLogoutTest extends TestCase
 
         $this->assertFalse($result['sent_to_idp']);
         $this->assertSame([], $result['fetched'], 'no discovery request');
-        $this->assertSame([], array_filter($result['redis_calls'], fn(array $c): bool => str_starts_with($c[1], 'IAM_END_SESSION_ENDPOINT_')),
+        $this->assertSame([], array_filter($result['redis_calls'], fn(array $c): bool => str_starts_with((string)($c[1] ?? ''), 'IAM_END_SESSION_ENDPOINT_')),
             'no discovery cache lookup');
         $this->assertSame(['Location: /'], $result['headers'], 'the local logout redirect of sessions.inc.php');
         $this->assertSame(302, $result['status']);
@@ -72,7 +72,7 @@ class IdpLogoutTest extends TestCase
     {
         $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT);
 
-        $this->assertSame([['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]]], $result['redis_calls'], 'one SET NX EX, no read before');
+        $this->assertSame([['clearLastError'], ['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]]], $result['redis_calls'], 'one SET NX EX, no read before');
         $this->assertSame([self::noIdTokenKey() => '1'], $result['redis']);
         $this->assertSame([self::noIdTokenKey() => 3600], $result['redis_ttl']);
         $this->assertCount(1, $result['logs']);
@@ -86,9 +86,27 @@ class IdpLogoutTest extends TestCase
         $this->assertSame([], $result['fetched']);
         $this->assertSame(['Location: /'], $result['headers']);
         $this->assertSame([], $result['logs'], 'SET NX failed: another logout logged');
-        $this->assertSame([['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]]], $result['redis_calls']);
+        $this->assertSame([['clearLastError'], ['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]], ['getLastError']], $result['redis_calls']);
         $this->assertSame([self::noIdTokenKey() => 'set by another logout'], $result['redis'], 'the marker is not overwritten');
         $this->assertSame([], $result['redis_ttl'], 'nor its expiry extended');
+    }
+
+    public function testMissingIdTokenWarningIsLoggedWhenRedisAnswersSetWithAnError(): void
+    {
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT,
+            redisErrorReply: "ERR unknown command 'SET', with args beginning with: 'IAM_NO_ID_TOKEN_LOGGED_'");
+
+        $this->assertSame([['clearLastError'], ['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]], ['getLastError']], $result['redis_calls']);
+        $this->assertSame([self::localOnlyLog(sprintf(self::NO_ID_TOKEN, self::idpLogoutLabel()))], $result['logs'],
+            'set() returned false for an error, not for an existing marker');
+    }
+
+    public function testErrorOfAnEarlierRedisCommandDoesNotRepeatTheWarning(): void
+    {
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT, redis: [self::noIdTokenKey() => '1'],
+            redisLastError: 'ERR error of an earlier command');
+
+        $this->assertSame([], $result['logs'], 'the marker exists; the old error is cleared before SET');
     }
 
     public function testMissingIdTokenWarningOfAnotherProviderIsLogged(): void
@@ -233,7 +251,8 @@ class IdpLogoutTest extends TestCase
 
     // the SOGo logout button: mc_logout() of data/conf/sogo/custom-sogo.js posts logout=1 without the CSRF token
 
-    // a structural regression check of mc_logout(); that the browser follows the redirect is checked by the local browser tests
+    // a structural regression check of mc_logout(); that a browser follows the redirect or the form is not tested in this
+    // repository (verified out of tree with headless Chrome, see the PR description)
     public function testSogoLogoutButtonBuildsATopLevelLogoutForm(): void
     {
         // without comments, without whitespace around punctuation and with one quote style: only a change of behaviour fails
@@ -322,15 +341,17 @@ class IdpLogoutTest extends TestCase
      * @param array<string, array{0: int, 1: string}> $documents discovery URL => [HTTP code, body]
      * @param array<string, string> $redis
      * @param bool $redisDown every Redis call throws RedisException
+     * @param ?string $redisErrorReply Redis answers SET with this error reply (phpredis: false and getLastError())
+     * @param ?string $redisLastError error of an earlier Redis command, still in getLastError()
      */
     private function logout(array $settings, array $session, array $post, array $server = [], array $documents = [], array $redis = [],
-        bool $redisDown = false): array
+        bool $redisDown = false, ?string $redisErrorReply = null, ?string $redisLastError = null): array
     {
         $requestFile = tempnam(sys_get_temp_dir(), 'idp-logout-req-');
         $resultFile = tempnam(sys_get_temp_dir(), 'idp-logout-res-');
         try {
             file_put_contents($requestFile, json_encode(['settings' => $settings, 'session' => $session, 'post' => $post,
-                'server' => $server, 'documents' => (object)$documents, 'redis' => (object)$redis, 'redis_down' => $redisDown,
+                'server' => $server, 'documents' => (object)$documents, 'redis' => (object)$redis, 'redis_down' => $redisDown, 'redis_error_reply' => $redisErrorReply, 'redis_last_error' => $redisLastError,
                 'result' => $resultFile],
                 JSON_THROW_ON_ERROR));
             $process = proc_open([PHP_BINARY, '-d', 'display_errors=stderr',
