@@ -3042,7 +3042,8 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $token = $iam_provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
         $plain_token = $token->getToken();
         $plain_refreshtoken = $token->getRefreshToken();
-        $plain_idtoken = $token->getValues()['id_token'] ?? null;
+        // a refresh response may omit the ID token, keep the one from the login then
+        $plain_idtoken = $token->getValues()['id_token'] ?? $_SESSION['iam_id_token'] ?? null;
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         clear_session();
@@ -3170,7 +3171,21 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       $id_token_claims = json_decode(base64_decode(strtr($id_token_parts[1], '-_', '+/')), true);
       $issuer = (is_array($id_token_claims) && is_string($id_token_claims['iss'] ?? null)) ? $id_token_claims['iss'] : '';
-      if (!in_array(parse_url($issuer, PHP_URL_SCHEME), array('https', 'http')))
+      // only talk to the configured provider: the issuer and the end session endpoint must use
+      // the same scheme, host and port as one of the configured authorize, token or userinfo URLs
+      $get_origin = function ($url) {
+        $url = parse_url((string)$url);
+        $scheme = strtolower($url['scheme'] ?? '');
+        if (empty($url['host']) || !in_array($scheme, array('https', 'http')))
+          return false;
+        return $scheme . '://' . strtolower($url['host']) . ':' . ($url['port'] ?? ($scheme == 'https' ? 443 : 80));
+      };
+      $provider_origins = array_filter(array_map($get_origin, array(
+        $iam_settings['authorize_url'] ?? '',
+        $iam_settings['token_url'] ?? '',
+        $iam_settings['userinfo_url'] ?? ''
+      )));
+      if (!in_array($get_origin($issuer), $provider_origins, true) || strpbrk($issuer, '?#') !== false)
         return false;
       $cache_key = 'IAM_END_SESSION_ENDPOINT_' . md5($issuer);
       try {
@@ -3183,6 +3198,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         curl_setopt($curl, CURLOPT_URL, rtrim($issuer, '/') . '/.well-known/openid-configuration');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 3);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         if ($iam_settings['ignore_ssl_error']) {
           curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -3191,24 +3207,28 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $res = curl_exec($curl);
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        if ($res === false || $code != 200) {
-          // provider not reachable, try again on the next logout
-          return false;
-        }
-        $discovery = json_decode($res, true);
         $end_session_endpoint = '';
-        // the document must belong to the issuer, the endpoint is optional
-        if (is_array($discovery) && ($discovery['issuer'] ?? null) === $issuer &&
-          is_string($discovery['end_session_endpoint'] ?? null) &&
-          in_array(parse_url($discovery['end_session_endpoint'], PHP_URL_SCHEME), array('https', 'http'))) {
-          $end_session_endpoint = $discovery['end_session_endpoint'];
+        if ($res === false || $code != 200) {
+          // provider not reachable, logout stays local, try again in a few minutes
+          $cache_ttl = 300;
+        }
+        else {
+          $cache_ttl = 3600;
+          $discovery = json_decode($res, true);
+          // the document must belong to the issuer, the endpoint is optional
+          if (is_array($discovery) && ($discovery['issuer'] ?? null) === $issuer &&
+            is_string($discovery['end_session_endpoint'] ?? null)) {
+            $end_session_endpoint = $discovery['end_session_endpoint'];
+          }
         }
         try {
-          $redis->setEx($cache_key, 3600, $end_session_endpoint);
+          $redis->setEx($cache_key, $cache_ttl, $end_session_endpoint);
         } catch (RedisException $e) {
         }
       }
-      return (!empty($end_session_endpoint)) ? $end_session_endpoint : false;
+      if (empty($end_session_endpoint) || !in_array($get_origin($end_session_endpoint), $provider_origins, true))
+        return false;
+      return $end_session_endpoint;
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
