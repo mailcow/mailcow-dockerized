@@ -2407,6 +2407,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
   global $pdo;
   global $iam_provider;
   global $iam_settings;
+  global $redis;
 
   $data_log = $_data;
   if (isset($data_log['client_secret'])) $data_log['client_secret'] = '*';
@@ -3122,8 +3123,22 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "get-logout-url":
       // RP-initiated logout (OpenID Connect RP-Initiated Logout 1.0), ends the session at the IdP
-      if ($iam_settings['authsource'] != 'keycloak' || empty($iam_settings['server_url']) || empty($iam_settings['realm']))
-        return false;
+      switch ($iam_settings['authsource']) {
+        case "keycloak":
+          if (empty($iam_settings['server_url']) || empty($iam_settings['realm']))
+            return false;
+          $end_session_endpoint = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/logout";
+        break;
+        case "generic-oidc":
+          // no setting for it, the endpoint comes from the discovery document of the ID token issuer
+          $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data);
+          if (empty($end_session_endpoint))
+            return false;
+        break;
+        default:
+          return false;
+        break;
+      }
       $post_logout_redirect_uri = $iam_settings['redirect_url'];
       if (isset($iam_settings['redirect_url_extra'])) {
         // use the extra redirect URL of the current domain, as in get-redirect
@@ -3144,7 +3159,56 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if (!empty($_data) && is_string($_data)) {
         $params['id_token_hint'] = $_data;
       }
-      return "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/logout?" . http_build_query($params);
+      return $end_session_endpoint . (strpos($end_session_endpoint, '?') === false ? '?' : '&') . http_build_query($params);
+    break;
+    case "get-end-session-endpoint":
+      // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
+      if (empty($_data) || !is_string($_data))
+        return false;
+      $id_token_parts = explode('.', $_data);
+      if (count($id_token_parts) != 3)
+        return false;
+      $id_token_claims = json_decode(base64_decode(strtr($id_token_parts[1], '-_', '+/')), true);
+      $issuer = (is_array($id_token_claims) && is_string($id_token_claims['iss'] ?? null)) ? $id_token_claims['iss'] : '';
+      if (!in_array(parse_url($issuer, PHP_URL_SCHEME), array('https', 'http')))
+        return false;
+      $cache_key = 'IAM_END_SESSION_ENDPOINT_' . md5($issuer);
+      try {
+        $end_session_endpoint = $redis->get($cache_key);
+      } catch (RedisException $e) {
+        $end_session_endpoint = false;
+      }
+      if ($end_session_endpoint === false) {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, rtrim($issuer, '/') . '/.well-known/openid-configuration');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        if ($iam_settings['ignore_ssl_error']) {
+          curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+          curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        }
+        $res = curl_exec($curl);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        if ($res === false || $code != 200) {
+          // provider not reachable, try again on the next logout
+          return false;
+        }
+        $discovery = json_decode($res, true);
+        $end_session_endpoint = '';
+        // the document must belong to the issuer, the endpoint is optional
+        if (is_array($discovery) && ($discovery['issuer'] ?? null) === $issuer &&
+          is_string($discovery['end_session_endpoint'] ?? null) &&
+          in_array(parse_url($discovery['end_session_endpoint'], PHP_URL_SCHEME), array('https', 'http'))) {
+          $end_session_endpoint = $discovery['end_session_endpoint'];
+        }
+        try {
+          $redis->setEx($cache_key, 3600, $end_session_endpoint);
+        } catch (RedisException $e) {
+        }
+      }
+      return (!empty($end_session_endpoint)) ? $end_session_endpoint : false;
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
