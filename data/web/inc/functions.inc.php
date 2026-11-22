@@ -3160,6 +3160,9 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if (!empty($_data) && is_string($_data)) {
         $params['id_token_hint'] = $_data;
       }
+      // the same request as a form POST, for a URL too long to redirect to
+      if (!empty($_extra['form']))
+        return array('action' => $end_session_endpoint, 'params' => $params);
       return $end_session_endpoint . (strpos($end_session_endpoint, '?') === false ? '?' : '&') . http_build_query($params);
     break;
     case "get-end-session-endpoint":
