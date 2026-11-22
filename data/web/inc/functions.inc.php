@@ -2850,7 +2850,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
 
       try {
-        $token = $iam_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
+        // RFC 6749 §4.1.3 requires the token request to use the same redirect_uri
+        // as the authorization request. When an extra redirect URL was selected in
+        // get-redirect, pass that exact value instead of the provider's default.
+        $tokenOptions = ['code' => $_GET['code']];
+        if (!empty($_SESSION['iam_redirect_uri'])) {
+          $tokenOptions['redirect_uri'] = $_SESSION['iam_redirect_uri'];
+          unset($_SESSION['iam_redirect_uri']);
+        }
+        $token = $iam_provider->getAccessToken('authorization_code', $tokenOptions);
         $plain_token = $token->getToken();
         $plain_refreshtoken = $token->getRefreshToken();
         $info = $iam_provider->getResourceOwner($token)->toArray();
@@ -3110,6 +3118,13 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
             break;
           }
         }
+      }
+      // Remember the exact redirect_uri used for authorization so verify-sso can
+      // send the same value in the token request (RFC 6749 §4.1.3).
+      if (isset($options['redirect_uri'])) {
+        $_SESSION['iam_redirect_uri'] = $options['redirect_uri'];
+      } else {
+        unset($_SESSION['iam_redirect_uri']);
       }
       $authUrl = $iam_provider->getAuthorizationUrl($options);
       $_SESSION['oauth2state'] = $iam_provider->getState();
