@@ -38,7 +38,8 @@ through dockerapi) are used by other modules instead of calling `docker()` or th
 `Identity/` (IdP links, sync runs, offboarding) lists Keycloak/LDAP through `Directory/` adapters, decides in the
 side-effect free `SyncPlanner` and is run by the `identity-sync.php` cron.
 `Auth/` (logins) holds for now the IdP login steps the legacy login flows call (link checks fail closed, group
-template before the attribute mapping); the auth logic of the function files moves here step by step.
+template before the attribute mapping) and the IdP logout request (`Model/IdpLogoutRequest`: parameters and GET or
+POST per provider); the auth logic of the function files moves here step by step.
 
 ## Layers and rules
 

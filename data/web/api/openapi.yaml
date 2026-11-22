@@ -3358,8 +3358,9 @@ components:
           description: >-
             (boolean) Keycloak and generic OIDC: end the IdP session on logout (OpenID Connect
             RP-Initiated Logout). The redirect URLs must be registered at the IdP as post-logout
-            redirect URIs. On if never saved.
-          default: true
+            redirect URIs. Like the other switches, an edit without it turns it off; a provider
+            saved before this setting existed reads as on.
+          default: false
         periodic_sync:
           type:
             - integer
@@ -12674,6 +12675,7 @@ paths:
                       - https://webmail.example.org
                     version: 26.1.3
                     login_provisioning: 1
+                    idp_logout: 1
                     mailpassword_flow: 0
                     periodic_sync: 1
                     import_users: 1
@@ -12725,6 +12727,7 @@ paths:
                     redirect_url: https://mail.example.org
                     client_scopes: openid profile email mailcow_template
                     login_provisioning: 1
+                    idp_logout: 1
                     default_template: Default
       responses:
         "200":

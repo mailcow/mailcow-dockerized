@@ -278,13 +278,12 @@ if(file_exists($langFile)) {
 if (!empty($iam_logout) && $iam_provider) {
   $iam_logout_form = identity_provider('get-logout-url', $iam_logout_id_token ?? null, array('form' => true, 'username' => $iam_logout_username ?? null));
   if (!empty($iam_logout_form)) {
-    $iam_logout_url = $iam_logout_form['action'] . (strpos($iam_logout_form['action'], '?') === false ? '?' : '&') . http_build_query($iam_logout_form['params']);
-    if (strlen($iam_logout_url) <= 2048) {
-      header('Location: ' . $iam_logout_url);
+    if ($iam_logout_form['method'] == 'GET') {
+      header('Location: ' . $iam_logout_form['action'] . (strpos($iam_logout_form['action'], '?') === false ? '?' : '&') . http_build_query($iam_logout_form['params']));
       exit();
     }
-    // A large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits),
-    // send the same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows
+    // POST: a large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits), send the
+    // same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows (see IdpLogoutRequest)
     header_remove('Location');
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');

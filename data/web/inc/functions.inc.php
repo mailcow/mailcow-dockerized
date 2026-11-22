@@ -3130,29 +3130,14 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
     break;
     case "get-logout-url":
       // RP-initiated logout (OpenID Connect RP-Initiated Logout 1.0), ends the session at the IdP
-      // $_extra: 'form' => true returns action and params for a form POST, 'username' is used in log entries
+      // returns the logout URL, or with $_extra 'form' => true the transport (method, action, params) for the browser
+      // $_extra 'username' is used in log entries
       if (empty($iam_settings['idp_logout']))
         return false;
-      $redirect_param = 'post_logout_redirect_uri';
-      switch ($iam_settings['authsource']) {
-        case "keycloak":
-          if (empty($iam_settings['server_url']) || empty($iam_settings['realm']))
-            return false;
-          $end_session_endpoint = "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/logout";
-          // Keycloak before 18.0.0 only knows redirect_uri on logout, as in the Keycloak provider library
-          if (!empty($iam_settings['version']) && version_compare($iam_settings['version'], '18.0.0', '<'))
-            $redirect_param = 'redirect_uri';
-        break;
-        case "generic-oidc":
-          // the endpoint comes from the discovery document of the ID token issuer
-          $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data, $_extra['username'] ?? null);
-          if (empty($end_session_endpoint))
-            return false;
-        break;
-        default:
-          return false;
-        break;
-      }
+      if (!in_array($iam_settings['authsource'], array('keycloak', 'generic-oidc')))
+        return false;
+      if ($iam_settings['authsource'] == 'keycloak' && (empty($iam_settings['server_url']) || empty($iam_settings['realm'])))
+        return false;
       $post_logout_redirect_uri = $iam_settings['redirect_url'];
       if (isset($iam_settings['redirect_url_extra'])) {
         // use the extra redirect URL of the current domain, as in get-redirect
@@ -3165,18 +3150,31 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           }
         }
       }
-      $params = array(
-        'client_id' => $iam_settings['client_id'],
-        $redirect_param => $post_logout_redirect_uri
-      );
-      // without id_token_hint Keycloak asks the user to confirm the logout
-      if (!empty($_data) && is_string($_data)) {
-        $params['id_token_hint'] = $_data;
+      $id_token = (!empty($_data) && is_string($_data)) ? $_data : null;
+      if ($iam_settings['authsource'] == 'keycloak') {
+        // parameters and transport depend on the Keycloak version
+        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::keycloak($iam_settings['server_url'], $iam_settings['realm'],
+          (string)($iam_settings['version'] ?? ''), $iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
       }
-      // the same request as a form POST, for a URL too long to redirect to
-      if (!empty($_extra['form']))
-        return array('action' => $end_session_endpoint, 'params' => $params);
-      return $end_session_endpoint . (strpos($end_session_endpoint, '?') === false ? '?' : '&') . http_build_query($params);
+      else {
+        // the endpoint comes from the discovery document of the ID token issuer
+        $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data, $_extra['username'] ?? null);
+        if (empty($end_session_endpoint))
+          return false;
+        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::generic($end_session_endpoint, $iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
+      }
+      if (empty($_extra['form']))
+        return $logout_request->url();
+      // how the browser sends it: redirect, form POST for a long URL, or a shorter GET for Keycloak < 19
+      $logout_transport = $logout_request->transport();
+      if ($logout_transport['reduced']) {
+        logger(array('return' => array(array(
+          'type' => 'warning',
+          'log' => array(__FUNCTION__, $_action, $_extra['username'] ?? ''),
+          'msg' => 'ID token of ' . ($_extra['username'] ?? 'unknown user') . ' too large for a logout redirect and Keycloak ' . $iam_settings['version'] . ' does not accept the logout as POST, logout without id_token_hint'
+        ))));
+      }
+      return $logout_transport;
     break;
     case "get-end-session-endpoint":
       // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
