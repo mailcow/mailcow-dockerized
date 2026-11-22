@@ -117,6 +117,35 @@ elseif (!empty($_SESSION['mailcow_cc_api'])) {
 }
 
 // Handle logouts
+// Logout CSRF check: accept the form token of the session (mailcow UI) or a request the browser reports as
+// same-origin (the SOGo logout button cannot read the token); old browsers without Sec-Fetch-Site and Origin
+// headers still have the SameSite session cookie against cross-site requests
+if (isset($_POST["logout"])) {
+  $logout_allowed = isset($_SESSION['CSRF']['TOKEN']) && is_string($_POST['csrf_token'] ?? null) &&
+    hash_equals($_SESSION['CSRF']['TOKEN'], $_POST['csrf_token']);
+  if (!$logout_allowed) {
+    if (!empty($_SERVER['HTTP_SEC_FETCH_SITE'])) {
+      $logout_allowed = in_array($_SERVER['HTTP_SEC_FETCH_SITE'], array('same-origin', 'none'));
+    }
+    elseif (!empty($_SERVER['HTTP_ORIGIN'])) {
+      $logout_allowed = strtolower((string)parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST)) ===
+        strtolower((string)parse_url('//' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST));
+    }
+    else {
+      $logout_allowed = true;
+    }
+  }
+  if (!$logout_allowed) {
+    unset($_POST["logout"]);
+    // a wrong token is reported by session_check() below
+    if (!isset($_POST['csrf_token'])) {
+      $_SESSION['return'][] = array(
+        'type' => 'warning',
+        'msg' => 'session_token'
+      );
+    }
+  }
+}
 if (isset($_POST["logout"])) {
   if (isset($_SESSION["dual-login"])) {
     $_SESSION["mailcow_cc_username"] = $_SESSION["dual-login"]["username"];

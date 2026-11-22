@@ -3188,8 +3188,10 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $iam_settings['token_url'] ?? '',
         $iam_settings['userinfo_url'] ?? ''
       )));
-      if (!in_array($get_origin($issuer), $provider_origins, true) || strpbrk($issuer, '?#') !== false)
+      if (!in_array($get_origin($issuer), $provider_origins, true) || strpbrk($issuer, '?#') !== false) {
+        identity_provider('log-logout-local-only', $issuer, 'ID token issuer is not on the host of the configured provider URLs');
         return false;
+      }
       $cache_key = 'IAM_END_SESSION_ENDPOINT_' . md5($issuer);
       try {
         $end_session_endpoint = $redis->get($cache_key);
@@ -3214,6 +3216,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         if ($res === false || $code != 200) {
           // provider not reachable, logout stays local, try again in a few minutes
           $cache_ttl = 300;
+          identity_provider('log-logout-local-only', $issuer, 'discovery document not available (HTTP ' . $code . ')');
         }
         else {
           $cache_ttl = 3600;
@@ -3222,6 +3225,9 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
           if (is_array($discovery) && ($discovery['issuer'] ?? null) === $issuer &&
             is_string($discovery['end_session_endpoint'] ?? null)) {
             $end_session_endpoint = $discovery['end_session_endpoint'];
+          }
+          else {
+            identity_provider('log-logout-local-only', $issuer, 'discovery document has no end_session_endpoint for this issuer');
           }
         }
         try {
@@ -3232,6 +3238,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       if (empty($end_session_endpoint) || !in_array($get_origin($end_session_endpoint), $provider_origins, true))
         return false;
       return $end_session_endpoint;
+    break;
+    case "log-logout-local-only":
+      // tell the admin why the IdP session is not ended on logout (mailcow UI log, no tokens)
+      logger(array('return' => array(array(
+        'type' => 'warning',
+        'log' => array(__FUNCTION__, 'get-end-session-endpoint', $_data),
+        'msg' => 'IdP logout not possible, local logout only: ' . $_extra
+      ))));
+      return true;
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client
