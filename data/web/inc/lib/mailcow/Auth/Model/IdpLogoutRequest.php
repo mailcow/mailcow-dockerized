@@ -45,12 +45,15 @@ class IdpLogoutRequest
             $short = $params;
         } else {
             // Keycloak 18 accepts post_logout_redirect_uri only with id_token_hint; without both it asks the user
-            // to confirm and does not redirect back
+            // to confirm and does not redirect back. From 19, client_id is enough for post_logout_redirect_uri.
             $params = ['client_id' => $clientId, 'post_logout_redirect_uri' => $redirectUri];
             $short = ['client_id' => $clientId];
         }
         if ($idToken !== null && $idToken !== '') {
             $params['id_token_hint'] = $idToken;
+        } elseif ($major === 18) {
+            // no ID token (e.g. a session from before the update)
+            $params = $short;
         }
         return new self($endpoint, $params, $legacy ? $short : null);
     }

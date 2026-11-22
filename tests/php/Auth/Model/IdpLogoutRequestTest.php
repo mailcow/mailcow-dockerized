@@ -111,6 +111,37 @@ class IdpLogoutRequestTest extends TestCase
         $this->assertSame($major, IdpLogoutRequest::keycloakMajor($version));
     }
 
+    /** @return array<string, array{0: string, 1: ?string, 2: array<string, string>}> version, token, params */
+    public static function noTokenCases(): array
+    {
+        $cases = [];
+        foreach (['null' => null, 'empty' => ''] as $name => $token) {
+            // Keycloak 17 checks redirect_uri against the realm without a hint
+            $cases['Keycloak 17, ' . $name] = ['17.0.1', $token, ['client_id' => 'mailcow', 'redirect_uri' => self::REDIRECT]];
+            // Keycloak 18 rejects post_logout_redirect_uri without id_token_hint (HTTP 400): client_id only
+            foreach (['18.0.2', '18', '18.0.0.redhat-00001'] as $version) {
+                $cases['Keycloak ' . $version . ', ' . $name] = [$version, $token, ['client_id' => 'mailcow']];
+            }
+            // from 19, client_id is enough for post_logout_redirect_uri
+            foreach (['19.0.0', '26.4.0', 'latest', ''] as $version) {
+                $cases['Keycloak ' . ($version === '' ? 'no version' : $version) . ', ' . $name] = [$version, $token, ['client_id' => 'mailcow', 'post_logout_redirect_uri' => self::REDIRECT]];
+            }
+        }
+        return $cases;
+    }
+
+    #[DataProvider('noTokenCases')]
+    public function testKeycloakWithoutTokenSendsAcceptedParameters(string $version, ?string $token, array $params): void
+    {
+        $request = IdpLogoutRequest::keycloak(self::SERVER, 'r1', $version, 'mailcow', self::REDIRECT, $token);
+        $transport = $request->transport();
+
+        $this->assertSame('GET', $transport['method']);
+        $this->assertFalse($transport['reduced']);
+        $this->assertSame($params, $transport['params']);
+        $this->assertSame($request->url($params), $transport['url']);
+    }
+
     public function testWithoutTokenThereIsNoHint(): void
     {
         $transport = IdpLogoutRequest::generic('https://idp.example.org/logout', 'mailcow', self::REDIRECT, null)->transport();
