@@ -91,10 +91,11 @@ class IdpLogoutTest extends TestCase
         $this->assertSame([], $result['redis_ttl'], 'nor its expiry extended');
     }
 
+    // an ERR reply, e.g. from a Redis before 2.6.12 or a proxy that does not accept SET ... NX EX
     public function testMissingIdTokenWarningIsLoggedWhenRedisAnswersSetWithAnError(): void
     {
         $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT,
-            redisErrorReply: "ERR unknown command 'SET', with args beginning with: 'IAM_NO_ID_TOKEN_LOGGED_'");
+            redisErrorReply: 'ERR syntax error');
 
         $this->assertSame([['clearLastError'], ['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]], ['getLastError']], $result['redis_calls']);
         $this->assertSame([self::localOnlyLog(sprintf(self::NO_ID_TOKEN, self::idpLogoutLabel()))], $result['logs'],
