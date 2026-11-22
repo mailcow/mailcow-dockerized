@@ -268,7 +268,8 @@ function user_login($user, $pass, $extra = null, &$denied = false){
             return false;
           }
         }
-        return true;
+        // same result as the login of an existing mailbox; sogo-auth.php accepts only "user"
+        return 'user';
       }
       // the IdP accepted the password, the mailbox is inactive
       $denied = true;
