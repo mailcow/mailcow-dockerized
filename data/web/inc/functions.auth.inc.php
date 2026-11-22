@@ -7,8 +7,8 @@ function bare_localpart_login_enabled() {
 
 /**
  * If the request Host is mail.<domain>, return <domain>; otherwise null.
- * A trailing port is ignored. The domain is not rewritten unless it later
- * exists and is active in Mailcow (see bare_localpart_login_qualify()).
+ * A trailing port is ignored. The name is not rewritten unless <domain>
+ * exists in Mailcow (see bare_localpart_login_qualify()).
  */
 function bare_localpart_login_domain_from_host($http_host = null) {
   $host = strtolower((string)($http_host ?? ($_SERVER['HTTP_HOST'] ?? '')));
@@ -27,9 +27,23 @@ function bare_localpart_login_domain_from_host($http_host = null) {
 }
 
 /**
+ * Whether a bare local part can be qualified on this request (feature on and Host mail.<domain>).
+ * Used by the login form, which then accepts a name without "@". Does not query the database.
+ */
+function bare_localpart_login_applies() {
+  return bare_localpart_login_enabled() && bare_localpart_login_domain_from_host() !== null;
+}
+
+/**
  * Qualify a bare local-part as user@domain when the feature is enabled,
- * the username contains no "@", and Host is mail.<active-domain>.
+ * the username contains no "@", and Host is mail.<domain> of a Mailcow domain.
  * Full addresses (any domain) are never changed.
+ *
+ * A disabled domain is qualified as well: the login then fails exactly as for
+ * the typed full address (user_login()/apppass_login() refuse it and mark the
+ * right password as denied, so netfilter does not count it). Left bare, the
+ * name would match no mailbox and every retry of a client with the right
+ * password would be a netfilter strike.
  */
 function bare_localpart_login_qualify($user) {
   global $pdo;
@@ -47,7 +61,7 @@ function bare_localpart_login_qualify($user) {
     if (!isset($pdo) || !($pdo instanceof PDO)) {
       return $user;
     }
-    $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d AND `active` = '1' LIMIT 1");
+    $stmt = $pdo->prepare("SELECT 1 FROM `domain` WHERE `domain` = :d LIMIT 1");
     $stmt->execute(array(':d' => $domain));
     if (!$stmt->fetchColumn()) {
       return $user;
@@ -93,6 +107,8 @@ function check_login(&$user, $pass, $extra = null) {
 
   // After admin/domain-admin have seen the original name (SOGo/EAS/DAV: role unset),
   // qualify so mailbox and app-password login and the caller's $username get user@domain.
+  // An admin or domain admin with the same name and password therefore wins here, as without
+  // this option; sogo-auth.php only accepts "user", the full address avoids the clash.
   if (!isset($role)) {
     $user = bare_localpart_login_qualify($user);
   }

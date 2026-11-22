@@ -20,7 +20,7 @@ $mailcow_hostname = getenv('MAILCOW_HOSTNAME');
 $default_pass_scheme = getenv('MAILCOW_PASS_SCHEME');
 
 // Allow mailbox login with only the local part when the request Host is mail.<domain>
-// and <domain> is an active Mailcow domain. Off by default. Override in vars.local.inc.php.
+// and <domain> is a Mailcow domain. Off by default. Override in vars.local.inc.php.
 $ALLOW_BARE_LOCALPART_LOGIN = getenv('ALLOW_BARE_LOCALPART_LOGIN');
 
 // Autodiscover settings

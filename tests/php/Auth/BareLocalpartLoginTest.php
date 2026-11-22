@@ -99,12 +99,9 @@ class BareLocalpartLoginTest extends TestCase
         $this->assertSame('other@example.net', bare_localpart_login_qualify('other@example.net'));
     }
 
-    public function testQualifyUnknownOrInactiveOrUnrelatedHostLeftUnchanged(): void
+    public function testQualifyUnknownOrUnrelatedHostLeftUnchanged(): void
     {
         $_SERVER['HTTP_HOST'] = 'mail.unknown.example';
-        $this->assertSame('user', bare_localpart_login_qualify('user'));
-
-        $_SERVER['HTTP_HOST'] = 'mail.inactive.test';
         $this->assertSame('user', bare_localpart_login_qualify('user'));
 
         $_SERVER['HTTP_HOST'] = 'autodiscover.example.org';
@@ -112,6 +109,41 @@ class BareLocalpartLoginTest extends TestCase
 
         $_SERVER['HTTP_HOST'] = '192.0.2.10';
         $this->assertSame('user', bare_localpart_login_qualify('user'));
+    }
+
+    // a disabled domain is qualified too: the login then fails as for the full address (denied, no netfilter strike)
+    public function testQualifyInactiveDomain(): void
+    {
+        $_SERVER['HTTP_HOST'] = 'mail.inactive.test';
+        $this->assertSame('user@inactive.test', bare_localpart_login_qualify('user'));
+    }
+
+    public static function flags(): array
+    {
+        return [
+            // [$ALLOW_BARE_LOCALPART_LOGIN (null: not set), environment (null: not set), enabled]
+            'nothing set' => [null, null, false],
+            'environment only' => [null, 'y', true],
+            'vars.inc.php without environment' => [false, null, false],
+            'global n wins over environment y' => ['n', 'y', false],
+            'global y wins over environment n' => ['y', 'n', true],
+            'global yes' => ['yes', null, true],
+            'global empty' => ['', 'y', false],
+            'other value' => ['true', null, false],
+        ];
+    }
+
+    #[DataProvider('flags')]
+    public function testFlagPrecedence(string|false|null $global, ?string $env, bool $enabled): void
+    {
+        unset($GLOBALS['ALLOW_BARE_LOCALPART_LOGIN']);
+        if ($global !== null) {
+            $GLOBALS['ALLOW_BARE_LOCALPART_LOGIN'] = $global;
+        }
+        putenv($env === null ? 'ALLOW_BARE_LOCALPART_LOGIN' : 'ALLOW_BARE_LOCALPART_LOGIN=' . $env);
+
+        $this->assertSame($enabled, bare_localpart_login_enabled());
+        $this->assertSame($enabled ? 'user@example.org' : 'user', bare_localpart_login_qualify('user'));
     }
 
     public function testCheckLoginUserParameterIsByReference(): void

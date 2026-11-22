@@ -115,21 +115,7 @@ exit;
 }
 
 // OAuth2
-class mailcowPdo extends OAuth2\Storage\Pdo {
-  public function __construct($connection, $config = array()) {
-    parent::__construct($connection, $config);
-    $this->config['user_table'] = 'mailbox';
-  }
-  public function checkUserCredentials($username, $password) {
-    if (check_login($username, $password, array("role" => "user", "service" => "NONE")) == 'user') {
-      return true;
-    }
-    return false;
-  }
-  public function getUserDetails($username) {
-    return $this->getUser($username);
-  }
-}
+class mailcowPdo extends Mailcow\Auth\OAuth2Storage {}
 $oauth2_scope_storage = new OAuth2\Storage\Memory(array('default_scope' => 'profile', 'supported_scopes' => array('profile')));
 $oauth2_storage = new mailcowPdo(array('dsn' => $dsn, 'username' => $database_user, 'password' => $database_pass));
 $oauth2_server = new OAuth2\Server($oauth2_storage, array(

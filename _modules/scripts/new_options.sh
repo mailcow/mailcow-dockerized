@@ -234,9 +234,10 @@ adapt_new_options() {
             ;;
         ALLOW_BARE_LOCALPART_LOGIN)
             echo '# Allow mailbox login with only the local part when the HTTP Host is mail.<domain>' >> mailcow.conf
-            echo '# and <domain> is an active Mailcow domain (including hosts listed in ADDITIONAL_SERVER_NAMES' >> mailcow.conf
-            echo '# when they follow that pattern, e.g. mail.example.net). Usernames that already contain "@"' >> mailcow.conf
-            echo '# are never rewritten. Admin and domain-admin logins are unchanged. Off by default.' >> mailcow.conf
+            echo '# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of' >> mailcow.conf
+            echo '# that form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.' >> mailcow.conf
+            echo '# Usernames that already contain "@" are never rewritten. Admin and domain-admin logins are' >> mailcow.conf
+            echo '# unchanged. Off by default.' >> mailcow.conf
             echo '# After setting this to y, recreate php-fpm-mailcow (or docker compose up -d).' >> mailcow.conf
             echo 'ALLOW_BARE_LOCALPART_LOGIN=n' >> mailcow.conf
             ;;

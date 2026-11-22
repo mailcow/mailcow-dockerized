@@ -353,9 +353,10 @@ FTS_PROCS=1
 ALLOW_ADMIN_EMAIL_LOGIN=n
 
 # Allow mailbox login with only the local part when the HTTP Host is mail.<domain>
-# and <domain> is an active Mailcow domain (including hosts listed in ADDITIONAL_SERVER_NAMES
-# when they follow that pattern, e.g. mail.example.net). Usernames that already contain "@"
-# are never rewritten. Admin and domain-admin logins are unchanged. Off by default.
+# and <domain> is a Mailcow domain (a disabled domain still refuses the login). Any Host of
+# that form works, e.g. mail.example.net from ADDITIONAL_SERVER_NAMES; the list is not checked.
+# Usernames that already contain "@" are never rewritten. Admin and domain-admin logins are
+# unchanged. Off by default.
 # After setting this to y, recreate php-fpm-mailcow (or docker compose up -d).
 ALLOW_BARE_LOCALPART_LOGIN=n
 
