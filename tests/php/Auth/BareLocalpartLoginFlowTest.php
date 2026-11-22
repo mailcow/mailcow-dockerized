@@ -252,6 +252,26 @@ class BareLocalpartLoginFlowTest extends TestCase
         $this->assertSame('user', $attempt($password));
     }
 
+    // LDAP/Keycloak mailbox on a disabled domain: any password is denied without asking the IdP (existing
+    // policy for the full address); the bare name gets the same answer
+    public function testDisabledDomainIdpMailboxIsDeniedLikeTheFullAddress(): void
+    {
+        $this->pdo->exec("INSERT INTO `mailbox` (`username`, `domain`, `authsource`, `attributes`) VALUES ('dave@example.org', 'example.org', 'ldap', '{}')");
+        $this->pdo->exec("UPDATE `domain` SET `active` = 0 WHERE `domain` = 'example.org'");
+        foreach (['dave', 'dave@example.org'] as $username) {
+            foreach ([null, 'user'] as $role) {
+                $_SESSION = [];
+                LegacyLoginFlow::$published = [];
+                $login = $username;
+                $result = $role === null ? $this->sogoLogin($login, 'anything', 'EAS')
+                    : check_login($login, 'anything', ['role' => $role, 'service' => 'MAILCOWUI', 'is_internal' => false]);
+                $this->assertFalse($result);
+                $this->assertSame('dave@example.org', $login);
+                $this->assertSame([], LegacyLoginFlow::strikes());
+            }
+        }
+    }
+
     public function testUnknownDomainHostLeavesTheNameAlone(): void
     {
         $_SERVER['HTTP_HOST'] = 'mail.unknown.example';
@@ -291,6 +311,31 @@ class BareLocalpartLoginFlowTest extends TestCase
         $role === null ? $this->sogoLogin($login, $password, 'EAS')
             : check_login($login, $password, ['role' => $role, 'service' => 'MAILCOWUI', 'is_internal' => false]);
         $this->assertSame(1, $this->pdo->domainLookups);
+    }
+
+    // A full address, an explicit admin role, or an admin that wins before the mailbox step needs no lookup
+    public static function noLookups(): array
+    {
+        return [
+            // [username, role (null: SOGo/EAS/DAV), password, admin (name, password) or null]
+            'ui, full address' => ['alice@example.org', 'user', 'secret', null],
+            'eas, full address' => ['alice@example.org', null, 'secret', null],
+            'admin role' => ['alice', 'admin', 'secret', ['alice', 'admin-secret']],
+            'eas, admin wins' => ['alice', null, 'secret', ['alice', 'secret']],
+        ];
+    }
+
+    #[DataProvider('noLookups')]
+    public function testNoDomainLookupWhenNothingIsQualified(string $username, ?string $role, string $password, ?array $admin): void
+    {
+        if ($admin !== null) {
+            $this->addAdmin($admin[0], $admin[1], 1);
+        }
+        $login = $username;
+        $role === null ? $this->sogoLogin($login, $password, 'EAS')
+            : check_login($login, $password, ['role' => $role, 'service' => 'MAILCOWUI', 'is_internal' => false]);
+        $this->assertSame($username, $login);
+        $this->assertSame(0, $this->pdo->domainLookups);
     }
 
     public function testDovecotInternalRequestIsUnchanged(): void

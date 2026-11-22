@@ -49,9 +49,10 @@ function bare_localpart_login_applies() {
  *
  * A disabled domain is qualified as well: the login then fails exactly as for
  * the typed full address (user_login()/apppass_login() refuse it and mark the
- * right password as denied, so netfilter does not count it). Left bare, the
- * name would match no mailbox and every retry of a client with the right
- * password would be a netfilter strike.
+ * right password as denied, so netfilter does not count it; for LDAP/Keycloak
+ * mailboxes any password is denied, as before). Left bare, the name would match
+ * no mailbox and every retry of a client with the right password would be a
+ * netfilter strike.
  */
 function bare_localpart_login_qualify($user) {
   global $pdo;
@@ -96,7 +97,7 @@ function check_login(&$user, $pass, $extra = null) {
   // set when the password is right, but the account does not allow this login
   $denied = false;
 
-  // Qualify bare usernames for user/app paths only, once per login: user_login() and
+  // Qualify bare usernames for user/app paths only, at most once per login: user_login() and
   // apppass_login() get the result and the caller (session, SOGo X-User, OAuth) gets it back.
   // Admin and domain-admin keep the name as typed. Full addresses are never changed.
   // Dovecot calls user_login()/apppass_login() directly (mailcowauth.php) and is never qualified.
