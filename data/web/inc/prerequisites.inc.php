@@ -275,28 +275,9 @@ if(file_exists($langFile)) {
 
 
 // Logout of an identity provider session: the local session is gone, now end the IdP session
-if (!empty($iam_logout) && $iam_provider) {
-  $iam_logout_form = identity_provider('get-logout-url', $iam_logout_id_token ?? null, array('form' => true, 'username' => $iam_logout_username ?? null));
-  if (!empty($iam_logout_form)) {
-    if ($iam_logout_form['method'] == 'GET') {
-      header('Location: ' . $iam_logout_form['url']);
-      exit();
-    }
-    // POST: a large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits), send the
-    // same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows (see IdpLogoutRequest)
-    header_remove('Location');
-    http_response_code(200);
-    header('Content-Type: text/html; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo '<!DOCTYPE html><html lang="' . htmlspecialchars($_SESSION['mailcow_locale'] ?? 'en-gb', ENT_QUOTES) . '"><head><meta charset="utf-8">';
-    echo '<title>' . htmlspecialchars($lang['login']['idp_logout'], ENT_QUOTES) . '</title></head><body onload="document.forms[0].submit()">';
-    echo '<form method="post" action="' . htmlspecialchars($iam_logout_form['action'], ENT_QUOTES) . '">';
-    foreach ($iam_logout_form['params'] as $key => $value) {
-      echo '<input type="hidden" name="' . htmlspecialchars($key, ENT_QUOTES) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '">';
-    }
-    echo '<noscript><button type="submit">' . htmlspecialchars($lang['login']['idp_logout_continue'], ENT_QUOTES) . '</button></noscript></form></body></html>';
-    exit();
-  }
+if (!empty($iam_logout) && $iam_provider &&
+  identity_provider('send-logout', $iam_logout_id_token ?? null, $iam_logout_username ?? null)) {
+  exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.acl.inc.php';

@@ -3181,6 +3181,33 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       }
       return $logout_transport;
     break;
+    case "send-logout":
+      // called by prerequisites.inc.php after sessions.inc.php ended the local session: sends the browser to the
+      // IdP logout, a redirect or, for a large ID token, a form POST; returns false when the logout stays local
+      // $_data: ID token of the session; $_extra: username, for log entries
+      global $lang;
+      $logout_form = identity_provider('get-logout-url', $_data, array('form' => true, 'username' => $_extra));
+      if (empty($logout_form))
+        return false;
+      if ($logout_form['method'] == 'GET') {
+        header('Location: ' . $logout_form['url']);
+        return true;
+      }
+      // POST: a large ID token does not fit in a redirect (FastCGI header buffer, IdP URL length limits), send the
+      // same parameters as a form POST, which OpenID Connect RP-Initiated Logout also allows (see IdpLogoutRequest)
+      header_remove('Location');
+      http_response_code(200);
+      header('Content-Type: text/html; charset=utf-8');
+      header('Cache-Control: no-store');
+      echo '<!DOCTYPE html><html lang="' . htmlspecialchars($_SESSION['mailcow_locale'] ?? 'en-gb', ENT_QUOTES) . '"><head><meta charset="utf-8">';
+      echo '<title>' . htmlspecialchars($lang['login']['idp_logout'], ENT_QUOTES) . '</title></head><body onload="document.forms[0].submit()">';
+      echo '<form method="post" action="' . htmlspecialchars($logout_form['action'], ENT_QUOTES) . '">';
+      foreach ($logout_form['params'] as $key => $value) {
+        echo '<input type="hidden" name="' . htmlspecialchars($key, ENT_QUOTES) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '">';
+      }
+      echo '<noscript><button type="submit">' . htmlspecialchars($lang['login']['idp_logout_continue'], ENT_QUOTES) . '</button></noscript></form></body></html>';
+      return true;
+    break;
     case "get-end-session-endpoint":
       // OpenID Connect Discovery 1.0: {iss}/.well-known/openid-configuration, iss is read from the ID token of the session
       // $_extra: username of the session, for log entries
