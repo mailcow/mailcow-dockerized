@@ -135,6 +135,9 @@ if (isset($_POST["logout"])) {
   }
   else {
     $role = $_SESSION["mailcow_cc_role"];
+    // the session came from the identity provider, end it there too (see prerequisites.inc.php)
+    $iam_logout = !empty($_SESSION['iam_token']);
+    $iam_logout_id_token = $_SESSION['iam_id_token'] ?? null;
     session_regenerate_id(true);
     session_unset();
     session_destroy();

@@ -183,6 +183,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 $iam_provider = identity_provider('init');
 $iam_settings = identity_provider('get');
 
+// Logout of an identity provider session: the local session is gone, now end the IdP session
+if (!empty($iam_logout) && $iam_provider) {
+  $iam_logout_url = identity_provider('get-logout-url', $iam_logout_id_token ?? null);
+  if (!empty($iam_logout_url)) {
+    header('Location: ' . $iam_logout_url);
+    exit();
+  }
+}
+
 // IMAP lib
 // use Ddeboer\Imap\Server;
 // $imap_server = new Server('dovecot', 143, '/imap/tls/novalidate-cert');

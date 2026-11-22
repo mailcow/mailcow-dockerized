@@ -2853,6 +2853,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $token = $iam_provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
         $plain_token = $token->getToken();
         $plain_refreshtoken = $token->getRefreshToken();
+        $plain_idtoken = $token->getValues()['id_token'] ?? null;
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         $_SESSION['return'][] =  array(
@@ -2939,6 +2940,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         set_user_loggedin_session($info['email']);
         $_SESSION['iam_token'] = $plain_token;
         $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
+        $_SESSION['iam_id_token'] = $plain_idtoken;
         $_SESSION['return'][] =  array(
           'type' => 'success',
           'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -3026,6 +3028,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       set_user_loggedin_session($info['email']);
       $_SESSION['iam_token'] = $plain_token;
       $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
+      $_SESSION['iam_id_token'] = $plain_idtoken;
       $_SESSION['return'][] =  array(
         'type' => 'success',
         'log' => array(__FUNCTION__, $_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role']),
@@ -3038,6 +3041,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         $token = $iam_provider->getAccessToken('refresh_token', ['refresh_token' => $_SESSION['iam_refresh_token']]);
         $plain_token = $token->getToken();
         $plain_refreshtoken = $token->getRefreshToken();
+        $plain_idtoken = $token->getValues()['id_token'] ?? null;
         $info = $iam_provider->getResourceOwner($token)->toArray();
       } catch (Throwable $e) {
         clear_session();
@@ -3094,6 +3098,7 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       set_user_loggedin_session($info['email']);
       $_SESSION['iam_token'] = $plain_token;
       $_SESSION['iam_refresh_token'] = $plain_refreshtoken;
+      $_SESSION['iam_id_token'] = $plain_idtoken;
       return true;
     break;
     case "get-redirect":
@@ -3114,6 +3119,32 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $authUrl = $iam_provider->getAuthorizationUrl($options);
       $_SESSION['oauth2state'] = $iam_provider->getState();
       return $authUrl;
+    break;
+    case "get-logout-url":
+      // RP-initiated logout (OpenID Connect RP-Initiated Logout 1.0), ends the session at the IdP
+      if ($iam_settings['authsource'] != 'keycloak' || empty($iam_settings['server_url']) || empty($iam_settings['realm']))
+        return false;
+      $post_logout_redirect_uri = $iam_settings['redirect_url'];
+      if (isset($iam_settings['redirect_url_extra'])) {
+        // use the extra redirect URL of the current domain, as in get-redirect
+        $targetDomain = strtolower($_SERVER['HTTP_HOST']);
+        foreach ($iam_settings['redirect_url_extra'] as $testUrl) {
+          $testUrlParsed = parse_url($testUrl);
+          if (isset($testUrlParsed['host']) && strtolower($testUrlParsed['host']) == $targetDomain) {
+            $post_logout_redirect_uri = $testUrl;
+            break;
+          }
+        }
+      }
+      $params = array(
+        'client_id' => $iam_settings['client_id'],
+        'post_logout_redirect_uri' => $post_logout_redirect_uri
+      );
+      // without id_token_hint Keycloak asks the user to confirm the logout
+      if (!empty($_data) && is_string($_data)) {
+        $params['id_token_hint'] = $_data;
+      }
+      return "{$iam_settings['server_url']}/realms/{$iam_settings['realm']}/protocol/openid-connect/logout?" . http_build_query($params);
     break;
     case "get-keycloak-admin-token":
       // get access_token for service account of mailcow client

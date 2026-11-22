@@ -7,13 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 // logout function
 function mc_logout() {
-    fetch("/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "logout=1"
-    }).then(() => window.location.href = '/');
+    // top-level POST, so mailcow can redirect to the identity provider logout
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/";
+    var input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "logout";
+    input.value = "1";
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Custom SOGo JS
