@@ -23,12 +23,22 @@ class IdpLogoutRequest
     ) {
     }
 
-    /** Keycloak: the endpoint and parameters of its version, an empty version counts as current */
+    /**
+     * Major version of the free-text Keycloak version setting ("18", "18.0.2", "18.0.0.redhat-00001"), null when it
+     * does not start with a number ("", "latest"): that counts as current
+     */
+    public static function keycloakMajor(string $version): ?int
+    {
+        return preg_match('/^\s*v?(\d+)/i', $version, $match) ? (int)$match[1] : null;
+    }
+
+    /** Keycloak: the endpoint and parameters of its version */
     public static function keycloak(string $serverUrl, string $realm, string $version, string $clientId, string $redirectUri, ?string $idToken): self
     {
         $endpoint = $serverUrl . '/realms/' . $realm . '/protocol/openid-connect/logout';
-        $legacy = $version !== '' && version_compare($version, '19.0.0', '<');
-        if ($version !== '' && version_compare($version, '18.0.0', '<')) {
+        $major = self::keycloakMajor($version);
+        $legacy = $major !== null && $major < 19;
+        if ($major !== null && $major < 18) {
             // Keycloak 17 and older: redirect_uri, as the Keycloak provider library sends it (17 also reads
             // post_logout_redirect_uri); without id_token_hint it is checked against the redirect URIs of the realm
             $params = ['client_id' => $clientId, 'redirect_uri' => $redirectUri];
@@ -61,17 +71,19 @@ class IdpLogoutRequest
     }
 
     /**
-     * @return array{method: 'GET'|'POST', action: string, params: array<string, string>, reduced: bool}
-     *   reduced: the request lacks id_token_hint because the provider cannot take it as POST
+     * @return array{method: 'GET'|'POST', action: string, params: array<string, string>, url: string, reduced: bool}
+     *   url: the redirect target for GET; reduced: the request lacks id_token_hint because the provider cannot
+     *   take it as POST
      */
     public function transport(): array
     {
-        if (strlen($this->url()) <= self::MAX_REDIRECT_URL) {
-            return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->params, 'reduced' => false];
+        $url = $this->url();
+        if (strlen($url) <= self::MAX_REDIRECT_URL) {
+            return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->params, 'url' => $url, 'reduced' => false];
         }
         if ($this->getParams === null) {
-            return ['method' => 'POST', 'action' => $this->endpoint, 'params' => $this->params, 'reduced' => false];
+            return ['method' => 'POST', 'action' => $this->endpoint, 'params' => $this->params, 'url' => $url, 'reduced' => false];
         }
-        return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->getParams, 'reduced' => true];
+        return ['method' => 'GET', 'action' => $this->endpoint, 'params' => $this->getParams, 'url' => $this->url($this->getParams), 'reduced' => true];
     }
 }

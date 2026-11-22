@@ -29,6 +29,11 @@ class IdpLogoutRequestTest extends TestCase
             'Keycloak 19' => ['19.0.0', 'POST', []],
             'Keycloak 26' => ['26.4.0', 'POST', []],
             'no version' => ['', 'POST', []],
+            // the version setting is free text: only the major version counts, non-numeric values are current
+            'major only 18' => ['18', 'GET', ['client_id' => 'mailcow']],
+            'major only 19' => ['19', 'POST', []],
+            'Red Hat build of 18' => ['18.0.0.redhat-00001', 'GET', ['client_id' => 'mailcow']],
+            'latest' => ['latest', 'POST', []],
         ];
     }
 
@@ -48,7 +53,8 @@ class IdpLogoutRequestTest extends TestCase
         } else {
             $this->assertTrue($transport['reduced']);
             $this->assertSame($params, $transport['params']);
-            $this->assertLessThanOrEqual(IdpLogoutRequest::MAX_REDIRECT_URL, strlen($request->url($transport['params'])));
+            $this->assertSame($request->url($transport['params']), $transport['url']);
+            $this->assertLessThanOrEqual(IdpLogoutRequest::MAX_REDIRECT_URL, strlen($transport['url']));
         }
     }
 
@@ -59,6 +65,11 @@ class IdpLogoutRequestTest extends TestCase
             'Keycloak 17' => ['17.0.1', 'redirect_uri'],
             'Keycloak 18' => ['18.0.2', 'post_logout_redirect_uri'],
             'Keycloak 26' => ['26.4.0', 'post_logout_redirect_uri'],
+            'major only 17' => ['17', 'redirect_uri'],
+            'major only 18' => ['18', 'post_logout_redirect_uri'],
+            'Red Hat build of 18' => ['18.0.0.redhat-00001', 'post_logout_redirect_uri'],
+            'latest' => ['latest', 'post_logout_redirect_uri'],
+            'no version' => ['', 'post_logout_redirect_uri'],
         ];
     }
 
@@ -71,6 +82,7 @@ class IdpLogoutRequestTest extends TestCase
         $this->assertSame('GET', $transport['method']);
         $this->assertFalse($transport['reduced']);
         $this->assertSame(['client_id' => 'mailcow', $redirectParam => self::REDIRECT, 'id_token_hint' => $token], $transport['params']);
+        $this->assertSame(self::SERVER . '/realms/r1/protocol/openid-connect/logout?' . http_build_query($transport['params']), $transport['url']);
     }
 
     public function testGenericOidcPostsALargeToken(): void
@@ -80,8 +92,23 @@ class IdpLogoutRequestTest extends TestCase
 
         $this->assertSame(['method' => 'POST', 'action' => 'https://idp.example.org/logout?tenant=1',
             'params' => ['client_id' => 'mailcow', 'post_logout_redirect_uri' => self::REDIRECT, 'id_token_hint' => $token],
-            'reduced' => false], $request->transport());
+            'url' => $request->url(), 'reduced' => false], $request->transport());
         $this->assertStringStartsWith('https://idp.example.org/logout?tenant=1&client_id=mailcow&', $request->url());
+    }
+
+    /** @return array<string, array{0: string, 1: ?int}> */
+    public static function versionCases(): array
+    {
+        return [
+            'full' => ['18.0.2', 18], 'major only' => ['19', 19], 'leading v and space' => [' v17.0.1', 17],
+            'Red Hat suffix' => ['18.0.0.redhat-00001', 18], 'latest' => ['latest', null], 'empty' => ['', null],
+        ];
+    }
+
+    #[DataProvider('versionCases')]
+    public function testOnlyTheMajorVersionCounts(string $version, ?int $major): void
+    {
+        $this->assertSame($major, IdpLogoutRequest::keycloakMajor($version));
     }
 
     public function testWithoutTokenThereIsNoHint(): void
@@ -90,6 +117,7 @@ class IdpLogoutRequestTest extends TestCase
 
         $this->assertSame('GET', $transport['method']);
         $this->assertSame(['client_id' => 'mailcow', 'post_logout_redirect_uri' => self::REDIRECT], $transport['params']);
+        $this->assertSame('https://idp.example.org/logout?client_id=mailcow&post_logout_redirect_uri=' . rawurlencode(self::REDIRECT), $transport['url']);
     }
 
     public function testTheLimitIsInclusive(): void

@@ -3138,7 +3138,12 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
         return false;
       if ($iam_settings['authsource'] == 'keycloak' && (empty($iam_settings['server_url']) || empty($iam_settings['realm'])))
         return false;
-      $post_logout_redirect_uri = $iam_settings['redirect_url'];
+      // a logout without client or redirect URL stays local; the local session is already gone, so no error page
+      if (empty($iam_settings['client_id']) || empty($iam_settings['redirect_url'])) {
+        identity_provider('log-logout-local-only', array('issuer' => '', 'username' => $_extra['username'] ?? null), 'client ID or redirect URL not set');
+        return false;
+      }
+      $post_logout_redirect_uri = (string)$iam_settings['redirect_url'];
       if (isset($iam_settings['redirect_url_extra'])) {
         // use the extra redirect URL of the current domain, as in get-redirect
         $targetDomain = strtolower($_SERVER['HTTP_HOST'] ?? '');
@@ -3153,15 +3158,15 @@ function identity_provider($_action = null, $_data = null, $_extra = null) {
       $id_token = (!empty($_data) && is_string($_data)) ? $_data : null;
       if ($iam_settings['authsource'] == 'keycloak') {
         // parameters and transport depend on the Keycloak version
-        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::keycloak($iam_settings['server_url'], $iam_settings['realm'],
-          (string)($iam_settings['version'] ?? ''), $iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
+        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::keycloak((string)$iam_settings['server_url'], (string)$iam_settings['realm'],
+          (string)($iam_settings['version'] ?? ''), (string)$iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
       }
       else {
         // the endpoint comes from the discovery document of the ID token issuer
         $end_session_endpoint = identity_provider('get-end-session-endpoint', $_data, $_extra['username'] ?? null);
         if (empty($end_session_endpoint))
           return false;
-        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::generic($end_session_endpoint, $iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
+        $logout_request = \Mailcow\Auth\Model\IdpLogoutRequest::generic((string)$end_session_endpoint, (string)$iam_settings['client_id'], $post_logout_redirect_uri, $id_token);
       }
       if (empty($_extra['form']))
         return $logout_request->url();
