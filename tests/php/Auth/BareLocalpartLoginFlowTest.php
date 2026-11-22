@@ -272,6 +272,41 @@ class BareLocalpartLoginFlowTest extends TestCase
         }
     }
 
+    // LDAP/Keycloak look a mailbox up by its email address (username_field "mail", Keycloak email=):
+    // the IdP is asked for the qualified address, as when the full address is typed
+    public static function ldapLogins(): array
+    {
+        return [
+            // [mailbox exists in mailcow, username]
+            'existing mailbox, bare' => [true, 'erin'],
+            'existing mailbox, full address' => [true, 'erin@example.org'],
+            'first login (provisioning), bare' => [false, 'erin'],
+        ];
+    }
+
+    #[DataProvider('ldapLogins')]
+    public function testLdapIsAskedForTheQualifiedAddress(bool $exists, string $username): void
+    {
+        if ($exists) {
+            $this->pdo->exec("INSERT INTO `mailbox` (`username`, `domain`, `authsource`, `attributes`) VALUES ('erin@example.org', 'example.org', 'ldap', '{}')");
+        }
+        $GLOBALS['iam_settings'] = ['authsource' => 'ldap', 'username_field' => 'mail', 'filter' => '', 'attribute_field' => 'memberof', 'id_attribute' => ''];
+        // records the search; no entry found, so the login fails before any bind
+        $GLOBALS['iam_provider'] = new class {
+            public array $searches = [];
+            public function query(): self { return $this; }
+            public function where(string $field, string $op, string $value): self { $this->searches[] = [$field, $value]; return $this; }
+            public function select(array $attributes): self { return $this; }
+            public function get(): array { return []; }
+        };
+        $login = $username;
+        // @: ldap_mbox_login() reads $extra['create'], unset for an existing mailbox (not part of this change)
+        $this->assertFalse(@check_login($login, 'secret', ['role' => 'user', 'service' => 'MAILCOWUI', 'is_internal' => false]));
+        $this->assertSame('erin@example.org', $login);
+        $this->assertSame([['mail', 'erin@example.org']], $GLOBALS['iam_provider']->searches);
+        $this->assertSame(['mailcow UI: Invalid password for erin@example.org by ' . self::IP], LegacyLoginFlow::strikes());
+    }
+
     public function testUnknownDomainHostLeavesTheNameAlone(): void
     {
         $_SERVER['HTTP_HOST'] = 'mail.unknown.example';
