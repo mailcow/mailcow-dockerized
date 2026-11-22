@@ -83,8 +83,10 @@ function check_login(&$user, $pass, $extra = null) {
   // set when the password is right, but the account does not allow this login
   $denied = false;
 
-  // Qualify bare usernames for user/app paths only.
+  // Qualify bare usernames for user/app paths only, once per login: user_login() and
+  // apppass_login() get the result and the caller (session, SOGo X-User, OAuth) gets it back.
   // Admin and domain-admin keep the name as typed. Full addresses are never changed.
+  // Dovecot calls user_login()/apppass_login() directly (mailcowauth.php) and is never qualified.
   if (isset($role) && ($role == "user" || $role == "app")) {
     $user = bare_localpart_login_qualify($user);
   }
@@ -304,8 +306,6 @@ function user_login($user, $pass, $extra = null, &$denied = false){
 
   $is_internal = $extra['is_internal'];
   $extra['service'] = !isset($extra['service']) ? 'NONE' : $extra['service'];
-
-  $user = bare_localpart_login_qualify($user);
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){
@@ -550,8 +550,6 @@ function apppass_login($user, $pass, $extra = null, &$denied = false){
   global $pdo;
 
   $is_internal = $extra['is_internal'];
-
-  $user = bare_localpart_login_qualify($user);
 
   if (!filter_var($user, FILTER_VALIDATE_EMAIL) && !ctype_alnum(str_replace(array('_', '.', '-'), '', $user))) {
     if (!$is_internal){

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mailcow\Tests\Auth;
 
 use Mailcow\Auth\OAuth2Storage;
+use Mailcow\Tests\Support\CountingPdo;
 use Mailcow\Tests\Support\LegacyLoginFlow;
 use OAuth2\GrantType\UserCredentials;
 use OAuth2\Request;
@@ -31,13 +32,20 @@ class BareLocalpartLoginFlowTest extends TestCase
     private const PROTOCOLS = ['imap_access', 'smtp_access', 'pop3_access', 'sieve_access', 'eas_access', 'dav_access'];
     private const IP = '192.0.2.1';
 
-    private PDO $pdo;
+    private CountingPdo $pdo;
+    private array $savedServer;
+    private array|null $savedSession;
+    private array $savedGlobals;
+    private const GLOBALS = ['pdo', 'redis', 'iam_settings', 'iam_provider', 'ALLOW_BARE_LOCALPART_LOGIN'];
     private string $errorLog;
     private string|false $previousErrorLog;
 
     protected function setUp(): void
     {
-        $this->pdo = new PDO('sqlite::memory:');
+        $this->savedServer = $_SERVER;
+        $this->savedSession = $_SESSION ?? null;
+        $this->savedGlobals = array_intersect_key($GLOBALS, array_flip(self::GLOBALS));
+        $this->pdo = new CountingPdo('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->sqliteCreateFunction('regexp', fn ($pattern, $value) => preg_match('/' . $pattern . '/', (string)$value) === 1, 2);
         $this->pdo->exec("CREATE TABLE `domain` (`domain` TEXT PRIMARY KEY, `active` INTEGER NOT NULL DEFAULT 1)");
@@ -70,9 +78,18 @@ class BareLocalpartLoginFlowTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($GLOBALS['pdo'], $GLOBALS['redis'], $GLOBALS['iam_settings'], $GLOBALS['iam_provider'], $GLOBALS['ALLOW_BARE_LOCALPART_LOGIN']);
-        $_SERVER = [];
-        $_SESSION = [];
+        foreach (self::GLOBALS as $name) {
+            unset($GLOBALS[$name]);
+        }
+        foreach ($this->savedGlobals as $name => $value) {
+            $GLOBALS[$name] = $value;
+        }
+        $_SERVER = $this->savedServer;
+        if ($this->savedSession === null) {
+            unset($_SESSION);
+        } else {
+            $_SESSION = $this->savedSession;
+        }
         LegacyLoginFlow::reset();
         ini_set('error_log', (string)$this->previousErrorLog);
         @unlink($this->errorLog);
@@ -244,6 +261,37 @@ class BareLocalpartLoginFlowTest extends TestCase
     }
 
     // Dovecot (mailcowauth.php) asks https://nginx:9082: that Host never qualifies
+
+    // The name is resolved once, in check_login(): the verifiers take it as given, on any Host
+    public function testVerifiersDoNotQualifyThemselves(): void
+    {
+        $denied = false;
+        $this->assertFalse(user_login('alice', 'secret', ['is_internal' => true, 'service' => 'imap'], $denied));
+        $this->assertFalse(apppass_login('alice', 'app-secret', ['is_internal' => true, 'service' => 'eas'], $denied));
+        $this->assertSame(0, $this->pdo->domainLookups);
+    }
+
+    public static function lookupCounts(): array
+    {
+        return [
+            // [host, username, role (null: SOGo/EAS/DAV), password]
+            'ui, known domain' => ['mail.example.org', 'alice', 'user', 'secret'],
+            'ui, unknown domain' => ['mail.unknown.example', 'alice', 'user', 'secret'],
+            'eas, known domain' => ['mail.example.org', 'alice', null, 'app-secret'],
+            'eas, unknown domain' => ['mail.unknown.example', 'alice', null, 'secret'],
+            'eas, wrong password' => ['mail.example.org', 'alice', null, 'wrong'],
+        ];
+    }
+
+    #[DataProvider('lookupCounts')]
+    public function testOneDomainLookupPerLogin(string $host, string $username, ?string $role, string $password): void
+    {
+        $_SERVER['HTTP_HOST'] = $host;
+        $login = $username;
+        $role === null ? $this->sogoLogin($login, $password, 'EAS')
+            : check_login($login, $password, ['role' => $role, 'service' => 'MAILCOWUI', 'is_internal' => false]);
+        $this->assertSame(1, $this->pdo->domainLookups);
+    }
 
     public function testDovecotInternalRequestIsUnchanged(): void
     {

@@ -15,9 +15,17 @@ require_once __DIR__ . '/../../../data/web/inc/functions.auth.inc.php';
 class BareLocalpartLoginTest extends TestCase
 {
     private PDO $pdo;
+    private array $savedServer;
+    private array|null $savedSession;
+    private array $savedGlobals;
+    private string|false $savedEnv;
 
     protected function setUp(): void
     {
+        $this->savedServer = $_SERVER;
+        $this->savedSession = $_SESSION ?? null;
+        $this->savedGlobals = array_intersect_key($GLOBALS, array_flip(['pdo', 'ALLOW_BARE_LOCALPART_LOGIN']));
+        $this->savedEnv = getenv('ALLOW_BARE_LOCALPART_LOGIN');
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->exec("CREATE TABLE `domain` (`domain` TEXT PRIMARY KEY, `active` INTEGER NOT NULL DEFAULT 1)");
@@ -31,9 +39,16 @@ class BareLocalpartLoginTest extends TestCase
     protected function tearDown(): void
     {
         unset($GLOBALS['pdo'], $GLOBALS['ALLOW_BARE_LOCALPART_LOGIN']);
-        $_SERVER = [];
-        $_SESSION = [];
-        putenv('ALLOW_BARE_LOCALPART_LOGIN');
+        foreach ($this->savedGlobals as $name => $value) {
+            $GLOBALS[$name] = $value;
+        }
+        $_SERVER = $this->savedServer;
+        if ($this->savedSession === null) {
+            unset($_SESSION);
+        } else {
+            $_SESSION = $this->savedSession;
+        }
+        putenv($this->savedEnv === false ? 'ALLOW_BARE_LOCALPART_LOGIN' : 'ALLOW_BARE_LOCALPART_LOGIN=' . $this->savedEnv);
     }
 
     public static function hosts(): array
