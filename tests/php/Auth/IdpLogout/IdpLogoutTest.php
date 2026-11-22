@@ -32,7 +32,7 @@ class IdpLogoutTest extends TestCase
     private const DISCOVERY = 'https://idp.example.org/.well-known/openid-configuration';
     /** Reason of the warning for a session without ID token; %s: label of the idp_logout setting */
     private const NO_ID_TOKEN = 'no ID token in the session (a session from before the update, or the provider returns none: '
-        . 'add the openid scope or turn off "%s"), logged once an hour';
+        . 'add the openid scope or turn off "%s"), logged at most once an hour';
     /** The form the logout button of the mailcow UI posts */
     private const UI_LOGOUT = ['logout' => '1', 'csrf_token' => 'csrf-token-of-the-session'];
 
@@ -65,24 +65,30 @@ class IdpLogoutTest extends TestCase
         $this->assertSame([self::localOnlyLog(sprintf($reason, self::idpLogoutLabel()))], $result['logs']);
     }
 
-    // a provider that returns no ID token would warn on every logout: once an hour per provider
+    // a provider that returns no ID token would warn on every logout: at most once an hour per provider, the logout that
+    // sets the marker with one atomic SET NX logs (two logouts at once cannot both log)
 
-    public function testMissingIdTokenWarningIsRememberedForAnHour(): void
+    public function testMissingIdTokenWarningSetsTheMarkerAtomically(): void
     {
         $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT);
 
-        $this->assertSame([['get', self::noIdTokenKey()], ['setEx', self::noIdTokenKey(), 3600, '1']], $result['redis_calls']);
+        $this->assertSame([['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]]], $result['redis_calls'], 'one SET NX EX, no read before');
+        $this->assertSame([self::noIdTokenKey() => '1'], $result['redis']);
+        $this->assertSame([self::noIdTokenKey() => 3600], $result['redis_ttl']);
+        $this->assertCount(1, $result['logs']);
     }
 
-    public function testMissingIdTokenWarningIsNotRepeatedWithinTheHour(): void
+    public function testMissingIdTokenWarningIsNotRepeatedWhileTheMarkerExists(): void
     {
-        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT, redis: [self::noIdTokenKey() => '1']);
+        $result = $this->logout(self::GENERIC, self::session(null), self::UI_LOGOUT, redis: [self::noIdTokenKey() => 'set by another logout']);
 
         $this->assertFalse($result['sent_to_idp']);
         $this->assertSame([], $result['fetched']);
         $this->assertSame(['Location: /'], $result['headers']);
-        $this->assertSame([], $result['logs']);
-        $this->assertSame([['get', self::noIdTokenKey()]], $result['redis_calls']);
+        $this->assertSame([], $result['logs'], 'SET NX failed: another logout logged');
+        $this->assertSame([['set', self::noIdTokenKey(), '1', ['nx', 'ex' => 3600]]], $result['redis_calls']);
+        $this->assertSame([self::noIdTokenKey() => 'set by another logout'], $result['redis'], 'the marker is not overwritten');
+        $this->assertSame([], $result['redis_ttl'], 'nor its expiry extended');
     }
 
     public function testMissingIdTokenWarningOfAnotherProviderIsLogged(): void
@@ -227,7 +233,8 @@ class IdpLogoutTest extends TestCase
 
     // the SOGo logout button: mc_logout() of data/conf/sogo/custom-sogo.js posts logout=1 without the CSRF token
 
-    public function testSogoLogoutButtonPostsTheLogoutFormTopLevel(): void
+    // a structural regression check of mc_logout(); that the browser follows the redirect is checked by the local browser tests
+    public function testSogoLogoutButtonBuildsATopLevelLogoutForm(): void
     {
         // without comments, without whitespace around punctuation and with one quote style: only a change of behaviour fails
         $js = (string)file_get_contents(__DIR__ . '/../../../../data/conf/sogo/custom-sogo.js');
@@ -251,6 +258,9 @@ class IdpLogoutTest extends TestCase
         $this->assertSame('logout', self::jsProperty($body, $input, 'name'));
         $this->assertSame('1', self::jsProperty($body, $input, 'value'));
         $this->assertStringContainsString($form . '.appendChild(' . $input . ')', $body);
+        $this->assertSame(1, preg_match('/document\.(?:body|documentElement)\.(?:appendChild|append)\(' . $form . '\)/', $body),
+            'the form is attached to the document (a detached form is not submitted)');
+        $this->assertSame(0, preg_match('/\.target=|setAttribute\("target"|\btarget:/i', $body), 'no target: the logout replaces the page');
         $this->assertSame(1, preg_match('/' . $form . '\.(?:requestSubmit|submit)\(\)/', $body), 'the form is submitted');
         foreach (['fetch(', 'XMLHttpRequest', '.ajax(', 'sendBeacon('] as $background) {
             $this->assertStringNotContainsString($background, $body, 'a top-level navigation, so the browser follows the IdP redirect');

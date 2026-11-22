@@ -26,11 +26,13 @@ namespace IdpLogoutHarness {
         public static array $notices = [];
     }
 
-    /** The Redis calls identity_provider() makes, on an array */
+    /** The Redis calls identity_provider() makes, on an array (no expiry: a request is over in an instant) */
     final class FakeRedis
     {
         /** @var list<array> */
         public array $calls = [];
+        /** @var array<string, int> TTL in seconds of the keys set with one */
+        public array $ttl = [];
 
         /** @param array<string, string> $data */
         public function __construct(public array $data, private bool $down = false)
@@ -53,6 +55,36 @@ namespace IdpLogoutHarness {
                 throw new \RedisException('down');
             }
             $this->data[$key] = $value;
+            $this->ttl[$key] = $ttl;
+            return true;
+        }
+
+        /**
+         * phpredis set(): $options is a TTL in seconds or an array of the flags 'nx' / 'xx' and 'ex' / 'px' => TTL;
+         * false when nx or xx does not allow the write
+         */
+        public function set(string $key, string $value, int|array|null $options = null): bool
+        {
+            $this->calls[] = ['set', $key, $value, $options];
+            if ($this->down) {
+                throw new \RedisException('down');
+            }
+            $options = is_int($options) ? ['ex' => $options] : ($options ?? []);
+            foreach ($options as $name => $option) {
+                if (!in_array(is_int($name) ? $option : $name, ['nx', 'xx', 'ex', 'px'], true)) {
+                    throw new \LogicException('FakeRedis::set() does not know the option ' . json_encode([$name => $option]));
+                }
+            }
+            $exists = array_key_exists($key, $this->data);
+            if ((in_array('nx', $options, true) && $exists) || (in_array('xx', $options, true) && !$exists)) {
+                return false;
+            }
+            $this->data[$key] = $value;
+            if (isset($options['ex']) || isset($options['px'])) {
+                $this->ttl[$key] = isset($options['ex']) ? (int)$options['ex'] : intdiv((int)$options['px'], 1000);
+            } else {
+                unset($this->ttl[$key]);
+            }
             return true;
         }
     }
@@ -221,6 +253,7 @@ namespace {
             'fetched' => State::$fetched,
             'redis_calls' => $redis->calls,
             'redis' => $redis->data,
+            'redis_ttl' => $redis->ttl,
             'logs' => $pdo->query('SELECT `type`, `msg`, `call`, `user` FROM `logs` ORDER BY `id`')->fetchAll(PDO::FETCH_ASSOC),
             'session' => $_SESSION ?? null,
             'notices' => State::$notices,
