@@ -23,8 +23,8 @@ function in_net($addr, $net) {
   $addr_bin = '';
   $net_bin = '';
   for ($i = 0; $i < $length; ++$i) {
-    $addr_bin .= str_pad(decbin(ord(substr($addr, $i, $i+1))), 8, '0', STR_PAD_LEFT);
-    $net_bin .= str_pad(decbin(ord(substr($net, $i, $i+1))), 8, '0', STR_PAD_LEFT);
+    $addr_bin .= str_pad(decbin(ord($addr[$i])), 8, '0', STR_PAD_LEFT);
+    $net_bin .= str_pad(decbin(ord($net[$i])), 8, '0', STR_PAD_LEFT);
   }
   return substr($addr_bin, 0, $mask) == substr($net_bin, 0, $mask);
 }

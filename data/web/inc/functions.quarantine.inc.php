@@ -550,7 +550,6 @@ function quarantine($_action, $_data = null) {
                 continue;
               }
             }
-            curl_close($curl);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -562,7 +561,6 @@ function quarantine($_action, $_data = null) {
             // It is most likely not a spam hash, so we ignore any error/warning response
             // $response = curl_exec($curl);
             if (!curl_errno($curl)) {
-              curl_close($curl);
               $curl = curl_init();
               curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -585,7 +583,6 @@ function quarantine($_action, $_data = null) {
                   }
                 }
               }
-              curl_close($curl);
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -594,7 +591,6 @@ function quarantine($_action, $_data = null) {
               continue;
             }
             else {
-              curl_close($curl);
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -602,7 +598,6 @@ function quarantine($_action, $_data = null) {
               );
               continue;
             }
-            curl_close($curl);
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -616,10 +611,8 @@ function quarantine($_action, $_data = null) {
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('ham_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
             );
-            curl_close($curl);
             continue;
           }
-          curl_close($curl);
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -681,7 +674,6 @@ function quarantine($_action, $_data = null) {
                 continue;
               }
             }
-            curl_close($curl);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -693,7 +685,6 @@ function quarantine($_action, $_data = null) {
             // It is most likely not a spam hash, so we ignore any error/warning response
             // $response = curl_exec($curl);
             if (!curl_errno($curl)) {
-              curl_close($curl);
               $curl = curl_init();
               curl_setopt($curl, CURLOPT_UNIX_SOCKET_PATH, '/var/lib/rspamd/rspamd.sock');
               curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -716,7 +707,6 @@ function quarantine($_action, $_data = null) {
                   }
                 }
               }
-              curl_close($curl);
               $_SESSION['return'][] = array(
                 'type' => 'success',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -725,7 +715,6 @@ function quarantine($_action, $_data = null) {
               continue;
             }
             else {
-              curl_close($curl);
               $_SESSION['return'][] = array(
                 'type' => 'danger',
                 'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -733,7 +722,6 @@ function quarantine($_action, $_data = null) {
               );
               continue;
             }
-            curl_close($curl);
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -747,10 +735,8 @@ function quarantine($_action, $_data = null) {
               'log' => array(__FUNCTION__, $_action, $_data_log),
               'msg' => array('spam_learn_error', 'Curl: ' . curl_strerror(curl_errno($curl)))
             );
-            curl_close($curl);
             continue;
           }
-          curl_close($curl);
           $_SESSION['return'][] = array(
             'type' => 'danger',
             'log' => array(__FUNCTION__, $_action, $_data_log),

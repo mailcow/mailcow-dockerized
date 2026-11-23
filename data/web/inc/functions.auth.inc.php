@@ -566,7 +566,6 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
   }
   $users = json_decode(curl_exec($curl), true);
   $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-  curl_close($curl);
   // the password is checked below, a failed request is never a wrong password
   if ($code != 200) {
     throw new \Mailcow\Auth\IdpUnavailable('Keycloak returned HTTP ' . $code);

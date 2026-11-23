@@ -55,15 +55,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'ddeboer/imap' => array(
-            'pretty_version' => '1.19.0',
-            'version' => '1.19.0.0',
-            'reference' => '30800b1cfeacc4add5bb418e40a8b6e95a8a04ac',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../ddeboer/imap',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'directorytree/ldaprecord' => array(
             'pretty_version' => 'v3.8.6',
             'version' => '3.8.6.0',
