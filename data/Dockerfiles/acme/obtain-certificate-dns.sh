@@ -131,7 +131,7 @@ TMP_FULLCHAIN=$(mktemp /tmp/acme-fullchain.XXXXXX)
 
 ACME_CMD=("${ACME_SH_BIN_PATH}" "--home" "${ACME_SH_WORK_HOME}" "--config-home" "${ACME_SH_WORK_HOME}" "--cert-home" "${ACME_SH_WORK_HOME}")
 ACME_CMD+=("${ACME_SH_SERVER_ARGS[@]}")
-ACME_CMD+=("--issue" "--dns" "${ACME_DNS_PROVIDER}" "--key-file" "${KEY}" "--cert-file" "${TMP_CERT}" "--fullchain-file" "${TMP_FULLCHAIN}" "--force")
+ACME_CMD+=("--issue" "--dns" "${ACME_DNS_PROVIDER}" "--keylength" "4096" "--key-file" "${KEY}" "--cert-file" "${TMP_CERT}" "--fullchain-file" "${TMP_FULLCHAIN}" "--force")
 for domain in "${CERT_DOMAINS[@]}"; do
   ACME_CMD+=("-d" "${domain}")
 done
