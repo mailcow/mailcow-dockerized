@@ -124,13 +124,15 @@ function customize($_action, $_item, $_data = null) {
           $links = (array)$_data['href'];
           $user_links = (array)$_data['user_href'];
           $hide = (array)$_data['hide'];
+          $admin_only = (array)($_data['admin_only'] ?? array());
           $out = array();
           if (count($apps) == count($links) && count($apps) == count($user_links) && count($apps) == count($hide)) {
             for ($i = 0; $i < count($apps); $i++) {
               $out[] = array($apps[$i] => array(
                 'link' => $links[$i],
                 'user_link' => $user_links[$i],
-                'hide' => ($hide[$i] === '0' || $hide[$i] === 0) ? false : true
+                'hide' => ($hide[$i] === '0' || $hide[$i] === 0) ? false : true,
+                'admin_only' => (isset($admin_only[$i]) && ($admin_only[$i] === '1' || $admin_only[$i] === 1 || $admin_only[$i] === true))
               ));
             }
             try {

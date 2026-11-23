@@ -134,6 +134,7 @@
         "api_service_key": "Service-Key aus der mailcow.conf, nur dort änderbar",
         "api_service_key_info": "Dieser API-Key ist in der mailcow.conf definiert (API_KEY, API_KEY_READ_ONLY, API_ALLOW_FROM) und kann nur dort geändert werden.",
         "api_skip_ip_check": "IP-Check für API nicht ausführen",
+        "app_admin_only": "Nur für Admins",
         "app_hide": "Für Login verstecken",
         "app_links": "App-Links",
         "app_name": "App-Name",

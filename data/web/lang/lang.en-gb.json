@@ -138,6 +138,7 @@
         "api_service_key": "Service key from mailcow.conf, can only be changed there",
         "api_service_key_info": "This API key is defined in mailcow.conf (API_KEY, API_KEY_READ_ONLY, API_ALLOW_FROM) and can only be changed there.",
         "api_skip_ip_check": "Skip IP check for API",
+        "app_admin_only": "Admins only",
         "app_hide": "Hide for login",
         "app_links": "App links",
         "app_name": "App name",
