@@ -73,7 +73,27 @@ $client_ip = filter_var($post['client_ip'] ?? '', FILTER_VALIDATE_IP) ? $post['c
 $result = false;
 // set when the password is right, but the account does not allow this login
 $denied = false;
-if ($isSOGoRequest) {
+// OAUTHBEARER and XOAUTH2 carry an access token where the password would be. It is checked as a
+// token only: never as a password, and a password is never checked as a token.
+$isTokenRequest = in_array(strtoupper((string)($post['mech'] ?? '')), array('OAUTHBEARER', 'XOAUTH2'), true);
+if ($isTokenRequest) {
+  $service = $post['service'];
+  try {
+    $result = token_login($post['username'], $post['password'], $post['service'], $denied);
+  } catch (\Mailcow\Auth\IdpUnavailable $e) {
+    // the issuer's keys cannot be fetched: a temporary failure for Dovecot, no failed login
+    error_log("MAILCOWAUTH: Token issuer unavailable for user " . $post['username'] . " with service " . $post['service'] . " from IP " . $client_ip . ": " . $e->getMessage());
+    http_response_code(503); // Service Unavailable
+    echo json_encode($return);
+    session_destroy();
+    exit;
+  }
+  if ($result) {
+    error_log('MAILCOWAUTH: Token auth for user ' . $post['username'] . " with service " . $service . " from IP " . $client_ip);
+    set_sasl_log($post['username'], $client_ip, $service);
+  }
+}
+if (!$isTokenRequest && $isSOGoRequest) {
   // This is a SOGo Auth request. First check for SSO password.
   $sogo_sso_pass = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
   if ($sogo_sso_pass === $post['password']){
@@ -82,7 +102,7 @@ if ($isSOGoRequest) {
     $result = true;
   }
 }
-if ($result === false){
+if ($result === false && !$isTokenRequest){
   // If it's a SOGo Request, don't check for protocol access
   if ($isSOGoRequest) {
     $service = 'SOGO';
@@ -101,7 +121,7 @@ if ($result === false){
     set_sasl_log($post['username'], $client_ip, $service);
   }
 }
-if ($result === false){
+if ($result === false && !$isTokenRequest){
   // Init Identity Provider
   $iam_provider = identity_provider('init');
   $iam_settings = identity_provider('get');

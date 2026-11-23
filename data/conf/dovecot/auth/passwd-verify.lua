@@ -11,7 +11,9 @@ function auth_password_verify(request, password)
     real_rip = request.real_rip,
     -- address of the client, also for proxied connections
     client_ip = request.rip,
-    service = request.service
+    service = request.service,
+    -- PLAIN, LOGIN, or OAUTHBEARER/XOAUTH2, where the password is an access token
+    mech = request.mech
   }
   local req_json = json.encode(req)
   local res = {}
