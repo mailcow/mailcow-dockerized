@@ -7,6 +7,24 @@ require "variables";
 require "subaddress";
 require "envelope";
 require "duplicate";
+require "index";
+require "editheader";
+
+# Tag inbound plaintext SMTP: the trusted Postfix Received header is the 2nd
+# Received from the top (1st = Dovecot LMTP). "with ESMTP "/"with SMTP " mean
+# no TLS; ESMTPS/A/SA do not match because a space, not 'S'/'A', follows
+# "ESMTP". Client-supplied Received headers sit at index >= 3 and cannot
+# influence this test.
+if allof (
+  not header :contains "X-Spam-Flag" "YES",
+  anyof (
+    header :index 2 :matches "received" "*with ESMTP *",
+    header :index 2 :matches "received" "*with SMTP *"
+  )
+) {
+  addheader "X-Spam-Flag" "YES";
+  addheader "X-TLS-Status" "none";
+}
 
 if header :contains "X-Spam-Flag" "YES" {
   fileinto "Junk";
