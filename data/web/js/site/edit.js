@@ -32,6 +32,18 @@ $(document).ready(function() {
     mailcow_alert_box(lang_admin.copy_to_clipboard, 'success');
   });
   $(".api-key-regen").click(function() { return confirm(lang_admin.ays); });
+  // SCIM token: attribute mapping rows (markup of admin/iam-template-mapping.twig, like addAttributeMappingRow() in admin.js)
+  $('.iam_rolemap_add_scim').click(function(e) {
+    e.preventDefault();
+    var row = $('#iam_scim_mapping_list').children('div').last().clone().appendTo('#iam_scim_mapping_list');
+    row.find('input').val('');
+    row.find('.dropdown-toggle, .dropdown-menu, .bs-title-option').remove();
+    row.find('select').selectpicker('destroy').selectpicker();
+  });
+  $(document).on('click', '.iam_scim_rolemap_del', function(e) {
+    e.preventDefault();
+    if ($('#iam_scim_mapping_list').children('div').length > 1) $(this).closest('#iam_scim_mapping_list > div').remove();
+  });
 
   $("#mailbox-password-warning-close").click(function( event ) {
     $('#mailbox-passwd-hidden-info').addClass('hidden');

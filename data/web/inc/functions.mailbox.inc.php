@@ -881,7 +881,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             );
             return false;
           }
-          if ($_data['authsource'] == "mailcow" ||
+          if ($_data['authsource'] == "mailcow" || $_data['authsource'] == "scim" ||
               in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
             $authsource = $_data['authsource'];
           }
@@ -953,7 +953,7 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           }
           $quota_b    = ($quota_m * 1048576);
           $attribute_hash = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
-          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+          if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
             $force_pw_update = 0;
           }
           if ($authsource == 'generic-oidc'){
@@ -1261,6 +1261,10 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $mbox_template_data['local_part'] = $_data['local_part'];
           $mbox_template_data['authsource'] = $_data['authsource'];
           $mbox_template_data['attribute_hash'] = $attribute_hash;
+          if (isset($_data['active'])) {
+            // the caller's state wins over the template's, e.g. a SCIM user created with active=false
+            $mbox_template_data['active'] = intval($_data['active']);
+          }
           $mbox_template_data['quota'] = intval($mbox_template_data['quota'] / 1048576);
 
           $mailbox_attributes = array('acl' => array());
@@ -2832,11 +2836,13 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               $tags                 = (is_array($_data['tags']) ? $_data['tags'] : array());
               $attribute_hash       = (!empty($_data['attribute_hash'])) ? $_data['attribute_hash'] : '';
               $authsource           = $is_now['authsource'];
+              // SCIM users log in through the IdP: without one, switching a mailbox to SCIM locks it out
               if ($_data['authsource'] == "mailcow" ||
+                  ($_data['authsource'] == "scim" && in_array($iam_settings['authsource'] ?? '', array('keycloak', 'generic-oidc', 'ldap'))) ||
                   in_array($_data['authsource'], array('keycloak', 'generic-oidc', 'ldap')) && $iam_settings['authsource'] == $_data['authsource']){
                 $authsource = $_data['authsource'];
               }
-              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap'))){
+              if (in_array($authsource, array('keycloak', 'generic-oidc', 'ldap', 'scim'))){
                 $force_pw_update = 0;
               }
               if ($authsource == 'generic-oidc'){
@@ -3145,6 +3151,21 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
                 ':username' => $username,
                 ':authsource' => $authsource
               ));
+              // handed back from SCIM: the mailbox leaves SCIM and its SCIM group memberships; if that fails, it stays a
+              // SCIM mailbox, so no half-left state remains
+              if ($is_now['authsource'] == 'scim' && $authsource != 'scim') {
+                try {
+                  \Mailcow\Scim\ScimModule::fromGlobals()->users->onAuthsourceLeft($username);
+                } catch (\Throwable $e) {
+                  $pdo->prepare("UPDATE `mailbox` SET `authsource` = 'scim' WHERE `username` = :username")->execute(array(':username' => $username));
+                  $_SESSION['return'][] = array(
+                    'type' => 'danger',
+                    'log' => array(__FUNCTION__, $_action, $_type, $_data_log, $_attr),
+                    'msg' => $e->getMessage()
+                  );
+                  return false;
+                }
+              }
             }
             catch (PDOException $e) {
               $_SESSION['return'][] = array(
@@ -3307,7 +3328,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'mailbox_group_imap_grant' => ['owner'],
               'mailbox_group_sogo_grant' => ['owner'],
               'mailbox_group_sogo_acl' => ['c_uid'],
-              'mailbox_group_subscription' => ['username', 'owner']
+              'mailbox_group_subscription' => ['username', 'owner'],
+              'scim_maps' => ['username']
             ];
             foreach ($tables as $table => $columns) {
               foreach ($columns as $column) {
@@ -3323,6 +3345,8 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
             \Mailcow\Imapsync\ImapsyncModule::fromGlobals()->sources->onAccountRenamed($old_username, $new_username);
             // Group memberships and send-as grants follow, group aliases are rebuilt
             \Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->hooks->onMailboxRenamed($old_username, $new_username);
+            // SCIM groups list the members their IdP set by username
+            \Mailcow\Scim\ScimModule::fromGlobals()->groups->onMailboxRenamed($old_username, $new_username);
 
             // Update c_uid, c_name and mail in _sogo_static_view table
             $pdo->prepare("UPDATE _sogo_static_view SET c_uid = :new_username, c_name = :new_username2, mail = :new_username3 WHERE c_uid = :old_username")
@@ -3436,9 +3460,16 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           if ($applied_template === null || $applied_template === $_data['template']) {
             unset($mbox_template_data['active']);
           }
-          // Login disabled by the IdP sync is only lifted by the sync
-          $stmt = $pdo->prepare("SELECT `idp_disabled` FROM `identity_link` WHERE `username` = :username");
-          $stmt->execute(array(':username' => $_data['username']));
+          // Login disabled by the IdP sync or SCIM is only lifted by them
+          try {
+            $stmt = $pdo->prepare("SELECT 1 FROM `identity_link` WHERE `username` = :username AND `idp_disabled` = 1
+              UNION SELECT 1 FROM `scim_maps` WHERE `username` = :username2 AND `disabled` = 1");
+            $stmt->execute(array(':username' => $_data['username'], ':username2' => $_data['username']));
+          } catch (PDOException $e) {
+            // scim_maps missing (schema not migrated yet): the IdP sync alone
+            $stmt = $pdo->prepare("SELECT 1 FROM `identity_link` WHERE `username` = :username AND `idp_disabled` = 1");
+            $stmt->execute(array(':username' => $_data['username']));
+          }
           if (intval($stmt->fetchColumn()) == 1) {
             unset($mbox_template_data['active']);
           }

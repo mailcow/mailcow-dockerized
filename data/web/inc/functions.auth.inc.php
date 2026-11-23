@@ -291,11 +291,16 @@ function user_login($user, $pass, $extra = null, &$denied = false){
     }
     return false;
   }
-  switch ($row['authsource']) {
+  // SCIM only provisions mailboxes, their password is checked by the configured IdP
+  $authsource = $row['authsource'];
+  if ($authsource == 'scim' && in_array($iam_settings['authsource'] ?? '', array('keycloak', 'ldap'))) {
+    $authsource = $iam_settings['authsource'];
+  }
+  switch ($authsource) {
     case 'keycloak':
       // user authsource is keycloak, try using via rest flow
       if (intval($iam_settings['mailpassword_flow']) == 1){
-        $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal));
+        $result = keycloak_mbox_login_rest($user, $pass, array('is_internal' => $is_internal, 'scim' => $row['authsource'] == 'scim'));
         if ($result !== false) {
           // double check if mailbox and domain is active
           $stmt = $pdo->prepare("SELECT * FROM `mailbox`
@@ -354,7 +359,7 @@ function user_login($user, $pass, $extra = null, &$denied = false){
     break;
     case 'ldap':
       // user authsource is ldap
-      $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal));
+      $result = ldap_mbox_login($user, $pass, array('is_internal' => $is_internal, 'scim' => $row['authsource'] == 'scim'));
       if ($result !== false) {
         // double check if mailbox and domain is active
         $stmt = $pdo->prepare("SELECT * FROM `mailbox`
@@ -626,7 +631,8 @@ function keycloak_mbox_login_rest($user, $pass, $extra = null){
       return false;
     }
     // login success
-    $update_template = $idp_login->templateFor($user, $mapped_template);
+    // SCIM mailboxes keep the template SCIM applied, only group templates follow them at login
+    $update_template = $idp_login->templateFor($user, empty($extra['scim']) ? $mapped_template : null);
     if ($update_template !== null) {
       // update user
       $_SESSION['access_all_exception'] = '1';
@@ -759,7 +765,8 @@ function ldap_mbox_login($user, $pass, $extra = null){
       return false;
     }
     // login success
-    $update_template = $idp_login->templateFor($user, $mapped_template);
+    // SCIM mailboxes keep the template SCIM applied, only group templates follow them at login
+    $update_template = $idp_login->templateFor($user, empty($extra['scim']) ? $mapped_template : null);
     if ($update_template !== null) {
       // update user
       $_SESSION['access_all_exception'] = '1';

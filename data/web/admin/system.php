@@ -87,6 +87,9 @@ $cors_settings['allowed_methods'] = explode(", ", $cors_settings['allowed_method
 $f2b_data = fail2ban('get');
 // mbox templates
 $mbox_templates = mailbox('get', 'mailbox_templates');
+// SCIM: the value of a new token is shown once
+$scim_new_tokens = $_SESSION['scim_new_tokens'] ?? [];
+unset($_SESSION['scim_new_tokens']);
 
 $template = 'admin.twig';
 $template_data = [
@@ -121,6 +124,8 @@ $template_data = [
   'is_https' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   'iam_settings' => $iam_settings,
   'mbox_templates' => $mbox_templates,
+  'scim_new_tokens' => $scim_new_tokens,
+  'scim_base_url' => getBaseUrl() . '/scim/v2',
   'lang_admin' => json_encode($lang['admin']),
   'lang_datatables' => json_encode($lang['datatables'])
 ];

@@ -277,6 +277,9 @@ if (isset($_GET['query'])) {
         case "api-key":
           process_add_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->addKey($attr));
         break;
+        case "scim-token":
+          process_add_return(\Mailcow\Scim\ScimModule::fromGlobals()->api->addToken($attr));
+        break;
         case "mailbox-group":
           process_add_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->addGroup($attr));
         break;
@@ -842,6 +845,18 @@ if (isset($_GET['query'])) {
             }
           break;
 
+          case "scim-token":
+            switch ($object) {
+              case "all":
+                process_get_return(\Mailcow\Scim\ScimModule::fromGlobals()->api->getTokens());
+              break;
+
+              default:
+                process_get_return(\Mailcow\Scim\ScimModule::fromGlobals()->api->getToken($object));
+              break;
+            }
+          break;
+
           case "mailbox-group":
             switch ($object) {
               case "all":
@@ -901,6 +916,17 @@ if (isset($_GET['query'])) {
                 }
                 else {
                   $logs = get_logs('cron-mailcow');
+                }
+                echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
+              break;
+              case "scim":
+                // 0 is first record, so empty is fine
+                if (isset($extra)) {
+                  $extra = preg_replace('/[^\d\-]/i', '', $extra);
+                  $logs = get_logs('scim-mailcow', $extra);
+                }
+                else {
+                  $logs = get_logs('scim-mailcow');
                 }
                 echo (isset($logs) && !empty($logs)) ? json_encode($logs, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '{}';
               break;
@@ -1779,6 +1805,9 @@ if (isset($_GET['query'])) {
         case "api-key":
           process_delete_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->deleteKeys($items));
         break;
+        case "scim-token":
+          process_delete_return(\Mailcow\Scim\ScimModule::fromGlobals()->api->deleteTokens($items));
+        break;
         case "mailbox-group":
           process_delete_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->deleteGroups($items));
         break;
@@ -1952,6 +1981,9 @@ if (isset($_GET['query'])) {
         break;
         case "api-key":
           process_edit_return(\Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->editKeys($items, $attr));
+        break;
+        case "scim-token":
+          process_edit_return(\Mailcow\Scim\ScimModule::fromGlobals()->api->editTokens($items, $attr));
         break;
         case "mailbox-group":
           process_edit_return(\Mailcow\MailboxGroup\MailboxGroupModule::fromGlobals()->api->editGroups($items, $attr));

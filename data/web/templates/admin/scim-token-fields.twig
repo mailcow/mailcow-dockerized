@@ -1,0 +1,74 @@
+{# Fields of a SCIM token, used by the add modal (token = {}) and edit/scim-token.twig #}
+          <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="allow_rename">
+          <input type="hidden" value="0" name="rename_alias">
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.description }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" name="description" value="{{ token.description }}" maxlength="255" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ lang.admin.scim_domain_restriction_info }}"></i>
+              <label class="control-label">{{ lang.admin.scim_domain_restriction }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select data-live-search="true" name="domain_restriction" class="form-control">
+                <option value="">{{ lang.admin.scim_all_domains }}</option>
+                {# a restriction to a deleted domain stays selected: saving the form must not widen the token #}
+                {% if token.domain_restriction and token.domain_restriction not in domains %}
+                <option selected>{{ token.domain_restriction }}</option>
+                {% endif %}
+                {% for domain in domains %}
+                <option{% if domain == token.domain_restriction %} selected{% endif %}>{{ domain }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ lang.admin.scim_group_domain_info }}"></i>
+              <label class="control-label">{{ lang.admin.scim_group_domain }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select data-live-search="true" name="group_domain" class="form-control">
+                <option value="">-</option>
+                {% if token.group_domain and token.group_domain not in domains %}
+                <option selected>{{ token.group_domain }}</option>
+                {% endif %}
+                {% for domain in domains %}
+                <option{% if domain == token.group_domain %} selected{% endif %}>{{ domain }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.scim_allow_from }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <textarea class="form-control textarea-code" rows="3" name="allow_from" placeholder="192.168.1.0/24">{{ token.allow_from|default([])|join("\n") }}</textarea>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="offset-md-3 col-12 col-md-9">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="allow_rename"{% if token.allow_rename == 1 %} checked{% endif %}> {{ lang.admin.scim_allow_rename }}</label>
+                <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ lang.admin.scim_allow_rename_info }}"></i>
+              </div>
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="rename_alias"{% if token.rename_alias is not defined or token.rename_alias == 1 %} checked{% endif %}> {{ lang.admin.scim_rename_alias }}</label>
+              </div>
+            </div>
+          </div>
+          {% include 'admin/iam-template-mapping.twig' with {'iam_form': 'scim', 'iam_settings': {'default_template': token.default_template, 'mappers': token.mappers|default([]), 'templates': token.templates|default([])}} %}
+          <div class="row mb-4">
+            <div class="offset-md-3 col-12 col-md-9">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active"{% if token.active is not defined or token.active == 1 %} checked{% endif %}> {{ lang.admin.active }}</label>
+              </div>
+            </div>
+          </div>

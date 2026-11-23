@@ -120,6 +120,15 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         $result = \Mailcow\ApiKey\ApiKeyModule::fromGlobals()->api->getKey($_GET['api-key']);
         $template = 'edit/api-key.twig';
     }
+    elseif (isset($_GET['scim-token']) &&
+      is_numeric($_GET['scim-token'])) {
+        $result = \Mailcow\Scim\ScimModule::fromGlobals()->api->getToken($_GET['scim-token']);
+        $template = 'edit/scim-token.twig';
+        $template_data = [
+          'mbox_templates' => mailbox('get', 'mailbox_templates'),
+          'domains' => mailbox('get', 'domains'),
+        ];
+    }
     elseif (isset($_GET['aliasdomain']) &&
       is_valid_domain_name(html_entity_decode(rawurldecode($_GET["aliasdomain"]))) &&
       !empty($_GET["aliasdomain"])) {

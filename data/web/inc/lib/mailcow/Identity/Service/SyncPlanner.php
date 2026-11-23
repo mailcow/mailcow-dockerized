@@ -101,7 +101,8 @@ class SyncPlanner
             $this->planUpdates($settings, $state, $matched, $plan);
         }
         $active = count(array_filter($state->accounts, fn(Account $a): bool => $a->active === 1));
-        $memberships = array_sum(array_map(fn(array $g): int => count(self::idpMembers($g)), $state->groups));
+        // only the groups this sync manages: IdP members of other groups (SCIM) are no base for its removals
+        $memberships = array_sum(array_map(fn(array $g): int => ($g['idp_ref'] !== null) ? count(self::idpMembers($g)) : 0, $state->groups));
         if (!$force && (count($plan->deactivate) > self::limit($active, $settings->offboardingLimit)
             || $plan->membershipRemovals > self::limit($memberships, $settings->offboardingLimit))) {
             $plan->blocked = true;

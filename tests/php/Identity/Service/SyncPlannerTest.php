@@ -161,6 +161,24 @@ class SyncPlannerTest extends TestCase
         $this->assertTrue($plan->blocked);
     }
 
+    public function testGuardIgnoresIdpMembersOfGroupsItDoesNotManage(): void
+    {
+        $members = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $members["u$i@example.org"] = 'idp';
+        }
+        // IdP members of a group without idp_ref (SCIM) are no base for the removals of this sync
+        $scim = [];
+        for ($i = 1; $i <= 200; $i++) {
+            $scim["s$i@example.org"] = 'idp';
+        }
+        $plan = $this->plan([], [], ['group_sync' => 1], ['groups' => [self::group(3, 'gone', 'Old', $members),
+            self::group(4, null, 'SCIM', $scim)]], []);
+
+        $this->assertSame(6, $plan->membershipRemovals);
+        $this->assertTrue($plan->blocked);
+    }
+
     public function testGroupMembershipsFollowTheIdp(): void
     {
         $accounts = [new Account('a@example.org', '', 1, 'u1'), new Account('b@example.org', '', 1, 'u2'),
