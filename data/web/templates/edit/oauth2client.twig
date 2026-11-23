@@ -28,6 +28,13 @@
       <input type="text" class="form-control" name="redirect_uri" id="redirect_uri" value="{{ result.redirect_uri }}">
     </div>
   </div>
+  <div class="row mb-4">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <label><input type="checkbox" class="form-check-input" value="1" name="trusted"{% if result.trusted == '1' %} checked{% endif %}> {{ lang.edit.oauth2_trusted_client }}</label>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="offset-sm-2 col-sm-10">
       <button class="btn btn-xs-lg d-block d-sm-inline btn-secondary" data-action="edit_selected" data-id="oauth2client" data-item="{{ oauth2client }}" data-api-url='edit/oauth2-client' data-api-attr='{}' href="#">{{ lang.admin.save }}</button>
