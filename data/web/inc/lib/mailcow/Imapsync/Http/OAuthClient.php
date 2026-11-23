@@ -92,7 +92,6 @@ class OAuthClient
         curl_setopt_array($ch, $options);
         $body = curl_exec($ch);
         $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
         return [is_string($body) ? $body : false, $code];
     }
 

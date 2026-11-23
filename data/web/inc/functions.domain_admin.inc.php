@@ -66,7 +66,7 @@ function domain_admin($_action, $_data = null) {
         }
       }
       if (password_check($password, $password2) !== true) {
-        continue;
+        return false;
       }
       $password_hashed = hash_password($password);
       $valid_domains = 0;

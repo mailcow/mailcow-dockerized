@@ -442,7 +442,6 @@ class Auth_Yubico
 		    /* We have status=OK or status=REPLAYED_OTP, return. */
 		    foreach ($ch as $h) {
 		      curl_multi_remove_handle($mh, $h);
-		      curl_close($h);
 		    }
 		    curl_multi_close($mh);
 		    if ($replay) return PEAR::raiseError('REPLAYED_OTP');
@@ -476,7 +475,6 @@ class Auth_Yubico
 	      }
 	      /* Done with this handle */
 	      curl_multi_remove_handle($mh, $info['handle']);
-	      curl_close($info['handle']);
 	      unset ($ch[(int)$info['handle']]);
 	    }
 	  } while ($active);

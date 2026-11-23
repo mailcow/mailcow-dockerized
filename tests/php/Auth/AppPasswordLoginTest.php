@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mailcow\Tests\Auth;
 
 use PDO;
+use Pdo\Sqlite;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -16,13 +17,13 @@ class AppPasswordLoginTest extends TestCase
 {
     private const PROTOCOLS = ['imap_access', 'smtp_access', 'pop3_access', 'sieve_access', 'eas_access', 'dav_access'];
 
-    private PDO $pdo;
+    private Sqlite $pdo;
 
     protected function setUp(): void
     {
-        $this->pdo = new PDO('sqlite::memory:');
+        $this->pdo = new Sqlite('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->sqliteCreateFunction('regexp', fn ($pattern, $value) => preg_match('/' . $pattern . '/', (string)$value) === 1, 2);
+        $this->pdo->createFunction('regexp', fn ($pattern, $value) => preg_match('/' . $pattern . '/', (string)$value) === 1, 2);
         $this->pdo->exec("CREATE TABLE `domain` (`domain` TEXT PRIMARY KEY, `active` INTEGER NOT NULL DEFAULT 1)");
         $this->pdo->exec("CREATE TABLE `mailbox` (`username` TEXT PRIMARY KEY, `domain` TEXT, `kind` TEXT NOT NULL DEFAULT '',
             `active` INTEGER NOT NULL DEFAULT 1, `attributes` TEXT)");

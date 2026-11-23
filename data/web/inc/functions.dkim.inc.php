@@ -115,7 +115,7 @@ function dkim($_action, $_data = null, $privkey = false) {
           'log' => array(__FUNCTION__, $_action, $_data),
           'msg' => array('dkim_domain_or_sel_invalid', $from_domain)
         );
-        continue;
+        return false;
       }
       $to_domains = (array)$_data['to_domain'];
       $to_domains = array_filter($to_domains);

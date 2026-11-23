@@ -115,7 +115,7 @@ class SieveKeywordRegistry
                     'extends' => (string) $e['extends'],
                     'rules'   => $xml
                 );
-                continue;
+                continue 2;
             default:
                 trigger_error('Unsupported extension type \''.
                     $e->getName() ."' in extension '$extension'");
