@@ -68,6 +68,12 @@ table.dataTable .tag-badge {
     margin-top: 0;
     margin-bottom: 0;
 }
+/* allowed protocols in two lines of three, aligned from row to row */
+.protocol-grid {
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    column-gap: 0.75rem;
+}
 td.dtr-col-lg {
     min-width: 350px;
     word-break: break-word;

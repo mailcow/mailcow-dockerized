@@ -695,6 +695,9 @@
     },
     "datatables": {
         "collapse_all": "Collapse All",
+        "columns": "Columns",
+        "columns_reset": "Reset to default",
+        "columns_show": "Show as column",
         "decimal": ".",
         "emptyTable": "No data available in table",
         "expand_all": "Expand All",
