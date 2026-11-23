@@ -246,6 +246,19 @@ jQuery(function($){
       }).observe(element_object);
     });
   }
+  // MTA-STS: warn that saving will require updating the DNS records
+  // (whitespace is stripped like the server does for mx)
+  var $mtaStsWarning = $('#mta-sts-dns-change-warning');
+  if ($mtaStsWarning.length) {
+    var $mtaStsForm = $("form[data-id='dommtasts']");
+    var mtaStsSnapshot = function() {
+      return $mtaStsForm.serialize().replace(/\+|%0[9AD]/gi, '');
+    };
+    var mtaStsInitial = mtaStsSnapshot();
+    $mtaStsForm.on('input change', function() {
+      $mtaStsWarning.toggleClass('d-none', mtaStsSnapshot() === mtaStsInitial);
+    });
+  }
   // Draw Table if tab is active
   onVisible("[id^=wl_policy_domain_table]", () => draw_wl_policy_domain_table());
   onVisible("[id^=bl_policy_domain_table]", () => draw_bl_policy_domain_table());
