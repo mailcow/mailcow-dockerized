@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:18081:80"
+      - "10.77.0.16:18081:80"
     environment:
       TZ: Asia/Seoul
       ROUNDCUBEMAIL_DEFAULT_HOST: ssl://dovecot
