@@ -6,6 +6,7 @@ $config['product_name'] = 'Uptempo Mail';
 $config['imap_conn_options'] = [
     'ssl' => [
         'cafile' => '/etc/mailcow-webmail.crt',
+        'capath' => '/etc/ssl/certs',
         'peer_name' => 'mail.cloudfan.shop',
         'verify_peer' => true,
         'verify_peer_name' => true,
