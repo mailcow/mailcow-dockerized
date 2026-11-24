@@ -1,0 +1,41 @@
+name: roundcube-kr
+
+services:
+  webmail:
+    image: roundcube/roundcubemail:1.7.7-apache
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18081:80"
+    environment:
+      TZ: Asia/Seoul
+      ROUNDCUBEMAIL_DEFAULT_HOST: ssl://dovecot
+      ROUNDCUBEMAIL_DEFAULT_PORT: "993"
+      ROUNDCUBEMAIL_SMTP_SERVER: tls://postfix
+      ROUNDCUBEMAIL_SMTP_PORT: "587"
+      ROUNDCUBEMAIL_DB_TYPE: sqlite
+    volumes:
+      - webmail:/var/www/html
+      - preferences:/var/roundcube/db
+      - type: bind
+        source: ./mailcow.inc.php
+        target: /var/roundcube/config/mailcow.inc.php
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../data/assets/ssl/cert.pem
+        target: /etc/mailcow-webmail.crt
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      - mailcow
+
+networks:
+  mailcow:
+    external: true
+    name: mailcowdockerized_mailcow-network
+
+volumes:
+  webmail:
+  preferences:
