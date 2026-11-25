@@ -23,20 +23,22 @@ if (isset($_SESSION['mailcow_cc_role']) && ($_SESSION['mailcow_cc_role'] == "adm
     }
   }
 
-  $ch = curl_init('http://ip4.mailcow.email');
+  $ch = curl_init('https://ip4.mailcow.email');
   curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
   curl_setopt($ch, CURLOPT_VERBOSE, false);
   curl_setopt($ch, CURLOPT_HEADER, false);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 5);
   $ip = curl_exec($ch);
 
-  $ch = curl_init('http://ip6.mailcow.email');
+  $ch = curl_init('https://ip6.mailcow.email');
   curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
   curl_setopt($ch, CURLOPT_VERBOSE, false);
   curl_setopt($ch, CURLOPT_HEADER, false);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 5);
   $ip6 = curl_exec($ch);
 
   $ptr = implode('.', array_reverse(explode('.', $ip))) . '.in-addr.arpa';
