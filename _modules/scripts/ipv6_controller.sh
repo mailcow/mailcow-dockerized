@@ -257,7 +257,11 @@ configure_ipv6() {
     return
   fi
 
-  docker_daemon_edit
+  if [[ "${CONTAINER_RUNTIME:-docker}" == "podman" ]]; then
+    echo "Podman detected, skipping Docker daemon.json IPv6 configuration (netavark enables IPv6 per network)."
+  else
+    docker_daemon_edit
+  fi
   _set_enable_ipv6 true
 
   echo "IPv6 configuration complete: ENABLE_IPV6=true"
