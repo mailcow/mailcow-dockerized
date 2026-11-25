@@ -135,7 +135,7 @@ class SimpleLoginService
                 AND app_passwd.active = 1
                 AND mailbox.active = 1
                 AND domain.active = 1
-                AND mailbox.kind NOT IN ('location', 'thing', 'group')"
+                AND COALESCE(mailbox.kind, '') NOT IN ('location', 'thing', 'group')"
         );
         $stmt->execute([':mailbox' => $mailbox]);
 
