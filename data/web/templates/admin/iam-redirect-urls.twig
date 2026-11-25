@@ -1,0 +1,41 @@
+{# Redirect URLs of the OIDC forms (iam_form = keycloak|generic); row markup is used by addRedirectUrlRow() in admin.js #}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_redirect_url }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <div class="row mx-0 align-items-center">
+                <span class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control" name="redirect_url" value="{{ iam_settings.redirect_url }}" required>
+                </span>
+                <div class="col-2 p-0 d-flex">
+                  <button class="btn btn-sm d-block d-sm-inline btn-secondary ms-auto iam_redirect_add_{{ iam_form }}" title="{{ lang.admin.iam_redirect_url_add }}"><i class="bi bi-plus-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2" id="iam_{{ iam_form }}_redirect_list">
+            <input type="hidden" name="redirect_url_extra" value="">
+            {% for key, url in iam_settings.redirect_url_extra %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row mx-0">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="{{ iam_settings.redirect_url_extra[key] }}">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_{{ iam_form }}_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="offset-md-3 col-12 col-md-9 col-lg-4 mb-2">
+              <div class="row mx-0">
+                <div class="col-10 p-0 pe-2">
+                  <input type="text" class="form-control me-2" name="redirect_url_extra" value="">
+                </div>
+                <div class="col-2 p-0 d-flex">
+                  <button class="iam_{{ iam_form }}_redirect_del btn btn-sm d-block d-sm-inline btn-secondary ms-auto"><i class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>

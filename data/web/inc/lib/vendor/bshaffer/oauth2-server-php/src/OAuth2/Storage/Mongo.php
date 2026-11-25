@@ -179,7 +179,7 @@ class Mongo implements AuthorizationCodeInterface,
         return is_null($code) ? false : $code;
     }
 
-    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
+    public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null)
     {
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
@@ -192,6 +192,8 @@ class Mongo implements AuthorizationCodeInterface,
                     'expires' => $expires,
                     'scope' => $scope,
                     'id_token' => $id_token,
+                    'code_challenge' => $code_challenge,
+                    'code_challenge_method' => $code_challenge_method,
                 ))
             );
         } else {
@@ -203,6 +205,8 @@ class Mongo implements AuthorizationCodeInterface,
                 'expires' => $expires,
                 'scope' => $scope,
                 'id_token' => $id_token,
+                'code_challenge' => $code_challenge,
+                'code_challenge_method' => $code_challenge_method,
             );
             $this->collection('code_table')->insert($token);
         }

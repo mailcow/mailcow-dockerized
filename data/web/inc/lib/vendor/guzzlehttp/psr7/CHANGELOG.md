@@ -5,7 +5,375 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 3.2.0 - 2026-10-18
+
+### Fixed
+
+- Fix `InflateStream` ignoring source read failures that follow decoded bytes
+- Fix `AppendStream` discarding bytes read before a timeout
+
+## 3.1.1 - 2026-10-18
+
+### Fixed
+
+- Fix `StreamWrapper` flushes reporting failure
+- Fix `CachingStream` skipping unread bytes after repeated writes
+
+## 3.1.0 - 2026-08-24
+
+### Added
+
+- Add `Utils::redactUriForMessage()` and `Utils::redactUriStringForMessage()` for URI diagnostics
+- Add support for PHP 8.6
+
+### Changed
+
+- Omit rejected header values and sensitive URI components from automatic exception messages
+
+## 3.0.1 - 2026-08-24
+
+### Fixed
+
+- Prefix relative paths that begin with a colon segment with `./` instead of throwing
+- Apply the `/.` prefix for authority-less `//` paths to percent-encoding normalizations as well
+- Keep colon-leading first path segments when reading the paths of scheme-less non-native URIs
+- Stop throwing when removing the default `file` host strands a `//` path, prefixing it with `/.`
+
+## 3.0.0 - 2026-07-20
+
+### Added
+
+- Add `DiagnosticValue::escape()` to escape controls and malformed UTF-8 in diagnostics
+- Add `GuzzleHttp\Psr7\Exception\TimeoutException` for timed-out stream operations
+- Add `GuzzleHttp\Psr7\Utils::redactUserInfoInString()` to redact the userinfo of a raw URI string within text
+- Promote `GuzzleHttp\Psr7\Rfc3986` to public API with `isValid*()` predicates and `canonicalizeIpv6()`
+- Add `GuzzleHttp\Psr7\UriNormalizer::CANONICALIZE_IPV6_HOST` to `PRESERVING_NORMALIZATIONS`
+
+### Changed
+
+- Require `psr/http-message:^2.0` and add native parameter and return types
+- Require `psr/http-factory:^1.1`
+- Reject native PHP serialization of stream implementations
+- Preserve request method casing, except `ServerRequest::fromGlobals()` still uppercases
+- Reject empty arrays and non-string values as header values
+- Reject invalid uploaded file trees and invalid parsed body values
+- Reject uploaded file specs missing `tmp_name`, `size`, or `error`
+- Reject non-integer and negative uploaded file `error` values
+- Reject invalid stream/upload sizes, buffer high-water marks, and dropping-stream limits
+- Rewind seekable uploaded-file streams before copying in `UploadedFile::moveTo()`
+- Reject negative `read()` lengths across all stream implementations
+- Detect the `+` flag anywhere in a mode for `Stream::isReadable()`/`isWritable()`
+- Reject empty strings returned by `PumpStream` source callables
+- Discard buffered bytes on `PumpStream` close and detach
+- Restore the original stream position after `Message::bodySummary()`
+- Allow `null` for the `Message::bodySummary()` truncation length to use the default
+- Validate `LimitStream` offset/limit and track non-seekable offset by bytes skipped
+- Make `FnStream` close and detach terminal, calling close callbacks at most once
+- Suppress exceptions from `FnStream` close callbacks during destructor cleanup
+- Make `CachingStream::close()` idempotent, preserving remote cleanup after detach
+- Do not move the `CachingStream` cursor when a `SEEK_END` target on an unknown-size stream is rejected
+- Normalize multiple leading slashes in `Uri::getPath()` and origin-form request targets
+- Serialize authority-less `file` URIs with rootless paths without the `//` separator
+- Serialize authority-less `file` URIs with empty paths as `file:` instead of the unparseable `file://`
+- Remove dot segments above the root per RFC 3986, prefixing authority-less `//` paths with `/.`
+- Return a network-path reference from `UriResolver::relativize()` when an empty-path target requires one
+- Stop returning an empty reference from `UriResolver::relativize()` when it would inherit the base fragment
+- Stop throwing from `UriResolver::relativize()` when an equal-path target's last path segment contains a colon
+- Harden URI host validation (delimiters, backslashes, IPv6, embedded ports); require schemes to start with a letter
+- Validate `Uri::fromParts()` ports instead of casting them
+- Treat ports 80 and 443 as defaults for the `ws` and `wss` schemes
+- Use the `ws` and `wss` default ports in `UriComparator::isCrossOrigin()` port comparisons
+- Redact all non-empty URI userinfo in `Utils::redactUserInfo()`
+- Rebuild server request URIs from `$_SERVER` by `REQUEST_METHOD`, using target authority before `SERVER_PORT`
+- Remove userinfo from absolute-form `REQUEST_URI` targets in `ServerRequest::fromGlobals()`
+- Reject zero-port `HTTP_HOST` and malformed `SERVER_PORT` in `ServerRequest::getUriFromGlobals()`
+- Reject malformed `REQUEST_METHOD` and `SERVER_PROTOCOL` server values in `ServerRequest::fromGlobals()`
+- Reject zero-port `Host` and normalize leading-zero ports in `Message::parseRequest()`
+- Reject duplicate `Host` headers and validate present values for all request-target forms
+- Reject zero-port, hostless, and userinfo absolute-form request targets in `Message::parseRequest()`
+- Synchronize the `Host` header in `Request::withUri()` when the URI changes or Host is empty
+- Include the URI port in `Host` headers synthesized by `Message::toString()`
+- Validate the Host header synthesized by `Message::toString()` from the request URI
+- Include non-default URI ports in `Host` headers set by `Utils::modifyRequest()` URI changes
+- Accept `OPTIONS *` and `CONNECT` authority-form request targets in `Message::parseRequest()`
+- Hide credential-bearing URI, server, and cookie arguments in stack traces on PHP 8.2+
+- Reject malformed HTTP request/response start-lines
+- Unfold obsolete HTTP/1.0 line folding for all valid request method tokens
+- Reject empty and control-character request targets in `Request::withRequestTarget()`
+- Validate iterator chunks passed to `Utils::streamFor()`
+- Validate unsupported values passed to `Query::build()`
+- Reject non-finite float values in `Query::build()` and `MultipartStream` contents
+- Reject non-finite float values in iterator chunks passed to `Utils::streamFor()`
+- `Utils::streamFor()` now rejects non-string scalar bodies
+- `Uri::withQueryValues()` now rejects non-string values
+- Reject invalid `Utils::modifyRequest()` change values
+- Use PHP debug type names in type error messages
+- Changed `Utils::copyToStream()` to throw when destination streams cannot make progress
+- Throw `TimeoutException` from `Stream` read/write and `Utils` copy/hash/readLine on stream timeouts
+- Throw `TimeoutException` from `AppendStream::read()`, `CachingStream::read()`, and `Utils::tryGetContents()` on stream timeouts
+- Re-throw `TimeoutException` from `InflateStream` when the decoded source stream times out
+- Close the compressed source stream from `InflateStream::close()`
+- Return the number of bytes copied from `Utils::copyToStream()`
+- Throw `OverflowException` when stream byte counts or offsets exceed `PHP_INT_MAX`
+- Translate `StreamWrapper` runtime failures to PHP stream failure values
+- Stop adding default `Content-Length` to `multipart/form-data` parts (RFC 7578 §4.8)
+- Escape multipart `Content-Disposition` parameters and reject unsafe boundaries and part headers
+- Preserve trailing whitespace in custom `MultipartStream` part header values
+- Preserve explicit custom `MultipartStream` boundary `'0'` instead of replacing it with a generated boundary
+- Made static utility classes non-instantiable
+- Validate bracketed IP-literal hosts consistently between parsing and `withHost()`, including userinfo forms
+- Percent-encode raw control bytes in userinfo before bracketed IP-literal hosts instead of parsing mutated values
+- Reject invalid UTF-8 and preserve percent-sequences in userinfo before bracketed IP-literal hosts
+- Normalize percent-encoded octets in the URI host to uppercase hex
+- Canonicalize IPv6 hosts to RFC 5952 form in `Uri` construction, `fromParts()`, and `withHost()`
+- Canonicalize bracketed IPv6 hosts in `UriComparator::isCrossOrigin()`
+- Reject malformed percent-sequences and percent-encoded bytes forbidden by the URI host policy
+- Extend `CAPITALIZE_PERCENT_ENCODING` and `DECODE_UNRESERVED_CHARACTERS` to userinfo and host
+- Trim header list elements with only spaces, horizontal tabs, and line terminators in `Header::splitList()`
+- Report header parameter PCRE failures explicitly in `Header::parse()`
+- Escape controls and malformed UTF-8 consistently in generated exception messages
+
+### Removed
+
+- Dropped support for PHP 7.2 and 7.3
+- Removed the `ralouphie/getallheaders` dependency
+- Removed deprecated `Header::normalize()` method
+
+## 2.13.0 - 2026-07-16
+
+### Added
+
+- Add `Utils::` `asciiToLower`, `asciiToUpper`, `asciiUcFirst`, `caselessEquals`, `caselessContains`
+
+### Changed
+
+- Use locale-independent ASCII case folding everywhere case is normalized
+- Trigger a runtime deprecation for previously deprecated functionality in 2.3.0
+
+## 2.12.5 - 2026-07-13
+
+### Fixed
+
+- Compare header names and hosts with locale-independent ASCII lowercasing
+- Compare hosts without locale sensitivity when detecting cross-origin redirects
+
+## 2.12.4 - 2026-07-08
+
+### Changed
+
+- Pass explicit trim characters ahead of the PHP 8.6 trim default change
+
+### Fixed
+
+- Anchor server port and response start-line patterns to the true end of input
+- Treat host-less origin-form request targets starting with `//` as paths in `Message::parseRequest()`
+- Reject raw DEL bytes in bracketed IP-literal hosts instead of parsing a mutated host
+- Reject invalid bytes after a bracketed IP-literal host instead of reparsing a different host
+
+## 2.12.3 - 2026-06-23
+
+### Security
+
+- Validate the URI host so `getHost()` matches the URI authority (GHSA-c2w2-prh8-qm98)
+
+## 2.12.2 - 2026-06-23
+
+### Fixed
+
+- Report URI parsing, filtering, and normalization PCRE failures explicitly
+- Report HTTP message parser PCRE failures explicitly
+- Fail closed when PCRE validation fails for request targets and hosts
+
+## 2.12.1 - 2026-06-18
+
+### Security
+
+- Reject CR/LF in HTTP method, protocol version, and reason phrase (GHSA-vm85-hxw5-5432)
+
+## 2.12.0 - 2026-06-16
+
+### Deprecated
+
+- Deprecated non-finite float values in `Query::build()` that guzzlehttp/psr7 3.0 rejects
+- Deprecated non-finite float multipart contents that guzzlehttp/psr7 3.0 rejects
+- Deprecated non-string scalar bodies in `Utils::streamFor()`; cast them to a string for 3.0
+- Deprecated non-string `Uri::withQueryValues()` values; cast them to a string for 3.0
+
+## 2.11.1 - 2026-06-12
+
+### Fixed
+
+- Fixed non-finite float values emitting coercion warnings on PHP 8.5
+
+## 2.11.0 - 2026-06-02
+
+### Changed
+
+- Changed `Utils::modifyRequest()` to reject conflicting URI and `Host` header changes in the same call
+- Changed `Header::parse()` to split semicolon-separated parameters without repeated regular expression lookaheads
+- Changed `UriComparator::isCrossOrigin()` so only HTTP and HTTPS missing ports receive implicit default ports
+
+### Deprecated
+
+- Deprecated invalid PSR-7 arguments that guzzlehttp/psr7 3.0 will require native types for
+- Deprecated non-string header values that guzzlehttp/psr7 3.0 will reject
+- Deprecated empty header value arrays that guzzlehttp/psr7 3.0 will reject
+- Deprecated URI schemes that do not match guzzlehttp/psr7 3.0 syntax requirements
+- Deprecated multipart boundary and custom part header metadata that guzzlehttp/psr7 3.0 will reject
+- Deprecated reliance on automatic uppercasing of request methods; guzzlehttp/psr7 3.0 preserves method casing
+- Deprecated invalid `Utils::modifyRequest()` change values that guzzlehttp/psr7 3.0 will reject
+
+### Fixed
+
+- Fixed `Utils::copyToStream()` to retry short destination writes instead of dropping the unwritten remainder
+- Fixed `Header::parse()` splitting of semicolon-separated parameters with escaped quotes
+
+## 2.10.4 - 2026-05-29
+
+### Fixed
+
+- Apply `UriNormalizer` percent-encoding normalizations to URI fragments
+- Make `LimitStream::getSize()` return `0` for slices past the underlying stream end
+- Make `AppendStream::read()` return an empty string when no streams are attached
+- Make `CachingStream::read()` throw on an incomplete cache-target write instead of silently corrupting replays
+- Prevent `CachingStream::seek()` from looping indefinitely when the remote stream makes no progress
+
+## 2.10.3 - 2026-05-27
+
+### Fixed
+
+- Fixed URI parsing for IPv6 literals containing embedded IPv4 addresses
+- Fixed malformed UTF-8 URI strings being parsed as empty URIs
+
+## 2.10.2 - 2026-05-25
+
+### Security
+
+- Reject control and whitespace characters in URI host components (GHSA-hq7v-mx3g-29hw)
+- Reject malformed Host values when constructing request URIs (GHSA-34xg-wgjx-8xph)
+
+### Fixed
+
+- Make `ServerRequest::fromGlobals()` robust against unexpected HTTP header value types in `$_SERVER`
+
+## 2.10.1 - 2026-05-20
+
+### Fixed
+
+- Fix `Utils::modifyRequest()` with numeric header names
+
+## 2.10.0 - 2026-05-19
+
+### Changed
+
+- Harden `ServerRequest::fromGlobals()` against malformed `$_SERVER` values
+- Prevent custom stream metadata from affecting internal size handling
+- Throw when `StreamWrapper::getResource()` cannot create a resource
+- Preserve custom request implementations in `Utils::modifyRequest()`
+- Preserve custom URI implementations in `UriResolver::resolve()`
+- Make `Uri::__toString()` side-effect-free
+
+## 2.9.1 - 2026-05-19
+
+### Fixed
+
+- Fix parsing of relative path references containing a colon in a non-initial path segment
+- Fix `CachingStream::detach()` returning an incomplete resource before the decorated stream has been fully read
+- Fix `Message::bodySummary()` returning `null` when truncating printable UTF-8 bodies inside a multibyte character
+
+## 2.9.0 - 2026-03-10
+
+### Added
+
+- Added nested array expansion support to `MultipartStream`
+- Added `@return static` to `MessageTrait` methods
+
+### Changed
+
+- Updated MIME type mappings
+
+## 2.8.1 - 2026-03-10
+
+### Fixed
+
+- Encode `+` signs in `Uri::withQueryValue()` and `Uri::withQueryValues()` to prevent them being interpreted as spaces
+
+## 2.8.0 - 2025-08-23
+
+### Added
+
+- Allow empty lists as header values
+
+### Changed
+
+- PHP 8.5 support
+
+## 2.7.1 - 2025-03-27
+
+### Fixed
+
+- Fixed uppercase IPv6 addresses in URI
+
+### Changed
+
+- Improve uploaded file error message
+
+## 2.7.0 - 2024-07-18
+
+### Added
+
+- Add `Utils::redactUserInfo()` method
+- Add ability to encode bools as ints in `Query::build`
+
+## 2.6.3 - 2024-07-18
+
+### Fixed
+
+- Make `StreamWrapper::stream_stat()` return `false` if inner stream's size is `null` 
+
+### Changed
+
+- PHP 8.4 support
+
+## 2.6.2 - 2023-12-03
+
+### Fixed
+
+- Fixed another issue with the fact that PHP transforms numeric strings in array keys to ints
+
+### Changed
+
+- Updated links in docs to their canonical versions
+- Replaced `call_user_func*` with native calls
+
+## 2.6.1 - 2023-08-27
+
+### Fixed
+
+- Properly handle the fact that PHP transforms numeric strings in array keys to ints
+
+## 2.6.0 - 2023-08-03
+
+### Changed
+
+- Updated the mime type map to add some new entries, fix a couple of invalid entries, and remove an invalid entry
+- Fallback to `application/octet-stream` if we are unable to guess the content type for a multipart file upload
+
+## 2.5.1 - 2023-08-03
+
+### Fixed
+
+- Corrected mime type for `.acc` files to `audio/aac`
+
+### Changed
+
+- PHP 8.3 support
+
+## 2.5.0 - 2023-04-17
+
+### Changed
+
+- Adjusted `psr/http-message` version constraint to `^1.1 || ^2.0`
 
 ## 2.4.5 - 2023-04-17
 

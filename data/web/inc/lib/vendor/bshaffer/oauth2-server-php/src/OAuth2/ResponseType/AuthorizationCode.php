@@ -26,9 +26,9 @@ class AuthorizationCode implements AuthorizationCodeInterface
         // build the URL to redirect to
         $result = array('query' => array());
 
-        $params += array('scope' => null, 'state' => null);
+        $params += array('scope' => null, 'state' => null, 'code_challenge' => null, 'code_challenge_method' => null);
 
-        $result['query']['code'] = $this->createAuthorizationCode($params['client_id'], $user_id, $params['redirect_uri'], $params['scope']);
+        $result['query']['code'] = $this->createAuthorizationCode($params['client_id'], $user_id, $params['redirect_uri'], $params['scope'], $params['code_challenge'], $params['code_challenge_method']);
 
         if (isset($params['state'])) {
             $result['query']['state'] = $params['state'];
@@ -53,10 +53,10 @@ class AuthorizationCode implements AuthorizationCodeInterface
      * @see http://tools.ietf.org/html/rfc6749#section-4
      * @ingroup oauth2_section_4
      */
-    public function createAuthorizationCode($client_id, $user_id, $redirect_uri, $scope = null)
+    public function createAuthorizationCode($client_id, $user_id, $redirect_uri, $scope = null, $code_challenge = null, $code_challenge_method = null)
     {
         $code = $this->generateAuthorizationCode();
-        $this->storage->setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, time() + $this->config['auth_code_lifetime'], $scope);
+        $this->storage->setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, time() + $this->config['auth_code_lifetime'], $scope, null, $code_challenge, $code_challenge_method);
 
         return $code;
     }

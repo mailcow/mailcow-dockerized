@@ -1,0 +1,21 @@
+{
+    "name": "mailcow/php-tests",
+    "description": "Dev-only PHPUnit setup for data/web/inc/lib/mailcow (never deployed)",
+    "type": "project",
+    "license": "GPL-3.0-only",
+    "require-dev": {
+        "phpunit/phpunit": "^11.5",
+        "symfony/yaml": "^7.3"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mailcow\\Tests\\": ""
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.5.13"
+        },
+        "sort-packages": true
+    }
+}

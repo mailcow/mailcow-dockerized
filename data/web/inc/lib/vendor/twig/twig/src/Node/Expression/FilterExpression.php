@@ -14,15 +14,23 @@ namespace Twig\Node\Expression;
 
 use Twig\Attribute\FirstClassTwigCallableReady;
 use Twig\Compiler;
+use Twig\Node\CoercesChildrenToStringInterface;
 use Twig\Node\NameDeprecation;
 use Twig\Node\Node;
 use Twig\TwigFilter;
 
-class FilterExpression extends CallExpression
+class FilterExpression extends CallExpression implements CoercesChildrenToStringInterface
 {
+    /**
+     * @param AbstractExpression $node
+     */
     #[FirstClassTwigCallableReady]
     public function __construct(Node $node, TwigFilter|ConstantExpression $filter, Node $arguments, int $lineno)
     {
+        if (!$node instanceof AbstractExpression) {
+            trigger_deprecation('twig/twig', '3.15', 'Not passing a "%s" instance to the "node" argument of "%s" is deprecated ("%s" given).', AbstractExpression::class, static::class, $node::class);
+        }
+
         if ($filter instanceof TwigFilter) {
             $name = $filter->getName();
             $filterName = new ConstantExpression($name, $lineno);
@@ -69,5 +77,11 @@ class FilterExpression extends CallExpression
         }
 
         $this->compileCallable($compiler);
+    }
+
+    public function getStringCoercedChildNames(): array
+    {
+        // a filter may coerce its input and arguments to string (e.g. `upper`, `replace`)
+        return ['node', 'arguments'];
     }
 }

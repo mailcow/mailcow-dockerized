@@ -40,20 +40,20 @@ class JwtAccessTokenTest extends TestCase
         $this->assertEquals(3600, $delta);
         $this->assertEquals($decodedAccessToken['id'], $decodedAccessToken['jti']);
     }
-    
+
     public function testExtraPayloadCallback()
     {
         $jwtconfig = array('jwt_extra_payload_callable' => function() {
             return array('custom_param' => 'custom_value');
         });
-        
+
         $server = $this->getTestServer($jwtconfig);
         $jwtResponseType = $server->getResponseType('token');
-        
+
         $accessToken = $jwtResponseType->createAccessToken('Test Client ID', 123, 'test', false);
         $jwt = new Jwt;
         $decodedAccessToken = $jwt->decode($accessToken['access_token'], null, false);
-        
+
         $this->assertArrayHasKey('custom_param', $decodedAccessToken);
         $this->assertEquals('custom_value', $decodedAccessToken['custom_param']);
     }
@@ -162,7 +162,7 @@ class JwtAccessTokenTest extends TestCase
         $memoryStorage = Bootstrap::getInstance()->getMemoryStorage();
 
         $storage = array(
-            'access_token' => new JwtAccessTokenStorage($memoryStorage),
+            'access_token' => new JwtAccessTokenStorage($memoryStorage, $memoryStorage),
             'client' => $memoryStorage,
             'client_credentials' => $memoryStorage,
         );

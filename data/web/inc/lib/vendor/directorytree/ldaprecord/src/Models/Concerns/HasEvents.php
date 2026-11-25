@@ -6,9 +6,10 @@ use Closure;
 use LdapRecord\Events\NullDispatcher;
 use LdapRecord\Models\Events;
 use LdapRecord\Models\Events\Event;
+use LdapRecord\Models\Model;
 use LdapRecord\Support\Arr;
 
-/** @mixin \LdapRecord\Models\Model */
+/** @mixin Model */
 trait HasEvents
 {
     /**

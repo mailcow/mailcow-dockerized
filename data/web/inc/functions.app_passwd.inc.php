@@ -5,6 +5,15 @@ function app_passwd($_action, $_data = null) {
   $_data_log = $_data;
   !isset($_data_log['app_passwd']) ?: $_data_log['app_passwd'] = '*';
   !isset($_data_log['app_passwd2']) ?: $_data_log['app_passwd2'] = '*';
+  if (in_array($_action, array('add', 'edit', 'delete')) &&
+    (!isset($_SESSION['acl']['app_passwds']) || $_SESSION['acl']['app_passwds'] != "1")) {
+    $_SESSION['return'][] = array(
+      'type' => 'danger',
+      'log' => array(__FUNCTION__, $_action, $_data_log),
+      'msg' => 'access_denied'
+    );
+    return false;
+  }
   if (isset($_data['username']) && filter_var($_data['username'], FILTER_VALIDATE_EMAIL)) {
     if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data['username'])) {
       $_SESSION['return'][] = array(

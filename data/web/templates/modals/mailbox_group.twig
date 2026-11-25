@@ -1,0 +1,119 @@
+<!-- add mailbox group modal -->
+<div class="modal fade" id="addMailboxGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ lang.groups.add }}</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form" data-id="add_mailbox_group" autocapitalize="none" autocorrect="off">
+          <input type="hidden" value="0" name="active">
+          <input type="hidden" value="0" name="sender_allowed">
+          <input type="hidden" value="0" name="sogo_visible">
+          <input type="hidden" value="0" name="internal">
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_domain">{{ lang.groups.domain }}</label>
+            <div class="col-sm-10">
+              <select data-live-search="true" name="domain" id="add_group_domain" class="form-control mailbox-group-domain-select" required>
+                {% for domain in domains %}
+                <option>{{ domain }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_name">{{ lang.groups.name }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="name" id="add_group_name" maxlength="100" required>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_description">{{ lang.groups.description }}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="description" id="add_group_description" maxlength="255">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_local_part">{{ lang.groups.address }}</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <input type="text" class="form-control" name="local_part" id="add_group_local_part">
+                <span class="input-group-text">@<span class="mailbox-group-domain">{{ domains|first }}</span></span>
+              </div>
+              <small class="text-muted">{{ lang.groups.address_hint }}</small>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_members">{{ lang.groups.members }}</label>
+            <div class="col-sm-10">
+              <select data-live-search="true" data-width="100%" name="members" id="add_group_members" class="form-control" multiple>
+                {% for mailbox in mailboxes %}
+                <option>{{ mailbox }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_send_as">{{ lang.groups.send_as }}</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" rows="3" name="send_as" id="add_group_send_as"></textarea>
+              <small class="text-muted">{{ lang.groups.send_as_hint }}</small>
+            </div>
+          </div>
+          {% include 'edit/mailbox-group-grants.twig' with {'kind': 'imap', 'grants': [], 'id': 'add_group_imap_grants', 'ro': false, 'label_class': ' text-sm-end'} %}
+          {% if not skip_sogo %}
+          {% include 'edit/mailbox-group-grants.twig' with {'kind': 'sogo', 'grants': [], 'id': 'add_group_sogo_grants', 'ro': false, 'label_class': ' text-sm-end'} %}
+          {% endif %}
+          <div class="row mb-2">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sender_allowed"> {{ lang.groups.sender_allowed }}</label>
+              </div>
+              {% if not skip_sogo %}
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="sogo_visible"> {{ lang.groups.sogo_visible }}</label>
+              </div>
+              {% endif %}
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="internal"> {{ lang.groups.internal }}</label>
+              </div>
+            </div>
+          </div>
+          {% if mailcow_cc_role == 'admin' %}
+          <div class="row mb-2">
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_template">{{ lang.groups.template }}</label>
+            <div class="col-sm-6">
+              <select name="template_id" id="add_group_template" class="form-control">
+                <option value="">{{ lang.groups.template_none }}</option>
+                {% for template in mbox_templates %}
+                <option value="{{ template.id }}">{{ template.template }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <label class="control-label col-sm-2 text-sm-end" for="add_group_priority">{{ lang.groups.priority }}</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" name="priority" id="add_group_priority" value="0">
+            </div>
+            <div class="offset-sm-2 col-sm-10">
+              <small class="text-muted">{{ lang.groups.template_hint }}</small>
+            </div>
+          </div>
+          {% endif %}
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <div class="form-check">
+                <label><input type="checkbox" class="form-check-input" value="1" name="active" checked> {{ lang.groups.active }}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="offset-sm-2 col-sm-10">
+              <button class="btn btn-xs-lg d-block d-sm-inline btn-success" data-action="add_item" data-id="add_mailbox_group" data-api-url='add/mailbox-group' data-api-attr='{}' href="#">{{ lang.admin.add }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- add mailbox group modal -->

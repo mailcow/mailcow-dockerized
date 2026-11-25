@@ -4,6 +4,7 @@ namespace LdapRecord\Models\ActiveDirectory\Scopes;
 
 use LdapRecord\Models\ActiveDirectory\Entry;
 use LdapRecord\Models\Model;
+use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\Scope;
 use LdapRecord\Query\Model\Builder;
 
@@ -12,7 +13,7 @@ class InConfigurationContext implements Scope
     /**
      * Refines the base dn to be inside the configuration context.
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
     public function apply(Builder $query, Model $model): void
     {
@@ -22,7 +23,7 @@ class InConfigurationContext implements Scope
     /**
      * Get the LDAP server configuration naming context distinguished name.
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
     protected function getConfigurationNamingContext(Model $model)
     {

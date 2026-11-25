@@ -13,6 +13,7 @@ namespace Twig\TokenParser;
 
 use Twig\Error\SyntaxError;
 use Twig\Node\Node;
+use Twig\Node\Nodes;
 use Twig\Node\SetNode;
 use Twig\Token;
 
@@ -34,11 +35,11 @@ final class SetTokenParser extends AbstractTokenParser
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
-        $names = $this->parser->getExpressionParser()->parseAssignmentExpression();
+        $names = $this->parseAssignmentExpression();
 
         $capture = false;
         if ($stream->nextIf(Token::OPERATOR_TYPE, '=')) {
-            $values = $this->parser->getExpressionParser()->parseMultitargetExpression();
+            $values = $this->parseMultitargetExpression();
 
             $stream->expect(Token::BLOCK_END_TYPE);
 
@@ -69,5 +70,18 @@ final class SetTokenParser extends AbstractTokenParser
     public function getTag(): string
     {
         return 'set';
+    }
+
+    private function parseMultitargetExpression(): Nodes
+    {
+        $targets = [];
+        while (true) {
+            $targets[] = $this->parser->parseExpression();
+            if (!$this->parser->getStream()->nextIf(Token::PUNCTUATION_TYPE, ',')) {
+                break;
+            }
+        }
+
+        return new Nodes($targets);
     }
 }

@@ -1,0 +1,30 @@
+<div class="tab-pane fade" id="tab-groups" role="tabpanel" aria-labelledby="tab-groups">
+  <div class="card mb-4">
+    <div class="card-header d-flex fs-5">
+      <button class="btn d-md-none flex-grow-1 text-start" data-bs-target="#collapse-tab-groups" data-bs-toggle="collapse" aria-controls="collapse-tab-groups">
+        {{ lang.groups.groups }} <span class="badge bg-info table-lines"></span>
+      </button>
+      <span class="d-none d-md-block">{{ lang.groups.groups }} <span class="badge bg-info table-lines"></span></span>
+      <div class="btn-group ms-auto d-flex">
+        <button class="btn btn-xs btn-secondary refresh_table" data-table="mailbox_group_table">{{ lang.admin.refresh }}</button>
+      </div>
+    </div>
+    <div id="collapse-tab-groups" class="card-body collapse" data-bs-parent="#mail-content">
+      <p class="text-muted">{{ lang.groups.info }}</p>
+      <table id="mailbox_group_table" class="table table-striped dt-responsive w-100"></table>
+      <div class="mass-actions-mailbox mt-4">
+        <div class="btn-group">
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary" id="toggle_multi_select_all" data-id="mailbox_group" href="#"><i class="bi bi-check-all"></i> {{ lang.mailbox.toggle_all }}</a>
+          <a class="btn btn-sm btn-xs-half d-block d-sm-inline btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ lang.mailbox.quick_actions }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox_group" data-api-url='edit/mailbox-group' data-api-attr='{"active":"1"}' href="#">{{ lang.mailbox.activate }}</a></li>
+            <li><a class="dropdown-item" data-action="edit_selected" data-id="mailbox_group" data-api-url='edit/mailbox-group' data-api-attr='{"active":"0"}' href="#">{{ lang.mailbox.deactivate }}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" data-action="delete_selected" data-id="mailbox_group" data-api-url='delete/mailbox-group' href="#">{{ lang.mailbox.remove }}</a></li>
+          </ul>
+          <a class="btn btn-sm d-block d-sm-inline btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addMailboxGroupModal"><i class="bi bi-plus-lg"></i> {{ lang.groups.add }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

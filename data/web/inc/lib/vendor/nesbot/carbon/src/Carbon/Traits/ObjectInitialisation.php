@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -16,7 +18,10 @@ trait ObjectInitialisation
     /**
      * True when parent::__construct has been called.
      *
-     * @var string
+     * Can be an int (starting from version 3.13.3, was a string in previous version, can come from unserializing
+     * objects serialized by an older version, but this property then get overwriten during __construct).
+     *
+     * @var string|int
      */
     protected $constructedObjectId;
 }

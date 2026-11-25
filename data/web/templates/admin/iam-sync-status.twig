@@ -1,0 +1,30 @@
+{# Status of the identity sync (Keycloak and LDAP), filled by js/site/identity.js #}
+      <div class="card mt-4" id="iam_sync_status">
+        <div class="card-header d-flex flex-wrap align-items-center">
+          <span class="me-2">{{ lang.admin.iam_sync_status }}</span>
+          <div class="btn-group ms-auto">
+            <button class="btn btn-sm btn-secondary iam_sync_request" data-mode="preview"><i class="bi bi-eye"></i> {{ lang.admin.iam_sync_preview }}</button>
+            <button class="btn btn-sm btn-primary iam_sync_request" data-mode="run"><i class="bi bi-play"></i> {{ lang.admin.iam_sync_run }}</button>
+            <button class="btn btn-sm btn-danger iam_sync_request" data-mode="force"><i class="bi bi-exclamation-triangle"></i> {{ lang.admin.iam_sync_force }}</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="text-muted"><small>{{ lang.admin.iam_sync_status_info }}</small></p>
+          <div id="iam_sync_counts" class="mb-3"></div>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0" id="iam_sync_runs">
+              <thead>
+                <tr>
+                  <th>{{ lang.admin.iam_sync_started }}</th>
+                  <th>{{ lang.admin.iam_sync_mode }}</th>
+                  <th>{{ lang.admin.iam_sync_result }}</th>
+                  <th>{{ lang.admin.iam_sync_changes }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="4" class="text-muted">{{ lang.admin.iam_sync_none }}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>

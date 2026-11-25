@@ -62,6 +62,18 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4"><i class="bi bi-people"></i> {{ lang.groups.memberships }}:</div>
+        <div class="col-sm-8 col-md-9 col-12">
+          <p>
+          {% for group in mailbox_groups.groups %}
+            {{ group.name }}{% if group.address %} &lt;{{ group.address }}&gt;{% endif %}{% if not loop.last %}<br>{% endif %}
+          {% else %}
+            <i class="bi bi-x-lg"></i>
+          {% endfor %}
+          </p>
+        </div>
+      </div>
+      <div class="row">
         <div class="col-sm-4 col-md-3 col-12 text-sm-end text-start mb-4">{{ lang.user.is_catch_all }}:</div>
         <div class="col-sm-8 col-md-9 col-12">
           <p>{% if not user_get_alias_details.is_catch_all %}<i class="bi bi-x-lg"></i>{% else %}{{ user_get_alias_details.is_catch_all }}{% endif %}</p>

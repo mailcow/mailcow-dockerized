@@ -9,6 +9,7 @@ use JsonSerializable;
 use LdapRecord\Connection;
 use LdapRecord\Container;
 use LdapRecord\EscapesValues;
+use LdapRecord\LdapRecordException;
 use LdapRecord\Models\Attributes\DistinguishedName;
 use LdapRecord\Models\Attributes\Guid;
 use LdapRecord\Query\Builder as BaseBuilder;
@@ -246,7 +247,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Get the RootDSE (AD schema) record from the directory.
      *
-     * @throws \LdapRecord\Models\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
     public static function getRootDse(?string $connection = null): Model
     {
@@ -919,7 +920,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Save the model to the directory without raising any events.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function saveQuietly(array $attributes = []): void
     {
@@ -931,7 +932,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Save the model to the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function save(array $attributes = []): void
     {
@@ -951,7 +952,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Inserts the model into the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     protected function performInsert(): void
     {
@@ -998,7 +999,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Updates the model in the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     protected function performUpdate(): void
     {
@@ -1020,7 +1021,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Create the model in the directory.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public static function create(array $attributes = []): static
     {
@@ -1035,7 +1036,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Add an attribute on the model with the given value.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function addAttribute(string $attribute, mixed $value): void
     {
@@ -1054,7 +1055,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Update the model.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function update(array $attributes = []): void
     {
@@ -1067,7 +1068,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Update the model attribute with the specified value.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function replaceAttribute(string $attribute, mixed $value): void
     {
@@ -1085,7 +1086,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Destroy the models for the given distinguished names.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public static function destroy(mixed $dns, bool $recursive = false): int
     {
@@ -1121,7 +1122,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * not exist or does not contain a distinguished name.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function delete(bool $recursive = false): void
     {
@@ -1146,7 +1147,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
     /**
      * Deletes leaf nodes that are attached to the model.
      *
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     protected function deleteLeafNodes(): void
     {
@@ -1162,7 +1163,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Remove an attribute on the model.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function removeAttribute(string $attribute, mixed $value = null): void
     {
@@ -1181,7 +1182,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      *     ["memberuid" => []]
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function removeAttributes(array|string $attributes): void
     {
@@ -1238,7 +1239,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      *
      * @throws UnexpectedValueException
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function move(Model|string $newParentDn, bool $deleteOldRdn = true): void
     {
@@ -1255,7 +1256,7 @@ abstract class Model implements Arrayable, ArrayAccess, JsonSerializable, String
      * Rename the model to a new RDN and new parent.
      *
      * @throws ModelDoesNotExistException
-     * @throws \LdapRecord\LdapRecordException
+     * @throws LdapRecordException
      */
     public function rename(string $rdn, Model|string|null $newParentDn = null, bool $deleteOldRdn = true): void
     {

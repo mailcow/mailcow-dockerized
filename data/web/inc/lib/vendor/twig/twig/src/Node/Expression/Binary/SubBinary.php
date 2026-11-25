@@ -13,8 +13,9 @@
 namespace Twig\Node\Expression\Binary;
 
 use Twig\Compiler;
+use Twig\Node\Expression\ReturnNumberInterface;
 
-class SubBinary extends AbstractBinary
+class SubBinary extends AbstractBinary implements ReturnNumberInterface
 {
     public function operator(Compiler $compiler): Compiler
     {

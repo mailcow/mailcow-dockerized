@@ -36,8 +36,12 @@ require_pattern 'com\. SOA \+dnssec' "${WATCHDOG}"
 require_pattern 'dnssec-failed\.org A \+dnssec' "${WATCHDOG}"
 reject_pattern 'restart_container unbound' "${WATCHDOG}"
 
-require_pattern 'image: ghcr\.io/mailcow/watchdog:2\.11a' "${COMPOSE}"
-require_pattern 'ENABLE_IPV6=' "${COMPOSE}"
+require_pattern 'image: ghcr\.io/mailcow/watchdog:2\.13a' "${COMPOSE}"
+watchdog_compose="$(sed -n '/^    watchdog-mailcow:/,/^    dockerapi-mailcow:/p' "${COMPOSE}")"
+grep -Eq '^[[:space:]]*- ENABLE_IPV6=\$\{ENABLE_IPV6:-true\}$' <<< "${watchdog_compose}" \
+  || fail "watchdog is missing its IPv6 enablement setting"
+grep -Eq '^[[:space:]]*- \*db_version$' <<< "${watchdog_compose}" \
+  || fail "watchdog is missing the staging database version"
 require_pattern 'unbound\.conf:/etc/mailcow/unbound\.conf:ro,z' "${COMPOSE}"
 reject_pattern 'UNBOUND_DNSSEC_MODE=' "${COMPOSE}"
 

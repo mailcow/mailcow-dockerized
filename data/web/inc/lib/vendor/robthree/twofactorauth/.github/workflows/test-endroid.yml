@@ -1,0 +1,46 @@
+name: Test Endroid QR Code Provider
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.0', '8.1']
+        endroid-version: ["^4"]
+        include:
+        - php-version: 5.6
+          # earliest supported version
+          endroid-version: 2.2.1
+        - php-version: 7.0
+          endroid-version: 2.5.1
+        - php-version: 7.1
+          # this version is 7.1+
+          endroid-version: 3.0.0
+        - php-version: 7.2
+          # all later versions are 7.3+
+          endroid-version: 3.5.9
+        - php-version: 7.3
+          endroid-version: 3.9.7
+        - php-version: 7.4
+          endroid-version: 4.0.0
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        tools: composer
+        coverage: xdebug
+        ini-values: error_reporting=E_ALL
+
+    - uses: ramsey/composer-install@v1
+
+    - run: composer require endroid/qrcode:${{ matrix.endroid-version }}
+
+    - run: composer test testsDependency/EndroidQRCodeTest.php

@@ -1,0 +1,153 @@
+{# Sync and group settings of the Keycloak and LDAP forms (iam_form = keycloak|ldap) #}
+          <legend class="fs-5 mt-4"><i class="bi bi-arrow-repeat"></i> {{ lang.admin.iam_section_sync }}</legend><hr>
+          {% if iam_form == 'keycloak' %}
+          <div class="row mb-2">
+            <div class="offset-md-3 col-12 col-md-9">
+              <small class="text-muted">{{ lang.admin.iam_extra_permission|raw }}</small>
+            </div>
+          </div>
+          {% endif %}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_import_users_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_import_users }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="import_users" value="1" {% if iam_settings.import_users == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_periodic_full_sync_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_periodic_full_sync }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="periodic_sync" value="1" {% if iam_settings.periodic_sync == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_offboarding_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_offboarding }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="offboarding" value="1" {% if iam_settings.offboarding == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label">{{ lang.admin.iam_sync_interval }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input class="form-control" type="number" min="1" name="sync_interval" style="width: 80px;" value="{{ iam_settings.sync_interval ?: 15 }}">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_offboarding_limit_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_offboarding_limit }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input class="form-control" type="number" min="0" max="100" name="offboarding_limit" style="width: 80px;" value="{{ iam_settings.offboarding_limit ?? 10 }}">
+            </div>
+          </div>
+          <legend class="fs-5 mt-4"><i class="bi bi-people"></i> {{ lang.admin.iam_section_groups }}</legend><hr>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_group_sync_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_group_sync }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="group_sync" value="1" {% if iam_settings.group_sync == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          {% if iam_form == 'keycloak' %}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_group_paths_info }}"></i>
+              <label class="control-label" for="iam_{{ iam_form }}_group_paths">{{ lang.admin.iam_group_paths }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="/mailcow/*" id="iam_{{ iam_form }}_group_paths" name="group_paths" value="{{ iam_settings.group_paths }}">
+            </div>
+          </div>
+          {% else %}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_{{ iam_form }}_group_basedn">{{ lang.admin.iam_group_basedn }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="{{ lang.admin.iam_basedn }}" id="iam_{{ iam_form }}_group_basedn" name="group_basedn" value="{{ iam_settings.group_basedn }}">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_{{ iam_form }}_group_filter">{{ lang.admin.iam_group_filter }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="(&amp;(objectClass=group)(cn=mailcow-*))" id="iam_{{ iam_form }}_group_filter" name="group_filter" value="{{ iam_settings.group_filter }}">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_{{ iam_form }}_group_name_attribute">{{ lang.admin.iam_group_name_attribute }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="cn" id="iam_{{ iam_form }}_group_name_attribute" name="group_name_attribute" value="{{ iam_settings.group_name_attribute }}">
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <label class="control-label" for="iam_ldap_group_member_mode">{{ lang.admin.iam_group_member_mode }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select id="iam_ldap_group_member_mode" name="group_member_mode" class="form-control">
+                {% for mode in ['memberof', 'member', 'ad_chain'] %}
+                <option value="{{ mode }}" {% if (iam_settings.group_member_mode ?: 'memberof') == mode %}selected{% endif %}>{{ attribute(lang.admin, 'iam_group_member_mode_' ~ mode) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_group_member_attribute_info }}"></i>
+              <label class="control-label" for="iam_{{ iam_form }}_group_member_attribute">{{ lang.admin.iam_group_member_attribute }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <input type="text" class="form-control" placeholder="member" id="iam_{{ iam_form }}_group_member_attribute" name="group_member_attribute" value="{{ iam_settings.group_member_attribute }}">
+            </div>
+          </div>
+          {% endif %}
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_group_autocreate_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_group_autocreate }}</label>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="group_autocreate" value="1" {% if iam_settings.group_autocreate is not defined or iam_settings.group_autocreate == 1 %}checked{% endif %}>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-3 d-flex align-items-center justify-content-md-end">
+              <i style="font-size: 16px; cursor: pointer;" class="bi bi-patch-question-fill mx-2 ms-0" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" title="{{ lang.admin.iam_group_default_domain_info }}"></i>
+              <label class="control-label">{{ lang.admin.iam_group_default_domain }}:</label>
+            </div>
+            <div class="col-12 col-md-9 col-lg-4">
+              <select data-live-search="true" name="group_default_domain" class="form-control" title="-- {{ lang.admin.iam_group_default_domain }} --">
+                <option value="" {% if not iam_settings.group_default_domain %}selected{% endif %}>-- {{ lang.admin.iam_group_default_domain }} --</option>
+                {% for domain in domains %}
+                <option {% if domain == iam_settings.group_default_domain %}selected{% endif %}>{{ domain }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>

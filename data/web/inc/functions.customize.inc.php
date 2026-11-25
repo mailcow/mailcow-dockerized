@@ -233,6 +233,38 @@ function customize($_action, $_item, $_data = null) {
             'msg' => 'custom_login_modified'
           );
         break;
+        case 'ui_theme':
+          $ui_theme = is_array($_data['ui_theme']) ? (string)reset($_data['ui_theme']) : (string)$_data['ui_theme'];
+          if ($ui_theme !== '' && !array_key_exists($ui_theme, customize('get', 'ui_themes'))) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => 'ui_theme_invalid'
+            );
+            return false;
+          }
+          try {
+            if ($ui_theme === '') {
+              $redis->del('UI_THEME');
+            }
+            else {
+              $redis->set('UI_THEME', $ui_theme);
+            }
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          $_SESSION['return'][] = array(
+            'type' => 'success',
+            'log' => array(__FUNCTION__, $_action, $_item, $_data),
+            'msg' => 'ui_theme_modified'
+          );
+        break;
       }
     break;
     case 'delete':
@@ -401,6 +433,42 @@ function customize($_action, $_item, $_data = null) {
             );
             return false;
           }
+        break;
+        case 'ui_themes':
+          // theme folders in css/themes/<name>/ with a theme.css
+          $themes = array();
+          foreach (glob('/web/css/themes/*/theme.css') as $theme_css) {
+            $theme_dir = dirname($theme_css);
+            $theme = basename($theme_dir);
+            if (!preg_match('/^[a-zA-Z0-9_-]+$/', $theme)) {
+              continue;
+            }
+            $meta = json_decode(@file_get_contents($theme_dir . '/theme.json'), true);
+            $themes[$theme] = array(
+              'name' => (!empty($meta['name'])) ? $meta['name'] : $theme,
+              'description' => (!empty($meta['description'])) ? $meta['description'] : '',
+              'dark' => file_exists($theme_dir . '/dark.css')
+            );
+          }
+          ksort($themes);
+          return $themes;
+        break;
+        case 'ui_theme':
+          try {
+            $ui_theme = $redis->get('UI_THEME');
+          }
+          catch (RedisException $e) {
+            $_SESSION['return'][] = array(
+              'type' => 'danger',
+              'log' => array(__FUNCTION__, $_action, $_item, $_data),
+              'msg' => array('redis_error', $e)
+            );
+            return false;
+          }
+          if (empty($ui_theme) || !preg_match('/^[a-zA-Z0-9_-]+$/', $ui_theme) || !file_exists('/web/css/themes/' . $ui_theme . '/theme.css')) {
+            return '';
+          }
+          return $ui_theme;
         break;
       }
     break;

@@ -11,6 +11,8 @@
 
 namespace Twig;
 
+use Twig\Error\RuntimeError;
+
 /**
  * Exposes a template to userland.
  *
@@ -30,12 +32,28 @@ final class TemplateWrapper
     ) {
     }
 
+    /**
+     * @return iterable<scalar|\Stringable|null>
+     */
+    public function stream(array $context = []): iterable
+    {
+        yield from $this->template->yield($context);
+    }
+
+    /**
+     * @return iterable<scalar|\Stringable|null>
+     */
+    public function streamBlock(string $name, array $context = []): iterable
+    {
+        yield from $this->template->yieldBlock($name, $context + $this->env->getGlobals());
+    }
+
     public function render(array $context = []): string
     {
         return $this->template->render($context);
     }
 
-    public function display(array $context = [])
+    public function display(array $context = []): void
     {
         // using func_get_args() allows to not expose the blocks argument
         // as it should only be used by internal code
@@ -44,7 +62,7 @@ final class TemplateWrapper
 
     public function hasBlock(string $name, array $context = []): bool
     {
-        return $this->template->hasBlock($name, $context);
+        return $this->template->hasBlock($name, $context + $this->env->getGlobals());
     }
 
     /**
@@ -52,7 +70,7 @@ final class TemplateWrapper
      */
     public function getBlockNames(array $context = []): array
     {
-        return $this->template->getBlockNames($context);
+        return $this->template->getBlockNames($context + $this->env->getGlobals());
     }
 
     public function renderBlock(string $name, array $context = []): string
@@ -60,7 +78,7 @@ final class TemplateWrapper
         return $this->template->renderBlock($name, $context + $this->env->getGlobals());
     }
 
-    public function displayBlock(string $name, array $context = [])
+    public function displayBlock(string $name, array $context = []): void
     {
         $context += $this->env->getGlobals();
         foreach ($this->template->yieldBlock($name, $context) as $data) {
@@ -79,12 +97,38 @@ final class TemplateWrapper
     }
 
     /**
-     * @internal
+     * Returns the escaping strategy the template body was compiled with.
      *
-     * @return Template
+     * This describes the template's own source, not its output: `autoescape`,
+     * `escape`, and anything rendered by a parent, embedded, or included
+     * template can use another strategy.
+     *
+     * @return string|false The strategy name or false when the template is not autoescaped
      */
-    public function unwrap()
+    public function getDefaultEscapeStrategy(): string|false
     {
+        return $this->template->getDefaultEscapeStrategy();
+    }
+
+    /**
+     * @internal
+     */
+    public function isOwnedBy(Environment $env): bool
+    {
+        return $this->env === $env && $this->template->isOwnedBy($env);
+    }
+
+    /**
+     * @internal
+     */
+    public function unwrap(?Environment $env = null): Template
+    {
+        if (null === $env) {
+            trigger_deprecation('twig/twig', '3.30', 'Calling "%s()" without arguments is deprecated, pass the Twig environment instead.', __METHOD__);
+        } elseif (!$this->isOwnedBy($env)) {
+            throw new RuntimeError(\sprintf('A "%s" can only be used with the "%s" that created it.', self::class, Environment::class));
+        }
+
         return $this->template;
     }
 }

@@ -68,7 +68,7 @@ class Bootstrap
     public function getPostgresDriver()
     {
         try {
-            $pdo = new \PDO('pgsql:host=localhost;dbname=oauth2_server_php', 'postgres');
+            $pdo = new \PDO('pgsql:host=localhost;dbname=oauth2_server_php', 'postgres', 'postgres');
 
             return $pdo;
         } catch (\PDOException $e) {
@@ -118,7 +118,7 @@ class Bootstrap
         if (!$this->mysql) {
             $pdo = null;
             try {
-                $pdo = new \PDO('mysql:host=localhost;', 'root');
+                $pdo = new \PDO('mysql:host=localhost;', 'root', 'root');
             } catch (\PDOException $e) {
                 $this->mysql = new NullStorage('MySQL', 'Unable to connect to MySQL on root@localhost');
             }
@@ -352,11 +352,11 @@ class Bootstrap
 
     private function createPostgresDb()
     {
-        if (!`psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='postgres'"`) {
-            `createuser -s -r postgres`;
+        if (!`PGPASSWORD=postgres psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='postgres'" -h localhost -U postgres`) {
+            `PGPASSWORD=postgres createuser -s -r postgres -h localhost -U postgres`;
         }
 
-        `createdb -O postgres oauth2_server_php`;
+        `PGPASSWORD=postgres createdb -O postgres oauth2_server_php -h localhost -U postgres`;
     }
 
     private function populatePostgresDb(\PDO $pdo)
@@ -366,8 +366,8 @@ class Bootstrap
 
     private function removePostgresDb()
     {
-        if (trim(`psql -l | grep oauth2_server_php | wc -l`)) {
-            `dropdb oauth2_server_php`;
+        if (trim(`PGPASSWORD=postgres psql -l -h localhost -U postgres | grep oauth2_server_php | wc -l`)) {
+            `PGPASSWORD=postgres dropdb oauth2_server_php -h localhost -U postgres`;
         }
     }
 
@@ -943,21 +943,6 @@ class Bootstrap
                 'public_key' => array('S' => $this->getTestPublicKey()),
             )
         ));
-    }
-
-    public function cleanupTravisDynamoDb($prefix = null)
-    {
-        if (is_null($prefix)) {
-            // skip this when not applicable
-            if (!$this->getEnvVar('TRAVIS') || self::DYNAMODB_PHP_VERSION != $this->getEnvVar('TRAVIS_PHP_VERSION')) {
-                return;
-            }
-
-            $prefix = sprintf('build_%s_', $this->getEnvVar('TRAVIS_JOB_NUMBER'));
-        }
-
-        $client = $this->getDynamoDbClient();
-        $this->deleteDynamoDb($client, $prefix);
     }
 
     private function getEnvVar($var, $default = null)

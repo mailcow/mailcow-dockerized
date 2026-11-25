@@ -1,0 +1,36 @@
+{
+    "name": "symfony/polyfill-time",
+    "type": "library",
+    "description": "Symfony polyfill for the Time API added to PHP 8.6",
+    "keywords": ["polyfill", "shim", "compatibility", "portable", "time", "duration"],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ignace Philippe Nyamagana Butera",
+            "email": "nyamsprod@gmail.com"
+        },
+        {
+            "name": "Tim Düsterhus",
+            "email": "tim@tideways-gmbh.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": { "Symfony\\Polyfill\\Time\\": "" },
+        "classmap": [ "Resources/stubs" ]
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "thanks": {
+            "name": "symfony/polyfill",
+            "url": "https://github.com/symfony/polyfill"
+        }
+    }
+}

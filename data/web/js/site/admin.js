@@ -219,6 +219,93 @@ jQuery(function($){
       ]
     });
   }
+  function draw_api_keys() {
+    // just recalc width if instance already exists
+    if ($.fn.DataTable.isDataTable('#apikeystable') ) {
+      $('#apikeystable').DataTable().columns.adjust().responsive.recalc();
+      return;
+    }
+
+    $('#apikeystable').DataTable({
+      responsive: true,
+      processing: true,
+      serverSide: false,
+      stateSave: true,
+      pageLength: pagination_size,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      language: lang_datatables,
+      ajax: {
+        type: "GET",
+        url: "/api/v1/get/api-key/all",
+        dataSrc: function(data){
+          return process_table_data(data, 'apikeystable');
+        }
+      },
+      createdRow: function(row, data) {
+        // service keys from mailcow.conf are read-only
+        if (data.service == 1) $(row).addClass('opacity-75');
+      },
+      columns: [
+        {
+          // placeholder, so checkbox will not block child row toggle
+          title: '',
+          data: null,
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: '',
+          data: 'chkbox',
+          searchable: false,
+          orderable: false,
+          defaultContent: ''
+        },
+        {
+          title: 'ID',
+          data: 'id',
+          defaultContent: ''
+        },
+        {
+          title: lang.description,
+          data: 'desc',
+          defaultContent: ''
+        },
+        {
+          title: lang.access,
+          data: 'access_type',
+          defaultContent: ''
+        },
+        {
+          title: lang.api_key,
+          data: 'key',
+          defaultContent: ''
+        },
+        {
+          title: lang.api_networks,
+          data: 'networks',
+          defaultContent: ''
+        },
+        {
+          title: lang.active,
+          data: 'active',
+          defaultContent: '',
+          render: function (data, type) {
+            if(data == 1) return '<i class="bi bi-check-lg"><span class="sorting-value">1</span></i>';
+            else return '<i class="bi bi-x-lg"><span class="sorting-value">0</span></i>';
+          }
+        },
+        {
+          title: lang.action,
+          data: 'action',
+          className: 'dt-sm-head-hidden dt-text-right',
+          defaultContent: ''
+        },
+      ]
+    });
+  }
   function draw_admins() {
     // just recalc width if instance already exists
     if ($.fn.DataTable.isDataTable('#adminstable') ) {
@@ -574,6 +661,36 @@ jQuery(function($){
         item.grant_types = 'refresh_token password authorization_code';
         item.chkbox = '<input type="checkbox" class="form-check-input" data-id="oauth2_clients" name="multi_select" value="' + item.id + '" />';
       });
+    } else if (table == 'apikeystable') {
+      $.each(data, function (i, item) {
+        item.desc = escapeHtml(item.description);
+        item.access_type = (item.access == 'rw') ?
+          '<span class="badge bg-warning text-dark">' + lang.api_read_write + '</span>' :
+          '<span class="badge bg-info">' + lang.api_read_only + '</span>';
+        item.key = '<code>' + escapeHtml(item.api_key) + '</code> ' +
+          '<a href="#" class="api-key-copy" data-key="' + escapeHtml(item.api_key) + '" title="' + lang.copy_to_clipboard + '"><i class="bi bi-clipboard"></i></a>';
+        if (item.skip_ip_check == 1) {
+          item.networks = '<span class="text-muted">' + lang.api_skip_ip_check + '</span>';
+        } else {
+          item.networks = $.map(item.allow_from, function(n) { return escapeHtml(n); }).join('<br>');
+        }
+        if (item.service == 1) {
+          // service keys are shown, but cannot be changed here
+          item.desc = '<i class="bi bi-lock-fill" title="' + lang.api_service_key + '"></i> ' + item.desc +
+            ' <span class="badge bg-secondary">mailcow.conf</span>';
+          item.chkbox = '<input type="checkbox" class="form-check-input" disabled />';
+          item.action = '<div class="btn-group">' +
+            '<a class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary disabled" aria-disabled="true"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+            '<a class="btn btn-xs btn-xs-lg btn-xs-half btn-danger disabled" aria-disabled="true"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+            '</div>';
+        } else {
+          item.chkbox = '<input type="checkbox" class="form-check-input" data-id="api_keys" name="multi_select" value="' + item.id + '" />';
+          item.action = '<div class="btn-group">' +
+            '<a href="/edit/api-key/' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-secondary"><i class="bi bi-pencil-fill"></i> ' + lang.edit + '</a>' +
+            '<a href="#" data-action="delete_selected" data-id="single-api-key" data-api-url="delete/api-key" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-xs-lg btn-xs-half btn-danger"><i class="bi bi-trash"></i> ' + lang.remove + '</a>' +
+            '</div>';
+        }
+      });
     } else if (table == 'domainadminstable') {
       $.each(data, function (i, item) {
         item.selected_domains = escapeHtml(item.selected_domains);
@@ -621,6 +738,7 @@ jQuery(function($){
   onVisible("[id^=adminstable]", () => draw_admins());
   onVisible("[id^=domainadminstable]", () => draw_domain_admins());
   onVisible("[id^=oauth2clientstable]", () => draw_oauth2_clients());
+  onVisible("[id^=apikeystable]", () => draw_api_keys());
   onVisible("[id^=forwardinghoststable]", () => draw_fwd_hosts());
   onVisible("[id^=relayhoststable]", () => draw_relayhosts());
   onVisible("[id^=transportstable]", () => draw_transport_maps());
@@ -630,24 +748,14 @@ jQuery(function($){
     event.stopPropagation();
   })
 
-  // API IP check toggle
-  $("#skip_ip_check_ro").click(function( event ) {
-   $("#skip_ip_check_ro").not(this).prop('checked', false);
-    if ($("#skip_ip_check_ro:checked").length > 0) {
-      $('#allow_from_ro').prop('disabled', true);
-    }
-    else {
-      $("#allow_from_ro").removeAttr('disabled');
-    }
+  // API key: no allowed networks without IP check
+  $(".api-skip-ip-check").change(function() {
+    $($(this).data('target')).prop('disabled', this.checked);
   });
-  $("#skip_ip_check_rw").click(function( event ) {
-   $("#skip_ip_check_rw").not(this).prop('checked', false);
-    if ($("#skip_ip_check_rw:checked").length > 0) {
-      $('#allow_from_rw').prop('disabled', true);
-    }
-    else {
-      $("#allow_from_rw").removeAttr('disabled');
-    }
+  $(document).on('click', '.api-key-copy', function(e) {
+    e.preventDefault();
+    navigator.clipboard.writeText($(this).attr('data-key'));
+    mailcow_alert_box(lang.copy_to_clipboard, 'success');
   });
   // Relayhost
   $('#testRelayhostModal').on('show.bs.modal', function (e) {
@@ -825,6 +933,12 @@ jQuery(function($){
       $('#generic_oidc_settings').addClass('d-none');
       $('#keycloak_settings').addClass('d-none');
     }
+  });
+  // LDAP: one select for the excluding use_ssl and use_tls (select only, bootstrap-select copies the class to its wrapper)
+  $('select.iam_ldap_encryption').on('change', function() {
+    var $form = $(this).closest('form');
+    $form.find('input[name="use_ssl"]').val(this.value === 'ssl' ? 1 : 0);
+    $form.find('input[name="use_tls"]').val(this.value === 'tls' ? 1 : 0);
   });
   function addAttributeMappingRow(list_id, del_class, e) {
     e.preventDefault();

@@ -1,7 +1,7 @@
 /*!
- * Bootstrap-select v1.14.0-beta2 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.14.0-beta3 (https://developer.snapappointments.com/bootstrap-select)
  *
- * Copyright 2012-2021 SnapAppointments, LLC
+ * Copyright 2012-2022 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
  */
 
@@ -35,8 +35,7 @@ select.selectpicker {
   display: none !important;
 }
 .bootstrap-select {
-  width: 220px \0;
-  /*IE9 and below*/
+  width: 220px;
   vertical-align: middle;
 }
 .bootstrap-select > .dropdown-toggle {

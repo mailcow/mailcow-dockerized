@@ -100,6 +100,22 @@ final class Profile implements \IteratorAggregate, \Serializable
     }
 
     /**
+     * Returns the start time in microseconds.
+     */
+    public function getStartTime(): float
+    {
+        return $this->starts['wt'] ?? 0.0;
+    }
+
+    /**
+     * Returns the end time in microseconds.
+     */
+    public function getEndTime(): float
+    {
+        return $this->ends['wt'] ?? 0.0;
+    }
+
+    /**
      * Returns the memory usage in bytes.
      */
     public function getMemoryUsage(): int
@@ -157,7 +173,7 @@ final class Profile implements \IteratorAggregate, \Serializable
 
     public function unserialize($data): void
     {
-        $this->__unserialize(unserialize($data));
+        $this->__unserialize(unserialize($data, ['allowed_classes' => [self::class]]));
     }
 
     /**

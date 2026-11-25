@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from jinja2 import Environment, FileSystemLoader
 
@@ -44,6 +45,11 @@ def prepare_template_vars():
   ipv4_network = os.getenv("IPV4_NETWORK", "172.22.1")
   additional_server_names = os.getenv("ADDITIONAL_SERVER_NAMES", "")
   trusted_proxies = os.getenv("TRUSTED_PROXIES", "")
+  # nginx size syntax, invalid values fall back to the default
+  max_body_size = os.getenv("NGINX_MAX_BODY_SIZE", "128m").strip()
+  if not re.fullmatch(r'[0-9]+[kKmMgG]?', max_body_size):
+    print(f"Invalid NGINX_MAX_BODY_SIZE '{max_body_size}', using 128m")
+    max_body_size = "128m"
 
   template_vars = {
     'IPV4_NETWORK': ipv4_network,
@@ -60,6 +66,7 @@ def prepare_template_vars():
     'PHPFPMHOST': os.getenv("PHPFPMHOST", "php-fpm-mailcow"),
     'ENABLE_IPV6': os.getenv("ENABLE_IPV6", "true").lower() != "false",
     'HTTP_REDIRECT': os.getenv("HTTP_REDIRECT", "n").lower() in ("y", "yes"),
+    'NGINX_MAX_BODY_SIZE': max_body_size,
   }
 
   ssl_dir = '/etc/ssl/mail/'

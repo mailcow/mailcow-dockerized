@@ -112,7 +112,7 @@ class HttpBasic implements ClientAssertionTypeInterface
      *
      * @ingroup oauth2_section_2
      */
-    public function getClientCredentials(RequestInterface $request, ResponseInterface $response = null)
+    public function getClientCredentials(RequestInterface $request, ?ResponseInterface $response = null)
     {
         if (!is_null($request->headers('PHP_AUTH_USER')) && !is_null($request->headers('PHP_AUTH_PW'))) {
             return array('client_id' => $request->headers('PHP_AUTH_USER'), 'client_secret' => $request->headers('PHP_AUTH_PW'));

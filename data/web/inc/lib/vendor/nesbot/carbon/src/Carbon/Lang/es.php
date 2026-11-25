@@ -72,6 +72,10 @@ return [
     'diff_tomorrow_regexp' => 'mañana(?:\\s+a)?(?:\\s+las)?',
     'diff_before_yesterday' => 'anteayer',
     'diff_after_tomorrow' => 'pasado mañana',
+    'period_recurrences' => 'una vez|:count veces',
+    'period_interval' => 'cada :interval',
+    'period_start_date' => 'de :date',
+    'period_end_date' => 'a :date',
     'formats' => [
         'LT' => 'H:mm',
         'LTS' => 'H:mm:ss',
@@ -81,26 +85,25 @@ return [
         'LLLL' => 'dddd, D [de] MMMM [de] YYYY H:mm',
     ],
     'calendar' => [
-        'sameDay' => function (CarbonInterface $current) {
+        'sameDay' => static function (CarbonInterface $current) {
             return '[hoy a la'.($current->hour !== 1 ? 's' : '').'] LT';
         },
-        'nextDay' => function (CarbonInterface $current) {
+        'nextDay' => static function (CarbonInterface $current) {
             return '[mañana a la'.($current->hour !== 1 ? 's' : '').'] LT';
         },
-        'nextWeek' => function (CarbonInterface $current) {
+        'nextWeek' => static function (CarbonInterface $current) {
             return 'dddd [a la'.($current->hour !== 1 ? 's' : '').'] LT';
         },
-        'lastDay' => function (CarbonInterface $current) {
+        'lastDay' => static function (CarbonInterface $current) {
             return '[ayer a la'.($current->hour !== 1 ? 's' : '').'] LT';
         },
-        'lastWeek' => function (CarbonInterface $current) {
+        'lastWeek' => static function (CarbonInterface $current) {
             return '[el] dddd [pasado a la'.($current->hour !== 1 ? 's' : '').'] LT';
         },
         'sameElse' => 'L',
     ],
     'months' => ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
-    'months_short' => ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
-    'mmm_suffix' => '.',
+    'months_short' => ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'],
     'ordinal' => ':numberº',
     'weekdays' => ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
     'weekdays_short' => ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],

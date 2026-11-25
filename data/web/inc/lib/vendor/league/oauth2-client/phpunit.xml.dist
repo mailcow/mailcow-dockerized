@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="./vendor/autoload.php"
+         colors="true"
+         cacheDirectory="build/phpunit">
+
+    <coverage>
+        <report>
+            <clover outputFile="build/logs/clover.xml"/>
+            <html outputDirectory="build/coverage"/>
+            <text outputFile="php://stdout"/>
+        </report>
+    </coverage>
+
+    <testsuites>
+        <testsuite name="all">
+            <directory>test</directory>
+        </testsuite>
+    </testsuites>
+
+    <logging>
+        <junit outputFile="build/report.junit.xml"/>
+    </logging>
+
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+
+    <php>
+        <env name="XDEBUG_MODE" value="coverage"/>
+    </php>
+
+</phpunit>

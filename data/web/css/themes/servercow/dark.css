@@ -1,0 +1,212 @@
+/* servercow theme, dark mode, bundled after mailcow core dark mode */
+
+:root {
+  --sc-brown-hover: #806b55;
+  --sc-brown-active: #8a745c;
+  --sc-brown-soft: rgba(201, 180, 154, .18);
+  --sc-brown-tint: rgba(201, 180, 154, .08);
+  --sc-link: #c9b49a;
+  --sc-danger-text: #ff8a8a;
+  --sc-ink: #ece7e1;
+  --sc-muted: #a89f94;
+  --sc-placeholder: #8a8177;
+  --sc-bg: #171513;
+  --sc-surface: #211e1b;
+  --sc-cap: #2a2622;
+  --sc-addon: #2a2622;
+  --sc-line: #463f38;
+  --sc-divider: #34302b;
+  --sc-cap-line: #3d3732;
+  --sc-stripe: rgba(255, 255, 255, .025);
+  --sc-hover: rgba(201, 180, 154, .08);
+  --sc-focus-border: #8a7864;
+  --sc-focus: rgba(201, 180, 154, .25);
+  --sc-shadow: 0 0 10px 0 rgba(0, 0, 0, .5);
+  --bs-body-color: #ece7e1;
+  --bs-body-bg: #171513;
+  /* core dark tokens, see css/themes/mailcow-darkmode.css */
+  --mc-body-bg: var(--sc-bg);
+  --mc-body-color: var(--sc-ink);
+  --mc-surface: var(--sc-surface);
+  --mc-surface-alt: var(--sc-cap);
+  --mc-text: var(--sc-ink);
+  --mc-text-soft: var(--sc-ink);
+  --mc-muted: var(--sc-muted);
+  --mc-border: var(--sc-divider);
+  --mc-tab-border: var(--sc-divider);
+  --mc-link: var(--sc-link);
+  --mc-link-hover: #e0cfba;
+  --mc-btn-bg: var(--sc-cap);
+  --mc-btn-border: var(--sc-line);
+  --mc-input-bg: var(--sc-bg);
+  --mc-input-color: var(--sc-ink);
+  --mc-input-border: var(--sc-line);
+  --mc-dropdown-bg: var(--sc-surface);
+  --mc-table-bg: transparent;
+  --mc-table-stripe: var(--sc-stripe);
+  --mc-table-stripe-row: transparent;
+  --mc-table-hover: var(--sc-hover);
+  --mc-table-border: var(--sc-divider);
+  --mc-progress-bg: var(--sc-cap);
+  --mc-placeholder: var(--sc-placeholder);
+  --mc-hr: var(--sc-divider);
+  --mc-btn-outline-color: var(--sc-ink);
+  --mc-btn-outline-border: var(--sc-line);
+  --mc-btn-outline-hover-bg: var(--sc-brown-tint);
+  --mc-btn-outline-active-bg: var(--sc-brown);
+  --mc-btn-light-active-color: #fff;
+  --mc-btn-light-active-bg: var(--sc-brown);
+  --mc-btn-light-active-border: var(--sc-brown);
+  --mc-btn-dark-bg: var(--sc-brown);
+  --mc-input-disabled-bg: var(--sc-cap);
+  --mc-input-disabled-color: var(--sc-muted);
+  --mc-list-header-bg: var(--sc-cap);
+  --mc-list-details-bg: var(--sc-surface);
+  --mc-chip-bg: var(--sc-cap);
+  --mc-table-child-bg: var(--sc-surface);
+  --mc-dtr-bg: var(--sc-cap);
+  --mc-dtr-border: var(--sc-line);
+  --mc-dtr-color: var(--sc-link);
+  --mc-dtr-hover-bg: var(--sc-hover);
+  --mc-dtr-active-bg: var(--sc-brown-soft);
+}
+
+/* navbar */
+.navbar.bg-light {
+  background-color: var(--sc-surface) !important;
+  border-bottom-color: var(--sc-green);
+}
+.navbar-light .navbar-nav .nav-link {
+  color: var(--sc-ink) !important;
+}
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:focus,
+.navbar-light .navbar-nav .nav-link.active,
+.navbar-light .navbar-nav .show > .nav-link {
+  color: var(--sc-link) !important;
+}
+.dropdown-menu {
+  border-color: var(--sc-cap-line);
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  color: var(--sc-link) !important;
+}
+
+/* cards and modals */
+.card-header {
+  color: var(--sc-ink);
+  background-color: var(--sc-cap);
+  border-color: var(--sc-cap-line);
+}
+.modal-content {
+  background-color: var(--sc-surface);
+}
+.modal-header {
+  border-color: var(--sc-cap-line);
+}
+.input-group-text {
+  background-color: var(--sc-addon);
+}
+.form-control::file-selector-button {
+  color: var(--sc-ink);
+  background-color: var(--sc-cap);
+  border-color: var(--sc-line);
+}
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+  color: var(--sc-link);
+  background-color: var(--sc-line);
+}
+.form-check-input:not(:checked) {
+  background-color: var(--sc-bg);
+  border-color: var(--sc-line);
+}
+kbd {
+  color: var(--sc-ink);
+  background-color: var(--sc-cap);
+}
+
+/* buttons */
+.btn-secondary:hover, .btn-secondary:focus, .btn-light:hover, .btn-light:focus, .page-link:hover {
+  color: var(--sc-link) !important;
+  background-color: var(--sc-line) !important;
+}
+.btn-check:checked + .btn-secondary, .btn-secondary.active, .show > .btn-secondary.dropdown-toggle,
+.page-item.active .page-link {
+  color: #fff !important;
+  background-color: var(--sc-brown) !important;
+  border-color: var(--sc-brown) !important;
+}
+
+/* tabs */
+.nav-tabs .nav-link {
+  color: var(--sc-ink) !important;
+  border-bottom-color: transparent !important;
+}
+.nav-tabs .nav-link:not(.disabled):hover, .nav-tabs .nav-link:not(.disabled):focus,
+.card .nav-tabs .nav-link:not(.disabled):hover, .card .nav-tabs .nav-link:not(.disabled):focus {
+  color: var(--sc-link) !important;
+  border-bottom-color: transparent !important;
+}
+.nav-tabs .nav-link.active, .card .nav-tabs .nav-link.active {
+  color: var(--sc-link) !important;
+  border-bottom-color: var(--sc-link) !important;
+}
+
+/* semantic text */
+.text-success {
+  color: var(--sc-green) !important;
+}
+.text-warning {
+  color: var(--sc-warning) !important;
+}
+
+/* alerts, opaque dark tints (also used for floating notifications) */
+.alert-primary {
+  color: #e6d9c9 !important;
+  background-color: #3c342b !important;
+  border-color: #5e4f3e !important;
+}
+.alert-info {
+  color: #cfe9f6 !important;
+  background-color: #2f3334 !important;
+  border-color: #44535a !important;
+}
+.alert-success {
+  color: #cdeea0;
+  background-color: #2e3419;
+  border-color: #405515;
+}
+.alert-danger {
+  color: #f9c4c4;
+  background-color: #402a28;
+  border-color: #693a38;
+}
+.alert-warning {
+  color: #f5d496;
+  background-color: #3c2f19;
+  border-color: #654815;
+}
+.alert-secondary, .alert-light {
+  color: var(--sc-ink) !important;
+  background-color: var(--sc-cap) !important;
+  border-color: var(--sc-divider) !important;
+}
+
+.alert .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* slider */
+.noUi-target {
+  background: var(--sc-bg);
+  border-color: var(--sc-line);
+  box-shadow: none;
+}
+.noUi-handle {
+  background: var(--sc-cap);
+  border-color: var(--sc-line);
+  box-shadow: none;
+}
+.noUi-handle::before, .noUi-handle::after {
+  background: var(--sc-line);
+}

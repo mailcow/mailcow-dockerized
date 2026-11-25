@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.21
+FROM php:8.5-fpm-alpine3.24
 
 LABEL maintainer = "The Infrastructure Company GmbH <info@servercow.de>"
 
@@ -16,10 +16,7 @@ ARG REDIS_PECL_VERSION=6.3.0
 ARG COMPOSER_VERSION=2.10.2
 
 RUN apk add -U --no-cache autoconf \
-  aspell-dev \
-  aspell-libs \
   bash \
-  c-client \
   cyrus-sasl-dev \
   freetype \
   freetype-dev \
@@ -33,7 +30,6 @@ RUN apk add -U --no-cache autoconf \
   icu-libs \
   imagemagick \
   imagemagick-dev \
-  imap-dev \
   jq \
   libavif \
   libavif-dev \
@@ -47,6 +43,7 @@ RUN apk add -U --no-cache autoconf \
   libressl-dev \
   librsvg \
   libtool \
+  libwebp \
   libwebp-dev \
   libxml2-dev \
   libxpm \
@@ -63,6 +60,7 @@ RUN apk add -U --no-cache autoconf \
   samba-client \
   zlib-dev \
   tzdata \
+  && docker-php-source extract \
   && pecl install APCu-${APCU_PECL_VERSION} \
   && pecl install imagick-${IMAGICK_PECL_VERSION} \
   && pecl install mailparse-${MAILPARSE_PECL_VERSION} \
@@ -77,21 +75,18 @@ RUN apk add -U --no-cache autoconf \
     --with-webp \
     --with-xpm \
     --with-avif \
-  && docker-php-ext-install -j 4 exif gd gettext intl ldap opcache pcntl pdo pdo_mysql pspell soap sockets zip bcmath gmp \
-  && docker-php-ext-configure imap --with-imap --with-imap-ssl \
-  && docker-php-ext-install -j 4 imap \
+  && docker-php-ext-install -j 4 exif gd gettext intl ldap pcntl pdo pdo_mysql soap sockets zip bcmath gmp \
   && curl --silent --show-error https://getcomposer.org/installer | php -- --version=${COMPOSER_VERSION} \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer \
+  && docker-php-source delete \
   && apk del --purge autoconf \
-    aspell-dev \
     cyrus-sasl-dev \
     freetype-dev \
     g++ \
     gettext-dev \
     icu-dev \
     imagemagick-dev \
-    imap-dev \
     libavif-dev \
     libjpeg-turbo-dev \
     libmemcached-dev \

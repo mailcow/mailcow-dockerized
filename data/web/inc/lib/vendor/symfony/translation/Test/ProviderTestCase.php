@@ -11,13 +11,17 @@
 
 namespace Symfony\Component\Translation\Test;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\Provider\ProviderInterface;
+use Symfony\Component\Translation\TranslatorBag;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -45,6 +49,7 @@ abstract class ProviderTestCase extends TestCase
     /**
      * @dataProvider toStringProvider
      */
+    #[DataProvider('toStringProvider')]
     public function testToString(ProviderInterface $provider, string $expected)
     {
         $this->assertSame($expected, (string) $provider);
@@ -57,12 +62,12 @@ abstract class ProviderTestCase extends TestCase
 
     protected function getLoader(): LoaderInterface
     {
-        return $this->loader ??= $this->createMock(LoaderInterface::class);
+        return $this->loader ??= new ArrayLoader();
     }
 
     protected function getLogger(): LoggerInterface
     {
-        return $this->logger ??= $this->createMock(LoggerInterface::class);
+        return $this->logger ??= new NullLogger();
     }
 
     protected function getDefaultLocale(): string
@@ -72,11 +77,11 @@ abstract class ProviderTestCase extends TestCase
 
     protected function getXliffFileDumper(): XliffFileDumper
     {
-        return $this->xliffFileDumper ??= $this->createMock(XliffFileDumper::class);
+        return $this->xliffFileDumper ??= new XliffFileDumper();
     }
 
     protected function getTranslatorBag(): TranslatorBagInterface
     {
-        return $this->translatorBag ??= $this->createMock(TranslatorBagInterface::class);
+        return $this->translatorBag ??= new TranslatorBag();
     }
 }

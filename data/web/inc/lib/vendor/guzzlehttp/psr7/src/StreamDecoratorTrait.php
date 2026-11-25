@@ -24,33 +24,25 @@ trait StreamDecoratorTrait
     /**
      * Magic method used to create a new stream if streams are not added in
      * the constructor of a decorator (e.g., LazyOpenStream).
-     *
-     * @return StreamInterface
      */
-    public function __get(string $name)
+    public function __get(string $name): StreamInterface
     {
         if ($name === 'stream') {
             $this->stream = $this->createStream();
+
             return $this->stream;
         }
 
-        throw new \UnexpectedValueException("$name not found on class");
+        throw new \UnexpectedValueException(\sprintf('%s not found on class', DiagnosticValue::escape($name)));
     }
 
     public function __toString(): string
     {
-        try {
-            if ($this->isSeekable()) {
-                $this->seek(0);
-            }
-            return $this->getContents();
-        } catch (\Throwable $e) {
-            if (\PHP_VERSION_ID >= 70400) {
-                throw $e;
-            }
-            trigger_error(sprintf('%s::__toString exception: %s', self::class, (string) $e), E_USER_ERROR);
-            return '';
+        if ($this->isSeekable()) {
+            $this->seek(0);
         }
+
+        return $this->getContents();
     }
 
     public function getContents(): string
@@ -67,7 +59,7 @@ trait StreamDecoratorTrait
     {
         /** @var callable $callable */
         $callable = [$this->stream, $method];
-        $result = call_user_func_array($callable, $args);
+        $result = ($callable)(...$args);
 
         // Always return the wrapped object if the result is a return $this
         return $result === $this->stream ? $this : $result;
@@ -79,11 +71,9 @@ trait StreamDecoratorTrait
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return mixed
      */
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         return $this->stream->getMetadata($key);
     }
@@ -128,17 +118,21 @@ trait StreamDecoratorTrait
         $this->seek(0);
     }
 
-    public function seek($offset, $whence = SEEK_SET): void
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         $this->stream->seek($offset, $whence);
     }
 
-    public function read($length): string
+    public function read(int $length): string
     {
+        if ($length < 0) {
+            throw new \RuntimeException('Length parameter cannot be negative');
+        }
+
         return $this->stream->read($length);
     }
 
-    public function write($string): int
+    public function write(string $string): int
     {
         return $this->stream->write($string);
     }

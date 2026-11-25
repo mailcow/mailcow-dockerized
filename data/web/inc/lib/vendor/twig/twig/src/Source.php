@@ -44,4 +44,23 @@ final class Source
     {
         return $this->path;
     }
+
+    /**
+     * Returns the 1-based column for a 0-based byte offset in the source code.
+     *
+     * A negative offset means the position is unknown and yields null.
+     *
+     * @return positive-int|null
+     */
+    public function getColumn(int $offset): ?int
+    {
+        if ($offset < 0) {
+            return null;
+        }
+
+        $before = str_replace(["\r\n", "\r"], "\n", substr($this->code, 0, $offset));
+        $lineStart = strrpos($before, "\n");
+
+        return false === $lineStart ? \strlen($before) + 1 : \strlen($before) - $lineStart;
+    }
 }

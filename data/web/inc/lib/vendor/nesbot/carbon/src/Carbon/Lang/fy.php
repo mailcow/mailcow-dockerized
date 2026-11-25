@@ -61,12 +61,11 @@ return [
         'lastWeek' => '[ôfrûne] dddd [om] LT',
         'sameElse' => 'L',
     ],
-    'ordinal' => function ($number) {
+    'ordinal' => static function ($number) {
         return $number.(($number === 1 || $number === 8 || $number >= 20) ? 'ste' : 'de');
     },
     'months' => ['jannewaris', 'febrewaris', 'maart', 'april', 'maaie', 'juny', 'july', 'augustus', 'septimber', 'oktober', 'novimber', 'desimber'],
-    'months_short' => ['jan', 'feb', 'mrt', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
-    'mmm_suffix' => '.',
+    'months_short' => ['jan.', 'feb.', 'mrt.', 'apr.', 'mai.', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'des.'],
     'weekdays' => ['snein', 'moandei', 'tiisdei', 'woansdei', 'tongersdei', 'freed', 'sneon'],
     'weekdays_short' => ['si.', 'mo.', 'ti.', 'wo.', 'to.', 'fr.', 'so.'],
     'weekdays_min' => ['Si', 'Mo', 'Ti', 'Wo', 'To', 'Fr', 'So'],

@@ -54,12 +54,12 @@ final class TwigFilter extends AbstractTwigCallable
             return $this->options['is_safe_callback']($filterArgs);
         }
 
-        return null;
+        return [];
     }
 
-    public function getPreservesSafety(): ?array
+    public function getPreservesSafety(): array
     {
-        return $this->options['preserves_safety'];
+        return $this->options['preserves_safety'] ?? [];
     }
 
     public function getPreEscape(): ?string

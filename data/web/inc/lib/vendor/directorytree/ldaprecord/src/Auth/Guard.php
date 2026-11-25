@@ -3,7 +3,9 @@
 namespace LdapRecord\Auth;
 
 use Exception;
+use LdapRecord\Configuration\ConfigurationException;
 use LdapRecord\Configuration\DomainConfiguration;
+use LdapRecord\ConnectionException;
 use LdapRecord\Events\DispatcherInterface;
 use LdapRecord\LdapInterface;
 
@@ -71,7 +73,7 @@ class Guard
      * Attempt binding a user to the LDAP server. Supports sasl and anonymous binding.
      *
      * @throws BindException
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     public function bind(?string $username = null, ?string $password = null): void
     {
@@ -102,7 +104,7 @@ class Guard
     /**
      * Authenticate by binding to the LDAP server.
      *
-     * @throws \LdapRecord\ConnectionException
+     * @throws ConnectionException
      */
     protected function authenticate(?string $username = null, ?string $password = null): bool
     {
@@ -119,8 +121,8 @@ class Guard
      * Bind to the LDAP server using the configured username and password.
      *
      * @throws BindException
-     * @throws \LdapRecord\ConnectionException
-     * @throws \LdapRecord\Configuration\ConfigurationException
+     * @throws ConnectionException
+     * @throws ConfigurationException
      */
     public function bindAsConfiguredUser(): void
     {

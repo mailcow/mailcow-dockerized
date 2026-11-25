@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="true"
+         failOnDeprecation="true"
+         failOnNotice="true"
+         beStrictAboutOutputDuringTests="true">
+    <testsuites>
+        <testsuite name="mailcow">
+            <directory>.</directory>
+            <exclude>vendor</exclude>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>../../data/web/inc/lib/mailcow</directory>
+        </include>
+    </source>
+</phpunit>

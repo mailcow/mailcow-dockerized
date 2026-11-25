@@ -4,7 +4,7 @@ Types to use Carbon in Doctrine
 
 ## Documentation
 
-[Check how to use in the official Carbon documentation](https://carbon.nesbot.com/symfony/)
+[Check how to use in the official Carbon documentation](https://carbon.nesbot.com/guide/getting-started/symfony.html)
 
 This package is an externalization of [src/Carbon/Doctrine](https://github.com/briannesbitt/Carbon/tree/2.71.0/src/Carbon/Doctrine)
 from `nestbot/carbon` package.

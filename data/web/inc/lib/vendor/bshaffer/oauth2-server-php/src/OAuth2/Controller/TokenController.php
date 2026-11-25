@@ -54,7 +54,7 @@ class TokenController implements TokenControllerInterface
      * @param ScopeInterface               $scopeUtil
      * @throws InvalidArgumentException
      */
-    public function __construct(AccessTokenInterface $accessToken, ClientInterface $clientStorage, array $grantTypes = array(), ClientAssertionTypeInterface $clientAssertionType = null, ScopeInterface $scopeUtil = null)
+    public function __construct(AccessTokenInterface $accessToken, ClientInterface $clientStorage, array $grantTypes = array(), ?ClientAssertionTypeInterface $clientAssertionType = null, ?ScopeInterface $scopeUtil = null)
     {
         if (is_null($clientAssertionType)) {
             foreach ($grantTypes as $grantType) {

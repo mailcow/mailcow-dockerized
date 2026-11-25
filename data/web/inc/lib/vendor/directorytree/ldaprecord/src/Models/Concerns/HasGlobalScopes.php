@@ -4,9 +4,10 @@ namespace LdapRecord\Models\Concerns;
 
 use Closure;
 use InvalidArgumentException;
+use LdapRecord\Models\Model;
 use LdapRecord\Models\Scope;
 
-/** @mixin \LdapRecord\Models\Model */
+/** @mixin Model */
 trait HasGlobalScopes
 {
     /**

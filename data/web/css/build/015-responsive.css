@@ -191,7 +191,7 @@
       height: 2rem;
       width: 2rem;
       line-height: 2rem;
-      margin-top: -15px;
+      margin-top: calc(-1rem - 1.5px);
   }
 
   li .dtr-data {

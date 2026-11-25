@@ -23,6 +23,15 @@ $(document).ready(function() {
   if ($("form[data-id='editalias'] .goto_checkbox:checked").length > 0) {
     $('#textarea_alias_goto').prop('disabled', true);
   }
+  // API key
+  $(".api-skip-ip-check").change(function() {
+    $($(this).data('target')).prop('disabled', this.checked);
+  });
+  $(".api-key-copy").click(function() {
+    navigator.clipboard.writeText($(this).attr('data-key'));
+    mailcow_alert_box(lang_admin.copy_to_clipboard, 'success');
+  });
+  $(".api-key-regen").click(function() { return confirm(lang_admin.ays); });
 
   $("#mailbox-password-warning-close").click(function( event ) {
     $('#mailbox-passwd-hidden-info').addClass('hidden');

@@ -36,8 +36,6 @@
         "public_comment": "Comentário público",
         "sieve_desc": "Breve descrição",
         "sieve_type": "Tipo de filtro",
-        "subscribeall": "Subscrever todas as pastas",
-        "syncjob": "Adicionar sincronização",
         "validate": "Validar",
         "validation_success": "Validado com sucesso",
         "app_passwd_protocols": "Protocolos permitidos para senha de aplicação"
@@ -86,7 +84,6 @@
         "customize": "Personalizar",
         "destination": "Destino",
         "dkim_from": "De",
-        "activate_api": "Ativar API",
         "add_admin": "Adicionar administrador",
         "admins": "Administradores",
         "advanced_settings": "Configurações avançadas",
@@ -281,6 +278,10 @@
         "mailbox_modified": "A conta %s foi alterada com sucesso",
         "mailbox_removed": "Conta %s removida com sucesso",
         "resource_modified": "A conta %s foi alterada com sucesso"
+    },
+    "syncjobs": {
+        "add": "Adicionar sincronização",
+        "subscribeall": "Subscrever todas as pastas"
     },
     "user": {
         "action": "Ação",

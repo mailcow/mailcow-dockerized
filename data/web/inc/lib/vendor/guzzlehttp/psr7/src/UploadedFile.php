@@ -11,51 +11,30 @@ use RuntimeException;
 
 class UploadedFile implements UploadedFileInterface
 {
-    private const ERRORS = [
-        UPLOAD_ERR_OK,
-        UPLOAD_ERR_INI_SIZE,
-        UPLOAD_ERR_FORM_SIZE,
-        UPLOAD_ERR_PARTIAL,
-        UPLOAD_ERR_NO_FILE,
-        UPLOAD_ERR_NO_TMP_DIR,
-        UPLOAD_ERR_CANT_WRITE,
-        UPLOAD_ERR_EXTENSION,
+    private const ERROR_MAP = [
+        UPLOAD_ERR_OK => 'UPLOAD_ERR_OK',
+        UPLOAD_ERR_INI_SIZE => 'UPLOAD_ERR_INI_SIZE',
+        UPLOAD_ERR_FORM_SIZE => 'UPLOAD_ERR_FORM_SIZE',
+        UPLOAD_ERR_PARTIAL => 'UPLOAD_ERR_PARTIAL',
+        UPLOAD_ERR_NO_FILE => 'UPLOAD_ERR_NO_FILE',
+        UPLOAD_ERR_NO_TMP_DIR => 'UPLOAD_ERR_NO_TMP_DIR',
+        UPLOAD_ERR_CANT_WRITE => 'UPLOAD_ERR_CANT_WRITE',
+        UPLOAD_ERR_EXTENSION => 'UPLOAD_ERR_EXTENSION',
     ];
 
-    /**
-     * @var string|null
-     */
-    private $clientFilename;
+    private ?string $clientFilename;
 
-    /**
-     * @var string|null
-     */
-    private $clientMediaType;
+    private ?string $clientMediaType;
 
-    /**
-     * @var int
-     */
-    private $error;
+    private int $error;
 
-    /**
-     * @var string|null
-     */
-    private $file;
+    private ?string $file = null;
 
-    /**
-     * @var bool
-     */
-    private $moved = false;
+    private bool $moved = false;
 
-    /**
-     * @var int|null
-     */
-    private $size;
+    private ?int $size;
 
-    /**
-     * @var StreamInterface|null
-     */
-    private $stream;
+    private ?StreamInterface $stream = null;
 
     /**
      * @param StreamInterface|string|resource $streamOrFile
@@ -64,11 +43,11 @@ class UploadedFile implements UploadedFileInterface
         $streamOrFile,
         ?int $size,
         int $errorStatus,
-        string $clientFilename = null,
-        string $clientMediaType = null
+        ?string $clientFilename = null,
+        ?string $clientMediaType = null
     ) {
         $this->setError($errorStatus);
-        $this->size = $size;
+        $this->size = Integers::assertOptionalNonNegativeSize($size, 'Uploaded file size');
         $this->clientFilename = $clientFilename;
         $this->clientMediaType = $clientMediaType;
 
@@ -104,18 +83,13 @@ class UploadedFile implements UploadedFileInterface
      */
     private function setError(int $error): void
     {
-        if (false === in_array($error, UploadedFile::ERRORS, true)) {
+        if (!isset(UploadedFile::ERROR_MAP[$error])) {
             throw new InvalidArgumentException(
                 'Invalid error status for UploadedFile'
             );
         }
 
         $this->error = $error;
-    }
-
-    private function isStringNotEmpty($param): bool
-    {
-        return is_string($param) && false === empty($param);
     }
 
     /**
@@ -137,7 +111,7 @@ class UploadedFile implements UploadedFileInterface
     private function validateActive(): void
     {
         if (false === $this->isOk()) {
-            throw new RuntimeException('Cannot retrieve stream due to upload error');
+            throw new RuntimeException(\sprintf('Cannot retrieve stream due to upload error (%s)', self::ERROR_MAP[$this->error]));
         }
 
         if ($this->isMoved()) {
@@ -159,11 +133,11 @@ class UploadedFile implements UploadedFileInterface
         return new LazyOpenStream($file, 'r+');
     }
 
-    public function moveTo($targetPath): void
+    public function moveTo(string $targetPath): void
     {
         $this->validateActive();
 
-        if (false === $this->isStringNotEmpty($targetPath)) {
+        if ($targetPath === '') {
             throw new InvalidArgumentException(
                 'Invalid path provided for move operation; must be a non-empty string'
             );
@@ -174,8 +148,13 @@ class UploadedFile implements UploadedFileInterface
                 ? rename($this->file, $targetPath)
                 : move_uploaded_file($this->file, $targetPath);
         } else {
+            $stream = $this->getStream();
+            if ($stream->isSeekable()) {
+                $stream->rewind();
+            }
+
             Utils::copyToStream(
-                $this->getStream(),
+                $stream,
                 new LazyOpenStream($targetPath, 'w')
             );
 
@@ -183,9 +162,7 @@ class UploadedFile implements UploadedFileInterface
         }
 
         if (false === $this->moved) {
-            throw new RuntimeException(
-                sprintf('Uploaded file could not be moved to %s', $targetPath)
-            );
+            throw new RuntimeException(sprintf('Uploaded file could not be moved to %s', DiagnosticValue::escape($targetPath)));
         }
     }
 

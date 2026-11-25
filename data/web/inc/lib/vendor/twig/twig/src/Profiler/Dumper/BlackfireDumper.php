@@ -40,7 +40,7 @@ EOF;
         return $str;
     }
 
-    private function dumpChildren(string $parent, Profile $profile, &$data)
+    private function dumpChildren(string $parent, Profile $profile, &$data): void
     {
         foreach ($profile as $p) {
             if ($p->isTemplate()) {
@@ -53,7 +53,7 @@ EOF;
         }
     }
 
-    private function dumpProfile(string $edge, Profile $profile, &$data)
+    private function dumpProfile(string $edge, Profile $profile, &$data): void
     {
         if (isset($data[$edge])) {
             ++$data[$edge]['ct'];
