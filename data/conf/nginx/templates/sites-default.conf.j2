@@ -105,6 +105,11 @@ location ~ ^/api/v1/(.*)$ {
     try_files $uri $uri/ /json_api.php?query=$1&$args;
 }
 
+# SimpleLogin/Bitwarden forwarder: POST /api/alias/random/new
+location = /api/alias/random/new {
+    try_files $uri /simplelogin.php?$args;
+}
+
 location ~ ^/cache/(.*)$ {
     try_files $uri $uri/ /resource.php?file=$1;
 }
