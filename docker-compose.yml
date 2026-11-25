@@ -536,7 +536,7 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: ghcr.io/mailcow/watchdog:2.13
+      image: ghcr.io/mailcow/watchdog:2.13a
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       tmpfs:
@@ -546,6 +546,7 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/:z
         - postfix-vol-1:/var/spool/postfix
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
+        - ./data/conf/unbound/unbound.conf:/etc/mailcow/unbound.conf:ro,z
       restart: always
       depends_on:
         - postfix-mailcow
@@ -554,6 +555,7 @@ services:
         - acme-mailcow
         - redis-mailcow
       environment:
+        - ENABLE_IPV6=${ENABLE_IPV6:-true}
         - *db_version
         - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
