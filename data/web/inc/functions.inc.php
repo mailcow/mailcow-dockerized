@@ -371,12 +371,10 @@ function last_login($action, $username, $sasl_limit_days = 7, $ui_offset = 1) {
                         'log' => array(__FUNCTION__, $_action, $_data_log),
                         'msg' => array('redis_error', $e)
                       );
-                      curl_close($curl);
                       return false;
                     }
                 }
               }
-              curl_close($curl);
             }
           }
         }
@@ -2128,7 +2126,6 @@ function license($action, $data = null) {
       curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
       curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
       $response = curl_exec($curl);
-      curl_close($curl);
       $json_return = json_decode($response, true);
       if ($response && $json_return) {
         if ($json_return['response'] === "ok") {
@@ -3849,10 +3846,8 @@ function get_logs($application, $lines = false) {
     $history = curl_exec($curl);
     if (!curl_errno($curl)) {
       $data_array = json_decode($history, true);
-      curl_close($curl);
       return $data_array['rows'];
     }
-    curl_close($curl);
     return false;
   }
   if ($application == "rspamd-stats") {
@@ -3863,10 +3858,8 @@ function get_logs($application, $lines = false) {
     $stats = curl_exec($curl);
     if (!curl_errno($curl)) {
       $data_array = json_decode($stats, true);
-      curl_close($curl);
       return $data_array;
     }
-    curl_close($curl);
     return false;
   }
   return false;
@@ -3875,7 +3868,6 @@ function getGUID() {
   if (function_exists('com_create_guid')) {
     return com_create_guid();
   }
-  mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
   $charid = strtoupper(md5(uniqid(rand(), true)));
   $hyphen = chr(45);// "-"
   return substr($charid, 0, 8).$hyphen

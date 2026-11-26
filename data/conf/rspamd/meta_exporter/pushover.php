@@ -266,7 +266,6 @@ foreach ($rcpt_final_mailboxes as $rcpt_final) {
     ));
     $result = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
     error_log("NOTIFY: result: " . $httpcode . PHP_EOL);
   }
 }

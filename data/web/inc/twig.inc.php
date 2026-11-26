@@ -18,7 +18,7 @@ $twig->addFunction(new TwigFunction('query_string', function (array $params = []
   return http_build_query(array_merge($filtered, $params));
 }));
 
-$twig->addFunction(new TwigFunction('is_uri', function (string $uri, string $where = null) {
+$twig->addFunction(new TwigFunction('is_uri', function (string $uri, ?string $where = null) {
   if (is_null($where)) $where = $_SERVER['REQUEST_URI'];
   return preg_match('/'.$uri.'/i', $where);
 }));

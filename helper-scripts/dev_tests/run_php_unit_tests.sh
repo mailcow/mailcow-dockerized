@@ -9,7 +9,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TESTS_DIR="${REPO_DIR}/tests/php"
 
 docker run --rm -u "$(id -u):$(id -g)" -v "${TESTS_DIR}:/app" -w /app composer:2 \
-  install --no-interaction --no-progress --quiet
+  install --no-interaction --no-progress --quiet --ignore-platform-req=ext-*
 
-docker run --rm -u "$(id -u):$(id -g)" -v "${REPO_DIR}:/app" -w /app/tests/php php:8.2-cli \
+docker run --rm -u "$(id -u):$(id -g)" -v "${REPO_DIR}:/app" -w /app/tests/php php:8.5-cli \
   php vendor/bin/phpunit "$@"

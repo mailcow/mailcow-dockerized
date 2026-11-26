@@ -93,7 +93,6 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         ),
         'D' =>
         array (
-            'Ddeboer\\Imap\\' => 13,
             'DASPRiD\\Enum\\' => 13,
         ),
         'C' =>
@@ -246,10 +245,6 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
-        ),
-        'Ddeboer\\Imap\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/ddeboer/imap/src',
         ),
         'DASPRiD\\Enum\\' =>
         array (

@@ -4306,7 +4306,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
           $default_actions = curl_exec($curl);
           if (!curl_errno($curl)) {
             $data_array = json_decode($default_actions, true);
-            curl_close($curl);
             foreach ($data_array as $data) {
               if ($data['action'] == 'reject') {
                 $reject = $data['value'];
@@ -4339,7 +4338,6 @@ function mailbox($_action, $_type, $_data = null, $_extra = null) {
               'msg' => 'Could not determine servers default spam score, assuming default'
             );
           }
-          curl_close($curl);
           $policydata = array();
           if (isset($_data) && filter_var($_data, FILTER_VALIDATE_EMAIL)) {
             if (!hasMailboxObjectAccess($_SESSION['mailcow_cc_username'], $_SESSION['mailcow_cc_role'], $_data)) {

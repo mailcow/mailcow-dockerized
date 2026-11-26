@@ -14,7 +14,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.2.29"
+            "php": "8.5.13"
         },
         "sort-packages": true
     }

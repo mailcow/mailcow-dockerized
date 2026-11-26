@@ -35,7 +35,6 @@ function github_get($url) {
   ));
   $body = curl_exec($ch);
   $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
   if ($body === false || $code !== 200) return false;
   $json = json_decode($body, true);
   return is_array($json) ? $json : false;
