@@ -199,10 +199,28 @@
         "no_action": "Nenhuma ação foi definida"
     },
     "login": {
+        "back_to_mailcow": "Voltar ao mailcow",
         "delayed": "Sua entrada será atrasada por %s segundos.",
+        "fido2_webauthn": "Entrada FIDO2/WebAuthn",
+        "forgot_password": "> Esqueceu-se da palavra-passe?",
+        "invalid_pass_reset_token": "O código de reposição da palavra-passe é inválido ou expirou.<br>Peça uma nova ligação de reposição da palavra-passe.",
         "login": "Entrar",
+        "login_linkstext": "Não é a entrada correta?",
+        "login_usertext": "Entrar como utilizador",
+        "login_domainadmintext": "Entrar como administrador de domínio",
+        "login_admintext": "Entrar como administrador",
+        "login_user": "Entrada de utilizador",
+        "login_dadmin": "Entrada de administrador de domínio",
+        "login_admin": "Entrada de administrador",
+        "mobileconfig_info": "Inicie sessão como utilizador da caixa de correio para transferir o perfil de ligação da Apple pedido.",
+        "new_password": "Nova palavra-passe",
+        "new_password_confirm": "Confirmar a nova palavra-passe",
+        "other_logins": "ou entrar com",
         "password": "Senha",
-        "username": "Utilizador"
+        "reset_password": "Repor a palavra-passe",
+        "request_reset_password": "Pedir alteração da palavra-passe",
+        "username": "Utilizador",
+        "email": "Endereço de email"
     },
     "mailbox": {
         "action": "Ação",
